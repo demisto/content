@@ -8,6 +8,8 @@ defang_data = [
     ('xsoar[@]test[.]com', 'xsoar@test.com'),
     ('xsoar[@]test.com', 'xsoar@test.com'),
 ]
+
+
 @pytest.mark.parametrize('address,valid', defang_data)
 def test_check_defanging(address, valid):
     assert refang_email(address) == valid
@@ -23,6 +25,8 @@ tld_data = [
     ('randomName@randomDomain.com', True),
     ('Xsoar@xsoar.xlsx', False),
 ]
+
+
 @pytest.mark.parametrize('address,valid', tld_data)
 def test_check_tld(address, valid):
     assert check_tld(address) is valid
