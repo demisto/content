@@ -12,8 +12,8 @@
                             "type": "UNUSUAL_PAYMENT_REQUEST"
                         },
                         "user": {
-                            "suspicious_user_name": "brandon romero",
-                            "suspicious_user_email": "zoey_russel@fake-odessa.com"
+                            "suspicious_user_name": "John Doe",
+                            "suspicious_user_email": "john_doe@patterson.com"
                         },
                         "urgency": {
                             "urgency": false
