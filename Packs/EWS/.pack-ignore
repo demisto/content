@@ -19,3 +19,6 @@ ignore=BA101
 
 [file:classifier-EWS_v2.json]
 ignore=BA101
+
+[known_words]
+sc

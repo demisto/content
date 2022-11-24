@@ -1,0 +1,15 @@
+{
+    "id": "89f888d0-5b6f-42d9-bd19-dc8fd82f00e8",
+    "name": "Seattle computers",
+    "description": "User devices in Seattle office",
+    "type": "computer",
+    "endpoints": {
+        "total": 0,
+        "itemsCount": 0,
+        "items": []
+    },
+    "tenant": {
+        "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+    },
+    "createdAt": "2022-09-19T17:08:03.221Z"
+}
