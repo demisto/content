@@ -1,4 +1,4 @@
-This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the sub-playbooks outputs:
 
 - **Microsoft 365 Defender - Get Email URL clicks**:
         Retrieves data based on URL click events.
@@ -21,7 +21,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 This playbook does not use any commands.
@@ -31,20 +31,20 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| URLDomain | Domain or URL to search within emails. Can be a single domain or URL or an array of domains or URLs to search. |  | Optional |
+| URLDomain | Domain or URL to search within emails. Can be a single domain or URL, or an array of domains or URLs to search. |  | Optional |
 | SHA256 | The SHA256 hash file or an array of hashes to search within emails. |  | Optional |
 | IPAddress | The source or destination IP address to search. Can be a single address or an array of IP addresses. |  | Optional |
-| MessageID | MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of NMessageIDs to search. |  | Optional |
-| Timeout | The time limit in seconds for the HTTP request to run. Default is 60. | 180 | Optional |
-| SearchTimeframe | Number of days past to search. Default is 7. | 7 | Optional |
-| ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. 50 is the default. | 50 | Optional |
+| MessageID | Message ID of the email from which the URL was clicked. Note that this can be either of the following 2 values:<br/>- The value of the header "Message-ID".<br/>- The internal ID of the message within Microsoft's products \(e.g NetworkMessageId\).<br/><br/>Can be a single MessageID or an array of NMessageIDs to search. |  | Optional |
+| Timeout | The time limit in seconds for the HTTP request to run.  | 180 | Optional |
+| SearchTimeframe | Number of days past to search. | 7 | Optional |
+| ResultsLimit | Number of retrieved entries. Enter -1 for unlimited query. | 50 | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Microsoft365Defender.RetrievedEmails | Email objects containing relevant fields related to url clicks events. | string |
+| Microsoft365Defender.RetrievedEmails | Email objects containing relevant fields related to URL click events. | string |
 | Microsoft365Defender.RetrievedEmails.InternetMessageId | Public-facing identifier for the email that is set by the sending email system. This will be the value of the "Message-ID" header. | string |
 | Microsoft365Defender.RetrievedEmails.SenderFromDomain | Sender domain in the FROM header, which is visible to email recipients on their email clients. | string |
 | Microsoft365Defender.RetrievedEmails.EmailDirection | Direction of the email relative to your network: Inbound, Outbound, Intra-org. | string |
@@ -55,7 +55,7 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.AttachmentCount | Number of attachments in the email. | number |
 | Microsoft365Defender.RetrievedEmails.ThreatNames | Detection name for malware or other threats found. | string |
 | Microsoft365Defender.RetrievedEmails.RecipientEmailAddress | Email address of the recipient, or email address of the recipient after distribution list expansion. | string |
-| Microsoft365Defender.RetrievedEmails.EmailAction | Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, send to quarantine, No action taken, Bcc message. | string |
+| Microsoft365Defender.RetrievedEmails.EmailAction | Final action taken on the email based on filter verdict, policies, and user actions: Move message to junk mail folder, Add X-header, Modify subject, Redirect message, Delete message, Send to quarantine, No action taken, Bcc message. | string |
 | Microsoft365Defender.RetrievedEmails.EmailLanguage | Email language. | string |
 | Microsoft365Defender.RetrievedEmails.SenderFromAddress | Sender email address in the FROM header, which is visible to email recipients on their email clients. | string |
 | Microsoft365Defender.RetrievedEmails.Timestamp | Date and time when the record was generated. | string |
@@ -69,7 +69,7 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.SenderIPv6 | IPv6 address of the last detected mail server that relayed the message. | string |
 | Microsoft365Defender.RetrievedEmails.AccountUpn | User principal name \(UPN\) of the account. | string |
 | Microsoft365Defender.RetrievedEmails.IsClickedThrough | Indicates whether the user was able to click through to the original URL or not. | number |
-| Microsoft365Defender.RetrievedEmails.BulkComplaintLevel | Threshold assigned to email from bulk mailers, a high bulk complain level \(BCL\) means the email is more likely to generate complaints, and thus more likely to be spam. | string |
+| Microsoft365Defender.RetrievedEmails.BulkComplaintLevel | Threshold assigned to email from bulk mailers. A high bulk complain level \(BCL\) means the email is more likely to generate complaints, and thus more likely to be spam. | string |
 | Microsoft365Defender.RetrievedEmails.IPAddress | IP address assigned to the device during communication. | string |
 | Microsoft365Defender.RetrievedEmails.DetectionMethods | Methods used to detect whether the URL contains or leads to malware, phishing, or other threats. | string |
 | Microsoft365Defender.RetrievedEmails.ActionType | Type of activity that triggered the event. | string |
