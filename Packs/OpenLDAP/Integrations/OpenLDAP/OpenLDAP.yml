@@ -90,11 +90,10 @@ configuration:
   hidden: false
   name: ssl_version
   options:
-  - SSLv23
+  - TLS
   - TLSv1
   - TLSv1_1
   - TLSv1_2
-  - TLS
   - TLS_CLIENT
   required: false
   type: 15

@@ -31,11 +31,10 @@ class LdapClient:
     CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
     SSL_VERSIONS = {
-        'SSLv23': ssl.PROTOCOL_SSLv23,
+        'TLS': ssl.PROTOCOL_TLS,
         'TLSv1': ssl.PROTOCOL_TLSv1,  # guardrails-disable-line
         'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
         'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
-        'TLS': ssl.PROTOCOL_TLS,
         'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
     }
 
