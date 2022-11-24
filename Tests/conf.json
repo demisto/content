@@ -5721,7 +5721,7 @@
             },
             "devdemisto/py3-primary": {
                 "pid_threshold": 15,
-                "memory_threshold": 250
+                "memory_threshold": 200
             }
         }
     },
