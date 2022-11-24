@@ -3815,7 +3815,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
     for indicator in indicators:
         results.append(CommandResults(
             outputs_prefix="Nexpose.Asset",
-            outputs_key_field="Id",
+            outputs_key_field="AssetId",
             outputs={
                 "AssetId": asset_id,
                 "Vulnerability": [vulnerability_outputs],
