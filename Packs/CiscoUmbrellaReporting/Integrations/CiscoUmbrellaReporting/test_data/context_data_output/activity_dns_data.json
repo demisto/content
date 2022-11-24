@@ -1,0 +1,50 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "returncode": 0,
+            "externalip": "1.1.1.1",
+            "allapplications": [],
+            "date": "2022-09-12",
+            "internalip": "1.1.1.1",
+            "time": "10:27:15",
+            "querytype": "A",
+            "policycategories": [],
+            "type": "dns",
+            "categories": [
+                {
+                    "id": 23,
+                    "type": "content",
+                    "label": "Search Engines",
+                    "integration": false,
+                    "deprecated": true
+                },
+                {
+                    "id": 190,
+                    "type": "content",
+                    "label": "Search Engines and Portals",
+                    "integration": false,
+                    "deprecated": false
+                }
+            ],
+            "verdict": "allowed",
+            "domain": "dummy.domain.com",
+            "timestamp": 1662978435000,
+            "blockedapplications": [],
+            "allowedapplications": [],
+            "identities": [
+                {
+                    "id": 589064228,
+                    "type": {
+                        "id": 9,
+                        "type": "roaming",
+                        "label": "Roaming Computers"
+                    },
+                    "label": "DESKTOP",
+                    "deleted": false
+                }
+            ],
+            "threats": []
+        }
+    ]
+}
