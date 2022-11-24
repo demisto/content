@@ -13,11 +13,11 @@ jobs:
     - name: Changed Files
       id: changed-files
       uses: tj-actions/changed-files@v34.4.0
-    - name: qoute changed Files
+    - name: quote changed Files
       id: quote-changed-files
       run:
         # "ab acc arr b" -> "'ab' 'acc' 'arr' b'"
-        echo "::set-output name=files::$(echo "${{ steps.changed-files.outputs.all_changed_files }}")" | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/"
+        echo files=${{ steps.changed-files.outputs.all_changed_files }}") | sed -e "s/ /' '/g" -e "s/^/'/" -e "s/$/'/" >> $GITHUB_OUTPUT
     - name: Setup python
       uses: actions/setup-python@v4
       with:
