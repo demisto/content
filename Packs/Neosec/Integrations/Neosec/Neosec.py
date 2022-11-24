@@ -144,7 +144,7 @@ class NeosecClient(BaseClient):
 def convert_to_demisto_severity(severity: str) -> float:
     """
     Maps Neosec severity to Cortex XSOAR severity.
-    Converts the Neosec alert severity level ('Low', 'Medium', 'High', 'Critical') to Cortex XSOAR incident
+    Converts the Neosec alert severity level ('Info', 'Low', 'Medium', 'High', 'Critical') to Cortex XSOAR incident
     severity (1 to 4).
 
     Args:
@@ -158,6 +158,7 @@ def convert_to_demisto_severity(severity: str) -> float:
         "Medium": IncidentSeverity.MEDIUM,
         "High": IncidentSeverity.HIGH,
         "Info": IncidentSeverity.INFO,
+        "Critical": IncidentSeverity.CRITICAL,
     }[severity]
 
 
