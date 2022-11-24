@@ -10,6 +10,7 @@ from TAXII2ApiModule import *  # noqa: E402
 COMPLEX_OBSERVATION_MODE_SKIP = 'Skip indicators with more than a single observation'
 MAX_FETCH_INTERVAL = '48 hours'
 DEFAULT_FETCH_INTERVAL = '24 hours'
+DEFAULT_LIMIT_PER_REQUEST = 1000
 
 ''' COMMAND FUNCTIONS '''
 
@@ -32,7 +33,8 @@ def get_limited_interval(given_interval: Union[str, datetime],
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
-                             initial_interval: str = DEFAULT_FETCH_INTERVAL) -> Tuple[list, dict]:
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL, fetch_from_feed_start: bool = False) \
+        -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -45,22 +47,32 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
         dateparser.parse(initial_interval or DEFAULT_FETCH_INTERVAL, date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
 
     if client.collection_to_fetch:
-        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
+        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx,
+                                                        fetch_from_feed_start)  # type: ignore[arg-type]
     else:
-        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
+        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx,
+                                                         fetch_from_feed_start)  # type: ignore[arg-type]
 
     return indicators, last_run_ctx
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
-                         last_run_ctx: Optional[dict] = None):
-    demisto.debug('in fetch_one_collection')
+                         last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
+    demisto.debug(f'in fetch_one_collection with {client.collection_to_fetch.id=}')
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     # initial_interval gets here limited so no need to check limitation with default value
+    demisto.debug(f'{initial_interval=}, {last_fetch_time=}')
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
-    demisto.debug(f'{added_after=}')
+    demisto.debug(f'{limit=}, {added_after=}, {last_run_ctx=}, {fetch_from_feed_start=}')
 
-    indicators = client.build_iterator(limit, added_after=added_after)
+    if fetch_from_feed_start and not last_fetch_time:
+        # first run for fetch from feed start
+        demisto.debug(f'sending without added_after')
+        indicators = client.build_iterator(limit)
+    else:
+        demisto.debug(f'sending with {added_after=}')
+        indicators = client.build_iterator(limit, added_after=added_after)
+
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
         last_run_ctx[client.collection_to_fetch.id] = _ensure_datetime_to_string(client.last_fetched_indicator__modified
                                                                                  if client.last_fetched_indicator__modified
@@ -70,12 +82,12 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
 
 
 def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
-                          last_run_ctx: Optional[dict] = None):
+                          last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
     indicators: list = []
     demisto.debug('in fetch_all_collections')
     for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
-        fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)
+        fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_from_feed_start)
         indicators.extend(fetched_iocs)
 
         if limit >= 0:
@@ -158,8 +170,9 @@ def main():  # pragma: no cover
         objects_to_fetch = ','.join(objects_to_fetch)
 
     initial_interval = params.get('initial_interval', DEFAULT_FETCH_INTERVAL)
+    fetch_from_feed_start = params.get('fetch_from_feed_start', False)
     limit = arg_to_number(params.get('limit')) or -1
-    limit_per_request = arg_to_number(params.get('limit_per_request')) or DFLT_LIMIT_PER_REQUEST
+    limit_per_request = arg_to_number(params.get('limit_per_request')) or DEFAULT_LIMIT_PER_REQUEST
     default_api_root = params.get('default_api_root', 'public')
 
     command = demisto.command()
@@ -188,7 +201,8 @@ def main():  # pragma: no cover
 
         elif command == 'fetch-indicators':
             last_run_indicators = demisto.getLastRun()
-            indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval)
+            indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval,
+                                                                       fetch_from_feed_start)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
