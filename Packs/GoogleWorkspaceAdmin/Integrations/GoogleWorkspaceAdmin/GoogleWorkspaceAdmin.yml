@@ -33,7 +33,8 @@ script:
           description: "The unique ID the API service uses to identify the mobile device."
           required: true
           isArray: false
-        - name: action
+        - auto: PREDEFINED
+          name: action
           description: "The action to be performed on the device."
           required: true
           isArray: false
@@ -54,7 +55,8 @@ script:
     - name: google-mobiledevice-list
       description: "Retrieves a paginated list that includes company-owned devices."
       arguments:
-        - name: projection
+        - auto: PREDEFINED
+          name: projection
           description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status)"
           required: false
           isArray: false
@@ -65,7 +67,8 @@ script:
           description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators"
           required: false
           isArray: false
-        - name: order_by
+        - auto: PREDEFINED
+          name: order_by
           description: "Device property to use for sorting results."
           required: false
           isArray: false
@@ -78,7 +81,8 @@ script:
             - OS
             - STATUS
             - TYPE
-        - name: sort_order
+        - auto: PREDEFINED
+          name: sort_order
           description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter."
           required: false
           isArray: false
@@ -101,9 +105,12 @@ script:
         - type: String
           contextPath: Google.mobileEvent.resourceKind
           description: "Kind of resource this is."
+        - type: List
+          contextPath: Google.mobileEvent.mobileListObjects
+          description: "A list of Mobile Device objects."
         - type: String
           contextPath: Google.mobileEvent.mobileListObjects.kind
-          description: "The type of the API resource. "
+          description: "The type of the API resource."
         - type: String
           contextPath: Google.mobileEvent.mobileListObjects.etag
           description: "ETag of the resource."
@@ -236,7 +243,8 @@ script:
     - name: google-chromeosdevice-list
       description: "Retrieves a paginated list of company-owned ChromeOS devices."
       arguments:
-        - name: projection
+        - auto: PREDEFINED
+          name: projection
           description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user)"
           required: false
           isArray: false
@@ -247,7 +255,8 @@ script:
           description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators"
           required: false
           isArray: false
-        - name: order_by
+        - auto: PREDEFINED
+          name: order_by
           description: "Device property to use for sorting results."
           required: false
           isArray: false
@@ -258,7 +267,8 @@ script:
             - NOTES
             - SERIAL_NUMBER
             - STATUS
-        - name: sort_order
+        - auto: PREDEFINED
+          name: sort_order
           description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter."
           required: false
           isArray: false
@@ -269,7 +279,8 @@ script:
           description: "The full path of the organizational unit (minus the leading /) or its unique ID."
           required: false
           isArray: false
-        - name: include_child_org_units
+        - auto: PREDEFINED
+          name: include_child_org_units
           description: "Whether to return devices from all child orgunits."
           required: false
           isArray: false
@@ -288,6 +299,280 @@ script:
           description: "The number of requested results per page. The default value is 50. Max allowed value is 100."
           required: false
           isArray: false
+      outputs:
+        - type: String
+          contextPath: Google.chromeosEvent.resourceKind
+          description: "Kind of resource this is."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects
+          description: "A list of Chrome OS Device objects."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceId
+          description: "The unique ID of the Chrome device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.serialNumber
+          description: "The Chrome device serial number entered when the device was enabled."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.status
+          description: "Status of the device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.lastSync
+          description: "The date and time the device was last synchronized with the policy settings in the Admin console."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.supportEndDate
+          description: "The final date the device will be supported."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.annotatedUser
+          description: "The user of the device as noted by the administrator."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.annotatedLocation
+          description: "The address or location of the device as noted by the administrator."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.notes
+          description: "Notes about this device added by the administrator."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.model
+          description: "The device's model information."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.meid
+          description: "The Mobile Equipment Identifier (MEID) or the International Mobile Equipment Identity (IMEI) for the 3G mobile card in a mobile device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.orderNumber
+          description: "The device's order number."
+        - type: Boolean
+          contextPath: Google.chromeosEvent.chromeosListObjects.willAutoRenew
+          description: "Determines if the device will auto renew its support after the support end date."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osVersion
+          description: "The Chrome device's operating system version."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.platformVersion
+          description: "The Chrome device's platform version."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.firmwareVersion
+          description: "The Chrome device's firmware version."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.macAddress
+          description: "The device's wireless MAC address."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.bootMode
+          description: "The boot mode for the device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.lastEnrollmentTime
+          description: "The date and time the device was last enrolled."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.kind
+          description: "The type of resource."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.recentUsers
+          description: "A list of recent device users, in descending order, by last login time."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.recentUsers.type
+          description: "The type of the user."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.recentUsers.email
+          description: "The user's email address."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.activeTimeRanges
+          description: "A list of active time ranges."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.activeTimeRanges.activeTime
+          description: "Duration of usage in milliseconds."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.activeTimeRanges.date
+          description: "Date of usage."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.ethernetMacAddress
+          description: "The device's MAC address on the ethernet network interface."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.annotatedAssetId
+          description: "The asset identifier as noted by an administrator or specified during enrollment."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.etag
+          description: "ETag of the resource."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.diskVolumeReports
+          description: "Reports of disk space and other info about mounted/connected volumes."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.diskVolumeReports.volumeInfo
+          description: "Disk volumes."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.diskVolumeReports.volumeInfo.volumeId
+          description: "Volume id."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.diskVolumeReports.volumeInfo.storageTotal
+          description: "Total disk space [in bytes]."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.diskVolumeReports.volumeInfo.storageFree
+          description: "Free disk space [in bytes]."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.systemRamTotal
+          description: "Total RAM on the device in bytes."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports
+          description: "Reports of CPU utilization and temperature."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports.reportTime
+          description: "Date and time the report was received."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports.cpuUtilizationPercentageInfo
+          description: ""
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports.cpuTemperatureInfo
+          description: "A list of CPU temperature samples."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports.cpuTemperatureInfo.temperature
+          description: "Temperature in Celsius degrees."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuStatusReports.cpuTemperatureInfo.label
+          description: "CPU label."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo
+          description: "Information regarding CPU specs in the device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.model
+          description: "The CPU model name."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.architecture
+          description: "The CPU architecture."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.maxClockSpeedKhz
+          description: "The max CPU clock speed in kHz."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus
+          description: "Information for the Logical CPUs."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz
+          description: "Maximum frequency the CPU is allowed to run at, by policy."
+        - type: Integer
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz
+          description: "Current frequency the CPU is running at."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.idleDuration
+          description: "Idle time since last boot."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.cStates
+          description: "C-States indicate the power consumption state of the CPU. For more information look at documentation published by the CPU maker."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.cStates.displayName
+          description: "Name of the state."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.cpuInfo.logicalCpus.cStates.sessionDuration
+          description: "Time spent in the state since the last reboot."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles
+          description: "A list of device files to download."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles.name
+          description: "File name."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles.type
+          description: "File type."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles.downloadUrl
+          description: "File download URL."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles.createTime
+          description: "Date and time the file was created."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.deviceFiles.createTime
+          description: "Date and time the file was created."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.systemRamFreeReports
+          description: "Reports of amounts of available RAM memory."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.systemRamFreeReports.reportTime
+          description: "Date and time the report was received."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.systemRamFreeReports.systemRamFreeInfo
+          description: ""
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.lastKnownNetwork
+          description: "Contains last known network."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.lastKnownNetwork.ipAddress
+          description: "The IP address."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.lastKnownNetwork.wanIpAddress
+          description: "The WAN IP address."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.autoUpdateExpiration
+          description: "The timestamp after which the device will stop receiving Chrome updates or support."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.ethernetMacAddress0
+          description: "MAC address used by the Chromebook's internal ethernet port, and for onboard network (ethernet) interface. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.dockMacAddress
+          description: "Built-in MAC address for the docking station that the device connected to. Factory sets Media access control address (MAC address) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.manufactureDate
+          description: "The date the device was manufactured in yyyy-mm-dd format."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.orgUnitPath
+          description: "The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /."
+        - type: Object
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo
+          description: "Trusted Platform Module (TPM)."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.family
+          description: "TPM family, using the TPM 2.0 style encoding."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.specLevel
+          description: "TPM specification level."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.manufacturer
+          description: "TPM manufacturer code."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.tpmModel
+          description: "TPM model number."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.firmwareVersion
+          description: "TPM firmware version."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.tpmVersionInfo.vendorSpecific
+          description: "Vendor-specific information such as Vendor ID."
+        - type: List
+          contextPath: Google.chromeosEvent.chromeosListObjects.screenshotFiles
+          description: "A list of screenshot files to download."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.screenshotFiles.name
+          description: "File name."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.screenshotFiles.type
+          description: "File type."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.screenshotFiles.downloadUrl
+          description: "File download URL."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.screenshotFiles.createTime
+          description: "Date and time the file was created."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.orgUnitId
+          description: "The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit."
+        - type: Object
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus
+          description: "The status of the OS updates for the device."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.state
+          description: "The update state of an OS update."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.targetOsVersion
+          description: "New platform version of the OS image being downloaded and applied."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.targetKioskAppVersion
+          description: "New required platform version from the pending updated kiosk app."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.updateTime
+          description: "Date and time of the last successful OS update."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.updateCheckTime
+          description: "Date and time of the last update check."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.osUpdateStatus.rebootTime
+          description: "Date and time of the last reboot."
+        - type: String
+          contextPath: Google.chromeosEvent.chromeosListObjects.firstEnrollmentTime
+          description: "Date and time for the first time the device was enrolled."
     - name: google-chromeosdevice-action
       description: "Takes an action that affects a ChromeOS Device. This includes deprovisioning, disabling, and re-enabling devices."
       arguments:
@@ -295,7 +580,8 @@ script:
           description: "The unique ID of the device."
           required: true
           isArray: false
-        - name: action
+        - auto: PREDEFINED
+          name: action
           description: "The action to be performed on the ChromeOS device."
           required: true
           isArray: false
@@ -305,7 +591,8 @@ script:
             - reenable
             - pre_provisioned_disable
             - pre_provisioned_reenable
-        - name: deprovision_reason
+        - auto: PREDEFINED
+          name: deprovision_reason
           description: "Only used when the action is deprovision. With the deprovision action, this field is required."
           required: false
           isArray: false

@@ -124,8 +124,8 @@ class Client(BaseClient):
 
     def google_mobile_device_list_request(self, query_params: dict) -> dict:
         # TODO Don't forget to delete the following lines (these are for testing purposes)
-        max_results = query_params['maxResults']
-        query_params['maxResults'] = 3 if max_results > 3 else max_results
+        # max_results = query_params['maxResults']
+        # query_params['maxResults'] = 3 if max_results > 3 else max_results
 
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly']
         token = self._get_oauth_token(scopes=scopes)
@@ -158,8 +158,8 @@ class Client(BaseClient):
 
     def google_chromeos_device_list_request(self, query_params: dict) -> dict:
         # TODO Don't forget to delete the following lines (these are for testing purposes)
-        max_results = query_params['maxResults']
-        query_params['maxResults'] = 3 if max_results > 3 else max_results
+        # max_results = query_params['maxResults']
+        # query_params['maxResults'] = 3 if max_results > 3 else max_results
 
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly']
         token = self._get_oauth_token(scopes=scopes)
@@ -181,7 +181,7 @@ class Client(BaseClient):
 
 
 def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: Optional[int],
-                                  page_size: int, table_headers: List[str], table_title: str,
+                                  page_size: int, table_headers: List[str], table_title: str, outputs_prefix: str,
                                   response_devices_list_key: str, cd_devices_list_key: str) -> CommandResults:
     """_summary_
 
@@ -218,7 +218,6 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
         if(current_page_number == page):
             get_data_from_api = False
             context_data['resourceKind'] = response.get('kind')
-            # context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
             relevant_response = response
         elif(not next_page_token):
@@ -230,11 +229,13 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
         markdown = (f'No results were found. The maximum number of pages is {current_page_number}'
                     f' for page size of {page_size}')
     else:
+        num_of_devices = len(context_data[cd_devices_list_key])
         human_readable = to_human_readable(context_data=context_data)
-        markdown = tableToMarkdown(table_title, human_readable, headers=table_headers)
+        markdown = tableToMarkdown(table_title, human_readable, headers=table_headers,
+                                   metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
 
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
+        outputs_prefix=outputs_prefix,
         readable_output=markdown,
         outputs=context_data,
         raw_response=relevant_response,
@@ -243,7 +244,7 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
 
 
 def device_list_automatic_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict,
-                                     limit: int, table_headers: List[str], table_title: str,
+                                     limit: int, table_headers: List[str], table_title: str, outputs_prefix: str,
                                      response_devices_list_key: str, cd_devices_list_key) -> CommandResults:
     # TODO add documentation
     results_limit = limit
@@ -264,14 +265,14 @@ def device_list_automatic_pagination(api_request: Callable, to_human_readable: C
         results_limit -= len(response_mobile_devices)
         if(results_limit <= 0 or not next_page_token):
             context_data['resourceKind'] = response.get('kind')
-            # context_data['ETag'] = trim_extra_double_quotes_from_string(value=response.get('etag'))
             context_data[cd_devices_list_key] = mobile_devices
             get_data_from_api = False
     human_readable = to_human_readable(context_data=context_data)
+    num_of_devices = len(context_data[cd_devices_list_key])
     markdown = tableToMarkdown(table_title, human_readable, headers=table_headers,
-                               metadata=f'{len(context_data[cd_devices_list_key])} results were found')
+                               metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileEvent',
+        outputs_prefix=outputs_prefix,
         readable_output=markdown,
         outputs=context_data,
         raw_response=responses,
@@ -350,6 +351,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
     table_title = f'{INTEGRATION_NAME} - Mobile Devices List'
     response_devices_list_key = 'mobiledevices'
     cd_devices_list_key = 'mobileListObjects'
+    outputs_prefix = f'{OUTPUT_PREFIX}.mobileEvent'
     pagination_args = prepare_pagination_arguments(args=kwargs)
     if 'limit' in pagination_args:
         return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
@@ -358,6 +360,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
                                                 table_title=table_title,
                                                 response_devices_list_key=response_devices_list_key,
                                                 cd_devices_list_key=cd_devices_list_key,
+                                                outputs_prefix=outputs_prefix,
                                                 query_params=query_params, **pagination_args)
 
     return device_list_manual_pagination(api_request=client.google_mobile_device_list_request,
@@ -366,6 +369,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
                                          table_title=table_title,
                                          response_devices_list_key=response_devices_list_key,
                                          cd_devices_list_key=cd_devices_list_key,
+                                         outputs_prefix=outputs_prefix,
                                          query_params=query_params, **pagination_args)
 
 
@@ -419,6 +423,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
     table_title = f'{INTEGRATION_NAME} - ChromeOs Devices List'
     response_devices_list_key = 'chromeosdevices'
     cd_devices_list_key = 'chromeosListObjects'
+    outputs_prefix = f'{OUTPUT_PREFIX}.chromeosEvent'
     pagination_args = prepare_pagination_arguments(args=kwargs)
     if 'limit' in pagination_args:
         return device_list_automatic_pagination(api_request=client.google_chromeos_device_list_request,
@@ -427,13 +432,16 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
                                                 table_title=table_title,
                                                 response_devices_list_key=response_devices_list_key,
                                                 cd_devices_list_key=cd_devices_list_key,
+                                                outputs_prefix=outputs_prefix,
                                                 query_params=query_params, **pagination_args)
+
     return device_list_manual_pagination(api_request=client.google_chromeos_device_list_request,
                                          to_human_readable=chromeos_device_list_to_human_readable,
                                          table_headers=table_headers,
                                          table_title=table_title,
                                          response_devices_list_key=response_devices_list_key,
                                          cd_devices_list_key=cd_devices_list_key,
+                                         outputs_prefix=outputs_prefix,
                                          query_params=query_params, **pagination_args)
 
 
@@ -474,6 +482,7 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
     except DemistoException as e:
         demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
         readable_output = 'Failure'
+        failure_reason['Reason'] = str(e)
         # TODO Should I add the reason as str(e)?
         # raise e
     command_results = CommandResults(
