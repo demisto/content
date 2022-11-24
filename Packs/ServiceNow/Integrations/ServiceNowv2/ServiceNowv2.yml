@@ -2205,7 +2205,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: devdemisto/py3-primary:8.1.0.37717
+  dockerimage: devdemisto/py3-primary:8.1.0.38621
   isfetch: true
   ismappable: true
   isremotesyncin: true
