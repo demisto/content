@@ -78,6 +78,7 @@ class Client(BaseClient):
         if not ctx or not ctx.get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
+            ctx = {}
         else:
             generation_time = dateparser.parse(ctx.get('generation_time'))
             if generation_time:

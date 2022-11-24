@@ -135,6 +135,26 @@ def test_get_oauth_token___old_token_expired(mocker):
     assert client.access_token != "old token"
 
 
+@pytest.mark.parametrize("return_val", ({}, {'generation_time': None}))
+def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
+    """
+        Given -
+           client
+        When -
+            asking for a token when the previous token is unreachable
+        Then -
+            Validate that a func that creates a new token has been called
+            Validate that a new token was stored in the get_integration_context dict.
+    """
+    mocker.patch.object(Zoom_IAM, "get_integration_context",
+                        return_value=return_val)
+    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    assert generate_token_mock.called
+    #assert client.access_token != "old token"
+
+
 def test_disable_user_command__allow_disable(mocker):
     """
     Given:
