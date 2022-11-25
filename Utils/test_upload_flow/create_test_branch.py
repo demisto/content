@@ -96,6 +96,8 @@ def get_pack_content_dict(pack_path: Path):
 
 def parse_path(path: Path, item_type: str, item_prefixes: dict):
     path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
+    if item_type =='IndicatorFields':
+        path_name = f"incidentfield-{path_name}"
     original_path_name = path.name
     if item_type in ['Integrations', 'Scripts']:  # Remove the item parent directory from the path
         path_list = str(path).split('/')
