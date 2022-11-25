@@ -75,7 +75,7 @@ def validate_required_parameters(**kwargs) -> None:
         Error if the value of the parameter is "", [], (), {}, None.
     """
     for key, value in kwargs.items():
-        if not value and value != False:
+        if not value and value is not False:
             raise ValueError(
                 "{} is a required parameter. Please provide correct value.".format(key)
             )

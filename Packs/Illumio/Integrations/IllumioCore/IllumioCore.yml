@@ -639,7 +639,7 @@ script:
     - contextPath: Illumio.Workloads.agent.status.agent_health.severity
       description: Severity of the error type.
       type: String
-    - contextPath: Illumio.Workload.agent.status.agent_health.audit_event
+    - contextPath: Illumio.Workloads.agent.status.agent_health.audit_event
       description: The URI of the audit event that was generated for the corresponding
         error or warning.
       type: String
@@ -1642,7 +1642,7 @@ script:
     - contextPath: Illumio.Rule.resolve_labels_as.consumers
       description: Consumers resolve labels.
       type: String
-  dockerimage: demisto/illumio:1.0.0.37679
+  dockerimage: demisto/illumio:1.0.0.38251
   feed: false
   isfetch: false
   longRunning: false
