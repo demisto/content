@@ -395,112 +395,112 @@ Retrieves the details of the workload based on the provided workload's HREF.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illumio.Workload.href | String | URI of workload. | 
-| Illumio.Workload.deleted | Boolean | Whether this workload has been deleted or not. | 
-| Illumio.Workload.delete_type | String | Workload deletion type. | 
-| Illumio.Workload.name | String | Interface name. | 
-| Illumio.Workload.description | String | The description of this workload. | 
-| Illumio.Workload.managed | Boolean | True if the workload is managed, else false. | 
-| Illumio.Workload.hostname | String | The hostname of this workload. | 
-| Illumio.Workload.service_principal_name | String | The Kerberos Service Principal Name \(SPN\). | 
-| Illumio.Workload.agent_to_pce_certificate_authentication_id | String | PKI Certificate identifier to be used by the PCE for authenticating the VEN. | 
-| Illumio.Workload.distinguished_name | String | X.509 Subject distinguished name. | 
-| Illumio.Workload.public_ip | String | The public IP address of the server. | 
-| Illumio.Workload.external_data_set | String | External data set identifier. | 
-| Illumio.Workload.external_data_reference | String | External data reference identifier. | 
-| Illumio.Workload.interfaces.name | String | Interface name. | 
-| Illumio.Workload.interfaces.link_state | String | Link state. | 
-| Illumio.Workload.interfaces.address | String | The IP address to assign to this interface. | 
-| Illumio.Workload.interfaces.cidr_block | Number | The number of bits in the subnet /24 is 255.255.255.0. | 
-| Illumio.Workload.interfaces.default_gateway_address | String | The IP address of the default gateway. | 
-| Illumio.Workload.interfaces.network.href | String | URI of the network. | 
-| Illumio.Workload.interfaces.network_detection_mode | String | Network detection mode. | 
-| Illumio.Workload.interfaces.friendly_name | String | User-friendly name for interface. | 
-| Illumio.Workload.service_provider | String | Service provider. | 
-| Illumio.Workload.data_center | String | Data center. | 
-| Illumio.Workload.data_center_zone | String | Data center zone. | 
-| Illumio.Workload.os_id | String | Our OS identifier. | 
-| Illumio.Workload.os_detail | String | Additional OS details - just displayed to the end user. | 
-| Illumio.Workload.online | Boolean | If this workload is online. | 
-| Illumio.Workload.firewall_coexistence.illumio_primary | Boolean | Illumio is the primary firewall if set to true. | 
-| Illumio.Workload.containers_inherit_host_policy | Boolean | This workload will apply the policy it receives both to itself and the containers hosted by it. | 
-| Illumio.Workload.blocked_connection_action | String | Firewall action for blocked connections. | 
-| Illumio.Workload.labels.href | String | URI of this label. | 
-| Illumio.Workload.labels.deleted | Boolean | Assigned labels. | 
-| Illumio.Workload.labels.key | String | Key in key-value pair. | 
-| Illumio.Workload.labels.value | String | Value in key-value pair. | 
-| Illumio.Workload.labels.external_data_set | String | External data set identifier. | 
-| Illumio.Workload.labels.external_data_reference | String | External data reference identifier. | 
-| Illumio.Workload.labels.created_at | Date | Timestamp when this label was first created. | 
-| Illumio.Workload.labels.updated_at | Date | Timestamp when this label was last updated. | 
-| Illumio.Workload.labels.created_by.href | String | User who has originally created this label. | 
-| Illumio.Workload.labels.updated_by.href | String | User who has last updated this label. | 
-| Illumio.Workload.services.uptime_seconds | Number | How long since the last reboot of this box - used as a timestamp for this. | 
-| Illumio.Workload.services.created_at | Date | Timestamp when this service was first created. | 
-| Illumio.Workload.services.open_service_ports.protocol | Number | Transport protocol. | 
-| Illumio.Workload.services.open_service_ports.address | String | The local address this service is bound to. | 
-| Illumio.Workload.services.open_service_ports.port | Number | The local port this service is bound to. | 
-| Illumio.Workload.services.open_service_ports.process_name | String | The process name \(including the full path\). | 
-| Illumio.Workload.services.open_service_ports.user | String | The user account that the process is running under. | 
-| Illumio.Workload.services.open_service_ports.package | String | The RPM/DEB package that the program is part of. | 
-| Illumio.Workload.services.open_service_ports.win_service_name | String | Name of the windows service. | 
-| Illumio.Workload.vulnerabilities_summary.num_vulnerabilities | Number | Number of vulnerabilities associated with the workload. | 
-| Illumio.Workload.vulnerabilities_summary.vulnerable_port_exposure | Number | The aggregated vulnerability port exposure score of the workload across all the vulnerable ports. | 
-| Illumio.Workload.vulnerabilities_summary.vulnerable_port_wide_exposure.any | Boolean | The boolean value represents if at least one port is exposed to the internet \(any rule\) on the workload. | 
-| Illumio.Workload.vulnerabilities_summary.vulnerable_port_wide_exposure.ip_list | Boolean | The boolean value represents if at least one port is exposed to ip_list\(s\) on the workload. | 
-| Illumio.Workload.vulnerabilities_summary.vulnerability_exposure_score | Number | The aggregated vulnerability exposure score of the workload across all the vulnerable ports. | 
-| Illumio.Workload.vulnerabilities_summary.vulnerability_score | Number | The aggregated vulnerability score of the workload across all the vulnerable ports. | 
-| Illumio.Workload.vulnerabilities_summary.max_vulnerability_score | Number | The maximum of all the vulnerability scores associated with the detected_vulnerabilities on the workload. | 
-| Illumio.Workload.detected_vulnerabilities.ip_address | String | The IP address of the host where the vulnerability is found. | 
-| Illumio.Workload.detected_vulnerabilities.port | Number | The port which is associated with the vulnerability. | 
-| Illumio.Workload.detected_vulnerabilities.proto | Number | The protocol which is associated with the vulnerability. | 
-| Illumio.Workload.detected_vulnerabilities.port_exposure | Number | The exposure of the port based on the current policy. | 
-| Illumio.Workload.detected_vulnerabilities.port_wide_exposure.any | Boolean | The boolean value represents if the port is exposed to the internet \(any rule\). | 
-| Illumio.Workload.detected_vulnerabilities.port_wide_exposure.ip_list | Boolean | The boolean value represents if the port is exposed to ip_list\(s\). | 
-| Illumio.Workload.detected_vulnerabilities.workload.href | String | The URI of the workload to which this vulnerability belongs to. | 
-| Illumio.Workload.detected_vulnerabilities.vulnerability.href | String | The URI of the vulnerability class to which this vulnerability belongs to. | 
-| Illumio.Workload.detected_vulnerabilities.vulnerability.score | Number | The normalized score of the vulnerability within the range of 0 to 100. | 
-| Illumio.Workload.detected_vulnerabilities.vulnerability.name | String | The title/name of the vulnerability. | 
-| Illumio.Workload.detected_vulnerabilities.vulnerability_report.href | String | The URI of the report to which this vulnerability belongs to. | 
-| Illumio.Workload.agent.config.mode | String | DEPRECATED AND REPLACED \(Use workload enforcement_mode instead\) | 
-| Illumio.Workload.agent.config.log_traffic | Boolean | True if we want to log traffic events from this workload. | 
-| Illumio.Workload.agent.config.security_policy_update_mode | String | Defines the current policy update mode, which can be either adaptive or static based on static policy scopes. | 
-| Illumio.Workload.agent.href | String | HREF of the service agent. | 
-| Illumio.Workload.agent.secure_connect.matching_issuer_name | String | Issuer name match criteria for certificate used during establishing secure connections. | 
-| Illumio.Workload.agent.status.uid | String | The unique ID reported by the server. | 
-| Illumio.Workload.agent.status.last_heartbeat_on | Date | The last time \(rfc3339 timestamp\) a heartbeat was received from this workload. | 
-| Illumio.Workload.agent.status.uptime_seconds | Number | How long since the last reboot of this server. Recorded in DB at the time of the last heartbeat. | 
-| Illumio.Workload.agent.status.agent_version | String | Agent software version string. | 
-| Illumio.Workload.agent.status.managed_since | Date | The time \(rfc3339 timestamp\) at which this workload became managed by a VEN. | 
-| Illumio.Workload.agent.status.fw_config_current | Boolean | If this workload's firewall config is up to string'. | 
-| Illumio.Workload.agent.status.firewall_rule_count | Number | DEPRECATED WITH NO REPLACEMENT: Number of firewall rules currently installed. | 
-| Illumio.Workload.agent.status.security_policy_refresh_at | Date | DEPRECATED AND REPLACED \(USE security_policy_applied_at and security_policy_received_at INSTEAD\). | 
-| Illumio.Workload.agent.status.security_policy_applied_at | Date | Last reported time when policy was applied \(UTC\). | 
-| Illumio.Workload.agent.status.security_policy_received_at | Date | Last reported time when policy was received \(UTC\). | 
-| Illumio.Workload.agent.status.agent_health_errors.errors | Unknown | Errors associated with the security policy. | 
-| Illumio.Workload.agent.status.agent_health_errors.warnings | Unknown | Warnings associated with the security policy. | 
-| Illumio.Workload.agent.status.agent_health.type | String | This field describes the error or the warning type. | 
-| Illumio.Workload.agent.status.agent_health.severity | String | Severity of the error type. | 
-| Illumio.Workload.agent.status.agent_health.audit_event | String | The URI of the audit event that was generated for the corresponding error or warning. | 
-| Illumio.Workload.agent.status.security_policy_sync_state | String | Current state of security policy. | 
-| Illumio.Workload.agent.active_pce_fqdn | String | The FQDN of the PCE that received the agent's last heartbeat. | 
-| Illumio.Workload.agent.target_pce_fqdn | String | The FQDN of the PCE the agent will use for future connections. | 
-| Illumio.Workload.agent.type | String | Agent type. | 
-| Illumio.Workload.ven.href | String | The URI of the VEN that manages this workload. This replaces the 'agent' field of this object. | 
-| Illumio.Workload.ven.hostname | String | The hostname of the host managed by the VEN, only displayed in expanded representations. | 
-| Illumio.Workload.ven.name | String | The friendly name of the VEN, only displayed in expanded representations. | 
-| Illumio.Workload.ven.status | String | Status of the VEN, only displayed in expanded representations. | 
-| Illumio.Workload.enforcement_mode | String | Workload's enforcement mode. | 
-| Illumio.Workload.selectively_enforced_services.href | String | Workload's selective enforcement mode. | 
-| Illumio.Workload.created_at | Date | The time \(rfc3339 timestamp\) at which this workload was created. | 
-| Illumio.Workload.updated_at | Date | The time \(rfc3339 timestamp\) at which this workload was last updated. | 
-| Illumio.Workload.deleted_at | Date | The time \(rfc3339 timestamp\) at which this workload was deleted. | 
-| Illumio.Workload.created_by.href | String | The URI of the user who has created this workload. | 
-| Illumio.Workload.updated_by.href | String | The URI of the user who has last updated this workload. | 
-| Illumio.Workload.deleted_by.href | String | The URI of the user who has deleted this workload. | 
-| Illumio.Workload.container_cluster.href | String | Container cluster URI. | 
-| Illumio.Workload.container_cluster.name | String | Container cluster name. | 
-| Illumio.Workload.ike_authentication_certificate | String | IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections. | 
+| Illumio.Workloads.href | String | URI of workload. | 
+| Illumio.Workloads.deleted | Boolean | Whether this workload has been deleted or not. | 
+| Illumio.Workloads.delete_type | String | Workload deletion type. | 
+| Illumio.Workloads.name | String | Interface name. | 
+| Illumio.Workloads.description | String | The description of this workload. | 
+| Illumio.Workloads.managed | Boolean | True if the workload is managed, else false. | 
+| Illumio.Workloads.hostname | String | The hostname of this workload. | 
+| Illumio.Workloads.service_principal_name | String | The Kerberos Service Principal Name \(SPN\). | 
+| Illumio.Workloads.agent_to_pce_certificate_authentication_id | String | PKI Certificate identifier to be used by the PCE for authenticating the VEN. | 
+| Illumio.Workloads.distinguished_name | String | X.509 Subject distinguished name. | 
+| Illumio.Workloads.public_ip | String | The public IP address of the server. | 
+| Illumio.Workloads.external_data_set | String | External data set identifier. | 
+| Illumio.Workloads.external_data_reference | String | External data reference identifier. | 
+| Illumio.Workloads.interfaces.name | String | Interface name. | 
+| Illumio.Workloads.interfaces.link_state | String | Link state. | 
+| Illumio.Workloads.interfaces.address | String | The IP address to assign to this interface. | 
+| Illumio.Workloads.interfaces.cidr_block | Number | The number of bits in the subnet /24 is 255.255.255.0. | 
+| Illumio.Workloads.interfaces.default_gateway_address | String | The IP address of the default gateway. | 
+| Illumio.Workloads.interfaces.network.href | String | URI of the network. | 
+| Illumio.Workloads.interfaces.network_detection_mode | String | Network detection mode. | 
+| Illumio.Workloads.interfaces.friendly_name | String | User-friendly name for interface. | 
+| Illumio.Workloads.service_provider | String | Service provider. | 
+| Illumio.Workloads.data_center | String | Data center. | 
+| Illumio.Workloads.data_center_zone | String | Data center zone. | 
+| Illumio.Workloads.os_id | String | Our OS identifier. | 
+| Illumio.Workloads.os_detail | String | Additional OS details - just displayed to the end user. | 
+| Illumio.Workloads.online | Boolean | If this workload is online. | 
+| Illumio.Workloads.firewall_coexistence.illumio_primary | Boolean | Illumio is the primary firewall if set to true. | 
+| Illumio.Workloads.containers_inherit_host_policy | Boolean | This workload will apply the policy it receives both to itself and the containers hosted by it. | 
+| Illumio.Workloads.blocked_connection_action | String | Firewall action for blocked connections. | 
+| Illumio.Workloads.labels.href | String | URI of this label. | 
+| Illumio.Workloads.labels.deleted | Boolean | Assigned labels. | 
+| Illumio.Workloads.labels.key | String | Key in key-value pair. | 
+| Illumio.Workloads.labels.value | String | Value in key-value pair. | 
+| Illumio.Workloads.labels.external_data_set | String | External data set identifier. | 
+| Illumio.Workloads.labels.external_data_reference | String | External data reference identifier. | 
+| Illumio.Workloads.labels.created_at | Date | Timestamp when this label was first created. | 
+| Illumio.Workloads.labels.updated_at | Date | Timestamp when this label was last updated. | 
+| Illumio.Workloads.labels.created_by.href | String | User who has originally created this label. | 
+| Illumio.Workloads.labels.updated_by.href | String | User who has last updated this label. | 
+| Illumio.Workloads.services.uptime_seconds | Number | How long since the last reboot of this box - used as a timestamp for this. | 
+| Illumio.Workloads.services.created_at | Date | Timestamp when this service was first created. | 
+| Illumio.Workloads.services.open_service_ports.protocol | Number | Transport protocol. | 
+| Illumio.Workloads.services.open_service_ports.address | String | The local address this service is bound to. | 
+| Illumio.Workloads.services.open_service_ports.port | Number | The local port this service is bound to. | 
+| Illumio.Workloads.services.open_service_ports.process_name | String | The process name \(including the full path\). | 
+| Illumio.Workloads.services.open_service_ports.user | String | The user account that the process is running under. | 
+| Illumio.Workloads.services.open_service_ports.package | String | The RPM/DEB package that the program is part of. | 
+| Illumio.Workloads.services.open_service_ports.win_service_name | String | Name of the windows service. | 
+| Illumio.Workloads.vulnerabilities_summary.num_vulnerabilities | Number | Number of vulnerabilities associated with the workload. | 
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_exposure | Number | The aggregated vulnerability port exposure score of the workload across all the vulnerable ports. | 
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_wide_exposure.any | Boolean | The boolean value represents if at least one port is exposed to the internet \(any rule\) on the workload. | 
+| Illumio.Workloads.vulnerabilities_summary.vulnerable_port_wide_exposure.ip_list | Boolean | The boolean value represents if at least one port is exposed to ip_list\(s\) on the workload. | 
+| Illumio.Workloads.vulnerabilities_summary.vulnerability_exposure_score | Number | The aggregated vulnerability exposure score of the workload across all the vulnerable ports. | 
+| Illumio.Workloads.vulnerabilities_summary.vulnerability_score | Number | The aggregated vulnerability score of the workload across all the vulnerable ports. | 
+| Illumio.Workloads.vulnerabilities_summary.max_vulnerability_score | Number | The maximum of all the vulnerability scores associated with the detected_vulnerabilities on the workload. | 
+| Illumio.Workloads.detected_vulnerabilities.ip_address | String | The IP address of the host where the vulnerability is found. | 
+| Illumio.Workloads.detected_vulnerabilities.port | Number | The port which is associated with the vulnerability. | 
+| Illumio.Workloads.detected_vulnerabilities.proto | Number | The protocol which is associated with the vulnerability. | 
+| Illumio.Workloads.detected_vulnerabilities.port_exposure | Number | The exposure of the port based on the current policy. | 
+| Illumio.Workloads.detected_vulnerabilities.port_wide_exposure.any | Boolean | The boolean value represents if the port is exposed to the internet \(any rule\). | 
+| Illumio.Workloads.detected_vulnerabilities.port_wide_exposure.ip_list | Boolean | The boolean value represents if the port is exposed to ip_list\(s\). | 
+| Illumio.Workloads.detected_vulnerabilities.workload.href | String | The URI of the workload to which this vulnerability belongs to. | 
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.href | String | The URI of the vulnerability class to which this vulnerability belongs to. | 
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.score | Number | The normalized score of the vulnerability within the range of 0 to 100. | 
+| Illumio.Workloads.detected_vulnerabilities.vulnerability.name | String | The title/name of the vulnerability. | 
+| Illumio.Workloads.detected_vulnerabilities.vulnerability_report.href | String | The URI of the report to which this vulnerability belongs to. | 
+| Illumio.Workloads.agent.config.mode | String | DEPRECATED AND REPLACED \(Use workload enforcement_mode instead\) | 
+| Illumio.Workloads.agent.config.log_traffic | Boolean | True if we want to log traffic events from this workload. | 
+| Illumio.Workloads.agent.config.security_policy_update_mode | String | Defines the current policy update mode, which can be either adaptive or static based on static policy scopes. | 
+| Illumio.Workloads.agent.href | String | HREF of the service agent. | 
+| Illumio.Workloads.agent.secure_connect.matching_issuer_name | String | Issuer name match criteria for certificate used during establishing secure connections. | 
+| Illumio.Workloads.agent.status.uid | String | The unique ID reported by the server. | 
+| Illumio.Workloads.agent.status.last_heartbeat_on | Date | The last time \(rfc3339 timestamp\) a heartbeat was received from this workload. | 
+| Illumio.Workloads.agent.status.uptime_seconds | Number | How long since the last reboot of this server. Recorded in DB at the time of the last heartbeat. | 
+| Illumio.Workloads.agent.status.agent_version | String | Agent software version string. | 
+| Illumio.Workloads.agent.status.managed_since | Date | The time \(rfc3339 timestamp\) at which this workload became managed by a VEN. | 
+| Illumio.Workloads.agent.status.fw_config_current | Boolean | If this workload's firewall config is up to string'. | 
+| Illumio.Workloads.agent.status.firewall_rule_count | Number | DEPRECATED WITH NO REPLACEMENT: Number of firewall rules currently installed. | 
+| Illumio.Workloads.agent.status.security_policy_refresh_at | Date | DEPRECATED AND REPLACED \(USE security_policy_applied_at and security_policy_received_at INSTEAD\). | 
+| Illumio.Workloads.agent.status.security_policy_applied_at | Date | Last reported time when policy was applied \(UTC\). | 
+| Illumio.Workloads.agent.status.security_policy_received_at | Date | Last reported time when policy was received \(UTC\). | 
+| Illumio.Workloads.agent.status.agent_health_errors.errors | Unknown | Errors associated with the security policy. | 
+| Illumio.Workloads.agent.status.agent_health_errors.warnings | Unknown | Warnings associated with the security policy. | 
+| Illumio.Workloads.agent.status.agent_health.type | String | This field describes the error or the warning type. | 
+| Illumio.Workloads.agent.status.agent_health.severity | String | Severity of the error type. | 
+| Illumio.Workloads.agent.status.agent_health.audit_event | String | The URI of the audit event that was generated for the corresponding error or warning. | 
+| Illumio.Workloads.agent.status.security_policy_sync_state | String | Current state of security policy. | 
+| Illumio.Workloads.agent.active_pce_fqdn | String | The FQDN of the PCE that received the agent's last heartbeat. | 
+| Illumio.Workloads.agent.target_pce_fqdn | String | The FQDN of the PCE the agent will use for future connections. | 
+| Illumio.Workloads.agent.type | String | Agent type. | 
+| Illumio.Workloads.ven.href | String | The URI of the VEN that manages this workload. This replaces the 'agent' field of this object. | 
+| Illumio.Workloads.ven.hostname | String | The hostname of the host managed by the VEN, only displayed in expanded representations. | 
+| Illumio.Workloads.ven.name | String | The friendly name of the VEN, only displayed in expanded representations. | 
+| Illumio.Workloads.ven.status | String | Status of the VEN, only displayed in expanded representations. | 
+| Illumio.Workloads.enforcement_mode | String | Workload's enforcement mode. | 
+| Illumio.Workloads.selectively_enforced_services.href | String | Workload's selective enforcement mode. | 
+| Illumio.Workloads.created_at | Date | The time \(rfc3339 timestamp\) at which this workload was created. | 
+| Illumio.Workloads.updated_at | Date | The time \(rfc3339 timestamp\) at which this workload was last updated. | 
+| Illumio.Workloads.deleted_at | Date | The time \(rfc3339 timestamp\) at which this workload was deleted. | 
+| Illumio.Workloads.created_by.href | String | The URI of the user who has created this workload. | 
+| Illumio.Workloads.updated_by.href | String | The URI of the user who has last updated this workload. | 
+| Illumio.Workloads.deleted_by.href | String | The URI of the user who has deleted this workload. | 
+| Illumio.Workloads.container_cluster.href | String | Container cluster URI. | 
+| Illumio.Workloads.container_cluster.name | String | Container cluster name. | 
+| Illumio.Workloads.ike_authentication_certificate | String | IKE authentication certificate for certificate-based Secure Connect and Machine Auth connections. | 
 
 #### Command example
 ```!illumio-workload-get href=/orgs/1/workloads/b0426bc0-c6c6-4ef8-bd8a-2a1771f97503```
@@ -1040,23 +1040,23 @@ Retrieves the list of IPs based on the name of the IP list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Illumio.IPList.href | String | URI of the IP list. | 
-| Illumio.IPList.description | String | Description of IP list. | 
-| Illumio.IPList.external_data_set | String | External data set identifier. | 
-| Illumio.IPList.external_data_reference | String | External data reference identifier. | 
-| Illumio.IPList.created_at | Date | Time stamp when this IP list was first created. | 
-| Illumio.IPList.updated_at | Date | Time stamp when this IP List was last updated. | 
-| Illumio.IPList.deleted_at | Date | Time stamp when this IP List was deleted. | 
-| Illumio.IPList.created_by.href | String | User who originally created this IP List. | 
-| Illumio.IPList.updated_by.href | String | User who last updated this IP List. | 
-| Illumio.IPList.deleted_by.href | String | User who has deleted this IP List. | 
-| Illumio.IPList.name | String | Name \(must be unique\). | 
-| Illumio.IPList.ip_ranges.description | String | Description of given IP range. | 
-| Illumio.IPList.ip_ranges.from_ip | String | IP address or a low end of IP range. Might be specified with CIDR notation. | 
-| Illumio.IPList.ip_ranges.to_ip | String | High end of an IP range. | 
-| Illumio.IPList.ip_ranges.exclusion | String | Whether this IP address is an exclusion. Exclusions must be a strict subset of inclusive IP addresses. | 
-| Illumio.IPList.fqdns.fqdn | String | Fully qualified domain name. | 
-| Illumio.IPList.fqdns.description | String | Description of FQDN. | 
+| Illumio.IPLists.href | String | URI of the IP list. | 
+| Illumio.IPLists.description | String | Description of IP list. | 
+| Illumio.IPLists.external_data_set | String | External data set identifier. | 
+| Illumio.IPLists.external_data_reference | String | External data reference identifier. | 
+| Illumio.IPLists.created_at | Date | Time stamp when this IP list was first created. | 
+| Illumio.IPLists.updated_at | Date | Time stamp when this IP List was last updated. | 
+| Illumio.IPLists.deleted_at | Date | Time stamp when this IP List was deleted. | 
+| Illumio.IPLists.created_by.href | String | User who originally created this IP List. | 
+| Illumio.IPLists.updated_by.href | String | User who last updated this IP List. | 
+| Illumio.IPLists.deleted_by.href | String | User who has deleted this IP List. | 
+| Illumio.IPLists.name | String | Name \(must be unique\). | 
+| Illumio.IPLists.ip_ranges.description | String | Description of given IP range. | 
+| Illumio.IPLists.ip_ranges.from_ip | String | IP address or a low end of IP range. Might be specified with CIDR notation. | 
+| Illumio.IPLists.ip_ranges.to_ip | String | High end of an IP range. | 
+| Illumio.IPLists.ip_ranges.exclusion | String | Whether this IP address is an exclusion. Exclusions must be a strict subset of inclusive IP addresses. | 
+| Illumio.IPLists.fqdns.fqdn | String | Fully qualified domain name. | 
+| Illumio.IPLists.fqdns.description | String | Description of FQDN. | 
 
 #### Command example
 ```!illumio-ip-list-get href=/orgs/1/sec_policy/draft/ip_lists/35```

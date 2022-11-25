@@ -75,7 +75,7 @@ def validate_required_parameters(**kwargs) -> None:
         Error if the value of the parameter is "", [], (), {}, None.
     """
     for key, value in kwargs.items():
-        if not value:
+        if not value and value != False:
             raise ValueError(
                 "{} is a required parameter. Please provide correct value.".format(key)
             )
@@ -124,7 +124,7 @@ def generate_change_description_for_object_provision(hrefs: List[str]) -> str:
         str: A string with the current time in UTC.
     """
     return "XSOAR - {}\nProvisioning following objects:\n{}".format(
-        datetime.now().astimezone(timezone.utc).isoformat()[:-6], ", ".join(hrefs)
+        datetime.utcnow().isoformat(), ", ".join(hrefs)
     )
 
 
@@ -830,7 +830,7 @@ def workload_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> C
     readable_output = prepare_workload_get_output(results)
 
     return CommandResults(
-        outputs_prefix="Illumio.Workload",
+        outputs_prefix="Illumio.Workloads",
         readable_output=readable_output,
         outputs_key_field="href",
         outputs=remove_empty_elements(results),
@@ -1010,7 +1010,7 @@ def ip_list_get_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
     readable_output = prepare_ip_list_get_output(results)
 
     return CommandResults(
-        outputs_prefix="Illumio.IPList",
+        outputs_prefix="Illumio.IPLists",
         outputs_key_field="href",
         outputs=remove_empty_elements(results),
         readable_output=readable_output,

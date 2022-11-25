@@ -233,32 +233,32 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Illumio.IPList.href
+              simple: Illumio.IPLists.href
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.IPList.created_at
+              simple: Illumio.IPLists.created_at
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.IPList.updated_at
+              simple: Illumio.IPLists.updated_at
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.IPList.created_by.href
+              simple: Illumio.IPLists.created_by.href
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.IPList.updated_by.href
+              simple: Illumio.IPLists.updated_by.href
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.IPList.name
+              simple: Illumio.IPLists.name
             iscontext: true
     view: |-
       {
@@ -435,32 +435,32 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.href
+              simple: Illumio.Workloads.href
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.enforcement_mode
+              simple: Illumio.Workloads.enforcement_mode
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.created_at
+              simple: Illumio.Workloads.created_at
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.updated_at
+              simple: Illumio.Workloads.updated_at
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.created_by.href
+              simple: Illumio.Workloads.created_by.href
             iscontext: true
       - - operator: isNotEmpty
           left:
             value:
-              simple: Illumio.Workload.updated_by.href
+              simple: Illumio.Workloads.updated_by.href
             iscontext: true
     view: |-
       {
@@ -755,7 +755,7 @@ tasks:
                 value:
                   simple: "0"
       workloads:
-        simple: ${Illumio.Workload.href}
+        simple: ${Illumio.Workloads.href}
     separatecontext: false
     view: |-
       {
