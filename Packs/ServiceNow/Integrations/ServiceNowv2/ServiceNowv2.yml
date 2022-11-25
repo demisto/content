@@ -2179,7 +2179,13 @@ script:
     - description: the API path starting with forward slash (/)
       name: path
       required: true
-    - description: json to send in body
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: is the body json formatted
+      predefined:
+      - 'true'
+      - 'false'
+    - description: data to send in body
       name: body
     - description: json of headers to add
       name: headers
