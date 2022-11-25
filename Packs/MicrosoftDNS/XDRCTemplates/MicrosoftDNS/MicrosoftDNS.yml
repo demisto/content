@@ -1,0 +1,9 @@
+filebeat.inputs:
+- type: filestream
+  paths:
+    - c:\Windows\System32\dns\DNS.log
+processors:
+  - add_fields:
+      fields:
+        vendor: msft
+        product: dns
