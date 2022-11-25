@@ -3142,11 +3142,6 @@
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "IllumioCore",
-            "playbookID": "IllumioCore-Test",
-            "fromversion": "6.2.0"
-        },
-        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"
