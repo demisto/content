@@ -1,4 +1,5 @@
-# Fancy Emails
+
+## What does this pack do?
 A content pack to generate professional, eye-catching emails. Useful for increasing user engagement with XSOAR.
 
 ## Features

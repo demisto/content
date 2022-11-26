@@ -17,7 +17,7 @@
 | indicator_query | Query to use for the indicator table |
 | indicator_table_name | Name to use for indicator table |
 | use_alt_link | Whether to use the alt_link feature of the indicator table |
-| max_name_chars | Max number of charachter in the indicator name field |
+| max_name_chars | Max number of character in the indicator name field |
 | to | Passed to send-mail, Address to Send Email to |
 | cc | Passed to send-mail, Address to cc Email |
 | bcc | Passed to send-mail, Address to bcc Email |

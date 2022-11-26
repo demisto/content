@@ -1,7 +1,7 @@
 ### Fancy E-Emails
 #### Integration Author: Evan Yandle (Palo Alto Networks)
 
-The  Fancy E-Mails integration is a simple templating engine for emails. It produces HTML elements like headers, footers and table in a consistent style to easy, consistent, and professional looking emails.  The integration can be used out of the box or as a boiler plate for more complex layouts.
+The  Fancy E-Mails integration is a simple templating engine for emails. It produces HTML elements like headers, footers and table in a consistent style for easy, consistent, and professional looking emails.  The integration can be used out of the box or as a boiler plate for more complex layouts.
 
 The HTML and CSS elements have been tested to work with outlook.
 
