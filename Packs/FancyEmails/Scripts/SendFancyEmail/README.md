@@ -1,5 +1,12 @@
 Sends a simple email using the fancy email template
 
+### Example Send Email Command
+Basic example of sending an email using Fancy Emails
+```
+!SendFancyEmail to=me@mycompany.com subject="Check Out This Fancy Email" body="Hello World" body_header="Important Email" banner="Classified"
+```
+
+
 ## Script Data
 ---
 
