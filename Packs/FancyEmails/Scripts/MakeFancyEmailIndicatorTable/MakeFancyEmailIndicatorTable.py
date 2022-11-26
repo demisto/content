@@ -5,7 +5,7 @@ query = demisto.args().get('query')
 name = demisto.args().get('name')
 investigation_url = demisto.demistoUrls().get('investigation')
 use_alt_link = demisto.args().get('use_alt_link') in ['True', 'true']
-max_name_characters = int(demisto.args().get('max_name_characters', 40))
+max_name_characters = arg_to_number(demisto.args().get('max_name_characters', 40))
 
 
 def get_base_url(url):
