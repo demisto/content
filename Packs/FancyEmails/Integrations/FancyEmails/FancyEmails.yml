@@ -98,6 +98,13 @@ script:
       type: unknown
     - description: Headers will display in the first column of the table, instead of the First Row. Good key:value type data.
       name: vertical_table
+    outputs:
+    - contextPath: FancyEmails.Table.name
+      description: Name of the table provided on input
+      type: String
+    - contextPath: FancyEmails.Table.html
+      description: Generated HTML for the table
+      type: String
     description: Take a list of objects and converts it to html. This command permits custom HTML.
     name: fancy-email-make-table
   - arguments:
@@ -113,6 +120,13 @@ script:
       name: include_logo
     - description: 'Override or include CSS to include with the email body. '
       name: custom_css
+    outputs:
+      - contextPath: FancyEmails.Email.name
+        description: Name of the email header provided on input
+        type: String
+      - contextPath: FancyEmails.Email.html
+        description: Generated HTML for the email
+        type: String
     description: Make an email body
     name: fancy-email-make-email
   - arguments:
@@ -127,6 +141,13 @@ script:
       predefined:
       - "True"
       - "False"
+    outputs:
+      - contextPath: FancyEmails.TimeString.name
+        description: Name of the time string provided on input
+        type: String
+      - contextPath: FancyEmails.TimeString.html
+        description: Generated HTML for the time string
+        type: String
     description: Format a Generic ISO timestamp to an easy to read string
     name: fancy-email-make-timestring
   - arguments: []
