@@ -5,10 +5,11 @@ A content pack to generate professional, eye-catching emails. Useful for increas
 ## Features
 - Ready to use out of the box but Fully customizable
 - Automated generation of email HTML, tables, and CSS
+- Compatible with Outlook's unique CSS implementation
 - Easy implementation and embeding of organization logo into emails 
 - Automatic Time Formatting to a human-readable local time stampe
 - Customizable headers, footers, and Warning/Classified banners
-- Default configuration produces emails with ADA compliant readability [High Contrast, Element Spacing, Screen Reader Compatible]
+- Default configuration produces emails with ADA compliant readability [Readable Font, High Contrast, Element Spacing, Screen Reader Compatible]
 - Includes scripts to send fancy emails using the 'send-mail command'
 - Include scripts to generate certain common emails and elements
   - Generate an HTML indicator table (MakeFancyEmailIndicatorTable)
