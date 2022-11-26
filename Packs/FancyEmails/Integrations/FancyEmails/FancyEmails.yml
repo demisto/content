@@ -121,12 +121,12 @@ script:
     - description: 'Override or include CSS to include with the email body. '
       name: custom_css
     outputs:
-      - contextPath: FancyEmails.Email.name
-        description: Name of the email header provided on input
-        type: String
-      - contextPath: FancyEmails.Email.html
-        description: Generated HTML for the email
-        type: String
+    - contextPath: FancyEmails.Email.name
+      description: Name of the email header provided on input
+      type: String
+    - contextPath: FancyEmails.Email.html
+      description: Generated HTML for the email
+      type: String
     description: Make an email body
     name: fancy-email-make-email
   - arguments:
@@ -142,22 +142,22 @@ script:
       - "True"
       - "False"
     outputs:
-      - contextPath: FancyEmails.TimeString.name
-        description: Name of the time string provided on input
-        type: String
-      - contextPath: FancyEmails.TimeString.html
-        description: Generated HTML for the time string
-        type: String
+    - contextPath: FancyEmails.TimeString.name
+      description: Name of the time string provided on input
+      type: String
+    - contextPath: FancyEmails.TimeString.html
+      description: Generated HTML for the time string
+      type: String
     description: Format a Generic ISO timestamp to an easy to read string
     name: fancy-email-make-timestring
   - arguments: []
     description: Return div and img html tags with Logo embeded as a base64 string
     name: fancy-email-make-logo
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.8.37753
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

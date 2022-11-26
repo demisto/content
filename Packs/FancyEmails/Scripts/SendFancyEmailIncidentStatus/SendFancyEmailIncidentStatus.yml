@@ -49,7 +49,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.8.37233
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
 name: SendFancyEmailIncidentStatus
 runas: DBotWeakRole
@@ -60,6 +60,6 @@ subtype: python3
 comment: Sends an incident summary email using the Fancy Email templating integration
 tags: []
 type: python
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
