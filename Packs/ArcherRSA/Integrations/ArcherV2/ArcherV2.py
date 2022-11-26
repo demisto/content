@@ -1314,7 +1314,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
-        timeout=int(params.get('timeout', 400))
+        timeout=int(params.get('timeout', 600))
     )
     commands = {
         'archer-search-applications': search_applications_command,
