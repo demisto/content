@@ -10,7 +10,7 @@ foreground_color = params.get('ForegroundColor', '#FFFFFF')
 banner_text_color = params.get('BannerTextColor', '#FFFFFF')
 banner_color = params.get('BannerColor', '#F51212')
 custom_css = params.get('CustomCss', '')
-timezone = params.get('TimeZone')
+local_timezone = params.get('TimeZone')
 alignlogo = params.get('AlignLogo')
 baselogo = params.get('Base64Logo')
 logoheight = params.get('LogoHeight')
@@ -135,7 +135,7 @@ def convert_timestamp_to_fancy_time(value):
     value = value.split('.')[0]
     value = datetime.fromisoformat(value)
     pytz.timezone('UTC').localize(value)
-    return value.astimezone(pytz.timezone(timezone)).strftime(f'%A %b-%d-%Y %-I:%M:%S%p {timezone}')
+    return value.astimezone(pytz.timezone(local_timezone)).strftime(f'%A %b-%d-%Y %-I:%M:%S%p {local_timezone}')
 
 
 def make_cell(value, include_raw: bool = True):
