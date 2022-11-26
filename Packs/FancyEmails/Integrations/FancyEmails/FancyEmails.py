@@ -4,17 +4,17 @@ import demistomock as demisto  # noqa: F401
 import pytz
 from CommonServerPython import *  # noqa: F401
 
-PARAMS = demisto.params()
-BACKGROUND_COLOR = PARAMS.get('BackgroundColor', '#272727')
-FOREGROUND_COLOR = PARAMS.get('ForegroundColor', '#FFFFFF')
-BANNER_TEXT_COLOR = PARAMS.get('BannerTextColor', '#FFFFFF')
-BANNER_COLOR = PARAMS.get('BannerColor', '#F51212')
-CUSTOM_CSS = PARAMS.get('CustomCss', '')
-TIMEZONE = PARAMS.get('TimeZone')
-ALIGNLOGO = PARAMS.get('AlignLogo')
-BASELOGO = PARAMS.get('Base64Logo')
-LOGOHEIGHT = PARAMS.get('LogoHeight')
-LOGOWIDTH = PARAMS.get('LogoWidth')
+params = demisto.params()
+background_color = params.get('BackgroundColor', '#272727')
+foreground_color = params.get('ForegroundColor', '#FFFFFF')
+banner_text_color = params.get('BannerTextColor', '#FFFFFF')
+banner_color = params.get('BannerColor', '#F51212')
+custom_css = params.get('CustomCss', '')
+timezone = params.get('TimeZone')
+alignlogo = params.get('AlignLogo')
+baselogo = params.get('Base64Logo')
+logoheight = params.get('LogoHeight')
+logowidth = params.get('LogoWidth')
 
 DEFAULT_CSS = f"""
 body{{
@@ -22,15 +22,15 @@ body{{
 }}
 
 table {{
-      border: 1px solid {BACKGROUND_COLOR};
+      border: 1px solid {background_color};
       border-collapse: collapse;
       width: 100%;
 }}
 
 th {{
-    background-color:  {BACKGROUND_COLOR};
+    background-color:  {background_color};
     border: none;
-    color: {FOREGROUND_COLOR};
+    color: {foreground_color};
     text-align: left;
     padding: 0.5em;
 }}
@@ -45,8 +45,8 @@ td{{
 
 .banner{{
     text-align:center;
-    color: {BANNER_TEXT_COLOR};
-    background-color: {BANNER_COLOR};
+    color: {banner_text_color};
+    background-color: {banner_color};
     width: 100%;
     display: block;
     font-size:1.2em
@@ -62,9 +62,9 @@ td{{
 }}
 
 .footer {{
-    background-color:   {BACKGROUND_COLOR};
+    background-color:   {background_color};
     width: 100%;
-    color:  {FOREGROUND_COLOR};
+    color:  {foreground_color};
     border-collapse: collapsed;
     border: none;
     padding: 0.5em;
@@ -75,23 +75,23 @@ td{{
 }}
 
 .footer-row {{
-    background-color:   {BACKGROUND_COLOR};
+    background-color:   {background_color};
     width: 100%;
     text-align: center;
     font-size: 0.75em;
 }}
 
 .header {{
-    background-color:  {BACKGROUND_COLOR};
+    background-color:  {background_color};
     width: 100%;
     text-align: center;
-    color:  {FOREGROUND_COLOR};
+    color:  {foreground_color};
     padding: 0.5em;
 
 }}
 
 .header-text {{
-    background-color:  {BACKGROUND_COLOR};
+    background-color:  {background_color};
     width: 100%;
     text-align: center;
 
@@ -106,10 +106,10 @@ td{{
 .logo-container{{
     width: 100%;
     margin-top: 1em;
-    text-align: {ALIGNLOGO};
+    text-align: {alignlogo};
 }}
 
-{CUSTOM_CSS}
+{custom_css}
 """
 
 
@@ -135,7 +135,7 @@ def convert_timestamp_to_fancy_time(value):
     value = value.split('.')[0]
     value = datetime.fromisoformat(value)
     pytz.timezone('UTC').localize(value)
-    return value.astimezone(pytz.timezone(TIMEZONE)).strftime(f'%A %b-%d-%Y %-I:%M:%S%p {TIMEZONE}')
+    return value.astimezone(pytz.timezone(timezone)).strftime(f'%A %b-%d-%Y %-I:%M:%S%p {timezone}')
 
 
 def make_cell(value, include_raw: bool = True):
@@ -268,7 +268,7 @@ def make_email_footer(line1, line2):
 def make_logo():
     return f'''
         <div class='logo-container'>
-            <img class='logo' height='{LOGOHEIGHT}' width='{LOGOWIDTH}' src='{BASELOGO}' alt="Cortex Logo" />
+            <img class='logo' height='{logoheight}' width='{logowidth}' src='{baselogo}' alt="Cortex Logo" />
         </div>
     '''
 
