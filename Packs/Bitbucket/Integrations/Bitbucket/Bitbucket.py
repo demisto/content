@@ -772,7 +772,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
                       'LastCommitCreatedAt': response.get('target', {}).get('date')}
     headers = ['Name', 'LastCommitCreatedBy', 'LastCommitCreatedAt', 'LastCommitHash']
     readable_output = tableToMarkdown(
-        name=f'Information about the branch: {branch_name}',
+        name=f'Information about the branchTTTTTTTTT: {branch_name}',
         t=human_readable,
         removeNull=True,
         headers=headers

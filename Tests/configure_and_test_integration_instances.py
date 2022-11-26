@@ -1118,8 +1118,13 @@ def set_integration_params(build,
         (bool): True if integrations params were filled with secret configuration values, otherwise false
     """
     for integration in integrations:
+        logging.info(f'_________in set_integration_params_________')
+        logging.info(f'placeholders_map: {placeholders_map}')
+        logging.info(f'instance_names: {instance_names}')
+        logging.info(f'integrations: {integrations}')
         integration_params = [change_placeholders_to_values(placeholders_map, item) for item
                               in secret_params if item['name'] == integration['name']]
+        logging.info(f'integration_params: {integration_params}')
         if integration_params:
             matched_integration_params = integration_params[0]
             # if there are more than one integration params, it means that there are configuration
@@ -1155,6 +1160,7 @@ def set_integration_params(build,
                 integration['params'].update({'proxy': False})
                 logging.debug(
                     f'Configuring integration "{integration["name"]}" with proxy=False')
+            logging.info(f'integration: {integration}')
 
     return True
 
