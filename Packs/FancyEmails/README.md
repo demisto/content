@@ -1,11 +1,11 @@
 # Fancy Emails
-A content pack to generate professional, eye-catching emails.
+A content pack to generate professional, eye-catching emails. Useful for increasing user engagement with XSOAR.
 
 ## Features
-- Ready to use out of box
+- Ready to use out of the box but Fully customizable
 - Automated generation of email HTML, tables, and CSS
 - Easy implementation and embeding of organization logo into emails 
-- Automatic Time Formatting to a human readable local time stampe
+- Automatic Time Formatting to a human-readable local time stampe
 - Customizable headers, footers, and Warning/Classified banners
 - Default configuration produces emails with ADA compliant readability [High Contrast, Element Spacing, Screen Reader Compatible]
 - Includes scripts to send fancy emails using the 'send-mail command'
@@ -24,8 +24,22 @@ You must have an email integration configured to support the 'send-mail' command
 2. Modify integration settings.
 
 ### Example Send Email Command
+Basic example of sending an email using Fancy Emails
 ```
 !SendFancyEmail to=me@mycompany.com subject="Check Out This Fancy Email" body="Hello World" body_header="Important Email" banner="Classified"
+```
+
+### Example: Sending an email with an Indicator Table
+_Scenario: Send an email containing an email with a table of malicious URLs linked to an incident. Use the alt link format, to use a seperate text area to link to the indicator rather than using the indicator name/value._
+
+From within an incident:
+```
+!MakeFancyEMailIndicatorTable query="incident.id=${incident.id} verdict=Malicious type:URL" use_alt_link=True max_name_chars=40
+```
+
+This outputs to the FancyEmails.IndicatorTable.html context the raw_html for the table. You can embed it into a fancy email by:
+```
+!SendFancyEmail to=me@mycompany.com subject="Check Out These Malicious Indicators" html_body=${FancyEmails.IndicatorTable.html} body_header="Malicious Indicators related to ${incident.id}" banner="Classified" 
 ```
 
 ## Default CSS
