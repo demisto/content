@@ -1,5 +1,4 @@
-Templating Engine for better looking emails.
-This integration was integrated and tested with version xx of Fancy Emails
+Templating Engine for  emails.
 
 ## Configure Fancy Emails on Cortex XSOAR
 
