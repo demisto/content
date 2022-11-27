@@ -106,10 +106,10 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
             else:
                 if res.status_code in ERROR_CODES_DICT:
                     raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
-                        ERROR_CODES_DICT[res.status_code], res.content))
+                        ERROR_CODES_DICT[res.status_code], res.text))
                 else:
                     raise Exception('Your request failed with the following error: {}.\nMessage: {}'.format(
-                        res.status_code, res.content))
+                        res.status_code, res.text))
     except Exception as e:
         LOG('Zscaler request failed with url={url}\tdata={data}'.format(url=url, data=data))
         LOG(e)
@@ -433,7 +433,7 @@ def url_lookup(args):
                 data['url'] = url
 
         ioc_context = {'Address': data['url'], 'Data': data['url']}
-        score = 1
+        score = Common.DBotScore.GOOD
 
         if len(data['urlClassifications']) == 0:
             data['urlClassifications'] = ''
@@ -441,7 +441,7 @@ def url_lookup(args):
             data['urlClassifications'] = ''.join(data['urlClassifications'])
             ioc_context['urlClassifications'] = data['urlClassifications']
             if data['urlClassifications'] == 'MISCELLANEOUS_OR_UNKNOWN':
-                score = 0
+                score = Common.DBotScore.NONE
 
         if len(data['urlClassificationsWithSecurityAlert']) == 0:
             data['urlClassificationsWithSecurityAlert'] = ''
@@ -449,9 +449,9 @@ def url_lookup(args):
             data['urlClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
             ioc_context['urlClassificationsWithSecurityAlert'] = data['urlClassificationsWithSecurityAlert']
             if data['urlClassificationsWithSecurityAlert'] in SUSPICIOUS_CATEGORIES:
-                score = 2
+                score = Common.DBotScore.SUSPICIOUS
             else:
-                score = 3
+                score = Common.DBotScore.BAD
 
             data['ip'] = data.pop('url')
 
@@ -471,7 +471,7 @@ def url_lookup(args):
             outputs_key_field='Data',
             indicator=url_indicator,
             readable_output=tableToMarkdown(f'Zscaler URL Lookup for {ioc_context["Data"]}', data, removeNull=True),
-            outputs=ioc_context,
+            outputs=createContext(data=ioc_context, removeNull=True),
             raw_response=data))
 
     return results or 'No results found.'
@@ -485,7 +485,7 @@ def ip_lookup(ip):
 
     for data in raw_res:
         ioc_context = {'Address': data['url']}
-        score = 1
+        score = Common.DBotScore.GOOD
 
         if len(data['urlClassifications']) == 0:
             data['iplClassifications'] = ''
@@ -501,9 +501,9 @@ def ip_lookup(ip):
             data['ipClassificationsWithSecurityAlert'] = ''.join(data['urlClassificationsWithSecurityAlert'])
             ioc_context['ipClassificationsWithSecurityAlert'] = data['ipClassificationsWithSecurityAlert']
             if data['urlClassificationsWithSecurityAlert'] in SUSPICIOUS_CATEGORIES:
-                score = 2
+                score = Common.DBotScore.SUSPICIOUS
             else:
-                score = 3
+                score = Common.DBotScore.BAD
 
         del data['urlClassificationsWithSecurityAlert']
 
