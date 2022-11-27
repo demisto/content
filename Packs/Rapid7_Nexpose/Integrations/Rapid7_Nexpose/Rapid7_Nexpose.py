@@ -1,16 +1,13 @@
 import json
-
 import urllib3
-
-import demistomock as demisto
-
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
-from typing import TypeVar
+from typing import overload
+
+import demistomock as demisto
 from CommonServerPython import *
 
-IterableCollection = TypeVar('IterableCollection', dict, list, tuple)
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
 API_DEFAULT_PAGE_SIZE = 10  # Default page size that's set on the API. Used for calculations.
@@ -2268,50 +2265,33 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
     )
 
 
-def enrich_asset_data(client: Client, asset: dict) -> dict:
+def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
+
     """
-    Enrich asset data with additional information.
+    Find the date and ID for the last scan of an asset.
+
+    Note:
+        `-` is used as a placeholder for missing values instead of `None` because of backwards compatibility.
 
     Args:
-        client (Client): Client to use for API requests.
-        asset (dict): A dictionary representing an asset as received from the API.
+        asset_data (dict): A dictionary representing an asset as received from the API.
 
     Returns:
-        dict: The enriched asset data.
+        tuple[str, str]: A tuple containing the date (first value) and ID (seconds value) of the last scan of the asset.
     """
-    last_scan = find_asset_last_change(asset)
-    asset["LastScanDate"] = last_scan["date"]
-    asset["LastScanId"] = last_scan["id"]
-    site = client.find_asset_site(asset["id"])
+    scan_date = '-'
+    scan_id = '-'
 
-    if site is not None:
-        asset["Site"] = site.name
+    if asset_data.get("history"):
+        sorted_scans = sorted(asset_data["history"], key=lambda x: convert_datetime_str(x.get("date")), reverse=True)
 
-    return asset
+        if "date" in sorted_scans[0]:
+            scan_date = sorted_scans[0]["date"]
 
+        if "scanId" in sorted_scans[0]:
+            scan_id = sorted_scans[0]["scanId"]
 
-def find_asset_last_change(asset_data: dict) -> dict:
-    """
-    Retrieve the last change (usually a scan) from an asset's history.
-
-    Args:
-        asset_data (dict): The asset data as it was retrieved from the API.
-
-    Returns:
-        dict: A dictionary containing data about the latest change in asset's history.
-    """
-    if not asset_data.get("history"):
-        return {
-            "date": "-",
-            "id": "-"
-        }
-
-    sorted_scans = sorted(asset_data["history"], key=lambda x: convert_datetime_str(x.get("date")), reverse=True)
-
-    return {
-        "date": sorted_scans[0]["date"] if "date" in sorted_scans[0] else "-",
-        "id": sorted_scans[0]["scanId"] if "scanId" in sorted_scans[0] else "-"
-    }
+    return scan_date, scan_id
 
 
 def find_valid_params(**kwargs):
@@ -2336,8 +2316,6 @@ def find_valid_params(**kwargs):
 def get_scan_entry(scan: dict) -> CommandResults:
     """
     Generate entry data from scan data (as received from the API).
-    NOTE: This function alters scan data for HR, and returns that way in ContextData as well.
-          For example, if "id" turns to "ID" in HR, the change also applies for ContextData.
 
     Args:
         scan (dict): Scan data as it was received from the API.
@@ -2354,7 +2332,7 @@ def get_scan_entry(scan: dict) -> CommandResults:
         "Total",
     ]
 
-    vulnerability_output = replace_key_names(
+    vulnerability_output = generate_new_dict(
         data=scan["vulnerabilities"],
         name_mapping={
             "critical": "Critical",
@@ -2362,11 +2340,11 @@ def get_scan_entry(scan: dict) -> CommandResults:
             "moderate": "Moderate",
             "total": "Total",
         },
-        use_reference=True,
+        include_none=True,
     )
 
     scan_hr = tableToMarkdown(
-        name="Nexpose Scan ID " + str(scan["Id"]),
+        name=f"Nexpose Scan ID {str(scan['id'])}",
         t=scan_output,
         headers=[
             "Id",
@@ -2451,7 +2429,6 @@ def generate_duration_time(years: int | None = None, months: int | None = None, 
 def normalize_scan_data(scan_data: dict) -> dict:
     """
     Normalizes scan data received from the API to a HumanReadable format that will be displayed in the UI.
-    NOTE: This function alters the original data that's passed under the `scan` parameter, and does not create a copy.
 
     Args:
         scan_data (dict): Scan data as it was received from the API.
@@ -2459,7 +2436,7 @@ def normalize_scan_data(scan_data: dict) -> dict:
     Returns:
         dict: Scan data in a normalized format that will be displayed in the UI.
     """
-    replace_key_names(
+    result = generate_new_dict(
         data=scan_data,
         name_mapping={
             "id": "Id",
@@ -2467,17 +2444,16 @@ def normalize_scan_data(scan_data: dict) -> dict:
             "scanName": "ScanName",
             "startedBy": "StartedBy",
             "assets": "Assets",
-            "duration": "TotalTime",
             "endTime": "Completed",
             "status": "Status",
             "message": "Message",
         },
-        use_reference=True,
+        include_none=True,
     )
 
-    scan_data["TotalTime"] = readable_duration_time(scan_data["TotalTime"])
+    result["TotalTime"] = readable_duration_time(scan_data["duration"])
 
-    return scan_data
+    return result
 
 
 def readable_duration_time(duration: str) -> str:
@@ -2555,88 +2531,115 @@ def readable_duration_time(duration: str) -> str:
     return ", ".join(result)
 
 
-def remove_dict_key(data: IterableCollection, removal_key: Any) -> IterableCollection:
+def remove_dict_key(data: dict | list | tuple, key: Any) -> dict | list | tuple:
     """
     Recursively remove a dictionary key from an object
 
     Args:
-        data (IterableCollection): An iterable to remove keys for dictionaries within it.
-        removal_key (Any): Key to remove from dictionaries.
+        data (dict | list | tuple): A dictionary or an iterable to remove keys for dictionaries within it.
+        key (Any): Key to remove from dictionaries.
 
     Returns:
-        IterableCollection: The data-structure (original or copy) with the specified key name removed
+        dict | list | tuple: The data-structure (original or copy) with the specified key name removed
         from all dictionaries within.
     """
     if isinstance(data, dict):
-        if removal_key in data:
-            del data[removal_key]
+        if key in data:
+            del data[key]
 
-        for key in data:
-            remove_dict_key(data[key], removal_key)
+        for k in data:
+            remove_dict_key(data[k], key)
 
     if isinstance(data, (list, tuple)):
         for item in data:
-            remove_dict_key(item, removal_key)
+            remove_dict_key(item, key)
 
     return data
 
 
-def replace_key_names(data: IterableCollection, name_mapping: dict[str, str],
-                      use_reference: bool = False, original_reference: dict | None = None) -> IterableCollection:
-    """
-    Replace key names in a dictionary.
-    Works only with string keys.
+@overload
+def generate_new_dict(data: dict, name_mapping: dict[str, str], include_none: bool = False) -> dict:
+    pass
 
-    Note:
-        `use-reference` parameter exists because the original code used a reference to the original dictionary
-        instead of creating a copy. This means that when keys were renamed for HR, the changes also affected
-        ContextData keys. This parameter is used in these commands to keep the same behaviour and to not break
-        backwards compatibility.
+
+@overload
+def generate_new_dict(data: list, name_mapping: dict[str, str], include_none: bool = False) -> list:
+    pass
+
+
+def generate_new_dict(data: dict | list, name_mapping: dict[str, str],
+                      include_none: bool = False) -> dict | list | tuple:
+    """
+    Generate a new dictionary from an existing dictionary, with the keys renamed according to `name_mapping`.
 
     Args:
-        data (IterableCollection): An iterable to replace key names for dictionaries within it.
-        name_mapping (dict): A dictionary in a `from (key): to (value)` mapping format of which key names
-                             to replace with what. The value of the keys (and only keys)
-                             can represent nested dict items in a "parent.child" format.
-        use_reference (bool | None, optional): If set to true, the function will replace the keys in the original
-            dictionary and return it, instead of creating, applying changes, and returning a new copy.
-        original_reference (dict | None, optional): Used internally for recursion. Should not be used.
+        data (dict | list): The dictionary to generate a new dictionary from.
+            If a list is passed, the function will run recursively on each item in the list.
+        name_mapping (dict[str, str]): A mapping between old key names to the new key names
+            in a `key-path: new-key` format.
+        include_none (bool, optional): Whether to include keys with `None` values in the new dictionary.
+    """
+    if isinstance(data, dict):
+        new_dict = {}
+
+        for key_path, new_key in name_mapping.items():
+            value = find_dict_item(data, key_path)
+
+            if include_none or value is not None:
+                new_dict[new_key] = value
+
+        return new_dict
+
+    elif isinstance(data, list):
+        return [generate_new_dict(item, name_mapping, include_none) for item in data]
+
+    elif isinstance(data, tuple):
+        return tuple(generate_new_dict(item, name_mapping, include_none) for item in data)
+
+    else:
+        return data
+
+
+def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
+    """
+    Find a dictionary item by its key path.
+
+    Note:
+        This code snippet assumes that `data` does not contain None values.
+        If it does, None values will be returned both if the value is None, or if the key couldn't be found.
+
+    Args:
+        data (dict | list | tuple): A dictionary, a list, or a tuple to search for the key path in.
+        key_path (str): The key path to search for. Keys are separated by a dot (.) character.
 
     Returns:
-        IterableCollection: The data-structure (original or copy) with key names of dicts replaced according to mapping.
+        Any: The value of the key path if found, None otherwise.
     """
-    if not use_reference:
-        data = deepcopy(data)
+    if isinstance(data, dict):
+        key_path_list = key_path.split('.')
 
-    if isinstance(data, (list, tuple)):
-        for i in range(len(data)):
-            replace_key_names(
-                data=data[i],
-                name_mapping=name_mapping,
-                use_reference=True,
-                original_reference=original_reference,
-            )
+        if key_path_list[0] in data:
+            if len(key_path_list) == 1:
+                return data[key_path_list[0]]
 
-    elif isinstance(data, dict):
-        if original_reference is None:
-            original_reference = data
+            else:
+                return find_dict_item(
+                    data=data[key_path_list[0]],
+                    key_path=".".join(key_path_list[1:]),
+                )
 
-        for key, value in name_mapping.items():
-            nested_keys = key.split(".")
+        else:
+            return None
 
-            if nested_keys[0] in data:
-                if len(nested_keys) > 1:
-                    replace_key_names(
-                        data=data[nested_keys[0]],
-                        name_mapping={".".join(nested_keys[1:]): value},
-                        use_reference=True,
-                        original_reference=original_reference,
-                    )
+    elif isinstance(data, (list, tuple)):
+        result = [find_dict_item(
+            data=item,
+            key_path=key_path,
+        ) for item in data]
 
-                else:
-                    original_reference[value] = data.pop(key)
+        return [item for item in result if item is not None]
 
-    return data
+    return None
 
 
 # --- Command Functions --- #
@@ -3355,18 +3358,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         client (Client): Client to use for API requests.
         asset_id (str): ID of the asset to retrieve information about.
     """
-    try:
-        asset_data = client.get_asset(asset_id)
-
-    except DemistoException as e:
-        if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
-            return CommandResults(readable_output="Asset not found.")
-
-        raise e
-
-    enrich_asset_data(client, asset_data)
-
-    asset_headers = [
+    hr_asset_headers = [
         "AssetId",
         "Addresses",
         "Hardware",
@@ -3380,7 +3372,47 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         "RiskScore"
     ]
 
-    asset_output: dict = replace_key_names(
+    hr_service_headers = [
+        "Name",
+        "Port",
+        "Product",
+        "Protocol",
+    ]
+
+    hr_software_headers = [
+        "Software",
+        "Version",
+    ]
+
+    hr_users_headers = [
+        "FullName",
+        "Name",
+        "UserId",
+    ]
+
+    hr_vulnerability_headers = [
+        "Id",
+        "Title",
+        "Malware",
+        "Exploit",
+        "CVSS",
+        "Risk",
+        "PublishedOn",
+        "ModifiedOn",
+        "Severity",
+        "Instances",
+    ]
+
+    try:
+        asset_data = client.get_asset(asset_id)
+
+    except DemistoException as e:
+        if e.res is not None and e.res.status_code is not None and e.res.status_code == 404:
+            return CommandResults(readable_output="Asset not found.")
+
+        raise e
+
+    asset_output = generate_new_dict(
         data=asset_data,
         name_mapping={
             "id": "AssetId",
@@ -3394,36 +3426,31 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
             "cpe.v2.3": "CPE",
             "riskScore": "RiskScore",
         },
-        use_reference=True,
+        include_none=True,
     )
 
-    # Set all vars to None
-    software_headers = software_output = service_headers = services_output = users_headers = users_output = None
+    site = client.find_asset_site(asset_data["id"])
 
-    if "software" in asset_data and len(asset_data["software"]) > 0:
-        software_headers = [
-            "Software",
-            "Version",
-        ]
+    if site is not None:
+        asset_output["Site"] = site.name
 
-        software_output = replace_key_names(
+    asset_output["LastScanDate"], asset_output["LastScanId"] = find_asset_last_scan_data(asset_data)
+    asset_output["Software"] = None
+    asset_output["Service"] = None
+    asset_output["User"] = None
+
+    if asset_data.get("software"):
+        asset_output["Software"] = generate_new_dict(
             data=asset_data["software"],
             name_mapping={
                 "description": "Software",
                 "version": "Version",
             },
-            use_reference=True,
+            include_none=True,
         )
 
-    if "services" in asset_data and len(asset_data["services"]) > 0:
-        service_headers = [
-            "Name",
-            "Port",
-            "Product",
-            "Protocol",
-        ]
-
-        services_output = replace_key_names(
+    if asset_data.get("services"):
+        asset_output["Service"] = generate_new_dict(
             data=asset_data["services"],
             name_mapping={
                 "name": "Name",
@@ -3431,49 +3458,27 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
                 "product": "Product",
                 "protocol": "Protocol",
             },
-            use_reference=True,
+            include_none=True,
         )
 
-    if "users" in asset_data and len(asset_data["users"]) > 0:
-        users_headers = [
-            "FullName",
-            "Name",
-            "UserId",
-        ]
-
-        users_output = replace_key_names(
+    if asset_data.get("users"):
+        asset_output["User"] = generate_new_dict(
             data=asset_data["users"],
             name_mapping={
                 "name": "Name",
                 "fullName": "FullName",
                 "id": "UserId",
             },
-            use_reference=True,
+            include_none=True,
         )
 
-    vulnerability_headers = [
-        "Id",
-        "Title",
-        "Malware",
-        "Exploit",
-        "CVSS",
-        "Risk",
-        "PublishedOn",
-        "ModifiedOn",
-        "Severity",
-        "Instances",
-    ]
-
-    asset_data["vulnerabilities"] = client.get_asset_vulnerabilities(asset_id=str(asset_data["AssetId"]))
-
-    vulnerabilities_output = []
+    vulnerabilities = client.get_asset_vulnerabilities(asset_id=str(asset_data["id"]))
+    asset_output["Vulnerability"] = []
     cve_indicators: list[CommandResults] = []
 
-    for idx, vulnerability in enumerate(asset_data["vulnerabilities"]):
+    for vulnerability in vulnerabilities:
         extra_info = client.get_vulnerability(vulnerability["id"])
-        asset_data["vulnerabilities"][idx].update(extra_info)
-
-        output_vulnerability = {
+        vulnerability_output = {
             "Id": vulnerability["id"],
             "Title": extra_info["title"],
             "Malware": extra_info["malwareKits"],
@@ -3486,6 +3491,8 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
             "Instances": vulnerability["instances"],
         }
 
+        asset_output["Vulnerability"].append(vulnerability_output)
+
         if "cves" in extra_info:
             for cve in extra_info["cves"]:
                 if "v3" in extra_info["cvss"]:
@@ -3497,7 +3504,8 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
                     cvss_version = "2"
 
                 cve_indicators.append(CommandResults(
-                    readable_output=tableToMarkdown(cve, output_vulnerability, vulnerability_headers, removeNull=True),
+                    readable_output=tableToMarkdown(cve, vulnerability_output,
+                                                    hr_vulnerability_headers, removeNull=True),
                     indicator=Common.CVE(
                         id=cve,
                         cvss=None,  # type: ignore
@@ -3509,26 +3517,47 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
                         published=extra_info["published"],
                     )))
 
-        vulnerabilities_output.append(output_vulnerability)
+    readable_output = tableToMarkdown(
+        name=f"Nexpose Asset {str(asset_data['id'])}",
+        t=asset_output,
+        headers=hr_asset_headers,
+        removeNull=True
+    )
 
-    asset_md = tableToMarkdown("Nexpose Asset " + str(asset_data["AssetId"]), asset_output, asset_headers,
-                               removeNull=True)
-    vulnerabilities_md = tableToMarkdown("Vulnerabilities", vulnerabilities_output, vulnerability_headers,
-                                         removeNull=True) if len(vulnerabilities_output) > 0 else ""
-    software_md = tableToMarkdown("Software", software_output, software_headers,
-                                  removeNull=True) if software_output is not None else ""
-    services_md = tableToMarkdown("Services", services_output, service_headers,
-                                  removeNull=True) if services_output is not None else ""
-    users_md = tableToMarkdown("Users", users_output, users_headers,
-                               removeNull=True) if users_output is not None else ""
+    if asset_output.get("Vulnerability"):
+        readable_output += tableToMarkdown(
+            name="Vulnerabilities",
+            t=asset_output["Vulnerability"],
+            headers=hr_vulnerability_headers,
+            removeNull=True
+        )
 
-    asset_output["Vulnerability"] = vulnerabilities_output
-    asset_output["Software"] = software_output
-    asset_output["Service"] = services_output
-    asset_output["User"] = users_output
+    if asset_output.get("Software"):
+        readable_output += tableToMarkdown(
+            name="Software",
+            t=asset_output["Software"],
+            headers=hr_software_headers,
+            removeNull=True
+        )
+
+    if asset_output.get("Service"):
+        readable_output += tableToMarkdown(
+            name="Services",
+            t=asset_output["Service"],
+            headers=hr_service_headers,
+            removeNull=True
+        )
+
+    if asset_output.get("User"):
+        readable_output += tableToMarkdown(
+            name="Users",
+            t=asset_output["User"],
+            headers=hr_users_headers,
+            removeNull=True
+        )
 
     result = CommandResults(
-        readable_output=asset_md + vulnerabilities_md + software_md + services_md + users_md,
+        readable_output=readable_output,
         outputs_prefix="Nexpose.Asset",
         outputs=asset_output,
         outputs_key_field="AssetId",
@@ -3538,12 +3567,12 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
             ip_address=asset_output.get("Addresses"),
             os=asset_output.get("OperatingSystem"),
             vendor=VENDOR_NAME
-        )
+        ),
+        raw_response=asset_data,
     )
 
     if cve_indicators:
-        cve_indicators.append(result)
-        return cve_indicators
+        return [*cve_indicators, result]
 
     return result
 
@@ -3567,23 +3596,7 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
     page_int = arg_to_number(page, required=False)
     limit_int = arg_to_number(limit, required=False)
 
-    assets_data = client.get_assets(
-        page_size=page_size_int,
-        page=page_int,
-        sort=sort,
-        limit=limit_int
-    )
-
-    if not assets_data:
-        return CommandResults(
-            readable_output="No assets found",
-            raw_response=assets_data
-        )
-
-    for asset in assets_data:
-        enrich_asset_data(client, asset)
-
-    headers = [
+    hr_headers = [
         "AssetId",
         "Address",
         "Name",
@@ -3598,43 +3611,65 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
         "LastScanId"
     ]
 
-    replace_key_names(
-        data=assets_data,
-        name_mapping={
-            "id": "AssetId",
-            "ip": "Address",
-            "hostName": "Name",
-            "Site": "Site",
-            "vulnerabilities.exploits": "Exploits",
-            "vulnerabilities.malwareKits": "Malware",
-            "os": "OperatingSystem",
-            "vulnerabilities.total": "Vulnerabilities",
-            "riskScore": "RiskScore",
-            "assessedForVulnerabilities": "Assessed",
-        },
-        use_reference=True,
+    assets_data = client.get_assets(
+        page_size=page_size_int,
+        page=page_int,
+        sort=sort,
+        limit=limit_int
     )
 
-    result = []
+    if not assets_data:
+        return CommandResults(
+            readable_output="No assets found",
+            raw_response=assets_data
+        )
 
-    for asset in assets_data:
-        result.append(
+    results = []
+
+    for asset_data in assets_data:
+        asset_output = generate_new_dict(
+            data=asset_data,
+            name_mapping={
+                "id": "AssetId",
+                "ip": "Address",
+                "hostName": "Name",
+                "Site": "Site",
+                "vulnerabilities.exploits": "Exploits",
+                "vulnerabilities.malwareKits": "Malware",
+                "os": "OperatingSystem",
+                "vulnerabilities.total": "Vulnerabilities",
+                "riskScore": "RiskScore",
+                "assessedForVulnerabilities": "Assessed",
+            },
+            include_none=True,
+        )
+
+        site = client.find_asset_site(asset_data["id"])
+
+        if site is not None:
+            asset_output["Site"] = site.name
+
+        asset_output["LastScanDate"], asset_output["LastScanId"] = find_asset_last_scan_data(asset_data)
+
+        results.append(
             CommandResults(
                 outputs_prefix="Nexpose.Asset",
                 outputs_key_field="Id",
-                outputs=asset,
-                readable_output=tableToMarkdown("Nexpose Asset", asset, headers, removeNull=True),
-                raw_response=asset,
+                outputs=asset_output,
+                readable_output=tableToMarkdown(f"Nexpose Asset {str(asset_data['id'])}", asset_output,
+                                                hr_headers, removeNull=True),
+                raw_response=asset_data,
                 indicator=Common.Endpoint(
-                    id=asset["AssetId"],
-                    hostname=asset.get("Name"),
-                    ip_address=asset.get("Address"),
-                    os=asset.get("OperatingSystem"),
+                    id=asset_data["id"],
+                    hostname=asset_data.get("hostName"),
+                    ip_address=asset_data.get("ip"),
+                    mac_address=asset_data.get("mac"),
+                    os=asset_data.get("os"),
                     vendor=VENDOR_NAME
                 )
             ))
 
-    return result
+    return results
 
 
 def get_asset_vulnerability_command(client: Client, asset_id: str,
@@ -3647,6 +3682,38 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
         asset_id (str): ID of the asset to retrieve information about.
         vulnerability_id (str): ID of the vulnerability to look for
     """
+    hr_vulnerability_headers = [
+        "Id",
+        "Title",
+        "Severity",
+        "RiskScore",
+        "CVSS",
+        "CVSSV3",
+        "Published",
+        "Added",
+        "Modified",
+        "CVSSScore",
+        "CVSSV3Score",
+        "Categories",
+        "CVES",
+    ]
+
+    hr_results_headers = [
+        "Port",
+        "Protocol",
+        "Since",
+        "Proof",
+        "Status",
+    ]
+
+    hr_solutions_headers = [
+        "Type",
+        "Summary",
+        "Steps",
+        "Estimate",
+        "AdditionalInformation",
+    ]
+
     try:
         vulnerability_data = client.get_asset_vulnerability(
             asset_id=asset_id,
@@ -3680,7 +3747,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
     vulnerability_extra_data = client.get_vulnerability(vulnerability_id=vulnerability_id)
     vulnerability_data.update(deepcopy(vulnerability_extra_data))
 
-    vulnerability_outputs: dict = replace_key_names(
+    vulnerability_outputs = generate_new_dict(
         data=vulnerability_extra_data,
         name_mapping={
             "id": "Id",
@@ -3697,13 +3764,13 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
             "categories": "Categories",
             "cves": "CVES",
         },
-        use_reference=True,
+        include_none=True,
     )
 
     results_output: list = []
 
     if vulnerability_data.get("results"):
-        results_output = replace_key_names(
+        results_output = generate_new_dict(
             data=vulnerability_data["results"],
             name_mapping={
                 "port": "Port",
@@ -3712,7 +3779,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 "proof": "Proof",
                 "status": "Status",
             },
-            use_reference=True,
+            include_none=True,
         )
 
     # Remove HTML tags
@@ -3720,12 +3787,12 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
         result["Proof"] = re.sub("<.*?>", "", result["Proof"])
 
     # Add solutions data
-    solutions_output: dict = {}
+    solutions_output: list = []
     solutions = client.get_asset_vulnerability_solution(asset_id, vulnerability_id)
     vulnerability_data["solutions"] = solutions
 
     if solutions and solutions.get("resources"):
-        solutions_output = replace_key_names(
+        solutions_output = generate_new_dict(
             data=solutions["resources"],
             name_mapping={
                 "type": "Type",
@@ -3734,53 +3801,21 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 "estimate": "Estimate",
                 "additionalInformation.text": "AdditionalInformation",
             },
-            use_reference=True,
+            include_none=True,
         )
 
         for idx, val in enumerate(solutions_output):
             solutions_output[idx]["Estimate"] = readable_duration_time(solutions_output[idx]["Estimate"])
 
-    vulnerability_headers = [
-        "Id",
-        "Title",
-        "Severity",
-        "RiskScore",
-        "CVSS",
-        "CVSSV3",
-        "Published",
-        "Added",
-        "Modified",
-        "CVSSScore",
-        "CVSSV3Score",
-        "Categories",
-        "CVES",
-    ]
-
-    results_headers = [
-        "Port",
-        "Protocol",
-        "Since",
-        "Proof",
-        "Status",
-    ]
-
-    solutions_headers = [
-        "Type",
-        "Summary",
-        "Steps",
-        "Estimate",
-        "AdditionalInformation",
-    ]
-
-    vulnerabilities_md = tableToMarkdown("Vulnerability " + vulnerability_id, vulnerability_outputs,
-                                         vulnerability_headers, removeNull=True)
-    results_md = tableToMarkdown("Checks", results_output, results_headers, removeNull=True) if len(
-        results_output) > 0 else ""
-    solutions_md = tableToMarkdown("Solutions", solutions_output, solutions_headers,
-                                   removeNull=True) if solutions_output is not None else ""
-
     vulnerability_outputs["Check"] = results_output
     vulnerability_outputs["Solution"] = solutions_output
+
+    vulnerabilities_md = tableToMarkdown(f"Vulnerability {str(vulnerability_id)}", vulnerability_outputs,
+                                         hr_vulnerability_headers, removeNull=True)
+    results_md = tableToMarkdown("Checks", results_output, hr_results_headers, removeNull=True) if len(
+        results_output) > 0 else ""
+    solutions_md = tableToMarkdown("Solutions", solutions_output, hr_solutions_headers,
+                                   removeNull=True) if solutions_output is not None else ""
 
     indicators: list = []
 
@@ -3824,9 +3859,6 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
             indicator=indicator,
         ))
 
-    if len(results) == 1:
-        return results[0]
-
     return results
 
 
@@ -3865,42 +3897,42 @@ def get_report_templates_command(client: Client) -> CommandResults:
     Args:
         client (Client): Client to use for API requests.
     """
-    response_data = client.get_report_templates()
-
-    if not response_data.get("resources"):
-        return CommandResults(
-            readable_output="No templates found",
-            raw_response=response_data,
-        )
-
-    headers = [
+    hr_headers = [
         "Id",
         "Name",
         "Description",
         "Type"
     ]
 
-    outputs = replace_key_names(
-        data=response_data["resources"],
+    report_templates_data = client.get_report_templates()
+
+    if not report_templates_data.get("resources"):
+        return CommandResults(
+            readable_output="No templates found",
+            raw_response=report_templates_data,
+        )
+
+    report_templates_output = generate_new_dict(
+        data=report_templates_data["resources"],
         name_mapping={
             "id": "Id",
             "name": "Name",
             "description": "Description",
             "type": "Type",
         },
-        use_reference=True,
+        include_none=True,
     )
 
     return CommandResults(
         outputs_prefix="Nexpose.Template",
         outputs_key_field="Id",
-        outputs=outputs,
-        readable_output=tableToMarkdown("Nexpose templates", outputs, headers, removeNull=True),
-        raw_response=response_data,
+        outputs=report_templates_output,
+        readable_output=tableToMarkdown("Nexpose Templates", report_templates_output, hr_headers, removeNull=True),
+        raw_response=report_templates_data,
     )
 
 
-def get_scan_command(client: Client, scan_ids: str) -> CommandResults | list[CommandResults]:
+def get_scan_command(client: Client, scan_ids: str) -> list[CommandResults]:
     """
     Retrieve information about a specific or multiple scans.
 
@@ -3910,7 +3942,7 @@ def get_scan_command(client: Client, scan_ids: str) -> CommandResults | list[Com
     """
     scan_ids_list = argToList(scan_ids)
 
-    scans = []
+    results = []
 
     for scan_id in scan_ids_list:
         try:
@@ -3926,12 +3958,9 @@ def get_scan_command(client: Client, scan_ids: str) -> CommandResults | list[Com
         else:
             scan_entry = get_scan_entry(scan_data)
 
-        scans.append(scan_entry)
+        results.append(scan_entry)
 
-    if len(scans) == 1:
-        return scans[0]
-
-    return scans
+    return results
 
 
 def get_scans_command(client: Client, active: str | None = None, page_size: str | None = None,
@@ -3971,7 +4000,7 @@ def get_scans_command(client: Client, active: str | None = None, page_size: str 
     normalized_scans = [normalize_scan_data(scan) for scan in scans_data]
 
     scan_hr = tableToMarkdown(
-        name="Nexpose scans",
+        name="Nexpose Scans",
         t=normalized_scans,
         headers=[
             "Id",
@@ -4010,24 +4039,7 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
-    page_size_int = arg_to_number(page_size, required=False)
-    page_int = arg_to_number(page, required=False)
-    limit_int = arg_to_number(limit, required=False)
-
-    sites_data = client.get_sites(
-        page_size=page_size_int,
-        page=page_int,
-        sort=sort,
-        limit=limit_int
-    )
-
-    if not sites_data:
-        return CommandResults(
-            readable_output="No sites found",
-            raw_response=sites_data,
-        )
-
-    headers = [
+    hr_headers = [
         "Id",
         "Name",
         "Assets",
@@ -4037,7 +4049,24 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
         "LastScan"
     ]
 
-    outputs = replace_key_names(
+    page_size_int = arg_to_number(page_size, required=False)
+    page_int = arg_to_number(page, required=False)
+    limit_int = arg_to_number(limit, required=False)
+
+    sites_data = client.get_sites(
+        page_size=page_size_int,
+        page=page_int,
+        sort=sort,
+        limit=limit_int,
+    )
+
+    if not sites_data:
+        return CommandResults(
+            readable_output="No sites found",
+            raw_response=sites_data,
+        )
+
+    sites_output = generate_new_dict(
         data=sites_data,
         name_mapping={
             "id": "Id",
@@ -4048,13 +4077,14 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
             "type": "Type",
             "lastScanTime": "LastScan",
         },
+        include_none=True,
     )
 
     return CommandResults(
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
-        outputs=outputs,
-        readable_output=tableToMarkdown("Nexpose sites", outputs, headers, removeNull=True),
+        outputs=sites_output,
+        readable_output=tableToMarkdown("Nexpose Sites", sites_output, hr_headers, removeNull=True),
         raw_response=sites_data,
     )
 
@@ -4072,6 +4102,15 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
+    hr_headers = [
+        "Enable",
+        "StartDate",
+        "Name",
+        "MaxDuration",
+        "Repeat",
+        "NextStart",
+    ]
+
     limit_int = arg_to_number(limit, required=False)
 
     if not schedule_id:
@@ -4092,7 +4131,7 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
             raw_response=scan_schedules_data,
         )
 
-    hr_outputs = replace_key_names(
+    hr_outputs = generate_new_dict(
         data=scan_schedules_data,
         name_mapping={
             "id": "Id",
@@ -4111,20 +4150,11 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
         if scan_schedule.get("Repeat"):
             scan_schedule["Repeat"] = "every " + scan_schedule["Repeat"]
 
-    headers = [
-        "Enable",
-        "StartDate",
-        "Name",
-        "MaxDuration",
-        "Repeat",
-        "NextStart",
-    ]
-
     return CommandResults(
         outputs_prefix="Nexpose.ScanSchedule",
         outputs_key_field="id",
         outputs=scan_schedules_data,
-        readable_output=tableToMarkdown("Nexpose scan schedules", hr_outputs, headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Scan Schedules", hr_outputs, hr_headers, removeNull=True),
         raw_response=scan_schedules_data,
     )
 
@@ -4141,6 +4171,15 @@ def list_shared_credential_command(client: Client, credential_id: str | None = N
         limit (str | None, optional): Limit the number of credentials to return. None means to not use a limit.
             Defaults to None.
     """
+    hr_headers = [
+        "Id",
+        "Name",
+        "Service",
+        "Domain",
+        "UserName",
+        "AvailableToSites",
+    ]
+
     limit_int = arg_to_number(limit, required=False)
 
     if not credential_id:
@@ -4158,16 +4197,7 @@ def list_shared_credential_command(client: Client, credential_id: str | None = N
             raw_response=shared_credentials_data,
         )
 
-    headers = [
-        "Id",
-        "Name",
-        "Service",
-        "Domain",
-        "UserName",
-        "AvailableToSites",
-    ]
-
-    shared_credentials_hr = replace_key_names(
+    shared_credentials_hr = generate_new_dict(
         data=shared_credentials_data,
         name_mapping={
             "id": "Id",
@@ -4186,7 +4216,8 @@ def list_shared_credential_command(client: Client, credential_id: str | None = N
         outputs_prefix="Nexpose.SharedCredential",
         outputs_key_field="id",
         outputs=shared_credentials_data,
-        readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr, headers, removeNull=True),
+        readable_output=tableToMarkdown("Nexpose Shared Credentials", shared_credentials_hr,
+                                        hr_headers, removeNull=True),
         raw_response=shared_credentials_data,
     )
 
@@ -4200,6 +4231,13 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: s
         site (Site): Site to retrieve shared credentials from.
         limit (str | None, optional): Limit the number of credentials to return. None means to not use a limit.
     """
+    hr_headers = [
+        "Id",
+        "Name",
+        "Service",
+        "Enabled",
+    ]
+
     limit_int = arg_to_number(limit, required=False)
 
     response_data = client.get_assigned_shared_credentials(site_id=site.id)
@@ -4215,14 +4253,7 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: s
     if limit_int:
         response_data = response_data[:limit_int]
 
-    headers = [
-        "Id",
-        "Name",
-        "Service",
-        "Enabled",
-    ]
-
-    assigned_shared_credentials_hr = replace_key_names(
+    assigned_shared_credentials_hr = generate_new_dict(
         data=response_data,
         name_mapping={
             "id": "Id",
@@ -4237,7 +4268,7 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: s
         outputs_key_field="id",
         outputs=response_data,
         readable_output=tableToMarkdown("Nexpose Assigned Shared Credentials",
-                                        assigned_shared_credentials_hr, headers, removeNull=True),
+                                        assigned_shared_credentials_hr, hr_headers, removeNull=True),
         raw_response=response_data,
     )
 
@@ -4254,6 +4285,16 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
         limit (str | None, optional): Limit the number of credentials to return. None means to not use a limit.
             Defaults to None.
     """
+    hr_headers = [
+        "Id",
+        "Enabled",
+        "Name",
+        "Service",
+        "UserName",
+        "RestrictToHostName",
+        "RestrictToPort",
+    ]
+
     limit_int = arg_to_number(limit, required=False)
 
     if credential_id is not None:
@@ -4273,17 +4314,7 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
     if limit_int and len(site_scan_credentials_data) > limit_int:
         site_scan_credentials_data = site_scan_credentials_data[:limit_int]
 
-    headers = [
-        "Id",
-        "Enabled",
-        "Name",
-        "Service",
-        "UserName",
-        "RestrictToHostName",
-        "RestrictToPort",
-    ]
-
-    site_scan_credentials_hr = replace_key_names(
+    site_scan_credentials_hr = generate_new_dict(
         data=site_scan_credentials_data,
         name_mapping={
             "id": "Id",
@@ -4301,7 +4332,7 @@ def list_site_scan_credential_command(client: Client, site: Site, credential_id:
         outputs_key_field="id",
         outputs=site_scan_credentials_data,
         readable_output=tableToMarkdown(
-            "Nexpose Site Scan Credentials", site_scan_credentials_hr, headers, removeNull=True),
+            "Nexpose Site Scan Credentials", site_scan_credentials_hr, hr_headers, removeNull=True),
         raw_response=site_scan_credentials_data,
     )
 
@@ -4324,6 +4355,18 @@ def list_vulnerability_command(client: Client, vulnerability_id: str | None = No
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
+    hr_headers = [
+        "Title",
+        "MalwareKits",
+        "Exploits",
+        "CVSS",
+        "CVSSv3",
+        "Risk",
+        "PublishedOn",
+        "ModifiedOn",
+        "Severity",
+    ]
+
     page_size_int = arg_to_number(page_size, required=False)
     page_int = arg_to_number(page, required=False)
     limit_int = arg_to_number(limit, required=False)
@@ -4345,19 +4388,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: str | None = No
             raw_response=vulnerabilities_data,
         )
 
-    headers = [
-        "Title",
-        "MalwareKits",
-        "Exploits",
-        "CVSS",
-        "CVSSv3",
-        "Risk",
-        "PublishedOn",
-        "ModifiedOn",
-        "Severity",
-    ]
-
-    vulnerabilities_hr = replace_key_names(
+    vulnerabilities_hr = generate_new_dict(
         data=vulnerabilities_data,
         name_mapping={
             "title": "Title",
@@ -4377,7 +4408,7 @@ def list_vulnerability_command(client: Client, vulnerability_id: str | None = No
         outputs_key_field="id",
         outputs=vulnerabilities_data,
         readable_output=tableToMarkdown(
-            "Nexpose Vulnerabilities", vulnerabilities_hr, headers, removeNull=True),
+            "Nexpose Vulnerabilities", vulnerabilities_hr, hr_headers, removeNull=True),
         raw_response=vulnerabilities_data,
     )
 
@@ -4400,6 +4431,18 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
+    hr_headers = [
+        "Id",
+        "Vulnerability",
+        "ExceptionScope",
+        "Reason",
+        "ReportedBy",
+        "ReportedOn",
+        "ReviewStatus",
+        "ReviewedOn",
+        "ExpiresOn",
+    ]
+
     page_size_int = arg_to_number(page_size, required=False)
     page_int = arg_to_number(page, required=False)
     limit_int = arg_to_number(limit, required=False)
@@ -4421,19 +4464,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
             raw_response=vulnerability_exceptions_data,
         )
 
-    headers = [
-        "Id",
-        "Vulnerability",
-        "ExceptionScope",
-        "Reason",
-        "ReportedBy",
-        "ReportedOn",
-        "ReviewStatus",
-        "ReviewedOn",
-        "ExpiresOn",
-    ]
-
-    hr_outputs = replace_key_names(
+    hr_vulnerability_exceptions_data = generate_new_dict(
         data=vulnerability_exceptions_data,
         name_mapping={
             "id": "Id",
@@ -4452,7 +4483,7 @@ def list_vulnerability_exceptions_command(client: Client, vulnerability_exceptio
         outputs_key_field="id",
         outputs=vulnerability_exceptions_data,
         readable_output=tableToMarkdown(
-            "Nexpose Vulnerability Exceptions", hr_outputs, headers, removeNull=True),
+            "Nexpose Vulnerability Exceptions", hr_vulnerability_exceptions_data, hr_headers, removeNull=True),
         raw_response=vulnerability_exceptions_data,
     )
 
@@ -4490,6 +4521,20 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
             Defaults to None.
     """
     sites: list[Site] = []
+
+    hr_headers = [
+        "AssetId",
+        "Address",
+        "Name",
+        "Site",
+        "Exploits",
+        "Malware",
+        "OperatingSystem",
+        "RiskScore",
+        "Assessed",
+        "LastScanDate",
+        "LastScanId"
+    ]
 
     for site_id in argToList(site_ids):
         sites.append(Site(site_id=site_id, client=client))
@@ -4551,59 +4596,51 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
     if not assets:
         return CommandResults(readable_output="No assets were found")
 
-    for asset in assets:
-        enrich_asset_data(client, asset)
-
-    headers = [
-        "AssetId",
-        "Address",
-        "Name",
-        "Site",
-        "Exploits",
-        "Malware",
-        "OperatingSystem",
-        "RiskScore",
-        "Assessed",
-        "LastScanDate",
-        "LastScanId"
-    ]
-
-    replace_key_names(
-        data=assets,
-        name_mapping={
-            "id": "AssetId",
-            "ip": "Address",
-            "hostName": "Name",
-            "vulnerabilities.exploits": "Exploits",
-            "vulnerabilities.malwareKits": "Malware",
-            "os": "OperatingSystem",
-            "vulnerabilities.total": "Vulnerabilities",
-            "riskScore": "RiskScore",
-            "assessedForVulnerabilities": "Assessed",
-        },
-        use_reference=True,
-    )
-
-    result = []
+    results = []
 
     for asset in assets:
-        result.append(
+        asset_output = generate_new_dict(
+            data=asset,
+            name_mapping={
+                "id": "AssetId",
+                "ip": "Address",
+                "hostName": "Name",
+                "vulnerabilities.exploits": "Exploits",
+                "vulnerabilities.malwareKits": "Malware",
+                "os": "OperatingSystem",
+                "vulnerabilities.total": "Vulnerabilities",
+                "riskScore": "RiskScore",
+                "assessedForVulnerabilities": "Assessed",
+            },
+            include_none=True,
+        )
+
+        site = client.find_asset_site(asset["id"])
+
+        if site is not None:
+            asset_output["Site"] = site.name
+
+        asset_output["LastScanDate"], asset_output["LastScanId"] = find_asset_last_scan_data(asset)
+
+        results.append(
             CommandResults(
                 outputs_prefix="Nexpose.Asset",
                 outputs_key_field="Id",
-                outputs=asset,
-                readable_output=tableToMarkdown("Nexpose Asset", asset, headers, removeNull=True),
+                outputs=asset_output,
+                readable_output=tableToMarkdown(f"Nexpose Asset {str(asset['id'])}", asset_output,
+                                                hr_headers, removeNull=True),
                 raw_response=asset,
                 indicator=Common.Endpoint(
-                    id=asset["AssetId"],
-                    hostname=asset.get("Name"),
-                    ip_address=asset.get("Address"),
-                    os=asset.get("OperatingSystem"),
+                    id=asset["id"],
+                    hostname=asset.get("hostName"),
+                    ip_address=asset.get("ip"),
+                    mac_address=asset.get("mac"),
+                    os=asset.get("os"),
                     vendor=VENDOR_NAME
                 )
             ))
 
-    return result
+    return results
 
 
 def set_assigned_shared_credential_status_command(client: Client, site: Site,
@@ -5488,7 +5525,11 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
-        return_results(results)
+        if isinstance(results, (list, tuple)) and len(results) == 1:
+            return_results(results[0])
+
+        else:
+            return_results(results)
 
     except Exception as e:
         return_error(str(e))

@@ -1,13 +1,5 @@
 [
     {
-        "importance": "normal",
-        "scanEngine": 3,
-        "scanTemplate": "full-audit-without-web-spider",
-        "vulnerabilities": {
-            "critical": 0,
-            "moderate": 16,
-            "severe": 25
-        },
         "Id": 1,
         "Name": "Test 1",
         "Assets": 4,
@@ -17,14 +9,6 @@
         "LastScan": "2021-08-03T14:09:15.321Z"
     },
     {
-        "importance": "normal",
-        "scanEngine": 3,
-        "scanTemplate": "full-audit-without-web-spider",
-        "vulnerabilities": {
-            "critical": 139,
-            "moderate": 13,
-            "severe": 307
-        },
         "Id": 2,
         "Name": "Test 2",
         "Assets": 19,
@@ -34,15 +18,6 @@
         "LastScan": "2021-06-29T07:06:54.733Z"
     },
     {
-        "description": "This is a test site with test asset",
-        "importance": "very_low",
-        "scanEngine": 3,
-        "scanTemplate": "full-audit-without-web-spider",
-        "vulnerabilities": {
-            "critical": 6,
-            "moderate": 4,
-            "severe": 42
-        },
         "Id": 3,
         "Name": "Test 3",
         "Assets": 11,

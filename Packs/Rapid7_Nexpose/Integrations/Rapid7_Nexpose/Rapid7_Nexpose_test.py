@@ -206,28 +206,26 @@ def test_readable_duration_time(test_input: str, expected_output: float):
                              ([1, 2, {"a": "b", "test": "test"}], "test", [1, 2, {"a": "b"}]),
                              ({"a": {"b": {"test": "x"}}}, "test", {'a': {'b': {}}}),
                          ])
-def test_remove_dict_key(test_input_data: IterableCollection, test_input_key: str, expected_output: IterableCollection):
+def test_remove_dict_key(test_input_data: dict | list | tuple,
+                         test_input_key: str, expected_output: dict | list | tuple):
     assert remove_dict_key(test_input_data, test_input_key) == expected_output
 
 
-@pytest.mark.parametrize("test_input_data, name_mapping, use_reference, expected_output",
+@pytest.mark.parametrize("test_input_data, name_mapping, include_none, expected_output",
                          [
-                             ({"a": "b", "c": "d", "e": "f"}, {"a": "A", "e": "E"}, False,
-                              {"A": "b", "c": "d", "E": "f"}),
+                             ({"a": "b", "c": "d", "e": "f"}, {"a": "A", "e": "E"}, False, {"A": "b", "E": "f"}),
                              ({"a": {"b": {"test": "x"}}}, {"a": "A", "test": "TEST"}, True,
-                              {"A": {"b": {"test": "x"}}}),
-                             ([(1, {"a": {"b": {"a": "a"}}}), 2], {"a": "A"}, True, [(1, {"A": {"b": {"a": "a"}}}), 2]),
-                             ({"a": {"b": {"test": "x"}}}, {"a.b": "A", "test": "TEST"}, True,
-                              {"A": {"test": "x"}, "a": {}}),
+                              {"A": {"b": {"test": "x"}}, "TEST": None}),
+                             ([(1, {"a": {"b": {"a": "a"}}}), 2], {"a": "A"}, False,
+                              [(1, {"A": {"b": {"a": "a"}}}), 2]),
+                             ({"a": {"b": {"test": "x"}}}, {"a.b": "A", "test": "TEST"}, False,
+                              {"A": {"test": "x"}}),
                              ({}, {"a": "b"}, False, {})
                          ])
-def test_replace_key_names(test_input_data: IterableCollection, name_mapping: dict,
-                           use_reference: bool, expected_output: IterableCollection):
-    result = replace_key_names(test_input_data, name_mapping, use_reference)
+def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
+                           include_none: bool, expected_output: dict | list):
+    result = generate_new_dict(test_input_data, name_mapping, include_none)
     assert result == expected_output
-
-    if use_reference:
-        assert result is test_input_data
 
 
 # --- Command & Client Functions Tests ---
@@ -378,8 +376,8 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    result = get_asset_vulnerability_command(client=mock_client, asset_id="1", vulnerability_id=vulnerability_id)
-    assert result.outputs == expected_output_context
+    results = get_asset_vulnerability_command(client=mock_client, asset_id="1", vulnerability_id=vulnerability_id)
+    assert [result.outputs for result in results] == expected_output_context
 
 
 @pytest.mark.parametrize("api_mock_file, expected_output_context_file",
@@ -423,8 +421,8 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    result = get_scan_command(client=mock_client, scan_ids=ids_input)
-    assert result.outputs == expected_output_context
+    results = get_scan_command(client=mock_client, scan_ids=ids_input)
+    assert [result.outputs for result in results] == expected_output_context
 
 
 @pytest.mark.parametrize("api_mock_file, expected_output_context_file",
