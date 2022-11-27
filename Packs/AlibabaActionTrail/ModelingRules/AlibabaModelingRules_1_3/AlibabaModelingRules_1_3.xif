@@ -12,7 +12,9 @@ filter
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
-    xdm.event.outcome=event_errormessage;
+    xdm.event.outcome=event_errormessage,
+    xdm.observer.vendor=_vendor,
+    xdm.observer.product=_product;
 
 filter
     event_eventtype in("ConsoleSignin","ConsoleSignout")
@@ -25,4 +27,6 @@ filter
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
     xdm.session_context_id=event_useridentity_accesskeyid,
-    xdm.event.outcome=event_errormessage;
+    xdm.event.outcome=event_errormessage,
+    xdm.observer.vendor=_vendor,
+    xdm.observer.product=_product;
