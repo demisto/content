@@ -3943,7 +3943,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
     """
     endpoint_url = '/spotlight/combined/vulnerabilities/v1'
     if not args or not args.get('cve_ids'):
-        raise ValueError('Please insert at least one cve_ids argument')
+        raise DemistoException('Please insert at least one cve_ids argument')
     url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
     params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
     vulnerability_response = http_request('GET', endpoint_url, params=params)

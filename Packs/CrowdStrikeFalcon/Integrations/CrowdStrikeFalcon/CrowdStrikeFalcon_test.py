@@ -4232,3 +4232,81 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
         with pytest.raises(DemistoException) as e:
             cs_falcon_spotlight_search_vulnerability_command(args)
         assert str(e.value) == expected_hr
+
+
+
+
+ARGS_vulnerability_host_by = [
+    (
+        None, False,
+        None, 'Please insert at least one cve_ids argument'
+    ),
+    (
+        {'cve_ids': '', 'limit': 1}, False,
+        None, 'Please insert at least one cve_ids argument'
+    ),
+    (
+        {'cve_ids': 'CVE-2013-3900', 'limit': 1},
+        True,  # Valid case
+        {
+            "resources": [
+                {
+                    "id": "id1",
+                    "cid": "cid1",
+                    "aid": "aid1",
+                    "created_timestamp": "2022-01-25T22:44:53Z",
+                    "updated_timestamp": "2022-10-19T13:56:17Z",
+                    "status": "open",
+                    "host_info": {
+                        "hostname": "host",
+                        "local_ip": "ip_addr",
+                        "machine_domain": "",
+                        "os_version": "os_ver_example",
+                        "ou": "",
+                        "site_name": "",
+                        "system_manufacturer": "manu_example",
+                        "tags": [],
+                        "platform": "Windows",
+                        "instance_id": "int_id",
+                        "service_provider_account_id": "id1_account",
+                        "service_provider": "id_ser_prov",
+                        "os_build": "1",
+                        "product_type_desc": "Server"
+                    },
+                    "cve": {
+                        "id": "CVE-2013-3900"
+                    }
+                }
+            ]
+        },
+        '### List Vulnerabilities\n'\
+        '|CVE ID|Host Info hostname|Host Info os Version|Host Info Product Type Desc|Host Info Local IP|\n' \
+        '|---|---|---|---|---|\n' \
+        '| CVE-2013-3900 | host | os_ver_example | Server | ip_addr |\n'  # args list
+
+    )
+]
+
+@pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability_host_by)
+def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker, args, is_valid, result_key_json, expected_hr):
+    """
+    Test cs_falcon_spotlight_list_host_by_vulnerability_command,
+        with a the filters:  cve_severity, status
+    Given
+     - There is a vulnerability that are found
+    When
+     - The user is running cs_falcon_spotlight_list_host_by_vulnerability_command with an id
+    Then
+     - Return a CrowdStrike Falcon Vulnerability context output
+     - Return an Endpoint context output
+     """
+    from CrowdStrikeFalcon import cs_falcon_spotlight_list_host_by_vulnerability_command
+    from CommonServerPython import DemistoException
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
+    if is_valid:
+        outputs = cs_falcon_spotlight_list_host_by_vulnerability_command(args)
+        assert outputs.readable_output == expected_hr
+    else:
+        with pytest.raises(DemistoException) as e:
+            cs_falcon_spotlight_list_host_by_vulnerability_command(args)
+        assert str(e.value) == expected_hr
