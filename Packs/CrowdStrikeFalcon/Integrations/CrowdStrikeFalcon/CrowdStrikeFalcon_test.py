@@ -4234,8 +4234,6 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
         assert str(e.value) == expected_hr
 
 
-
-
 ARGS_vulnerability_host_by = [
     (
         None, False,
@@ -4286,6 +4284,7 @@ ARGS_vulnerability_host_by = [
 
     )
 ]
+
 
 @pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability_host_by)
 def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker, args, is_valid, result_key_json, expected_hr):
