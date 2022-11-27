@@ -27,7 +27,9 @@ MOCK_ALL_EVENTS = {
             "timestamp": "2022-05-05T19:39:49.504000Z",
             "status": "Open",
             "severity": "Low",
-            "description": "* Endpoint 'DELETE /v2/invoicing/invoices/{invoices_id}' in service 'Invoicing' \n* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
+            "description": "* Endpoint 'DELETE /v2/invoicing/invoices/{invoices_id}' in service 'Invoicing' \n"
+                           "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
+                           " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
             "category": "Data Access",
             "source": None,
             "author": "Analytics",
@@ -42,7 +44,8 @@ MOCK_ALL_EVENTS = {
                     "value_type": "String"
                 },
                 {
-                    "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-"
+                             "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
                     "name": "AccessToken",
                     "pretty_name": None,
                     "class": "token",
@@ -87,8 +90,13 @@ MOCK_ALL_EVENTS = {
                 "PII"
             ],
             "alert_type": "UserBehaviorAlert",
-            "recommendations": "* Is the resource being accessed private to the actor entity type accessing it?\n* Is the actor entity accessing this resource an admin?\n* Investigate the behavior of the API consumer around the time of the alert",
-            "alert_info": "Some functions and resources in the API are accessible only by high-privilege or admin users. When a low-privilege API consumer abnormally tries to use those functions, they may be looking for an authorization bypass vulnerability, often called BFLA (broken function level authorization).",
+            "recommendations": "* Is the resource being accessed private to the actor entity type accessing it?"
+                               "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
+                               " behavior of the API consumer around the time of the alert",
+            "alert_info": "Some functions and resources in the API are accessible only by high-privilege or "
+                          "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
+                          " they may be looking for an authorization bypass vulnerability, often called BFLA"
+                          " (broken function level authorization).",
             "triggered_at": "2022-05-05T19:39:49.504000Z",
             "detection_model_id": "fa10ba69-89a0-4c15-876a-cdaf911fda25",
             "endpoint": "DELETE /v2/invoicing/invoices/{invoices_id}",
@@ -103,7 +111,9 @@ MOCK_ALL_EVENTS = {
             "timestamp": "2022-05-05T19:24:09.129000Z",
             "status": "Open",
             "severity": "Low",
-            "description": "* Endpoint 'POST /v1/oauth2/token' in service 'Authentication'\n* It received 30 or more bad requests in the last hour from IP 141.226.145.7\n* The average bad request ratio per 10 minutes per IP for this endpoint was 20 in the last 5 days.",
+            "description": "* Endpoint 'POST /v1/oauth2/token' in service 'Authentication'\n* It received 30"
+                           " or more bad requests in the last hour from IP 141.226.145.7\n* The average bad "
+                           "request ratio per 10 minutes per IP for this endpoint was 20 in the last 5 days.",
             "category": "Account Takeover",
             "source": None,
             "author": "Analytics",
@@ -146,8 +156,14 @@ MOCK_ALL_EVENTS = {
                 "Unauthenticated EP"
             ],
             "alert_type": "UserBehaviorAlert",
-            "recommendations": "* Consider tightening rate limits for authentication endpoints\n* Look at adding IP addresses performing brute force attempts to your firewall's deny list\n* Any subsequent successful login from the alerted IP address should be treated as suspicious.",
-            "alert_info": "In brute force attacks, malicious actors try to login to accounts using different passwords. These password could be part of a specified dictionary or simple guessing without any logic. This attack method is considered to be quite old but still effective and popular among hackers.",
+            "recommendations": "* Consider tightening rate limits for authentication endpoints\n* Look "
+                               "at adding IP addresses performing brute force attempts to your firewall's"
+                               " deny list\n* Any subsequent successful login from the alerted IP address "
+                               "should be treated as suspicious.",
+            "alert_info": "In brute force attacks, malicious actors try to login to accounts using different"
+                          " passwords. These password could be part of a specified dictionary or simple "
+                          "guessing without any logic. This attack method is considered to be quite old"
+                          " but still effective and popular among hackers.",
             "triggered_at": "2022-05-05T19:24:09.129000Z",
             "detection_model_id": "a7d9f57d-b0d7-48ed-82a7-23db1b83271c",
             "endpoint": "POST /v1/oauth2/token",
@@ -193,7 +209,11 @@ MOCK_ALL_EVENTS = {
             "timestamp": "2022-05-05T19:10:09.169000Z",
             "status": "Open",
             "severity": "Low",
-            "description": "* Query parameter 'total_required' in endpoint 'GET /v2/invoicing/invoices' in service 'Invoicing'\n* IP '141.226.145.7' used 52 unique 'total_required' query parameter values in 10 minutes\n* 5 of IP requests returned 200 OK\n* On average, a single IP uses 6 unique query parameter values in 10 minutes, failing 2 of these requests.",
+            "description": "* Query parameter 'total_required' in endpoint 'GET /v2/invoicing/invoices' "
+                           "in service 'Invoicing'\n* IP '141.226.145.7' used 52 unique 'total_required'"
+                           " query parameter values in 10 minutes\n* 5 of IP requests returned 200 OK\n*"
+                           " On average, a single IP uses 6 unique query parameter values in 10 minutes, "
+                           "failing 2 of these requests.",
             "category": "Recon",
             "source": None,
             "author": "Analytics",
@@ -208,7 +228,8 @@ MOCK_ALL_EVENTS = {
                     "value_type": "String"
                 },
                 {
-                    "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___"
+                             "KlA7pxr0WeAlQPiFeEi-XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
                     "name": "AccessToken",
                     "pretty_name": None,
                     "class": "token",
@@ -252,8 +273,19 @@ MOCK_ALL_EVENTS = {
                 "PII"
             ],
             "alert_type": "UserBehaviorAlert",
-            "recommendations": "* Check whether the fuzzing originated from a company-sanctioned tool, or was part of an authorized penetration test\n* Has the same actor performed any subsequent operations against your APIs? If so, treat them as suspicious.",
-            "alert_info": "Attackers fuzz query parameter values in order to find injection points and whether the API is leaking any information. An extreme case of information leaks is broken authorization, when attacker can access resources they should not be able to access.\nThis detection model triggers on an API consumer fuzzing a certain endpoint query parameter, and getting one or more successful responses. This may mean that the attacker managed to access unauthorized data. Note that regardless of the success or failure of the calls themselves - the attacker may also have learned important information from the response codes, sizes, and other response attributes, such as the time it took to process each request.",
+            "recommendations": "* Check whether the fuzzing originated from a company-sanctioned "
+                               "tool, or was part of an authorized penetration test\n* Has the same"
+                               " actor performed any subsequent operations against your APIs? If so,"
+                               " treat them as suspicious.",
+            "alert_info": "Attackers fuzz query parameter values in order to find injection points "
+                          "and whether the API is leaking any information. An extreme case of information"
+                          " leaks is broken authorization, when attacker can access resources they should "
+                          "not be able to access.\nThis detection model triggers on an API consumer fuzzing a "
+                          "certain endpoint query parameter, and getting one or more successful responses."
+                          " This may mean that the attacker managed to access unauthorized data. Note that"
+                          " regardless of the success or failure of the calls themselves - the attacker may "
+                          "also have learned important information from the response codes, sizes, and other"
+                          " response attributes, such as the time it took to process each request.",
             "triggered_at": "2022-05-05T19:10:09.169000Z",
             "detection_model_id": "96c02fc1-430a-4dd5-8aef-72d42927620d",
             "endpoint": "GET /v2/invoicing/invoices",
@@ -319,7 +351,9 @@ MOCK_ALL_EVENTS = {
             "timestamp": "2022-05-05T18:55:22.148000Z",
             "status": "Open",
             "severity": "Low",
-            "description": "* Endpoint 'GET /v2/checkout/orders/{order_id}' in service 'Invoicing'\n* The following query parameters are not documented: full_details\n* They had been used successfully 5 times in the last 30 days",
+            "description": "* Endpoint 'GET /v2/checkout/orders/{order_id}' in service 'Invoicing'\n* The "
+                           "following query parameters are not documented: full_details\n* They had been"
+                           " used successfully 5 times in the last 30 days",
             "category": "Shadow API",
             "source": None,
             "author": "Analytics",
@@ -354,8 +388,12 @@ MOCK_ALL_EVENTS = {
                 "Money Out"
             ],
             "alert_type": "APIAlert",
-            "recommendations": "* Review the endpoint and assess whether the parameter(s) should be exposed\n* Update the documentation, preferably adding documentation generation into your CI/CD pipeline",
-            "alert_info": "Shadow parameters are undocumented parameters accepted by a documented API endpoint. These undocumented parameters may not have been tested as thoroughly as the documented parameters, and therefore pose a greater security risk.",
+            "recommendations": "* Review the endpoint and assess whether the parameter(s) should be exposed\n*"
+                               " Update the documentation, preferably adding documentation generation into your"
+                               " CI/CD pipeline",
+            "alert_info": "Shadow parameters are undocumented parameters accepted by a documented API endpoint."
+                          " These undocumented parameters may not have been tested as thoroughly as the documented"
+                          " parameters, and therefore pose a greater security risk.",
             "triggered_at": "2022-05-05T18:55:22.148000Z",
             "detection_model_id": "5a78eeb0-8be0-434f-9ddb-96f3e9c97a3e",
             "endpoint": "GET /v2/checkout/orders/{orders_id}",

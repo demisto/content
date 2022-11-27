@@ -9,8 +9,7 @@ Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
 """
-import json
-from typing import Dict, Any, Tuple, cast
+from typing import Tuple, cast
 
 import urllib3
 
@@ -30,7 +29,6 @@ ALERT_TYPE_MAP = {
     "Runtime": "UserBehaviorAlert",
     "Posture": "APIAlert",
 }
-
 
 """ CLIENT CLASS """
 
@@ -58,18 +56,18 @@ class NeosecClient(BaseClient):
     """
 
     def __init__(
-        self, base_url: str, proxy: bool, verify: bool, headers: Dict, tenant_key: str
+            self, base_url: str, proxy: bool, verify: bool, headers: Dict, tenant_key: str
     ):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=headers)
         self.tenant_key = tenant_key
 
     def search_alerts(
-        self,
-        alert_status: Optional[str],
-        severities: Optional[List[str]],
-        alert_types: Optional[List[str]],
-        max_results: Optional[int],
-        start_time: Optional[int],
+            self,
+            alert_status: Optional[str],
+            severities: Optional[List[str]],
+            alert_types: Optional[List[str]],
+            max_results: Optional[int],
+            start_time: Optional[int],
     ) -> List[Dict[str, Any]]:
         """
         Searches for Neosec alerts using the '/alerts/query' API endpoint.
@@ -163,7 +161,7 @@ def convert_to_demisto_severity(severity: str) -> float:
 
 
 def build_filter(
-    name: str, operator: str, values: Union[List[Any], Any]
+        name: str, operator: str, values: Union[List[Any], Any]
 ) -> List[Dict[str, Any]]:
     if not isinstance(values, list):
         values = [values]
@@ -172,9 +170,7 @@ def build_filter(
 
 def neosec_datetime_to_timestamp(date_str: str) -> int:
     return int(
-        datetime.strptime(date_str, NEOSEC_DATE_FORMAT)
-        .replace(tzinfo=timezone.utc)
-        .timestamp()
+        datetime.strptime(date_str, NEOSEC_DATE_FORMAT).replace(tzinfo=timezone.utc).timestamp()
     )
 
 
@@ -183,7 +179,7 @@ def timestamp_to_neosec_datetime(timestamp: int) -> str:
 
 
 def detokenize_alerts(
-    neosec_node_client: NeosecNodeClient, alerts: List[Dict[str, Any]]
+        neosec_node_client: NeosecNodeClient, alerts: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     return json.loads(neosec_node_client.detokenize_message(json.dumps(alerts)))
 
@@ -192,10 +188,10 @@ def detokenize_alerts(
 
 
 def test_module(
-    client: NeosecClient,
-    node_client: Optional[NeosecNodeClient],
-    params: Dict[str, Any],
-    first_fetch_timestamp: int,
+        client: NeosecClient,
+        node_client: Optional[NeosecNodeClient],
+        params: Dict[str, Any],
+        first_fetch_timestamp: int,
 ) -> str:
     """Tests API connectivity and authentication'
 
@@ -259,16 +255,15 @@ def test_module(
 
 
 def fetch_incidents(
-    client: NeosecClient,
-    node_client: Optional[NeosecNodeClient],
-    max_results: int,
-    last_run: Dict[str, int],
-    first_fetch_time: int,
-    alert_status: Optional[str] = None,
-    severities: Optional[List[str]] = None,
-    alert_type: Optional[List[str]] = None,
+        client: NeosecClient,
+        node_client: Optional[NeosecNodeClient],
+        max_results: int,
+        last_run: Dict[str, int],
+        first_fetch_time: int,
+        alert_status: Optional[str] = None,
+        severities: Optional[List[str]] = None,
+        alert_type: Optional[List[str]] = None,
 ) -> Tuple[Dict[str, int], List[dict]]:
-
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get("last_fetch", None)
@@ -296,20 +291,17 @@ def fetch_incidents(
     )
     alerts = detokenize_alerts(node_client, alerts) if node_client else alerts
 
-    demisto.info("Starting iterating over incidents")
     for alert in alerts:
-        demisto.info("alert to incident workflow")
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Neosec API response
-        incident_created_time = dateparser.parse(alert["triggered_at"]).timestamp()
-        demisto.info(
-            f"alert: {incident_created_time}, triggered_at: {alert.get('triggered_at')}"
-        )
+        alert_trigger_at = dateparser.parse(alert["triggered_at"])
+        if not alert_trigger_at:
+            raise ValueError("Alert triggered at is not valid")
+        incident_created_time = alert_trigger_at.timestamp()
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch:
             if incident_created_time <= last_fetch:
-                demisto.info(f"dropping alert {alert.get('id')}")
                 continue
 
         incident = {
@@ -325,12 +317,11 @@ def fetch_incidents(
             "details": alert["description"],
         }
 
-        demisto.info(f"Created new incident: {incident}")
         incidents.append(incident)
 
         # Update last run and add incident if the incident is newer than last fetch
         if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
+            latest_created_time = int(incident_created_time)
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {"last_fetch": latest_created_time}
@@ -387,7 +378,7 @@ def main() -> None:
         is_tokenized = params.get("is_tokenized", False)
         neosec_node_url = params.get("neosec_node_url")
         if (is_tokenized and not neosec_node_url) or (
-            not is_tokenized and neosec_node_url
+                not is_tokenized and neosec_node_url
         ):
             return_error(
                 f"Invalid input: De-Tokenized Alerts(is_tokenized={is_tokenized}) "
