@@ -428,7 +428,7 @@ class TestCleanPacks:
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
                                                    storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   pack_list=[])
+                                                   content_packs=[])
 
         assert skipped_cleanup
 
@@ -458,7 +458,7 @@ class TestCleanPacks:
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
                                                    storage_bucket=dummy_storage_bucket,
                                                    storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-                                                   pack_list=[])
+                                                   content_packs=[])
 
         assert skipped_cleanup
 
@@ -509,7 +509,7 @@ class TestCleanPacks:
             private_packs=private_packs,
             storage_bucket=dummy_storage_bucket,
             storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH,
-            pack_list=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
+            content_packs=[Pack("public_pack", "/dummy_path"), Pack("private_pack", "/dummy_path")]
         )
 
         assert not skipped_cleanup
