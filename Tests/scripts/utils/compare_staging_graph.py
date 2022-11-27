@@ -105,7 +105,7 @@ def file_diff_text(file1_path: Path, file2_path: Path, output_path_file: Path):
     return False
 
 
-def remove_known_diffs(dct1: dict, dct2: dict, known_diff: list[str], changelog: bool = False):
+def remove_known_diffs(dct1: dict, dct2: dict, known_diff: list[str]):
     for diff in known_diff:
         dct1.pop(diff, None)
         dct2.pop(diff, None)
