@@ -13,7 +13,7 @@ def equals_object(obj1, obj2) -> bool:
                 return False
             if not equals_object(v1, obj2[k1]):
                 return False
-        return True
+        return not (set(obj1.keys()) ^ set(obj2.keys()))
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
