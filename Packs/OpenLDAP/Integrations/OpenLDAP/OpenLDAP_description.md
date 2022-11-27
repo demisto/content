@@ -30,7 +30,7 @@ Use OpenLDAP or Active Directory user authentication groups to set user roles in
     * __Page size__
     * __Connection Type (None, SSL or Start TLS)__
     * __SSL Version (None, TLS, TLSv1, TLSv1_1, TLSv1_2, TLS_CLIENT)__
-     (The SSL\TLS version to use in SSL or Start TLS connections types. It is highly recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)).
+     (The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)).
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.

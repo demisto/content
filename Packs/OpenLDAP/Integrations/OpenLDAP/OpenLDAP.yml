@@ -85,7 +85,7 @@ configuration:
   - Start TLS
   required: true
   type: 15
-- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is highly recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT.'
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
   defaultvalue: None
   display: SSL Version
   hidden: false
