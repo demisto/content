@@ -79,7 +79,7 @@ tasks:
       id: 4745fd0b-4f71-4287-85ec-6453d449460a
       version: -1
       name: Check caller IP reputation
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -135,7 +135,7 @@ tasks:
       id: c97de1ea-62c9-486c-874e-9bd924b83e93
       version: -1
       name: Unusual allocation & Heavy allocation alerts existence
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -193,7 +193,7 @@ tasks:
       id: 98b85d0b-2c42-4a40-8890-143aad9aa963
       version: -1
       name: Check alert severity & Throttling API rate error alert
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -270,7 +270,7 @@ tasks:
       id: 61bdf893-c55c-4e7a-8f7f-17e2e98a29db
       version: -1
       name: Check alert severity & ASN popularity & Agent IP
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
@@ -356,7 +356,7 @@ tasks:
       id: c021b67f-9dee-4984-8b50-00531dfd6b6b
       version: -1
       name: Check unusual allocation & Dormant region
-      description: Checks the verdict logic. Please refer to the playbook description for detailed information.
+      description: Checks the verdict logic. Refer to the playbook description for detailed information.
       type: condition
       iscommand: false
       brand: ""
