@@ -4207,7 +4207,6 @@ ARGS_vulnerability = [
 
     )
 ]
-# ''
 
 
 @pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)

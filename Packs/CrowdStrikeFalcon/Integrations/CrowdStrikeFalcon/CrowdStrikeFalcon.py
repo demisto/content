@@ -3938,30 +3938,13 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
+        cve.id%3A%5B%27CVE-2013-3900%27%2C%27CVE-2021-1675%5D&facet=host_info&limit=50
+        cve.id%3A%5B%27CVE-2013-3900%27%2C%27CVE-2021-1675
     """
     endpoint_url = '/spotlight/combined/vulnerabilities/v1'
-    if not args:
-        raise ValueError('Must insert at least one filter param or filter string')
-    input_arg_dict = {'cve_ids': str(args.get('cve_ids', '')).split(',')}
-    url_filter = '{}'.format(str(args.get('filter', '')))
-    # In Falcon Query Language, '+' stands for AND and ',' for OR
-    # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
-
-    for k, arg in input_arg_dict.items():
-        if arg:
-            if type(arg) is list:
-                arg_filter = ''
-                for arg_elem in arg:
-                    if arg_elem:
-                        first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
-                if arg_filter:
-                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + ',' if url_filter else '',
-                                                                   arg_filter=arg_filter)
-            else:
-                # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=',',
-                                                                                  inp_arg=k, arg_val=arg)
+    if not args or not args.get('cve_ids'):
+        raise ValueError('Please insert at least one cve_ids argument')
+    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
     params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
     vulnerability_response = http_request('GET', endpoint_url, params=params)
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
