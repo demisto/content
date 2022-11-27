@@ -21,7 +21,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cryptomining - Set Verdict
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 * LoadJSON
