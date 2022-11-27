@@ -666,14 +666,14 @@ outputs:
   description: Name of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
   description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE",
-    "PHISING", "UNKNOWN".'
+    "PHISHING", "UNKNOWN".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
   description: Whether the artifact is malicious, decided by the Wildfire verdict.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
   description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY",
     "HOSTNAME".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-  description: SHA-256 hash of the file.
+  description: SHA256 hash of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
   description: File signature vendor name.
 - contextPath: PortScan.BlockPorts
