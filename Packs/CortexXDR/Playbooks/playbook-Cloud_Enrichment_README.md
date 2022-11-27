@@ -17,7 +17,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Account Enrichment - Generic v2.1
 
 ### Integrations
-* Whois
+Whois
 
 ### Scripts
 * CopyContextToField
@@ -34,7 +34,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
+| ResolveIP | Determines whether to convert the IP address to a host name using a DNS query \(True/ False\). | True | Optional |
 | InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
 
 ## Playbook Outputs
