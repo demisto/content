@@ -2,8 +2,8 @@ id: Cloud Response - GCP
 version: -1
 name: Cloud Response - GCP
 description: |-
-  This playbook provides response actions to Azure, the following are available for execution automatically/manually:
-  - Resource remediation
+  This playbook provides response actions to Azure. The following are available for execution automatically/manually:
+  - Resource remediation:
      - Delete the instance
      - Stop the instance
   - Identity remediation:
@@ -812,7 +812,7 @@ tasks:
       id: b7c92358-4c34-42ab-844a-87cc9cbac517
       version: -1
       name: Delete the instance
-      description: Deletes the specified Instance resource. For more information, see Stopping or Deleting an Instance.
+      description: Deletes the specified instance resource. For more information, see Stopping or Deleting an Instance.
       script: '|||gcp-compute-delete-instance'
       type: regular
       iscommand: true
@@ -1020,7 +1020,7 @@ tasks:
       id: 5eab1ac6-48c4-4e94-8ca2-fdfe599db7ce
       version: -1
       name: Choose resources to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1196,7 +1196,7 @@ tasks:
       id: ea6a9362-bbad-48dd-80b9-ff9f5dd1ab44
       version: -1
       name: Choose user to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1315,7 +1315,7 @@ tasks:
       id: ebcacf97-2eff-4832-8738-499bfa6f6eea
       version: -1
       name: Choose a user for access key remediation
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1435,7 +1435,7 @@ tasks:
       id: 4f647538-9413-4e60-889d-15ccc0bda9d6
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -1571,7 +1571,7 @@ tasks:
       id: 1c979519-3966-4131-8ccb-8fa5a22aee70
       version: -1
       name: Choose indicators to block
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1778,7 +1778,7 @@ tasks:
       id: f0d5235c-42a6-494b-84cd-dfd057f01729
       version: -1
       name: Check if the user is a service account
-      description: Check if the user is a service account
+      description: Check if the user is a service account.
       type: condition
       iscommand: false
       brand: ""
@@ -1977,7 +1977,7 @@ inputs:
   description: |-
     Choose the remediation type for the user's access key.
     Disable - For disabling the user's access key.
-    Delete - For the deleting user's access key.
+    Delete - For deleting user's access key.
   playbookInputQuery:
 - key: userRemediationType
   value:
