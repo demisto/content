@@ -68,7 +68,8 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value=ARGS)
     mocker.patch.object(demisto, 'results')
     main()
-    assert EXPECTED_RESULTS == demisto.results.call_args[0][0]
+    results = [email_address['Contents'] for email_address in demisto.results.call_args[0][0]]
+    assert EXPECTED_RESULTS == results
 
 
 def test_main_invalid_emails(mocker):
