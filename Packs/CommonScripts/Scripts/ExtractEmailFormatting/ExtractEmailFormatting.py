@@ -59,14 +59,24 @@ def refang_email(email_address: str) -> str:
 
 
 def main():
+    list_results = []
+
     emails = argToList(demisto.args().get('input'))
 
     clean_emails = [extract_email(address) for address in emails]
 
     list_results = [refang_email(email_address) for email_address in clean_emails]
 
-    if list_results:
-        return_results(list_results)
+    output = [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': email_address,
+            'EntryContext': {'Email': email_address},
+        } for email_address in list_results]
+
+    if output:
+        return_results(output)
     else:
         return_results('')
 
