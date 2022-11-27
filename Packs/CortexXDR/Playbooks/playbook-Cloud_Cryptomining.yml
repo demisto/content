@@ -1,7 +1,7 @@
 id: Cloud Cryptomining
 version: -1
 name: Cloud Cryptomining
-description: "Investigates a Cortex XDR incident containing Cloud Cryptomining related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
+description: "Investigates a Cortex XDR incident containing a Cloud Cryptomining related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
 starttaskid: "0"
 tasks:
   "0":
@@ -188,14 +188,14 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          XSOAR Notification
+          Cortex XSOAR Notification
 
-          XSOAR has detected activity related to cryptomining.
-          After careful analysis, XSOAR found the activity malicious.
+          Cortex XSOAR has detected activity related to cryptomining.
+          After careful analysis, Cortex XSOAR found the activity malicious.
 
-          Please enter XSOAR incident ID ${incident.id} for further investigation and response.
+          Please enter Cortex XSOAR incident ID ${incident.id} for further investigation and response.
       subject:
-        simple: Cryptominig activity detected by XSOAR
+        simple: Cryptominig activity detected by Cortex XSOAR
       to:
         complex:
           root: inputs.SOCEmailAddress
@@ -228,7 +228,7 @@ tasks:
         This playbook provides response playbooks for:
             * AWS - Fully supported
             * Azure - Fully supported
-            * GCP - Requires input adjustment. (Beta)
+            * GCP - Requires input adjustment (Beta)
 
         The response actions available are:
             * Terminate/Shut down/Power off an instance
@@ -500,7 +500,7 @@ tasks:
       id: 51df4d8f-7064-41be-837d-890b48eac4d0
       version: -1
       name: Load alert JSON
-      description: Loads a json from string input, and returns a json object result
+      description: Loads a JSON from the string input, and returns a JSON object result.
       scriptName: LoadJSON
       type: regular
       iscommand: false
