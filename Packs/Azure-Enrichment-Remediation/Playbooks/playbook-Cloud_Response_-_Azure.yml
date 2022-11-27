@@ -1,7 +1,7 @@
 id: Cloud Response - Azure
 version: -1
 name: Cloud Response - Azure
-description: "This playbook provides response actions to Azure, the following are available for execution automatically/manually:\n- Resource remediation    \n   - Delete the instance\n   - Power off the instance\n- Identity remediation:\n   - Disable the user\n   - Delete the user\n- Block indicators"
+description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n- Resource remediation    \n   - Delete the instance\n   - Power off the instance\n- Identity remediation:\n   - Disable the user\n   - Delete the user\n- Block indicators"
 starttaskid: "0"
 tasks:
   "0":
@@ -289,8 +289,8 @@ tasks:
       name: Disable the user
       description: |-
         Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-        but does not terminate an existing session. Supported only in a self deployed app flow with the
-        Permission: Directory.AccessAsUser.All(Delegated)
+        but does not terminate an existing session. Supported only in a self-deployed app flow with the
+        permission: Directory.AccessAsUser.All(Delegated)
       script: '|||msgraph-user-account-disable'
       type: regular
       iscommand: true
@@ -723,7 +723,7 @@ tasks:
       id: 43b93c5c-cebc-4d7b-87cd-1182f0473566
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing)\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -813,7 +813,7 @@ tasks:
       id: 0ddcddea-3cd0-438e-8c53-43afe80794cc
       version: -1
       name: Choose user to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -978,7 +978,7 @@ tasks:
       id: 37757431-ae42-4631-8f57-52e57385a3d9
       version: -1
       name: Choose indicators to block
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1241,7 +1241,7 @@ tasks:
       id: 917bd820-4a5d-4be0-8238-3edb309c8e87
       version: -1
       name: Choose resources to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
