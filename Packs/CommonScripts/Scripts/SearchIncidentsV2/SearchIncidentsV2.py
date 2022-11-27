@@ -85,12 +85,12 @@ def search_incidents(args: Dict):   # pragma: no cover
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:
-        return 'Incidents not found.', [], []
+        return 'Incidents not found.', [{}], []
 
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data)
-    if not data: 
-        return 'Incidents not found.', [], []
+    if not data:
+        return 'Incidents not found.', [{}], []
 
     headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
     md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)

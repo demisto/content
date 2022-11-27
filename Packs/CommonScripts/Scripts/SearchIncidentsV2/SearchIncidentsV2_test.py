@@ -118,10 +118,14 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
     return [{'Contents': {'data': [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]}}]
 
 
+def get_incidents_mock_empty(command, args, extract_contents=True, fail_on_error=True):
+    return [{'Contents': {'data': None}}]
+
+
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
-    ({}, {}, []),
-    (dict(trimevents='0'), {}, []),
-    (dict(trimevents='1'), dict(trimevents='1'), []),
+    ({}, {}, [{}]),
+    (dict(trimevents='0'), {}, [{}]),
+    (dict(trimevents='1'), dict(trimevents='1'), [{}]),
     ({'id': 1}, {'id': '1'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0]]),
     ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
     ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
@@ -144,3 +148,10 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
+
+
+def test_filter_events_empty_response(mocker):
+    import SearchIncidentsV2
+    mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=get_incidents_mock_empty)
+    _, res, _ = SearchIncidentsV2.search_incidents({})
+    assert res == [{}]
