@@ -9,6 +9,13 @@ PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 EXTRACT_FOLDER=$(mktemp -d)
 ID_SET=$ARTIFACTS_FOLDER/id_set.json
 
+# build type is staging if ID_SET doesn't exist
+STAGING_SUFFIX=""
+if [ ! -f "$ID_SET" ]; then
+    echo "ID_SET file not found at $ID_SET"
+    STAGING_SUFFIX="_staging"
+fi
+
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     echo "GCS_MARKET_KEY not set aborting!"
     exit 1
@@ -23,14 +30,13 @@ else
   fi
 fi
 
-
 echo "Preparing content packs for testing ..."
 gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
 GCS_BUILD_BUCKET="marketplace-ci-build"
-BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID/$MARKETPLACE_TYPE"
+BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUILD_BUCKET_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
@@ -78,7 +84,7 @@ if [ -z "${BUCKET_UPLOAD}" ]; then
       echo "Did not get content packs to update in the bucket."
     else
       echo "Updating the following content packs: $CONTENT_PACKS_TO_INSTALL ..."
-      python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+      python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_INSTALL -o true -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
       echo "Finished updating content packs successfully."
     fi
   fi

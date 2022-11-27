@@ -13,7 +13,9 @@
     "categories": [
         "Utilities"
     ],
-    "tags": ["Core"],
+    "tags": [
+        "Core"
+    ],
     "useCases": [],
     "keywords": [],
     "githubUser": [],

@@ -88,6 +88,12 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  defaultvalue: 1
+  display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
+  name: look_back
+  required: false
+  type: 0
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -329,7 +335,7 @@ script:
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
   - arguments:
-    - description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection.
+    - description: The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs.
       isArray: true
       name: ids
       required: true
@@ -2501,7 +2507,7 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2513,3 +2519,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon-Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
