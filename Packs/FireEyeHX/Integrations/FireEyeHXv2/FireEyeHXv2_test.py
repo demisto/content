@@ -1952,4 +1952,3 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
     client.file_acquisition_package_request('acquisition_id')
     assert requests_mock.request_history[0].headers.get('Accept') == 'application/octet-stream'
     assert requests_mock.request_history[0].headers.get('X-FeApi-Token') == 'test'
-
