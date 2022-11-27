@@ -30,7 +30,7 @@
     "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": "Malware Investigation and Response",
+    "systemAssociatedTypes": ["Malware Investigation and Response"],
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
