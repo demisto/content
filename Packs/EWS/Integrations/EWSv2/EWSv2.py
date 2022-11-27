@@ -903,6 +903,7 @@ def get_last_run():
 
 def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude_ids=None):
     qs = get_folder_by_path(account, folder_name, is_public=IS_PUBLIC_FOLDER)
+    demisto.debug('since_datetime: {}'.format(since_datetime))
     if since_datetime:
         qs = qs.filter(datetime_received__gte=since_datetime)
     else:
@@ -913,14 +914,18 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
+    demisto.debug('Query - {}'.format(qs.filter()))
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug('Exclude ID list: {}'.format(exclude_ids))
 
     for item in qs:
+        demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
+            item.subject, item.message_id, item.datetime_created.ewsformat(), item.datetime_received.ewsformat()))
         try:
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
+                demisto.debug('Appending {}, {}.'.format(item.subject, item.message_id))
                 if len(result) >= MAX_FETCH:
                     break
         except ValueError as exc:
@@ -1254,8 +1259,10 @@ def fetch_emails_as_incidents(account_email, folder_name):
             if item.message_id:
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item, True)
+                demisto.debug('Parsed incident: {}'.format(item.message_id))
                 if incident:
                     incidents.append(incident)
+                    demisto.debug('Appended incident: {}, {}'.format(item.message_id, incident))
 
                 if len(incidents) >= MAX_FETCH:
                     break
