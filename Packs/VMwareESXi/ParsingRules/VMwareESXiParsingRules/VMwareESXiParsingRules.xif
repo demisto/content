@@ -5,5 +5,5 @@ alter tmp_date_part = arraystring(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2})T")
 | alter tmp_time_format = arraystring(arraycreate(tmp_date_part, tmp_time_part), " ")
 | alter tmp_epoch = to_epoch(parse_timestamp("%Y-%m-%d %H:%M:%S", tmp_time_format), "millis")
 | alter tmp_epochm = add(tmp_epoch, tmp_mili_part)
-| alter check = to_timestamp(coalesce(tmp_epochm, tmp_epoch), "millis")
-| fields tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_epoch, tmp_epochm;
+| alter _time = to_timestamp(coalesce(tmp_epochm, tmp_epoch), "millis")
+| fields -tmp_date_part, tmp_time_part, tmp_mili_part, tmp_time_format, tmp_epoch, tmp_epochm;
