@@ -50,7 +50,6 @@ def main():
     }}
     .data-header {{
         padding: 0.5em;
-    
     }}
     .data-cell {{
         padding:0.5em;
@@ -64,7 +63,6 @@ def main():
         padding: 0.5em;
     }}
     .footer-cell {{
-    
     }}
     .footer-row {{
         background-color:   {background_color};
@@ -78,7 +76,6 @@ def main():
         text-align: center;
         color:  {foreground_color};
         padding: 0.5em;
-    
     }}
     .header-text {{
         background-color:  {background_color};
