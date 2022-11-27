@@ -16,8 +16,8 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 ---
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
+- [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
@@ -27,21 +27,21 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
-* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-* File.Read.All - Application / Delegated
-* Ip.Read.All - Application / Delegated
-* Machine.CollectForensics - Application / Delegated
-* Machine.Isolate - Application / Delegated
-* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-* Machine.RestrictExecution - Application / Delegated
-* Machine.Scan - Application / Delegated
-* Machine.StopAndQuarantine - Application / Delegated
-* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application / Delegated
-* User.Read.All - Application / Delegated
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+* WindowsDefenderATP - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* WindowsDefenderATP - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* WindowsDefenderATP - File.Read.All - Application / Delegated
+* WindowsDefenderATP - Ip.Read.All - Application / Delegated
+* WindowsDefenderATP - Machine.CollectForensics - Application / Delegated
+* WindowsDefenderATP - Machine.Isolate - Application / Delegated
+* WindowsDefenderATP - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
+* WindowsDefenderATP - Machine.Scan - Application / Delegated
+* WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
+* WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* WindowsDefenderATP - Url.Read.All - Application / Delegated
+* WindowsDefenderATP - User.Read.All - Application / Delegated
+* WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* WindowsDefenderATP - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
