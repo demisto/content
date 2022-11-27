@@ -1,6 +1,5 @@
 import argparse
 import json
-import logging
 import os
 import shutil
 import subprocess
@@ -15,10 +14,9 @@ versions_dict = {}
 pack_items_dict = {}
 changed_packs = set()
 
-import logging
+from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 
-# from Tests.scripts.utils.log_util import install_logging
-# install_logging('create_test_branch.log', logger=logging)
 
 
 def json_write(file_path: str, data: Union[list, dict]):
@@ -63,10 +61,10 @@ def create_new_pack():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    return dest_path, '1.0.0', get_pack_content_dict(dest_path)
+    return dest_path, '1.0.0', get_pack_content_dict_v2(dest_path)
 
 
-def get_pack_content_dict(pack_path: Path):
+def get_pack_content_dict_v2(pack_path: Path, marketplace='xsoar'):
     """
     Gets a dict of all the paths of the pack content items as it is in the bucket.
 
@@ -76,34 +74,64 @@ def get_pack_content_dict(pack_path: Path):
     Returns:
         dict: The content paths dict.
     """
+    create_artifacts_command = ['demisto-sdk', 'create-content-artifacts', '-a',
+                                '.', "-p", f'{pack_path.name}', '--no-zip', '--packs']
+
+    if marketplace == 'marketplacev2':
+        create_artifacts_command.extend(['-mp', f'{marketplace}'])
+
+    subprocess.call(create_artifacts_command, stdout=subprocess.DEVNULL)
+
     content_dict = {}
-    sub_dirs = os.listdir(pack_path)
+    new_pack_path = os.path.join('content_packs', pack_path.name)
+    sub_dirs = os.listdir(new_pack_path)
     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
 
-    prefix_dict = {content_item: content_item.lower()[:-1] for content_item in sub_dirs}
-    prefix_dict['Layouts'] = 'layoutscontainer'
-    prefix_dict['IndicatorTypes'] = 'reputation'
-
     for content_item_type in sub_dirs:
-        if content_item_type in ['Integrations', 'Scripts']:
-            content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob('*/*.yml')]
+        content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), content_item_type)).glob('*')]
 
-        elif content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-            extension = 'yml' if content_item_type == 'Playbooks' else 'json'
-            content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob(f'*.{extension}')]
+    shutil.rmtree('./content_packs')
     return content_dict
 
 
-def parse_path(path: Path, item_type: str, item_prefixes: dict):
-    path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
-    if item_type =='IndicatorFields':
-        path_name = f"incidentfield-{path_name}"
-    original_path_name = path.name
-    if item_type in ['Integrations', 'Scripts']:  # Remove the item parent directory from the path
-        path_list = str(path).split('/')
-        path_list.pop(-2)
-        path = "/".join(path_list)
-    return str(path).split('/Packs/')[1].replace(original_path_name, path_name)
+# def get_pack_content_dict(pack_path: Path):
+#     """
+#     Gets a dict of all the paths of the pack content items as it is in the bucket.
+
+#     Args:
+#         pack_path (Path): The pack path.
+
+#     Returns:
+#         dict: The content paths dict.
+#     """
+#     content_dict = {}
+#     sub_dirs = os.listdir(pack_path)
+#     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
+
+#     prefix_dict = {content_item: content_item.lower()[:-1] for content_item in sub_dirs}
+#     prefix_dict['Layouts'] = 'layoutscontainer'
+#     prefix_dict['IndicatorTypes'] = 'reputation'
+
+#     for content_item_type in sub_dirs:
+#         if content_item_type in ['Integrations', 'Scripts']:
+#             content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob('*/*.yml')]
+
+#         elif content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
+#             extension = 'yml' if content_item_type == 'Playbooks' else 'json'
+#             content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob(f'*.{extension}')]
+#     return content_dict
+
+
+# def parse_path(path: Path, item_type: str, item_prefixes: dict):
+#     path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
+#     if item_type =='IndicatorFields':
+#         path_name = f"incidentfield-{path_name}"
+#     original_path_name = path.name
+#     if item_type in ['Integrations', 'Scripts']:  # Remove the item parent directory from the path
+#         path_list = str(path).split('/')
+#         path_list.pop(-2)
+#         path = "/".join(path_list)
+#     return str(path).split('/Packs/')[1].replace(original_path_name, path_name)
 
 @add_changed_pack
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
@@ -198,7 +226,7 @@ def modify_pack(pack: Path, integration: str):
         f.write('\n#  CHANGE IN PACK')
 
     enhance_release_notes(pack)
-    return pack, get_current_version(pack), get_pack_content_dict(pack)
+    return pack, get_current_version(pack), get_pack_content_dict_v2(pack)
 
 
 @add_changed_pack
@@ -207,22 +235,21 @@ def modify_modeling_rules(modeling_rule: Path, old_name: str, new_name: str):
     Modify modeling rules path, in order to verify that the pack was uploaded again
     """
     
-    modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif', packs_path / 'AlibabaActionTrail')
-    modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml', packs_path / 'AlibabaActionTrail')
-    modify_item_path(modeling_rule / f'{old_name}_schema.json', f'{new_name}_schema.json', packs_path / 'AlibabaActionTrail')
+    modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif', modeling_rule.parent.parent)
+    modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml', modeling_rule.parent.parent)
+    modify_item_path(modeling_rule / f'{old_name}_schema.json', f'{new_name}_schema.json', modeling_rule.parent.parent)
     parent = modeling_rule.parent
+    pack_path = modeling_rule.parent.parent
     modeling_rule.rename(parent.joinpath(new_name))
-    return modeling_rule.parent.parent, get_current_version(packs_path / 'AlibabaActionTrail'), None
+    return pack_path, get_current_version(pack_path), get_pack_content_dict_v2(pack_path, marketplace='marketplacev2')
     
 
-@add_changed_pack
-def modify_item_path(item: Path, new_name: str, pack_id: Path):
+def modify_item_path(item: Path, new_name: str, pack_path: Path):
     """
     Modify item's path, in order to verify that the pack was uploaded again
     """
     parent = item.parent
     item.rename(parent.joinpath(new_name))
-    return item.parent.parent.parent, get_current_version(pack_id), None
 
 
 @add_changed_pack
@@ -256,6 +283,51 @@ def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
     return branch
 
 
+def do_changes_on_branch(packs_path: Path):
+    """
+    Makes the test changes on the created branch
+
+    Args:
+        packs_path (Path): Path to the packs.
+    """
+    # Case 1: Verify new pack - TestUploadFlow
+    new_pack_path, _, _ = create_new_pack()
+
+    # Case 2: Verify modified pack - Arcanna
+    modify_pack(packs_path / 'Arcanna', 'Integrations/ArcannaAI/ArcannaAI.py')
+
+    # Case 3: Verify dependencies handling - Armis
+    add_dependency(packs_path / 'Armis', new_pack_path)
+
+    # Case 4: Verify new version - ZeroFox
+    enhance_release_notes(packs_path / 'ZeroFox')
+
+    # Case 5: Verify modified existing release notes - Box
+    update_existing_release_notes(packs_path / 'Box', "2.1.2")
+
+    # Case 6: Verify 1.0.0 rn was added - BPA
+    add_1_0_0_release_notes(packs_path / 'BPA')
+
+    # Case 7: Verify pack is set to hidden - Microsoft365Defender
+    # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
+
+    # Case 8: Verify changed readme - Maltiverse
+    update_readme(packs_path / 'Maltiverse')
+
+    # TODO: didn't verified
+    update_pack_ignore(packs_path / 'MISP')
+
+    # Case 9: Verify failing pack - Absolute
+    create_failing_pack(packs_path / 'Absolute')
+
+    # Case 10: Verify changed image - Armis
+    change_image(packs_path / 'Armis')
+
+    # Case 11: Verify modified modeling rule path - AlibabaActionTrail
+    modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules', 'AlibabaModelingRules', 'Alibaba')  # TODO: add script
+
+
+
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.", default='.')
@@ -267,7 +339,8 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
+    # install_logging('create_test_branch.log', logger=logging)
 
     args = parse_arguments()
     repo = Repo(args.path)
@@ -276,48 +349,14 @@ if __name__ == "__main__":
         repo.git.checkout(original_branch)
     else:
         original_branch = repo.active_branch
-        pass
+
     try:
         new_branch_name = f"{original_branch}_upload_test_branch_{time.time()}"
         content_path = Path(__file__).parent.parent.parent
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
 
-        # Case 1: Verify new pack - TestUploadFlow
-        new_pack_path, _, _ = create_new_pack()
-
-        # Case 2: Verify modified pack - Grafana
-        modify_pack(packs_path / 'Grafana', 'Integrations/Grafana/Grafana.py')
-
-        # Case 3: Verify dependencies handling - Armis
-        add_dependency(packs_path / 'Armis', new_pack_path)
-
-        # Case 4: Verify new version - ZeroFox
-        enhance_release_notes(packs_path / 'ZeroFox')
-
-        # Case 5: Verify modified existing release notes - Box
-        update_existing_release_notes(packs_path / 'Box', "2.1.2")
-
-        # Case 6: Verify 1.0.0 rn was added - BPA
-        add_1_0_0_release_notes(packs_path / 'BPA')
-
-        # Case 7: Verify pack is set to hidden - Microsoft365Defender
-        # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
-
-        # Case 8: Verify changed readme - Maltiverse
-        update_readme(packs_path / 'Maltiverse')
-
-        # TODO: didnt verify
-        update_pack_ignore(packs_path / 'MISP')
-
-        # Case 9: Verify failing pack - Absolute
-        create_failing_pack(packs_path / 'Absolute')
-
-        # Case 10: Verify changed image - Armis
-        change_image(packs_path / 'Armis')
-
-        # Case 11: Verify modified modeling rule path - AlibabaActionTrail
-        modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules', 'AlibabaModelingRules', 'Alibaba')  # TODO: add script
+        do_changes_on_branch(packs_path)
 
         for p in changed_packs:
             repo.git.add(f"{p}/*")
@@ -337,3 +376,5 @@ if __name__ == "__main__":
 
         print(new_branch_name)
 
+if __name__ == "__main__":
+    main()

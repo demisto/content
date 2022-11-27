@@ -22,7 +22,8 @@ MSG_DICT = {
     'verify_readme': 'Verify readme content is parsed correctly, verify that there was no version bump '
                      'if only readme was modified',
     'verify_failed_pack': 'Verify commit hash is not updated in the pack metadata in the index.zip',
-    'verify_modified_path': 'Verify the path of the item is modified',
+    # 'verify_modified_path': 'Verify the path of the item is modified',
+    'verify_modified_modeling_rule_path': 'Verify the path of the item is modified',
     'verify_dependency': 'Verify the new dependency is in the metadata',
     'verify_new_image': 'Verify the new image was uploaded'
 }
@@ -97,7 +98,7 @@ class GCP:
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
 
-    def is_item_in_pack(self, item_file_paths: list):
+    def is_items_in_pack(self, item_file_paths: list):
         """
         Check if an item is inside the pack.
         """
@@ -153,21 +154,21 @@ class BucketVerifier:
         Verify the pack is in the index, verify version 1.0.0 zip exists under the pack's path
         """
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
-        items_exists = [self.gcp.is_item_in_pack(item_file_paths) for item_file_paths
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
                         in pack_items.values()]
         return all(version_exists) and all(items_exists), pack_id
 
     @logger
-    def verify_modified_pack(self, pack_id, pack_items):
+    def verify_modified_pack(self, pack_id, pack_items, expected_rn):
         """
         Verify the pack's new version is in the index, verify the new version zip exists under the pack's path,
         verify all the new items are present in the pack
         """
-        pack_path = self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        version_exists = [self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])]
-        items_exists = [self.gcp.is_item_in_pack(item_file_paths) for item_file_paths
+        self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+        changelog_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
                         in pack_items.values()]
-        return all(version_exists) and all(items_exists), pack_id
+        return changelog_as_expected and all(items_exists), pack_id
 
     @logger
     def verify_new_version(self, pack_id, rn):
@@ -208,14 +209,27 @@ class BucketVerifier:
         """
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
+    # @logger
+    # def verify_modified_path(self, pack_id, item_file_path):
+    #     """
+    #     Verify the path of the item is modified
+    #     """
+
+    #     self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
+    #     return self.gcp.is_items_in_pack([item_file_path]), pack_id
+    
     @logger
-    def verify_modified_path(self, pack_id, item_file_path):
+    def verify_modified_modeling_rule_path(self, pack_id, modeling_rule, pack_items):
         """
         Verify the path of the item is modified
         """
 
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        return self.gcp.is_item_in_pack([item_file_path]), pack_id
+        # modeling_rule_paths = [modeling_rule / f"{modeling_rule.name}.xif", modeling_rule / f"{modeling_rule.name}.yml",
+        #                        modeling_rule / f"{modeling_rule.name}_schema.json"]
+        items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
+                        in pack_items.values()]
+        return all(items_exists), pack_id
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
@@ -241,7 +255,8 @@ class BucketVerifier:
         self.verify_new_pack('TestUploadFlow', self.items_dict.get('TestUploadFlow'))
 
         # Case 2: Verify modified pack - Grafana
-        self.verify_modified_pack('Grafana', self.items_dict.get('Grafana'))
+        expected_rn = 'testing adding new RN'
+        self.verify_modified_pack('Arcanna', self.items_dict.get('Arcanna'), expected_rn)
 
         # Case 3: Verify dependencies handling - Armis
         self.verify_dependency('Armis', 'TestUploadFlow')
@@ -276,12 +291,14 @@ class BucketVerifier:
         """
         Runs the XSIAM verifications.
         """
-        self.verify_modified_path('AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.yml'))
-        self.verify_modified_path('AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.jsom'))
-        self.verify_modified_path('AlibabaActionTrail',
-                                  os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.xif'))
+        self.verify_modified_modeling_rule_path('AlibabaActionTrail', Path(os.path.join('AlibabaActionTrail', 'ModelingRules')),
+                                                self.items_dict.get('AlibabaActionTrail'))
+        # self.verify_modified_path('AlibabaActionTrail',
+        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.xif'))
+        # self.verify_modified_path('AlibabaActionTrail',
+        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.yml'))
+        # self.verify_modified_path('AlibabaActionTrail',
+        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba_schema.jsom'))
 
     def run_validations(self):
         """
