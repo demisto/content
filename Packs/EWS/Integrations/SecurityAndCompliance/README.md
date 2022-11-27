@@ -19,7 +19,10 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ### Delegated Authentication
 
-To access the Security & Compliance Center, the user account needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
+To access the Security & Compliance Center, the user who is configuring the account which will be used in O365 S&C, 
+needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the 
+Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
+*Clarification:* The account which is used by the integration, does _not_ require Global Administrator permissions.
 
 1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
@@ -42,6 +45,16 @@ To access the Security & Compliance Center, the user account needs to be a globa
 7. Click **Done**.
 
 The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
+
+Certificate Based Authentication supports only certain cmdlets which do not require delegated access. The commands which require delegated access are:
+- ***o365-sc-start-search***
+- ***o365-sc-new-search-action***
+- ***o365-sc-get-search-action***
+
+Please note: The use of Username and Password is not indicative of the use of basic authentication. The PowerShell session uses modern authentication as noted [here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#connect-to-security--compliance-powershell-without-a-login-prompt-unattended-scripts).
+>The following example also connects without a login prompt, but the credentials are stored locally, so this method is not secure. Consider using this method only for brief testing purposes.
+
+Because the session which the integration uses is containerized, the notification provided by Microsoft is not applicable in this use-case.
 
 ### Creating a Certificate
 

@@ -14,6 +14,7 @@ configuration:
   required: false
   additionalinfo: A pfx certificate encoded in Base64.
 - display: UPN/Email
+  additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
   name: delegated_auth
   required: true
   type: 9
