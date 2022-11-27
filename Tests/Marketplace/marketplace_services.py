@@ -1411,6 +1411,7 @@ class Pack(object):
                     with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
                         rn_lines = rn_file.read()
                     modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
+                    continue
 
                 logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of'
                               f' aggregated content')
