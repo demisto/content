@@ -57,13 +57,15 @@ def main():
     def make_incident_table():
         incident_table = transform_incident_to_table_format()
 
-        incident_table = demisto.executeCommand('fancy-email-make-table', {
-            'header': incident_headers,
-            'items': [incident_table],
-            'name': 'Incident Details',
-            'vertical_table': 'True'
-        }
-                                                )[0]
+        incident_table = demisto.executeCommand('fancy-email-make-table',
+                                                {
+                                                    'header': incident_headers,
+                                                    'items': [incident_table],
+                                                    'name': 'Incident Details',
+                                                    'vertical_table': 'True'
+                                                }
+                                                )
+        incident_table = incident_table[0]
         return demisto.get(incident_table, 'Contents.html', '')
 
     def make_notes_table():
