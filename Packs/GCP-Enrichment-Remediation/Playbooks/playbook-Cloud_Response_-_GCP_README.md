@@ -1,5 +1,5 @@
 This playbook provides response actions to Azure, the following are available for execution automatically/manually:
-- Resource remediation
+- Resource remediation:
    - Delete the instance
    - Stop the instance
 - Identity remediation:
@@ -14,13 +14,13 @@ This playbook provides response actions to Azure, the following are available fo
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block IP - Generic v3
+Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 * gcp-iam-service-account-delete
@@ -36,7 +36,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| accessKeyRemediationType | Choose the remediation type for the user's access key.<br/>Disable - For disabling the user's access key.<br/>Delete - For the deleting user's access key. | Disable | Optional |
+| accessKeyRemediationType | Choose the remediation type for the user's access key.<br/>Disable - For disabling the user's access key.<br/>Delete - For deleting user's access key. | Disable | Optional |
 | userRemediationType | Choose the remediation type for the user involved.<br/>Delete - For deleting the user.<br/>Disable - For disabling the user. | Disable | Optional |
 | resourceRemediationType | Choose the remediation type for the instances created.<br/>Stop - For stopping the instances.<br/>Delete - For deleting the instances. | Stop | Optional |
 | autoResourceRemediation | Whether to execute the resource remediation flow automatically. | False | Optional |
