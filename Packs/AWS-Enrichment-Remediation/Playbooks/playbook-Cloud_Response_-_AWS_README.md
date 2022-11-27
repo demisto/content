@@ -1,4 +1,4 @@
-This playbook provides response actions to Azure, the following are available for execution automatically/manually:
+This playbook provides response actions to Azure. The following are available for execution automatically/manually:
  - Resource remediation
    - Terminate the instance
    - Stop the instance
@@ -14,13 +14,13 @@ This playbook provides response actions to Azure, the following are available fo
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block IP - Generic v3
+Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
+Set
 
 ### Commands
 * aws-ec2-terminate-instances
