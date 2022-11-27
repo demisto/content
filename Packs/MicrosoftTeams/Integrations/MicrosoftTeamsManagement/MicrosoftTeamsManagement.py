@@ -26,7 +26,6 @@ class Client:
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
                 if 'Client' not in connection_type \
                 else None,
