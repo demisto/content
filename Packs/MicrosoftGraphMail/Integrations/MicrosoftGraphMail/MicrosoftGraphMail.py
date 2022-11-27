@@ -165,11 +165,16 @@ class MsGraphClient:
         Returns:
             dict:
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
-                    f'/?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}/'
-                       f'?$expand=microsoft.graph.itemattachment/item')
+        if attachment_id:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
+                        f'/?$expand=microsoft.graph.itemattachment/item'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
+        else:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
         response = self.ms_client.http_request('GET', suffix)
         return response
@@ -841,7 +846,7 @@ class MsGraphClient:
 
         return mime_content
 
-    def _get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
+    def get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -918,8 +923,8 @@ class MsGraphClient:
         parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''),
-                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+        attachments = self.get_email_attachments(message_id=email.get('id', ''),
+                                                 overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -1583,8 +1588,10 @@ def get_attachment_command(client: MsGraphClient, args):
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    attachment = create_attachment(raw_response, user_id)
-    return_results(attachment)
+    attachments = []
+    for attachment in raw_response.get('value', []):
+        attachments.append(create_attachment(attachment, user_id))
+    return_results(attachments)
 
 
 def get_message_command(client: MsGraphClient, args):
