@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "7aab08596d155a9e27eadc86d7fae41c0e1d4570"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "cb925bd69e7dc1722dbf0ae7698f49f7138d7e53"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -39,7 +39,7 @@ pandas = "^1.3.3"
 prettytable = "^3.2.0"
 pyspellchecker = "^0.6.2"
 sendgrid = "^6.6.0"
-slack_sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "8e1f5718897121b7f3e4798b5b74dcb33d1a96d1"}
+slack_sdk = "^3.11.2"
 timeout_decorator = "^0.5.0"
 ujson = "^5.1.0"
 yamlordereddictloader = "^0.4.0"
