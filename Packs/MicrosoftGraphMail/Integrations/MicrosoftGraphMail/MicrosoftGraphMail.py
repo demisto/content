@@ -846,7 +846,7 @@ class MsGraphClient:
 
         return mime_content
 
-    def get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
+    def _get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -923,8 +923,8 @@ class MsGraphClient:
         parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self.get_email_attachments(message_id=email.get('id', ''),
-                                                 overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
