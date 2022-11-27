@@ -82,6 +82,11 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+- additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
+  display: Use Display Value
+  name: use_display_value
+  required: false
+  type: 8
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
   defaultvalue: comments
   display: Comment Entry Tag
@@ -1897,6 +1902,19 @@ script:
     - defaultValue: '0'
       description: Offset of the ticket notes.
       name: offset
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      name: ticket_type
+      predefined:
+        - incident
+        - problem
+        - change_request
+        - sc_request
+        - sc_task
+        - sc_req_item
+        - sn_si_incident
     description: Gets notes from the specified ServiceNow ticket. "Read permissions"
       are required for the sys_journal_field table.
     name: servicenow-get-ticket-notes

@@ -489,6 +489,46 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     return dic_fields
 
 
+def split_notes(raw_notes, note_type):
+    notes = []
+    # todo: verify that this is the correct split
+    notes_split = raw_notes.split('\n\n')
+    for note in notes_split:
+        note_info, note_value = note.split('\n')
+        created_on, created_by = note_info.split(' - ')
+        created_by = created_by.split(' (Additional')[0]
+        note_dict = {
+            "sys_created_on": created_on,
+            "value": note_value,
+            "sys_created_by": created_by,
+            "element": note_type
+        }
+        notes.append(note_dict)
+    return notes
+
+
+def convert_to_notes_result(full_response):
+    """
+    Converts the response of a ticket to the response format when making a query for notes only.
+    """
+    if not full_response or 'result' not in full_response:
+        return []
+
+    all_notes = []
+
+    raw_comments = full_response.get('comments')
+    if raw_comments:
+        comments = split_notes(raw_comments, 'comments')
+        all_notes.extend(comments)
+
+    raw_work_notes = full_response.get('work_notes')
+    if raw_work_notes:
+        work_notes = split_notes(raw_work_notes, 'work_notes')
+        all_notes.extend(work_notes)
+
+    return {'result': all_notes}
+
+
 class Client(BaseClient):
     """
     Client to use in the ServiceNow integration. Overrides BaseClient.
@@ -497,7 +537,8 @@ class Client(BaseClient):
     def __init__(self, server_url: str, sc_server_url: str, cr_server_url: str, username: str,
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
-                 incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0):
+                 incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0,
+                 use_display_value: bool = False):
         """
 
         Args:
@@ -537,6 +578,7 @@ class Client(BaseClient):
         self.sys_param_limit = sysparm_limit
         self.sys_param_offset = 0
         self.look_back = look_back
+        self.use_display_value = use_display_value
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
@@ -1375,9 +1417,23 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+    use_display_value = args.get('use_display_value', client.use_display_value)  # todo: check if it indeed takes the value from the client in case this parameter is not overridden in the command.
 
-    result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+    # todo: check that this works also for tables other than 'incident'
+    # todo: check if it works also with number (see get-ticket command for params) or only with  sys_id
+    # todo: check about work_notes
+
+    if use_display_value:  # make query using sysparm_display_value=true (requires less permissions)
+        ticket_type = client.get_table_name(str(args.get('ticket_type', '')))  # todo: check if we want this or use self.ticket_type
+        assert ticket_type, ValueError('ticket_type must be specified when retrieving comments using display value.')  # todo: check if this is necessary or just set a default to `incident`
+        # number = str(args.get('number', ''))  # todo: check if this should be added
+        path = f'table/{ticket_type}/{ticket_id}'
+        query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'true'}
+        full_result = client.send_request(path, 'GET', params=query_params)
+        result = convert_to_notes_result(full_result)
+    else:
+        sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+        result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
 
     if not result or 'result' not in result:
         return f'No comment found on ticket {ticket_id}.', {}, {}, True
@@ -2752,6 +2808,7 @@ def main():
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
+    use_display_value = params.get('use_display_value')
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (
@@ -2768,7 +2825,7 @@ def main():
     try:
         client = Client(server_url=server_url, sc_server_url=sc_server_url, cr_server_url=cr_server_url,
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
-                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit,
+                        sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_display_value=use_display_value,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
                         incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
