@@ -3877,7 +3877,8 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    # args = demisto.args()
+    if not args:
+        raise DemistoException('Please add a at least one filter argument')
     input_arg_dict = {'aid': argToList(args.get('aid')),
                       'cve.id': argToList(args.get('cve_id')),
                       'cve.severity': argToList(args.get('cve_severity')),

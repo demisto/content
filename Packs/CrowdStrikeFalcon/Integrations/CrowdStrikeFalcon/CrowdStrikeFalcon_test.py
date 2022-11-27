@@ -4228,7 +4228,6 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
     mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
     if is_valid:
         outputs = cs_falcon_spotlight_search_vulnerability_command(args)
-        k = outputs.readable_output
         assert outputs.readable_output == expected_hr
     else:
         with pytest.raises(DemistoException) as e:
