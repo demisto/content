@@ -3871,53 +3871,47 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator='AND'):
+def cs_falcon_spotlight_search_vulnerability_command(args: dict,filter_operator='AND'):
     """
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    input_arg_dict = {'aid': str(args.get('aid', '')).split(','),
-                      'cve.id': str(args.get('cve_id', '')).split(','),
-                      'cve.severity': str(args.get('cve_severity', '')).split(','),
-                      'host_info.tags': str(args.get('tags', '')).split(','),
-                      'status': str(args.get('status', '')).split(','),
+    args = demisto.args()
+    input_arg_dict = {'aid': argToList(args.get('aid')),
+                      'cve.id': argToList(args.get('cve_id')),
+                      'cve.severity': argToList(args.get('cve_severity')),
+                      'host_info.tags': argToList(args.get('tags')),
+                      'status': argToList(args.get('status')),
                       'host_info.platform_name': args.get('platform_name'),
-                      'host_info.groups': str(args.get('host_group', '')).split(','),
-                      'host_info.product_type_desc': str(args.get('host_type', '')).split(','),
+                      'host_info.groups': argToList(args.get('host_group')),
+                      'host_info.product_type_desc': argToList(args.get('host_type')),
                       'last_seen_within': args.get('last_seen_within'),
                       'suppression_info.is_suppressed': args.get('is_suppressed')}
     if not input_arg_dict:
-        raise ValueError('Must insert at least one filter param or filter string')
-    url_filter = 'filter={}'.format(str(args.get('filter', '')))
-    op = ',' if filter_operator == 'OR' else '+'
-    # In Falcon Query Language, '+' stands for AND and ',' for OR
+        raise DemistoException('Please add a at least one filter argument')
+    url_filter = '{}'.format(str(args.get('filter', '')))
+    op = ',' if filter_operator == 'OR' else '%2B'
+    # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR 
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
-
-    for k, arg in input_arg_dict.items():
+    for key, arg in input_arg_dict.items():
         if arg:
+            if url_filter:
+                url_filter += '%2B'
             if type(arg) is list:
-                arg_filter = ''
-                for arg_elem in arg:
-                    if arg_elem:
-                        first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
-                if arg_filter:
-                    url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
-                                                                   arg_filter=arg_filter)
+                url_filter += f'{key}:[\'' + "','".join(arg) + '\']'
             else:
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=k, arg_val=arg)
+                                                                                  inp_arg=key, arg_val=arg)
     url_facet = '&facet=cve'
-    if args.get('display_remediation_info'):
+    if argToBoolean(args.get('display_remediation_info')):
         url_facet += "&facet=remediation"
-    if args.get('display_evaluation_logic_info'):
+    if argToBoolean(args.get('display_evaluation_logic_info')):
         url_facet += "&facet=evaluation_logic"
-    if args.get('display_host_info'):
+    if argToBoolean(args.get('display_host_info')):
         url_facet += "&facet=host_info"
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + url_filter + url_facet +\
-        "&limit=" + args.get('limit', '50')
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + url_filter + url_facet + "&limit=" + args.get('limit', '50')
     vulnerability_response = http_request('GET', endpoint_url)
     headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
                'CVE Exploitability Score', 'CVE Vector']
@@ -3969,7 +3963,8 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
     params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
     vulnerability_response = http_request('GET', endpoint_url, params=params)
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
-               'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name']
+               'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name'
+               'CVE Exploitability Score', 'CVE Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources'):
         outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
@@ -4028,6 +4023,7 @@ def main():
             return_results(result)
         elif command == 'fetch-incidents':
             demisto.incidents(fetch_incidents())
+
         elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':

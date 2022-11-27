@@ -2553,28 +2553,28 @@ script:
       required: false
     - auto: PREDEFINED
       description: Display remediation information type of data to be returned for each vulnerability entity.
-      defaultValue: true
+      defaultValue: 'True'
       name: display_remediation_info
       required: false
       predefined:
-      - 'true'
-      - 'false'
+      - 'True'
+      - 'False'
     - auto: PREDEFINED
       description: Display logic information type of data to be returned for each vulnerability entity.
-      defaultValue: true
+      defaultValue: 'True'
       name: display_evaluation_logic_info
       required: false
       predefined:
-      - 'true'
-      - 'false'
+      - 'True'
+      - 'False'
     - auto: PREDEFINED
       description: Display host information type of data to be returned for each vulnerability entity.
       name: display_host_info
-      defaultValue: false
+      defaultValue: 'False'
       required: false
       predefined:
-      - 'true'
-      - 'false'
+      - 'True'
+      - 'False'
     - description: Maximum number of items to return (1-5000).
       defaultValue: '50'
       type: String
