@@ -1938,8 +1938,9 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
     When:
         - running the file_acquisition_package_request
     Then:
-        - ensure that the headers of this command is what expected.
-        - Token exists and the header Accept is indeed octet-stream
+        - ensure that the headers of this command is what expected:
+            1. Token exists
+            2. Header Accept is octet-stream
     """
     from FireEyeHXv2 import Client
 
