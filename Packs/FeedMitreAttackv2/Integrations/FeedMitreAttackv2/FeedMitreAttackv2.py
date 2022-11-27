@@ -1,10 +1,11 @@
+import logging
+
 import demistomock as demisto
 from CommonServerPython import *
 
 from typing import List, Dict, Set, Optional
 import json
 import urllib3
-import requests
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
@@ -59,6 +60,9 @@ FILTER_OBJS = {
 
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
+
+# disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
+logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
 
 # Disable insecure warnings
 urllib3.disable_warnings()
