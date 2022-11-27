@@ -5,7 +5,7 @@
     "currentVersion": "1.0.0",
     "author": "Neosec",
     "url": "",
-    "email": "",
+    "email": "support@neosec.com",
     "categories": [
         "Network Security"
     ],
@@ -16,5 +16,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "created": "2022-11-27T09:39:30Z"
 }
