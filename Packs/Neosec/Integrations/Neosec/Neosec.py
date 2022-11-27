@@ -185,10 +185,7 @@ def timestamp_to_neosec_datetime(timestamp: int) -> str:
 def detokenize_alerts(
     neosec_node_client: NeosecNodeClient, alerts: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
-    return [
-        json.loads(neosec_node_client.detokenize_message(json.dumps(alert)))
-        for alert in alerts
-    ]
+    return json.loads(neosec_node_client.detokenize_message(json.dumps(alerts)))
 
 
 """ COMMAND FUNCTIONS """
@@ -267,9 +264,9 @@ def fetch_incidents(
     max_results: int,
     last_run: Dict[str, int],
     first_fetch_time: int,
-    alert_status: Optional[str],
-    severities: Optional[List[str]],
-    alert_type: Optional[List[str]],
+    alert_status: Optional[str] = None,
+    severities: Optional[List[str]] = None,
+    alert_type: Optional[List[str]] = None,
 ) -> Tuple[Dict[str, int], List[dict]]:
 
     # Get the last fetch time, if exists
