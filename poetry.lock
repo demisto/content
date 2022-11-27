@@ -419,7 +419,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = {git = "https://github.com/demisto/demisto-sdk.git", rev = "8e1f5718897121b7f3e4798b5b74dcb33d1a96d1"}
+version = {git = "https://github.com/demisto/demisto-sdk.git", rev = "cb925bd69e7dc1722dbf0ae7698f49f7138d7e53"}
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
