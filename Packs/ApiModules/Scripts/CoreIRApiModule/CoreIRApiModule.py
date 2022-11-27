@@ -1267,6 +1267,45 @@ def init_filter_args_options():
             'False': False,
         }),
         'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'alert_action_status': AlertFilterArg('alert_action_status', 'EQ', dropdown, {
+            'detected': 'DETECTED',
+            'detected (allowed the session)': 'DETECTED_0',
+            'detected (download)': 'DOWNLOAD',
+            'detected (forward)': 'DETECTED_19',
+            'detected (post detected)': 'POST_DETECTED',
+            'detected (prompt allow)': 'PROMPT_ALLOW',
+            'detected (raised an alert)': 'DETECTED_4',
+            'detected (reported)': 'REPORTED',
+            'detected (on write)': 'REPORTED_TRIGGER_4',
+            'detected (scanned)': 'SCANNED',
+            'detected (sinkhole)': 'DETECTED_23',
+            'detected (syncookie sent)': 'DETECTED_18',
+            'detected (wildfire upload failure)': 'DETECTED_21',
+            'detected (wildfire upload success)': 'DETECTED_20',
+            'detected (wildfire upload skip)': 'DETECTED_22',
+            'detected (xdr managed threat hunting)': 'DETECTED_MTH',
+            'prevented (block)': 'BLOCKED_25',
+            'prevented (blocked)': 'BLOCKED',
+            'prevented (block-override)': 'BLOCKED_14',
+            'prevented (blocked the url)': 'BLOCKED_5',
+            'prevented (blocked the ip)': 'BLOCKED_6',
+            'prevented (continue)': 'BLOCKED_13',
+            'prevented (denied the session)': 'BLOCKED_1',
+            'prevented (dropped all packets)': 'BLOCKED_8',
+            'prevented (dropped the session)': 'BLOCKED_2',
+            'prevented (dropped the session and sent a tcp reset)': 'BLOCKED_3',
+            'prevented (dropped the packet)': 'BLOCKED_7',
+            'prevented (override)': 'BLOCKED_16',
+            'prevented (override-lockout)': 'BLOCKED_15',
+            'prevented (post detected)': 'BLOCKED_26',
+            'prevented (prompt block)': 'PROMPT_BLOCK',
+            'prevented (random-drop)': 'BLOCKED_17',
+            'prevented (silently dropped the session with an icmp unreachable message to the host or application)': 'BLOCKED_24',
+            'prevented (terminated the session and sent a tcp reset to both sides of the connection)': 'BLOCKED_9',
+            'prevented (terminated the session and sent a tcp reset to the client)': 'BLOCKED_10',
+            'prevented (terminated the session and sent a tcp reset to the server)': 'BLOCKED_11',
+            'prevented (on write)': 'BLOCKED_TRIGGER_4'
+        }),
         'agent_id': AlertFilterArg('agent_id', 'EQ', array),
         'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
         'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
@@ -3178,6 +3217,47 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
     )
 
 
+ALERT_STATUS_TYPES = {
+    'DETECTED': 'detected',
+    'DETECTED_0': 'detected (allowed the session)',
+    'DOWNLOAD': 'detected (download)',
+    'DETECTED_19': 'detected (forward)',
+    'POST_DETECTED': 'detected (post detected)',
+    'PROMPT_ALLOW': 'detected (prompt allow)',
+    'DETECTED_4': 'detected (raised an alert)',
+    'REPORTED': 'detected (reported)',
+    'REPORTED_TRIGGER_4': 'detected (on write)',
+    'SCANNED': 'detected (scanned)',
+    'DETECTED_23': 'detected (sinkhole)',
+    'DETECTED_18': 'detected (syncookie sent)',
+    'DETECTED_21': 'detected (wildfire upload failure)',
+    'DETECTED_20': 'detected (wildfire upload success)',
+    'DETECTED_22': 'detected (wildfire upload skip)',
+    'DETECTED_MTH': 'detected (xdr managed threat hunting)',
+    'BLOCKED_25': 'prevented (block)',
+    'BLOCKED': 'prevented (blocked)',
+    'BLOCKED_14': 'prevented (block-override)',
+    'BLOCKED_5': 'prevented (blocked the url)',
+    'BLOCKED_6': 'prevented (blocked the ip)',
+    'BLOCKED_13': 'prevented (continue)',
+    'BLOCKED_1': 'prevented (denied the session)',
+    'BLOCKED_8': 'prevented (dropped all packets)',
+    'BLOCKED_2': 'prevented (dropped the session)',
+    'BLOCKED_3': 'prevented (dropped the session and sent a tcp reset)',
+    'BLOCKED_7': 'prevented (dropped the packet)',
+    'BLOCKED_16': 'prevented (override)',
+    'BLOCKED_15': 'prevented (override-lockout)',
+    'BLOCKED_26': 'prevented (post detected)',
+    'PROMPT_BLOCK': 'prevented (prompt block)',
+    'BLOCKED_17': 'prevented (random-drop)',
+    'BLOCKED_24': 'prevented (silently dropped the session with an icmp unreachable message to the host or application)',
+    'BLOCKED_9': 'prevented (terminated the session and sent a tcp reset to both sides of the connection)',
+    'BLOCKED_10': 'prevented (terminated the session and sent a tcp reset to the client)',
+    'BLOCKED_11': 'prevented (terminated the session and sent a tcp reset to the server)',
+    'BLOCKED_TRIGGER_4': 'prevented (on write)',
+}
+
+
 def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
     # get arguments
     request_data: dict = {'filter_data': {}}
@@ -3225,7 +3305,15 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     demisto.debug(f'sending the following request data: {request_data}')
     raw_response = client.get_alerts_by_filter_data(request_data)
 
-    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+    context = []
+    for alert in raw_response.get('alerts', []):
+        alert = alert.get('alert_fields')
+        if 'alert_action_status' in alert:
+            # convert the status, if failed take the original status
+            action_status = alert.get('alert_action_status')
+            alert['alert_action_status_readable'] = ALERT_STATUS_TYPES.get(action_status, action_status)
+
+        context.append(alert)
 
     human_readable = [{
         'Alert ID': alert.get('internal_id'),
@@ -3233,7 +3321,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         'Name': alert.get('alert_name'),
         'Severity': alert.get('severity'),
         'Category': alert.get('alert_category'),
-        'Action': alert.get('alert_action_status'),
+        'Action': alert.get('alert_action_status_readable'),
         'Description': alert.get('alert_description'),
         'Host IP': alert.get('agent_ip_addresses'),
         'Host Name': alert.get('agent_hostname'),
