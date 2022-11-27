@@ -406,7 +406,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                                      pack_id: str,
                                      packs_to_install: list,
                                      installation_request_body: list,
-                                     lock: Lock):
+                                     lock: Lock,
+                                     after_update: bool):
     """ Searches for the pack of the specified file path, as well as its dependencies,
         and updates the list of packs to be installed accordingly.
 
@@ -416,6 +417,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         packs_to_install (list) A list of the packs to be installed in this iteration.
         installation_request_body (list): A list of packs to be installed, in the request format.
         lock (Lock): A lock object.
+        after_update (bool): True to fail on deprecated dependencies. False to just print info message.
     """
     pack_data = {}
     if pack_id not in packs_to_install:
@@ -437,10 +439,15 @@ def search_pack_and_its_dependencies(client: demisto_client,
             for dependency in dependencies:
                 pack_path = os.path.join(PACKS_FOLDER, dependency.get('id'))
                 if is_pack_deprecated(pack_path):
-                    logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
-                                     f'pack.')
-                    global SUCCESS_FLAG
-                    SUCCESS_FLAG = False
+                    if after_update:
+                        logging.critical(f'After updating the marketplace, pack {pack_id} depends on pack '
+                                         f'{dependency.get("id")} which is a deprecated pack. '
+                                         f'Returning Failure for this job but continuing install other packs.')
+                        global SUCCESS_FLAG
+                        SUCCESS_FLAG = False
+                    else:
+                        logging.info(f'Before updating the marketplace, pack {pack_id} depends on pack '
+                                     f'{dependency.get("id")} which is a deprecated pack.')
                 else:
                     current_packs_to_install.extend(dependencies)
 
@@ -631,13 +638,16 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
 
 def search_and_install_packs_and_their_dependencies(pack_ids: list,
-                                                    client: demisto_client, hostname: str = ''):
+                                                    client: demisto_client,
+                                                    hostname: str = '',
+                                                    after_update: bool = True):
     """ Searches for the packs from the specified list, searches their dependencies, and then
     installs them.
     Args:
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
         hostname (str): Hostname of instance. Using for logs.
+        after_update (bool): True if marketplace was updated, false otherwise.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -658,7 +668,7 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
                 logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
                 continue
             pool.submit(search_pack_and_its_dependencies,
-                        client, pack_id, packs_to_install, installation_request_body, lock)
+                        client, pack_id, packs_to_install, installation_request_body, lock, after_update)
 
     install_packs(client, host, installation_request_body)
 
