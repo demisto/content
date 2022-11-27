@@ -40,13 +40,20 @@ configuration:
   required: false
   type: 0
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  hidden: true
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can
