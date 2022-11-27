@@ -3,8 +3,6 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    incident = demisto.incident()
-
     entries = demisto.executeCommand('getEntries', {})
 
     def get_user_display_name(username):
@@ -24,8 +22,8 @@ def main():
         }
 
     def convert_to_fancy_table(notes):
-        return demisto.executeCommand('fancy-email-make-table', {'items': notes, 'name':
-            'Notes',
+        return demisto.executeCommand('fancy-email-make-table', {'items': notes,
+                                                                 'name': 'Notes',
                                                                  'include_raw': False,
                                                                  'headers': ['Notes']
                                                                  })
