@@ -61,7 +61,7 @@ ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
+logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
 
 class Client:
 
