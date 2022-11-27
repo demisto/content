@@ -81,12 +81,10 @@ def main():
         background-color:  {background_color};
         width: 100%;
         text-align: center;
-    
         margin: auto;
     }}
     .logo{{
-        margin: 1em;
-    
+        margin: 1em; 
     }}
     .logo-container{{
         width: 100%;
