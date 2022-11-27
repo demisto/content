@@ -367,7 +367,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.UserManagerEmail
+                root: UserManagerEmail
             iscontext: true
           right:
             value: {}
@@ -736,7 +736,7 @@ tasks:
     message:
       to:
         complex:
-          root: inputs.UserManagerEmail
+          root: UserManagerEmail
       subject:
         simple: Impossible Traveler Alert Validation
       body:
@@ -1064,12 +1064,6 @@ inputs:
     simple: "True"
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
-  playbookInputQuery:
-- key: UserManagerEmail
-  value:
-    simple: poc@demistodev.com
-  required: false
-  description: The user's manager email address.
   playbookInputQuery:
 - key: AutoContainment
   value:
