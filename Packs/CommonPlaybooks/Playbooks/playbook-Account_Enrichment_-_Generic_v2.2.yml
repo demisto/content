@@ -1012,7 +1012,7 @@ tasks:
       id: be533930-e327-4945-8fb7-c47ada329a2f
       version: -1
       name: Is Azure Active Directory Users integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1257,7 +1257,7 @@ outputs:
 - contextPath: IdentityIQ.Identity.emails
   description: Array of email objects.
 - contextPath: IdentityIQ.Identity.entitlements
-  description: Array of entitlements objects that the identity has.
+  description: Array of entitlement objects that the identity has.
 - contextPath: IdentityIQ.Identity.roles
   description: Array of role objects that the identity has.
 - contextPath: IdentityIQ.Identity.capabilities
@@ -1275,13 +1275,13 @@ outputs:
   description: The account's manager returned from IdentityIQ.
   type: unknown
 - contextPath: IdentityIQ.Identity.manager.userName
-  description: The IdentityIQ username (primary ID) of the identities manager.
+  description: The IdentityIQ username (primary ID) of the identity's manager.
 - contextPath: IdentityIQ.Identity.emails.type
   description: Type of the email being returned.
 - contextPath: IdentityIQ.Identity.emails.value
   description: The email address of the identity.
 - contextPath: IdentityIQ.Identity.emails.primary
-  description: Indicates if this email address is the identities primary email.
+  description: Indicates if this email address is the identity's primary email.
 - contextPath: PingOne.Account.ID
   description: PingOne account ID.
 - contextPath: PingOne.Account.Username
