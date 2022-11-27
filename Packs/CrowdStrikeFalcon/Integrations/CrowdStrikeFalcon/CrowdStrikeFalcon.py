@@ -3893,7 +3893,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
         raise DemistoException('Please add a at least one filter argument')
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '%2B'
-    # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR 
+    # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
     for key, arg in input_arg_dict.items():
         if arg:
@@ -3912,7 +3912,8 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
         url_facet += "&facet=evaluation_logic"
     if argToBoolean(args.get('display_host_info')):
         url_facet += "&facet=host_info"
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + url_filter + url_facet + "&limit=" + args.get('limit', '50')
+    endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + \
+        url_filter + url_facet + "&limit=" + args.get('limit', '50')
     vulnerability_response = http_request('GET', endpoint_url)
     headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
                'CVE Exploitability Score', 'CVE Vector']
