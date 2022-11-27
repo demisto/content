@@ -2,8 +2,8 @@ id: Cloud Response - AWS
 version: -1
 name: Cloud Response - AWS
 description: |-
-  This playbook provides response actions to Azure, the following are available for execution automatically/manually:
-   - Resource remediation
+  This playbook provides response actions to Azure. The following are available for execution automatically/manually:
+   - Resource remediation:
      - Terminate the instance
      - Stop the instance
    - Identity remediation:
@@ -1094,7 +1094,7 @@ tasks:
       id: 7ee887b7-5042-486f-806a-559a4407f755
       version: -1
       name: Choose a user for access key remediation
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1214,7 +1214,7 @@ tasks:
       id: c6dddc29-dff7-45aa-8519-77e8b07ce776
       version: -1
       name: Choose resources to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1391,7 +1391,7 @@ tasks:
       id: 3914e80e-b350-498c-8bdc-d1cda4b9632c
       version: -1
       name: Choose user to remediate
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
@@ -1511,7 +1511,7 @@ tasks:
       id: eeac60d9-2cab-42cb-8a43-f2ee0bee6bbb
       version: -1
       name: Block IP - Generic v3
-      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n- Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
       playbookName: Block IP - Generic v3
       type: playbook
       iscommand: false
@@ -1601,7 +1601,7 @@ tasks:
       id: 607a944f-e0c5-44c1-8682-3d8212c85882
       version: -1
       name: Should block indicators automatically?
-      description: Checks if the user chose automatic remediation.
+      description: Checks if the user chose automatic.remediation.
       type: condition
       iscommand: false
       brand: ""
@@ -1647,7 +1647,7 @@ tasks:
       id: b5d97b04-5f48-48bd-8347-40d99210f3a4
       version: -1
       name: Choose indicators to block
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
       brand: ""
