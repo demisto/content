@@ -22,13 +22,11 @@ def main():
     body{{
         font-family: arial;
     }}
-    
     table {{
           border: 1px solid {background_color};
           border-collapse: collapse;
           width: 100%;
     }}
-    
     th {{
         background-color:  {background_color};
         border: none;
@@ -36,15 +34,12 @@ def main():
         text-align: left;
         padding: 0.5em;
     }}
-    
     tr{{
         text-align: left;
     }}
-    
     td{{
         padding: 0.5em;
     }}
-    
     .banner{{
         text-align:center;
         color: {banner_text_color};
@@ -53,16 +48,13 @@ def main():
         display: block;
         font-size:1.2em
     }}
-    
     .data-header {{
         padding: 0.5em;
     
     }}
-    
     .data-cell {{
         padding:0.5em;
     }}
-    
     .footer {{
         background-color:   {background_color};
         width: 100%;
@@ -71,18 +63,15 @@ def main():
         border: none;
         padding: 0.5em;
     }}
-    
     .footer-cell {{
     
     }}
-    
     .footer-row {{
         background-color:   {background_color};
         width: 100%;
         text-align: center;
         font-size: 0.75em;
     }}
-    
     .header {{
         background-color:  {background_color};
         width: 100%;
@@ -91,7 +80,6 @@ def main():
         padding: 0.5em;
     
     }}
-    
     .header-text {{
         background-color:  {background_color};
         width: 100%;
@@ -99,18 +87,15 @@ def main():
     
         margin: auto;
     }}
-    
     .logo{{
         margin: 1em;
     
     }}
-    
     .logo-container{{
         width: 100%;
         margin-top: 1em;
         text-align: {alignlogo};
     }}
-    
     {custom_css}
     """
 
