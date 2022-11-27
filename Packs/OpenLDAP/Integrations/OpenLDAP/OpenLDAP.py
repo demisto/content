@@ -260,7 +260,8 @@ class LdapClient:
     @staticmethod
     def _is_valid_dn(dn: str, user_identifier_attribute: str) -> Tuple[bool, str]:
         """
-            Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
+            Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN
+            (if exists).
         """
         try:
             parsed_dn = parse_dn(dn, strip=False)
@@ -647,7 +648,7 @@ class LdapClient:
         return 'ok'
 
 
-def main():
+def main():  # pragma: no coverage
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     command = demisto.command()
