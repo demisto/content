@@ -3,9 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Threat Hunting - Generic
-description: "This playbook enables threat hunting for IOCs in your enterprise. It\
-  \ currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n\
-  - Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
 starttaskid: "0"
 tasks:
   "0":
@@ -26,6 +24,7 @@ tasks:
       - "5"
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -48,9 +47,7 @@ tasks:
       id: faee0e93-b767-4148-8d8f-b1762d1e1039
       version: -1
       name: Splunk Indicator Hunting
-      description: This playbook queries Splunk for indicators such as file hashes,
-        IP addresses, domains, or URLs. It returns detected users, IP addresses, and
-        hostnames related to the indicators.
+      description: This playbook queries Splunk for indicators such as file hashes, IP addresses, domains, or URLs. It returns detected users, IP addresses, and hostnames related to the indicators.
       playbookName: Splunk Indicator Hunting
       type: playbook
       iscommand: false
@@ -88,6 +85,7 @@ tasks:
         complex:
           root: inputs.SplunkLatestTime
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -115,14 +113,7 @@ tasks:
       id: 41273c47-6b21-49dd-869a-35e115202d0a
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
-      description: "This is a multipurpose playbook used for hunting and threat detection.\
-        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
-        \ provided manually or from outputs from other playbooks. \nWith the received\
-        \ indicators, the playbook leverages data received by PANW products including\
-        \ Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host\
-        \ names and users related to the provided indicators.\nThe output provided\
-        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users."
+      description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs from other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
       playbookName: Palo Alto Networks - Hunting And Threat Detection
       type: playbook
       iscommand: false
@@ -148,6 +139,7 @@ tasks:
       URLDomain:
         simple: ${inputs.URLDomain}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -180,6 +172,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -202,8 +195,7 @@ tasks:
       id: 6f545ba4-aeb9-4c82-87d0-4e3a1f0b5826
       version: -1
       name: QRadar Indicator Hunting V2
-      description: 'This playbook queries the QRadar SIEM for indicators such as file
-        hashes, IP addresses, domains, or URLs. '
+      description: 'This playbook queries the QRadar SIEM for indicators such as file hashes, IP addresses, domains, or URLs. '
       playbookName: QRadar Indicator Hunting V2
       type: playbook
       iscommand: false
@@ -234,6 +226,7 @@ tasks:
       URLDomain:
         simple: ${inputs.URLDomain}
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -255,17 +248,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: fc0a94ba-5e88-4e2a-8a37-8bb33de4dda9
+    taskid: 7bf5bd95-cefc-4259-81aa-e5f187e015c8
     type: playbook
     task:
-      id: fc0a94ba-5e88-4e2a-8a37-8bb33de4dda9
+      id: 7bf5bd95-cefc-4259-81aa-e5f187e015c8
       version: -1
-      name: Microsoft 365 Defender - Emails Indicators Hunt
-      playbookName: Microsoft 365 Defender - Emails Indicators Hunt
+      name: Microsoft 365 Defender - Threat Hunting Generic
+      description: |
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress` and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+
+        - **Microsoft 365 Defender - Get Email URL clicks**:
+                Retrieves data based on URL click events.
+
+
+        - **Microsoft 365 Defender - Emails Indicators Hunt**:
+                Retrieves data based on several different email events.
+
+        Please read the playbooks descriptions in order to get the full details.
+      playbookName: Microsoft 365 Defender - Threat Hunting Generic
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -273,6 +276,9 @@ tasks:
       IPAddress:
         complex:
           root: inputs.IPAddress
+      MessageID:
+        complex:
+          root: inputs.MessageID
       ResultsLimit:
         simple: "50"
       SHA256:
@@ -281,16 +287,17 @@ tasks:
       SearchTimeframe:
         simple: "7"
       Timeout:
-        simple: "60"
+        simple: "180"
       URLDomain:
         complex:
           root: inputs.URLDomain
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
+      max: 100
     view: |-
       {
         "position": {
@@ -343,34 +350,22 @@ inputs:
 - key: URLDomain
   value: {}
   required: false
-  description: Domain or URL to search. Can be a single domain or URL or an array
-    of domains or URLs to search. By default, the LIKE clause is used.
+  description: Domain or URL to search. Can be a single domain or URL or an array of domains or URLs to search. By default, the LIKE clause is used.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A comma-separated list of internal IP ranges to check IP addresses
-    against. The list should be provided in CIDR notation. An example of a list of
-    ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If
-    a list is not provided, uses the default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+  description: 'A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organization's internal domain name. This is provided for the script
-    IsInternalHostName that checks if the detected hostnames are internal or external,
-    if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If
-    there is more than one domain, use the | character to separate values such as
-    (paloaltonetworks.com|test.com).
+  description: The organization's internal domain name. This is provided for the script IsInternalHostName that checks if the detected hostnames are internal or external, if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com).
   playbookInputQuery:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: Provided for the script IsInternalHostName that checks if the
-    detected host names are internal or external, if the hosts match the organization's
-    naming convention. For example, the host testpc1 will have the following regex
-    \w{6}\d{1}
+  description: Provided for the script IsInternalHostName that checks if the detected host names are internal or external, if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \w{6}\d{1}
   playbookInputQuery:
 - key: QRadarTimeFrame
   value:
@@ -389,6 +384,11 @@ inputs:
     simple: now
   required: false
   description: The latest time to search in Splunk.
+  playbookInputQuery:
+- key: MessageID
+  value: {}
+  required: false
+  description: "This input will be used in the \"Microsoft 365 Defender - Get Email URL clicks\" playbook. MessageID of the email from which the URL was clicked. Please note that this can be either of the following 2 values:\n- The value of the header \"Message-ID\".\n- The internal ID of the message within Microsoft's products (e.g. \n NetworkMessageId).\n\nCan be a single MessageID or an array of MessageIDs to search."
   playbookInputQuery:
 outputs:
 - contextPath: Splunk.DetectedUsers
@@ -431,12 +431,10 @@ outputs:
   description: External IP addresses detected based on fields and inputs in your search.
   type: string
 - contextPath: QRadar.DetectedInternalHosts
-  description: Internal host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: Internal host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: QRadar.DetectedExternalHosts
-  description: External host names detected based on hosts in your assets table. Note
-    that the data accuracy depends on how the asset mapping is configured in QRadar.
+  description: External host names detected based on hosts in your assets table. Note that the data accuracy depends on how the asset mapping is configured in QRadar.
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails
   description: Email objects containing relevant fields.
@@ -501,7 +499,45 @@ outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails.SenderIPv6
   description: Sender IPv6.
   type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.AccountUpn
+  description: User principal name (UPN) of the account.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.IsClickedThrough
+  description: Indicates whether the user was able to click through to the original URL or not.
+  type: number
+- contextPath: Microsoft365Defender.RetrievedEmails.BulkComplaintLevel
+  description: Threshold assigned to email from bulk mailers, a high bulk complain level (BCL) means the email is more likely to generate complaints, and thus more likely to be spam.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.IPAddress
+  description: IP address assigned to the device during communication.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DetectionMethods
+  description: Methods used to detect whether the URL contains or leads to malware, phishing, or other threats.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ActionType
+  description: Type of activity that triggered the event.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.UrlChain
+  description: List of URLs in the redirection chain.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.NetworkMessageId
+  description: Unique identifier for the email, generated by Office 365.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.DisplayName
+  description: Name of the sender displayed in the address book, typically a combination of a given or first name, a middle initial, and a last name or surname.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromDomain
+  description: Sender domain in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.SenderMailFromAddress
+  description: Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.Subject
+  description: Subject of the email.
+  type: string
+- contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
+  description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
+  type: unknown
 tests:
 - No tests (auto formatted)
-fromversion: 6.2.0
-toversion: 6.4.9
+fromversion: 6.5.0
