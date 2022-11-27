@@ -4158,19 +4158,24 @@ def test_error_in_get_detections_by_behaviors(mocker):
 
 
 ARGS_vulnerability = [
-    ({}, False,  # Invalid call without filter params
-     {}, 'Please add a at least one filter argument'),
-    ({"cve_severity": "LOW", 'display_remediation_info': 'True',
-      'display_evaluation_logic_info': 'True',
-      'display_host_info': 'False', 'status': "open,closed"}, True,  # Valid case
+    (
+        None, False,
+        None, 'Please add a at least one filter argument'
+    ),
+    (
+        {"cve_severity": "LOW", 'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False', 'status': "open,closed"},
+        True,  # Valid case
         {"resources":
-         [{"id": "id1",
-           "cid": "cid1",
-           "aid": "aid1",
-           "created_timestamp": "2021-09-16T15:12:42Z",
-           "updated_timestamp": "2022-10-19T00:54:43Z",
-           "status": "open",
-           "cve": {
+         [
+             {"id": "id1",
+              "cid": "cid1",
+              "aid": "aid1",
+              "created_timestamp": "2021-09-16T15:12:42Z",
+              "updated_timestamp": "2022-10-19T00:54:43Z",
+              "status": "open",
+              "cve": {
                "id": "cveid1",
                "base_score": 3.3,
                "severity": "LOW",
@@ -4180,32 +4185,33 @@ ARGS_vulnerability = [
                "spotlight_published_date": "2021-09-15T18:33:00Z",
                "description": "secd",
                "published_date": "2021-09-15T12:15:00Z"}},
-          {"id": "ID2",
-           "cid": "cid2",
-           "aid": "aid2",
-           "created_timestamp": "2022-10-12T22:12:49Z",
-           "updated_timestamp": "2022-10-18T02:54:43Z",
-           "status": "open",
-           "cve": {"id": "idcve4",
-                   "spotlight_published_date": "2022-10-12T14:57:00Z",
-                   "description": "desc3",
-                   "published_date": "2022-10-11T19:15:00Z",
-                   "exploitability_score": 1.8,
-                   "impact_score": 1.4}
-           }]
-         },  # args list
-     'get_branches',
-     '### List Branches\n' \
-     '|Title|CommitShortId|CommitTitle|CreatedAt|IsMerge|IsProtected|\n' \
-     '|---|---|---|---|---|---|\n' \
-     '| 1-test | f9d0bf17 | test1 | 2022-07-27T13:09:50.000+00:00 | false | false |\n' \
-     '| 2-test | d9177263 | test2 | 2022-07-18T12:19:47.000+00:00 | false | false |\n'
-     )
+             {"id": "ID2",
+              "cid": "cid2",
+              "aid": "aid2",
+              "created_timestamp": "2022-10-12T22:12:49Z",
+              "updated_timestamp": "2022-10-18T02:54:43Z",
+              "status": "open",
+              "cve": {"id": "idcve4",
+                        "spotlight_published_date": "2022-10-12T14:57:00Z",
+                        "description": "desc3",
+                        "published_date": "2022-10-11T19:15:00Z",
+                        "exploitability_score": 1.8,
+                        "impact_score": 1.4}}
+         ]
+         },
+        '### List Vulnerabilities\n' \
+        '|CVE ID|CVE Severity|CVE Base Score|CVE Published Date|CVE Impact Score|CVE Exploitability Score|\n' \
+        '|---|---|---|---|---|---|\n' \
+        '| cveid1 | LOW | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '| idcve4 |  |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
+
+    )
 ]
+# ''
 
 
-@pytest.mark.parametrize('args, is_valid, result_key_json, expected_results', ARGS_vulnerability)
-def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid, result_key_json, expected_results):
+@pytest.mark.parametrize('args, is_valid, result_key_json, expected_hr', ARGS_vulnerability)
+def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid, result_key_json, expected_hr):
     """
     Test cs_falcon_spotlight_search_vulnerability_command,
         with a the filters:  cve_severity, status
@@ -4217,14 +4223,14 @@ def test_cs_falcon_spotlight_search_vulnerability_command(mocker, args, is_valid
      - Return a CrowdStrike Falcon Vulnerability context output
      - Return an Endpoint context output
      """
-    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command, http_request
+    from CrowdStrikeFalcon import cs_falcon_spotlight_search_vulnerability_command
     from CommonServerPython import DemistoException
+    mocker.patch("CrowdStrikeFalcon.http_request", return_value=result_key_json)
     if is_valid:
+        outputs = cs_falcon_spotlight_search_vulnerability_command(args)
+        k = outputs.readable_output
+        assert outputs.readable_output == expected_hr
+    else:
         with pytest.raises(DemistoException) as e:
             cs_falcon_spotlight_search_vulnerability_command(args)
-        assert str(e.value) == expected_results
-    else:
-        mocker.patch.object(http_request, return_value=result_key_json)
-        outputs = cs_falcon_spotlight_search_vulnerability_command(result_key_json)
-        result = outputs[0].to_context()
-        assert outputs == expected_results
+        assert str(e.value) == expected_hr

@@ -3871,13 +3871,13 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict,filter_operator='AND'):
+def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator='AND'):
     """
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    args = demisto.args()
+    # args = demisto.args()
     input_arg_dict = {'aid': argToList(args.get('aid')),
                       'cve.id': argToList(args.get('cve_id')),
                       'cve.severity': argToList(args.get('cve_severity')),
@@ -3888,7 +3888,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict,filter_operator=
                       'host_info.product_type_desc': argToList(args.get('host_type')),
                       'last_seen_within': args.get('last_seen_within'),
                       'suppression_info.is_suppressed': args.get('is_suppressed')}
-    if not input_arg_dict:
+    if not args or input_arg_dict == {}:
         raise DemistoException('Please add a at least one filter argument')
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '%2B'
