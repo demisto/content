@@ -85,7 +85,7 @@ tasks:
       id: 1286a5ae-df9a-46e0-8603-258f9e1bc044
       version: -1
       name: Check if the caller_ip is an internal IP address
-      description: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed comma-delimited and each will be tested.
+      description: Determines whether an IPv4 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4 addresses can be passed as a comma-delimited list and each will be tested.
       scriptName: IsInCidrRanges
       type: regular
       iscommand: false
@@ -186,7 +186,7 @@ tasks:
       id: bed915ec-699c-4289-8e18-09a200000d57
       version: -1
       name: Get Geolocation data
-      description: Provides data enrichment for ips.
+      description: Provides data enrichment for IPs.
       script: Whois|||ip
       type: regular
       iscommand: true
@@ -551,7 +551,7 @@ tasks:
       description: |-
         Enrich IP addresses using one or more integrations.
 
-        - Resolve IP addresses to hostnames (DNS)
+        - Resolve IP addresses to host names (DNS)
         - Provide threat information
         - Separate internal and external IP addresses
         - For internal IP addresses, get host information
@@ -691,7 +691,7 @@ tasks:
         - Okta
         - AWS IAM
 
-        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+        Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
       playbookName: Account Enrichment - Generic v2.1
       type: playbook
       iscommand: false
@@ -782,7 +782,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: CopyContextToField
       type: regular
       iscommand: false
@@ -897,7 +897,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/playbooks/automations.html
       scriptName: CopyContextToField
       type: regular
       iscommand: false
@@ -954,7 +954,7 @@ inputs:
 - key: InternalRange
   value: {}
   required: false
-  description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
+  description: A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook.
   playbookInputQuery:
 outputs: []
 tests:
