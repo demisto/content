@@ -49,7 +49,7 @@
                     }
                 },
                 "details": {
-                    "simple": "alert_info"
+                    "simple": "description"
                 },
                 "name": {
                     "complex": {
