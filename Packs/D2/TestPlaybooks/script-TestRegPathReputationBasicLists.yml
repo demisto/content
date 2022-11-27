@@ -1,7 +1,7 @@
 commonfields:
-  id: TestRegPathReputation
+  id: TestRegPathReputationBasicLists
   version: -1
-name: TestRegPathReputation
+name: TestRegPathReputationBasicLists
 script: >-
   # Test script to check RegPathReputationBasicLists
 
