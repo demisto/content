@@ -192,7 +192,7 @@ tasks:
       name: Cloud Response - AWS
       description: |-
         This playbook provides response actions to Azure, the following are available for execution automatically/manually:
-            - Resource remediation
+            - Resource remediation:
                 - Terminate the instance
                 - Stop the instance
             - Identity remediation:
@@ -269,7 +269,7 @@ tasks:
       id: 2bde4ff2-2d22-4a58-8a80-923e6b253f52
       version: -1
       name: Cloud Response - Azure
-      description: "This playbook provides response actions to Azure, the following are available for execution automatically/manually:\n    - Resource remediation    \n        -Delete the instance\n        - Power off the instance\n    - Identity remediation:\n        - Disable the user\n        - Change the user's password (Default password should be set in the playbook's inputs)\n    - Block indicators"
+      description: "This playbook provides response actions to Azure. The following are available for execution automatically/manually:\n    - Resource remediation    \n        - Delete the instance\n        - Power off the instance\n    - Identity remediation:\n        - Disable the user\n        - Change the user's password (Default password should be set in the playbook's inputs)\n    - Block indicators"
       playbookName: Cloud Response - Azure
       type: playbook
       iscommand: false
@@ -399,7 +399,7 @@ tasks:
       name: Cloud Response - GCP
       description: |-
         This playbook provides response actions to Azure, the following are available for execution automatically/manually:
-            - Resource remediation
+            - Resource remediation:
                 - Delete the instance
                 - Stop the instance
             - Identity remediation:
