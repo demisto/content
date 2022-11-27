@@ -15,7 +15,7 @@ SCOPE_BY_CONNECTION = {'Device Code': 'offline_access Group.ReadWrite.All TeamMe
 
 class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool,
-                connection_type: str, tenant_id: str, enc_key: str,
+                 connection_type: str, tenant_id: str, enc_key: str,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -26,9 +26,9 @@ class Client:
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
-                if 'Client' not in connection_type \
-                else '',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+                                if 'Client' not in connection_type
+                                else '',
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url='https://graph.microsoft.com',
             verify=verify,
