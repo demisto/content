@@ -28,7 +28,7 @@ class Client:
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
                 if 'Client' not in connection_type \
-                else None,
+                else '',
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url='https://graph.microsoft.com',
             verify=verify,
