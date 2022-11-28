@@ -5,7 +5,7 @@ import re
 from datetime import datetime, timedelta
 
 import dateparser
-import demistomock as demisto  # noqa: F401
+import demistomock as demisto
 import pytz
 import requests
 import splunklib.client as client
