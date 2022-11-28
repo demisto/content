@@ -406,7 +406,8 @@ script:
       description: Array of custom attributes of asset.
       type: unknown
     - contextPath: TenableIO.AssetDetails.counts
-      description: 'Array of audit statuses and vulnerabilities by type. '
+      description: Array of audit statuses and vulnerabilities by type.
+      type: unknown
     - contextPath: TenableIO.AssetDetails.created_at
       description: Date asset was created.
       type: date
@@ -415,6 +416,7 @@ script:
       type: date
     - contextPath: TenableIO.AssetDetails.fqdn
       description: Array of fully-qualified domain names.
+      type: unknown
     - contextPath: TenableIO.AssetDetails.id
       description: GUID of tenable.io asset.
       type: string
@@ -422,12 +424,15 @@ script:
       description: Array of interface information.
     - contextPath: TenableIO.AssetDetails.ipv4
       description: Array of IPv4 addresses.
+      type: unknown
     - contextPath: TenableIO.AssetDetails.operating_system
       description: Array of operating systems.
+      type: unknown
     - contextPath: TenableIO.AssetDetails.tags
       description: Array of tags added to asset.
+      type: unknown
     - contextPath: TenableIO.AssetDetails.updated_at
-      description: Date the asset was last updated
+      description: Date the asset was last updated.
       type: date
   feed: false
   isfetch: false
