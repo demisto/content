@@ -3006,16 +3006,20 @@ script:
     - description: List of endpoint IDs. Supports comma separated list.
       isArray: true
       name: endpoint_ids
+      required: true
     - description: Tag to add.
       name: tag
+      required: true
     description: Adds a tag to specified endpoint_ids
     name: xdr-endpoint-tag-add
   - arguments:
     - description: List of endpoint IDs. Supports comma separated list.
       isArray: true
+      required: true
       name: endpoint_ids
     - description: Tag to remove from specified endpoint_ids
       name: tag
+      required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
   dockerimage: demisto/python3:3.10.8.37753
