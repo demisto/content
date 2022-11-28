@@ -37,6 +37,8 @@ Test Collection Unit-Test cases
 - `M2` has a pack with support level != xsoar, and tests missing from conf.json -- should collect pack but not tests.
 - `M3` has a pack with support level != xsoar -- should collect pack but not tests.
 - `P` has a Test Playbook which uses a skipped integration - should not be collected.
+- `Q` has a single pack with two integrations, with mySkippedIntegration being skipped in conf.json,
+      and a folder named Samples (should be ignored).
 """
 
 
@@ -93,6 +95,7 @@ class MockerCases:
     M2 = CollectTestsMocker(TEST_DATA / 'M2')
     M3 = CollectTestsMocker(TEST_DATA / 'M3')
     P = CollectTestsMocker(TEST_DATA / 'P')
+    Q = CollectTestsMocker(TEST_DATA / 'Q')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -321,6 +324,15 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
      # (24) When content is moved between packs, both packs (old, new) should be collected
      (MockerCases.C, None, ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), None, XSOAR_BRANCH_ARGS, (),
       ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
+
+     # (25) Deprecated integration changes - should not be collected
+     (MockerCases.Q, (), (), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',), ()),
+
+     # (26) Deprecated integration changes - should not be collected
+     (MockerCases.Q, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+      ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
+       'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), ()),
      ))
 def test_branch(
         monkeypatch,

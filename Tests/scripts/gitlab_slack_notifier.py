@@ -84,7 +84,7 @@ def test_playbooks_results(artifact_folder, title):
     if failed_tests:
         field_failed_tests = {
             "title": f"{title} - Failed Tests - ({len(failed_tests)})",
-            "value": '\n'.join(failed_tests),
+            "value": ', '.join(failed_tests),
             "short": False
         }
         content_team_fields.append(field_failed_tests)
@@ -115,7 +115,7 @@ def unit_tests_results():
         failing_test_list = failing_tests.split('\n')
         slack_results.append({
             "title": f'{"Failed Unit Tests"} - ({len(failing_test_list)})',
-            "value": '\n'.join(failing_test_list),
+            "value": ', '.join(failing_test_list),
             "short": False
         })
     return slack_results
@@ -133,14 +133,14 @@ def bucket_upload_results(bucket_artifact_folder):
     if successful_packs:
         steps_fields += [{
             'title': f'Successful {marketplace_name} Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted([pack_name for pack_name in {*successful_packs}], key=lambda s: s.lower())),
             'short': False
         }]
 
     if failed_packs:
         steps_fields += [{
             'title': f'Failed {marketplace_name} Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
+            'value': ', '.join(sorted([pack_name for pack_name in {*failed_packs}], key=lambda s: s.lower())),
             'short': False
         }]
 
@@ -148,7 +148,7 @@ def bucket_upload_results(bucket_artifact_folder):
         # No need to indicate the marketplace name as private packs only upload to xsoar marketplace.
         steps_fields += [{
             'title': 'Successful Private Packs:',
-            'value': '\n'.join(sorted([pack_name for pack_name in {*successful_private_packs}],
+            'value': ', '.join(sorted([pack_name for pack_name in {*successful_private_packs}],
                                       key=lambda s: s.lower())),
             'short': False
         }]
@@ -228,9 +228,9 @@ def collect_pipeline_data(gitlab_client, project_id, pipeline_id) -> Tuple[str, 
 
 def construct_coverage_slack_msg():
     coverage_today = get_total_coverage(filename=os.path.join(ROOT_ARTIFACTS_FOLDER, 'coverage_report/coverage-min.json'))
-    yasterday = datetime.now() - timedelta(days=1)
-    coverage_yasterday = get_total_coverage(date=yasterday)
-    color = 'good' if coverage_today >= coverage_yasterday else 'danger'
+    yesterday = datetime.now() - timedelta(days=1)
+    coverage_yesterday = get_total_coverage(date=yesterday)
+    color = 'good' if coverage_today >= coverage_yesterday else 'danger'
     title = f'content code coverage: {coverage_today}'
 
     return {

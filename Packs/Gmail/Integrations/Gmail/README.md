@@ -147,7 +147,11 @@ After you successfully execute a command, a DBot message appears in the War Room
 - Reply an email using Gmail: **reply-mail**
 - Removers a delegate from a mailbox: **gmail-remove-delegated-mailbox**
 - Get details of a specific role: **gmail-get-role**
-- Creates a forwarding address.: **gmail-forwarding-address-add**
+- Creates a forwarding address: **gmail-forwarding-address-add**
+- Updates the disposition in a forwarding address: **gmail-forwarding-address-update**
+- Get a list of forwarding addresses: **gmail-forwarding-address-list**
+- Gets a forwarding address: **gmail-forwarding-address-get**
+- Removes a forwarding address: **gmail-forwarding-address-remove**
 - Create a custom "from" send-as alias: **gmail-send-as-add**
 
 
@@ -4930,50 +4934,6 @@ Get details of a specific role.
 >| 00tyjcwt49hs5nq | ROOT_APP_ADMIN |
 >| 00meukdy0whjvor | ROOT_APP_ADMIN |
 
-
-### gmail-forwarding-address-add
-***
-Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority.
-
-
-#### Base Command
-
-`gmail-forwarding-address-add`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| forwarding_email | An email address to which messages can be forwarded. | Required | 
-| user_id | The user's email address. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
-| Gmail.ForwardingAddress.userId | String | The user's email address. | 
-| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
-
-
-#### Command Example
-```!gmail-forwarding-address-add forwarding_email="user2@domain.io" user_id="user1@domain.io"```
-
-#### Context Example
-```
-{
-    "Gmail.ForwardingAddress": {
-        "forwardingEmail": "user2@domain.io",
-        "userId": "user1@domain.io",
-        "verificationStatus": "accepted"
-    }
-}
-```
-
-#### Human Readable Output
->Added forwarding address user2@domain.io for user1@domain.io with status accepted.
-
-
 ### gmail-send-as-add
 ***
 Creates a custom "from" send-as alias. If an SMTP MSA is specified, Gmail will attempt to connect to the SMTP service to validate the configuration before creating the alias. If ownership verification is required for the alias, a message will be sent to the email address and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. If a signature is provided, Gmail will sanitize the HTML before saving it with the alias.
@@ -5043,4 +5003,238 @@ This command is only available to service account clients who have been delegate
 >|Send As Email|Treat As Alias|
 >|---|---|
 >| user2@domain.io | false |
+
+
+### gmail-forwarding-address-add
+***
+Creates a forwarding address. If ownership verification is required, a message will be sent to the recipient and the resource's verification status will be set to pending; otherwise, the resource will be created with verification status set to accepted. This method is only available to service account clients that have been delegated domain-wide authority. The special value "me" can be used to indicate the authenticated user.
+
+
+#### Base Command
+
+`gmail-forwarding-address-add`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| forwarding_email | A comma-separated list of emails addresses to which messages can be forwarded. | Required | 
+| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.userId | String | The user's email address. | 
+| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
+
+#### Command example
+```!gmail-forwarding-address-add forwarding_email="test@gmail.com" user_id="me"```
+#### Context Example
+```json
+{
+    "Gmail": {
+        "ForwardingAddress": {
+            "forwardingEmail": "test@gmail.com",
+            "userId": "me",
+            "verificationStatus": "accepted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Forwarding addresses results for "me":
+>|forwardingEmail|userId|verificationStatus|
+>|---|---|---|
+>| test@gmail.com | me | accepted |
+
+
+### gmail-forwarding-address-update
+***
+Updates the auto-forwarding setting for the specified account. A verified forwarding address must be specified when auto-forwarding is enabled.
+
+
+#### Base Command
+
+`gmail-forwarding-address-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| disposition | The state that a message should be left in after it has been forwarded. Possible values are: archive, leaveInInbox, markRead, trash. | Optional | 
+| forwarding_email | A comma-separated list of emails addresses to which messages can be forwarded. | Required | 
+| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.userId | String | The user's email address. | 
+| Gmail.ForwardingAddress.Disposition | String | The state that a message should be left in after it has been forwarded. | 
+| Gmail.ForwardingAddress.Enabled | Boolean | Indicates whether all incoming mail is automatically forwarded to another address. | 
+
+#### Command example
+```!gmail-forwarding-address-update forwarding_email="test@gmail.com" user_id="me" disposition="archive"```
+#### Context Example
+```json
+{
+    "Gmail": {
+        "ForwardingAddress": {
+            "disposition": "archive",
+            "enabled": true,
+            "forwardingEmail": "test@gmail.com",
+            "userId": "me"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Forwarding addresses update results for "me":
+>|forwardingEmail|userId|disposition|enabled|
+>|---|---|---|---|
+>| test@gmail.com | me | archive | true |
+
+### gmail-forwarding-address-get
+***
+Gets the specified forwarding address or a list of the forwarding addresses for the specified account.
+
+
+#### Base Command
+
+`gmail-forwarding-address-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+| forwarding_email | The forwarding address to be retrieved. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.userId | String | The user email address or the user id, use the \!gmail-list-users command, in order to get the user id. | 
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+
+#### Command example
+```!gmail-forwarding-address-get forwarding_email="test@gmail.com" user_id="me"```
+#### Context Example
+```json
+{
+    "Gmail": {
+        "ForwardingAddress": {
+            "forwardingEmail": "test@gmail.com",
+            "userId": "me",
+            "verificationStatus": "accepted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Get forwarding address for: "me"
+>|forwardingEmail|verificationStatus|
+>|---|---|
+>| test@gmail.com | accepted |
+
+
+### gmail-forwarding-address-remove
+***
+Deletes the specified forwarding address and revokes any verification that may have been required. This method is only available to service account clients that have been delegated domain-wide authority.
+
+
+#### Base Command
+
+`gmail-forwarding-address-remove`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. | Required | 
+| forwarding_email | The forwarding address to be retrieved. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!gmail-forwarding-address-remove forwarding_email="test@gmail.com" user_id="me"```
+#### Human Readable Output
+
+>Forwarding address "test@gmail.com" for "me" was deleted successfully .
+
+### gmail-forwarding-address-list
+***
+Lists the forwarding addresses for the specified account.
+
+
+#### Base Command
+
+`gmail-forwarding-address-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | The user email address or the user id, use the !gmail-list-users command, in order to get the user id. The special value "me" can be used to indicate the authenticated user. | Required | 
+| limit | The maximum number of addresses to return. The default value is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gmail.ForwardingAddress.forwardingEmail | String | An email address to which messages can be forwarded. | 
+| Gmail.ForwardingAddress.verificationStatus | String | Indicates whether this address has been verified and is usable for forwarding. | 
+
+#### Command example
+```!gmail-forwarding-address-list user_id="me"```
+#### Context Example
+```json
+{
+    "Gmail": {
+        "ForwardingAddress": [
+            {
+                "forwardingEmail": "test@gmail.com",
+                "userId": "me",
+                "verificationStatus": "accepted"
+            },
+            {
+                "forwardingEmail": "test1@gmail.com",
+                "userId": "me",
+                "verificationStatus": "accepted"
+            },
+            {
+                "forwardingEmail": "test2@gmail.com",
+                "userId": "me",
+                "verificationStatus": "accepted"
+            },
+            {
+                "forwardingEmail": "test3@gmail.com",
+                "userId": "me",
+                "verificationStatus": "accepted"
+            },
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Forwarding addresses list for: "me"
+>|forwardingEmail|verificationStatus|
+>|---|---|
+>| test@gmail.com | accepted |
+>| test1@gmail.com | accepted |
+>| test2@gmail.com | accepted |
+>| test3@gmail.com | accepted |
+
 

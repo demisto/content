@@ -1,6 +1,6 @@
 import pytest
 from test_data import input_data
-
+import demistomock as demisto
 MOCK_MAIL_NO_LABELS = {
     u'internalDate': u'1572251535000',
     u'historyId': u'249781',
@@ -457,3 +457,145 @@ def test_emails_to_entry(title, raw_emails, format_data, mailbox, expected_resul
     result = emails_to_entry(title, raw_emails, format_data, mailbox)
     assert result.get("Contents") == expected_result.get("except_contents")
     assert result.get("HumanReadable") == expected_result.get("expected_human_readable")
+
+
+def test_forwarding_address_list_command(mocker):
+    """
+    Tests forwarding_address_list function.
+        Given:
+             - demisto arg user_id.
+        When:
+            - executing forwarding_address_list function.
+        Then:
+            -the raw_response,outputs and readable_output are valid.
+    """
+
+    from Gmail import forwarding_address_list_command
+    import Gmail
+    mocker.patch.object(demisto, 'args', return_value={'user_id': '111', 'forwarding_email': 'test@gmail.com'})
+    mocker.patch.object(Gmail, 'forwarding_address_list',
+                        return_value={'forwardingAddresses': [{'forwardingEmail': 'test1@gmail.com',
+                                                               'verificationStatus': 'accepted'},
+                                                              {'forwardingEmail': 'test2@gmail.com',
+                                                              'verificationStatus': 'accepted'}]})
+
+    result = forwarding_address_list_command()
+    assert result.raw_response == {'forwardingAddresses': [{'forwardingEmail': 'test1@gmail.com',
+                                                            'userId': '111',
+                                                            'verificationStatus': 'accepted'},
+                                                           {'forwardingEmail': 'test2@gmail.com',
+                                                            'userId': '111',
+                                                           'verificationStatus': 'accepted'}]}
+    assert result.outputs == [{'forwardingEmail': 'test1@gmail.com', 'userId': '111', 'verificationStatus': 'accepted'},
+                              {'forwardingEmail': 'test2@gmail.com', 'userId': '111', 'verificationStatus': 'accepted'}]
+    assert result.readable_output == '### Forwarding addresses list for: "111"\n|forwardingEmail|\
+verificationStatus|\n|---|---|\n| test1@gmail.com | accepted |\n| test2@gmail.com | accepted |\n'
+
+
+def test_forwarding_address_remove_command(mocker):
+    """
+    Tests forwarding_address_remove_command function.
+        Given:
+             - demisto arg user_id and forwarding_email.
+        When:
+            - executing forwarding_address_remove_command function.
+        Then:
+            -the raw_response,outputs and readable_output are valid.
+    """
+
+    from Gmail import forwarding_address_remove_command
+    import Gmail
+    mocker.patch.object(demisto, 'args', return_value={'user_id': '111', 'forwarding_email': 'test@gmail.com'})
+    mocker.patch.object(Gmail, 'forwarding_address_remove', return_value='')
+
+    result = forwarding_address_remove_command()
+    assert result.readable_output == 'Forwarding address "test@gmail.com" for "111" was deleted successfully .'
+
+
+@pytest.mark.parametrize('return_value_from_mocker_args, expected_result', [
+    ({'user_id': '111', 'forwarding_email': 'test@gmail.com'},
+     input_data.expected_result_forwarding_address_get_command_1),
+    ({'user_id': '111'},
+     input_data.expected_result_forwarding_address_get_command_2)
+])
+def test_forwarding_address_get_command(mocker, return_value_from_mocker_args, expected_result):
+    """
+    Tests forwarding_address_get_command function.
+        Given:
+             - demisto arg user_id.
+        When:
+            - executing forwarding_address_list function.
+        Then:
+            -the raw_response,outputs and readable_output are valid.
+    """
+
+    from Gmail import forwarding_address_get_command
+    import Gmail
+    mocker.patch.object(demisto, 'args', return_value=return_value_from_mocker_args)
+    mocker.patch.object(Gmail, 'forwarding_address_get',
+                        return_value={'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted'})
+    mocker.patch.object(Gmail, 'forwarding_address_list',
+                        return_value={'forwardingAddresses': [{'forwardingEmail': 'test1@gmail.com',
+                                                               'verificationStatus': 'accepted'},
+                                                              {'forwardingEmail': 'test2@gmail.com',
+                                                              'verificationStatus': 'accepted'},
+                                                              {'forwardingEmail': 'test3@gmail.com',
+                                                               'verificationStatus': 'accepted'}]})
+
+    result = forwarding_address_get_command()
+    assert result.raw_response == expected_result.get("raw_response")
+    assert result.outputs == expected_result.get("outputs")
+    assert result.readable_output == expected_result.get("readable_output")
+
+
+def test_forwarding_address_add(mocker):
+    """
+    Tests forwarding_address_get_command function.
+        Given:
+             - demisto arg user_id.
+        When:
+            - executing forwarding_address_list function.
+        Then:
+            -the raw_response,outputs and readable_output are valid.
+    """
+
+    from Gmail import forwarding_address_add_command
+    import Gmail
+    mocker.patch.object(Gmail, 'forwarding_address_add', return_value=({'forwardingEmail': 'test@gmail.com',
+                                                                        'verificationStatus': 'accepted', 'userId': 'me'},
+                                                                       False,
+                                                                       {'forwardingEmail': 'test@gmail.com',
+                                                                        'errorMessage': '', 'userId': 'me'}))
+    mocker.patch.object(demisto, 'args', return_value={'user_id': 'me', 'forwarding_email': 'test@gmail.com'})
+    result = forwarding_address_add_command()[0]
+    assert result.outputs == [{'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': 'me'}]
+    assert result.readable_output == '### Forwarding addresses results for "me":\n|forwardingEmail|userId|verificationStatus|\n|\
+---|---|---|\n| test@gmail.com | me | accepted |\n'
+    assert result.raw_response == [{'forwardingEmail': 'test@gmail.com', 'verificationStatus': 'accepted', 'userId': 'me'}]
+
+
+def test_forwarding_address_update(mocker):
+    """
+    Tests forwarding_address_get_command function.
+        Given:
+             - demisto arg user_id.
+        When:
+            - executing forwarding_address_list function.
+        Then:
+            -the raw_response,outputs and readable_output are valid.
+    """
+
+    from Gmail import forwarding_address_update_command
+    import Gmail
+    mocker.patch.object(Gmail, 'forwarding_address_update', return_value=({'enabled': True, 'emailAddress': 'test@gmail.com',
+                                                                           'disposition': 'markRead', 'userId': 'me'},
+                                                                          None, {'emailAddress': 'test@gmail.com',
+                                                                          'errorMessage': None, 'userId': 'me'}))
+    mocker.patch.object(demisto, 'args', return_value={'user_id': 'me', 'forwarding_email': 'test@gmail.com',
+                                                       'disposition': 'markRead'})
+    result = forwarding_address_update_command()[0]
+    assert result.outputs == [{'enabled': True, 'forwardingEmail': 'test@gmail.com', 'disposition': 'markRead', 'userId': 'me'}]
+    assert result.readable_output == '### Forwarding addresses update results for "me":\n|forwardingEmail|userId|disposition|\
+enabled|\n|---|---|---|---|\n| test@gmail.com | me | markRead | true |\n'
+    assert result.raw_response == [{'enabled': True, 'forwardingEmail': 'test@gmail.com', 'disposition':
+                                    'markRead', 'userId': 'me'}]
