@@ -5,6 +5,7 @@
   "CortexAttackSurfaceManagement",
   "CommonScripts",
   "CommonPlaybooks",
+  "CommonTypes",
   "ServiceNow",
   "Tenable_io",
   "AWS-Route53",
