@@ -365,7 +365,7 @@ inputs:
   playbookInputQuery:
 - key: ListValues
   value: {}
-  required: true
+  required: false
   description: If the list does not exist or is empty, it will be created with these values. In case this input is empty, the default value would be "{}".
   playbookInputQuery:
 outputs:
