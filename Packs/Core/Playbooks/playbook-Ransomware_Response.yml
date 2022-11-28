@@ -913,21 +913,53 @@ tasks:
     continueonerrortype: ""
   "133":
     id: "133"
-    taskid: 5912fe9e-9eb0-4105-8548-8b0c35afcdec
+    taskid: d7257ff3-fcc8-4128-8482-3a7e19bcf935
     type: playbook
     task:
-      id: 5912fe9e-9eb0-4105-8548-8b0c35afcdec
+      id: d7257ff3-fcc8-4128-8482-3a7e19bcf935
       version: -1
       name: Enrichment for Verdict
+      description: This playbook checks prior alert closing reasons and performs enrichment
+        and prevalence checks on different IOC types. It then  returns the information
+        needed to establish the alert's verdict.
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then  returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - "134"
+    scriptarguments:
+      CloseReason:
+        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved -
+          Known Issue
+      Domain:
+        complex:
+          root: alert
+          accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      IP:
+        complex:
+          root: alert
+          accessor: hostip
+      URL:
+        complex:
+          root: alert
+          accessor: url
+      User:
+        complex:
+          root: alert
+          accessor: username
+      query:
+        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip})
+          and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+      threshold:
+        simple: "2"
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -947,32 +979,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      CloseReason:
-        simple: Resolved - False Positive,Resolved - Duplicate Incident,Resolved - Known Issue
-      Domain:
-        complex:
-          root: alert
-          accessor: domainname
-      FileSHA256:
-        complex:
-          root: alert
-          accessor: initiatorsha256
-      IP:
-        simple: 8.8.8.8
-      URL:
-        complex:
-          root: alert
-          accessor: url
-      User:
-        complex:
-          root: alert
-          accessor: username
-      query:
-        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
-      threshold:
-        simple: "2"
-    continueonerrortype: ""
   "134":
     id: "134"
     taskid: 909fea80-f6ff-4b07-820c-642e7aea6404
