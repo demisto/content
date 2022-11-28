@@ -6,24 +6,24 @@ from CommonServerUserPython import *
 
 
 def read_file(args):
-    max_file_size = demisto.get(args, 'maxFileSize')
-    if max_file_size:
-        max_file_size = int(max_file_size)
+    maxFileSize = demisto.get(args, 'maxFileSize')
+    if maxFileSize:
+        maxFileSize = int(maxFileSize)
     else:
-        max_file_size = 1024 ** 2
+        maxFileSize = 1024 ** 2
 
     entry_id = args.get('entryID')
     input_encoding = args.get('encoding') or None
     output_data_type = args.get('outputDataType') or 'raw'
     output_meta_data = argToBoolean(args.get('outputMetaData') or 'false')
 
-    file_path = execute_command('getFilePath', {'id': args.get('entryID')})['path']
+    file_path = execute_command('getFilePath', {'id': entry_id})['path']
     file_size = os.path.getsize(file_path)
 
     with open(file_path,
               'rb' if input_encoding == 'binary' else 'r',
               encoding=None if input_encoding == 'binary' else input_encoding) as f:
-        data = f.read(max_file_size)
+        data = f.read(maxFileSize)
         eof = len(f.read(1)) == 0
 
     if not output_meta_data and len(data) == 0:
