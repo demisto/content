@@ -2338,16 +2338,15 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
 | PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
 
-
 #### Command example
 ```!xdr-get-alerts severity="high" alert_action_status="detected (reported)" sort_field="source_insert_ts" offset="0" limit="1"```
 #### Context Example
 ```json
 {
-        "PaloAltoNetworksXDR": {
-            "Alert": {
-                "action_country": [
-                    "UNKNOWN"
+    "PaloAltoNetworksXDR": {
+        "Alert": {
+            "action_country": [
+                "UNKNOWN"
             ],
             "action_external_hostname": null,
             "action_file_macro_sha256": null,
@@ -2361,19 +2360,19 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "action_process_causality_id": null,
             "action_process_image_command_line": null,
             "action_process_image_md5": [
-                    "ddcd2be64212b10c3cf84496a879b098"
+                "ddcd2be64212b10c3cf84496a879b098"
             ],
             "action_process_image_name": null,
             "action_process_image_path": [
-                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                "C:\Users\administrator\Downloads\svchost.exe"
             ],
             "action_process_image_sha256": null,
             "action_process_instance_id": null,
             "action_process_os_pid": [
-                    5172
+                5172
             ],
             "action_process_signature_status": [
-                    "SIGNATURE_UNAVAILABLE"
+                "SIGNATURE_UNAVAILABLE"
             ],
             "action_process_signature_vendor": null,
             "action_process_user_sid": null,
@@ -2389,53 +2388,53 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "actor_causality_id": null,
             "actor_effective_user_sid": null,
             "actor_effective_username": [
-                    "env1.local\\\\administrator"
+                "env1.local\administrator"
             ],
             "actor_process_causality_id": [
-                    "AdhDcc/XHpAAABQ0AAAAAA=="
+                "AdhDcc/XHpAAABQ0AAAAAA=="
             ],
             "actor_process_command_line": [
-                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe\\"
+                "\"C:\Users\administrator\Downloads\svchost.exe\" "
             ],
             "actor_process_execution_time": [
-                    1648560911622
+                1648560911622
             ],
             "actor_process_image_md5": [
-                    "ddcd2be64212b10c3cf84496a879b098"
+                "ddcd2be64212b10c3cf84496a879b098"
             ],
             "actor_process_image_name": [
-                    "svchost.exe"
+                "svchost.exe"
             ],
             "actor_process_image_path": [
-                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                "C:\Users\administrator\Downloads\svchost.exe"
             ],
             "actor_process_image_sha256": [
-                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
             ],
             "actor_process_instance_id": [
-                    "AdhDcc/XHpAAABQ0AAAAAA=="
+                "AdhDcc/XHpAAABQ0AAAAAA=="
             ],
             "actor_process_os_pid": [
-                    5172
+                5172
             ],
             "actor_process_signature_status": [
-                    "SIGNATURE_UNSIGNED"
+                "SIGNATURE_UNSIGNED"
             ],
             "actor_process_signature_vendor": null,
             "actor_thread_thread_id": [
-                    2468
+                2468
             ],
             "agent_data_collection_status": true,
             "agent_device_domain": "env1.local",
-            "agent_fqdn": "AGENTTESTFOO.env1.local",
+            "agent_fqdn": "DC1ENV1APC02.env1.local",
             "agent_host_boot_time": [
-                    0
+                0
             ],
-            "agent_hostname": "AGENTTESTFOO",
+            "agent_hostname": "DC1ENV1APC02",
             "agent_id": "63f88a9e797440ccac742a6adc926fb2",
             "agent_install_type": "STANDARD",
             "agent_ip_addresses": [
-                    "10.111.230.11"
+                "10.208.230.76"
             ],
             "agent_ip_addresses_v6": null,
             "agent_is_vdi": null,
@@ -2453,7 +2452,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "alert_sub_type": null,
             "alert_type": "Unclassified",
             "association_strength": [
-                    50
+                50
             ],
             "attack_techniques": null,
             "attempt_counter": 0,
@@ -2463,45 +2462,45 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "caller_ip": null,
             "case_id": 48,
             "causality_actor_causality_id": [
-                    "AdhDcc/XHpAAABQ0AAAAAA=="
+                "AdhDcc/XHpAAABQ0AAAAAA=="
             ],
             "causality_actor_process_command_line": [
-                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe\\"
+                "\"C:\Users\administrator\Downloads\svchost.exe\" "
             ],
             "causality_actor_process_execution_time": [
-                    1648560911622
+                1648560911622
             ],
             "causality_actor_process_image_md5": null,
             "causality_actor_process_image_name": [
-                    "svchost.exe"
+                "svchost.exe"
             ],
             "causality_actor_process_image_path": [
-                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                "C:\Users\administrator\Downloads\svchost.exe"
             ],
             "causality_actor_process_image_sha256": [
-                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
             ],
             "causality_actor_process_instance_id": [
-                    "AdhDcc/XHpAAABQ0AAAAAA=="
+                "AdhDcc/XHpAAABQ0AAAAAA=="
             ],
             "causality_actor_process_os_pid": [
-                    5172
+                5172
             ],
             "causality_actor_process_signature_status": [
-                    "SIGNATURE_UNSIGNED"
+                "SIGNATURE_UNSIGNED"
             ],
             "causality_actor_process_signature_vendor": null,
             "cloud_provider": null,
             "cluster_name": null,
             "container_id": null,
             "contains_featured_host": [
-                    "NO"
+                "NO"
             ],
             "contains_featured_ip": [
-                    "NO"
+                "NO"
             ],
             "contains_featured_user": [
-                    "NO"
+                "NO"
             ],
             "deduplicate_tokens": null,
             "detection_modules": null,
@@ -2521,7 +2520,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "dst_agent_hostname": null,
             "dst_agent_id": null,
             "dst_agent_os_type": [
-                    "NO_HOST"
+                "NO_HOST"
             ],
             "dst_association_strength": null,
             "dst_causality_actor_process_execution_time": null,
@@ -2529,46 +2528,46 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "dst_os_actor_process_os_pid": null,
             "dynamic_fields": {
                 "action_country": [
-                        "UNKNOWN"
+                    "UNKNOWN"
                 ],
                 "action_process_signature_status": [
-                        "SIGNATURE_UNAVAILABLE"
+                    "SIGNATURE_UNAVAILABLE"
                 ],
                 "activated": "0001-01-01T00:00:00Z",
                 "activatingingUserId": "",
                 "actor_effective_username": [
-                        "env1.local\\\\administrator"
+                    "env1.local\administrator"
                 ],
                 "actor_process_command_line": [
-                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                    "\"C:\Users\administrator\Downloads\svchost.exe\" "
                 ],
                 "actor_process_image_md5": [
-                        "ddcd2be64212b10c3cf84496a879b098"
+                    "ddcd2be64212b10c3cf84496a879b098"
                 ],
                 "actor_process_image_name": [
-                        "svchost.exe"
+                    "svchost.exe"
                 ],
                 "actor_process_image_path": [
-                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                    "C:\Users\administrator\Downloads\svchost.exe"
                 ],
                 "actor_process_image_sha256": [
-                        "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
                 ],
                 "actor_process_os_pid": [
-                        5172
+                    5172
                 ],
                 "actor_process_signature_status": [
-                        "SIGNATURE_UNSIGNED"
+                    "SIGNATURE_UNSIGNED"
                 ],
                 "actor_thread_thread_id": [
-                        2468
+                    2468
                 ],
                 "agent_device_domain": "env1.local",
-                "agent_fqdn": "AGENTTESTFOO.env1.local",
-                "agent_hostname": "AGENTTESTFOO",
-                "agent_id": "63f88a9e797440ccac742a611111111",
+                "agent_fqdn": "DC1ENV1APC02.env1.local",
+                "agent_hostname": "DC1ENV1APC02",
+                "agent_id": "63f88a9e797440ccac742a6adc926fb2",
                 "agent_ip_addresses": [
-                    "10.111.230.11"
+                    "10.208.230.76"
                 ],
                 "agent_os_sub_type": "10.0.10240",
                 "agent_os_type": "AGENT_OS_WINDOWS",
@@ -2581,34 +2580,34 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
                 "attachment": null,
                 "category": "",
                 "causality_actor_causality_id": [
-                        "AdhDcc/XHpAAABQ0AAAAAA=="
+                    "AdhDcc/XHpAAABQ0AAAAAA=="
                 ],
                 "causality_actor_process_command_line": [
-                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                    "\"C:\Users\administrator\Downloads\svchost.exe\" "
                 ],
                 "causality_actor_process_image_name": [
-                        "svchost.exe"
+                    "svchost.exe"
                 ],
                 "causality_actor_process_image_path": [
-                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                    "C:\Users\administrator\Downloads\svchost.exe"
                 ],
                 "causality_actor_process_image_sha256": [
-                        "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
                 ],
                 "causality_actor_process_signature_status": [
-                        "SIGNATURE_UNSIGNED"
+                    "SIGNATURE_UNSIGNED"
                 ],
                 "closeReason": "",
                 "closed": "0001-01-01T00:00:00Z",
                 "closingUserId": "",
                 "contains_featured_host": [
-                        "NO"
+                    "NO"
                 ],
                 "contains_featured_ip": [
-                        "NO"
+                    "NO"
                 ],
                 "contains_featured_user": [
-                        "NO"
+                    "NO"
                 ],
                 "dbotCurrentDirtyFields": null,
                 "dbotDirtyFields": null,
@@ -2620,11 +2619,11 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
                 "droppedCount": 0,
                 "dueDate": "0001-01-01T00:00:00Z",
                 "event_type": [
-                        1
+                    1
                 ],
                 "feedBased": false,
                 "fw_is_phishing": [
-                        "NOT_AVAILABLE"
+                    "NOT_AVAILABLE"
                 ],
                 "internal_id": 6887,
                 "investigationId": "6887",
@@ -2641,19 +2640,19 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
                     "TA0002 - Execution"
                 ],
                 "mitre_technique_id_and_name": [
-                        "T1036.005 - Masquerading: Match Legitimate Name or Location"
+                    "T1036.005 - Masquerading: Match Legitimate Name or Location"
                 ],
                 "module_id": [
-                        "Behavioral Threat Protection"
+                    "Behavioral Threat Protection"
                 ],
                 "notifyTime": "2022-09-21T06:45:17.746532863Z",
                 "occurred": "0001-01-01T00:00:00Z",
                 "openDuration": 0,
                 "os_actor_process_signature_status": [
-                        "SIGNATURE_UNAVAILABLE"
+                    "SIGNATURE_UNAVAILABLE"
                 ],
                 "os_actor_thread_thread_id": [
-                        2468
+                    2468
                 ],
                 "phase": "",
                 "playbookId": "T1036 - Masquerading",
@@ -2672,10 +2671,10 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "event_id": null,
             "event_sub_type": null,
             "event_timestamp": [
-                    1648560949290
+                1648560949290
             ],
             "event_type": [
-                    1
+                1
             ],
             "events_length": 1,
             "external_id": "d4c2983dfab74741b087dce1bbffd8d5",
@@ -2694,7 +2693,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "fw_interface_from": null,
             "fw_interface_to": null,
             "fw_is_phishing": [
-                    "NOT_AVAILABLE"
+                "NOT_AVAILABLE"
             ],
             "fw_misc": null,
             "fw_rule": null,
@@ -2780,12 +2779,13 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
     }
 }
 ```
+
 #### Human Readable Output
+
 >### Alerts
 >|Action|Alert ID|Category|Description|Detection Timestamp|Host IP|Host Name|Name|Severity|
 >|---|---|---|---|---|---|---|---|---|
->| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.111.230.11 | AGENTTESTFOO | Behavioral Threat | SEV_040_HIGH |
-'
+>| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.208.230.76 | DC1ENV1APC02 | Behavioral Threat | SEV_040_HIGH |
 
 
 ### xdr-get-contributing-event
