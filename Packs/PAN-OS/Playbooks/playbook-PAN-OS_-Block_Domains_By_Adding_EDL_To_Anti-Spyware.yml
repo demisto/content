@@ -442,12 +442,12 @@ view: |-
 inputs:
 - key: EDL_URL
   value: {}
-  required: true
+  required: false
   description: The URL from which to pull the EDL.
   playbookInputQuery:
 - key: Add_To_Existing_PAN-OS_EDL
   value: {}
-  required: true
+  required: false
   description: input "true" to use existing PAN-OS EDL
   playbookInputQuery:
 - key: PAN-OS_EDL_Name
