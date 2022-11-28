@@ -10,6 +10,7 @@ import pytz  # type: ignore[import]
 import requests
 import splunklib.client as client
 import splunklib.results as results
+from splunklib.data import Record
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from splunklib.binding import AuthenticationError, HTTPError, namespace
@@ -313,7 +314,7 @@ def build_fetch_query(dem_params):
     return fetch_query
 
 
-def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
+def fetch_notables(service: client.Service, mapper, cache_object=None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
@@ -407,7 +408,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
     demisto.setLastRun(last_run_data)
 
 
-def fetch_incidents(service, mapper):
+def fetch_incidents(service: client.Service, mapper):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
         if not demisto.getLastRun() and integration_context:
@@ -882,7 +883,7 @@ def get_drilldown_timeframe(notable_data, raw):
     return task_status, earliest_offset, latest_offset
 
 
-def drilldown_enrichment(service, notable_data, num_enrichment_events):
+def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events):
     """ Performs a drilldown enrichment.
 
     Args:
@@ -924,7 +925,7 @@ def drilldown_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
-def identity_enrichment(service, notable_data, num_enrichment_events):
+def identity_enrichment(service: client.Service, notable_data, num_enrichment_events):
     """ Performs an identity enrichment.
 
     Args:
@@ -955,7 +956,7 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
-def asset_enrichment(service, notable_data, num_enrichment_events):
+def asset_enrichment(service: client.Service, notable_data, num_enrichment_events):
     """ Performs an asset enrichment.
 
     Args:
@@ -987,7 +988,7 @@ def asset_enrichment(service, notable_data, num_enrichment_events):
     return job
 
 
-def handle_submitted_notables(service, incidents, cache_object, mapper):
+def handle_submitted_notables(service: client.Service, incidents, cache_object, mapper):
     """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
      it moves to the next submitted notable.
 
@@ -1015,7 +1016,7 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
         demisto.debug("Handled {}/{} notables.".format(len(handled_notables), total))
 
 
-def handle_submitted_notable(service, notable, enrichment_timeout):
+def handle_submitted_notable(service: client.Service, notable, enrichment_timeout):
     """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
 
     Args:
@@ -1059,7 +1060,7 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
     return task_status
 
 
-def submit_notables(service, incidents, cache_object, mapper):
+def submit_notables(service: client.Service, incidents, cache_object, mapper):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
@@ -1096,7 +1097,7 @@ def submit_notables(service, incidents, cache_object, mapper):
                       'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
-def submit_notable(service, notable, num_enrichment_events):
+def submit_notable(service: client.Service, notable, num_enrichment_events):
     """ Submits fetched notable to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
      If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
      integration context for the next fetch to handle the submitted notable.
@@ -1125,7 +1126,7 @@ def submit_notable(service, notable, num_enrichment_events):
     return notable.submitted()
 
 
-def run_enrichment_mechanism(service, integration_context, mapper):
+def run_enrichment_mechanism(service: client.Service, integration_context, mapper):
     """ Execute the enriching fetch mechanism
     1. We first handle submitted notables that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched notables, we fetch new notables
@@ -1215,6 +1216,8 @@ def get_last_update_in_splunk_time(last_update):
 
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    if not last_update_utc_datetime:
+        raise Exception(f'Could not parse the last update time: {last_update}')
     params = demisto.params()
 
     try:
@@ -1227,7 +1230,7 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
-def get_remote_data_command(service, args, close_incident, mapper):
+def get_remote_data_command(service: client.Service, args, close_incident, mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
@@ -1278,7 +1281,7 @@ def get_remote_data_command(service, args, close_incident, mapper):
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
-def get_modified_remote_data_command(service, args):
+def get_modified_remote_data_command(service: client.Service, args):
     """ Gets the list of all notables ids that have change since a given time
 
     Args:
@@ -1304,7 +1307,7 @@ def get_modified_remote_data_command(service, args):
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 
-def update_remote_system_command(args, params, service, auth_token, mapper):
+def update_remote_system_command(args, params, service: client.Service, auth_token, mapper):
     """ Pushes changes in XSOAR incident into the corresponding notable event in Splunk Server.
 
     Args:
@@ -1391,7 +1394,7 @@ def create_mapping_dict(total_parsed_results, type_field):
     return types_map
 
 
-def get_mapping_fields_command(service, mapper):
+def get_mapping_fields_command(service: client.Service, mapper):
     # Create the query to get unique objects
     # The logic is identical to the 'fetch_incidents' command
     type_field = demisto.params().get('type_field', 'source')
@@ -1629,7 +1632,7 @@ class ResponseReaderWrapper(io.RawIOBase):
         return len(data)
 
 
-def get_current_splunk_time(splunk_service):
+def get_current_splunk_time(splunk_service: client.Service):
     t = datetime.utcnow() - timedelta(days=3)
     time = t.strftime(SPLUNK_TIME_FORMAT)
     kwargs_oneshot = {'count': 1, 'earliest_time': time}
@@ -2043,7 +2046,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def splunk_search_command(service):
+def splunk_search_command(service: client.Service):
     args = demisto.args()
 
     query = build_search_query(args)
@@ -2105,7 +2108,7 @@ def splunk_search_command(service):
     )
 
 
-def splunk_job_create_command(service):
+def splunk_job_create_command(service: client.Service):
     query = demisto.args()['query']
     app = demisto.args().get('app', '')
     if not query.startswith('search'):
@@ -2127,7 +2130,7 @@ def splunk_job_create_command(service):
     })
 
 
-def splunk_results_command(service):
+def splunk_results_command(service: client.Service):
     res = []
     sid = demisto.args().get('sid', '')
     limit = int(demisto.args().get('limit', '100'))
@@ -2171,7 +2174,7 @@ def parse_time_to_minutes():
     return_error('Error: Invalid time unit.')
 
 
-def splunk_get_indexes_command(service):
+def splunk_get_indexes_command(service: client.Service):
     indexes = service.indexes  # type: ignore
     indexesNames = []
     for index in indexes:
@@ -2181,7 +2184,7 @@ def splunk_get_indexes_command(service):
                      'HumanReadable': tableToMarkdown("Splunk Indexes names", indexesNames, '')})
 
 
-def splunk_submit_event_command(service):
+def splunk_submit_event_command(service: client.Service):
     try:
         index = service.indexes[demisto.args()['index']]  # type: ignore
     except KeyError:
@@ -2361,12 +2364,12 @@ def replace_keys(data):
     return data
 
 
-def kv_store_collection_create(service):
+def kv_store_collection_create(service: client.Service):
     service.kvstore.create(demisto.args()['kv_store_name'])
     return_outputs("KV store collection {} created successfully".format(service.namespace['app']), {}, {})
 
 
-def kv_store_collection_config(service):
+def kv_store_collection_config(service: client.Service):
     args = demisto.args()
     app = service.namespace['app']
     kv_store_collection_name = args['kv_store_collection_name']
@@ -2384,20 +2387,21 @@ def kv_store_collection_config(service):
     return_outputs("KV store collection {} configured successfully".format(app), {}, {})
 
 
-def batch_kv_upload(kv_data_service_client, json_data):
+def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str):
     if json_data.startswith('[') and json_data.endswith(']'):
-        return json.loads(kv_data_service_client._post(
-            'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data).body.read().decode('utf-8'))
+        record: Record = kv_data_service_client._post(
+            'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data.encode('utf-8'))
+        return dict(record.items())
     elif json_data.startswith('{') and json_data.endswith('}'):
-        return kv_data_service_client.insert(json_data)
+        return kv_data_service_client.insert(json_data.encode('utf-8'))
     else:
         raise DemistoException('kv_store_data argument should be in json format. '
                                '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
 
 
-def kv_store_collection_add_entries(service):
+def kv_store_collection_add_entries(service: client.Service):
     args = demisto.args()
-    kv_store_data = args.get('kv_store_data', '').encode('utf-8')
+    kv_store_data = args.get('kv_store_data', '')
     kv_store_collection_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
     batch_kv_upload(service.kvstore[kv_store_collection_name].data, kv_store_data)
@@ -2414,7 +2418,7 @@ def kv_store_collection_add_entries(service):
     return_outputs("Data added to {}".format(kv_store_collection_name), timeline=timeline)
 
 
-def kv_store_collections_list(service):
+def kv_store_collections_list(service: client.Service):
     app_name = service.namespace['app']
     names = list([x.name for x in service.kvstore.iter()])
     human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
@@ -2422,7 +2426,7 @@ def kv_store_collections_list(service):
     return_outputs(human_readable, entry_context, entry_context)
 
 
-def kv_store_collection_data_delete(service):
+def kv_store_collection_data_delete(service: client.Service):
     args = demisto.args()
     kv_store_collection_name = args['kv_store_collection_name'].split(',')
     for store in kv_store_collection_name:
@@ -2430,14 +2434,14 @@ def kv_store_collection_data_delete(service):
     return_outputs('The values of the {} were deleted successfully'.format(args['kv_store_collection_name']), {}, {})
 
 
-def kv_store_collection_delete(service):
+def kv_store_collection_delete(service: client.Service):
     kv_store_names = demisto.args()['kv_store_name']
     for store in kv_store_names.split(','):
         service.kvstore[store].delete()
     return_outputs('The following KV store {} were deleted successfully'.format(kv_store_names), {}, {})
 
 
-def build_kv_store_query(kv_store, args):
+def build_kv_store_query(kv_store: client.KVStoreCollection, args):
     if 'key' in args and 'value' in args:
         _type = get_key_type(kv_store, args['key'])
         args['value'] = _type(args['value']) if _type else args['value']
@@ -2448,7 +2452,7 @@ def build_kv_store_query(kv_store, args):
         return args.get('query', '{}')
 
 
-def kv_store_collection_data(service):
+def kv_store_collection_data(service: client.Service):
     args = demisto.args()
     stores = args['kv_store_collection_name'].split(',')
 
@@ -2464,11 +2468,11 @@ def kv_store_collection_data(service):
             return_outputs(get_kv_store_config(store), {}, {})
 
 
-def kv_store_collection_delete_entry(service):
+def kv_store_collection_delete_entry(service: client.Service):
     args = demisto.args()
     store_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
-    store = service.kvstore[store_name]
+    store: client.KVStoreCollection = service.kvstore[store_name]
     query = build_kv_store_query(store, args)
     store_res = next(get_store_data(service))
     if indicator_path:
@@ -2484,7 +2488,7 @@ def kv_store_collection_delete_entry(service):
     return_outputs('The values of the {} were deleted successfully'.format(store_name), timeline=timeline)
 
 
-def check_error(service, args):
+def check_error(service: client.Service, args):
     app = args.get('app_name')
     store_name = args.get('kv_store_collection_name')
     if app not in service.apps:
@@ -2493,7 +2497,7 @@ def check_error(service, args):
         raise DemistoException('KV Store not found')
 
 
-def get_key_type(kv_store, _key):
+def get_key_type(kv_store: client.KVStoreCollection, _key):
     keys_and_types = get_keys_and_types(kv_store)
     types = {
         'number': float,
@@ -2508,7 +2512,7 @@ def get_key_type(kv_store, _key):
     return types.get(val_type)
 
 
-def get_keys_and_types(kv_store):
+def get_keys_and_types(kv_store: client.KVStoreCollection):
     keys = kv_store.content()
     for key_name in list(keys.keys()):
         if not (key_name.startswith('field.') or key_name.startswith('index.')):
@@ -2516,7 +2520,7 @@ def get_keys_and_types(kv_store):
     return keys
 
 
-def get_kv_store_config(kv_store):
+def get_kv_store_config(kv_store: client.KVStoreCollection):
     keys = get_keys_and_types(kv_store)
     readable = ['#### configuration for {} store'.format(kv_store.name),
                 '| field name | type |',
@@ -2526,7 +2530,7 @@ def get_kv_store_config(kv_store):
     return '\n'.join(readable)
 
 
-def get_auth_session_key(service):
+def get_auth_session_key(service: client.Service):
     """
     Get the session key or token for POST request based on whether the Splunk basic auth are true or not
     """
@@ -2544,12 +2548,12 @@ def extract_indicator(indicator_path, _dict_objects):
     return indicators
 
 
-def get_store_data(service):
+def get_store_data(service: client.Service):
     args = demisto.args()
     stores = args['kv_store_collection_name'].split(',')
 
     for store in stores:
-        store = service.kvstore[store]
+        store: client.KVStoreCollection = service.kvstore[store]
         query = build_kv_store_query(store, args)
         if isinstance(query, str):
             query = {'query': query}
