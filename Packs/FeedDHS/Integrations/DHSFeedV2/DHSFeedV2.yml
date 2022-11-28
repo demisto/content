@@ -100,7 +100,7 @@ configuration:
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: 'Determines whether the feed will fetch indicators from all time. It is discouraged to use this method, and using it will cause the first fetch to take a long time.'
+- additionalinfo: 'Determines whether the feed will fetch indicators from all time. It is discouraged to use this method. See "help" for more information.'
   defaultvalue: 'false'
   display: Fetch From Feed Start
   hidden: false
