@@ -416,7 +416,7 @@ class Client(BaseClient):
 
                 if access_token := res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
-                    expiry_time += res.get('expires_in') - 10
+                    expiry_time += res.get('expires_in', 0) - 10
                     new_token = {
                         tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
