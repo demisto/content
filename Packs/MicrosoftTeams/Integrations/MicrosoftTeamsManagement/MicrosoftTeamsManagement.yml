@@ -5,13 +5,11 @@ commonfields:
 configuration:
 - defaultvalue: 3307a0ab-612c-47af-b3b5-8208247562db
   display: Application ID
-  hidden: false
   name: app_id
   required: true
   type: 0
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
-  hidden: false
   name: azure_ad_endpoint
   options:
   - https://login.microsoftonline.com
@@ -25,10 +23,35 @@ configuration:
   name: insecure
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  defaultvalue: "false"
+- name: authentication_type
+  display: Authentication Type
+  required: false
+  defaultvalue: Device Code
+  type: 15
+  additionalinfo: Type of authentication - could be Client Credentials Authorization Flow (recommended) or Device Flow
+  options:
+  - Device Code
+  - Client Credentials
+- name: tenant_id
+  display: Tenant ID (for Client Credentials mode)
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: ""
+- name: credentials
+  hiddenusername: true
+  displaypassword: Client Secret (for Client Credentials mode)
+  display: Client Secret (for Client Credentials mode)
+  required: false
+  defaultvalue:
+  type: 9
+  additionalinfo: ""
 description: Manage teams and members in Microsoft Teams.
 display: Microsoft Teams Management
 name: Microsoft Teams Management
@@ -38,20 +61,28 @@ script:
     description: Run this command to start the authorization process and follow the instructions in the command results.
     execution: false
     name: microsoft-teams-auth-start
+    arguments: []
+    outputs: []
   - deprecated: false
     description: |-
       Run this command to complete the authorization process.
       Should be used after running the microsoft-teams-auth-start command.
     execution: false
     name: microsoft-teams-auth-complete
+    arguments: []
+    outputs: []
   - deprecated: false
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: microsoft-teams-auth-reset
+    arguments: []
+    outputs: []
   - deprecated: false
     description: Tests connectivity to Microsoft.
     execution: false
     name: microsoft-teams-auth-test
+    arguments: []
+    outputs: []
   - arguments:
     - default: false
       description: The name of the team.
