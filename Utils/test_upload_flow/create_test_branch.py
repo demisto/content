@@ -2,15 +2,14 @@ import argparse
 import json
 import os
 import shutil
-import logging
 import subprocess
 import time
 from pathlib import Path
 from typing import Union
 from git import GitCommandError, Head, Repo
 
-# from Tests.scripts.utils import logging_wrapper as logging
-# from Tests.scripts.utils.log_util import install_logging
+from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 
 versions_dict = {}
 pack_items_dict = {}
@@ -295,7 +294,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def main():
-    # install_logging('create_test_branch.log', logger=logging)
+    install_logging('create_test_branch.log', logger=logging)
 
     args = parse_arguments()
     repo = Repo(args.path)
@@ -330,7 +329,8 @@ def main():
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
-        print(new_branch_name)  # prints out to the bash variable
+        return new_branch_name
+        # print(new_branch_name)  # prints out to the bash variable
 
 
 if __name__ == "__main__":
