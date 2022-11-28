@@ -158,12 +158,6 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: Use Python requests handler
-  name: use_requests_handler
-  required: false
-  type: 8
-  section: Collect
-  advanced: true
 - additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   display: Enrichment Types
   name: enabled_enrichments
@@ -598,6 +592,5 @@ tests:
 - Splunk-Test_default_handler
 - Splunk-Test_requests_handler
 - SplunkPy_KV_commands_default_handler
-- SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
 fromversion: 5.0.0
