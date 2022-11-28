@@ -2182,6 +2182,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'true'
       description: is the body json formatted
+      name: json_body
       predefined:
       - 'true'
       - 'false'
