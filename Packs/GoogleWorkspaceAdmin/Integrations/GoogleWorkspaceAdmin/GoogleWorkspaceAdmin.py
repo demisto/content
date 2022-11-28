@@ -14,18 +14,6 @@ BASE_URL = 'https://admin.googleapis.com/'
 OUTPUT_PREFIX = 'Google'
 INTEGRATION_NAME = 'Google Workspace Admin'
 
-CHROMEOS_DEVICE_ACTION = ['deprovision', 'disable', 'reenable', 'pre_provisioned_disable', 'pre_provisioned_reenable']
-CHROMEOS_DEVICE_DEPROVISION_REASON = ['different_model_replacement', 'retiring_device', 'same_model_replacement',
-                                      'upgrade_transfer']
-CHROMEOS_DEVICE_ORDER_BY = ['annotated_location', 'annotated_user', 'last_sync', 'notes', 'serial_number', 'status']
-CHROMEOS_DEVICE_PROJECTION = ['basic', 'full']
-CHROMEOS_DEVICE_SORT_ORDER = ['ascending', 'descending']
-
-MOBILE_DEVICE_ACTION = ['admin_remote_wipe', 'admin_account_wipe', 'approve',
-                        'block', 'cancel_remote_wipe_then_activate', 'cancel_remote_wipe_then_block']
-MOBILE_DEVICE_ORDER_BY = ['device_id', 'email', 'last_sync', 'model', 'name', 'os', 'status', 'type']
-MOBILE_DEVICE_PROJECTION = ['basic', 'full']
-MOBILE_DEVICE_SORT_ORDER = ['ascending', 'descending']
 
 ERROR_MESSAGES_MAPPING = {
     'Bad Request': 'Please check the customer ID parameter.',
@@ -117,9 +105,6 @@ class Client(BaseClient):
         return self._credentials.token
 
     def google_mobile_device_action_request(self, resource_id: str, action: str):
-        # if action not in MOBILE_DEVICE_ACTION:
-        #     raise ActionCommandIncorrectArguments(
-        #         f'Unsupported argument value {action if action else "of empty string"} for action.')
         json_body = {'action': action}
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.action']
         token = self._get_oauth_token(scopes=scopes)
@@ -145,14 +130,7 @@ class Client(BaseClient):
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
-        # if action not in CHROMEOS_DEVICE_ACTION:
-        #     raise ActionCommandIncorrectArguments(
-        #         f'Unsupported argument value {action if action else "of empty string"} for action.')
         if action == 'deprovision':
-            # if deprovision_reason not in CHROMEOS_DEVICE_DEPROVISION_REASON:
-            #     raise ActionCommandIncorrectArguments(
-            #         (f'Unsupported argument value'
-            #          f' {deprovision_reason if deprovision_reason else "of empty string"} for deprovision_reason.'))
             json_body['deprovisionReason'] = deprovision_reason
 
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
@@ -176,15 +154,6 @@ class Client(BaseClient):
             params=query_params, headers=headers
         )
         return response
-
-
-# def trim_extra_double_quotes_from_string(value: str) -> str:
-#     value_length = len(value)
-#     first_element = value[0]
-#     last_element = value[value_length - 1]
-#     if((first_element == '"' or first_element == "'") and (last_element == '"' or last_element == "'")):
-#         return value[1:value_length - 1]
-#     return value
 
 
 def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: Optional[int],
