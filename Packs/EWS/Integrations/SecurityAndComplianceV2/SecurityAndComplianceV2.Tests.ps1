@@ -1,6 +1,6 @@
 BeforeAll {
     . $PSScriptRoot\demistomock.ps1
-    . $PSScriptRoot\SecurityAndCompliance.ps1
+    . $PSScriptRoot\SecurityAndComplianceV2.ps1
 }
 
 Describe 'StringRegexParse' {
