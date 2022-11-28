@@ -2058,7 +2058,7 @@ def splunk_search_command(service: client.Service):
 
     if not job_sid or not polling:
         # create a new job to search the query.
-        search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+        search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
 
