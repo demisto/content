@@ -16,7 +16,7 @@ This integration was integrated and tested with API version 0.6 of Alicloud Log 
     | Logstore name | The unit in your Log Service that is used to collect, store, and query logs. | True |
     | Query | The filter conditions in search statements used to obtain specific logs. Each query statement consists of a search statement and an analytic statement. The search statement and the analytic statement are separated with a vertical bar (\|).A search statement can be a keyword, a numeric value, a numeric value range, a space, or an asterisk . If you specify a space or an asterisk  as the search statement, no conditions are used for searching, and all logs are returned. <br />For example: *(\|) select * from actiontrail_pa_trail, will retrieve all the events from the project as set above. | True |
     | Number of incidents to fetch per fetch. | The maximum number of incidents to fetch each time. | False |
-    | First fetch time interval | The period to retrieve events for. format: <number> [time unit], for example 12 hours, 1 day, 3 months. Default is 3 days. | False |
+    | First fetch time interval | The period to retrieve events for. format: [number] [time unit], for example 12 hours, 1 day, 3 months. Default is 3 days. | False |
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | False |
     | Use Secured Connection | Use SSL secure connection or ‘None’. | False |
 
