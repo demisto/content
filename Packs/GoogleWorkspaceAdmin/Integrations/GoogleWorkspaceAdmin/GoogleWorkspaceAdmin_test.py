@@ -31,35 +31,50 @@ def create_test_client(mocker) -> Client:
     return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
 
 
-def test_invalid_resource_id_action_commands(mocker):
+def test_invalid_resource_id_mobile_action_command(mocker):
     """
     Given:
         - A client and an invalid resource id.
     When:
-        - Running the actions commands (for mobile and chrome os devices), and receiving the error message
-        Internal error encountered.
+        - Running the google_mobile_device_action_command command, and receiving the error message `Internal error encountered`.
     Then:
         - Validate that the ambiguous error message is mapped to a more human readable error message.
     """
-    from GoogleWorkspaceAdmin import google_chromeos_device_action_command, google_mobile_device_action_command
+    from GoogleWorkspaceAdmin import google_mobile_device_action_command
     from CommonServerPython import DemistoException
     client = create_test_client(mocker=mocker)
     expected_context_data = {'Status': 'Failure'}
     response_mock = MockResponse(json_data={'error': {'message': 'Internal error encountered.'}})
     mocker.patch.object(client, 'google_mobile_device_action_request',
                         side_effect=DemistoException(message='error', res=response_mock))
+
+    command_result = google_mobile_device_action_command(client=client, resource_id='wrong_resource_id',
+                                                         action='some_action')
+    assert 'Please check the resource_id argument.' in command_result.to_context().get('HumanReadable')
+    assert expected_context_data == command_result.to_context().get('Contents')
+
+
+def test_invalid_resource_id_chromeos_action_command(mocker):
+    """
+    Given:
+        - A client and an invalid resource id.
+    When:
+        - Running the google_chromeos_device_action_command command, and receiving the error message `Internal error encountered`
+    Then:
+        - Validate that the ambiguous error message is mapped to a more human readable error message.
+    """
+    from GoogleWorkspaceAdmin import google_chromeos_device_action_command
+    from CommonServerPython import DemistoException
+    client = create_test_client(mocker=mocker)
+    expected_context_data = {'Status': 'Failure'}
+    response_mock = MockResponse(json_data={'error': {'message': 'Delinquent account.'}})
     mocker.patch.object(client, 'google_chromeos_device_action_request',
                         side_effect=DemistoException(message='error', res=response_mock))
 
-    chromeos_action_command_result = google_chromeos_device_action_command(client=client, resource_id='wrong_resource_id',
-                                                                           action='some_action')
-    assert 'Please check the resource_id argument.' in chromeos_action_command_result.to_context().get('HumanReadable')
-    assert expected_context_data == chromeos_action_command_result.to_context().get('Contents')
-
-    movile_action_command_result = google_mobile_device_action_command(client=client, resource_id='wrong_resource_id',
-                                                                       action='some_action')
-    assert 'Please check the resource_id argument.' in movile_action_command_result.to_context().get('HumanReadable')
-    assert expected_context_data == movile_action_command_result.to_context().get('Contents')
+    command_result = google_chromeos_device_action_command(client=client, resource_id='wrong_resource_id',
+                                                           action='some_action')
+    assert 'Please check the resource_id argument.' in command_result.to_context().get('HumanReadable')
+    assert expected_context_data == command_result.to_context().get('Contents')
 
 
 def test_invalid_customer_id_client_connection(mocker):

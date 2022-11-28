@@ -18,7 +18,8 @@ INTEGRATION_NAME = 'Google Workspace Admin'
 ERROR_MESSAGES_MAPPING = {
     'Bad Request': 'Please check the customer ID parameter.',
     'Internal error encountered.': 'Please check the resource_id argument.',
-    'Not Authorized to access this resource/api': 'Please check the authorizations of the configured service account.'
+    'Not Authorized to access this resource/api': 'Please check the authorizations of the configured service account.',
+    'Delinquent account.': 'Please check the resource_id argument.'
 }
 
 MAX_PAGE_SIZE = 100
@@ -74,7 +75,7 @@ class Client(BaseClient):
                                           headers=headers)
             return 'ok'
         except DemistoException as e:
-            if(e.res):
+            if(e.res is not None):
                 error_res_to_json = e.res.json()
                 error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
                 raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -317,7 +318,7 @@ def mobile_device_list_create_query_parameters(args: dict) -> dict:
     Returns:
         dict: A dictionary that will hold the query arguments of the request.
     """
-    query_params = assign_params(projection=args.get('projection', '').lower(),
+    query_params = assign_params(projection=args.get('projection', 'full').lower(),
                                  query=args.get('query', ''),
                                  orderBy=args.get('order_by', '').lower(),
                                  sortOrder=args.get('sort_order', '').lower(),
@@ -364,7 +365,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
         response_devices_list_key=response_devices_list_key,
         cd_devices_list_key=cd_devices_list_key,
         outputs_prefix=outputs_prefix,
-        query_params=query_params
+        query_params=query_params,
     )
     try:
         if 'limit' in pagination_args:
@@ -372,7 +373,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
 
         return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
     except DemistoException as e:
-        if(e.res):
+        if(e.res is not None):
             error_res_to_json = e.res.json()
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
             raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -391,7 +392,7 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
         dict: A dictionary that will hold the query arguments of the request.
     """
     include_child_org_units = argToBoolean(args.get('include_child_org_units', False))
-    query_params = assign_params(projection=args.get('projection', '').lower(),
+    query_params = assign_params(projection=args.get('projection', 'full').lower(),
                                  query=args.get('query', None),
                                  orderBy=args.get('order_by', '').lower(),
                                  sortOrder=args.get('sort_order', '').lower(),
@@ -447,7 +448,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
 
         return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
     except DemistoException as e:
-        if(e.res):
+        if(e.res is not None):
             error_res_to_json = e.res.json()
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
             raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -468,7 +469,7 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
         # demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
         status = 'Failure'
         failure_reason = ''
-        if(e.res):
+        if(e.res is not None):
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
@@ -496,7 +497,7 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
     except DemistoException as e:
         status = 'Failure'
         failure_reason = ''
-        if(e.res):
+        if(e.res is not None):
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
