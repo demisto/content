@@ -17,7 +17,12 @@ This integration was integrated and tested with [Security & Compliance Center](h
 
 ## Permissions in the Security & Compliance Center
 
-To access the Security & Compliance Center, the user account needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
+### Delegated Authentication
+
+To access the Security & Compliance Center, the user who is configuring the account which will be used in O365 S&C, 
+needs to be a global administrator or needs to be assigned the Role Management role (a role is assigned only to the 
+Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
+*Clarification:* The account which is used by the integration, does _not_ require Global Administrator permissions.
 
 1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
 
@@ -38,7 +43,28 @@ To access the Security & Compliance Center, the user account needs to be a globa
    ![roles-edit-3](../../doc_imgs/security-and-compliance-edit-3.png)
 6. Choose which members to add from the displayed list and click **Add**.
 7. Click **Done**.
-   
+
+The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
+
+Certificate Based Authentication supports only certain cmdlets which do not require delegated access. The commands which require delegated access are:
+- ***o365-sc-start-search***
+- ***o365-sc-new-search-action***
+- ***o365-sc-get-search-action***
+
+Please note: The use of Username and Password is not indicative of the use of basic authentication. The PowerShell session uses modern authentication as noted [here](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#connect-to-security--compliance-powershell-without-a-login-prompt-unattended-scripts).
+>The following example also connects without a login prompt, but the credentials are stored locally, so this method is not secure. Consider using this method only for brief testing purposes.
+
+Because the session which the integration uses is containerized, the notification provided by Microsoft is not applicable in this use-case.
+
+### Creating a Certificate
+
+If you are using a linux environment (macOS included), you can run the script [provided here](../../doc_imgs/create_o365_security_and_compliance_cert.sh) to create the certificates.
+
+If you are using Powershell, please use the script [found here](https://github.com/SharePoint/PnP-Partner-Pack/blob/master/scripts/Create-SelfSignedCertificate.ps1).
+
+### Configuring an App in Azure
+
+Please refer to the documentation [found here](https://learn.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2?view=exchange-ps#set-up-app-only-authentication) to set up the app required for this integration.
 
 ## Configure SecurityAndCompliance on Cortex XSOAR
 
@@ -48,120 +74,32 @@ To access the Security & Compliance Center, the user account needs to be a globa
 
 3. Authentication / Authorization methods:
 
-   1. OAuth2.0 authorization (recommended):
+   1. Certificate Based Authentication:
 
          1. Click **Add instance** to create and configure a new integration instance.
 
-            | **Parameter** | **Description**                                          | **Required** |
-            | ------------- | -------------------------------------------------------- | ------------ |
-            | url           | Search and Compliance URL                                | True         |
-            | credentials   | Fill **only** Email (aka UPN), Password should be empty. | False        |
-            | insecure      | Trust any certificate \(not secure\)                     | False        |
+| **Parameter**        | **Description**                        | **Required** |
+|----------------------|----------------------------------------|--------------|
+| certificate          | A pfx certificate encoded in Base64.   | False        |
+| certificate_password | Password used to sign the certificate. | False        |
 
-         2. Open playground -  War-room:
+         2. Click **Test** to validate the URLs, token, and connection.
 
-            1. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
-    
-            > ## Security And Compliance - Authorize instructions
-            >
-            > 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
-            > 2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
-            
-            2. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command. 
-
-   2. Basic authentication (Not recommended):
+   2. Delegated Authentication:
 
       1. Click **Add instance** to create and configure a new integration instance.
 
-         | **Parameter** | **Description** | **Required** |
-         | --- | --- | --- |
-         | url | Search and Compliance URL | True |
-         | credentials | Fill Email (aka UPN) and password | False |
-         | insecure | Trust any certificate \(not secure\) | False |
+| **Parameter**  | **Description**                   | **Required** |
+|----------------|-----------------------------------|--------------|
+| delegated_auth | Fill Email (aka UPN) and password | False        |
 
-      2. Click **Test** to validate the URLs, token, and connection.
+      2. Click **Test** to validate the credentials and connection.
 
    
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### o365-sc-auth-start
-***
-OAuth2.0 - Start authorization.
-
-
-#### Base Command
-
-`o365-sc-auth-start`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!o365-sc-auth-start```
-
-#### Human Readable Output
-
->## Security And Compliance - Authorize instructions
->1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
->2. Run the ***!o365-sc-auth-complete*** command in the War Room.
-
-
-### o365-sc-auth-complete
-***
-OAuth2.0 - Complete authorization.
-
-
-#### Base Command
-
-`o365-sc-auth-complete`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!o365-sc-auth-complete```
-
-#### Human Readable Output
-
->Your account **successfully** authorized!
-
-
-
-### o365-sc-auth-test
-***
-OAuth2.0 - Test authorization.
-
-
-#### Base Command
-
-`o365-sc-auth-test`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-```!o365-sc-auth-test```
-
-#### Human Readable Output
-
->**Test ok!**
-
-
 
 ### o365-sc-new-search
 ***
@@ -1113,7 +1051,7 @@ Gets compliance search action from the Security & Compliance Center.
 ## Known Limitations
 
 * Security and compliance integrations do not support Security and compliance on-premise.
-* Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
+* Each security and compliance command creates an IPS-Session (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
 * Proxies are not supported due to a Microsoft [limitation](https://github.com/PowerShell/PowerShell/issues/9721).
 * Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 * A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).

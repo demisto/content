@@ -1,42 +1,51 @@
 category: Messaging
 commonfields:
-  id: SecurityAndCompliance
+  id: SecurityAndCompliance_V2
   version: -1
 configuration:
-- defaultvalue: https://ps.compliance.protection.outlook.com
-  display: Search and Compliance URL
-  name: url
-  required: true
-  type: 0
-- display: Email / User Principal Name (Required)
-  displaypassword: Password (Required for Basic authentication only)
-  name: credentials
-  defaultvalue: ""
-  type: 9
+- display: Certificate Password
+  name: certificate_password
   required: false
+  type: 4
+  additionalinfo: Password used to sign the certificate.
+- display: Certificate
+  name: certificate
+  type: 4
+  required: false
+  additionalinfo: A pfx certificate encoded in Base64.
+- display: UPN/Email
+  additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
+  name: delegated_auth
+  required: true
+  type: 9
+  displaypassword: Password
+- display: The organization used in app-only authentication.
+  name: organization
+  type: 0
+  required: true
+- display: The application ID from the Azure portal
+  name: app_id
+  type: 0
+  required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  required: false
+  defaultvalue: "false"
   type: 8
+  required: false
+- display: Tenant ID
+  name: tenant_id
+  type: 0
+  required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search (Deprecated)
-name: SecurityAndCompliance
-deprecated: true
+display: O365 - Security And Compliance - Content Search V2
+name: SecurityAndComplianceV2
 script:
   commands:
   - deprecated: false
-    description: OAuth2.0 - Start authorization.
+    description: Create compliance search in the Security & Compliance Center.
     execution: false
-    name: o365-sc-auth-start
-  - deprecated: false
-    description: OAuth2.0 - Complete authorization.
-    execution: false
-    name: o365-sc-auth-complete
-  - deprecated: false
-    description: OAuth2.0 - Test authorization.
-    execution: false
-    name: o365-sc-auth-test
-  - arguments:
+    name: o365-sc-new-search
+    arguments:
     - default: false
       description: |
         The name of the compliance search.
@@ -71,8 +80,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
       isArray: true
@@ -104,10 +113,6 @@ script:
       name: share_point_location_exclusion
       required: false
       secret: false
-    deprecated: false
-    description: Create compliance search in the Security & Compliance Center.
-    execution: false
-    name: o365-sc-new-search
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.AllowNotFoundExchangeLocationsEnabled
       description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
@@ -199,7 +204,11 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.Search.TenantId
       description: Security and compliance search Tenant ID.
       type: String
-  - arguments:
+  - deprecated: false
+    description: Modifies non-running compliance searches in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-set-search
+    arguments:
     - default: false
       description: The name of the compliance search.
       isArray: false
@@ -225,8 +234,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes.
       isArray: true
@@ -287,21 +296,17 @@ script:
       name: remove_share_point_location_exclusion
       required: false
       secret: false
-    deprecated: false
-    description: Modifies non-running compliance searches in the Security & Compliance Center.
+  - deprecated: false
+    description: Remove compliance search by name from the Security & Compliance Center.
     execution: false
-    name: o365-sc-set-search
-  - arguments:
+    name: o365-sc-remove-search
+    arguments:
     - default: false
       description: The name of the compliance search.
       isArray: false
       name: search_name
       required: true
       secret: false
-    deprecated: false
-    description: Remove compliance search by name from the Security & Compliance Center.
-    execution: false
-    name: o365-sc-remove-search
   - deprecated: false
     description: List compliance searches in the Security & Compliance Center.
     execution: false
@@ -405,7 +410,7 @@ script:
       required: true
       secret: false
     - default: false
-      description:  The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
       isArray: false
       name: limit
       required: false
@@ -420,19 +425,19 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Whether to export search results as json file to war-room.
       isArray: false
       name: export
       required: false
-      secret: false
       auto: PREDEFINED
-      defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
+      secret: false
+      defaultValue: 'false'
     - default: false
       description: Show search statistics. Default is "false".
       isArray: false
@@ -442,8 +447,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Gets compliance search by name from the Security & Compliance Center.
     execution: false
@@ -559,17 +564,17 @@ script:
     description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
     execution: false
     name: o365-sc-start-search
-  - arguments:
+  - deprecated: false
+    description: Stop running compliance search in the Security & Compliance Center.
+    execution: false
+    name: o365-sc-stop-search
+    arguments:
     - default: false
       description: The name of the compliance search.
       isArray: false
       name: search_name
       required: true
       secret: false
-    deprecated: false
-    description: Stop running compliance search in the Security & Compliance Center.
-    execution: false
-    name: o365-sc-stop-search
   - arguments:
     - default: false
       description: The name of the compliance search.
@@ -583,11 +588,11 @@ script:
       name: action
       required: false
       secret: false
-      auto: PREDEFINED
       defaultValue: "Preview"
+      auto: PREDEFINED
       predefined:
-        - "Preview"
-        - "Purge"
+      - "Preview"
+      - "Purge"
     - default: false
       description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
       isArray: false
@@ -597,8 +602,8 @@ script:
       auto: PREDEFINED
       defaultValue: "SoftDelete"
       predefined:
-        - SoftDelete
-        - HardDelete
+      - 'SoftDelete'
+      - 'HardDelete'
     deprecated: false
     description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
     execution: false
@@ -814,14 +819,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.
+      description: 'The maximum number of results to return. If you want to return all requests that match the query, use "-1" for the value of this argument.'
       isArray: false
       name: limit
       required: false
       secret: false
       defaultValue: 100
     - default: false
-      description: Whether to export search results as json file to war-room.
+      description: 'Whether to export search results as json file to war-room.'
       isArray: false
       name: export
       required: false
@@ -829,8 +834,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: Whether to print the results in the War Room. Default is "false".
       isArray: false
@@ -840,8 +845,8 @@ script:
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     deprecated: false
     description: Gets compliance search action from the Security & Compliance Center.
     execution: false
@@ -970,7 +975,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: devdemisto/powershell-ubuntu:7.2.2.37611
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -979,4 +984,4 @@ script:
   type: powershell
 fromversion: 5.5.0
 tests:
-- O365-SecurityAndCompliance-Test
+- O365-SecurityAndComplianceV2-Test

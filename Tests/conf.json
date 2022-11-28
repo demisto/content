@@ -208,6 +208,14 @@
             "timeout": 2500
         },
         {
+            "integrations": "SecurityAndComplianceV2",
+            "playbookID": "O365-SecurityAndComplianceV2-Test",
+            "fromversion": "5.5.0",
+            "memory_threshold": 300,
+            "pid_threshold": 40,
+            "timeout": 2500
+        },
+        {
             "integrations": "Azure Storage Container",
             "playbookID": "playbook-AzureStorageContainer-Test",
             "fromversion": "6.0.0"
