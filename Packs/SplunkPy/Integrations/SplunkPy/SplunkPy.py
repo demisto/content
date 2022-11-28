@@ -2137,10 +2137,10 @@ def splunk_results_command(service: client.Service):
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
             demisto.results("Found no job for sid: {}".format(sid))
         else:
-            return_error(error.message, error)
+            return_error(error.message, error)  # pylint: disable=no-member
     else:
         for result in results.ResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
@@ -2283,10 +2283,10 @@ def splunk_job_status(service, args):
     try:
         job = service.job(sid)
     except HTTPError as error:
-        if error.message == 'HTTP 404 Not Found -- Unknown sid.':
+        if error.message == 'HTTP 404 Not Found -- Unknown sid.':  # pylint: disable=no-member
             demisto.results("Not found job for SID: {}".format(sid))
         else:
-            return_error(error.message, error)
+            return_error(error.message, error)  # pylint: disable=no-member
     else:
         status = job.state.content.get('dispatchState')
         entry_context = {
