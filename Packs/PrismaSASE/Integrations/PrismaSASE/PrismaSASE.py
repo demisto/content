@@ -10,6 +10,8 @@ urllib3.disable_warnings()
 # CONSTANTS
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SEARCH_LIMIT = 200
+DEFAULT_LIMIT = 10
+DEFAULT_OFFSET = 0
 PA_OUTPUT_PREFIX = "PrismaAccess."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 
@@ -590,9 +592,9 @@ def list_address_objects_command(client: Client, args: Dict[str, Any], default_t
     if name := args.get('name'):
         query_params["name"] = encode_string_results(name)
 
-    if limit := arg_to_number(args.get('limit', 10)):
+    if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
         query_params["limit"] = limit
-    if offset := arg_to_number(args.get('offset', 0)):
+    if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
         query_params["offset"] = offset
 
     raw_response = client.list_address_objects(query_params, tsg_id)  # type: ignore
@@ -739,9 +741,9 @@ def list_security_rules_command(client: Client, args: Dict[str, Any], default_ts
 
     if name := args.get('name'):
         query_params["name"] = encode_string_results(name)
-    if limit := arg_to_number(args.get('limit', 10)):
+    if limit := arg_to_number(args.get('limit', DEFAULT_LIMIT)):
         query_params["limit"] = limit
-    if offset := arg_to_number(args.get('offset', 0)):
+    if offset := arg_to_number(args.get('offset', DEFAULT_OFFSET)):
         query_params["offset"] = offset
 
     raw_response = client.list_security_rules(query_params, tsg_id)  # type: ignore
@@ -838,7 +840,7 @@ def list_config_jobs_command(client: Client, args: Dict[str, Any], default_tsg_i
 
     query_params = {}
 
-    if limit := arg_to_number(args.get('limit', 200)):
+    if limit := arg_to_number(args.get('limit', SEARCH_LIMIT)):
         query_params["limit"] = limit
 
     if offset := arg_to_number(args.get('offset', 0)):
