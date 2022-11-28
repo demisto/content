@@ -4606,6 +4606,14 @@
             "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (OpenLDAP)"
+        },
+        {
             "playbookID": "FireEye-Detection-on-Demand-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5176,6 +5184,7 @@
         }
     ],
     "skipped_tests": {
+        "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
@@ -5327,6 +5336,7 @@
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
+        "Lastline v2": "No license",
         "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
