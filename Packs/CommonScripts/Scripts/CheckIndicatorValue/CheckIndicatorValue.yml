@@ -7,12 +7,12 @@ type: python
 tags:
 - evaluation
 - polling
-comment: Check if indicators exist in the Threat Intel DB.
+comment: Check if indicators exist in the Threat Intel database.
 enabled: true
 args:
 - name: indicator
   required: true
-  description: The indicator value to check
+  description: The indicator value to check.
   isArray: true
 - name: encoding
   auto: PREDEFINED
@@ -20,17 +20,17 @@ args:
   - none
   - base64
   - url-encoding
-  description: Decode indicators by the algorithm given
+  description: Decode indicators by the algorithm given.
   defaultValue: none
 outputs:
 - contextPath: CheckIndicatorValue.Indicator
-  description: The indicator value
+  description: The indicator value.
   type: string
 - contextPath: CheckIndicatorValue.EncodedIndicator
-  description: The encoded indicator value given
+  description: The encoded indicator value given.
   type: string
 - contextPath: CheckIndicatorValue.Exists
-  description: Whether the indicator exist
+  description: Whether the indicator exists.
   type: boolean
 scripttarget: 0
 subtype: python3
