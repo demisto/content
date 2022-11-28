@@ -1,6 +1,6 @@
-id: PrismaSASE_TestPlaybook
+id: PrismaSASE TestPlaybook
 version: -1
-name: PrismaSASE_TestPlaybook
+name: PrismaSASE TestPlaybook
 starttaskid: "0"
 tasks:
   "0":
