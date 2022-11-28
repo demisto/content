@@ -1,4 +1,5 @@
 import base64
+import os
 from typing import Union
 import demistomock as demisto
 from CommonServerPython import *
