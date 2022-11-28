@@ -2,7 +2,7 @@
     "name": "MITRE ATT&CK - Courses of Action",
     "description": "Looking for actionable intelligence? This intelligence-driven Pack provides manual or automated remediation of MITRE ATT&CK techniques.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -32,7 +32,6 @@
         "Unit 42",
         "Best Practices"
     ],
-    "price": 3,
     "dependencies": {
         "PAN-OS": {
             "display_name": "PAN-OS",
