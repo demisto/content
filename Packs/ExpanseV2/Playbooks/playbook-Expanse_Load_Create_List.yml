@@ -91,7 +91,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       extend-context:
         simple: ListText=.
@@ -103,7 +103,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 640
+          "y": 610
         }
       }
     note: false
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b50c7927-92ae-49e2-8739-3f93ca1f1a9d
+    taskid: f2275753-2d8c-4889-80da-b68f2ffa374c
     type: regular
     task:
-      id: b50c7927-92ae-49e2-8739-3f93ca1f1a9d
+      id: f2275753-2d8c-4889-80da-b68f2ffa374c
       version: -1
       name: Create List
       description: commands.local.cmd.list.create
@@ -184,7 +184,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "6"
     scriptarguments:
       key:
         simple: ParsedList
@@ -205,7 +205,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 820
+          "y": 1180
         }
       }
     note: false
@@ -229,7 +229,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "4"
       "yes":
       - "8"
     separatecontext: false
@@ -249,7 +249,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 800
         }
       }
     note: false
@@ -289,10 +289,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: ac091fc8-5450-4d17-89d1-b5ef460bdb45
+    taskid: 9228e6e2-2e0f-493c-8963-397b35f924bc
     type: regular
     task:
-      id: ac091fc8-5450-4d17-89d1-b5ef460bdb45
+      id: 9228e6e2-2e0f-493c-8963-397b35f924bc
       version: -1
       name: Set Empty List
       description: commands.local.cmd.list.set
@@ -302,12 +302,11 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "4"
     scriptarguments:
       listData:
         complex:
-          root: inputs
-          accessor: list
+          root: inputs.ListValues
           transformers:
           - operator: If-Then-Else
             args:
@@ -333,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 740,
-          "y": 1170
+          "x": 720,
+          "y": 1000
         }
       }
     note: false
@@ -351,7 +350,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1385,
-        "width": 670,
+        "width": 660,
         "x": 450,
         "y": 50
       }
