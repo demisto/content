@@ -226,20 +226,13 @@ def main():
             output_path,
         )
     print("\n".join(message))
-    if slack_token:
+    if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip"):
         slack_client = WebClient(token=slack_token)
-        diff_output = output_path / f"diff-{marketplace}.zip"
-        if not diff_output.exists():
-            slack_client.chat_postMessage(
-                channel="dmst-graph-tests",
-                text="\n".join(message),
-            )
-        else:
-            slack_client.files_upload(
-                file=str(diff_output),
-                channels="dmst-graph-tests",
-                initial_comment="\n".join(message),
-            )
+        slack_client.files_upload(
+            file=str(diff_output),
+            channels="dmst-graph-tests",
+            initial_comment="\n".join(message),
+        )
 
 
 if __name__ == "__main__":
