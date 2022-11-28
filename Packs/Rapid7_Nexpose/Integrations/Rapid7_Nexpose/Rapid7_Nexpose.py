@@ -1809,22 +1809,9 @@ class Client(BaseClient):
         return self._http_request(
             url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
             method="PUT",
-            data=json.dumps(expiration_date),  # type: ignore
+            data=json.dumps(expiration_date),
             resp_type="json",
         )
-
-    def find_site_id(self, name: str) -> str | None:
-        """
-        Find a site ID by its name.
-
-        Returns:
-            str | None: Site ID corresponding to the passed name. None if no match was found.
-        """
-        for site in self.get_sites():
-            if site["name"] == name:
-                return str(site["id"])
-
-        return None
 
     def find_asset_site(self, asset_id: str) -> Optional["Site"]:
         """
@@ -1867,9 +1854,22 @@ class Client(BaseClient):
             return None
 
         return Site(
-            site_id=response_data["records"][0]["siteID"],
-            site_name=response_data["records"][0]["siteName"],
+            site_id=str(response_data["records"][0]["siteID"]),
+            site_name=str(response_data["records"][0]["siteName"]),
         )
+
+    def find_site_id(self, name: str) -> str | None:
+        """
+        Find a site ID by its name.
+
+        Returns:
+            str | None: Site ID corresponding to the passed name. None if no match was found.
+        """
+        for site in self.get_sites():
+            if site["name"] == name:
+                return str(site["id"])
+
+        return None
 
 
 class Site:
@@ -3309,7 +3309,7 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
     )
 
 
-def download_report_command(client: Client, report_id: str, instance_id: str, report_format: str | None,
+def download_report_command(client: Client, report_id: str, instance_id: str, report_format: str | None = None,
                             report_name: str | None = None) -> dict:
     """
     Download a report file.

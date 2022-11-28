@@ -229,6 +229,31 @@ def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
 
 
 # --- Command & Client Functions Tests ---
+@pytest.mark.parametrize("sites_mock_file, site_name, expected_id",
+                         [
+                             ("client_get_sites", "Test 1", "1"),
+                             ("client_get_sites", "Test 2", "2"),
+                         ])
+def test_client(mocker, mock_client: Client, sites_mock_file: str, site_name: str, expected_id: str):
+    sites_api_data = load_test_data("api_mock", sites_mock_file)
+    mocker.patch.object(Client, "_paged_http_request", return_value=sites_api_data)
+
+    assert Site(client=mock_client, site_name=site_name).id == expected_id
+
+
+@pytest.mark.parametrize("api_mock_file, expected_output",
+                         [
+                             ("client_find_asset_site", Site(site_id="1", site_name="Test"))
+                         ])
+def test_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expected_output: Site):
+    api_data = load_test_data("api_mock", api_mock_file)
+    mocker.patch.object(Client, "_http_request", return_value=api_data)
+
+    returned_site = mock_client.find_asset_site(asset_id="1")
+    assert returned_site.id == expected_output.id
+    assert returned_site.name == expected_output.name
+
+
 @pytest.mark.parametrize("test_input, expected_output",
                          [
                              ("Test 1", "1"),
@@ -307,6 +332,22 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
     assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
         expected_output_context
+
+
+def test_download_report_command(mocker, mock_client: Client):
+    mocker.patch.object(Client, "download_report", return_value=b"Test")
+    mocker.patch("builtins.open", mocker.mock_open())
+    mocker.patch("uuid.uuid4", return_value="RandomUUID4")
+
+    result = download_report_command(client=mock_client, report_id="1", instance_id="latest", report_name="Test")
+
+    assert result == {
+        "Contents": "",
+        "ContentsFormat": "text",
+        "Type": 9,
+        "File": "Test.pdf",
+        "FileID": "RandomUUID4"
+    }
 
 
 @pytest.mark.parametrize("asset_mock_file, asset_vulnerability_api_mock_file, vulnerability_api_mock_file, "
