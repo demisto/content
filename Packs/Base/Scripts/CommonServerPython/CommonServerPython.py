@@ -4670,6 +4670,102 @@ class Common(object):
 
             return ret_value
 
+    class cve(Indicator):
+        """ ignore docstring
+        cve indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
+        """
+        # Compare by both ID and Vendor if both exist, otherwise just by ID.
+        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'
+
+        def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
+                     os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
+                     memory=None, processors=None, processor=None, relationships=None, vendor=None, status=None,
+                     is_isolated=None):
+            self.id = id
+            self.hostname = hostname
+            self.ip_address = ip_address
+            self.domain = domain
+            self.mac_address = mac_address
+            self.os = os
+            self.os_version = os_version
+            self.dhcp_server = dhcp_server
+            self.bios_version = bios_version
+            self.model = model
+            self.memory = memory
+            self.processors = processors
+            self.processor = processor
+            self.vendor = vendor
+            self.status = status
+            self.is_isolated = is_isolated
+            self.relationships = relationships
+
+        def to_context(self):
+            endpoint_context = {
+                'ID': self.id
+            }
+
+            if self.hostname:
+                endpoint_context['Hostname'] = self.hostname
+
+            if self.ip_address:
+                endpoint_context['IPAddress'] = self.ip_address
+
+            if self.domain:
+                endpoint_context['Domain'] = self.domain
+
+            if self.mac_address:
+                endpoint_context['MACAddress'] = self.mac_address
+
+            if self.os:
+                endpoint_context['OS'] = self.os
+
+            if self.os_version:
+                endpoint_context['OSVersion'] = self.os_version
+
+            if self.dhcp_server:
+                endpoint_context['DHCPServer'] = self.dhcp_server
+
+            if self.bios_version:
+                endpoint_context['BIOSVersion'] = self.bios_version
+
+            if self.model:
+                endpoint_context['Model'] = self.model
+
+            if self.memory:
+                endpoint_context['Memory'] = self.memory
+
+            if self.processors:
+                endpoint_context['Processors'] = self.processors
+
+            if self.processor:
+                endpoint_context['Processor'] = self.processor
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                endpoint_context['Relationships'] = relationships_context
+
+            if self.vendor:
+                endpoint_context['Vendor'] = self.vendor
+
+            if self.status:
+                if self.status not in ENDPOINT_STATUS_OPTIONS:
+                    raise ValueError('Status does not have a valid value such as: Online or Offline')
+                endpoint_context['Status'] = self.status
+
+            if self.is_isolated:
+                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
+                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
+                                     ' isolation or Pending unisolation')
+                endpoint_context['IsIsolated'] = self.is_isolated
+
+            ret_value = {
+                Common.Endpoint.CONTEXT_PATH: endpoint_context
+            }
+
+            return ret_value
+
+
     class Account(Indicator):
         """
         Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account

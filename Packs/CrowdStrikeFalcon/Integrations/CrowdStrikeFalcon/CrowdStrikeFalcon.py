@@ -3966,23 +3966,25 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict):
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def get_cve_command():
-    args = demisto.args()
+def get_cve_command(args: dict):
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
-
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
-    raw_res = search_device(filter_operator='OR')
+    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
+    #  raw_res = search_device(filter_operator='OR')
+    raw_res = http_request('GET', '/spotlight/combined/vulnerabilities/v1',
+                           params={'filter': url_filter, 'facet': 'cve'})
 
+    cve_group = raw_res.get('resources')
+    if not cve_group:
+        return None
+    demisto.debug(f"number of vulnerabilities returned from the api call is: {len(cve_group)}")
     if not raw_res:
-        return create_entry_object(hr='Could not find any devices.')
-    devices = raw_res.get('resources')
-
-    standard_endpoints = generate_endpoint_by_contex_standard(devices)
+        return create_entry_object(hr='Could not find any vulnerabilities with cve_id as requested.')
 
     command_results = []
-    for endpoint in standard_endpoints:
-        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+    for vulnerability in cve_group:
+        endpoint_context = vulnerability.to_context().get(Common.Endpoint.CONTEXT_PATH)
         hr = tableToMarkdown('CrowdStrike Falcon CVE', endpoint_context)
 
         command_results.append(CommandResults(
@@ -4158,7 +4160,7 @@ def main():
         elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
-            return(get_cve_command())
+            return(get_cve_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
