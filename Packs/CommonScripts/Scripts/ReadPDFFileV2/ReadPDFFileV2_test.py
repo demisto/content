@@ -418,3 +418,11 @@ def test_handle_error_read_only_failed(mocker):
             'The error is not due to a problem with write permissions to the file'
         )
     assert str(e.value) == 'The error is not due to a problem with write permissions to the file'
+ 
+
+def test_handle_corrupted_pdf_file(mocker, tmp_path):
+    from ReadPDFFileV2 import get_pdf_text
+    file_path = f'{CWD}/corrupted_pdf.pdf'
+    with pytest.raises(Exception) as e:
+        get_pdf_text(file_path, 'will_not_save')
+    assert str(e.value) == 'PDf file is damaged/corrupted.'
