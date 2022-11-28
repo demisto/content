@@ -582,7 +582,7 @@ script:
   isremotesyncout: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - SplunkPySearch_Test_default_handler
