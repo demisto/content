@@ -12,6 +12,15 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+class MockResponse:
+    """ This class will be used to mock a request response (only the json function in the requests.Response class) """
+    def __init__(self, json_data):
+        self.json_data = json_data
+
+    def json(self):
+        return self.json_data
+
+
 def create_test_client(mocker) -> Client:
     """ This will create a mock client in order to use in the tests
 
@@ -20,6 +29,78 @@ def create_test_client(mocker) -> Client:
     """
     mocker.patch('GoogleWorkspaceAdmin.Client._init_credentials', return_value=None)
     return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
+
+
+def test_invalid_resource_id_action_commands(mocker):
+    """
+    Given:
+        - A client and an invalid resource id.
+    When:
+        - Running the actions commands (for mobile and chrome os devices), and receiving the error message
+        Internal error encountered.
+    Then:
+        - Validate that the ambiguous error message is mapped to a more human readable error message.
+    """
+    from GoogleWorkspaceAdmin import google_chromeos_device_action_command, google_mobile_device_action_command
+    from CommonServerPython import DemistoException
+    client = create_test_client(mocker=mocker)
+    expected_context_data = {'Status': 'Failure'}
+    response_mock = MockResponse(json_data={'error': {'message': 'Internal error encountered.'}})
+    mocker.patch.object(client, 'google_mobile_device_action_request',
+                        side_effect=DemistoException(message='error', res=response_mock))
+    mocker.patch.object(client, 'google_chromeos_device_action_request',
+                        side_effect=DemistoException(message='error', res=response_mock))
+
+    chromeos_action_command_result = google_chromeos_device_action_command(client=client, resource_id='wrong_resource_id',
+                                                                           action='some_action')
+    assert 'Please check the resource_id argument.' in chromeos_action_command_result.to_context().get('HumanReadable')
+    assert expected_context_data == chromeos_action_command_result.to_context().get('Contents')
+
+    movile_action_command_result = google_mobile_device_action_command(client=client, resource_id='wrong_resource_id',
+                                                                       action='some_action')
+    assert 'Please check the resource_id argument.' in movile_action_command_result.to_context().get('HumanReadable')
+    assert expected_context_data == movile_action_command_result.to_context().get('Contents')
+
+
+def test_invalid_customer_id_client_connection(mocker):
+    """
+    Given:
+        - A client and an invalid customer id.
+    When:
+        - Running test module with an invalid customer id, and receiving the error message `Bad Request`.
+    Then:
+        - Validate that the ambiguous error message is mapped to a more human readable error message.
+    """
+    from GoogleWorkspaceAdmin import test_module
+    from CommonServerPython import DemistoException
+    response_mock = MockResponse(json_data={'error': {'message': 'Bad Request'}})
+    mocker.patch('GoogleWorkspaceAdmin.Client._get_oauth_token', return_value='token')
+    mocker.patch('GoogleWorkspaceAdmin.Client._http_request', side_effect=DemistoException(message='error', res=response_mock))
+    client = create_test_client(mocker=mocker)
+    with pytest.raises(DemistoException) as e:
+        test_module(client=client)
+    assert 'Please check the customer ID parameter.' in str(e)
+
+
+def test_unauthorized_service_account_client_connection(mocker):
+    """
+    Given:
+        - A client and an unauthorized service account
+    When:
+        - Running test module with an unauthorized service account, and receiving the error message
+        `Not Authorized to access this resource/api`.
+    Then:
+        - Validate that the ambiguous error message is mapped to a more human readable error message.
+    """
+    from GoogleWorkspaceAdmin import test_module
+    from CommonServerPython import DemistoException
+    response_mock = MockResponse(json_data={'error': {'message': 'Not Authorized to access this resource/api'}})
+    mocker.patch('GoogleWorkspaceAdmin.Client._get_oauth_token', return_value='token')
+    mocker.patch('GoogleWorkspaceAdmin.Client._http_request', side_effect=DemistoException(message='error', res=response_mock))
+    client = create_test_client(mocker=mocker)
+    with pytest.raises(DemistoException) as e:
+        test_module(client=client)
+    assert 'Please check the authorizations of the configured service account.' in str(e)
 
 
 def test_invalid_service_account_json():
@@ -33,7 +114,7 @@ def test_invalid_service_account_json():
     """
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
-        Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
+        Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={'wrong': 'service_account'})
     assert 'Please check the service account\'s json content' in str(e)
 
 

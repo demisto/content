@@ -86,7 +86,7 @@ class Client(BaseClient):
                                           headers=headers)
             return 'ok'
         except DemistoException as e:
-            if(not e.res):
+            if(e.res):
                 error_res_to_json = e.res.json()
                 error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
                 raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -348,24 +348,10 @@ def mobile_device_list_create_query_parameters(args: dict) -> dict:
     Returns:
         dict: A dictionary that will hold the query arguments of the request.
     """
-    projection = args.get('projection', '').lower()
-    # if(projection and projection not in MOBILE_DEVICE_PROJECTION):
-    #     raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
-
-    order_by = args.get('order_by', '').lower()
-    # if(order_by and order_by not in MOBILE_DEVICE_ORDER_BY):
-    #     raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
-
-    sort_order = args.get('sort_order', '').lower()
-    # if(sort_order and sort_order not in MOBILE_DEVICE_SORT_ORDER):
-    #     raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
-
-    # if(sort_order and not order_by):
-    #     raise DemistoException('sort_order argument must be used with the order_by parameter.')
-    query_params = assign_params(projection=projection,
+    query_params = assign_params(projection=args.get('projection', '').lower(),
                                  query=args.get('query', ''),
-                                 orderBy=order_by,
-                                 sortOrder=sort_order,
+                                 orderBy=args.get('order_by', '').lower(),
+                                 sortOrder=args.get('sort_order', '').lower(),
                                  )
     return query_params
 
@@ -417,7 +403,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
 
         return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
     except DemistoException as e:
-        if(not e.res):
+        if(e.res):
             error_res_to_json = e.res.json()
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
             raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -435,20 +421,12 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
     Returns:
         dict: A dictionary that will hold the query arguments of the request.
     """
-    projection = args.get('projection', '').lower()
-
-    order_by = args.get('order_by', '').lower()
-
-    sort_order = args.get('sort_order', '').lower()
-
     include_child_org_units = argToBoolean(args.get('include_child_org_units', False))
-    org_unit_path = args.get('org_unit_path', '')
-
-    query_params = assign_params(projection=projection,
+    query_params = assign_params(projection=args.get('projection', '').lower(),
                                  query=args.get('query', None),
-                                 orderBy=order_by,
-                                 sortOrder=sort_order,
-                                 orgUnitPath=org_unit_path,
+                                 orderBy=args.get('order_by', '').lower(),
+                                 sortOrder=args.get('sort_order', '').lower(),
+                                 orgUnitPath=args.get('org_unit_path', ''),
                                  includeChildOrgunits=str(include_child_org_units)
                                  )
     return query_params
@@ -500,7 +478,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
 
         return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
     except DemistoException as e:
-        if(not e.res):
+        if(e.res):
             error_res_to_json = e.res.json()
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
             raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
@@ -521,7 +499,7 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
         # demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
         status = 'Failure'
         failure_reason = ''
-        if(not e.res):
+        if(e.res):
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
@@ -549,7 +527,7 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
     except DemistoException as e:
         status = 'Failure'
         failure_reason = ''
-        if(not e.res):
+        if(e.res):
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
