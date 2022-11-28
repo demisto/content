@@ -88,7 +88,8 @@ def get_pack_content_dict_v2(pack_path: Path, marketplace='xsoar'):
     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
 
     for content_item_type in sub_dirs:
-        content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), content_item_type)).glob('*')]
+        if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']
+            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), content_item_type)).glob('*')]
 
     shutil.rmtree('./content_packs')
     return content_dict
@@ -293,8 +294,8 @@ def do_changes_on_branch(packs_path: Path):
     # Case 1: Verify new pack - TestUploadFlow
     new_pack_path, _, _ = create_new_pack()
 
-    # Case 2: Verify modified pack - Arcanna
-    modify_pack(packs_path / 'Arcanna', 'Integrations/ArcannaAI/ArcannaAI.py')
+    # Case 2: Verify modified pack - Armorblox
+    modify_pack(packs_path / 'Armorblox', 'Integrations/Armorblox/Armorblox.py')
 
     # Case 3: Verify dependencies handling - Armis
     add_dependency(packs_path / 'Armis', new_pack_path)
@@ -306,10 +307,10 @@ def do_changes_on_branch(packs_path: Path):
     update_existing_release_notes(packs_path / 'Box', "2.1.2")
 
     # Case 6: Verify 1.0.0 rn was added - BPA
-    add_1_0_0_release_notes(packs_path / 'BPA')
+    # add_1_0_0_release_notes(packs_path / 'BPA')
 
     # Case 7: Verify pack is set to hidden - Microsoft365Defender
-    # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed
+    # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed - CIAC-3848
 
     # Case 8: Verify changed readme - Maltiverse
     update_readme(packs_path / 'Maltiverse')

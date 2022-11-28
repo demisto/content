@@ -254,9 +254,9 @@ class BucketVerifier:
         # Case 1: Verify new pack - TestUploadFlow
         self.verify_new_pack('TestUploadFlow', self.items_dict.get('TestUploadFlow'))
 
-        # Case 2: Verify modified pack - Grafana
+        # Case 2: Verify modified pack - Armorblox
         expected_rn = 'testing adding new RN'
-        self.verify_modified_pack('Arcanna', self.items_dict.get('Arcanna'), expected_rn)
+        self.verify_modified_pack('Armorblox', self.items_dict.get('Armorblox'), expected_rn)
 
         # Case 3: Verify dependencies handling - Armis
         self.verify_dependency('Armis', 'TestUploadFlow')
@@ -269,9 +269,9 @@ class BucketVerifier:
         expected_rn = 'testing modifying existing RN'
         self.verify_rn('Box', expected_rn)
 
-        # Case 6: Verify 1.0.0 rn was added - BPA
-        expected_rn = """\n#### Integrations\n##### BPA\nfirst release note\n"""
-        self.verify_rn('BPA', expected_rn)
+        # Case 6: Verify 1.0.0 rn was added - TestUploadFlow
+        expected_rn = """\n#### Integrations\n##### TestUploadFlow\nfirst release note"""
+        self.verify_rn('TestUploadFlow', expected_rn)
 
         # Case 7: Verify pack is set to hidden - Microsoft365Defender
         # self.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed

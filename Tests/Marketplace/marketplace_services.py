@@ -1405,14 +1405,6 @@ class Pack(object):
                 logging.debug(f"Cleaned release notes from: {rn_lines} to: {modified_versions_dict[version]}")
             # The case where the version is not a key in the changelog file or it is a key of aggregated content
             else:
-                # The case where want to add a first version release notes for a pack
-                if version == '1.0.0':
-                    logging.debug("Adding the new version release notes to the changelog")
-                    with open(os.path.join(release_notes_dir, rn_filename), 'r') as rn_file:
-                        rn_lines = rn_file.read()
-                    modified_versions_dict[version] = self._clean_release_notes(rn_lines).strip()
-                    continue
-
                 logging.debug(f'The "{version}" version is not a key in the changelog file or it is a key of'
                               f' aggregated content')
                 same_block_versions_dict, higher_nearest_version = self.get_same_block_versions(
