@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "cb925bd69e7dc1722dbf0ae7698f49f7138d7e53"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "ea269a03435913232a55fbb2251dab9ea7f23dc8"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
@@ -52,6 +52,8 @@ boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
+json5 = "^0.9.10"
+google-cloud-secret-manager = "^2.12.6"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
