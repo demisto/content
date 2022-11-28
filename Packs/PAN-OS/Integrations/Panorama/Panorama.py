@@ -8211,7 +8211,11 @@ class Topology:
                 else:
                     self.ha_active_devices[serial_number] = "STANDALONE"
 
-        self.ha_pair_serials = ha_pair_dict
+        # This is only true if Panorama is in HA mode as well.
+        if self.ha_pair_serials:
+            self.ha_pair_serials = {**self.ha_pair_serials, **ha_pair_dict}
+        else:
+            self.ha_pair_serials = ha_pair_dict
 
     def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
         """
@@ -8225,16 +8229,32 @@ class Topology:
             serial_number_or_hostname = device.serial if device.serial else device.hostname
 
             # Check if HA is active and if so, what the system state is.
+            # Only associate Firewalls with the ACTIVE Panorama instance
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
             if enabled is not None:
                 if enabled.text == "yes":
-                    # Only associate Firewalls with the active Panorama instance
-                    state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+                    try:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/local-info/state")
+                    except LookupError:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+
                     if "active" in state:
-                        # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
+                        peer_serial = None
+                        try:
+                            # For panorama, there is no serial stored in the HA output, so we can't get it.
+                            # Instead, we can get the mgmt IP in it's place.
+                            peer_serial = find_text_in_element(panorama_ha_state_result, "./result/peer-info/mgmt-ip")
+                        except LookupError:
+                            peer_serial = None
+
+                        self.ha_active_devices[serial_number_or_hostname] = peer_serial
+                        self.ha_pair_serials[serial_number_or_hostname] = peer_serial
+                        if peer_serial:
+                            self.ha_pair_serials[peer_serial] = serial_number_or_hostname
+
                         self.get_all_child_firewalls(device)
+                        self.panorama_objects[serial_number_or_hostname] = device
                         return
                 else:
                     self.get_all_child_firewalls(device)
@@ -9141,8 +9161,8 @@ class DeviceGroupInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_sp: str
+    hostname: Optional[str] = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"
@@ -10586,9 +10606,13 @@ class FirewallCommand:
                 ))
             else:
                 state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
-                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                # Check both places for state to cover firewalls and panorama
+                try:
+                    state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                except LookupError:
+                    state = find_text_in_element(state_information_element, "./result/local-info/state")
 
-                if state == "active":
+                if "active" in state:
                     result.append(ShowHAState(
                         hostid=firewall_host_id,
                         status=state,
