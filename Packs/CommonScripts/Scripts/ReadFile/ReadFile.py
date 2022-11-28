@@ -13,9 +13,9 @@ def read_file(args):
         max_file_size = 1024 ** 2
 
     entry_id = args.get('entryID')
-    input_encoding = args.get('encoding') or None
-    output_data_type = args.get('outputDataType') or 'raw'
-    output_meta_data = argToBoolean(args.get('outputMetaData') or 'false')
+    input_encoding = args.get('input_encoding') or None
+    output_data_type = args.get('output_data_type') or 'raw'
+    output_meta_data = argToBoolean(args.get('output_meta_data') or 'false')
 
     file_path = execute_command('getFilePath', {'id': entry_id})['path']
     file_size = os.path.getsize(file_path)
