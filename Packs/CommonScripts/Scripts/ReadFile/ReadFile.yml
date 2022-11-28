@@ -32,6 +32,17 @@ args:
   description: The data type to which the output data is converted
   defaultValue: raw
   secret: false
+- name: output_meta_data
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  isArray: false
+  description: Set to true to output the meta data with the payload to `ReadFile`
+    in the context, otherwise only the payload will be output to `FileData` in the
+    context
+  defaultValue: "false"
+  secret: false
 comment: Load the contents of a file into context.
 commonfields:
   id: ReadFile
@@ -42,6 +53,18 @@ outputs:
 - contextPath: FileData
   description: Data read from war room file
   type: Unknown
+- contextPath: ReadFile.Data
+  description: Data read from war room file
+  type: Unknown
+- contextPath: ReadFile.EntryID
+  description: File Entry ID
+  type: string
+- contextPath: ReadFile.FileSize
+  description: File Size
+  type: number
+- contextPath: ReadFile.EOF
+  description: Whether the file has reached end-of-file.
+  type: boolean
 script: ''
 system: false
 tags:
@@ -53,6 +76,6 @@ subtype: python3
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.10.8.37753
 tests:
 - No tests (auto formatted)
