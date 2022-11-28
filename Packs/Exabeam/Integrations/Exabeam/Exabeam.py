@@ -2067,7 +2067,9 @@ def main():
                         password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
-        if command in commands:
+        if command == 'fetch-incidents':
+            commands[command](client, demisto.args())
+        elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')

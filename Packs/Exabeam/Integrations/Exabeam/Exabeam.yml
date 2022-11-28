@@ -1900,7 +1900,137 @@ script:
     - contextPath: Exabeam.SequenceEventTypes.sequenceId
       description: The sequence ID.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  - arguments:
+    - default: false
+      description: The incident ID
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: The query that will be used to filter incidents in exabeam
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident type to filter in exabeam
+      isArray: true
+      predefined:
+        - "generic"
+        - "abnormalAuth"
+        - "accountManipulation"
+        - "accountTampering"
+        - "ueba"
+        - "bruteForce"
+        - "compromisedCredentials"
+        - "cryptomining"
+        - "dataAccessAbuse"
+        - "dataExfiltration"
+        - "dlp"
+        - "departedEmployee"
+        - "dataDestruction"
+        - "evasion"
+        - "lateralMovement"
+        - "alertTriage"
+        - "malware"
+        - "phishing"
+        - "privilegeAbuse"
+        - "physicalSecurity"
+        - "privilegeEscalation"
+        - "privilegedActivity"
+        - "ransomware"
+        - "workforceProtection"
+      name: incident_type
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident priority to filter in exabeam
+      isArray: true
+      predefined:
+        - "low"
+        - "medium"
+        - "high"
+        - "critical"
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      auto: PREDEFINED
+      description: Incident status to filter in exabeam
+      isArray: true
+      predefined:
+        - "closed"
+        - "closedFalsePositive"
+        - "inprogress"
+        - "new"
+        - "pending"
+        - "resolved"
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results to query.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Specific page to query.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Number of total results in each page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sequence event types for the given asset sequence ID and time range.
+    execution: false
+    name: exabeam-list-incident
+    outputs:
+    - contextPath: Exabeam.incidents.incidentId
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.name
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.startedDate
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.closedDate
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.createdAt
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.owner
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.status
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.incidentType
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.source
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.priority
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.queue
+      description: The sequence event type.
+      type: String
+    - contextPath: Exabeam.incidents.fields.description
+      description: The sequence event type.
+      type: String
+  dockerimage: demisto/python3:3.10.8.37753
   feed: false
   isfetch: true
   longRunning: false
