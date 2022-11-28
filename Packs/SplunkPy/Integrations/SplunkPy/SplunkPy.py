@@ -4,9 +4,9 @@ import json
 import re
 from datetime import datetime, timedelta
 
-import dateparser  # type: ignore
+import dateparser
 import demistomock as demisto  # noqa: F401
-import pytz  # type: ignore[import]
+import pytz
 import requests
 import splunklib.client as client
 import splunklib.results as results
