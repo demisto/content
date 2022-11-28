@@ -656,7 +656,7 @@ def test_get_attachment(client):
 def test_get_attachments_without_attachment_id(mocker, client):
     """
     Given:
-        - raw response returned from get_attachment_command
+        - Raw response returned from get_attachment_command
 
     When:
         - Calling 'get_attachment_command' method.
