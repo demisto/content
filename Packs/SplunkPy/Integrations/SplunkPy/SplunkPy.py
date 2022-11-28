@@ -2553,11 +2553,11 @@ def get_store_data(service: client.Service):
     stores = args['kv_store_collection_name'].split(',')
 
     for store in stores:
-        store: client.KVStoreCollection = service.kvstore[store]
-        query = build_kv_store_query(store, args)
+        kvstore: client.KVStoreCollection = service.kvstore[store]
+        query = build_kv_store_query(kvstore, args)
         if isinstance(query, str):
             query = {'query': query}
-        yield store.data.query(**query)
+        yield kvstore.data.query(**query)
 
 
 def get_connection_args():
