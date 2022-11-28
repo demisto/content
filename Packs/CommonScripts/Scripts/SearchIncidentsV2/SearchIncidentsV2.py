@@ -6,7 +6,7 @@ from CommonServerPython import *
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 
 
-class IncidentSeverity(Enum):
+class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
     LOW = 1
@@ -15,7 +15,7 @@ class IncidentSeverity(Enum):
     CRITICAL = 4
 
 
-class IncidentStatus(Enum):
+class AlertStatus(Enum):
     PENDING = 0
     ACTIVE = 1
     DONE = 2
@@ -90,14 +90,14 @@ def add_incidents_link(data: List, platform: str):
     return data
 
 
-def transform_to_alert_data(incidents: List):  # pragma: no cover
+def transform_to_alert_data(incidents: List):
     for incident in incidents:
         incident['hostname'] = incident.get('CustomFields', {}).get('hostname')
         incident['initiatedby'] = incident.get('CustomFields', {}).get('initiatedby')
         incident['targetprocessname'] = incident.get('CustomFields', {}).get('targetprocessname')
         incident['username'] = incident.get('CustomFields', {}).get('username')
-        incident['status'] = IncidentStatus(incident.get('status')).name
-        incident['severity'] = IncidentSeverity(incident.get('severity')).name
+        incident['status'] = AlertStatus(incident.get('status')).name
+        incident['severity'] = AlertSeverity(incident.get('severity')).name
 
     return incidents
 
@@ -134,7 +134,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
-                   'owner', 'targetprocessname', 'username',  'alertLink']
+                   'owner', 'targetprocessname', 'username', 'alertLink']
         data = transform_to_alert_data(data)
         md = tableToMarkdown(name="Alerts found", t=data, headers=headers, is_auto_json_transform=True)
     else:
