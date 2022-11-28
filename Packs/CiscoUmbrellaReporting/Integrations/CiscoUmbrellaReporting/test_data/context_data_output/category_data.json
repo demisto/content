@@ -1,0 +1,17 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "count": 258,
+            "bandwidth": null,
+            "category": {
+                "id": 164,
+                "type": "content",
+                "label": "Chat and Instant Messaging",
+                "integration": false,
+                "deprecated": false
+            },
+            "rank": 1
+        }
+    ]
+}

@@ -399,6 +399,9 @@ script:
       - 'false'
       required: false
       secret: false
+    - description: List of additional keys to return from the resource JSON, specified as a comma separated list (e.g. "key1,key2,key3").  To preview all available resource JSON data, run redlock-get-alert-details with the "raw-response=true" option.
+      name: resource_keys
+      required: false
     deprecated: false
     description: Gets the details of an alert based on alert ID
     execution: false
@@ -436,6 +439,21 @@ script:
       type: string
     - contextPath: Redlock.Alert.RiskDetail.Score
       description: The risk score
+      type: string
+    - contextPath: Redlock.Alert.Resource.AccountID
+      description: The cloud account ID where the resource resides
+      type: string
+    - contextPath: Redlock.Alert.Resource.ID
+      description: The Resource ID of the cloud resource
+      type: string
+    - contextPath: Redlock.Alert.Resource.Name
+      description: The Resource Name of the cloud resource
+      type: string
+    - contextPath: Redlock.Alert.Resource.Data
+      description: Additional keys from Resource.Data. Only appears when resource_keys argument is specified.
+      type: json
+    - contextPath: Redlock.Alert.Resource.Account
+      description: The cloud account name where the resource resides
       type: string
   - arguments:
     - default: false
@@ -1391,7 +1409,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: true
   longRunning: false
