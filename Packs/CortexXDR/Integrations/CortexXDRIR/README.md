@@ -2230,8 +2230,8 @@ There is no context output for this command.
 
 ### xdr-get-alerts
 ***
-Returns a list of alerts and their meta-data, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
-Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
+Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. 
+Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value.
 
 
 #### Base Command
@@ -2243,10 +2243,10 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | --- | --- | --- |
 | alert_id | The unique ID of the alert. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high. | Optional | 
-| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant except time_frame, start_time and end_time which are used to filter the time. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
-| Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
+| custom_filter | a custom filter, when using this argument, other filter arguments are not relevant. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
+| Identity_type | Account type. Possible values are: ANONYMOUS, APPLICATION, COMPUTE, FEDERATED_IDENTITY, SERVICE, SERVICE_ACCOUNT, TEMPORARY_CREDENTIALS, TOKEN, UNKNOWN, USER. | Optional | 
 | agent_id | A unique identifier per agent. | Optional | 
-| action_external_hostname | The hostname to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
+| action_external_hostname | The host name to connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
 | rule_id | A string identifying the user rule. | Optional | 
 | rule_name | The name of the user rule. | Optional | 
 | alert_name | The alert name. | Optional | 
@@ -2266,16 +2266,18 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | host_ip | The host IP. | Optional | 
 | action_local_ip | The local IP address for the connection. | Optional | 
 | action_remote_ip | Remote IP address for the connection. | Optional | 
+| alert_action_status | Alert action status. Possible values are: detected, detected (allowed the session), detected (download), detected (forward), detected (post detected), detected (prompt allow), detected (raised an alert), detected (reported), detected (on write), detected (scanned), detected (sinkhole), detected (syncookie sent), detected (wildfire upload failure), detected (wildfire upload success), detected (wildfire upload skip), detected (xdr managed threat hunting), prevented (block), prevented (blocked), prevented (block-override), prevented (blocked the url), prevented (blocked the ip), prevented (continue), prevented (denied the session), prevented (dropped all packets), prevented (dropped the session), prevented (dropped the session and sent a tcp reset), prevented (dropped the packet), prevented (override), prevented (override-lockout), prevented (post detected), prevented (prompt block), prevented (random-drop), prevented (silently dropped the session with an icmp unreachable message to the host or application), prevented (terminated the session and sent a tcp reset to both sides of the connection), prevented (terminated the session and sent a tcp reset to the client), prevented (terminated the session and sent a tcp reset to the server), prevented (on write). | Optional | 
 | action_local_port | The local IP address for the connection. | Optional | 
 | action_remote_port | The remote port for the connection. | Optional | 
 | dst_action_external_hostname | The hostname we connect to. In case of a proxy connection, this value will differ from action_remote_ip. | Optional | 
-| sort_field | The field by which we will sort the results. Default is source_insert_ts. | Optional | 
+| sort_field | The field by which we sort the results. Default is source_insert_ts. | Optional | 
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
 | start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
 | end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
+| mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 
 
 #### Context Output
@@ -2283,18 +2285,507 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Alert.internal_id | String | The unique ID of the alert. | 
-| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestamp. | 
+| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestamp | 
 | PaloAltoNetworksXDR.Alert.alert_name | String | The name of the alert. | 
 | PaloAltoNetworksXDR.Alert.severity | String | The severity of the alert. | 
 | PaloAltoNetworksXDR.Alert.alert_category | String | The category of the alert. | 
-| PaloAltoNetworksXDR.Alert.alert_action_status | String | The alert action. | 
+| PaloAltoNetworksXDR.Alert.alert_action_status | String | The alert action. Possible values.
+
+DETECTED: detected
+DETECTED_0: detected \(allowed the session\)
+DOWNLOAD: detected \(download\)
+DETECTED_19: detected \(forward\)
+POST_DETECTED: detected \(post detected\)
+PROMPT_ALLOW: detected \(prompt allow\)
+DETECTED_4: detected \(raised an alert\)
+REPORTED: detected \(reported\)
+REPORTED_TRIGGER_4: detected \(on write\)
+SCANNED: detected \(scanned\)
+DETECTED_23: detected \(sinkhole\)
+DETECTED_18: detected \(syncookie sent\)
+DETECTED_21: detected \(wildfire upload failure\)
+DETECTED_20: detected \(wildfire upload success\)
+DETECTED_22: detected \(wildfire upload skip\)
+DETECTED_MTH: detected \(xdr managed threat hunting\)
+BLOCKED_25: prevented \(block\)
+BLOCKED: prevented \(blocked\)
+BLOCKED_14: prevented \(block-override\)
+BLOCKED_5: prevented \(blocked the url\)
+BLOCKED_6: prevented \(blocked the ip\)
+BLOCKED_13: prevented \(continue\)
+BLOCKED_1: prevented \(denied the session\)
+BLOCKED_8: prevented \(dropped all packets\)
+BLOCKED_2: prevented \(dropped the session\)
+BLOCKED_3: prevented \(dropped the session and sent a tcp reset\)
+BLOCKED_7: prevented \(dropped the packet\)
+BLOCKED_16: prevented \(override\)
+BLOCKED_15: prevented \(override-lockout\)
+BLOCKED_26: prevented \(post detected\)
+PROMPT_BLOCK: prevented \(prompt block\)
+BLOCKED_17: prevented \(random-drop\)
+BLOCKED_24: prevented \(silently dropped the session with an icmp unreachable message to the host or application\)
+BLOCKED_9: prevented \(terminated the session and sent a tcp reset to both sides of the connection\)
+BLOCKED_10: prevented \(terminated the session and sent a tcp reset to the client\)
+BLOCKED_11: prevented \(terminated the session and sent a tcp reset to the server\)
+BLOCKED_TRIGGER_4: prevented \(on write\)
+ | 
+| PaloAltoNetworksXDR.Alert.alert_action_status_readable | String | The alert action. | 
 | PaloAltoNetworksXDR.Alert.alert_name | String | The alert name. | 
 | PaloAltoNetworksXDR.Alert.alert_description | String | The alert description. | 
-| PaloAltoNetworksXDR.Alert.agent_ip_addresses | String | The host IP | 
-| PaloAltoNetworksXDR.Alert.agent_hostname | String | The host name | 
+| PaloAltoNetworksXDR.Alert.agent_ip_addresses | String | The host IP. | 
+| PaloAltoNetworksXDR.Alert.agent_hostname | String | The host name. | 
 | PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name | String | The MITRE attack tactic. | 
 | PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
+
+
+#### Command example
+```!xdr-get-alerts severity="high" alert_action_status="detected (reported)" sort_field="source_insert_ts" offset="0" limit="1"```
+#### Context Example
+```json
+{
+        "PaloAltoNetworksXDR": {
+            "Alert": {
+                "action_country": [
+                    "UNKNOWN"
+            ],
+            "action_external_hostname": null,
+            "action_file_macro_sha256": null,
+            "action_file_md5": null,
+            "action_file_name": null,
+            "action_file_path": null,
+            "action_file_sha256": null,
+            "action_local_ip": null,
+            "action_local_ip_v6": null,
+            "action_local_port": null,
+            "action_process_causality_id": null,
+            "action_process_image_command_line": null,
+            "action_process_image_md5": [
+                    "ddcd2be64212b10c3cf84496a879b098"
+            ],
+            "action_process_image_name": null,
+            "action_process_image_path": [
+                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+            ],
+            "action_process_image_sha256": null,
+            "action_process_instance_id": null,
+            "action_process_os_pid": [
+                    5172
+            ],
+            "action_process_signature_status": [
+                    "SIGNATURE_UNAVAILABLE"
+            ],
+            "action_process_signature_vendor": null,
+            "action_process_user_sid": null,
+            "action_registry_data": null,
+            "action_registry_full_key": null,
+            "action_registry_key_name": null,
+            "action_registry_value_name": null,
+            "action_remote_ip": null,
+            "action_remote_ip_v6": null,
+            "action_remote_port": null,
+            "activity_first_seen_at": null,
+            "activity_last_seen_at": null,
+            "actor_causality_id": null,
+            "actor_effective_user_sid": null,
+            "actor_effective_username": [
+                    "env1.local\\\\administrator"
+            ],
+            "actor_process_causality_id": [
+                    "AdhDcc/XHpAAABQ0AAAAAA=="
+            ],
+            "actor_process_command_line": [
+                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe\\"
+            ],
+            "actor_process_execution_time": [
+                    1648560911622
+            ],
+            "actor_process_image_md5": [
+                    "ddcd2be64212b10c3cf84496a879b098"
+            ],
+            "actor_process_image_name": [
+                    "svchost.exe"
+            ],
+            "actor_process_image_path": [
+                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+            ],
+            "actor_process_image_sha256": [
+                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+            ],
+            "actor_process_instance_id": [
+                    "AdhDcc/XHpAAABQ0AAAAAA=="
+            ],
+            "actor_process_os_pid": [
+                    5172
+            ],
+            "actor_process_signature_status": [
+                    "SIGNATURE_UNSIGNED"
+            ],
+            "actor_process_signature_vendor": null,
+            "actor_thread_thread_id": [
+                    2468
+            ],
+            "agent_data_collection_status": true,
+            "agent_device_domain": "env1.local",
+            "agent_fqdn": "AGENTTESTFOO.env1.local",
+            "agent_host_boot_time": [
+                    0
+            ],
+            "agent_hostname": "AGENTTESTFOO",
+            "agent_id": "63f88a9e797440ccac742a6adc926fb2",
+            "agent_install_type": "STANDARD",
+            "agent_ip_addresses": [
+                    "10.111.230.11"
+            ],
+            "agent_ip_addresses_v6": null,
+            "agent_is_vdi": null,
+            "agent_os_sub_type": "10.0.10240",
+            "agent_os_type": "AGENT_OS_WINDOWS",
+            "agent_version": "7.6.1.46600",
+            "alert_action_status": "REPORTED",
+            "alert_action_status_readable": "detected (reported)",
+            "alert_category": "Malware",
+            "alert_description": "Behavioral threat detected (rule: bioc.masquerade_svchost)",
+            "alert_description_raw": "Behavioral threat detected (rule: bioc.masquerade_svchost)",
+            "alert_is_fp": false,
+            "alert_name": "Behavioral Threat",
+            "alert_source": "TRAPS",
+            "alert_sub_type": null,
+            "alert_type": "Unclassified",
+            "association_strength": [
+                    50
+            ],
+            "attack_techniques": null,
+            "attempt_counter": 0,
+            "audit_ids": null,
+            "bioc_category_enum_key": null,
+            "bioc_indicator": null,
+            "caller_ip": null,
+            "case_id": 48,
+            "causality_actor_causality_id": [
+                    "AdhDcc/XHpAAABQ0AAAAAA=="
+            ],
+            "causality_actor_process_command_line": [
+                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe\\"
+            ],
+            "causality_actor_process_execution_time": [
+                    1648560911622
+            ],
+            "causality_actor_process_image_md5": null,
+            "causality_actor_process_image_name": [
+                    "svchost.exe"
+            ],
+            "causality_actor_process_image_path": [
+                    "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+            ],
+            "causality_actor_process_image_sha256": [
+                    "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+            ],
+            "causality_actor_process_instance_id": [
+                    "AdhDcc/XHpAAABQ0AAAAAA=="
+            ],
+            "causality_actor_process_os_pid": [
+                    5172
+            ],
+            "causality_actor_process_signature_status": [
+                    "SIGNATURE_UNSIGNED"
+            ],
+            "causality_actor_process_signature_vendor": null,
+            "cloud_provider": null,
+            "cluster_name": null,
+            "container_id": null,
+            "contains_featured_host": [
+                    "NO"
+            ],
+            "contains_featured_ip": [
+                    "NO"
+            ],
+            "contains_featured_user": [
+                    "NO"
+            ],
+            "deduplicate_tokens": null,
+            "detection_modules": null,
+            "dns_query_name": null,
+            "drilldown_max_ts": null,
+            "drilldown_min_ts": null,
+            "drilldown_query": null,
+            "dss_country": null,
+            "dss_department": null,
+            "dss_groups": null,
+            "dss_job_title": null,
+            "dst_action_country": null,
+            "dst_action_external_hostname": null,
+            "dst_action_external_port": null,
+            "dst_actor_process_image_name": null,
+            "dst_actor_process_os_pid": null,
+            "dst_agent_hostname": null,
+            "dst_agent_id": null,
+            "dst_agent_os_type": [
+                    "NO_HOST"
+            ],
+            "dst_association_strength": null,
+            "dst_causality_actor_process_execution_time": null,
+            "dst_os_actor_process_image_name": null,
+            "dst_os_actor_process_os_pid": null,
+            "dynamic_fields": {
+                "action_country": [
+                        "UNKNOWN"
+                ],
+                "action_process_signature_status": [
+                        "SIGNATURE_UNAVAILABLE"
+                ],
+                "activated": "0001-01-01T00:00:00Z",
+                "activatingingUserId": "",
+                "actor_effective_username": [
+                        "env1.local\\\\administrator"
+                ],
+                "actor_process_command_line": [
+                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                ],
+                "actor_process_image_md5": [
+                        "ddcd2be64212b10c3cf84496a879b098"
+                ],
+                "actor_process_image_name": [
+                        "svchost.exe"
+                ],
+                "actor_process_image_path": [
+                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                ],
+                "actor_process_image_sha256": [
+                        "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                ],
+                "actor_process_os_pid": [
+                        5172
+                ],
+                "actor_process_signature_status": [
+                        "SIGNATURE_UNSIGNED"
+                ],
+                "actor_thread_thread_id": [
+                        2468
+                ],
+                "agent_device_domain": "env1.local",
+                "agent_fqdn": "AGENTTESTFOO.env1.local",
+                "agent_hostname": "AGENTTESTFOO",
+                "agent_id": "63f88a9e797440ccac742a611111111",
+                "agent_ip_addresses": [
+                    "10.111.230.11"
+                ],
+                "agent_os_sub_type": "10.0.10240",
+                "agent_os_type": "AGENT_OS_WINDOWS",
+                "alert_action_status": "REPORTED",
+                "alert_category": "Malware",
+                "alert_description": "Behavioral threat detected (rule: bioc.masquerade_svchost)",
+                "alert_name": "Behavioral Threat",
+                "alert_source": "TRAPS",
+                "alert_type": "Unclassified",
+                "attachment": null,
+                "category": "",
+                "causality_actor_causality_id": [
+                        "AdhDcc/XHpAAABQ0AAAAAA=="
+                ],
+                "causality_actor_process_command_line": [
+                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                ],
+                "causality_actor_process_image_name": [
+                        "svchost.exe"
+                ],
+                "causality_actor_process_image_path": [
+                        "C:\\\\Users\\\\administrator\\\\Downloads\\\\svchost.exe"
+                ],
+                "causality_actor_process_image_sha256": [
+                        "b013074d220d71877112b61e16927abbbb98ad29aa40609aca1b936332fbe4b7"
+                ],
+                "causality_actor_process_signature_status": [
+                        "SIGNATURE_UNSIGNED"
+                ],
+                "closeReason": "",
+                "closed": "0001-01-01T00:00:00Z",
+                "closingUserId": "",
+                "contains_featured_host": [
+                        "NO"
+                ],
+                "contains_featured_ip": [
+                        "NO"
+                ],
+                "contains_featured_user": [
+                        "NO"
+                ],
+                "dbotCurrentDirtyFields": null,
+                "dbotDirtyFields": null,
+                "dbotMirrorDirection": "",
+                "dbotMirrorId": "",
+                "dbotMirrorInstance": "",
+                "dbotMirrorLastSync": "0001-01-01T00:00:00Z",
+                "dbotMirrorTags": null,
+                "droppedCount": 0,
+                "dueDate": "0001-01-01T00:00:00Z",
+                "event_type": [
+                        1
+                ],
+                "feedBased": false,
+                "fw_is_phishing": [
+                        "NOT_AVAILABLE"
+                ],
+                "internal_id": 6887,
+                "investigationId": "6887",
+                "isDebug": false,
+                "is_whitelisted": false,
+                "labels": null,
+                "lastJobRunTime": "0001-01-01T00:00:00Z",
+                "lastOpen": "0001-01-01T00:00:00Z",
+                "linkedCount": 0,
+                "linkedIncidents": null,
+                "mac": "00:50:56:89:8b:8e",
+                "mitre_tactic_id_and_name": [
+                    "TA0005 - Defense Evasion",
+                    "TA0002 - Execution"
+                ],
+                "mitre_technique_id_and_name": [
+                        "T1036.005 - Masquerading: Match Legitimate Name or Location"
+                ],
+                "module_id": [
+                        "Behavioral Threat Protection"
+                ],
+                "notifyTime": "2022-09-21T06:45:17.746532863Z",
+                "occurred": "0001-01-01T00:00:00Z",
+                "openDuration": 0,
+                "os_actor_process_signature_status": [
+                        "SIGNATURE_UNAVAILABLE"
+                ],
+                "os_actor_thread_thread_id": [
+                        2468
+                ],
+                "phase": "",
+                "playbookId": "T1036 - Masquerading",
+                "reason": "",
+                "reminder": "0001-01-01T00:00:00Z",
+                "resolution_comment": "",
+                "resolution_status": "STATUS_020_UNDER_INVESTIGATION",
+                "runStatus": "error",
+                "severity": "SEV_040_HIGH",
+                "sla": 0,
+                "sourceInstance": "",
+                "source_insert_ts": 1648560949000,
+                "starred": false
+            },
+            "end_match_attempt_ts": null,
+            "event_id": null,
+            "event_sub_type": null,
+            "event_timestamp": [
+                    1648560949290
+            ],
+            "event_type": [
+                    1
+            ],
+            "events_length": 1,
+            "external_id": "d4c2983dfab74741b087dce1bbffd8d5",
+            "family_tags": null,
+            "filter_rule_id": null,
+            "forensics_artifact_type": null,
+            "from_dml": null,
+            "fw_app_category": null,
+            "fw_app_id": null,
+            "fw_app_subcategory": null,
+            "fw_app_technology": null,
+            "fw_device_name": null,
+            "fw_email_recipient": null,
+            "fw_email_sender": null,
+            "fw_email_subject": null,
+            "fw_interface_from": null,
+            "fw_interface_to": null,
+            "fw_is_phishing": [
+                    "NOT_AVAILABLE"
+            ],
+            "fw_misc": null,
+            "fw_rule": null,
+            "fw_rule_id": null,
+            "fw_serial_number": null,
+            "fw_url_domain": null,
+            "fw_vsys": null,
+            "fw_xff": null,
+            "identity_invoked_by_type": null,
+            "identity_name": null,
+            "identity_sub_type": null,
+            "identity_type": null,
+            "image_name": null,
+            "internal_id": "6887",
+            "iot_pivot_url": null,
+            "is_disintegrated": null,
+            "is_pcap": false,
+            "is_whitelisted": false,
+            "is_xsoar_alert": false,
+            "last_modified_ts": 1663742717853,
+            "local_insert_ts": 1648560958017,
+            "mac": "00:50:56:89:8b:8e",
+            "matching_service_rule_id": null,
+            "matching_status": "MATCHED",
+            "mitre_tactic_id_and_name": [
+                "TA0005 - Defense Evasion",
+                "TA0002 - Execution"
+            ],
+            "mitre_technique_id_and_name": [
+                "T1036.005 - Masquerading: Match Legitimate Name or Location"
+            ],
+            "module_id": [
+                "Behavioral Threat Protection"
+            ],
+            "module_name": [
+                "COMPONENT_DSE"
+            ],
+            "operation_name": null,
+            "original_severity": "SEV_040_HIGH",
+            "os_actor_causality_id": null,
+            "os_actor_effective_username": null,
+            "os_actor_process_causality_id": null,
+            "os_actor_process_command_line": null,
+            "os_actor_process_execution_time": null,
+            "os_actor_process_image_md5": null,
+            "os_actor_process_image_name": null,
+            "os_actor_process_image_path": null,
+            "os_actor_process_image_sha256": null,
+            "os_actor_process_instance_id": null,
+            "os_actor_process_os_pid": null,
+            "os_actor_process_signature_status": [
+                "SIGNATURE_UNAVAILABLE"
+            ],
+            "os_actor_process_signature_vendor": null,
+            "os_actor_thread_thread_id": [
+                2468
+            ],
+            "phone_number": null,
+            "pivot_url": null,
+            "playbook_suggestion_rule_id": null,
+            "policy_id": null,
+            "project": null,
+            "query_tables": null,
+            "referenced_resource": null,
+            "remote_cid": null,
+            "resolution_comment": "",
+            "resolution_status": "STATUS_020_UNDER_INVESTIGATION",
+            "resource_sub_type": null,
+            "resource_type": null,
+            "severity": "SEV_040_HIGH",
+            "source_insert_ts": 1648560949290,
+            "starred": false,
+            "story_id": null,
+            "suggested_playbook_id": null,
+            "tim_main_indicator": null,
+            "user_agent": null,
+            "xpanse_asset_id": null,
+            "xpanse_asset_name": null,
+            "xpanse_policy_id": null,
+            "xpanse_primary_asset_id": null,
+            "xpanse_service_id": null
+        }
+    }
+}
+```
+#### Human Readable Output
+>### Alerts
+>|Action|Alert ID|Category|Description|Detection Timestamp|Host IP|Host Name|Name|Severity|
+>|---|---|---|---|---|---|---|---|---|
+>| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.111.230.11 | AGENTTESTFOO | Behavioral Threat | SEV_040_HIGH |
+'
 
 
 ### xdr-get-contributing-event
