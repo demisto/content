@@ -3,7 +3,6 @@ args:
   name: value
 - description: The value of the JSON object.
   name: json_object
-  hidden: true
 - description: Comma-separated list of fields/keys (without any whitespaces) that needs to be ignored from the JSON object.
   name: fields
 comment: Removed selected fields from the JSON object.
