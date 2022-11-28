@@ -466,9 +466,12 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     """
     validate_fetch_incidents_parameters(client.max_fetch, client.program_handle, client.filters)
     time_to_fetch = last_run.get("next_created_at", client.first_fetch)
-    page_to_fetch = last_run.get("next_page", 1)
-    fetch_params = prepare_fetch_incidents_parameters(client.max_fetch, time_to_fetch, client.program_handle,
-                                                      client.severity, client.state, client.filters, page_to_fetch)
+    max_fetch = client.max_fetch
+    # After one run we get a duplicate of the first incident, add one to reach the limit 
+    if last_run.get("next_created_at") and client.max_fetch < 100 :
+        max_fetch += 1
+    fetch_params = prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, client.program_handle,
+                                                      client.severity, client.state, client.filters, 1)
 
     response = client.report_list(params=fetch_params)
 
@@ -489,16 +492,13 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
                 'rawJSON': json.dumps(result)
             })
 
-    next_page = 1
     next_report_ids = new_report_ids
     created_at_last_report = results[-1].get("attributes", {}).get("created_at")
 
     if created_at_last_report == time_to_fetch:
         next_report_ids = previous_report_ids + new_report_ids
-        next_page = page_to_fetch + 1
 
     next_run = {
-        "next_page": next_page,
         "next_created_at": created_at_last_report,
         "report_ids": next_report_ids
     }
