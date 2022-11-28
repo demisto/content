@@ -1,16 +1,27 @@
 category: Messaging
 commonfields:
-  id: Zoom
+  id: Zoom Dev
   version: -1
 configuration:
-  - display: API key
-    name: apiKey
-    required: true
+  - display: Account ID (OAuth)
+    name: account_id
+    type: 0
+    required: false
+  - display: Client ID (OAuth)
+    displaypassword: Client Secret (OAuth)
+    name: credentials
+    type: 9
+    required: false
+  - display: API Key (JWT-Deprecated)
+    name: api_key
     type: 4
-  - display: API secret
-    name: apiSecret
-    required: true
+    required: false
+    additionalinfo: This authentication method is deprecated
+  - display: API Secret (JWT-Deprecated)
+    name: api_secret
     type: 4
+    required: false
+    additionalinfo: This authentication method is deprecated
   - display: Use system proxy settings
     name: proxy
     required: false
@@ -21,8 +32,8 @@ configuration:
     required: false
     type: 8
 description: Use the Zoom integration manage your Zoom users and meetings
-display: Zoom
-name: Zoom
+display: Zoom Dev
+name: Zoom Dev
 script:
   commands:
     - arguments:
