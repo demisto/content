@@ -586,11 +586,8 @@ script:
   type: python
 tests:
 - SplunkPySearch_Test_default_handler
-- SplunkPySearch_Test_requests_handler
 - SplunkPy-Test-V2_default_handler
-- SplunkPy-Test-V2_requests_handler
 - Splunk-Test_default_handler
-- Splunk-Test_requests_handler
 - SplunkPy_KV_commands_default_handler
 - SplunkPy parse-raw - Test
 fromversion: 5.0.0
