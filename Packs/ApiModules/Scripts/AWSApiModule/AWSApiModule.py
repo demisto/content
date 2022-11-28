@@ -134,15 +134,6 @@ class AWSClient:
                 verify=self.verify_certificate,
                 config=self.config
             )
-        elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
-            client = boto3.client(
-                service_name=service,
-                region_name=region if region else self.aws_default_region,
-                aws_access_key_id=self.aws_access_key_id,
-                aws_secret_access_key=self.aws_secret_access_key,
-                verify=self.verify_certificate,
-                config=self.config
-            )
         elif self.aws_session_token and not self.aws_role_arn:  # login with session token
             client = boto3.client(
                 service_name=service,
@@ -150,6 +141,15 @@ class AWSClient:
                 aws_access_key_id=self.aws_access_key_id,
                 aws_secret_access_key=self.aws_secret_access_key,
                 aws_session_token=self.aws_session_token,
+                verify=self.verify_certificate,
+                config=self.config
+            )
+        elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
+            client = boto3.client(
+                service_name=service,
+                region_name=region if region else self.aws_default_region,
+                aws_access_key_id=self.aws_access_key_id,
+                aws_secret_access_key=self.aws_secret_access_key,
                 verify=self.verify_certificate,
                 config=self.config
             )
