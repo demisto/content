@@ -22,7 +22,7 @@ args:
   - ascii
   required: false
   secret: false
-- name: output_data_type
+- name: outputDataType
   auto: PREDEFINED
   predefined:
   - raw
@@ -32,7 +32,7 @@ args:
   description: The data type to which the output data is converted
   defaultValue: raw
   secret: false
-- name: output_meta_data
+- name: outputMetaData
   auto: PREDEFINED
   predefined:
   - "true"

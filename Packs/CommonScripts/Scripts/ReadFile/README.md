@@ -23,7 +23,8 @@ This script is used in the following playbooks and scripts.
 | entryID | War room entryID of the file to read. |
 | maxFileSize | Maximal file size to load, in bytes. Default is 1MB. |
 | encoding | The character encoding of the file |
-| output_data_type | The data type to which the output data is converted. |
+| outputDataType | The data type to which the output data is converted. |
+| outputMetaData | Set to true to output the meta data with the payload to `ReadFile` in the context, otherwise the payload only output to `FileData` to the context. |
 
 ## Outputs
 ---
@@ -31,3 +32,7 @@ This script is used in the following playbooks and scripts.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | FileData | Data read from war room file | Unknown |
+| ReadFile.Data | Data read from war room file | Unknown |
+| ReadFile.EntryID | File Entry ID | string |
+| ReadFile.FileSize | File Size | number |
+| ReadFile.EOF | Whether the file has reached end-of-file. | boolean |

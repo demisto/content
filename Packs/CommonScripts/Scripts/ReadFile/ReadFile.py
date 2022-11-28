@@ -6,16 +6,16 @@ from CommonServerUserPython import *
 
 
 def read_file(args):
-    max_file_size = demisto.get(args, 'max_file_size')
+    max_file_size = demisto.get(args, 'maxFileSize')
     if max_file_size:
         max_file_size = int(max_file_size)
     else:
         max_file_size = 1024 ** 2
 
-    entry_id = args.get('entry_id')
+    entry_id = args.get('entryID')
     input_encoding = args.get('encoding') or None
-    output_data_type = args.get('output_data_type') or 'raw'
-    output_meta_data = argToBoolean(args.get('output_meta_data') or 'false')
+    output_data_type = args.get('outputDataType') or 'raw'
+    output_meta_data = argToBoolean(args.get('outputMetaData') or 'false')
 
     file_path = execute_command('getFilePath', {'id': args.get('entryID')})['path']
     file_size = os.path.getsize(file_path)
