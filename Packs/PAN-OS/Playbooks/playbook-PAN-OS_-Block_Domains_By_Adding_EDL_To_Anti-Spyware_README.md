@@ -24,8 +24,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| EDL_URL | The URL from which to pull the EDL. |  | Required |
-| Add_To_Existing_PAN-OS_EDL | input "true" to use existing PAN-OS EDL |  | Required |
+| EDL_URL | The URL from which to pull the EDL. |  | Optional |
+| Add_To_Existing_PAN-OS_EDL | input "true" to use existing PAN-OS EDL |  | Optional |
 | PAN-OS_EDL_Name | PAN-OS EDL Name to create/To edit if exist\(depend on inputs.Add_To_Existing_PAN-OS_EDL\) |  | Optional |
 | Device_Group | The device group for which to return addresses for the EDL \(Panorama instances\).<br/> |  | Optional |
 | Certificate_Profile | The certificate profile name for the URL that was previously uploaded. to PAN OS.<br/> |  | Optional |
