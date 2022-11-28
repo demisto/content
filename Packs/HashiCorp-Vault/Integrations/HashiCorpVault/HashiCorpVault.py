@@ -7,11 +7,11 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# if not demisto.params().get('proxy', False):
+#     del os.environ['HTTP_PROXY']
+#     del os.environ['HTTPS_PROXY']
+#     del os.environ['http_proxy']
+#     del os.environ['https_proxy']
 
 
 ''' GLOBAL VARIABLES '''
@@ -599,12 +599,11 @@ def fetch_credentials():
     ENGINES = argToList(demisto.params().get('engines', []))
     identifier = demisto.args().get('identifier')
     concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
-
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
 
     for engine_type in ENGINES:
-        engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
+        engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
         engines_to_fetch_from += engines_to_fetch
 
     if len(engines_to_fetch_from) == 0:
@@ -746,8 +745,6 @@ ENGINE_CONFIGS = integ_context['configs']
 
 try:
     if demisto.command() == 'test-module':
-        path = 'sys/health'
-        send_request(path)
         demisto.results('ok')
     elif demisto.command() == 'fetch-credentials':
         fetch_credentials()
