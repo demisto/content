@@ -11,6 +11,7 @@ install_logging('create_test_branch.log', logger=logging)
 
 GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
 TIMEOUT = 60 * 60 * 4
+
 requests.packages.urllib3.disable_warnings()
 
 
@@ -93,9 +94,10 @@ def main():
     pipeline_url = get_pipeline_info(pipeline_id, token).get('web_url')
 
     if upload_job_status == 'skipped':
-        print(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
+        logging.info(f'Failed to upload files to marketplace. See failed pipeline here: {pipeline_url}')
         sys.exit(1)
-    print(f'The upload has finished. See pipeline here: {pipeline_url}')
+
+    logging.info(f'The upload has finished. See pipeline here: {pipeline_url}')
     # TODO: check why 'logging' logs are not present in gitlab build
 
 

@@ -6,17 +6,14 @@ import subprocess
 import time
 from pathlib import Path
 from typing import Union
-
 from git import GitCommandError, Head, Repo
-
-# from Tests.Marketplace.marketplace_services import *
-versions_dict = {}
-pack_items_dict = {}
-changed_packs = set()
 
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
+versions_dict = {}
+pack_items_dict = {}
+changed_packs = set()
 
 
 def json_write(file_path: str, data: Union[list, dict]):
@@ -89,50 +86,12 @@ def get_pack_content_dict_v2(pack_path: Path, marketplace='xsoar'):
 
     for content_item_type in sub_dirs:
         if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), content_item_type)).glob('*')]
+            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), 
+                                                                                                content_item_type)).glob('*')]
 
     shutil.rmtree('./content_packs')
     return content_dict
 
-
-# def get_pack_content_dict(pack_path: Path):
-#     """
-#     Gets a dict of all the paths of the pack content items as it is in the bucket.
-
-#     Args:
-#         pack_path (Path): The pack path.
-
-#     Returns:
-#         dict: The content paths dict.
-#     """
-#     content_dict = {}
-#     sub_dirs = os.listdir(pack_path)
-#     sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
-
-#     prefix_dict = {content_item: content_item.lower()[:-1] for content_item in sub_dirs}
-#     prefix_dict['Layouts'] = 'layoutscontainer'
-#     prefix_dict['IndicatorTypes'] = 'reputation'
-
-#     for content_item_type in sub_dirs:
-#         if content_item_type in ['Integrations', 'Scripts']:
-#             content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob('*/*.yml')]
-
-#         elif content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-#             extension = 'yml' if content_item_type == 'Playbooks' else 'json'
-#             content_dict[content_item_type] = [parse_path(p, content_item_type, prefix_dict) for p in Path(os.path.join(str(pack_path), content_item_type)).glob(f'*.{extension}')]
-#     return content_dict
-
-
-# def parse_path(path: Path, item_type: str, item_prefixes: dict):
-#     path_name = f"{item_prefixes[item_type]}-{path.name}" if not path.name.startswith(item_prefixes[item_type]) else path.name
-#     if item_type =='IndicatorFields':
-#         path_name = f"incidentfield-{path_name}"
-#     original_path_name = path.name
-#     if item_type in ['Integrations', 'Scripts']:  # Remove the item parent directory from the path
-#         path_list = str(path).split('/')
-#         path_list.pop(-2)
-#         path = "/".join(path_list)
-#     return str(path).split('/Packs/')[1].replace(original_path_name, path_name)
 
 @add_changed_pack
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
@@ -157,7 +116,7 @@ def enhance_release_notes(pack: Path):
 
 @add_changed_pack
 def change_image(pack: Path):
-    new_image = Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
+    new_image = pack / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
         shutil.copy(new_image, p)
     return pack, get_current_version(pack), None
@@ -213,7 +172,7 @@ def create_failing_pack(pack: Path):
         base_metadata = json.load(f)
     splited_pack_version = base_metadata['currentVersion'].rsplit('.', 1)
     base_metadata['currentVersion'] = '.'.join([splited_pack_version[0], str(int(splited_pack_version[1]) + 1)])
-    json_write(metadata_json, base_metadata)
+    json_write(str(metadata_json), base_metadata)
     return pack, base_metadata['currentVersion'], None
 
 
@@ -271,12 +230,6 @@ def get_current_version(pack: Path):
     return base_metadata['currentVersion']
 
 
-# def get_all_packs_items_dict(pack: Path):
-#     pack = Pack(pack.name, str(pack))
-#     pack.collect_content_items()
-#     return pack._content_items
-
-
 def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
     branch = repo.create_head(new_branch_name)
     branch.checkout()
@@ -306,27 +259,27 @@ def do_changes_on_branch(packs_path: Path):
     # Case 5: Verify modified existing release notes - Box
     update_existing_release_notes(packs_path / 'Box', "2.1.2")
 
-    # Case 6: Verify 1.0.0 rn was added - BPA
-    # add_1_0_0_release_notes(packs_path / 'BPA')
+    # Case 6: Verify pack is set to hidden - Microsoft365Defender
+    # set_pack_hidden(packs_path / 'Microsoft365Defender') 
+    # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
 
-    # Case 7: Verify pack is set to hidden - Microsoft365Defender
-    # set_pack_hidden(packs_path / 'Microsoft365Defender') TODO: fix after hidden pack mechanism is fixed - CIAC-3848
-
-    # Case 8: Verify changed readme - Maltiverse
+    # Case 7: Verify changed readme - Maltiverse
     update_readme(packs_path / 'Maltiverse')
 
     # TODO: didn't verified
     update_pack_ignore(packs_path / 'MISP')
 
-    # Case 9: Verify failing pack - Absolute
+    # Case 8: Verify failing pack - Absolute
     create_failing_pack(packs_path / 'Absolute')
 
-    # Case 10: Verify changed image - Armis
+    # Case 9: Verify changed image - Armis
     change_image(packs_path / 'Armis')
 
-    # Case 11: Verify modified modeling rule path - AlibabaActionTrail
-    modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules', 'AlibabaModelingRules', 'Alibaba')  # TODO: add script
+    # Case 10: Verify modified modeling rule path - AlibabaActionTrail
+    modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules',
+                          'AlibabaModelingRules', 'Alibaba')  # TODO: add script
 
+    logging.info("Finished making test changes on the branch")
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -341,7 +294,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def main():
-    # install_logging('create_test_branch.log', logger=logging)
+    install_logging('create_test_branch.log', logger=logging)
 
     args = parse_arguments()
     repo = Repo(args.path)
@@ -366,6 +319,7 @@ def main():
         repo.git.push('--set-upstream',
                       f'https://GITLAB_PUSH_TOKEN:{args.gitlab_mirror_token}@'  # disable-secrets-detection
                       f'code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
+        logging.info("Successfuly pushing the branch to Gitlab content repo")
 
     except GitCommandError as e:
         logging.error(e)
@@ -375,7 +329,8 @@ def main():
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
-        print(new_branch_name)
+        print(new_branch_name)  # prints out to the bash variable
+
 
 if __name__ == "__main__":
     main()

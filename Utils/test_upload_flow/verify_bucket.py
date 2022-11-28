@@ -1,15 +1,18 @@
 import argparse
 import functools
 import json
-import logging
 import os
+from pathlib import Path
+import sys
 import tempfile
+from zipfile import ZipFile
+from packaging.version import Version
 
-from Tests.Marketplace.marketplace_services import *
+from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils.log_util import install_logging
-
-install_logging('create_test_branch.log', logger=logging)
+from Tests.scripts.utils import logging_wrapper as logging
+from Tests.scripts.utils.log_util import install_logging
 
 MSG_DICT = {
     'verify_new_pack': 'Verify the pack is in the index, verify version 1.0.0 zip exists under the pack path',
@@ -30,19 +33,21 @@ MSG_DICT = {
 XSOAR_BUCKET = 'marketplace-dist-dev'
 XSIAM_BUCKET = 'marketplace-v2-dist-dev'
 
+
 def logger(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
-        #logging.info(f'Starting {func.__name__}')
+        logging.info(f'Starting {func.__name__}')
         print(f'Starting {func.__name__}')
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
-            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}') # TODO: remove all prints once logging is present in the gitlab build
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            # # TODO: remove all prints once logging is present in the gitlab build
         except FileNotFoundError as e:
-            #logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
-            print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False:\nException: {e}')
+            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False:\nException: {e}')
             self.is_valid = False
 
     return wrapper
@@ -55,10 +60,12 @@ class GCP:
         self.storage_base_path = storage_base_path
 
         self.extracting_destination = tempfile.mkdtemp()
-        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination, self.storage_base_path)
+        self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
+                                                           self.storage_base_path)
         # TODO: for testing, use these lines instead of the 2 above
         # self.extracting_destination = os.path.join(os.getcwd(), 'results')
-        # self.index_path = '/Users/nmaimon/dev/demisto/content/Utils/test_upload_flow/results/index' TODO: download the index once to this path and then work with it, instead of downloading it again and again
+        # self.index_path = '/Users/nmaimon/dev/demisto/content/Utils/test_upload_flow/results/index'
+        # TODO: download the index once to this path and then work with it, instead of downloading it again and again
 
     def download_and_extract_pack(self, pack_id, pack_version):
         pack_path = os.path.join(self.storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
@@ -217,7 +224,7 @@ class BucketVerifier:
 
     #     self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
     #     return self.gcp.is_items_in_pack([item_file_path]), pack_id
-    
+
     @logger
     def verify_modified_modeling_rule_path(self, pack_id, modeling_rule, pack_items):
         """
@@ -352,13 +359,15 @@ def read_json(path):
 
 
 def main():
+    install_logging('verify_bucket.log', logger=logging)
+
     args = get_args()
     storage_base_path = args.storage_base_path
     service_account = args.service_account
     storage_bucket_name = args.bucket_name
     versions_dict = read_json(os.path.join(args.artifacts_path, 'versions_dict.json'))
     items_dict = read_json(os.path.join(args.artifacts_path, 'packs_items.json'))
-    
+
     is_valid = True
     if storage_bucket_name != 'All':
         if storage_bucket_name not in [XSOAR_BUCKET, XSIAM_BUCKET]:
@@ -368,7 +377,8 @@ def main():
         is_valid = validate_bucket(service_account, storage_base_path, storage_bucket_name, versions_dict, items_dict)
     else:
         is_xsoar_bucket_valid = validate_bucket(service_account, storage_base_path, XSOAR_BUCKET, versions_dict, items_dict)
-        is_valid = validate_bucket(service_account, storage_base_path, XSIAM_BUCKET, versions_dict, items_dict) and is_xsoar_bucket_valid
+        is_valid = validate_bucket(service_account, storage_base_path, XSIAM_BUCKET, versions_dict, items_dict) \
+            and is_xsoar_bucket_valid
 
     if not is_valid:
         sys.exit(1)
