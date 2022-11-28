@@ -436,24 +436,13 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
         dict: A dictionary that will hold the query arguments of the request.
     """
     projection = args.get('projection', '').lower()
-    # if(projection and projection not in CHROMEOS_DEVICE_PROJECTION):
-    #     raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
 
     order_by = args.get('order_by', '').lower()
-    # if(order_by and order_by not in CHROMEOS_DEVICE_ORDER_BY):
-    #     raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
 
     sort_order = args.get('sort_order', '').lower()
-    # if(sort_order and sort_order not in CHROMEOS_DEVICE_SORT_ORDER):
-    #     raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
-
-    # if(sort_order and not order_by):
-    #     raise DemistoException('sort_order argument must be used with the order_by parameter.')
 
     include_child_org_units = argToBoolean(args.get('include_child_org_units', False))
     org_unit_path = args.get('org_unit_path', '')
-    # if(include_child_org_units and not org_unit_path):
-    #     raise DemistoException('If include_child_org_units is set to true, org_unit_path must be provided')
 
     query_params = assign_params(projection=projection,
                                  query=args.get('query', None),
