@@ -22,6 +22,21 @@ def create_test_client(mocker) -> Client:
     return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
 
 
+def test_invalid_service_account_json():
+    """
+    Given:
+        - An invalid service_account_json (that holds the information about the service account).
+    When:
+        - Creating a client instance.
+    Then:
+        - Validate that an exception is thrown in response to an invalid service_account_json.
+    """
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as e:
+        Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
+    assert 'Please check the service account\'s json content' in str(e)
+
+
 TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
     ({'page': '3', 'page_size': '4', 'limit': '25'}, ('please supply either the argument limit,'
                                                       ' or the argument page, or the arguments page and page_size together.')),
@@ -32,6 +47,14 @@ TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
 
 @pytest.mark.parametrize('args, error_message', TEST_DATA_INVALID_PAGINATION_ARGUMENTS)
 def test_invalid_pagination_arguments(args, error_message):
+    """
+    Given:
+        - The pagination arguments supplied by the user.
+    When:
+        - Running the function prepare_pagination_arguments to check the content of the pagination arguments.
+    Then:
+        - Validate that an exception is thrown in response to invalid pagination arguments.
+    """
     from GoogleWorkspaceAdmin import prepare_pagination_arguments
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
@@ -205,11 +228,11 @@ def test_mobile_device_list_automatic_pagination(mocker, raw_results_file, parse
     # are under the impression that the maximum page is of size 3, this will give us the ability to mock the pagination process
     """
     Given:
-        -
+        - A client and query parameters for the API.
     When:
-        -
+        - Running the command google_mobile_device_list_command to retrieve the mobile devices' list using automatic pagination.
     Then:
-        -
+        - Validate the content of the context data and human readable.
     """
     from GoogleWorkspaceAdmin import google_mobile_device_list_command
     args = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', 'limit': limit}
@@ -237,11 +260,11 @@ def test_mobile_device_list_manual_pagination(mocker, raw_results_file, parsed_r
     # are under the impression that the maximum page is of size 3, this will give us the ability to mock the pagination process
     """
     Given:
-        - A client
+        - A client and query parameters for the API.
     When:
         - Running the command google_mobile_device_list_command to retrieve the mobile devices' list using manual pagination.
     Then:
-        -
+        - Validate the content of the context data and human readable.
     """
     from GoogleWorkspaceAdmin import google_mobile_device_list_command
     args = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', **pagination_args}
