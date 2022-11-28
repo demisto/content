@@ -170,14 +170,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.16"
+version = "1.26.17"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.16,<1.30.0"
+botocore = ">=1.29.17,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -186,7 +186,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.16"
+version = "1.29.17"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -419,7 +419,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = {git = "https://github.com/demisto/demisto-sdk.git", rev = "cb925bd69e7dc1722dbf0ae7698f49f7138d7e53"}
+version = "1.7.8"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1107,7 +1107,7 @@ python-versions = "*"
 
 [[package]]
 name = "neo4j"
-version = "4.4.9"
+version = "4.4.10"
 description = "Neo4j Bolt driver for Python"
 category = "dev"
 optional = false
@@ -1660,7 +1660,7 @@ cli = ["click (>=5.0)"]
 
 [[package]]
 name = "python-gitlab"
-version = "3.11.0"
+version = "3.12.0"
 description = "Interact with GitLab API"
 category = "dev"
 optional = false
@@ -2219,7 +2219,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.16.7"
+version = "20.17.0"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
@@ -2514,12 +2514,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.16-py3-none-any.whl", hash = "sha256:4f493a2aed71cee93e626de4f67ce58dd82c0473480a0fc45b131715cd8f4f30"},
-    {file = "boto3-1.26.16.tar.gz", hash = "sha256:31c0adf71e4bd19a5428580bb229d7ea3b5795eecaa0847a85385df00c026116"},
+    {file = "boto3-1.26.17-py3-none-any.whl", hash = "sha256:c39b7e87b27b00dcf452b2fc80252d311e275036f3d48464af34d0123077f985"},
+    {file = "boto3-1.26.17.tar.gz", hash = "sha256:bb40a9788dd2234851cdd1110eec0e3f6b3af6b98280924fa44c25199ced5737"},
 ]
 botocore = [
-    {file = "botocore-1.29.16-py3-none-any.whl", hash = "sha256:271b599e6cfe214405ed50d41cd967add1d5d469383dd81ff583bc818b47f59b"},
-    {file = "botocore-1.29.16.tar.gz", hash = "sha256:8cfcc10f2f1751608c3cec694f2d6b5e16ebcd50d0a104f9914d5616227c62e9"},
+    {file = "botocore-1.29.17-py3-none-any.whl", hash = "sha256:d4bab7d42acdb18effa33fee53d137b8b1bdedc2da196428a2d1e04a123778bc"},
+    {file = "botocore-1.29.17.tar.gz", hash = "sha256:4be7ca8c581dbc6e8584876c4347dcc4f4bc6aa6e6e8131901fc11816fc8151b"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3225,7 +3225,7 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 neo4j = [
-    {file = "neo4j-4.4.9.tar.gz", hash = "sha256:3c166e3e857e5a898331677321277e5c7b904c872884d265f7923ce5fe1babd6"},
+    {file = "neo4j-4.4.10.tar.gz", hash = "sha256:26db4f9c8f628e53bda62f15cf2a7bfac6e2073e962da761c7164b6b122fca44"},
 ]
 networkx = [
     {file = "networkx-2.8.8-py3-none-any.whl", hash = "sha256:e435dfa75b1d7195c7b8378c3859f0445cd88c6b0375c181ed66823a9ceb7524"},
@@ -3550,8 +3550,8 @@ python-dotenv = [
     {file = "python_dotenv-0.20.0-py3-none-any.whl", hash = "sha256:d92a187be61fe482e4fd675b6d52200e7be63a12b724abbf931a40ce4fa92938"},
 ]
 python-gitlab = [
-    {file = "python-gitlab-3.11.0.tar.gz", hash = "sha256:db9472b6ae4fba968b409dc32faee20dd65089065daa93e08d21b796a65d6578"},
-    {file = "python_gitlab-3.11.0-py3-none-any.whl", hash = "sha256:9f91d7d3967067a8fba46f23e8176bc1d006d3d26abc9f8f1f8d2d84da1d45d8"},
+    {file = "python-gitlab-3.12.0.tar.gz", hash = "sha256:567390c2b93690dae62ed9738bf9f221fa45c01378fdf896089dbf7c8a134fbd"},
+    {file = "python_gitlab-3.12.0-py3-none-any.whl", hash = "sha256:a5eb36b49783fda34563376674d5251dbbdbd1abd23b287dadf82f67d861b2c1"},
 ]
 python-http-client = [
     {file = "python_http_client-3.3.7-py3-none-any.whl", hash = "sha256:ad371d2bbedc6ea15c26179c6222a78bc9308d272435ddf1d5c84f068f249a36"},
@@ -4026,8 +4026,8 @@ urllib3 = [
     {file = "urllib3-1.26.13.tar.gz", hash = "sha256:c083dd0dce68dbfbe1129d5271cb90f9447dea7d52097c6e0126120c521ddea8"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.16.7-py3-none-any.whl", hash = "sha256:efd66b00386fdb7dbe4822d172303f40cd05e50e01740b19ea42425cbe653e29"},
-    {file = "virtualenv-20.16.7.tar.gz", hash = "sha256:8691e3ff9387f743e00f6bb20f70121f5e4f596cae754531f2b3b3a1b1ac696e"},
+    {file = "virtualenv-20.17.0-py3-none-any.whl", hash = "sha256:40a7e06a98728fd5769e1af6fd1a706005b4bb7e16176a272ed4292473180389"},
+    {file = "virtualenv-20.17.0.tar.gz", hash = "sha256:7d6a8d55b2f73b617f684ee40fd85740f062e1f2e379412cb1879c7136f05902"},
 ]
 virtualenv-clone = [
     {file = "virtualenv-clone-0.5.7.tar.gz", hash = "sha256:418ee935c36152f8f153c79824bb93eaf6f0f7984bae31d3f48f350b9183501a"},
