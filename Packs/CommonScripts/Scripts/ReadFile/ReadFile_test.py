@@ -445,7 +445,7 @@ def test_read_utf8_to_json_with_meta(mocker):
         assert v == results[k]
 
 
-def test_read_utf16be_to_json(mocker):
+def test_read_utf16be_to_json_with_meta(mocker):
     """
         Given:
             A file containing a json text in UTF-16BE with `output_meta_data' = true.
