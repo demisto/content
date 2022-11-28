@@ -116,18 +116,16 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def edit_security_rule(self, rule: dict, ruleid: str, tsg_id: str):
+    def edit_security_rule(self, rule: dict, rule_id: str, tsg_id: str):
         """Edit existing Prisma Access security rule
         Args:
             rule: Security rule dictionary
-            folder: Prisma Access Folder
-            postition: Prisma access rule position
-            ruleid: identifier of rule to be edited
+            rule_id: identifier of rule to be edited
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}security-rules/{ruleid}'
+        uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
         access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
@@ -186,16 +184,16 @@ class Client(BaseClient):
             headers=headers
         )
 
-    def edit_address_object(self, address: dict, addressid: str, tsg_id: str):
+    def edit_address_object(self, address: dict, address_id: str, tsg_id: str):
         """Edit existing address object
         Args:
             address: Address object dictionary
-            addressid: Identifier of existing address to be edited
+            address_id: Identifier of existing address to be edited
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
         """
-        uri = f'{CONFIG_URI_PREFIX}addresses/{addressid}'
+        uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
         access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
@@ -211,7 +209,7 @@ class Client(BaseClient):
     def delete_address_object(self, address_id: str, tsg_id: str):
         """Delete existing address object
         Args:
-            addressid: Identifier of existing address to be deleted
+            address_id: Identifier of existing address to be deleted
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -230,7 +228,7 @@ class Client(BaseClient):
     def list_address_objects(self, query_params: dict, tsg_id: str):
         """Return list of address objects from Prisma Access
         Args:
-            query_params: query paramters for the request
+            query_params: query parameters for the request
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -252,7 +250,7 @@ class Client(BaseClient):
     def list_security_rules(self, query_params: dict, tsg_id: str):
         """Command to list security rules
         Args:
-            query_params: query paramters for the request
+            query_params: query parameters for the request
             tsg_id: Target Prisma SASE tenant ID
         Returns:
             Outputs.
@@ -486,7 +484,6 @@ def create_address_object_command(client: Client, args: Dict[str, Any], default_
     """Command to create new Prisma Access address object
     Args:
         client: Client object with request
-        params: demisto.params()
         args: demisto.args()
         default_tsg_id: Default Prisma SASE TSG configured for integration
     Returns:
