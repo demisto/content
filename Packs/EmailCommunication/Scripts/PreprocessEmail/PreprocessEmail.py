@@ -184,7 +184,6 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
     Args:
         email_related_incident (str): ID of the incident to attach the files to.
         labels (Dict): Incident's labels to fetch the relevant data from.
-        attachment_id
     """
     message_id = ''
     instance_name = ''
