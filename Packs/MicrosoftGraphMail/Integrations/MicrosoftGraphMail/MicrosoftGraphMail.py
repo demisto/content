@@ -177,6 +177,7 @@ class MsGraphClient:
                            f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
         response = self.ms_client.http_request('GET', suffix)
+        response = [response] if response and attachment_id else response.get('value', [])
         return response
 
     def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
@@ -1589,9 +1590,9 @@ def get_attachment_command(client: MsGraphClient, args):
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
     attachments = []
-    for attachment in raw_response.get('value', []):
+    for attachment in raw_response:
         attachments.append(create_attachment(attachment, user_id))
-    return_results(attachments)
+    return attachments
 
 
 def get_message_command(client: MsGraphClient, args):
@@ -2067,7 +2068,7 @@ def main():
         elif command == 'msgraph-mail-list-attachments':
             list_attachments_command(client, args)
         elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command(client, args)
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-list-folders':
             list_folders_command(client, args)
         elif command == 'msgraph-mail-list-child-folders':
