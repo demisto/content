@@ -477,7 +477,8 @@ class Client(BaseClient):
                                os_types=None,
                                exclusion_type: str = None,
                                limit: int = 10,
-                               value_contains: Optional[str] = None):
+                               value_contains: Optional[str] = None,
+                               ok_codes=[200]):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
@@ -495,7 +496,7 @@ class Client(BaseClient):
             "limit": limit
         }
 
-        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get('data', {})
 
     def create_exclusion_item_request(self, exclusion_type, exclusion_value, os_type, description=None,
@@ -541,7 +542,7 @@ class Client(BaseClient):
                 "ids": [item_id]
             }
         }
-        response = self._http_request(method='DELETE', url_suffix='exclusions', json_data=body)
+        response = self._http_request(method='DELETE', url_suffix='exclusions', json_data=body, ok_codes=[200])
         return response.get('data') or {}
 
     def update_threat_analyst_verdict_request(self, threat_ids, action):
