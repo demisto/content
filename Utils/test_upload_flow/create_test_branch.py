@@ -329,6 +329,7 @@ def main():
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
+        subprocess.call(['export', f'branch={new_branch_name}'], stdout=subprocess.DEVNULL)
         return new_branch_name
         # print(new_branch_name)  # prints out to the bash variable
 
