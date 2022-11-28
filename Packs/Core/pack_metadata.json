@@ -9,6 +9,9 @@
     "categories": [
         "Endpoint"
     ],
+    "excludedDependencies": [
+        "Dropbox"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

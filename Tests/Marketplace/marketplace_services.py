@@ -2202,7 +2202,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("parsingrule-"):
+                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2210,7 +2210,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("modelingrule-"):
+                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
@@ -2612,7 +2612,8 @@ class Pack(object):
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and k not in core_packs
-                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()]
+                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
+                                      and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
