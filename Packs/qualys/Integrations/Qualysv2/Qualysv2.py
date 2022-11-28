@@ -297,16 +297,15 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
         "table_name": "Time Zone Codes",
         "json_path": ["TIME_ZONES"],
     },
-    # NOTE: tags parse and output data
     "qualys-asset-tag-list": {
         "table_name": "Tags identified by the specified filter",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": ["ID", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
+        "table_headers": ["id", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
     },
     "qualys-asset-tag-create": {
         "table_name": "Asset Tags Created",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": ["ID", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
+        "table_headers": ["id", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
     },
     "qualys-asset-tag-update": {
         "human_readable_massage": "Asset tag updated.",
@@ -315,9 +314,6 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     "qualys-asset-tag-delete": {
         "human_readable_massage": "Asset tag deleted.",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": [
-            "id",
-        ],
     },
 }
 
@@ -501,7 +497,6 @@ COMMANDS_CONTEXT_DATA = {
         "context_prefix": "Qualys.TimeZone",
         "context_key": "TIME_ZONE_CODE",
     },
-    # Asset Tags
     "qualys-asset-tag-list": {
         "context_prefix": "Qualys.AssetTags",
         "context_key": "AssetTags",
@@ -511,12 +506,12 @@ COMMANDS_CONTEXT_DATA = {
         "context_key": "AssetTags",
     },
     "qualys-asset-tag-update": {
-        "context_prefix": "Qualys.AssetTags",
-        "context_key": "AssetTags",
+        "context_prefix": "",
+        "context_key": "",
     },
     "qualys-asset-tag-delete": {
-        "context_prefix": "Qualys.AssetTags",
-        "context_key": "AssetTags",
+        "context_prefix": "",
+        "context_key": "",
     },
 }
 
@@ -1839,7 +1834,6 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
     """
     match command_name:
         case "qualys-asset-tag-list":
-            # NOTE: The attribute values can be configured one at a time with set(), for example: `root.set('version', '1.0')`
             ServiceRequest = ET.Element("ServiceRequest")
             filters = ET.SubElement(ServiceRequest, "filters")
             criteria = ET.SubElement(filters, "Criteria")
@@ -2054,7 +2048,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str) 
     elif formatted_response.get("ServiceResponse", {}).get("count") == "0":
         return None
 
-    if path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
+    elif path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
         if len(path_list) == 0:
             return formatted_response
         response_requested_value = dict_safe_get(formatted_response, path_list)
@@ -2062,6 +2056,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str) 
         if not response_requested_value:
             raise ValueError()
         return response_requested_value
+    return None
 
 
 @logger
@@ -2401,12 +2396,10 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
 
     if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
         for child_tag_dict in children_list:
-            child_tag_dict["ID"] = child_tag_dict.pop("id")
-            child_tag_dict["Name"] = child_tag_dict.pop("name")
-        handled_result["Child Tags"] = children_list
-
-    if handled_result.get("id"):
-        handled_result["ID"] = handled_result.pop("id")
+            child_tag_dict["id"] = child_tag_dict.pop("id")
+            child_tag_dict["name"] = child_tag_dict.pop("name")
+        handled_result["childTags"] = children_list
+        handled_result.pop("children")
 
     readable_output = tableToMarkdown(
         name=command_parse_and_output_data.get("table_name"),
@@ -2485,6 +2478,8 @@ def qualys_command_flow_manager(
         outputs, readable_output = command_methods["output_builder"](
             handled_result=handled_result, command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]
         )
+        if not COMMANDS_CONTEXT_DATA[command_name]["context_prefix"]:
+            outputs, result = None, None
         return CommandResults(
             outputs_prefix=COMMANDS_CONTEXT_DATA[command_name]["context_prefix"],
             outputs_key_field=COMMANDS_CONTEXT_DATA[command_name]["context_key"],

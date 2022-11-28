@@ -2632,6 +2632,9 @@ script:
     description: Create a new asset tag.
     name: qualys-asset-tag-create
     outputs:
+      - contextPath: Qualys.AssetTags.id
+        description: Parent asset tag id.
+        type: String
       - contextPath: Qualys.AssetTags.name
         description: Parent asset tag name.
         type: String
