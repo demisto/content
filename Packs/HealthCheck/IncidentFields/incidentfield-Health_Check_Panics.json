@@ -17,14 +17,29 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 150,
+            "orgType": "shortText"
         },
         {
-            "displayName": "PanicValue",
+            "displayName": "Latest Panic Time",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "latestpanictime",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "orgType": "shortText"
+        },
+        {
+            "displayName": "Panic Value",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
             "key": "panicvalue",
+            "orgType": "longText",
             "required": false,
             "script": "",
             "selectValues": null,
