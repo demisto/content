@@ -6,11 +6,11 @@ from CommonServerUserPython import *
 
 
 def read_file(args):
-    maxFileSize = demisto.get(args, 'maxFileSize')
-    if maxFileSize:
-        maxFileSize = int(maxFileSize)
+    max_file_size = demisto.get(args, 'maxFileSize')
+    if max_file_size:
+        max_file_size = int(max_file_size)
     else:
-        maxFileSize = 1024 ** 2
+        max_file_size = 1024 ** 2
 
     entry_id = args.get('entryID')
     input_encoding = args.get('encoding') or None
@@ -23,7 +23,7 @@ def read_file(args):
     with open(file_path,
               'rb' if input_encoding == 'binary' else 'r',
               encoding=None if input_encoding == 'binary' else input_encoding) as f:
-        data = f.read(maxFileSize)
+        data = f.read(max_file_size)
         eof = len(f.read(1)) == 0
 
     if not output_meta_data and len(data) == 0:
