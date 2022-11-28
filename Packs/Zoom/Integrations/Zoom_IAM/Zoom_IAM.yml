@@ -49,7 +49,7 @@ configuration:
     required: true
     type: 0
 description: An Identity and Access Management integration template.
-display: Zoom_IAM
+display: Zoom_IAM Dev
 name: Zoom_IAM Dev
 script:
   commands:
