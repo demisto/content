@@ -136,7 +136,7 @@ def search_incidents(args: Dict):   # pragma: no cover
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
         data = transform_to_alert_data(data)
-        md = tableToMarkdown(name="Alerts found", t=data, headers=headers, is_auto_json_transform=True)
+        md = tableToMarkdown(name="Alerts found", t=data, headers=headers, removeNull=True, url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
         md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
