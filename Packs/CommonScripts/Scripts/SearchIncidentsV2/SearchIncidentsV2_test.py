@@ -108,10 +108,10 @@ FILTER_TO_MATCHED_INCIDENTS = [
 
 INCIDENT = [
     {'CustomFields':
-         {'hostname': 'host_name',
-          'initiatedby': 'initiated_by',
-          'targetprocessname': 'target_process_name',
-          'username': 'user_name'},
+        {'hostname': 'host_name',
+         'initiatedby': 'initiated_by',
+         'targetprocessname': 'target_process_name',
+         'username': 'user_name'},
 
      'status': 0,
      'severity': 1,
