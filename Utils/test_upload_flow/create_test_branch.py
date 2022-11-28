@@ -116,7 +116,7 @@ def enhance_release_notes(pack: Path):
 
 @add_changed_pack
 def change_image(pack: Path):
-    new_image = pack / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
+    new_image = pack.parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
         shutil.copy(new_image, p)
     return pack, get_current_version(pack), None
