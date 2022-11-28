@@ -101,7 +101,7 @@ configuration:
   required: false
   type: 0
 - additionalinfo: 'Determines whether the feed will fetch indicators from all time. It is discouraged to use this method, and using it will cause the first fetch to take a long time.'
-  defaultvalue: false
+  defaultvalue: 'false'
   display: Fetch From Feed Start
   hidden: false
   name: fetch_from_feed_start
@@ -115,25 +115,9 @@ configuration:
   options:
   - indicator
   - relationship
-  - report
-  - malware
-  - campaign
-  - attack-pattern
-  - course-of-action
-  - intrusion-set
-  - tool
-  - threat-actor
-  - infrastructure
-  - autonomous-system
-  - domain-name
-  - email-addr
-  - file
-  - ipv4-addr
-  - ipv6-addr
-  - mutex
-  - url
-  - user-account
-  - windows-registry-key
+  - location
+  - identity
+  - opinion
 - display: Trust any certificate (not secure)
   name: insecure
   required: false

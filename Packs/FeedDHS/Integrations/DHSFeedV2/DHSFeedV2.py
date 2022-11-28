@@ -153,7 +153,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 
 def main():  # pragma: no cover
-    demisto.debug('version 2.7.5')
+    demisto.debug('version 2.7.6')
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')
@@ -165,7 +165,7 @@ def main():  # pragma: no cover
     skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get('observation_operator_mode')
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color', '')
-    objects_to_fetch = params.get('objects_to_fetch', None)
+    objects_to_fetch = params.get('objects_to_fetch')
     if isinstance(objects_to_fetch, list):
         objects_to_fetch = ','.join(objects_to_fetch)
 
@@ -184,7 +184,7 @@ def main():  # pragma: no cover
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
-            objects_to_fetch=[objects_to_fetch],
+            objects_to_fetch=[objects_to_fetch] if objects_to_fetch else [],
             skip_complex_mode=skip_complex_mode,
             tags=feed_tags,
             limit_per_request=limit_per_request,
