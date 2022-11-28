@@ -4,7 +4,7 @@ This playbook polls all indicators to check if they exist.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+GenericPolling
 
 ### Integrations
 This playbook does not use any integrations.
@@ -20,7 +20,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| indicators | The indicators to check |  | Required |
+| indicators | The indicators to check. |  | Required |
 | frequency | How often to check \(in minutes\). | 1 | Required |
 | timeout | When to timeout \(in minutes\). | 10 | Required |
 
