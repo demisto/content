@@ -84,7 +84,7 @@ def main():
         margin: auto;
     }}
     .logo{{
-        margin: 1em; 
+        margin: 1em;
     }}
     .logo-container{{
         width: 100%;
