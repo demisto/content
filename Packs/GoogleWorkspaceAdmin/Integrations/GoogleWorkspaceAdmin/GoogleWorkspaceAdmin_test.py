@@ -29,6 +29,7 @@ TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
     ({'page': '2', 'page_size': '101'}, 'The maximum page size is')
 ]
 
+
 @pytest.mark.parametrize('args, error_message', TEST_DATA_INVALID_PAGINATION_ARGUMENTS)
 def test_invalid_pagination_arguments(args, error_message):
     from GoogleWorkspaceAdmin import prepare_pagination_arguments
@@ -38,44 +39,45 @@ def test_invalid_pagination_arguments(args, error_message):
     assert error_message in str(e)
 
 
-TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS = [
-    ({'projection': 'Basics'}, 'Unsupported argument value'),
-    ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
-    ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
-    ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
-    ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
-    ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
-]
-
-@pytest.mark.parametrize('args, error_message', TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS)
-def test_mobile_device_list_wrong_arguments(mocker, args, error_message):
-    from GoogleWorkspaceAdmin import google_mobile_device_list_command
-    from CommonServerPython import DemistoException
-    client = create_test_client(mocker=mocker)
-    with pytest.raises(DemistoException) as e:
-        google_mobile_device_list_command(client=client, **args)
-    assert error_message in str(e)
+# TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS = [
+#     ({'projection': 'Basics'}, 'Unsupported argument value'),
+#     ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+#     ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+#     ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
+#     ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
+#     ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
+# ]
 
 
-def test_mobile_device_action_exception_wrong_action(mocker):
-    """
-    Given:
-        - A client, a resource id (that identifies a mobile device), and an action that affects the mobile device
-    When:
-        - The command google-mobiledevice-action is run with a wrong action argument
-    Then:
-        - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
-    """
-    from GoogleWorkspaceAdmin import google_mobile_device_action_command
-    from CommonServerPython import CommandResults
-    expected_command_result = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
-        readable_output='Failure',
-        outputs={'Reason': 'Unsupported argument value wrong_action for action.', 'Response': 'Failure'},
-    )
-    client = create_test_client(mocker=mocker)
-    command_result = google_mobile_device_action_command(client=client, resource_id='nothing', action='wrong_action')
-    assert command_result.to_context() == expected_command_result.to_context()
+# @pytest.mark.parametrize('args, error_message', TEST_DATA_MOBILE_DEVICE_LIST_WRONG_ARGUMENTS)
+# def test_mobile_device_list_wrong_arguments(mocker, args, error_message):
+#     from GoogleWorkspaceAdmin import google_mobile_device_list_command
+#     from CommonServerPython import DemistoException
+#     client = create_test_client(mocker=mocker)
+#     with pytest.raises(DemistoException) as e:
+#         google_mobile_device_list_command(client=client, **args)
+#     assert error_message in str(e)
+
+
+# def test_mobile_device_action_exception_wrong_action(mocker):
+#     """
+#     Given:
+#         - A client, a resource id (that identifies a mobile device), and an action that affects the mobile device
+#     When:
+#         - The command google-mobiledevice-action is run with a wrong action argument
+#     Then:
+#         - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
+#     """
+#     from GoogleWorkspaceAdmin import google_mobile_device_action_command
+#     from CommonServerPython import CommandResults
+#     expected_command_result = CommandResults(
+#         outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
+#         readable_output='Failure',
+#         outputs={'Reason': 'Unsupported argument value wrong_action for action.', 'Response': 'Failure'},
+#     )
+#     client = create_test_client(mocker=mocker)
+#     command_result = google_mobile_device_action_command(client=client, resource_id='nothing', action='wrong_action')
+#     assert command_result.to_context() == expected_command_result.to_context()
 
 
 def test_mobile_device_action(mocker):
@@ -92,7 +94,7 @@ def test_mobile_device_action(mocker):
     expected_command_result = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
         readable_output='Success',
-        outputs={'Response': 'Success'},
+        outputs={'Status': 'Success'},
     )
     client = create_test_client(mocker=mocker)
     mocker.patch.object(client, 'google_mobile_device_action_request', return_value='nothing')
@@ -100,48 +102,48 @@ def test_mobile_device_action(mocker):
     assert command_result.to_context() == expected_command_result.to_context()
 
 
-def test_chromeos_device_action_exception_wrong_action(mocker):
-    """
-    Given:
-        -  A client, a resource id (that identifies a mobile device), and an action that affects the chromeos device
-    When:
-        - The command google-chromeosdevice-action is run with a wrong action argument
-    Then:
-        - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
-    """
-    from GoogleWorkspaceAdmin import google_chromeos_device_action_command
-    from CommonServerPython import CommandResults
-    expected_command_result = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
-        readable_output='Failure',
-        outputs={'Reason': 'Unsupported argument value wrong_action for action.', 'Response': 'Failure'},
-    )
-    client = create_test_client(mocker=mocker)
-    command_result = google_chromeos_device_action_command(client=client, resource_id='nothing', action='wrong_action')
-    assert command_result.to_context() == expected_command_result.to_context()
+# def test_chromeos_device_action_exception_wrong_action(mocker):
+#     """
+#     Given:
+#         -  A client, a resource id (that identifies a mobile device), and an action that affects the chromeos device
+#     When:
+#         - The command google-chromeosdevice-action is run with a wrong action argument
+#     Then:
+#         - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
+#     """
+#     from GoogleWorkspaceAdmin import google_chromeos_device_action_command
+#     from CommonServerPython import CommandResults
+#     expected_command_result = CommandResults(
+#         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
+#         readable_output='Failure',
+#         outputs={'Reason': 'Unsupported argument value wrong_action for action.', 'Response': 'Failure'},
+#     )
+#     client = create_test_client(mocker=mocker)
+#     command_result = google_chromeos_device_action_command(client=client, resource_id='nothing', action='wrong_action')
+#     assert command_result.to_context() == expected_command_result.to_context()
 
 
-def test_chromeos_device_action_exception_wrong_deprovision_reason(mocker):
-    """
-    Given:
-        - A client, a resource id (that identifies a mobile device), and an action that affects the chromeos device
-    When:
-        - The command google-chromeosdevice-action is run with the action argument being set to `deprovision` and a wrong
-          deprovision_reason argument
-    Then:
-        - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
-    """
-    from GoogleWorkspaceAdmin import google_chromeos_device_action_command
-    from CommonServerPython import CommandResults
-    expected_command_result = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
-        readable_output='Failure',
-        outputs={'Reason': 'Unsupported argument value wrong_reason for deprovision_reason.', 'Response': 'Failure'},
-    )
-    client = create_test_client(mocker=mocker)
-    command_result = google_chromeos_device_action_command(client=client, resource_id='nothing',
-                                                           deprovision_reason='wrong_reason', action='deprovision')
-    assert command_result.to_context() == expected_command_result.to_context()
+# def test_chromeos_device_action_exception_wrong_deprovision_reason(mocker):
+#     """
+#     Given:
+#         - A client, a resource id (that identifies a mobile device), and an action that affects the chromeos device
+#     When:
+#         - The command google-chromeosdevice-action is run with the action argument being set to `deprovision` and a wrong
+#           deprovision_reason argument
+#     Then:
+#         - A CommandResults is returned that marks the command as failure and an error message is sent to demisto.log
+#     """
+#     from GoogleWorkspaceAdmin import google_chromeos_device_action_command
+#     from CommonServerPython import CommandResults
+#     expected_command_result = CommandResults(
+#         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
+#         readable_output='Failure',
+#         outputs={'Reason': 'Unsupported argument value wrong_reason for deprovision_reason.', 'Response': 'Failure'},
+#     )
+#     client = create_test_client(mocker=mocker)
+#     command_result = google_chromeos_device_action_command(client=client, resource_id='nothing',
+#                                                            deprovision_reason='wrong_reason', action='deprovision')
+#     assert command_result.to_context() == expected_command_result.to_context()
 
 
 def test_chromeos_device_action(mocker):
@@ -158,7 +160,7 @@ def test_chromeos_device_action(mocker):
     expected_command_result = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
         readable_output='Success',
-        outputs={'Response': 'Success'},
+        outputs={'Status': 'Success'},
     )
     client = create_test_client(mocker=mocker)
     mocker.patch.object(client, 'google_chromeos_device_action_request', return_value='nothing')
@@ -167,25 +169,26 @@ def test_chromeos_device_action(mocker):
     assert command_result.to_context() == expected_command_result.to_context()
 
 
-TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS = [
-    ({'projection': 'Basics'}, 'Unsupported argument value'),
-    ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
-    ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
-    ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
-    ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
-    ({'include_child_org_units': True, 'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'last_sync'},
-     'If include_child_org_units is set to true, org_unit_path must be provided'),
-    ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
-]
+# TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS = [
+#     ({'projection': 'Basics'}, 'Unsupported argument value'),
+#     ({'projection': 'Basic', 'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+#     ({'sort_order': 'ASCENDINGs'}, 'Unsupported argument value'),
+#     ({'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'lastsynC'}, 'Unsupported argument value'),
+#     ({'order_by': 'lastsynC'}, 'Unsupported argument value'),
+#     ({'include_child_org_units': True, 'projection': 'Basic', 'sort_order': 'ASCENDING', 'order_by': 'last_sync'},
+#      'If include_child_org_units is set to true, org_unit_path must be provided'),
+#     ({'sort_order': 'Ascending'}, 'sort_order argument must be used with the order_by parameter.')
+# ]
 
-@pytest.mark.parametrize('args, error_message', TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS)
-def test_chromeos_device_list_wrong_arguments(mocker, args, error_message):
-    from GoogleWorkspaceAdmin import google_chromeos_device_list_command
-    from CommonServerPython import DemistoException
-    client = create_test_client(mocker=mocker)
-    with pytest.raises(DemistoException) as e:
-        google_chromeos_device_list_command(client=client, **args)
-    assert error_message in str(e)
+
+# @pytest.mark.parametrize('args, error_message', TEST_DATA_CHROMEOS_DEVICE_LIST_WRONG_ARGUMENTS)
+# def test_chromeos_device_list_wrong_arguments(mocker, args, error_message):
+#     from GoogleWorkspaceAdmin import google_chromeos_device_list_command
+#     from CommonServerPython import DemistoException
+#     client = create_test_client(mocker=mocker)
+#     with pytest.raises(DemistoException) as e:
+#         google_chromeos_device_list_command(client=client, **args)
+#     assert error_message in str(e)
 
 
 TEST_DATA_AUTO_PAGINATION_FILES_CASES = [
@@ -194,6 +197,7 @@ TEST_DATA_AUTO_PAGINATION_FILES_CASES = [
     ('test_data/mobile_devices_list/automatic_pagination/raw_results_2_pages.json',
      'test_data/mobile_devices_list/automatic_pagination//parsed_results_2_pages.json', '6')
 ]
+
 
 @pytest.mark.parametrize('raw_results_file, parsed_results_file, limit', TEST_DATA_AUTO_PAGINATION_FILES_CASES)
 def test_mobile_device_list_automatic_pagination(mocker, raw_results_file, parsed_results_file, limit):
@@ -226,15 +230,16 @@ TEST_DATA_MANUAL_PAGINATION_FILES_CASES = [
      'test_data/mobile_devices_list/manual_pagination//parsed_results_page_not_found.json', {'page': '4', 'page_size': '3'})
 ]
 
+
 @pytest.mark.parametrize('raw_results_file, parsed_results_file, pagination_args', TEST_DATA_MANUAL_PAGINATION_FILES_CASES)
 def test_mobile_device_list_manual_pagination(mocker, raw_results_file, parsed_results_file, pagination_args):
     # Since there is not enough mobile devices to actually do pagination, all the requests being mocked
     # are under the impression that the maximum page is of size 3, this will give us the ability to mock the pagination process
     """
     Given:
-        -
+        - A client
     When:
-        -
+        - Running the command google_mobile_device_list_command to retrieve the mobile devices' list using manual pagination.
     Then:
         -
     """

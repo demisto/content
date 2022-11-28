@@ -27,6 +27,12 @@ MOBILE_DEVICE_ORDER_BY = ['device_id', 'email', 'last_sync', 'model', 'name', 'o
 MOBILE_DEVICE_PROJECTION = ['basic', 'full']
 MOBILE_DEVICE_SORT_ORDER = ['ascending', 'descending']
 
+ERROR_MESSAGES_MAPPING = {
+    'Bad Request': 'Please check the customer ID parameter.',
+    'Internal error encountered.': 'Please check the resource_id argument.',
+    'Not Authorized to access this resource/api': 'Please check the authorizations of the configured service account.'
+}
+
 MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
@@ -41,8 +47,6 @@ class ActionCommandIncorrectArguments(Exception):
 
 
 requests.packages.urllib3.disable_warnings()
-
-""" OAuth tokens are correlated with scopes, so if a new HTTP request requires different scopes, a new token is required """
 
 
 class Client(BaseClient):
@@ -82,18 +86,21 @@ class Client(BaseClient):
                                           headers=headers)
             return 'ok'
         except DemistoException as e:
-            if 'Forbidden' in str(e) or 'Not Authorized' in str(e):
-                raise DemistoException('Please make sure the service account has the relevant authorizations')
+            if(not e.res):
+                error_res_to_json = e.res.json()
+                error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+                raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
             else:
                 raise e
-        except Exception as e:
-            raise e
 
     def _get_oauth_token(self, scopes: List[str]):
-        """ In charge or retrieving the OAuth token in order to make HTTP requests """
+        """
+        In charge or retrieving the OAuth token in order to make HTTP requests.
+        OAuth tokens are correlated with scopes, so if a new HTTP request requires different scopes, a new token is required
+        """
 
-        #  It is enough to check the scopes' list using == operator since each HTTP request requires at most
-        #  one level of scope
+        #  Scopes are represented using a list, and it is enough to check the scopes' list using == operator since each HTTP
+        # request requires at most one level of scope
         if(scopes != self._credentials.scopes):
             self._credentials = self._credentials.with_scopes(scopes)
 
@@ -110,9 +117,9 @@ class Client(BaseClient):
         return self._credentials.token
 
     def google_mobile_device_action_request(self, resource_id: str, action: str):
-        if action not in MOBILE_DEVICE_ACTION:
-            raise ActionCommandIncorrectArguments(
-                f'Unsupported argument value {action if action else "of empty string"} for action.')
+        # if action not in MOBILE_DEVICE_ACTION:
+        #     raise ActionCommandIncorrectArguments(
+        #         f'Unsupported argument value {action if action else "of empty string"} for action.')
         json_body = {'action': action}
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.mobile.action']
         token = self._get_oauth_token(scopes=scopes)
@@ -138,14 +145,14 @@ class Client(BaseClient):
 
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
-        if action not in CHROMEOS_DEVICE_ACTION:
-            raise ActionCommandIncorrectArguments(
-                f'Unsupported argument value {action if action else "of empty string"} for action.')
-        elif action == 'deprovision':
-            if deprovision_reason not in CHROMEOS_DEVICE_DEPROVISION_REASON:
-                raise ActionCommandIncorrectArguments(
-                    (f'Unsupported argument value'
-                     f' {deprovision_reason if deprovision_reason else "of empty string"} for deprovision_reason.'))
+        # if action not in CHROMEOS_DEVICE_ACTION:
+        #     raise ActionCommandIncorrectArguments(
+        #         f'Unsupported argument value {action if action else "of empty string"} for action.')
+        if action == 'deprovision':
+            # if deprovision_reason not in CHROMEOS_DEVICE_DEPROVISION_REASON:
+            #     raise ActionCommandIncorrectArguments(
+            #         (f'Unsupported argument value'
+            #          f' {deprovision_reason if deprovision_reason else "of empty string"} for deprovision_reason.'))
             json_body['deprovisionReason'] = deprovision_reason
 
         scopes = ['https://www.googleapis.com/auth/admin.directory.device.chromeos']
@@ -183,25 +190,25 @@ class Client(BaseClient):
 def device_list_manual_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict, page: Optional[int],
                                   page_size: int, table_headers: List[str], table_title: str, outputs_prefix: str,
                                   response_devices_list_key: str, cd_devices_list_key: str) -> CommandResults:
-    """_summary_
+    """This function implements the manual pagination mechanism for both commands: mobile-device-list, and chromos-device-list.
+    Since the API does not support `page` and `page_size` arguments, we have to do the manual pagination manually. We do this by
+    limiting the page size returned from the API, using the `page_size` argument, and iteratively doing API requests according to
+    the value of the argument `page`.
 
     Args:
-        api_request (Callable): _description_
-        to_human_readable (Callable): _description_
-        query_params (dict): _description_
-        page (int): _description_
-        page_size (int): _description_
-        table_headers (List[str]): _description_
-        table_title (str): _description_
-        response_devices_list_key (str): _description_
-        cd_devices_list_key (str): _description_
+        api_request (Callable): The API request that will be used to retrieve the list of devices.
+        to_human_readable (Callable): The function that will be used to create the human readable data from the context data.
+        query_params (dict): The query parameters that will be sent with the API call.
+        page (Optional[int]): The page number.
+        page_size (int): The size of the page.
+        table_headers (List[str]): The table headers that will be used in the human readable table.
+        table_title (str): The tile of the human readable table.
+        outputs_prefix (str): The outputs_prefix that will be used in the context data.
+        response_devices_list_key (str): The key that will point to the list of devices in the response body.
+        cd_devices_list_key (str): The key that will point to the list of devices in the context data.
 
     Returns:
-        CommandResults: _description_
-    """
-    """
-    Executes the command mobile-device-list using manual pagination, and returns a CommandResult
-    that holds the data to return to the user.
+        CommandResults: Command Results that hold all the relevant data to return to the engine.
     """
     query_params['maxResults'] = page_size
     relevant_response = {}  # This will hold the relevant response that holds the page that was requested
@@ -213,14 +220,17 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
     while get_data_from_api:
         query_params['pageToken'] = next_page_token
         response = api_request(query_params=query_params)
-        next_page_token = response.get('nextPageToken')
+        next_page_token = response.get('nextPageToken')  # Get the token of the next page if needed
         current_page_number += 1
         if(current_page_number == page):
+            # If entered here, that means we found the required page
             get_data_from_api = False
             context_data['resourceKind'] = response.get('kind')
             context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
             relevant_response = response
         elif(not next_page_token):
+            # If entered here, that means we did not reach the required page, which means
+            # the page was not found
             get_data_from_api = False
             page_found = False
 
@@ -246,7 +256,25 @@ def device_list_manual_pagination(api_request: Callable, to_human_readable: Call
 def device_list_automatic_pagination(api_request: Callable, to_human_readable: Callable, query_params: dict,
                                      limit: int, table_headers: List[str], table_title: str, outputs_prefix: str,
                                      response_devices_list_key: str, cd_devices_list_key) -> CommandResults:
-    # TODO add documentation
+    """This function implements the automatic pagination mechanism for both commands: mobile-device-list, and chromos-device-list.
+    Since the API does not support a `limit` argument, we have to do the automatic pagination manually. If the limit
+    argument is smaller than or equal to the maximum page size allowed by the API, then we will only need one request call,
+    else, we will make multiple requests by utilizing the `nextPageToken` argument supplied by the API.
+
+    Args:
+        api_request (Callable): The API request that will be used to retrieve the list of devices.
+        to_human_readable (Callable): The function that will be used to create the human readable data from the context data.
+        query_params (dict): The query parameters that will be sent with the API call.
+        limit (int): The limit argument that will act as the maximum number of results to return from the API request.
+        table_headers (List[str]): The table headers that will be used in the human readable table.
+        table_title (str): The tile of the human readable table.
+        outputs_prefix (str): The outputs_prefix that will be used in the context data.
+        response_devices_list_key (str): The key that will point to the list of devices in the response body.
+        cd_devices_list_key (_type_): The key that will point to the list of devices in the context data.
+
+    Returns:
+        CommandResults: Command Results that hold all the relevant data to return to the engine.
+    """
     results_limit = limit
     context_data = {}  # This will hold the context data to return to the user
     mobile_devices = []  # This will hold all aggregated mobile devices returned from the API requests
@@ -259,11 +287,13 @@ def device_list_automatic_pagination(api_request: Callable, to_human_readable: C
         response = api_request(query_params=query_params)
         responses.append(response)
         response_mobile_devices = response.get(response_devices_list_key, [])
-        next_page_token = response.get('nextPageToken')
+        next_page_token = response.get('nextPageToken')  # Get the token of the next page if needed
 
         mobile_devices.extend(response_mobile_devices)
         results_limit -= len(response_mobile_devices)
         if(results_limit <= 0 or not next_page_token):
+            # If entered, that means we either reached the maximum results defined by the user,
+            # or there is no more data from the API.
             context_data['resourceKind'] = response.get('kind')
             context_data[cd_devices_list_key] = mobile_devices
             get_data_from_api = False
@@ -288,7 +318,7 @@ def prepare_pagination_arguments(args: dict) -> dict:
         args (dict): The arguments from the user
 
     Returns:
-        _type_: A dictionary that holds the pagination information.
+        dict: A dictionary that holds the pagination information.
     """
     if('page' in args or 'page_size' in args):
         if('limit' in args):
@@ -309,20 +339,29 @@ def prepare_pagination_arguments(args: dict) -> dict:
 
 
 def mobile_device_list_create_query_parameters(args: dict) -> dict:
+    """This function takes in the arguments from the user and creates a dictionary that will hold
+    the query arguments for the mobile-device-list request.
+
+    Args:
+        args (dict): The arguments from the user
+
+    Returns:
+        dict: A dictionary that will hold the query arguments of the request.
+    """
     projection = args.get('projection', '').lower()
-    if(projection and projection not in MOBILE_DEVICE_PROJECTION):
-        raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
+    # if(projection and projection not in MOBILE_DEVICE_PROJECTION):
+    #     raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
 
     order_by = args.get('order_by', '').lower()
-    if(order_by and order_by not in MOBILE_DEVICE_ORDER_BY):
-        raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
+    # if(order_by and order_by not in MOBILE_DEVICE_ORDER_BY):
+    #     raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
 
     sort_order = args.get('sort_order', '').lower()
-    if(sort_order and sort_order not in MOBILE_DEVICE_SORT_ORDER):
-        raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
+    # if(sort_order and sort_order not in MOBILE_DEVICE_SORT_ORDER):
+    #     raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
 
-    if(sort_order and not order_by):
-        raise DemistoException('sort_order argument must be used with the order_by parameter.')
+    # if(sort_order and not order_by):
+    #     raise DemistoException('sort_order argument must be used with the order_by parameter.')
     query_params = assign_params(projection=projection,
                                  query=args.get('query', ''),
                                  orderBy=order_by,
@@ -332,6 +371,15 @@ def mobile_device_list_create_query_parameters(args: dict) -> dict:
 
 
 def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
+    """This function will take a context data from the mobile-device-list command, and
+    return human readable data for the UI.
+
+    Args:
+        context_data (dict): Context Data returned from the mobile-device-list command.
+
+    Returns:
+        List[dict]: A list of human readable data to print to the user.
+    """
     human_readable: List[dict] = []
     for mobile_device in context_data.get('mobileListObjects', []):
         human_readable.append({'Serial Number': mobile_device.get('deviceId'),
@@ -353,46 +401,59 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
     cd_devices_list_key = 'mobileListObjects'
     outputs_prefix = f'{OUTPUT_PREFIX}.mobileEvent'
     pagination_args = prepare_pagination_arguments(args=kwargs)
-    if 'limit' in pagination_args:
-        return device_list_automatic_pagination(api_request=client.google_mobile_device_list_request,
-                                                to_human_readable=mobile_device_list_to_human_readable,
-                                                table_headers=table_headers,
-                                                table_title=table_title,
-                                                response_devices_list_key=response_devices_list_key,
-                                                cd_devices_list_key=cd_devices_list_key,
-                                                outputs_prefix=outputs_prefix,
-                                                query_params=query_params, **pagination_args)
+    mutual_pagination_args = assign_params(
+        api_request=client.google_mobile_device_list_request,
+        to_human_readable=mobile_device_list_to_human_readable,
+        table_headers=table_headers,
+        table_title=table_title,
+        response_devices_list_key=response_devices_list_key,
+        cd_devices_list_key=cd_devices_list_key,
+        outputs_prefix=outputs_prefix,
+        query_params=query_params
+    )
+    try:
+        if 'limit' in pagination_args:
+            return device_list_automatic_pagination(**mutual_pagination_args, **pagination_args)
 
-    return device_list_manual_pagination(api_request=client.google_mobile_device_list_request,
-                                         to_human_readable=mobile_device_list_to_human_readable,
-                                         table_headers=table_headers,
-                                         table_title=table_title,
-                                         response_devices_list_key=response_devices_list_key,
-                                         cd_devices_list_key=cd_devices_list_key,
-                                         outputs_prefix=outputs_prefix,
-                                         query_params=query_params, **pagination_args)
+        return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
+    except DemistoException as e:
+        if(not e.res):
+            error_res_to_json = e.res.json()
+            error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+            raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
+        else:
+            raise e
 
 
 def chromeos_device_list_create_query_parameters(args: dict) -> dict:
+    """This function takes in the arguments from the user and creates a dictionary that will hold
+    the query arguments for the chromeos-device-list request.
+
+    Args:
+        args (dict): The arguments from the user
+
+    Returns:
+        dict: A dictionary that will hold the query arguments of the request.
+    """
     projection = args.get('projection', '').lower()
-    if(projection and projection not in CHROMEOS_DEVICE_PROJECTION):
-        raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
+    # if(projection and projection not in CHROMEOS_DEVICE_PROJECTION):
+    #     raise DemistoException(f'Unsupported argument value {projection if projection else "of empty string"} for projection.')
 
     order_by = args.get('order_by', '').lower()
-    if(order_by and order_by not in CHROMEOS_DEVICE_ORDER_BY):
-        raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
+    # if(order_by and order_by not in CHROMEOS_DEVICE_ORDER_BY):
+    #     raise DemistoException(f'Unsupported argument value {order_by if order_by else "of empty string"} for order_by.')
 
     sort_order = args.get('sort_order', '').lower()
-    if(sort_order and sort_order not in CHROMEOS_DEVICE_SORT_ORDER):
-        raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
+    # if(sort_order and sort_order not in CHROMEOS_DEVICE_SORT_ORDER):
+    #     raise DemistoException(f'Unsupported argument value {sort_order if sort_order else "of empty string"} for sort_order.')
 
-    if(sort_order and not order_by):
-        raise DemistoException('sort_order argument must be used with the order_by parameter.')
+    # if(sort_order and not order_by):
+    #     raise DemistoException('sort_order argument must be used with the order_by parameter.')
 
     include_child_org_units = argToBoolean(args.get('include_child_org_units', False))
     org_unit_path = args.get('org_unit_path', '')
-    if(include_child_org_units and not org_unit_path):
-        raise DemistoException('If include_child_org_units is set to true, org_unit_path must be provided')
+    # if(include_child_org_units and not org_unit_path):
+    #     raise DemistoException('If include_child_org_units is set to true, org_unit_path must be provided')
 
     query_params = assign_params(projection=projection,
                                  query=args.get('query', None),
@@ -405,6 +466,15 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
 
 
 def chromeos_device_list_to_human_readable(context_data: dict) -> List[dict]:
+    """This function will take a context data from the chromeos-device-list command, and
+    return human readable data for the UI.
+
+    Args:
+        context_data (dict): Context Data returned from the chromeos-device-list command.
+
+    Returns:
+        List[dict]: A list of human readable data to print to the user.
+    """
     human_readable: List[dict] = []
     for mobile_device in context_data.get('chromeosListObjects', []):
         human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
@@ -425,70 +495,86 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
     cd_devices_list_key = 'chromeosListObjects'
     outputs_prefix = f'{OUTPUT_PREFIX}.chromeosEvent'
     pagination_args = prepare_pagination_arguments(args=kwargs)
-    if 'limit' in pagination_args:
-        return device_list_automatic_pagination(api_request=client.google_chromeos_device_list_request,
-                                                to_human_readable=chromeos_device_list_to_human_readable,
-                                                table_headers=table_headers,
-                                                table_title=table_title,
-                                                response_devices_list_key=response_devices_list_key,
-                                                cd_devices_list_key=cd_devices_list_key,
-                                                outputs_prefix=outputs_prefix,
-                                                query_params=query_params, **pagination_args)
+    mutual_pagination_args = assign_params(
+        api_request=client.google_mobile_device_list_request,
+        to_human_readable=mobile_device_list_to_human_readable,
+        table_headers=table_headers,
+        table_title=table_title,
+        response_devices_list_key=response_devices_list_key,
+        cd_devices_list_key=cd_devices_list_key,
+        outputs_prefix=outputs_prefix,
+        query_params=query_params
+    )
+    try:
+        if 'limit' in pagination_args:
+            return device_list_automatic_pagination(**mutual_pagination_args, **pagination_args)
 
-    return device_list_manual_pagination(api_request=client.google_chromeos_device_list_request,
-                                         to_human_readable=chromeos_device_list_to_human_readable,
-                                         table_headers=table_headers,
-                                         table_title=table_title,
-                                         response_devices_list_key=response_devices_list_key,
-                                         cd_devices_list_key=cd_devices_list_key,
-                                         outputs_prefix=outputs_prefix,
-                                         query_params=query_params, **pagination_args)
+        return device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
+    except DemistoException as e:
+        if(not e.res):
+            error_res_to_json = e.res.json()
+            error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+            raise DemistoException(ERROR_MESSAGES_MAPPING.get(error_message, error_message))
+        else:
+            raise e
 
 
 def google_mobile_device_action_command(client: Client, resource_id: str, action: str) -> CommandResults:
-    readable_output = 'Success'
-    failure_reason = {}
+    status = 'Success'
+    readable_output = status
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can mark this
         # request as failure
         client.google_mobile_device_action_request(resource_id, action)
-    except ActionCommandIncorrectArguments as e:
-        readable_output = 'Failure'
-        failure_reason['Reason'] = str(e)
+
     except DemistoException as e:
-        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
-        readable_output = 'Failure'
-        # TODO Should I add the reason as str(e)?
-        # raise e
+        # TODO Ask when it is a good idea to use demisto.debug
+        # demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
+        status = 'Failure'
+        failure_reason = ''
+        if(not e.res):
+            error_res_to_json = e.res.json()
+            # We want to print the error message to the UI
+            error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+            failure_reason = ERROR_MESSAGES_MAPPING.get(error_message, error_message)
+        else:
+            failure_reason = str(e)
+        readable_output = f'{status}. An error has occurred when running the command:\n{failure_reason}'
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
         readable_output=readable_output,
-        outputs=failure_reason | {'Response': readable_output},
+        outputs={'Status': status},
     )
     return command_results
 
 
 def google_chromeos_device_action_command(client: Client, resource_id: str, action: str,
                                           deprovision_reason: str = '') -> CommandResults:
-    readable_output = 'Success'
-    failure_reason = {}
+    status = 'Success'
+    readable_output = status
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can mark this
         # request as failure
         client.google_chromeos_device_action_request(resource_id, action, deprovision_reason=deprovision_reason)
-    except ActionCommandIncorrectArguments as e:
-        readable_output = 'Failure'
-        failure_reason['Reason'] = str(e)
+
     except DemistoException as e:
-        demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
-        readable_output = 'Failure'
-        failure_reason['Reason'] = str(e)
-        # TODO Should I add the reason as str(e)?
-        # raise e
+        status = 'Failure'
+        failure_reason = ''
+        if(not e.res):
+            error_res_to_json = e.res.json()
+            # We want to print the error message to the UI
+            error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+            failure_reason = ERROR_MESSAGES_MAPPING.get(error_message, error_message)
+        else:
+            failure_reason = str(e)
+        # TODO Ask when it is a good idea to use demisto.debug
+        # demisto.debug(f'An error has occurred when running the command:\n{str(e)}')
+        readable_output = f'{status}. An error has occurred when running the command:\n{failure_reason}'
+
     command_results = CommandResults(
         outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
         readable_output=readable_output,
-        outputs=failure_reason | {'Response': readable_output},
+        outputs={'Status': status},
     )
     return command_results
 
@@ -525,7 +611,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        print(str(e))
+        # print(str(e))
         return_error(f'Failed to execute {command} command.'
                      f'\nError:\n{str(e)}')
 
