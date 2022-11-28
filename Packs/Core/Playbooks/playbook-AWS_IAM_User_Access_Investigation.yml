@@ -35,6 +35,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: c48a2862-f3e1-4dd3-89b7-8590f645298b
@@ -65,6 +66,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 1e498a1e-df55-4805-8fa9-973ba6554ac1
@@ -92,6 +94,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: f452a1bf-3fc3-40db-8d4a-1666372f6a82
@@ -124,6 +127,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 043b96c8-7870-4754-823d-3a0658690cf2
@@ -154,6 +158,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: 99d6201c-337d-4da6-82a1-bcd06c48573b
@@ -184,6 +189,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: cee3b559-fdae-4404-863c-39f9dd375566
@@ -214,6 +220,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 65900bdd-a39d-4848-8edc-4a3026a5360c
@@ -275,6 +282,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "57":
     id: "57"
     taskid: 9bc32470-1e47-447a-8a0b-f41a4049394c
@@ -307,6 +315,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "58":
     id: "58"
     taskid: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
@@ -338,6 +347,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "60":
     id: "60"
     taskid: fe3f84ca-6874-4450-85d7-4de28a71fd11
@@ -405,6 +415,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "61":
     id: "61"
     taskid: 6c5bcd44-dde7-429a-8838-d0e78c895537
@@ -441,6 +452,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "64":
     id: "64"
     taskid: 8eded0e7-c70b-40a6-8515-6a3215682533
@@ -494,6 +506,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "65":
     id: "65"
     taskid: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
@@ -524,6 +537,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "66":
     id: "66"
     taskid: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
@@ -561,6 +575,17 @@ tasks:
           right:
             value:
               simple: Suspicious
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Ip
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -575,6 +600,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
