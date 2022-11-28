@@ -3,7 +3,7 @@ commonfields:
   id: Palo Alto Networks Threat Vault v2
   version: -1
 configuration:
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers who upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: true
@@ -55,7 +55,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The SHA256 or MD5 hash of the antivirus signature.
+      description: A comma-separated list of SHA256 or MD5 hashes of the antivirus signature.
       isArray: true
       name: file
       required: true
@@ -91,7 +91,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: The CVE name.
+      description: A comma-separated list of CVE names.
       isArray: true
       name: cve
       required: true
@@ -108,10 +108,10 @@ script:
       description: The indicator type.
       type: String
     - contextPath: CVE.ID
-      description: The CVE id.
+      description: The CVE ID.
       type: String
     - contextPath: CVE.Description
-      description: A description of the cve.
+      description: A description of the CVE.
       type: String
     - contextPath: CVE.CVSS.Score
       description: The CVSS of the CVE.
@@ -124,25 +124,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The SHA256 hash of the antivirus signature. ## checks
+      description: A comma-separated list of SHA256 hashes of the antivirus signature. ## checks
       isArray: true
       name: sha256
       required: false
       secret: false
     - default: false
-      description: The md5 hash of the antivirus signature. ## checks
+      description: A comma-separated list of MD5 hash of the antivirus signature. ## checks
       isArray: true
       name: md5
       required: false
       secret: false
     - default: false
-      description: ID of the antispyware or antivirus signature ## checks
+      description: A comma-separated list of IDs of the anti-spyware or antivirus signature ## checks
       isArray: true
       name: signature_id
       required: false
       secret: false
     deprecated: false
-    description: Gets the antivirus or antispyware or files signature. ## checks
+    description: Gets the antivirus or anti-spyware or files signature. ## checks
     execution: false
     name: threatvault-threat-signature-get
     outputs:
@@ -171,7 +171,7 @@ script:
       description: For malicious files, the vendor that made the decision.
       type: String
     - contextPath: ThreatVault.Vulnerability.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Vulnerability.name
       description: The name of the signature.
@@ -198,7 +198,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.vendor.
-      description: The vulnerability identifier issued by vendor on advisories.
+      description: The vulnerability identifier issued by the vendor on advisories.
       type: Array
     - contextPath: ThreatVault.Vulnerability.reference
       description: The public reference of the threat.
@@ -222,7 +222,7 @@ script:
       description: The latest release time of the signature.
       type: String
     - contextPath: ThreatVault.Spyware.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Spyware.name
       description: The name of the signature.
@@ -258,7 +258,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Antivirus.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
@@ -273,16 +273,16 @@ script:
       description: The type of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.create_time
-      description: The create_time of the signature.
+      description: The create time of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.related_sha256_hashes
-      description: The related_sha256_hashes of the threat.
+      description: The related sha256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
       description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.Fileformat.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Fileformat.name
       description: The name of the signature.
@@ -309,7 +309,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
       type: Array
     - contextPath: ThreatVault.Fileformat.vendor
-      description: The fileformat identifier issued by vendor on advisories.
+      description: The file format identifier issued by vendor on advisories.
       type: Array
     - contextPath: ThreatVault.Fileformat.reference
       description: The public reference of the threat.
@@ -336,13 +336,13 @@ script:
       description: The file type of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.sha256
-      description: The sha256 of the file.
+      description: The SHA256 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.sha1
-      description: The md5 of the file.
+      description: The SHA1 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.md5
-      description: The md5 of the file.
+      description: The MD5 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.size
       description: The size of the file.
@@ -357,7 +357,7 @@ script:
       description: The platform of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.wildfire_verdict
-      description: The wildfire verdict.
+      description: The Wildfire verdict.
       type: String
     - contextPath: ThreatVault.FileInfo.create_time
       description: The threat signature creation time.
@@ -423,11 +423,11 @@ script:
       description: List of modified entries.
       type: Array
     - contextPath: ThreatVault.ReleaseNote.applications.obsoleted
-      description: List of obsoleted entries.
+      description: List of obsolete entries.
       type: Array
   - arguments:
     - default: false
-      description: The signature ids.
+      description: The signature IDs.
       isArray: true
       name: id
       required: false
@@ -472,7 +472,7 @@ script:
     name: threatvault-threat-batch-search ## not done, I need add the outputs
     outputs:
     - contextPath: ThreatVault.Antivirus.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
@@ -487,10 +487,10 @@ script:
       description: The type of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.create_time
-      description: The create_time of the signature.
+      description: The create time of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.related_sha256_hashes
-      description: The related_sha256_hashes of the threat.
+      description: The related SHA256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
       description: The default action when the signature is triggered.
@@ -499,13 +499,13 @@ script:
       description: The file type of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.sha256
-      description: The sha256 of the file.
+      description: The SHA256 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.sha1
-      description: The md5 of the file.
+      description: The SHA1 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.md5
-      description: The md5 of the file.
+      description: The MD5 of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.size
       description: The size of the file.
@@ -520,7 +520,7 @@ script:
       description: The platform of the file.
       type: String
     - contextPath: ThreatVault.FileInfo.wildfire_verdict
-      description: The wildfire verdict.
+      description: The Wildfire verdict.
       type: String
     - contextPath: ThreatVault.FileInfo.create_time
       description: The threat signature creation time.
@@ -548,25 +548,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The release dates range (Used together with to-release-date field).
+      description: The release dates range (used with the to-release-date argument).
       isArray: false
       name: from-release-date
       required: false
       secret: false
     - default: false
-      description: The right boundary of date range query (Must use with from-release-date).
+      description: The right boundary of date range query (used with the from-release-date argument).
       isArray: false
       name: to-release-date
       required: false
       secret: false
     - default: false
-      description: The release versions range (Used together with to-release-version field).
+      description: The release versions range (used with the to-release-version argument).
       isArray: false
       name: from-release-version
       required: false
       secret: false
     - default: false
-      description: The right boundary of version range query (must use with from-release-version). ## not done
+      description: The right boundary of version range query (used with the from-release-version argument). ## not done
       isArray: false
       name: to-release-version
       required: false
@@ -600,7 +600,7 @@ script:
       - rtdns
       - spywarec2
     - default: false
-      description:  Page number to get result from. Needs to be used with page_size argument.
+      description:  Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -618,12 +618,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieve threat metadata, the nature of the query is determined by the query parameter that you provide.
+    description: Retrieves threat metadata. The nature of the query is determined by the query parameter that you provide.
     execution: false
     name: threatvault-threat-search
     outputs:
     - contextPath: ThreatVault.Vulnerability.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Vulnerability.name
       description: The name of the signature.
@@ -650,7 +650,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Vulnerability.vendor.
-      description: The vulnerability identifier issued by vendor on advisories.
+      description: The vulnerability identifier issued by the vendor on advisories.
       type: Array
     - contextPath: ThreatVault.Vulnerability.reference
       description: The public reference of the threat.
@@ -674,7 +674,7 @@ script:
       description: The latest release time of the signature.
       type: String
     - contextPath: ThreatVault.Spyware.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Spyware.name
       description: The name of the signature.
@@ -710,7 +710,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Antivirus.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.name
       description: The name of the signature.
@@ -725,16 +725,16 @@ script:
       description: The type of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.create_time
-      description: The create_time of the signature.
+      description: The create time of the signature.
       type: String
     - contextPath: ThreatVault.Antivirus.related_sha256_hashes
-      description: The related_sha256_hashes of the threat.
+      description: The related SHA256 hashes of the threat.
       type: String
     - contextPath: ThreatVault.Antivirus.release
       description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.Fileformat.id
-      description: The unique id of the signature.
+      description: The unique ID of the signature.
       type: String
     - contextPath: ThreatVault.Fileformat.name
       description: The name of the signature.
@@ -761,7 +761,7 @@ script:
       description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
       type: Array
     - contextPath: ThreatVault.Fileformat.vendor
-      description: The fileformat identifier issued by vendor on advisories.
+      description: The file format identifier issued by the vendor on advisories.
       type: Array
     - contextPath: ThreatVault.Fileformat.reference
       description: The public reference of the threat.
