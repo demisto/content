@@ -38,4 +38,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Expanse Load-Create List](../doc_files/Expanse_Load-Create_List.png)
+![Expanse Load-Create List](../doc_files/Expanse_Load_Create_List.png)
