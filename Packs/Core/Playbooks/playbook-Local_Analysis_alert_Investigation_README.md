@@ -11,7 +11,7 @@ Investigate the executed process image and verify if it is malicious using:
 
 **Response Actions**
 
-The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
+The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
 
 * Auto block indicators
 * Auto file quarantine
@@ -39,13 +39,13 @@ External resources:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+* Containment Plan
+* Handle False Positive Alerts
 * Wildfire Detonate and Analyze File
-* Endpoint Investigation Plan
-* Eradication Plan
 * Recovery Plan
 * Enrichment for Verdict
-* Handle False Positive Alerts
-* Containment Plan
+* Eradication Plan
+* Endpoint Investigation Plan
 
 ### Integrations
 * CortexCoreIR
@@ -55,11 +55,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * UnzipFile
 
 ### Commands
-* core-report-incorrect-wildfire
-* core-retrieve-file-details
 * closeInvestigation
-* internal-wildfire-get-report
 * core-retrieve-files
+* core-retrieve-file-details
+* core-report-incorrect-wildfire
+* internal-wildfire-get-report
 
 ## Playbook Inputs
 ---

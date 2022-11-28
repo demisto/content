@@ -69,12 +69,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '2':
     id: '2'
-    taskid: 762b80b1-46c9-4791-883d-9a23a20a373a
+    taskid: 53bb6e72-41f3-451e-8830-123ca99026ba
     type: condition
     task:
-      id: 762b80b1-46c9-4791-883d-9a23a20a373a
+      id: 53bb6e72-41f3-451e-8830-123ca99026ba
       version: -1
       name: Continue by Verdict
       description: Checks the verdict returned by the 'Enrichment for Verdict' playbook.
@@ -99,6 +100,17 @@ tasks:
             value:
               simple: Suspicious
           ignorecase: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Core.AnalyticsPrevalence.Hash
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
     view: |-
       {
         "position": {
@@ -113,6 +125,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '3':
     id: '3'
     taskid: 95780e0a-e062-42ef-8023-633fd90a32ca
@@ -143,6 +156,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '6':
     id: '6'
     taskid: 7fc9ca7d-ee00-4e76-83e3-1d1ccb61e008
@@ -189,6 +203,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '14':
     id: '14'
     taskid: db8e53a5-0c3e-4096-805f-404bcd7a0b48
@@ -253,6 +268,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '33':
     id: '33'
     taskid: 365fa7b4-058c-4ff7-834a-0dcc4009fc42
@@ -283,6 +299,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '34':
     id: '34'
     taskid: 1f7b5164-cccd-4e9f-8b63-0e7c79448c20
@@ -320,6 +337,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '35':
     id: '35'
     taskid: 3bb94a23-82c4-4c00-84fa-0228b084583b
@@ -350,6 +368,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '39':
     id: '39'
     taskid: 920e8ad9-ccf9-4b82-8375-b17b2c26eb42
@@ -380,6 +399,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '41':
     id: '41'
     taskid: ed0d81e9-adf9-41d1-84db-9087868cd0cf
@@ -411,6 +431,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '44':
     id: '44'
     taskid: 1131ba86-e2f3-4e90-8ab5-7281c5630145
@@ -454,6 +475,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '45':
     id: '45'
     taskid: 13ddb69e-6c8a-4a92-83e6-d77d652fd625
@@ -485,6 +507,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '46':
     id: '46'
     taskid: a3c1d4d1-3242-47cd-81aa-28d10f0bd155
@@ -530,6 +553,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '47':
     id: '47'
     taskid: b8a41bf5-ad48-43c0-8a8b-67ccfa036bb0
@@ -575,6 +599,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '48':
     id: '48'
     taskid: 8deecef6-2dcc-4135-8f36-540935d5020f
@@ -605,6 +630,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '50':
     id: '50'
     taskid: 82f5864b-14de-428e-87c0-d04ff9ec40e4
@@ -635,6 +661,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '51':
     id: '51'
     taskid: 7b89c9aa-8804-472e-8013-09dc91fd2901
@@ -662,6 +689,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '54':
     id: '54'
     taskid: 5ef91412-e2ac-46b3-8558-107fe4093b00
@@ -692,6 +720,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '55':
     id: '55'
     taskid: 2f9b0888-8966-46ed-856d-129f2e692d53
@@ -739,6 +768,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '57':
     id: '57'
     taskid: 65d493b5-8684-407f-8654-7443c95a6a15
@@ -776,6 +806,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '58':
     id: '58'
     taskid: d0251c23-0d6f-43e5-813d-aeab89008b32
@@ -822,6 +853,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '59':
     id: '59'
     taskid: 70e962f2-78c7-4e6d-8516-75f2eed67764
@@ -862,6 +894,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '60':
     id: '60'
     taskid: f8d13237-59bf-4980-8168-dc1c9a253f21
@@ -898,6 +931,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '61':
     id: '61'
     taskid: 5014f36a-3191-46f7-8caa-40f5ee33d4fd
@@ -961,6 +995,7 @@ tasks:
       exitCondition: ""
       wait: 1
       max: 100
+    continueonerrortype: ""
   '62':
     id: '62'
     taskid: e5dad5e0-215d-4537-8912-86a93f3c5bef
@@ -1081,6 +1116,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '63':
     id: '63'
     taskid: fb368c9f-ccb4-40e1-8010-f664993677ab
@@ -1146,6 +1182,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '64':
     id: '64'
     taskid: d544afa6-3c28-4fb9-8320-5554953744de
@@ -1243,6 +1280,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '65':
     id: '65'
     taskid: 6c369ff0-b57f-4227-873a-60a44c0579d1
@@ -1298,6 +1336,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '66':
     id: '66'
     taskid: 4d3c47d4-9f51-47a2-8876-bb57e5d504d7
@@ -1352,6 +1391,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '67':
     id: '67'
     taskid: 84962fd2-6212-4fc0-8018-63b0c08b2e4f
@@ -1413,6 +1453,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '68':
     id: '68'
     taskid: 126ffda6-c72f-486a-8068-5d58dbd6f642
@@ -1448,6 +1489,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '69':
     id: '69'
     taskid: e0bd8f50-3e7e-4ea0-8cbf-ce066d06ae08
@@ -1531,6 +1573,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '70':
     id: '70'
     taskid: 4bdcb352-0176-4423-897b-abac5ffcc221
@@ -1576,6 +1619,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '71':
     id: '71'
     taskid: 383805c3-25cf-4f01-865f-6b7187669557
@@ -1616,6 +1660,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "75":
     id: "75"
     taskid: a953691c-5334-47a3-821f-304f8ed1fbfd
@@ -1661,6 +1706,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "76":
     id: "76"
     taskid: a6fde59e-ee3e-40c4-8ba6-722934ef8be0
@@ -1691,6 +1737,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "77":
     id: "77"
     taskid: 078887a5-4228-44f2-89d5-aa95c2bcb770
@@ -1727,6 +1774,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "78":
     id: "78"
     taskid: 37332a6e-db70-4828-82b0-7be714a388dd
@@ -1772,6 +1820,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -1864,3 +1913,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
+contentitemexportablefields:
+  contentitemfields: {}
