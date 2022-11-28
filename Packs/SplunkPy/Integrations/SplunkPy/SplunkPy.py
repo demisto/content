@@ -2278,7 +2278,7 @@ def splunk_edit_notable_event_command(base_url, token, auth_token, args):
         demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service, args):
+def splunk_job_status(service: client.Service, args):
     sid = args.get('sid')
     try:
         job = service.job(sid)
@@ -2310,7 +2310,7 @@ def splunk_parse_raw_command():
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
 
 
-def test_module(service):
+def test_module(service: client.Service):
     try:
         # validate connection
         service.info()
