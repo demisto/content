@@ -97,7 +97,7 @@ configuration:
   required: false
   type: 0
 description: Microsoft Cloud App Security is a multimode Cloud Access Security Broker (CASB). It provides rich visibility, control over data travel, and sophisticated analytics to identify and combat cyber threats across all your cloud services. Use the integration to view and resolve alerts, view activities, view files, and view user accounts.
-display: Microsoft Cloud App Security
+display: Microsoft Defender for Cloud Apps
 name: MicrosoftCloudAppSecurity
 script:
   commands:
@@ -575,8 +575,8 @@ script:
       isArray: false
       name: is_scan
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
       required: false
       secret: false
     - default: false
@@ -872,7 +872,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command.
+    description: Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command. This command is supported only when using the legacy authentication.
     execution: false
     name: microsoft-cas-files-list
     outputs:
@@ -1113,7 +1113,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.35281
+  dockerimage: demisto/crypto:1.0.0.36225
   feed: false
   isfetch: true
   longRunning: false

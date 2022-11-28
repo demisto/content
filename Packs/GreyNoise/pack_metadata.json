@@ -10,12 +10,8 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence"
-    ],
-    "useCases": [
-        "Threat Intelligence Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "ip",
         "enrichment",

@@ -11,11 +11,9 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence"
-    ],
-    "useCases": [
         "Threat Intelligence Management"
     ],
+    "useCases": [],
     "keywords": [
         "cyjax",
         "threat intelligence",

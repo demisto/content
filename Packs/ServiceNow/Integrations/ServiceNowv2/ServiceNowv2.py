@@ -6,7 +6,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
@@ -2304,13 +2305,28 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeReason': f'From ServiceNow: {ticket.get("close_notes")}'
+                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeReason': converts_state_close_reason(ticket.get("state"))
                 },
                 'ContentsFormat': EntryFormat.JSON
             })
 
     demisto.debug(f'Pull result is {ticket}')
     return [ticket] + entries
+
+
+def converts_state_close_reason(ticket_state: str):
+    """
+    converts between XSOAR and service now state.
+    Args:
+        ticket_state: Service now state
+    Returns:
+        The XSOAR state
+    """
+    if ticket_state in ['6', '7']:
+        return 'Resolved'
+
+    return 'Other'
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:

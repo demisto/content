@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+import urllib3
 import ast
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL VARS """
 

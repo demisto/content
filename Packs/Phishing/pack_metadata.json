@@ -2,7 +2,7 @@
     "name": "Phishing",
     "description": "Phishing emails still hooking your end users? This Content Pack can drastically reduce the time your security team spends on phishing alerts.",
     "support": "xsoar",
-    "currentVersion": "3.3.8",
+    "currentVersion": "3.3.10",
     "serverMinVersion": "6.0.0",
     "videos": [
         "https://www.youtube.com/watch?v=SY-3L348PoY"
@@ -12,22 +12,17 @@
     "email": "",
     "created": "2020-05-12T10:55:43Z",
     "categories": [
-        "Messaging"
+        "Network Security"
     ],
     "tags": [
-        "Scam",
-        "Spam",
-        "Email",
-        "Use Case",
-        "Incident Response"
+        "Use Case"
     ],
     "itemPrefix": [
         "Email",
         "Reported"
     ],
     "useCases": [
-        "Phishing",
-        "Incident Response"
+        "Phishing"
     ],
     "keywords": [],
     "dependencies": {

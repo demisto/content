@@ -29,6 +29,11 @@ Follow these steps for a self-deployed configuration:
 4. Enter your Client Secret in the ***Password*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
+#### Required Permissions
+*Make sure to provide the following permissions for the app to work with Microsoft Cloud App Security:*
+ - ***Discovery.manage*** - https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes
+ - ***offline_access*** - when using the Device Code flow.
+
 ### By token (legacy method)
 To access the Microsoft Cloud App Security API, you need to grant authorization.
 See the [Microsoft documentation](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
@@ -1715,7 +1720,7 @@ Returns a list of activities that match the specified filters.
 ### microsoft-cas-files-list
 ***
 Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command.
-
+Note: This command is supported only when using the legacy authentication.
 
 #### Base Command
 
