@@ -1,0 +1,450 @@
+description: "This playbook Remediates the Ingress tool transfer technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1105: Ingress tool transfer\n\nKill Chain phases:\n- Command And Control\n\nMITRE ATT&CK Description:\nAdversaries may transfer tools or other files from an external system into a compromised environment. Files may be copied from an external adversary controlled system through the command and control channel to bring tools into the victim network or through alternate protocols with another tool such as FTP. Files can also be copied over on Mac and Linux with native tools like scp, rsync, and sftp.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+id: MITRE ATT&CK CoA - T1105 - Ingress tool transfer
+inputs:
+- description: Template name to enforce WildFire best practices profile.
+  key: template
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1105 - Ingress tool transfer
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f56cb07-7520-4da9-89be-75ff70f2431f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7f56cb07-7520-4da9-89be-75ff70f2431f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 390
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: feffe0f4-15d1-4de0-8065-7c744138715f
+      iscommand: false
+      name: Block all unknown and unauthorized applications
+      type: title
+      version: -1
+      description: ''
+    taskid: feffe0f4-15d1-4de0-8065-7c744138715f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 540
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 12c73da4-387c-46ed-8929-655b9ef2bc74
+      iscommand: false
+      name: Forward files for WildFire Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 12c73da4-387c-46ed-8929-655b9ef2bc74
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 860
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f806e0f-6792-40cb-8992-340b38f5e87b
+      iscommand: false
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
+      type: title
+      version: -1
+      description: ''
+    taskid: 0f806e0f-6792-40cb-8992-340b38f5e87b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1200
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Cortex XDR monitors for behavioral events indicative of command and control activity.
+      id: a274fe1b-1649-447c-880c-8fd5bb5b4561
+      iscommand: false
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
+      type: regular
+      version: -1
+    taskid: a274fe1b-1649-447c-880c-8fd5bb5b4561
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1690
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 92614196-0faf-4df6-87b3-e0be59e67fb5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 92614196-0faf-4df6-87b3-e0be59e67fb5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 2240
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cfc0c1af-97b2-4b43-8699-ca086021d626
+      iscommand: false
+      name: PAN-OS - Block all unknown and unauthorized applications
+      playbookId: PAN-OS - Block all unknown and unauthorized applications
+      type: playbook
+      version: -1
+      description: ''
+    taskid: cfc0c1af-97b2-4b43-8699-ca086021d626
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 680
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1105
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5c3b67c1-cc74-43b0-845b-6a11a06ee785
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5c3b67c1-cc74-43b0-845b-6a11a06ee785
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1880
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 96e89b0c-fff8-48c1-8011-5265812777ed
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 96e89b0c-fff8-48c1-8011-5265812777ed
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1350
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 9af691ee-492e-4847-8cb2-4d6536e25f33
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 9af691ee-492e-4847-8cb2-4d6536e25f33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1520
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+      template:
+        complex:
+          root: inputs.template
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f71dff30-5766-4570-8526-8e84a7cf559e
+      iscommand: false
+      name: PAN-OS - Enforce WildFire Best Practices Profile
+      playbookId: PAN-OS - Enforce WildFire Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: f71dff30-5766-4570-8526-8e84a7cf559e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1010
+        }
+      }
+  "32":
+    continueonerror: true
+    id: "32"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: aa632d37-f38a-4968-803c-eee14f029ca9
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: aa632d37-f38a-4968-803c-eee14f029ca9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 2050
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 700,
+        "x": 990,
+        "y": 390
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
