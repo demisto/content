@@ -1,7 +1,9 @@
 id: 'Get prevalence for IOCs'
 version: -1
 name: 'Get prevalence for IOCs'
-marketplaces: ["marketplacev2"]
+marketplaces:
+- marketplacev2
+- xpanse
 description: |+
   The playbook queries the analytics module to receive the prevalence of an IOC.
 
