@@ -1,6 +1,6 @@
 This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
 This integration was integrated and tested with version v2.5.3.102 of GCenter.
-To simplify GCenter v2.5.3.102 is called GCenterv102 in the Pack.
+To simplify GCenter v2.5.3.102 is called GCenterv in the Pack.
 
 ## Configure GCenter on Cortex XSOAR
 
