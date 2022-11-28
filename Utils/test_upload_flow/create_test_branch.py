@@ -2,14 +2,15 @@ import argparse
 import json
 import os
 import shutil
+import logging
 import subprocess
 import time
 from pathlib import Path
 from typing import Union
 from git import GitCommandError, Head, Repo
 
-from Tests.scripts.utils import logging_wrapper as logging
-from Tests.scripts.utils.log_util import install_logging
+# from Tests.scripts.utils import logging_wrapper as logging
+# from Tests.scripts.utils.log_util import install_logging
 
 versions_dict = {}
 pack_items_dict = {}
@@ -294,7 +295,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def main():
-    install_logging('create_test_branch.log', logger=logging)
+    # install_logging('create_test_branch.log', logger=logging)
 
     args = parse_arguments()
     repo = Repo(args.path)
