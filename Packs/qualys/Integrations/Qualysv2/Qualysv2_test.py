@@ -1137,21 +1137,17 @@ class TestAssetTags:
             },
         }
         handled_result = {
+            "id": "0",
             "name": "parent_tag",
             "created": "2022-11-24T12:38:13Z",
             "modified": "2022-11-24T13:09:35Z",
             "ruleType": "INSTALLED_SOFTWARE",
-            "children": {
-                "list": {
-                    "TagSimple": [{"ID": "1", "Name": "child_1"}, {"ID": "2", "Name": "child_2"}, {"ID": "3", "Name": "child_3"}]
-                }
-            },
             "criticalityScore": "3",
-            "Child Tags": [
-                {"ID": "1", "Name": "child_1"},
-                {"ID": "2", "Name": "child_2"},
-                {"ID": "3", "Name": "child_3"},
+            "criticalityScore": "3",
+            "childTags": [
+                {"id": "1", "name": "child_1"},
+                {"id": "2", "name": "child_2"},
+                {"id": "3", "name": "child_3"},
             ],
-            "ID": "0",
         }
         assert Qualysv2.build_tag_asset_output(**args)[0] == handled_result
