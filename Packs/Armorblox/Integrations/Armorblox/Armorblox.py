@@ -1,7 +1,8 @@
+import ast
 import collections
 import json
 from datetime import timedelta
-import ast
+
 import urllib3
 from CommonServerPython import *  # noqa: F401
 from armorblox.client import Client as AbxBaseClient
@@ -152,10 +153,11 @@ def fetch_incidents_command(client):  # pragma: no coverage
     current_time = current_time.strftime(ARMORBLOX_INCIDENT_API_TIME_FORMAT)
     next_page_token = None
     while True:
-        response, next_page_token = get_incidents_list(client, pageToken=next_page_token,
-                                                       from_date=last_fetch_time,
-                                                       to_date=current_time,
-                                                       first_fetch=FIRST_FETCH)
+        response, next_page_token = client.get_incidents(pageSize=MAX_INCIDENTS_TO_FETCH,
+                                                         pageToken=next_page_token,
+                                                         from_date=last_fetch_time,
+                                                         to_date=current_time,
+                                                         first_fetch=FIRST_FETCH)
         incidents_data.extend(response)
         if not next_page_token:
             break
@@ -260,3 +262,4 @@ def main():  # pragma: no coverage
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
