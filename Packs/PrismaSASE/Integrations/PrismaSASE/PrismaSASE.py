@@ -148,7 +148,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = f'/sse/config/v1/security-rules/{rule_id}'
+        uri = f'{CONFIG_URI_PREFIX}security-rules/{rule_id}'
         access_token = self.get_access_token(tsg_id)
         headers = self._headers
         headers['Authorization'] = f"Bearer {access_token}"
@@ -195,7 +195,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = f'/sse/config/v1/addresses/{addressid}'
+        uri = f'{CONFIG_URI_PREFIX}addresses/{addressid}'
         access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
@@ -216,7 +216,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = f'/sse/config/v1/addresses/{address_id}'
+        uri = f'{CONFIG_URI_PREFIX}addresses/{address_id}'
         access_token = self.get_access_token(tsg_id)
         headers = self._headers
         headers['Authorization'] = f"Bearer {access_token}"
@@ -341,7 +341,7 @@ class Client(BaseClient):
         Returns:
             Outputs.
         """
-        uri = f'/sse/config/v1/jobs/{job_id}'
+        uri = f'{CONFIG_URI_PREFIX}jobs/{job_id}'
         access_token = self.get_access_token(tsg_id)
 
         headers = self._headers
