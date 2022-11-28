@@ -660,10 +660,13 @@ def extract_from_xml(xml, path):
 
 def generate_field_contents(client, fields_values, level_fields):
     if fields_values and not isinstance(fields_values, dict):
+        demisto.debug(f"fields values are: {fields_values}")
+        fields_values = re.sub(r'\\(?!")', r'\\\\', fields_values)
+        demisto.debug(f"fields values after escaping: {fields_values}")
         try:
             fields_values = json.loads(fields_values)
         except Exception:
-            raise Exception('Failed to parese fields-values argument')
+            raise Exception('Failed to parse fields-values argument')
 
     field_content = {}
     for field_name in fields_values.keys():
@@ -1311,7 +1314,7 @@ def main():
         params.get('userDomain'),
         verify=not params.get('insecure', False),
         proxy=params.get('proxy', False),
-        timeout=int(params.get('timeout', 400))
+        timeout=int(params.get('timeout', 600))
     )
     commands = {
         'archer-search-applications': search_applications_command,
