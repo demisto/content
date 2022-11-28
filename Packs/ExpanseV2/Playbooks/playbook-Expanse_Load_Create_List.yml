@@ -1,5 +1,7 @@
 id: Expanse Load-Create List
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Expanse Load-Create List
 description: |
   Sub-playbook to support Expanse Handle Incident playbook.
@@ -22,6 +24,7 @@ tasks:
       '#none#':
       - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -34,6 +37,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: 5d981e49-dca5-49ca-88c1-c81fe74e6b7c
@@ -56,6 +61,7 @@ tasks:
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -68,6 +74,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: a10ccb67-3c4d-4d93-8f8e-347a7fed3ed2
@@ -90,6 +98,7 @@ tasks:
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,12 +111,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: b49935a1-6c41-4a45-8ab6-0237a1bb252a
+    taskid: b50c7927-92ae-49e2-8739-3f93ca1f1a9d
     type: regular
     task:
-      id: b49935a1-6c41-4a45-8ab6-0237a1bb252a
+      id: b50c7927-92ae-49e2-8739-3f93ca1f1a9d
       version: -1
       name: Create List
       description: commands.local.cmd.list.create
@@ -120,10 +131,30 @@ tasks:
       - "2"
     scriptarguments:
       listData:
-        simple: ${inputs.ListValues}
+        complex:
+          root: inputs.ListValues
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: inputs.ListValues
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.ListValues
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: '{}'
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -136,6 +167,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: fe3567cd-6f29-4922-8f74-b55d77a7bec9
@@ -153,10 +186,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      append: {}
       key:
         simple: ParsedList
-      stringify: {}
       value:
         complex:
           root: ListText
@@ -169,6 +200,7 @@ tasks:
                   simple: '{}'
           - operator: ParseJSON
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -181,12 +213,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 6011b442-e0f9-41b1-8134-03b0341a5037
+    taskid: 7c96c26f-3044-4f59-8aa3-72d2fdecd1eb
     type: condition
     task:
-      id: 6011b442-e0f9-41b1-8134-03b0341a5037
+      id: 7c96c26f-3044-4f59-8aa3-72d2fdecd1eb
       version: -1
       name: Is List Empty?
       description: Check if list is empty.
@@ -197,7 +231,7 @@ tasks:
       '#default#':
       - "6"
       "yes":
-      - "7"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -208,6 +242,9 @@ tasks:
               complex:
                 root: ListText
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -220,6 +257,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 004d92d9-a2fd-42aa-816c-b49d20f0bb24
@@ -233,6 +272,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -245,12 +285,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 62dda88b-b3a5-44c2-8fba-30516903d664
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ac091fc8-5450-4d17-89d1-b5ef460bdb45
     type: regular
     task:
-      id: 62dda88b-b3a5-44c2-8fba-30516903d664
+      id: ac091fc8-5450-4d17-89d1-b5ef460bdb45
       version: -1
       name: Set Empty List
       description: commands.local.cmd.list.set
@@ -263,14 +305,35 @@ tasks:
       - "6"
     scriptarguments:
       listData:
-        simple: ${inputs.ListValues}
+        complex:
+          root: inputs
+          accessor: list
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition: {}
+              else:
+                value:
+                  simple: inputs.ListValues
+                iscontext: true
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.ListValues
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: '{}'
       listName:
         simple: ${inputs.ListName}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 850,
+          "x": 740,
           "y": 1170
         }
       }
@@ -279,13 +342,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1385,
-        "width": 780,
+        "width": 670,
         "x": 450,
         "y": 50
       }
@@ -300,12 +366,12 @@ inputs:
 - key: ListValues
   value: {}
   required: true
-  description: If the list does not exist or is empty, it will be created with these values.
+  description: If the list does not exist or is empty, it will be created with these values. In case this input is empty, the default value would be "{}".
   playbookInputQuery:
 outputs:
 - contextPath: ParsedList
   description: Contents of parsed list.
   type: unknown
 tests:
-- No tests
+- No tests (auto formatted)
 fromversion: 6.0.0
