@@ -15,8 +15,9 @@ args:
   default: false
   description: The character encoding of the file
   isArray: false
-  name: input_encoding
+  name: encoding
   predefined:
+  - binary
   - utf-8
   - utf-16
   - ascii
