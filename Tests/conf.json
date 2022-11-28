@@ -4222,6 +4222,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Graph"
+            ],
+            "instance_names": [
+                "ms_graph_security_prod",
+                "ms_graph_security_dev"
             ]
         },
         {
@@ -5156,12 +5160,24 @@
             "playbookID": "VerifyCIDR-Test"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
+        },
+        {
+            "integrations": "Cisco Umbrella Reporting",
+            "playbookID": "Cisco Umbrella Reporting Test",
+            "fromversion": "6.5.0"
         }
     ],
     "skipped_tests": {
+        "Detonate URL - Generic Test": "Issue CRTX-67708",
+        "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
         "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
@@ -5312,6 +5328,7 @@
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
     },
     "skipped_integrations": {
+        "Lastline v2": "No license",
         "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5427,7 +5444,9 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "CiscoESA": "No instance - developed by Qmasters",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
     },
     "nightly_integrations": [
     ],
