@@ -24,7 +24,7 @@ This script is used in the following playbooks and scripts.
 | maxFileSize | Maximal file size to load, in bytes. Default is 1MB. |
 | encoding | The character encoding of the file |
 | outputDataType | The data type to which the output data is converted. |
-| outputMetaData | Set to true to output the meta data with the payload to `ReadFile` in the context, otherwise the payload only output to `FileData` to the context. |
+| outputMetaData | Set to true to output the meta data with the payload to `ReadFile` in the context, otherwise only the payload will be output to `FileData` in the context |
 
 ## Outputs
 ---
