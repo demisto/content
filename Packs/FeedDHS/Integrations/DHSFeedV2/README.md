@@ -16,19 +16,21 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Discovery Service URL (e.g., https://ais2.cisa.dhs.gov/taxii2/) |  | True |
     | Key File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
     | Certificate File as Text | For more information, visit https://us-cert.cisa.gov/ais. | True |
-    | Default API Root to use | The default API root to use \(e.g., default, public\). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the chosen API root. | False |
+    | Default API Root to use | The default API root to use \(e.g., default, public\). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the selected API root. | False |
     | Collection Name To Fetch Indicators From | Indicators will be fetched from this collection. Run the "dhs-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service. | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Fetch Interval |  | False |
-    | First Fetch Time | The time interval for the first fetch \(retroactive\) in the following format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day/year. For example, 1 minute, 12 hour. | False |
+    | First Fetch Time | The time interval for the first fetch \(retroactive\) in the following format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day. For example, 1 minute, 12 hour. Limited to 48 hours. | False |
+    | Fetch From Feed Start | Determines whether the feed will fetch indicators from all time. It is discouraged to use this method. See "help" for more information. | False |
+    | STIX Objects To Fetch | The objects to fetch, most likely indicators. Might slow down fetch time. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
     | Max Indicators Per Fetch | The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched. | False |
     | Max STIX Objects Per Poll | Set the number of STIX objects that will be requested with each TAXII poll \(http request\). A single fetch is made of several TAXII polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the requested limit. | False |
-    | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
+    | Complex Observation Mode | Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". For example, \`\[ IP = 'b' \] AND \[ URL = 'd' \]\` | False |
     | Tags | Supports CSV values. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -52,7 +54,7 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 | --- | --- | --- |
 | raw | Will return only the rawJSON of the indicator object. Possible values are: true, false. Default is false. | Optional | 
 | limit | Maximum number of indicators to return. Default is 10. | Optional | 
-| added_after | Fetch only indicators that were added to the server after the given time. Provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. Default is 20 days. | Optional | 
+| added_after | Fetch only indicators that were added to the server after the given time. Provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. Limited to 48 hours. Default is 24 hours. | Optional |
 
 #### Context Output
 
