@@ -21704,3 +21704,189 @@ Update Unix records for authenticated scans of hosts running on Unix
 #### Context Output
 
 There is no context output for this command.
+
+### qualys-asset-tag-list
+***
+List asset tag based on several search criteria.
+
+
+#### Base Command
+
+`qualys-asset-tag-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| criteria | Criteria field to search by predefined types. Possible values are: parent, provider, ruleType, name, id, criticalityScore. | Required | 
+| operator | Operator assign to the search criteria. | Required | 
+| search_data | search content. | Required | 
+| limit | Automatic Pagination. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.AssetTags.id | Number | Parent asset tag ID. | 
+| Qualys.AssetTags.name | String | Parent asset tag name. | 
+| Qualys.AssetTags.criticality_score | Number | Criticality score assign to the asset tag. | 
+| Qualys.AssetTags.chlid_id | Number | Child asset tags ID. | 
+| Qualys.AssetTags.chlid_id.child_name | String | Child asset tags name. | 
+| Qualys.AssetTags.tag_name.rule_type | String | Created tag rule type. | 
+| Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
+
+#### Command example
+```!qualys-asset-tag-list criteria=name operator=EQUALS search_data="example_tag"```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "AssetTags": {
+            "childTags": [
+                {
+                    "id": "1",
+                    "name": "child1"
+                },
+                {
+                    "id": "2",
+                    "name": "child2"
+                }
+            ],
+            "created": "2022-11-29T12:54:52Z",
+            "criticalityScore": "3",
+            "id": "0",
+            "modified": "2022-11-29T12:54:52Z",
+            "name": "example_tag",
+            "ruleText": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Tags identified by the specified filter
+>|Id|Name|Criticality Score|Rule Text|Child Tags|
+>|---|---|---|---|---|
+>| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child1<br/>**-**	***id***: 2<br/>	***name***: child2 |
+
+
+### qualys-asset-tag-create
+***
+Create a new asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the created tag. | Required | 
+| child_name | Names of the created child tags. | Optional | 
+| rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24<br/>VULN_EXIST(QID) - format: 12345(int)<br/>OPEN_PORTS - format: 443,888,12034(int)<br/>NAME_CONTAINS - format: REGEX<br/>INSTALLED_SOFTWARE - format: REGEX<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Qualys.AssetTags.id | String | Parent asset tag id. | 
+| Qualys.AssetTags.name | String | Parent asset tag name. | 
+| Qualys.AssetTags.criticality_score | Number | Criticality score assign to the asset tag. | 
+| Qualys.AssetTags.chlid_id | Number | Child asset tags ID. | 
+| Qualys.AssetTags.chlid_id.child_name | String | Child asset tags name. | 
+| Qualys.AssetTags.tag_name.rule_type | String | Created tag rule type. | 
+| Qualys.AssetTags.tag_name.rule_text | String | Created tag rule text. | 
+
+#### Command example
+```!qualys-asset-tag-create name=example_tag rule_type=STATIC rule_text="example" child_name=child1,child2 criticality_score=3```
+#### Context Example
+```json
+{
+    "Qualys": {
+        "AssetTags": {
+            "childTags": [
+                {
+                    "id": "1",
+                    "name": "child2"
+                },
+                {
+                    "id": "2",
+                    "name": "child1"
+                }
+            ],
+            "created": "2022-11-29T12:54:52Z",
+            "criticalityScore": "3",
+            "id": "0",
+            "modified": "2022-11-29T12:54:52Z",
+            "name": "example_tag",
+            "ruleText": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Asset Tags Created
+>|Id|Name|Criticality Score|Rule Text|Child Tags|
+>|---|---|---|---|---|
+>| 0 | example_tag | 3 | example | **-**	***id***: 1<br/>	***name***: child2<br/>**-**	***id***: 2<br/>	***name***: child1 |
+
+
+### qualys-asset-tag-update
+***
+Update an existing asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-update`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the tag you wish to update. | Required | 
+| name | Name of the created tag. | Required | 
+| rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24<br/>VULN_EXIST(QID) - format: 12345(int)<br/>OPEN_PORTS - format: 443,888,12034(int)<br/>NAME_CONTAINS - format: REGEX<br/>INSTALLED_SOFTWARE - format: REGEX<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| child_to_remove | Child tag to remove from the child tag list. | Optional | 
+| criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!qualys-asset-tag-update name=example_tag_updated rule_type=STATIC rule_text="example" id=12345```
+#### Human Readable Output
+
+>Asset tag updated.
+
+### qualys-asset-tag-delete
+***
+Delete an existing asset tag.
+
+
+#### Base Command
+
+`qualys-asset-tag-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the tag you wish to delete. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!qualys-asset-tag-delete id=12345```
+#### Human Readable Output
+
+>Asset tag deleted.

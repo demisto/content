@@ -2605,7 +2605,7 @@ script:
     - description: Names of the created child tags.
       name: child_name
       isArray: true
-    - description: Type of rule to dynamically tagging host.
+    - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nPossible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
       name: rule_type
       required: true
       auto: PREDEFINED
@@ -2616,9 +2616,9 @@ script:
       - OPEN_PORTS
       - VULN_EXIST
       - STATIC
-    - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of the rule types.
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
       name: rule_text
-    - description: Criticality score of the asset tag.
+    - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
       name: criticality_score
     description: Create a new asset tag.
     name: qualys-asset-tag-create
@@ -2630,7 +2630,7 @@ script:
       description: Parent asset tag name.
       type: String
     - contextPath: Qualys.AssetTags.criticality_score
-      description: Criticality score assign to the asset tag. Values between 1 (lowest) and 5 (highest).
+      description: Criticality score assign to the asset tag.
       type: Number
     - contextPath: Qualys.AssetTags.chlid_id
       description: Child asset tags ID.
@@ -2651,7 +2651,7 @@ script:
     - description: Name of the created tag.
       name: name
       required: true
-    - description: Type of rule to dynamically tagging host.
+    - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nPossible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
       name: rule_type
       required: true
       auto: PREDEFINED
@@ -2662,11 +2662,11 @@ script:
       - OPEN_PORTS
       - VULN_EXIST
       - STATIC
-    - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of rule types.
+    - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
       name: rule_text
     - description: Child tag to remove from the child tag list.
       name: child_to_remove
-    - description: Criticality score of the asset tag.
+    - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
       name: criticality_score
     description: Update an existing asset tag.
     name: qualys-asset-tag-update
