@@ -1,5 +1,5 @@
 {
-    "name": "BigFix",
+    "name": "IBM BigFix",
     "description": "IBM BigFix Patch provides an automated, simplified patching process that is administered from a single console.",
     "support": "xsoar",
     "currentVersion": "1.0.9",

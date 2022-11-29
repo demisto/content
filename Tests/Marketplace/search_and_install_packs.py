@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import ast
+from functools import lru_cache
 import glob
 import json
 import os
@@ -73,6 +74,7 @@ def get_pack_display_name(pack_id: str) -> str:
     return ''
 
 
+@lru_cache
 def is_pack_hidden(pack_id: str) -> bool:
     """
     Check if the given pack is deprecated.
@@ -652,6 +654,9 @@ def search_and_install_packs_and_their_dependencies(pack_ids: list,
 
     with ThreadPoolExecutor(max_workers=130) as pool:
         for pack_id in pack_ids:
+            if is_pack_hidden(pack_id):
+                logging.debug(f'pack {pack_id} is hidden, skipping installation and not searching for dependencies')
+                continue
             pool.submit(search_pack_and_its_dependencies,
                         client, pack_id, packs_to_install, installation_request_body, lock)
 

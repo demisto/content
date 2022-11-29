@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks Automatic SLR",
+    "name": "Automatic SLR by Palo Alto Networks",
     "description": "Automate the generation of Palo Alto Networks Security Lifecycle Reviews (SLR's) using XSOAR.",
     "support": "community",
     "currentVersion": "1.0.2",
@@ -7,7 +7,7 @@
     "url": "",
     "email": "",
     "created": "2020-11-25T15:05:50Z",
-    "categories": [],
+    "categories": ["Network Security"],
     "tags": [],
     "useCases": [],
     "keywords": [],

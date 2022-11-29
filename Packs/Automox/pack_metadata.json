@@ -7,20 +7,10 @@
     "url": "https://www.automox.com/",
     "email": "support@automox.com",
     "categories": [
-        "Endpoint",
         "Vulnerability Management"
     ],
-    "tags": [
-        "IT",
-        "Network",
-        "Security",
-        "Use Case",
-        "New"
-    ],
-    "useCases": [
-        "IT Services",
-        "Vulnerability Management"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Automox",
         "Patch",

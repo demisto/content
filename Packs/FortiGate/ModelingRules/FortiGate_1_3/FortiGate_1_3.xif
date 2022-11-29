@@ -1,8 +1,5 @@
 [MODEL: dataset="fortinet_fortigate_raw"]
 alter
-    timestamp = _time
-| alter
-	_time = timestamp,
     xdm.network.application_protocol = app,
 	xdm.network.application_protocol_category = FTNTFGTcat,
 	xdm.target.host.fqdn = dhost,

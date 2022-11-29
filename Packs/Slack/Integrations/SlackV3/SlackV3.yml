@@ -126,6 +126,12 @@ configuration:
   additionalinfo: This parameter prevents this integration from storing Users and Channels in the integration context. This parameter also prevents paginated calls which can result in timeout errors for large workspaces.
   hidden: false
   defaultvalue: 'false'
+- display: Extensive Logging
+  name: extensive_logging
+  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
+  required: false
+  type: 8
+  defaultvalue: 'false'
 - display: Common Channels
   name: common_channels
   type: 12
@@ -163,7 +169,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Both
-      description: The mirroring direction. 
+      description: The mirroring direction.
       isArray: false
       name: direction
       predefined:
@@ -175,7 +181,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: group
-      description: The channel type. 
+      description: The channel type.
       isArray: false
       name: mirrorTo
       predefined:
@@ -244,7 +250,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to include a URL to the relevant component in Cortex XSOAR. 
+      description: Whether to include a URL to the relevant component in Cortex XSOAR.
       isArray: false
       name: ignoreAddURL
       predefined:
@@ -363,7 +369,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: private
-      description: The channel type. 
+      description: The channel type.
       isArray: false
       name: type
       predefined:
@@ -571,7 +577,7 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-  dockerimage: demisto/slackv3:1.0.0.34779
+  dockerimage: demisto/slackv3:1.0.0.36868
   feed: false
   isfetch: false
   longRunning: true

@@ -1,6 +1,7 @@
 {
     "name": "Ansible Powered Integrations (Deprecated)",
     "description": "Deprecated. Use Ansible Microsoft Windows instead.",
+    "hidden": true,
     "support": "community",
     "currentVersion": "2.0.2",
     "author": "Serge Bakharev",

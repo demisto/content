@@ -85,6 +85,19 @@ def self_deployed_client_multi_resource():
                            ok_codes=ok_codes)
 
 
+def retry_on_rate_limit_client(retry_on_rate_limit: bool):
+    tenant_id = TENANT
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+    base_url = BASE_URL
+    resource = RESOURCE
+    ok_codes = OK_CODES
+
+    return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
+                           retry_on_rate_limit=retry_on_rate_limit)
+
+
 def test_error_parser(mocker):
     mocker.patch.object(demisto, 'error')
     err = Response()
@@ -354,3 +367,150 @@ def test_national_endpoints(mocker, endpoint):
 
     assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
     assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
+
+
+def test_retry_on_rate_limit(requests_mock, mocker):
+    """
+    Given:
+        self-deployed client with retry_on_rate_limit=True
+    When:
+        Response from http request is 429 rate limit
+    Then:
+        Verify that a ScheduledCommand is returend with relevant details
+    """
+    client = retry_on_rate_limit_client(True)
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/test_id',
+        status_code=429,
+        json={'content': "Rate limit reached!"}
+    )
+
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'command', return_value='testing_command')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
+
+    client.http_request(method='GET', url_suffix='test_id')
+    retry_results: ScheduledCommand = demisto.results.call_args[0][0]
+    assert retry_results.get('PollingCommand') == 'testing_command'
+    assert retry_results.get('PollingArgs') == {'ran_once_flag': True}
+
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == [{'Type': 'QuotaError', 'APICallsCount': 1}]
+
+
+def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
+    """
+    Given:
+        client with retry_on_rate_limit=True and where 'first_run_flag' set to True in args
+    When:
+        Response from http request is 429 rate limit
+    Then:
+        Return Error as we  already retried rerunning the command
+    """
+    client = retry_on_rate_limit_client(True)
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/test_id',
+        status_code=429,
+        json={'content': "Rate limit reached!"}
+    )
+
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'command', return_value='testing_command')
+    mocker.patch.object(demisto, 'args', return_value={'ran_once_flag': True})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
+
+    try:
+        client.http_request(method='GET', url_suffix='test_id')
+        assert False
+    except DemistoException as err:
+        assert 'Rate limit reached!' in err.args[0]['content']
+
+
+def test_rate_limit_when_retry_is_false(requests_mock):
+    """
+    Given:
+        self-deployed client with retry_on_rate_limit=False
+    When:
+        Response from http request is 429 rate limit
+    Then:
+        Verify that a regular error is returned and not a ScheduledCommand
+    """
+    client = retry_on_rate_limit_client(False)
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/test_id',
+        status_code=429,
+        json={'content': "Rate limit reached!"}
+    )
+
+    try:
+        client.http_request(method='GET', url_suffix='test_id')
+        assert False
+    except DemistoException as err:
+        assert 'Error in API call [429]' in err.args[0]
+
+
+@pytest.mark.parametrize('response, result', [
+    (200, [{'Type': 'Successful', 'APICallsCount': 1}]),
+    (429, [{'Type': 'QuotaError', 'APICallsCount': 1}]),
+    (500, [{'Type': 'GeneralError', 'APICallsCount': 1}])
+])
+def test_create_api_metrics(mocker, response, result):
+    """
+    Test create_api_metrics function, make sure metrics are reported according to the response
+    """
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
+    client = retry_on_rate_limit_client(True)
+    client.create_api_metrics(response)
+
+    metric_results = demisto.results.call_args_list[0][0][0]
+    assert metric_results.get('Contents') == 'Metrics reported successfully.'
+    assert metric_results.get('APIExecutionMetrics') == result
+
+
+def test_general_error_metrics(requests_mock, mocker):
+    "When we activate the retry mechanism, and we recieve a general error, it's metric should be recorded"
+    client = retry_on_rate_limit_client(True)
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    requests_mock.get(
+        'https://graph.microsoft.com/v1.0/test_id',
+        status_code=500,
+        json={'content': "General Error!"}
+    )
+
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, 'command', return_value='testing_command')
+    mocker.patch.object(demisto, 'results')
+
+    try:
+        client.http_request(method='GET', url_suffix='test_id')
+        assert False
+    except DemistoException:
+        metric_results = demisto.results.call_args_list[0][0][0]
+        assert metric_results.get('Contents') == 'Metrics reported successfully.'
+        assert metric_results.get('APIExecutionMetrics') == [{'Type': 'GeneralError', 'APICallsCount': 1}]

@@ -1,0 +1,152 @@
+{
+    "items": [
+        {
+            "id": "c4f066d4-9a6d-48c9-b72c-45c56d1c13ae",
+            "name": "encryp user",
+            "type": "device-encryption",
+            "lockedByManagingAccount": false,
+            "priority": 1,
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "enabled": true,
+            "settings": {
+                "endpoint.device-encryption.enable-right-click-context-menu": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-endpoint": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-non-boot-volumes": {
+                    "value": false
+                },
+                "endpoint.device-encryption.encrypt-used-space-only": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.enable-attachment-prompt": {
+                    "value": false
+                },
+                "endpoint.device-encryption.outlook-addin.enabled": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.excluded-domains": {
+                    "value": ""
+                },
+                "endpoint.device-encryption.require-startup-authentication": {
+                    "value": true
+                },
+                "endpoint.device-encryption.reset-authentication.frequency": {
+                    "value": 0,
+                    "unit": "months"
+                }
+            },
+            "appliesTo": {
+                "users": ["test_user"],
+                "userGroups": ["test_user_group"]
+            },
+            "createdAt": "2022-09-22T07:16:52.594Z",
+            "updatedAt": "2022-09-22T09:23:06.143Z"
+        },
+        {
+            "id": "testetst-9a6d-48c9-b72c-45c56d1c13ae",
+            "name": "encryp user",
+            "type": "device-encryption",
+            "lockedByManagingAccount": false,
+            "priority": 1,
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "enabled": true,
+            "settings": {
+                "endpoint.device-encryption.enable-right-click-context-menu": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-endpoint": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-non-boot-volumes": {
+                    "value": false
+                },
+                "endpoint.device-encryption.encrypt-used-space-only": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.enable-attachment-prompt": {
+                    "value": false
+                },
+                "endpoint.device-encryption.outlook-addin.enabled": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.excluded-domains": {
+                    "value": ""
+                },
+                "endpoint.device-encryption.require-startup-authentication": {
+                    "value": true
+                },
+                "endpoint.device-encryption.reset-authentication.frequency": {
+                    "value": 0,
+                    "unit": "months"
+                }
+            },
+            "appliesTo": {
+                "endpoints": ["test_endpoint"],
+                "endpointGroups": ["test_endpoint_group"]
+            },
+            "createdAt": "2022-09-22T07:16:52.594Z",
+            "updatedAt": "2022-09-22T09:23:06.143Z"
+        },
+        {
+            "id": "testetst-9a6d-48c9-b72c-45c56d1c13af",
+            "name": "encryp user2",
+            "type": "device-encryption",
+            "lockedByManagingAccount": false,
+            "priority": 1,
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "enabled": true,
+            "settings": {
+                "endpoint.device-encryption.enable-right-click-context-menu": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-endpoint": {
+                    "value": true
+                },
+                "endpoint.device-encryption.encrypt-non-boot-volumes": {
+                    "value": false
+                },
+                "endpoint.device-encryption.encrypt-used-space-only": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.enable-attachment-prompt": {
+                    "value": false
+                },
+                "endpoint.device-encryption.outlook-addin.enabled": {
+                    "value": true
+                },
+                "endpoint.device-encryption.outlook-addin.excluded-domains": {
+                    "value": ""
+                },
+                "endpoint.device-encryption.require-startup-authentication": {
+                    "value": true
+                },
+                "endpoint.device-encryption.reset-authentication.frequency": {
+                    "value": 0,
+                    "unit": "months"
+                }
+            },
+            "appliesTo": {
+                "endpoints": [],
+                "endpointGroups": []
+            },
+            "createdAt": "2022-09-22T07:16:52.594Z",
+            "updatedAt": "2022-09-22T09:23:06.143Z"
+        }
+    ],
+    "pages": {
+        "current": 1,
+        "size": 50,
+        "maxSize": 200,
+        "total": 1,
+        "items": 3
+    }
+}

@@ -524,3 +524,36 @@ def test_file_command(requests_mock, mocker, file: str, mocked_address: str, moc
     assert id_query_mock.call_count == 1
     assert all(mocked_search.call_count == 1 for mocked_search in search_query_mocks)
     assert isinstance(command_results, list) and len(command_results) == len(file_ids)
+
+
+@pytest.mark.parametrize('mocked_address,ioc_id,mocked_response,command_results_output',
+                         (('https://api.crowdstrike.com/falconx/entities/artifacts/v1',
+                           '123',
+                           {'headers': {'Content-Type': 'image/png',
+                                        'Content-Disposition': 'attachment; filename=screen_0.png'}},
+                           'screen_0.png'),
+                          ('https://api.crowdstrike.com/falconx/entities/artifacts/v1',
+                           '123',
+                           {'headers': {'Content-Type': 'application/json'}},
+                           None),
+                          ))
+def test_download_ioc_command(requests_mock, mocker, mocked_address, ioc_id, mocked_response, command_results_output):
+    """
+    Given
+            IOCs to download
+    When
+            Calling the cs-fx-download-ioc command
+    Then
+            - Verify that when the response includes an image a file is returned
+            - Verify that when the response includes a json the output is a table
+    """
+    mocker.patch.object(Client, '_generate_token', return_value='token')
+    client = Client(server_url="https://api.crowdstrike.com/", username="user1", password="12345", use_ssl=False,
+                    proxy=False, reliability=DBotScoreReliability.B)
+    from CrowdStrikeFalconX import download_ioc_command
+    requests_mock.get(mocked_address, headers=mocked_response.get('headers'), json={})
+    command_results = download_ioc_command(client, ioc_id)
+    if isinstance(command_results, dict):
+        assert command_results.get('File') == command_results_output
+    else:
+        assert command_results.outputs.get('File') == command_results_output

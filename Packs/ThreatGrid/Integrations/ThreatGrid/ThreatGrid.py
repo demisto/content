@@ -1,9 +1,10 @@
 import requests
+import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.getParam('proxy'):
     del os.environ['HTTP_PROXY']
@@ -272,7 +273,9 @@ def get_html_report_by_id():
     Download the html report for a sample given the id
     """
     sample_id = demisto.getArg('id')
+
     r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
+
     ec = {'ThreatGrid.Sample.Id': sample_id}
     demisto.results([
         {
@@ -281,7 +284,7 @@ def get_html_report_by_id():
             'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
                              + 'Your sample run HTML report download request has been completed successfully for '
                              + sample_id,
-            'Contents': r.content,
+            'Contents': r.text,
             'ContentsFormat': formats['html']
         },
         fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
@@ -1009,12 +1012,14 @@ def feeds_helper(name):
     requested_feed = name_conversion[name] if name in name_conversion else name
     url = SUB_API + 'iocs/feeds/' + requested_feed
     r = req('GET', url, params=handle_filters())
+    content = json.loads(r.content.decode('utf-8')) if isinstance(r.content, bytes) else r.content,
+
     demisto.results([
         {
             'Type': entryTypes['note'],
             'EntryContext': {},
             'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-            'Contents': r.content,
+            'Contents': content,
             'ContentsFormat': formats['json']
         },
         fileResult(url, r.content)

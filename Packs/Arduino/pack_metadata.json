@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-01-15T14:23:13Z",
-    "categories": [],
+    "categories": [
+        "IT Services"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

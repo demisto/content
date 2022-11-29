@@ -1,0 +1,25 @@
+commonfields:
+  id: AquatoneDiscoverV2
+  version: -1
+name: AquatoneDiscoverV2
+type: python
+subtype: python3
+script: '-'
+tags: []
+enabled: true
+args:
+- name: domain
+  required: true
+  default: true
+  description: domain to discover
+outputs:
+- contextPath: Aquatone.discover
+  description: 'find the targets nameservers and shuffle DNS lookups between them'
+scripttarget: 0
+timeout: 1h0m0s
+runonce: true
+dockerimage: demisto/aquatone:2.0.0.36846
+comment: 'aquatone-discover will find the targets nameservers and shuffle DNS lookups between them. Should a lookup fail on the target domains nameservers, aquatone-discover will fall back to using Google public DNS servers to maximize discovery.'
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

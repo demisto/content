@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - C:\Program Files\Update Services\LogFiles\Change.log
+    - C:\Program Files\Update Services\LogFiles\SoftwareDistribution.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: msft
+          product: WSUS

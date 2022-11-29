@@ -3082,7 +3082,7 @@ Adds an email object to MISP.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | event_id | ID of an MISP event. | Required | 
-| entry_id | Entry ID of the email. | Required |
+| entry_id | Entry ID of the email (only supports .eml files). | Required |
 
 
 #### Context Output

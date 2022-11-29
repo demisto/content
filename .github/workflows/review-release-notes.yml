@@ -23,7 +23,7 @@ jobs:
         uses: Gr1N/setup-poetry@v7
       - name: Install Python Dependencies
         run: |
-          poetry install
+          poetry install --with ci
       - name: Review Release Notes
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
