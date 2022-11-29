@@ -1061,12 +1061,12 @@ class TestAssetTags:
             "name": "parent_tag",
             "rule_type": "NAME_CONTAINS",
             "rule_text": "NetworkManager",
-            "child_name": "child_1,child_2,child_3",
+            "child_to_remove": "child_1,child_2,child_3",
             "criticality_score": "2",
         },
         b"<ServiceRequest><data><Tag><name>parent_tag</name><ruleType>NAME_CONTAINS</ruleType><ruleText>NetworkManager</ruleText>"
-        + b"<criticalityScore>2</criticalityScore><children><remove><TagSimple><name>child_1</name></TagSimple><TagSimple><name>"
-        + b"child_2</name></TagSimple><TagSimple><name>child_3</name></TagSimple>"
+        + b"<criticalityScore>2</criticalityScore><children><remove><TagSimple><id>child_1</id></TagSimple><TagSimple><id>"
+        + b"child_2</id></TagSimple><TagSimple><id>child_3</id></TagSimple>"
         + b"</remove></children></Tag></data></ServiceRequest>",
     )
     VALID_ASSET_TAG_COMMAND_ARGS = [
