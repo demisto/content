@@ -165,9 +165,7 @@ def main():  # pragma: no cover
     skip_complex_mode = COMPLEX_OBSERVATION_MODE_SKIP == params.get('observation_operator_mode')
     feed_tags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color', '')
-    objects_to_fetch = params.get('objects_to_fetch')
-    if isinstance(objects_to_fetch, list):
-        objects_to_fetch = ','.join(objects_to_fetch)
+    objects_to_fetch = params.get('objects_to_fetch', [])
 
     initial_interval = params.get('initial_interval', DEFAULT_FETCH_INTERVAL)
     fetch_from_feed_start = params.get('fetch_from_feed_start', False)
@@ -184,7 +182,7 @@ def main():  # pragma: no cover
             collection_to_fetch=collection_to_fetch,
             proxies=proxies,
             verify=verify_certificate,
-            objects_to_fetch=[objects_to_fetch] if objects_to_fetch else [],
+            objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
             tags=feed_tags,
             limit_per_request=limit_per_request,
