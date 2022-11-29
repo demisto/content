@@ -175,6 +175,7 @@ subdomain
 PDF
 auth
 endpoints
+SSDeep
 DNS
 XDR
 CommandRunner
