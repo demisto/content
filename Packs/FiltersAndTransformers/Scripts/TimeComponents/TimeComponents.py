@@ -135,11 +135,11 @@ def main():
             'unix_epoch_time': int(date_time.timestamp()),
             'iso_8601': date_time.isoformat(),
             'y-m-d': f'{date_time.year}-{date_time.month}-{date_time.day}',
-            'yyyy-mm-dd': f"{date_time.strftime('%Y')}-{date_time.strftime('%m')}-{date_time.strftime('%d')}",
+            'yyyy-mm-dd': f"{date_time.strftime('%Y-%m-%d')}",
             'h:m:s': f'{date_time.hour}:{date_time.minute}:{date_time.second}',
             'H:m:s': f'{(date_time.hour % 12) or 12}:{date_time.minute}:{date_time.second}',
-            'hh:mm:ss': f"{date_time.strftime('%I')}:{date_time.strftime('%M')}:{date_time.strftime('%S')}",
-            'HH:mm:ss': f"{date_time.strftime('%H')}:{date_time.strftime('%M')}:{date_time.strftime('%S')}",
+            'hh:mm:ss': f"{date_time.strftime('%I:%M:%S')}",
+            'HH:mm:ss': f"{date_time.strftime('%H:%M:%S')}",
         }
 
         if key := args.get('key'):
