@@ -243,7 +243,6 @@ def get_emails_context(event):
             'recipient': email.get('recipient', {}).get('email'),
             'subject': email.get('subject'),
             'message_id': email.get('messageId'),
-            'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
             'body': email.get('body'),
             'body_type': email.get('bodyType'),
             'headers': email.get('headers'),
