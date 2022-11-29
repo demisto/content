@@ -109,7 +109,7 @@ if [ -n "$_force" ] && [ -z "$_packs" ]; then
     exit 1
 fi
 
-if [ -n "$_force" ] && [ -n "$_storage_base_path"]; then
+if [ -n "$_force" ] && [ -n "$_storage_base_path" ]; then
     echo "Can not force upload while using a storage base path."
     exit 1
 fi
@@ -124,7 +124,6 @@ if [ -n "$_storage_base_path" ] && [[ "$_storage_base_path" != upload-flow* ]]; 
   echo "The given storage base path should look like upload-flow/builds/branch_name/build_number/content.2"
   exit 1
 fi
-
 
 _variables="variables[BUCKET_UPLOAD]=true"
 if [ -n "$_force" ]; then
