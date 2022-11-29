@@ -3777,7 +3777,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension:
+            if self.extension: 
                 file_context['Extension'] = self.extension
 
             if self.file_type:
@@ -6414,6 +6414,8 @@ class EntityRelationship:
         USED_ON = 'used-on'
         USES = 'uses'
         VARIANT_OF = 'variant-of'
+        DETECTS = 'detects'
+        DETECTED_BY = 'detected-by'
 
         RELATIONSHIPS_NAMES = {'applied': 'applied-on',
                                'attachment-of': 'attaches',
@@ -6484,7 +6486,8 @@ class EntityRelationship:
                                'used-by': 'uses',
                                'used-on': 'targeted-by',
                                'uses': 'used-by',
-                               'variant-of': 'variant-of'}
+                               'variant-of': 'variant-of',
+                               'detects': 'detected-by'}
 
         @staticmethod
         def is_valid(_type):

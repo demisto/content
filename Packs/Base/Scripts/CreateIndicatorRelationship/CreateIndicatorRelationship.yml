@@ -158,6 +158,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
   required: true
   secret: false
 - default: false
@@ -236,6 +238,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
   required: false
   secret: false
 - default: false

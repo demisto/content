@@ -115,6 +115,8 @@ args:
   - used-on
   - uses
   - variant-of
+  - detects
+  - detected-by
 - default: false
   defaultValue: '20'
   description: The number of results to return. Default is 20.
