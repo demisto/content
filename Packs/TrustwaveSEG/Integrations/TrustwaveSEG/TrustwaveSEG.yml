@@ -845,4 +845,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests: 
+- TrustwaveSEG-Test
 fromversion: 5.0.0

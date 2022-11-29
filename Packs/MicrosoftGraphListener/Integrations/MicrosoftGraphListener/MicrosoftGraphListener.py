@@ -8,8 +8,9 @@ import os
 import json
 import urllib3
 from urllib.parse import quote
-import urllib3
 
+
+# Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
