@@ -360,7 +360,15 @@ def send_asset_vuln_request(asset_id, date_range):
     return res.json()
 
 
-def send_asset_details_request(asset_id):
+def send_asset_details_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset details using the '{BASE_URL}workbenches/assets/{asset_id}/info' endpoint.
+
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
     full_url = "{}workbenches/assets/{}/info".format(BASE_URL, asset_id)
     try:
         res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
@@ -371,15 +379,22 @@ def send_asset_details_request(asset_id):
     return res.json()
 
 
+def send_asset_attributes_request(asset_id: str) -> Dict[str, Any]:
+    """Gets asset attributes using the '{BASE_URL}api/v3/assets/{asset_id}/attributes' endpoint.
 
-def send_asset_attributes_request(asset_id):
-     full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
+    Args:
+        asset_id (string): id of the asset.
+
+    Returns:
+        dict: dict containing information on an asset.
+    """
+    full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
     try:
         res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
         res.raise_for_status()
     except HTTPError as exc:
         return_error(f'Error calling for url {full_url}: error message {exc}')
-    
+
     return res.json()
 
 
@@ -389,15 +404,15 @@ def test_module():
 
 
 def get_scans_command():
-    folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
+    folder_id, last_modification_date=demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
+        last_modification_date=int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
-    response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
-    scan_entries = list(map(get_scan_info, response['scans']))
-    valid_scans = [x for x in scan_entries if x is not None]
-    invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
-    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
+    response=send_scan_request(folder_id = folder_id, last_modification_date = last_modification_date)
+    scan_entries=list(map(get_scan_info, response['scans']))
+    valid_scans=[x for x in scan_entries if x is not None]
+    invalid_scans=[k for k, v in zip(response['scans'], scan_entries) if v is None]
+    res=[get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
                                 replace_keys(valid_scans), GET_SCANS_HEADERS)]
     if invalid_scans:
         res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans',
@@ -407,13 +422,13 @@ def get_scans_command():
 
 
 def launch_scan_command():
-    scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTargets')
-    scan_info = send_scan_request(scan_id)['info']
+    scan_id, targets=demisto.getArg('scanId'), demisto.getArg('scanTargets')
+    scan_info=send_scan_request(scan_id)['info']
     if not targets:
-        targets = scan_info.get('targets', '')
-    target_list = argToList(targets)
-    body = assign_params(alt_targets=target_list)
-    res = send_scan_request(scan_id, 'launch', 'POST', body=body)
+        targets=scan_info.get('targets', '')
+    target_list=argToList(targets)
+    body=assign_params(alt_targets = target_list)
+    res=send_scan_request(scan_id, 'launch', 'POST', body = body)
     res.update({
         'id': scan_id,
         'targets': targets,
@@ -425,12 +440,12 @@ def launch_scan_command():
 
 
 def get_report_command():
-    scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
-    results = []
-    scan_details = send_scan_request(scan_id)
+    scan_id, info, detailed=demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
+    results=[]
+    scan_details=send_scan_request(scan_id)
     if info == 'yes':
-        scan_details['info']['id'] = scan_id
-        scan_details['info'] = replace_keys(scan_details['info'])
+        scan_details['info']['id']=scan_id
+        scan_details['info']=replace_keys(scan_details['info'])
         results.append(
             get_entry_for_object('Scan basic info', 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_details['info'],
                                  SCAN_REPORT_INFO_HEADERS))
@@ -489,6 +504,16 @@ def args_to_request_params(hostname, ip, date_range):
 
 
 def get_asset_details_command() -> CommandResults:
+    """
+    tenable-io-get-asset-details: Retrieves details for the specified asset to include custom attributes.
+
+    Args:
+        None
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains asset
+        details.
+    """
     ip = demisto.getArg('ip')
 
     if not ip:
@@ -502,7 +527,7 @@ def get_asset_details_command() -> CommandResults:
 
     asset_id = get_asset_id(params)
     if not asset_id:
-        return CommandResults(readable_output = f'Asset not found: {ip}')
+        return CommandResults(readable_output=f'Asset not found: {ip}')
 
     try:
         info = send_asset_details_request(asset_id)
@@ -514,7 +539,7 @@ def get_asset_details_command() -> CommandResults:
             info["info"]["attributes"] = attributes
 
     except DemistoException as e:
-        return_error('Failed to include custom attributes. {e})
+        return_error(f'Failed to include custom attributes. {e}')
 
     readable_output = tableToMarkdown(
         f'Asset Info for {ip}', info["info"], headers=["attributes", "fqdn", "interfaces", "ipv4", "id", "last_seen"])
