@@ -1927,10 +1927,39 @@ def add_additional_headers(additional_headers):
     return headers
 
 
+def return_outputs_dev(readable_output, outputs=None, raw_response=None, timeline=None, ignore_auto_extract=False):
+    timeline_list = [timeline] if isinstance(timeline, dict) else timeline
+    if timeline_list:
+        for tl_obj in timeline_list:
+            if 'Category' not in tl_obj.keys():
+                tl_obj['Category'] = 'Integration Update'
+
+    return_entry = {
+        "Type": entryTypes["note"],
+        "HumanReadable": readable_output,
+        "ContentsFormat": formats["text"] if isinstance(raw_response, STRING_TYPES) else formats['json'],
+        "Contents": raw_response,
+        "EntryContext": outputs,
+        'IgnoreAutoExtract': ignore_auto_extract,
+        "IndicatorTimeline": timeline_list
+    }
+    # Return 'readable_output' only if needed
+    if readable_output and not outputs and not raw_response:
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
+    elif outputs and raw_response is None:
+        # if raw_response was not provided but outputs were provided then set Contents as outputs
+        return_entry["Contents"] = outputs
+    demisto.debug(f'{return_entry=}')
+    demisto.results(return_entry)
+
+
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
                additionalHeader=None, raw_message=None, from_address=None, replyTo=None):
+    global return_outputs
+    return_outputs = return_outputs_dev
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
@@ -1941,36 +1970,39 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     if not to and not cc and not bcc:
         return_error('You must have at least one recipient')
 
-    if raw_message:
-        message = Message(
-            to_recipients=to,
-            cc_recipients=cc,
-            bcc_recipients=bcc,
-            body=raw_message,
-            author=from_address,
-            reply_to=reply_to
-        )
+    try:
+        if raw_message:
+            message = Message(
+                to_recipients=to,
+                cc_recipients=cc,
+                bcc_recipients=bcc,
+                body=raw_message,
+                author=from_address,
+                reply_to=reply_to
+            )
 
-    else:
-        if additionalHeader:
-            additionalHeader = add_additional_headers(additionalHeader)
+        else:
+            if additionalHeader:
+                additionalHeader = add_additional_headers(additionalHeader)
 
-        # collect all types of attachments
-        attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
-        attachments.extend(collect_manual_attachments(manualAttachObj))
-        attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
+            # collect all types of attachments
+            attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
+            attachments.extend(collect_manual_attachments(manualAttachObj))
+            attachments.extend(handle_transient_files(transientFile, transientFileContent, transientFileCID))
 
-        # update body and html_body with the templated params, if exists
-        template_params = handle_template_params(templateParams)
-        if template_params:
-            body = body.format(**template_params)
-            if htmlBody:
-                htmlBody = htmlBody.format(**template_params)
+            # update body and html_body with the templated params, if exists
+            template_params = handle_template_params(templateParams)
+            if template_params:
+                body = body.format(**template_params)
+                if htmlBody:
+                    htmlBody = htmlBody.format(**template_params)
 
-        message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
-                                 reply_to)
+            message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
+                                     reply_to)
 
-    client.send_email(message)
+        client.send_email(message)
+    except Exception as e:
+        return_error(f'Dev Error - Encountered an error while trying to send-mail: {str(e)}')
 
     return 'Mail sent successfully', {}, {}
 
