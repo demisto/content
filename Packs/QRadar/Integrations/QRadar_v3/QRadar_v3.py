@@ -1374,7 +1374,7 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], 
         (int): The Minimum ID to fetch offenses by.
     """
     if not highest_offense_id:
-        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client)
+        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client) - 1
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
