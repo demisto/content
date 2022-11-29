@@ -3416,6 +3416,7 @@ def get_asset_command(client: Client, asset_id: str) -> CommandResults | list[Co
         data=asset_data,
         name_mapping={
             "id": "AssetId",
+            "ip": "Address",
             "addresses.ip": "Addresses",
             "addresses.mac": "Hardware",
             "hostNames.name": "Aliases",
@@ -3632,6 +3633,7 @@ def get_assets_command(client: Client, page_size: str | None = None, page: str |
             name_mapping={
                 "id": "AssetId",
                 "ip": "Address",
+                "addresses.ip": "Addresses",
                 "hostName": "Name",
                 "Site": "Site",
                 "vulnerabilities.exploits": "Exploits",
@@ -4604,7 +4606,9 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
             name_mapping={
                 "id": "AssetId",
                 "ip": "Address",
+                "addresses.ip": "Addresses",
                 "hostName": "Name",
+                "Site": "Site",
                 "vulnerabilities.exploits": "Exploits",
                 "vulnerabilities.malwareKits": "Malware",
                 "os": "OperatingSystem",
