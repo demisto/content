@@ -528,6 +528,7 @@ def set_tql_query(from_date, params, endpoint):
           f'{status if status != "AND () " else ""}' + active_only + confidence + threat_score + type_names
 
     tql = tql.replace('AND ', '', 1)
+    demisto.info(str(f'TTTTTTTTTTTTTTTTTTT  {tql}  TTTTTTTTTTTTTTTTTTT'))
     return tql
 
 
