@@ -1045,7 +1045,7 @@ script:
     execution: false
     name: nexpose-create-asset
     outputs:
-      - contextPath: Nexpose.Site.Asset.id
+      - contextPath: Nexpose.Asset.id
         description: ID of the newly created asset.
         type: string
   - arguments:

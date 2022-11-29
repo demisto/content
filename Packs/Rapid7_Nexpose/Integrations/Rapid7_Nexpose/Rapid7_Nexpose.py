@@ -2666,7 +2666,7 @@ def create_asset_command(client: Client, site: Site, date: str, ip_address: str 
 
     return CommandResults(
         readable_output=f"New asset has been created with ID {response_data['id']}.",
-        outputs_prefix="Nexpose.Site.Asset",
+        outputs_prefix="Nexpose.Asset",
         outputs_key_field="id",
         outputs={"id": response_data['id']},
         raw_response=response_data,
