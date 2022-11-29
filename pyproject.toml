@@ -7,9 +7,9 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
-demisto-sdk = "1.7.9"
 
 [tool.poetry.group.dev.dependencies]
+demisto-sdk = "1.7.9"
 requests = "^2.22.0"
 
 [tool.poetry.group.linters.dependencies]
