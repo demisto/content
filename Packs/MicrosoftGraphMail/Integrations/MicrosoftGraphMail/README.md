@@ -198,8 +198,8 @@ Gets an attachment from the email.
 | user_id | User ID or principal ID (usually an email address in the format someuser@example.com). | Required | 
 | message_id | The unique ID of the mail. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 | folder_id | A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box). | Optional | 
-| attachment_id | ID of the attachment. | Required | 
-| ran_once_flag | Flag for rate limit retry. | Optional | 
+| attachment_id | The ID of the attachment. In case it is not supplied, the command will return all the attachments. | Optional | 
+| ran_once_flag | flag for rate limit retry. | Optional | 
 
 
 #### Context Output
