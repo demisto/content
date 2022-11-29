@@ -439,7 +439,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     command_results_list: List[CommandResults] = []
 
     if args['file']:
-        command_results_list.extend(file_command(client=client, args=args))  # This is not implemented with fileinfo output to the context
+        command_results_list.extend(file_command(client=client, args=args))
         return command_results_list
 
     for _id in ids:
