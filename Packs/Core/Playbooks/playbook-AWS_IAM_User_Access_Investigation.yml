@@ -1,17 +1,15 @@
 id: AWS IAM User Access Investigation
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: AWS IAM User Access Investigation
+name: AWS IAM User Access Investigation1
 description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, so we can continually improve the content.\n"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 40b4c735-392d-4c86-8ab3-6d49441a813d
+    taskid: 8a8ad825-1cee-4b65-8bd3-b50b419cdfcc
     type: start
     task:
-      id: 40b4c735-392d-4c86-8ab3-6d49441a813d
+      id: 8a8ad825-1cee-4b65-8bd3-b50b419cdfcc
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "8":
     id: "8"
-    taskid: c48a2862-f3e1-4dd3-89b7-8590f645298b
+    taskid: d5e35433-18c5-4ac5-8725-a4e034eed667
     type: title
     task:
-      id: c48a2862-f3e1-4dd3-89b7-8590f645298b
+      id: d5e35433-18c5-4ac5-8725-a4e034eed667
       version: -1
       name: 'Remediation '
       type: title
@@ -69,10 +67,10 @@ tasks:
     continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 1e498a1e-df55-4805-8fa9-973ba6554ac1
+    taskid: 20b6b05d-6b6a-44d7-843b-498f7a21d442
     type: title
     task:
-      id: 1e498a1e-df55-4805-8fa9-973ba6554ac1
+      id: 20b6b05d-6b6a-44d7-843b-498f7a21d442
       version: -1
       name: Done
       type: title
@@ -97,10 +95,10 @@ tasks:
     continueonerrortype: ""
   "21":
     id: "21"
-    taskid: f452a1bf-3fc3-40db-8d4a-1666372f6a82
+    taskid: 9988a925-09f0-4b12-8c73-585ec6a10430
     type: condition
     task:
-      id: f452a1bf-3fc3-40db-8d4a-1666372f6a82
+      id: 9988a925-09f0-4b12-8c73-585ec6a10430
       version: -1
       name: Manual decision making - true/false-positive alert
       description: Based on the collected data investigation and the verdict established by the "Enrichment for Verdict" playbook, is this a true positive event?
@@ -130,10 +128,10 @@ tasks:
     continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 043b96c8-7870-4754-823d-3a0658690cf2
+    taskid: 0a778e48-7ba1-4367-80ab-db14154497ed
     type: title
     task:
-      id: 043b96c8-7870-4754-823d-3a0658690cf2
+      id: 0a778e48-7ba1-4367-80ab-db14154497ed
       version: -1
       name: False Positive - Done
       type: title
@@ -161,10 +159,10 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: 99d6201c-337d-4da6-82a1-bcd06c48573b
+    taskid: 584f23b5-3af1-43e9-8da9-7d0443e1afdd
     type: title
     task:
-      id: 99d6201c-337d-4da6-82a1-bcd06c48573b
+      id: 584f23b5-3af1-43e9-8da9-7d0443e1afdd
       version: -1
       name: Enrichment
       type: title
@@ -192,10 +190,10 @@ tasks:
     continueonerrortype: ""
   "50":
     id: "50"
-    taskid: cee3b559-fdae-4404-863c-39f9dd375566
+    taskid: 3f0b5ced-1ef7-47a2-8a41-25675867ac99
     type: title
     task:
-      id: cee3b559-fdae-4404-863c-39f9dd375566
+      id: 3f0b5ced-1ef7-47a2-8a41-25675867ac99
       version: -1
       name: Verdict
       type: title
@@ -223,10 +221,10 @@ tasks:
     continueonerrortype: ""
   "54":
     id: "54"
-    taskid: 65900bdd-a39d-4848-8edc-4a3026a5360c
+    taskid: 56c34066-e6c8-452a-89c6-0a982f639313
     type: playbook
     task:
-      id: 65900bdd-a39d-4848-8edc-4a3026a5360c
+      id: 56c34066-e6c8-452a-89c6-0a982f639313
       version: -1
       name: AWS IAM User Access Investigation - Remediation
       description: "Investigate and respond to Cortex XSIAM alerts where an AWS IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n This is a beta playbook, which lets you implement and test pre-release software. Although AWS is supported, we are working towards multi-cloud support. As the playbook is beta, it might contain bugs. Updates to the playbook during the beta phase might include non-backward compatible features. We encourage feedback on the quality and usability of the content to help us identify and fix issues, sp we can continually improve content.\n"
@@ -285,10 +283,10 @@ tasks:
     continueonerrortype: ""
   "57":
     id: "57"
-    taskid: 9bc32470-1e47-447a-8a0b-f41a4049394c
+    taskid: 23b257f0-23b3-46c2-8e9d-3b347a6bc9b1
     type: condition
     task:
-      id: 9bc32470-1e47-447a-8a0b-f41a4049394c
+      id: 23b257f0-23b3-46c2-8e9d-3b347a6bc9b1
       version: -1
       name: Close the alert and finish the investigation?
       description: "Close the alert and finish the investigation?"
@@ -318,10 +316,10 @@ tasks:
     continueonerrortype: ""
   "58":
     id: "58"
-    taskid: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
+    taskid: b5e4cf03-33df-424d-8bbd-f83d9ede11fe
     type: regular
     task:
-      id: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
+      id: b5e4cf03-33df-424d-8bbd-f83d9ede11fe
       version: -1
       name: Close alert after remediation
       description: commands.local.cmd.close.inv
@@ -350,10 +348,10 @@ tasks:
     continueonerrortype: ""
   "60":
     id: "60"
-    taskid: fe3f84ca-6874-4450-85d7-4de28a71fd11
+    taskid: 3efcf72d-30f2-4ae1-811b-dcad46f801b2
     type: playbook
     task:
-      id: fe3f84ca-6874-4450-85d7-4de28a71fd11
+      id: 3efcf72d-30f2-4ae1-811b-dcad46f801b2
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
@@ -418,10 +416,10 @@ tasks:
     continueonerrortype: ""
   "61":
     id: "61"
-    taskid: 6c5bcd44-dde7-429a-8838-d0e78c895537
+    taskid: 1043efe9-eaa1-4311-8f72-8597ff5de06d
     type: regular
     task:
-      id: 6c5bcd44-dde7-429a-8838-d0e78c895537
+      id: 1043efe9-eaa1-4311-8f72-8597ff5de06d
       version: -1
       name: Get cloud original alert
       description: Returns information about each alert ID.
@@ -455,10 +453,10 @@ tasks:
     continueonerrortype: ""
   "64":
     id: "64"
-    taskid: 8eded0e7-c70b-40a6-8515-6a3215682533
+    taskid: 0f46be32-5995-4574-8992-d941ad137547
     type: playbook
     task:
-      id: 8eded0e7-c70b-40a6-8515-6a3215682533
+      id: 0f46be32-5995-4574-8992-d941ad137547
       version: -1
       name: Handle False Positive Alerts
       description: |
@@ -509,10 +507,10 @@ tasks:
     continueonerrortype: ""
   "65":
     id: "65"
-    taskid: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
+    taskid: 537b3b48-845b-475d-8d62-a0cfaf6578bd
     type: regular
     task:
-      id: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
+      id: 537b3b48-845b-475d-8d62-a0cfaf6578bd
       version: -1
       name: Continue the investigation
       description: Continue the investigation.
@@ -540,10 +538,10 @@ tasks:
     continueonerrortype: ""
   "66":
     id: "66"
-    taskid: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+    taskid: 401759a1-699c-4dda-8780-0e1449454b10
     type: condition
     task:
-      id: ac7a9b9c-0d3c-494a-8def-9884ca58aadf
+      id: 401759a1-699c-4dda-8780-0e1449454b10
       version: -1
       name: Is it a suspicious or Tor IP?
       description: Is it a suspicious or Tor IP?
@@ -559,23 +557,38 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isEqualString
           left:
             value:
-              simple: alert.name
+              complex:
+                root: DBotScore
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: alertname
             iscontext: true
           right:
             value:
               simple: Suspicious API call from a Tor exit node
+          ignorecase: true
         - operator: isEqualString
           left:
             value:
-              simple: IPVerdict
+              complex:
+                root: IPVerdict
             iscontext: true
           right:
             value:
               simple: Suspicious
-      - - operator: containsGeneral
+          ignorecase: true
+      - - operator: isEqualString
           left:
             value:
               complex:
