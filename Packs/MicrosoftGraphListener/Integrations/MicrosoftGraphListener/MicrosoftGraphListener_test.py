@@ -431,7 +431,7 @@ def test_list_emails_raw_response_contains_list(mocker):
                         "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
                     }
                 ],
-                '@odata.nextLink': 'https://graph.microsoft.com/v1.0/users/avishai@demistodev.onmicrosoft.com/messages?%24top=20&%24skip=20'
+                '@odata.nextLink': 'https://graph.microsoft.com/v1.0/users/avishai@demistodev.onmicrosoft.com'
         }]
     client = self_deployed_client()
     mocker.patch.object(client, 'list_mails', return_value=RAW_RESPONSE)
