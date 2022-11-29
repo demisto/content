@@ -1,4 +1,5 @@
 # O365 - Security And Compliance - Content Search
+Deprecated. Use O365 - Security And Compliance - Content Search v2 instead.
 
 This integration enables you to manage the features that are available in the Security & Compliance Center from XSOAR.
 
