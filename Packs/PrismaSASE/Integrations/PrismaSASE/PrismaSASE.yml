@@ -34,8 +34,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Beta integration that provides commands for interaction with Prisma SASE API.
-display: Prisma SASE (Beta)
+description: An integration that provides commands for interaction with Prisma SASE API.
+display: Prisma SASE
 name: Prisma SASE
 script:
   commands:
