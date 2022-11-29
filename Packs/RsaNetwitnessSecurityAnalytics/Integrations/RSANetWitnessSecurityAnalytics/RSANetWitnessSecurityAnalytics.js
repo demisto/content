@@ -2,8 +2,9 @@ var url = params.url;
 if (url.indexOf("https://") < 0) {
     url = 'https://' + url;
 }
-var username = params.username;
-var password = params.password;
+var username = params.username || params.credentials.identifier;
+var password = params.password || params.credentials.password;
+
 var proxy = params.proxy || false;
 var COOKIE_PREFIX = 'RSA_SA_LICENSE=true; JSESSIONID=';
 

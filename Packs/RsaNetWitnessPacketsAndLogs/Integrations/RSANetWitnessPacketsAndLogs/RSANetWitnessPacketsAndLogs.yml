@@ -20,16 +20,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Username
-  name: username
-  defaultvalue: admin
-  type: 0
-  required: true
-- display: Password
-  name: password
-  defaultvalue: ""
-  type: 4
-  required: true
+- displaypassword: Secret Key
+  hiddenusername: false
+  name: credentials
+  display: Access Key
+  required: false
+  type: 9
 - display: Validate server certificate
   name: secure
   defaultvalue: "true"
