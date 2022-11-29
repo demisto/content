@@ -39,8 +39,10 @@ def read_json(path):
 
 def logger(func):
     @functools.wraps(func)
-    def wrapper(self, pack_id, *args, **kwargs):
-        logging.info(f"Starting validation - {func.__name__} for pack '{pack_id}'")
+    def wrapper(self, *args, **kwargs):
+        logging.info(f"Starting validation - {func.__name__} for pack '{args[0]}'")
+        logging.debug(f"{args=}")
+        logging.debug(f"{kwargs=}")
         # print(f'Starting {func.__name__}')
         try:
             result, pack_id = func(self, *args, **kwargs)
