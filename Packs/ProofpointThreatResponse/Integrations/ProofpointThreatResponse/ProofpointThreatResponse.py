@@ -239,24 +239,22 @@ def get_emails_context(event):
     emails_context = []
     for email in event.get('emails', []):
         email_obj = {
-                'sender': email.get('sender', {}).get('email'),
-                'recipient': email.get('recipient', {}).get('email'),
-                'subject': email.get('subject'),
-                'message_id': email.get('messageId'),
-                'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
-                'body': email.get('body'),
-                'body_type': email.get('bodyType'),
-                'headers': email.get('headers'),
-                'urls': email.get('urls'),
-                'sender_vap': email.get('sender', {}).get('vap'),
-                'recipient_vap': email.get('recipient', {}).get('vap'),
-                'attachments': email.get('attachments'),
-            }
+            'sender': email.get('sender', {}).get('email'),
+            'recipient': email.get('recipient', {}).get('email'),
+            'subject': email.get('subject'),
+            'message_id': email.get('messageId'),
+            'message_delivery_time': email.get('messageDeliveryTime', {}).get('millis'),
+            'body': email.get('body'),
+            'body_type': email.get('bodyType'),
+            'headers': email.get('headers'),
+            'urls': email.get('urls'),
+            'sender_vap': email.get('sender', {}).get('vap'),
+            'recipient_vap': email.get('recipient', {}).get('vap'),
+            'attachments': email.get('attachments'),
+        }
         message_delivery_time = email.get('messageDeliveryTime', {})
-        # Our instance return messageDeliveryTime of type dictionary
         if message_delivery_time and isinstance(message_delivery_time, dict):
             email_obj['message_delivery_time'] = message_delivery_time.get('millis')
-        # Customers instance return messageDeliveryTime of type str
         elif message_delivery_time and isinstance(message_delivery_time, str):
             email_obj['message_delivery_time'] = message_delivery_time
         emails_context.append(
