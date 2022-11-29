@@ -404,15 +404,15 @@ def test_module():
 
 
 def get_scans_command():
-    folder_id, last_modification_date=demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
+    folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        last_modification_date=int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
+        last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
                                                                    "%Y-%m-%d").timetuple()))
-    response=send_scan_request(folder_id = folder_id, last_modification_date = last_modification_date)
-    scan_entries=list(map(get_scan_info, response['scans']))
-    valid_scans=[x for x in scan_entries if x is not None]
-    invalid_scans=[k for k, v in zip(response['scans'], scan_entries) if v is None]
-    res=[get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
+    response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
+    scan_entries = list(map(get_scan_info, response['scans']))
+    valid_scans = [x for x in scan_entries if x is not None]
+    invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
+    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan(val.Id && val.Id === obj.Id)',
                                 replace_keys(valid_scans), GET_SCANS_HEADERS)]
     if invalid_scans:
         res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans',
@@ -422,13 +422,13 @@ def get_scans_command():
 
 
 def launch_scan_command():
-    scan_id, targets=demisto.getArg('scanId'), demisto.getArg('scanTargets')
-    scan_info=send_scan_request(scan_id)['info']
+    scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTargets')
+    scan_info = send_scan_request(scan_id)['info']
     if not targets:
-        targets=scan_info.get('targets', '')
-    target_list=argToList(targets)
-    body=assign_params(alt_targets = target_list)
-    res=send_scan_request(scan_id, 'launch', 'POST', body = body)
+        targets = scan_info.get('targets', '')
+    target_list = argToList(targets)
+    body = assign_params(alt_targets=target_list)
+    res = send_scan_request(scan_id, 'launch', 'POST', body=body)
     res.update({
         'id': scan_id,
         'targets': targets,
@@ -440,12 +440,12 @@ def launch_scan_command():
 
 
 def get_report_command():
-    scan_id, info, detailed=demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
-    results=[]
-    scan_details=send_scan_request(scan_id)
+    scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
+    results = []
+    scan_details = send_scan_request(scan_id)
     if info == 'yes':
-        scan_details['info']['id']=scan_id
-        scan_details['info']=replace_keys(scan_details['info'])
+        scan_details['info']['id'] = scan_id
+        scan_details['info'] = replace_keys(scan_details['info'])
         results.append(
             get_entry_for_object('Scan basic info', 'TenableIO.Scan(val.Id && val.Id === obj.Id)', scan_details['info'],
                                  SCAN_REPORT_INFO_HEADERS))
