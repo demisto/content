@@ -825,7 +825,7 @@ class MsGraphClient:
 
         return parsed_email
 
-    def _get_attachment_mime(self, message_id, attachment_id):
+    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry=False):
         """
         Gets attachment mime.
 
@@ -836,11 +836,12 @@ class MsGraphClient:
         :rtype: ``str``
         """
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text',
+                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
         return mime_content
 
-    def _get_email_attachments(self, message_id):
+    def _get_email_attachments(self, message_id, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -853,7 +854,8 @@ class MsGraphClient:
 
         attachment_results = []  # type: ignore
         suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
-        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint,
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -866,7 +868,7 @@ class MsGraphClient:
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
-                attachment_content = self._get_attachment_mime(message_id, attachment_id)
+                attachment_content = self._get_attachment_mime(message_id, attachment_id, overwrite_rate_limit_retry)
                 attachment_name = f'{attachment_name}.eml'
             else:
                 # skip attachments that are not of the previous types (type referenceAttachment)
@@ -903,7 +905,7 @@ class MsGraphClient:
 
         return labels
 
-    def _parse_email_as_incident(self, email):
+    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
         """
         Parses fetched emails as incidents.
 
@@ -916,7 +918,8 @@ class MsGraphClient:
         parsed_email = self._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -989,7 +992,7 @@ class MsGraphClient:
 
         # remove duplicate incidents which were already fetched
         incidents = filter_incidents_by_duplicates_and_limit(
-            incidents_res=list(map(self._parse_email_as_incident, fetched_emails)),
+            incidents_res=list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails)),
             last_run=last_run,
             fetch_limit=self._emails_fetch_limit,
             id_field='ID'
@@ -2004,7 +2007,7 @@ def main():
     endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
     app_name: str = 'ms-graph-mail'
     ok_codes: tuple = (200, 201, 202, 204)
-    use_ssl: bool = not params.get('insecure', False)
+    use_ssl: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
     certificate_thumbprint: str = params.get('certificate_thumbprint', '')
     private_key: str = params.get('private_key', '')

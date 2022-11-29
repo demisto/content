@@ -1468,7 +1468,7 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message'
     }
 
-    # verify error message raised by Demisto server is sent as message as expectec
+    # verify error message raised by Demisto server is sent as message as expected
     mocker.patch.object(
         demisto,
         'directMessage',

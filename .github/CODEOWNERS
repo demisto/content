@@ -1,19 +1,22 @@
 # Marketplace Related - Marketplace PMs only
-/Tests/Marketplace/approved_tags.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/approved_usecases.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/landingPage_sections.json @glicht @bakatzir @GuyLibermanPA
-/Tests/Marketplace/approved_categories.json @glicht @bakatzir @GuyLibermanPA
+/Tests/Marketplace/approved_tags.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/approved_usecases.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/approved_categories.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/core_packs_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
+/Tests/Marketplace/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @GuyLibermanPA @demisto/content-leaders
 
 # Marketplace & Upload-Flow
+/Tests/scripts/create_artifacts_graph/create_artifacts.py @ilaner
 /Tests/Marketplace/upload_git_snapshot.py @yaakovpraisler
 /Tests/Marketplace/install_packs.sh @yaakovpraisler
 /Tests/Marketplace/configure_and_install_packs.py @yaakovpraisler
 /Tests/Marketplace/copy_and_upload_packs.py @yaakovpraisler
-/Tests/Marketplace/marketplace_services.py @yaakovpraisler
+/Tests/Marketplace/marketplace_services.py @yaakovpraisler @ilaner
 /Tests/Marketplace/marketplace_statistics.py @yaakovpraisler
 /Tests/Marketplace/marketplace_constants.py @yaakovpraisler
 /Tests/Marketplace/zip_packs.py @yaakovpraisler
-/Tests/Marketplace/upload_packs.py @yaakovpraisler
+/Tests/Marketplace/upload_packs.py @yaakovpraisler @ilaner
 /Tests/Marketplace/packs_dependencies.py @yaakovpraisler
 /Tests/Marketplace/search_and_install_packs.py @yaakovpraisler
 /Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
@@ -22,6 +25,8 @@
 
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
+/Tests/scripts/collect_tests/id_set.py @ilaner
+/Tests/conf.json @ostolero
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -42,7 +47,7 @@
 /Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 
@@ -58,6 +63,7 @@
 .gitlab/* @esharf
 .gitlab-ci.yml @esharf
 /Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
+.gitlab/ci/staging.yml @ilaner
 
 # SDK Related
 .gitlab/ci/sdk-nightly.yml @dorschw

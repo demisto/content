@@ -10,11 +10,13 @@
     ],
     "email": "",
     "created": "2020-08-06T08:15:26Z",
-    "categories": [],
-    "tags": [],
-    "useCases": [
-        "Email Communication"
+    "categories": [
+        "Utilities"
     ],
+    "tags": [
+        "Use Case"
+    ],
+    "useCases": [],
     "keywords": [],
     "dependencies": {
         "Phishing": {

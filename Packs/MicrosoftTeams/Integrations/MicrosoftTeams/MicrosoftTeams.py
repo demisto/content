@@ -129,7 +129,7 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
     name_pattern: str = r'(?<=name=).*'
     type_pattern: str = r'(?<=type=).*'
     json_match: Optional[Match[str]] = re.search(json_pattern, message)
-    created_incident: Union[dict, list]
+    created_incident: Union[dict, list] = []
     data: str = str()
     if json_match:
         if re.search(name_pattern, message) or re.search(type_pattern, message):

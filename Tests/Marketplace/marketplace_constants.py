@@ -24,13 +24,17 @@ BASE_PACK_DEPENDENCY_DICT = {
 SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
 XSIAM_MP = "marketplacev2"
 XSOAR_MP = "xsoar"
+XPANSE_MP = "xpanse"
 XSIAM_START_TAG = "<~XSIAM>"
 XSIAM_END_TAG = "</~XSIAM>"
 XSOAR_START_TAG = "<~XSOAR>"
 XSOAR_END_TAG = "</~XSOAR>"
+XPANSE_START_TAG = "<~XPANSE>"
+XPANSE_END_TAG = "</~XPANSE>"
 TAGS_BY_MP = {
     XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
-    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG)
+    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG),
+    XPANSE_MP: (XPANSE_START_TAG, XPANSE_END_TAG),
 }
 
 
@@ -48,6 +52,7 @@ class BucketUploadFlow(object):
     AGGREGATED = "aggregated"
     IMAGES = 'images'
     AUTHOR = 'author'
+    README_IMAGES = 'readme_images'
     INTEGRATIONS = 'integrations'
     PREVIEW_IMAGES = 'preview_images'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
@@ -74,6 +79,7 @@ class GCPConfig(object):
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
     PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_BUCKET_V2 = "marketplace-v2-dist"
     CI_BUILD_BUCKET = "marketplace-ci-build"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
@@ -86,17 +92,21 @@ class GCPConfig(object):
         CORE_PACKS_LIST = json.load(core_packs_list_file)
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_MPV2_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_XPANSE_LIST = json.load(core_packs_list_file)
 
     with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
         packs_list = json.load(upgrade_core_packs_list)
         CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
     CORE_PACKS_MPV2_LIST_TO_UPDATE: List[str] = []
+    CORE_PACKS_XPANSE_LIST_TO_UPDATE: List[str] = []
 
     @classmethod
     def get_core_packs(cls, marketplace):
         mapping = {
             'xsoar': cls.CORE_PACKS_LIST,
             'marketplacev2': cls.CORE_PACKS_MPV2_LIST,
+            'xpanse': cls.CORE_PACKS_XPANSE_LIST,
         }
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST)
 
@@ -105,6 +115,7 @@ class GCPConfig(object):
         mapping = {
             'xsoar': cls.CORE_PACKS_LIST_TO_UPDATE,
             'marketplacev2': cls.CORE_PACKS_MPV2_LIST_TO_UPDATE,
+            'xpanse': cls.CORE_PACKS_XPANSE_LIST_TO_UPDATE,
         }
         return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
 
@@ -159,6 +170,7 @@ class Metadata(object):
     USE_CASES = 'useCases'
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
+    EXCLUDED_DEPENDENCIES = 'excludedDependencies'
     ALL_LEVELS_DEPENDENCIES = 'allLevelDependencies'
     PREMIUM = 'premium'
     VENDOR_ID = 'vendorId'
@@ -300,10 +312,11 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
-    FAILED_LOADING_USER_METADATA = "Failed in loading user defined metadata"
+    FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
     FAILED_PREVIEW_IMAGES_UPLOAD = "Failed to upload pack preview images to gcs"
+    FAILED_README_IMAGE_UPLOAD = "Failed to upload readme images to gcs"
     FAILED_METADATA_PARSING = "Failed to parse and create metadata.json"
     FAILED_COLLECT_ITEMS = "Failed to collect pack content items data"
     FAILED_ZIPPING_PACK_ARTIFACTS = "Failed zipping pack artifacts"
