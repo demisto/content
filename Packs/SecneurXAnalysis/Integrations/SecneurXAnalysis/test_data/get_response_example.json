@@ -163,5 +163,15 @@
             "task_uuid": "05046f26c83e8c88b3ddab2eab63d0d16224ac1e564535fc75cdceee47a0938d-2022-07-06-05-08-07",
             "submission_time": "2022-07-06 05:08:07"
         }
+    },
+    "quota_response": {
+        "success": 1,
+        "data": {
+            "start_time": "01 Sep 2022 00:00:00 UTC",
+            "used": 250,
+            "allowed": 500,
+            "scale": "MONTH",
+            "unused": 250
+        }
     }
 }
