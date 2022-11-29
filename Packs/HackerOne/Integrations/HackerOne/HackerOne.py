@@ -3,9 +3,10 @@ from CommonServerUserPython import *  # noqa
 import traceback
 import demistomock as demisto
 from typing import Callable, Dict, Tuple, Any
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -466,9 +467,9 @@ def fetch_incidents(client: Client, last_run: dict, ) -> Tuple[dict, list]:
     """
     validate_fetch_incidents_parameters(client.max_fetch, client.program_handle, client.filters)
     time_to_fetch = last_run.get("next_created_at", client.first_fetch)
-    max_fetch = client.max_fetch
+    max_fetch = client.max_fetch if client.max_fetch else int(DEFAULT_MAX_FETCH)
     # After one run we get a duplicate of the first incident, add one to reach the limit
-    if last_run.get("next_created_at") and client.max_fetch and client.max_fetch < 100:
+    if last_run.get("next_created_at") and max_fetch < 100:
         max_fetch += 1
     fetch_params = prepare_fetch_incidents_parameters(max_fetch, time_to_fetch, client.program_handle,
                                                       client.severity, client.state, client.filters, 1)
