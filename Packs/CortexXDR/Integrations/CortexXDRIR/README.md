@@ -2434,7 +2434,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
             "agent_id": "63f88a9e797440ccac742a6adc926fb2",
             "agent_install_type": "STANDARD",
             "agent_ip_addresses": [
-                "10.208.230.76"
+                "10.111.230.11"
             ],
             "agent_ip_addresses_v6": null,
             "agent_is_vdi": null,
@@ -2567,7 +2567,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
                 "agent_hostname": "DC1ENV1APC02",
                 "agent_id": "63f88a9e797440ccac742a6adc926fb2",
                 "agent_ip_addresses": [
-                    "10.208.230.76"
+                    "10.111.230.11"
                 ],
                 "agent_os_sub_type": "10.0.10240",
                 "agent_os_type": "AGENT_OS_WINDOWS",
@@ -2785,7 +2785,7 @@ BLOCKED_TRIGGER_4: prevented \(on write\)
 >### Alerts
 >|Action|Alert ID|Category|Description|Detection Timestamp|Host IP|Host Name|Name|Severity|
 >|---|---|---|---|---|---|---|---|---|
->| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.208.230.76 | DC1ENV1APC02 | Behavioral Threat | SEV_040_HIGH |
+>| detected (reported) | 6887 | Malware | Behavioral threat detected (rule: bioc.masquerade_svchost) | 2022-03-29T13:35:49.000Z | 10.111.230.11 | DC1ENV1APC02 | Behavioral Threat | SEV_040_HIGH |
 
 
 ### xdr-get-contributing-event
