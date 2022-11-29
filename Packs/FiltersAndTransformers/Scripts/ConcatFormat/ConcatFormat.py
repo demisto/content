@@ -164,12 +164,12 @@ def stringify(value: Any) -> str:
 
 
 def main():
-    args = demisto.args()
+    args = assign_params(**demisto.args())
     try:
         value = args.get('value')
         prefix = args.get('prefix')
         suffix = args.get('suffix')
-        variable_markers = argToList(args.get('variable_markers') or '${,}')
+        variable_markers = argToList(args.get('variable_markers', '${,}'))
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
         elif len(variable_markers) >= 3:
@@ -189,7 +189,7 @@ def main():
         formatter = Formatter(
             variable_markers[0],
             variable_markers[1],
-            argToBoolean(args.get('keep_symbol_to_null') or False))
+            argToBoolean(args.get('keep_symbol_to_null', False)))
 
         prefix = stringify(prefix)
         if prefix:

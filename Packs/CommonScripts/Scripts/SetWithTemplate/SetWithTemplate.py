@@ -221,14 +221,14 @@ def normalize_value(value: Any, stringify: str) -> Any:
 
 def main():
     try:
-        args = demisto.args()
+        args = assign_params(**demisto.args())
         key = args.get('key')
         template = args.get('template')
-        append = argToBoolean(args.get('append') or False)
-        stringify = args.get('stringify') or 'noop'
-        force = argToBoolean(args.get('force') or False)
-        keep_symbol_to_null = argToBoolean(args.get('keep_symbol_to_null') or False)
-        variable_markers = argToList(args.get('variable_markers') or '${,}')
+        append = argToBoolean(args.get('append', False))
+        stringify = args.get('stringify', 'noop')
+        force = argToBoolean(args.get('force', False))
+        keep_symbol_to_null = argToBoolean(args.get('keep_symbol_to_null', False))
+        variable_markers = argToList(args.get('variable_markers', '${,}'))
 
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
