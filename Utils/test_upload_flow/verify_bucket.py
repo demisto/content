@@ -277,7 +277,7 @@ class BucketVerifier:
         self.verify_rn('Box', expected_rn)
 
         # Case 6: Verify 1.0.0 rn was added - TestUploadFlow
-        expected_rn = """\n#### Integrations\n##### TestUploadFlow\nfirst release note"""
+        expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
         self.verify_rn('TestUploadFlow', expected_rn)
 
         # Case 7: Verify pack is set to hidden - Microsoft365Defender
