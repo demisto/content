@@ -503,7 +503,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the attachment. In case it is not supplied, the command will return all the attachments.
+      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       isArray: false
       name: attachment_id
       required: false
