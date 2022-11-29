@@ -15,40 +15,49 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 MSG_DICT = {
-    'verify_new_pack': 'Verify the pack is in the index, verify version 1.0.0 zip exists under the pack path',
-    'verify_modified_pack': 'Verify the packs new version is in the index, verify the new version zip exists under '
-                            'the packs path, verify all the new items are present in the pack',
-    'verify_new_version': 'Verify a new version exists in the index, verify the rn is parsed correctly to the '
-                          'changelog',
-    'verify_rn': 'Verify the content of the RN is in the changelog under the right version',
-    'verify_hidden': 'Verify the pack does not exist in index',
-    'verify_readme': 'Verify readme content is parsed correctly, verify that there was no version bump '
-                     'if only readme was modified',
-    'verify_failed_pack': 'Verify commit hash is not updated in the pack metadata in the index.zip',
-    # 'verify_modified_path': 'Verify the path of the item is modified',
-    'verify_modified_modeling_rule_path': 'Verify the path of the item is modified',
-    'verify_dependency': 'Verify the new dependency is in the metadata',
-    'verify_new_image': 'Verify the new image was uploaded'
+    "verify_new_pack": "verified the new pack in the index and that version 1.0.0 zip exists under the pack path",
+    "verify_modified_pack": "verified the packs new version is in the index and that all the new items are present in the pack",
+    "verify_new_version": "verified the new pack's version exists in the index and that the release notes is parsed correctly in the "
+                          "changelog",
+    "verify_rn": "verified the content of the release notes is in the changelog under the right version",
+    "verify_hidden": "verified the pack does not exist in index",
+    "verify_readme": "verified the readme content is parsed correctly and that there was no version bump "
+                     "if only readme was modified",
+    "verify_failed_pack": "verified the commit hash is not updated in the pack metadata in the index.zip",
+    "verify_modified_item_path": "verified the path of the pack item is modified",
+    "verify_dependency": "verified the new dependency is in the pack metadata",
+    "verify_new_image": "verified the new image was uploaded"
 }
-XSOAR_BUCKET = 'marketplace-dist-dev'
-XSIAM_BUCKET = 'marketplace-v2-dist-dev'
+XSOAR_BUCKET = "marketplace-dist-dev"
+XSIAM_BUCKET = "marketplace-v2-dist-dev"
+
+
+def read_json(path):
+    with open(path, 'r') as file:
+        return json.load(file)
 
 
 def logger(func):
     @functools.wraps(func)
-    def wrapper(self, *args, **kwargs):
-        logging.info(f'Starting {func.__name__}')
-        print(f'Starting {func.__name__}')
+    def wrapper(self, pack_id, *args, **kwargs):
+        logging.info(f"Starting validation - {func.__name__} for pack '{pack_id}'")
+        # print(f'Starting {func.__name__}')
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
+            
+            if not result:
+                raise Exception(f"Failed when running validation - {func.__name__}")
+
+            logging.info(f"Successful {MSG_DICT[func.__name__]} for pack {pack_id}.")
             # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
             # # TODO: remove all prints once logging is present in the gitlab build
         except FileNotFoundError as e:
-            logging.info(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False: {e}')
+            logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
             # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False:\nException: {e}')
             self.is_valid = False
+        except Exception as e:
+            logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
 
     return wrapper
 
@@ -163,7 +172,9 @@ class BucketVerifier:
         version_exists = [self.gcp.is_in_index(pack_id), self.gcp.download_and_extract_pack(pack_id, '1.0.0')]
         items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
                         in pack_items.values()]
-        return all(version_exists) and all(items_exists), pack_id
+        expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
+        rn_as_expected = expected_rn in self.gcp.get_changelog_rn_by_version(pack_id, self.versions[pack_id])
+        return all(version_exists) and all(items_exists) and rn_as_expected, pack_id
 
     @logger
     def verify_modified_pack(self, pack_id, pack_items, expected_rn):
@@ -216,27 +227,17 @@ class BucketVerifier:
         """
         return self.gcp.get_flow_commit_hash() != self.gcp.get_pack_metadata(pack_id).get('commit'), pack_id
 
-    # @logger
-    # def verify_modified_path(self, pack_id, item_file_path):
-    #     """
-    #     Verify the path of the item is modified
-    #     """
-
-    #     self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-    #     return self.gcp.is_items_in_pack([item_file_path]), pack_id
-
     @logger
-    def verify_modified_modeling_rule_path(self, pack_id, modeling_rule, pack_items):
+    def verify_modified_item_path(self, pack_id, modified_item_path, pack_items):
         """
         Verify the path of the item is modified
         """
 
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
-        # modeling_rule_paths = [modeling_rule / f"{modeling_rule.name}.xif", modeling_rule / f"{modeling_rule.name}.yml",
-        #                        modeling_rule / f"{modeling_rule.name}_schema.json"]
+        modified_item_exist = self.gcp.is_items_in_pack([modified_item_path])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
                         in pack_items.values()]
-        return all(items_exists), pack_id
+        return modified_item_exist and all(items_exists), pack_id
 
     @logger
     def verify_dependency(self, pack_id, dependency_id):
@@ -254,7 +255,21 @@ class BucketVerifier:
         image_in_bucket_path = self.gcp.download_image(pack_id)
         return open(image_in_bucket_path, "rb").read() == open(str(new_image_path), "rb").read(), pack_id
 
-    def run_basic_validations(self):
+    def run_xsiam_bucket_validations(self):
+        """
+        Runs the XSIAM verifications.
+        """
+        self.verify_modified_item_path('AlibabaActionTrail', 'AlibabaActionTrail/ModelingRules/modelingrule-Alibaba.yml',
+                                       self.items_dict.get('AlibabaActionTrail'))
+
+    def run_xsoar_bucket_validations(self):
+        """
+        Runs the XSIAM verifications.
+        """
+        self.verify_modified_item_path('CortexXDR', 'CortexXDR/Scripts/script-XDRSyncScript_new_name.yml',
+                                       self.items_dict.get('CortexXDR'))
+
+    def run_validations(self):
         """
         Runs the basic verifications for both buckets.
         """
@@ -276,45 +291,25 @@ class BucketVerifier:
         expected_rn = 'testing modifying existing RN'
         self.verify_rn('Box', expected_rn)
 
-        # Case 6: Verify 1.0.0 rn was added - TestUploadFlow
-        expected_rn = """#### Integrations\n##### TestUploadFlow\nfirst release note"""
-        self.verify_rn('TestUploadFlow', expected_rn)
-
-        # Case 7: Verify pack is set to hidden - Microsoft365Defender
+        # Case 6: Verify pack is set to hidden - Microsoft365Defender
         # self.verify_hidden('Microsoft365Defender')  TODO: fix after hidden pack mechanism is fixed
 
-        # Case 8: Verify changed readme - Maltiverse
+        # Case 7: Verify changed readme - Maltiverse
         expected_readme = 'readme test upload flow'
         self.verify_readme('Maltiverse', expected_readme)
 
-        # Case 9: Verify failing pack - Absolute
+        # Case 8: Verify failing pack - Absolute
         self.verify_failed_pack('Absolute')
 
-        # Case 10: Verify changed image - Armis
+        # Case 9: Verify changed image - Armis
         self.verify_new_image('Armis', Path(
             __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
-
-    def run_xsiam_bucket_validations(self):
-        """
-        Runs the XSIAM verifications.
-        """
-        self.verify_modified_modeling_rule_path('AlibabaActionTrail', Path(os.path.join('AlibabaActionTrail', 'ModelingRules')),
-                                                self.items_dict.get('AlibabaActionTrail'))
-        # self.verify_modified_path('AlibabaActionTrail',
-        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.xif'))
-        # self.verify_modified_path('AlibabaActionTrail',
-        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba.yml'))
-        # self.verify_modified_path('AlibabaActionTrail',
-        #                           os.path.join('AlibabaActionTrail', 'ModelingRules', 'Alibaba_schema.jsom'))
-
-    def run_validations(self):
-        """
-        Runs the bucket verifications.
-        """
-        self.run_basic_validations()
-
+        
         if self.bucket_name == XSIAM_BUCKET:
             self.run_xsiam_bucket_validations()
+
+        if self.bucket_name == XSOAR_BUCKET:
+            self.run_xsoar_bucket_validations()
 
     def is_bucket_valid(self):
         """
@@ -322,12 +317,6 @@ class BucketVerifier:
         """
         logging.info(f"Bucket with name {self.bucket_name} is {'valid' if self.is_valid else 'invalid'}.")
         return self.is_valid
-
-
-# def get_items_dict(pack_path, pack_id):
-#     pack = Pack(pack_id, pack_path)
-#     pack.collect_content_items()
-#     return pack._content_items
 
 
 def validate_bucket(service_account, storage_base_path, bucket_name, versions_dict, items_dict):
@@ -351,11 +340,6 @@ def get_args():
                                                        "and json with dict of pack names and versions to verify",
                         required=False)
     return parser.parse_args()
-
-
-def read_json(path):
-    with open(path, 'r') as file:
-        return json.load(file)
 
 
 def main():

@@ -494,15 +494,12 @@ test_upload_flow:
       fi
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}_upload_test_branch_$(date +%s)"
-    - echo $BRANCH
-    # - export branch=$(python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN)
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
     - echo $BRANCH
     - section_end "Create Testing Branch"
 
     - section_start "Trigger Test Upload Flow On Testing Branch"
-    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH| jq .id)
-    - echo $pipeline_id
+    - export pipeline_id=$(./Utils/trigger_test_upload_flow.sh -ct $GITLAB_SVC_USER_TOKEN -g -b $BRANCH | jq .id)
     - echo "Successful triggered test upload - https://code.pan.run/xsoar/content/-/pipelines/$pipeline_id"  # disable-secrets-detection
     - section_end "Trigger Test Upload Flow On Testing Branch"
 

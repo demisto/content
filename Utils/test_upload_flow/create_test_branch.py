@@ -16,6 +16,9 @@ pack_items_dict = {}
 changed_packs = set()
 
 
+# HELPER FUNCTIONS
+
+
 def json_write(file_path: str, data: Union[list, dict]):
     """ Writes given data to a json file
 
@@ -26,6 +29,44 @@ def json_write(file_path: str, data: Union[list, dict]):
     """
     with open(file_path, "w") as f:
         f.write(json.dumps(data, indent=4))
+
+
+def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
+    """
+    Gets a dict of all the paths of the given pack content items as it is in the bucket.
+
+    Args:
+        pack_path (Path): The pack path.
+
+    Returns:
+        dict: The content items paths dict.
+    """
+    create_artifacts_command = ['demisto-sdk', 'create-content-artifacts', '-a',
+                                '.', "-p", f'{pack_path.name}', '--no-zip', '--packs']
+    if marketplace == 'marketplacev2':
+        create_artifacts_command.extend(['-mp', f'{marketplace}'])
+
+    subprocess.call(create_artifacts_command, stdout=subprocess.DEVNULL)
+
+    content_dict = {}
+    new_pack_path = os.path.join('content_packs', pack_path.name)
+    sub_dirs = os.listdir(new_pack_path)
+    sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
+
+    for content_item_type in sub_dirs:
+        if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
+            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), 
+                                                                                                content_item_type)).glob('*')]
+    shutil.rmtree('./content_packs')
+    return content_dict
+
+
+def modify_item_path(item: Path, new_name: str):
+    """
+    Modify item's path, in order to verify that the pack was uploaded again
+    """
+    parent = item.parent
+    item.rename(parent.joinpath(new_name))
 
 
 def add_changed_pack(func):
@@ -39,7 +80,7 @@ def add_changed_pack(func):
         versions_dict[str(pack.name)] = version
         if pack_items:
             pack_items_dict[str(pack.name)] = pack_items
-        logging.info(f"Done running {func.__name__} on pack {pack}")
+        logging.info(f"Done running {func.__name__} on pack {pack.name}")
 
         return pack, version, pack_items
     return wrapper
@@ -58,39 +99,7 @@ def create_new_pack():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
 
-    return dest_path, '1.0.0', get_pack_content_dict_v2(dest_path)
-
-
-def get_pack_content_dict_v2(pack_path: Path, marketplace='xsoar'):
-    """
-    Gets a dict of all the paths of the pack content items as it is in the bucket.
-
-    Args:
-        pack_path (Path): The pack path.
-
-    Returns:
-        dict: The content paths dict.
-    """
-    create_artifacts_command = ['demisto-sdk', 'create-content-artifacts', '-a',
-                                '.', "-p", f'{pack_path.name}', '--no-zip', '--packs']
-
-    if marketplace == 'marketplacev2':
-        create_artifacts_command.extend(['-mp', f'{marketplace}'])
-
-    subprocess.call(create_artifacts_command, stdout=subprocess.DEVNULL)
-
-    content_dict = {}
-    new_pack_path = os.path.join('content_packs', pack_path.name)
-    sub_dirs = os.listdir(new_pack_path)
-    sub_dirs = [str(sub_dir) for sub_dir in sub_dirs if '.' not in str(sub_dir)]
-
-    for content_item_type in sub_dirs:
-        if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), 
-                                                                                                content_item_type)).glob('*')]
-
-    shutil.rmtree('./content_packs')
-    return content_dict
+    return dest_path, '1.0.0', get_pack_content_paths(dest_path)
 
 
 @add_changed_pack
@@ -154,14 +163,6 @@ def update_readme(pack: Path):
 
 
 @add_changed_pack
-def update_pack_ignore(pack: Path):
-    pack_ignore = pack / ".pack-ignore"
-    with pack_ignore.open('a') as f:
-        f.write("\n[file:1_0_1.md]\nignore=RM104\n")
-    return pack, get_current_version(pack), None
-
-
-@add_changed_pack
 def create_failing_pack(pack: Path):
     """
     Modify a pack such that the upload fails on it - modifying a pack
@@ -186,41 +187,35 @@ def modify_pack(pack: Path, integration: str):
         f.write('\n#  CHANGE IN PACK')
 
     enhance_release_notes(pack)
-    return pack, get_current_version(pack), get_pack_content_dict_v2(pack)
+    return pack, get_current_version(pack), get_pack_content_paths(pack)
 
 
 @add_changed_pack
-def modify_modeling_rules(modeling_rule: Path, old_name: str, new_name: str):
+def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
     Modify modeling rules path, in order to verify that the pack was uploaded again
     """
-    
-    modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif', modeling_rule.parent.parent)
-    modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml', modeling_rule.parent.parent)
-    modify_item_path(modeling_rule / f'{old_name}_schema.json', f'{new_name}_schema.json', modeling_rule.parent.parent)
+    modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif')
+    modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml')
+    modify_item_path(modeling_rule / f'{old_name}_schema.json', f'{new_name}_schema.json')
     parent = modeling_rule.parent
     pack_path = modeling_rule.parent.parent
     modeling_rule.rename(parent.joinpath(new_name))
-    return pack_path, get_current_version(pack_path), get_pack_content_dict_v2(pack_path, marketplace='marketplacev2')
-    
-
-def modify_item_path(item: Path, new_name: str, pack_path: Path):
-    """
-    Modify item's path, in order to verify that the pack was uploaded again
-    """
-    parent = item.parent
-    item.rename(parent.joinpath(new_name))
+    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path, marketplace='marketplacev2')
 
 
 @add_changed_pack
-def add_1_0_0_release_notes(pack: Path):
-    release_note = pack / 'ReleaseNotes' / '1_0_0.md'
-    release_note.write_text(f"""
-#### Integrations
-##### {pack.name}
-first release note
-""")
-    return pack, get_current_version(pack), None
+def modify_script_path(script: Path, old_name: str, new_name: str):
+    """
+    Modify script path, in order to verify that the pack was uploaded again and that the path was changed.
+    """
+    modify_item_path(script / f'{old_name}.py', f'{new_name}.py')
+    modify_item_path(script / f'{old_name}.yml', f'{new_name}.yml')
+    modify_item_path(script / f'{old_name}_test.py', f'{new_name}_test.py')
+    parent = script.parent
+    pack_path = script.parent.parent
+    script.rename(parent.joinpath(new_name))
+    return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path)
 
 
 def get_current_version(pack: Path):
@@ -260,14 +255,11 @@ def do_changes_on_branch(packs_path: Path):
     update_existing_release_notes(packs_path / 'Box', "2.1.2")
 
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
-    # set_pack_hidden(packs_path / 'Microsoft365Defender') 
     # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
+    # set_pack_hidden(packs_path / 'Microsoft365Defender') 
 
     # Case 7: Verify changed readme - Maltiverse
     update_readme(packs_path / 'Maltiverse')
-
-    # TODO: didn't verified
-    update_pack_ignore(packs_path / 'MISP')
 
     # Case 8: Verify failing pack - Absolute
     create_failing_pack(packs_path / 'Absolute')
@@ -276,8 +268,12 @@ def do_changes_on_branch(packs_path: Path):
     change_image(packs_path / 'Armis')
 
     # Case 10: Verify modified modeling rule path - AlibabaActionTrail
-    modify_modeling_rules(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules',
-                          'AlibabaModelingRules', 'Alibaba')  # TODO: add script
+    modify_modeling_rules_path(packs_path / 'AlibabaActionTrail/ModelingRules/AlibabaModelingRules',
+                               'AlibabaModelingRules', 'Alibaba')
+
+    # Case 11: Verify script path - CortexXDR
+    modify_script_path(packs_path / 'CortexXDR/Scripts/XDRSyncScript',
+                       'XDRSyncScript', 'XDRSyncScript_new_name')
 
     logging.info("Finished making test changes on the branch")
 
@@ -312,6 +308,7 @@ def main():
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
 
+        logging.info(f"Starts doing test changes on branch '{branch.name}'")
         do_changes_on_branch(packs_path)
 
         for p in changed_packs:
@@ -330,14 +327,6 @@ def main():
         repo.git.checkout(original_branch)
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
-
-        os.environ.setdefault('BRANCH', str(new_branch_name))
-        if os.environ.get('BRANCH') == new_branch_name:
-            logging.info('Successful assigned the BRANCH var')
-        else:
-            logging.info('Failed to assigned the BRANCH var')
-        # return new_branch_name
-        # print(new_branch_name)  # prints out to the bash variable
 
 
 if __name__ == "__main__":
