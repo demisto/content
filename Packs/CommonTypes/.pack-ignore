@@ -303,6 +303,12 @@ ignore=IF100
 [file:incidentfield-Number_of_Related_Incidents.json]
 ignore=IF100
 
+[file:incidentfield-Verdict.json]
+ignore=IF115
+
+[file:incidentfield-SSDeep.json]
+ignore=IF115
+
 [known_words]
 SysAid
 longText
