@@ -2,10 +2,10 @@
 The Cisco Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs).
 
 ## What does this pack do?
-- Retrieve Spam Quarantined messages.
+- Retrieve spam quarantined messages.
 - Release and delete messages from spam quarantine.
-- Retrieve, add, append, edit or delete a list entry - blocklist and safelist of spam quarantine. 
-- Centralized Tracking Messages.
+- Retrieve, add, append, edit, or delete a list entry - blocklist and safelist of spam quarantine. 
+- Centralized tracking messages.
 - Retrieve tracking messages enrichment summaries - AMP, DLP, URL.
 - Centralized Reporting - get Cisco SMA's statistics reports.
 - Fetch quarantine messages as incidents.
@@ -18,5 +18,5 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** -> **Configure**.
 3. When configuring the Syslog Collector, set:
-   - vendor as vendor<-  Cisco
-   - product as product<- SMA
+   - vendor as vendor <-  Cisco
+   - product as product <- SMA
