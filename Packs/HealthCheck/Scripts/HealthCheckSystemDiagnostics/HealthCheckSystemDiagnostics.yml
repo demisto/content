@@ -2,7 +2,7 @@ comment: Collect data from System Diagnostics tool
 commonfields:
   id: HealthCheckSystemDiagnostics
   version: -1
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
 name: HealthCheckSystemDiagnostics
 runas: DBotWeakRole
