@@ -1,0 +1,6 @@
+name: Github Parsing Rule
+id: Github_Parsing_Rule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
