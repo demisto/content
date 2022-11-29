@@ -21,7 +21,7 @@ from illumio import (
 
 from CommonServerPython import *  # noqa
 from IllumioCore import (
-    test_module,
+    command_test_module,
     InvalidValueError,
     VALID_POLICY_DECISIONS,
     VALID_PROTOCOLS,
@@ -407,21 +407,21 @@ def rule_create_success_hr():
     return hr_output
 
 
-def test_test_module(mock_client, monkeypatch):
+def test_command_test_module(mock_client, monkeypatch):
     """
     Test case scenario for successful execution of test-module.
 
     Given:
        - mock_client to call the function
     When:
-       - Calling `test_module` function
+       - Calling `command_test_module` function
     Then:
        - Returns an ok message.
     """
     monkeypatch.setattr(
         illumio.pce.PolicyComputeEngine, "check_connection", lambda *a: True
     )
-    assert test_module(mock_client) == "ok"
+    assert command_test_module(mock_client) == "ok"
 
 
 @pytest.mark.parametrize(

@@ -606,7 +606,7 @@ def prepare_rule_create_output(response: Dict) -> str:
     return tableToMarkdown(title, hr_output, headers=headers, removeNull=True)
 
 
-def test_module(client: PolicyComputeEngine) -> str:
+def command_test_module(client: PolicyComputeEngine) -> str:
     """Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1198,7 +1198,7 @@ def main():
         client.set_credentials(api_user, api_key)
 
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(command_test_module(client))
         else:
             illumio_commands = {
                 "illumio-traffic-analysis": traffic_analysis_command,
