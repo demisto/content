@@ -11,11 +11,17 @@ Integrate with Prisma SASE to view or make changes to Prisma Access configuratio
 
 The integration includes commands to:
  - Create new security rule
- - List security rules
- - Update existing security rule
+ - Edit security rule
  - Delete security rule
+ - Get security rule by name
+ - List security rules
+ - Create new address object
+ - Edit address object
+ - Delete address object
+ - List address objects
  - List configuration jobs
  - Get configuration jobs by ID
+ - Commit candidate configuration
 
 
-The integration uses the Prisma SASE Multi-tenant API documented here: [Prisma API](https://pan.dev).
+The integration uses the Prisma SASE Multi-tenant API documented here: [Prisma SASE API](https://pan.dev).
