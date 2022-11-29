@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: SecurityAndCompliance_V2
+  id: SecurityAndComplianceV2
   version: -1
 configuration:
 - display: Certificate Password
@@ -37,7 +37,7 @@ configuration:
   type: 0
   required: false
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search V2
+display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
 script:
   commands:
@@ -975,7 +975,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: devdemisto/powershell-ubuntu:7.2.2.37611
+  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.38895
   isfetch: false
   longRunning: false
   longRunningPort: false
