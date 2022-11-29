@@ -27,10 +27,10 @@ def read_file(args):
             data = f.read(max_file_size)
             eof = len(f.read(1)) == 0
     except Exception as e:
-        return_error(f'There was a problem opening or reading the file.\nError is: {e}')
+        raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
 
     if not output_metadata and len(data) == 0:
-        raise Exception('No data could be read.')
+        raise DemistoException('No data could be read.')
 
     message = f'Read {len(data)} bytes from file.'
 
@@ -46,7 +46,7 @@ def read_file(args):
             data = data.decode()
         data = json.loads(data)
     else:
-        raise ValueError(f'Invalid data encoding name: {output_data_type}')
+        raise DemistoException(f'Invalid data encoding name: {output_data_type}')
 
     if output_metadata:
         return_results(CommandResults(outputs_prefix='ReadFile(obj.EntryID===val.EntryID)',
