@@ -112,7 +112,7 @@ class TestMetadataParsing:
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(index_folder_path="", dependencies_metadata_dict={},
-                                            statistics_handler=None)
+                                            statistics_handler=None, marketplace='xsoar')
         parsed_metadata = dummy_pack._parse_pack_metadata(build_number="dummy_build_number", commit_hash="dummy_commit")
 
         assert parsed_metadata['name'] == 'Test Pack Name'
@@ -150,7 +150,7 @@ class TestMetadataParsing:
         dummy_pack._user_metadata = dummy_pack_metadata
         dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
         )
 
         assert dummy_pack._pack_name == 'Test Pack Name'
@@ -177,7 +177,7 @@ class TestMetadataParsing:
         dummy_pack._user_metadata = {}
         dummy_pack._is_modified = False
         dummy_pack._enhance_pack_attributes(
-            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None
+            index_folder_path="", dependencies_metadata_dict={}, statistics_handler=None, marketplace='xsoar'
         )
 
         assert dummy_pack._support_type == Metadata.XSOAR_SUPPORT
@@ -204,7 +204,7 @@ class TestMetadataParsing:
 
        """
         dummy_pack._use_cases = ['Phishing']
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [])
+        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
 
         assert PackTags.USE_CASE in tags
 
@@ -213,7 +213,7 @@ class TestMetadataParsing:
         """ Test 'TIM' tag is added if is_feed_pack is True
         """
         dummy_pack.is_feed = is_feed_pack
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [])
+        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
 
         if is_feed_pack:
             assert PackTags.TIM in tags
@@ -224,7 +224,7 @@ class TestMetadataParsing:
         """ Test 'New' tag is added
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(5)).strftime(Metadata.DATE_FORMAT)
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [])
+        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
 
         assert PackTags.NEW in tags
 
@@ -233,7 +233,7 @@ class TestMetadataParsing:
         """
         dummy_pack._create_date = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
         dummy_pack._tags = {PackTags.NEW}
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [])
+        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, [], [], 'xsoar')
 
         assert PackTags.NEW not in tags
 
@@ -256,8 +256,25 @@ class TestMetadataParsing:
                 "Test Pack Name"
             ]
         }
-        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, section_tags, [])
+        tags = dummy_pack._collect_pack_tags(dummy_pack_metadata, section_tags, [], 'xsoar')
         assert 'Featured' in tags
+
+    @pytest.mark.parametrize('pack_metadata,marketplace,expected_result',
+                             [({'tags': ['tag1', 'marketplacev2:tag2']}, 'xsoar', {'tag1'}),
+                              ({'tags': ['tag1', 'marketplacev2:tag2']}, 'marketplacev2', {'tag1', 'tag2'}),
+                              ({'tags': ['marketplacev2:tag2']}, 'xsoar', set()),
+                              ({'tags': ['tag1', 'marketplacev2,xsoar:tag2']}, 'xsoar', {'tag1', 'tag2'})])
+    def test_get_tags_by_marketplace(self, dummy_pack, pack_metadata, marketplace, expected_result):
+        """
+        Given:
+            Pack, metadata and a marketplace
+        When:
+            Getting tags by marketplace
+        Then:
+            Validating the output
+        """
+        output = dummy_pack._get_tags_by_marketplace(pack_metadata, marketplace)
+        assert output == expected_result
 
 
 class TestParsingInternalFunctions:
