@@ -2214,7 +2214,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
     if report_name is None:
         report_name = "report " + str(datetime.now())
 
-    if report_format is None:
+    if not report_format:
         report_format = "pdf"
 
     if download_immediately is None:
@@ -3335,7 +3335,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
     if report_name is None:
         report_name = f"report {str(datetime.now())}"
 
-    if report_format is None:
+    if not report_format:
         report_format = "pdf"
 
     report_data = client.download_report(
