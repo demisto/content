@@ -362,15 +362,24 @@ def send_asset_vuln_request(asset_id, date_range):
 
 def send_asset_details_request(asset_id):
     full_url = "{}workbenches/assets/{}/info".format(BASE_URL, asset_id)
-    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
-    res.raise_for_status()
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+
     return res.json()
 
 
+
 def send_asset_attributes_request(asset_id):
-    full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
-    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
-    res.raise_for_status()
+     full_url = "{}api/v3/assets/{}/attributes".format(BASE_URL, asset_id)
+    try:
+        res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
+        res.raise_for_status()
+    except HTTPError as exc:
+        return_error(f'Error calling for url {full_url}: error message {exc}')
+    
     return res.json()
 
 
@@ -479,7 +488,7 @@ def args_to_request_params(hostname, ip, date_range):
     return params, indicator
 
 
-def get_asset_details_command():
+def get_asset_details_command() -> CommandResults:
     ip = demisto.getArg('ip')
 
     if not ip:
@@ -493,7 +502,7 @@ def get_asset_details_command():
 
     asset_id = get_asset_id(params)
     if not asset_id:
-        return 'Asset not found: {}'.format(ip)
+        return CommandResults(readable_output = f'Asset not found: {ip}')
 
     try:
         info = send_asset_details_request(asset_id)
@@ -505,7 +514,7 @@ def get_asset_details_command():
             info["info"]["attributes"] = attributes
 
     except DemistoException as e:
-        raise e
+        return_error('Failed to include custom attributes. {e})
 
     readable_output = tableToMarkdown(
         f'Asset Info for {ip}', info["info"], headers=["attributes", "fqdn", "interfaces", "ipv4", "id", "last_seen"])

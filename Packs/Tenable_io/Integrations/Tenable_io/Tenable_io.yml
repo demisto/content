@@ -399,6 +399,7 @@ script:
   - arguments:
     - description: IP Address of the asset
       name: ip
+      required: true
     description: Retrieves details for the specified asset to include custom attributes.
     name: tenable-io-get-asset-details
     outputs:
