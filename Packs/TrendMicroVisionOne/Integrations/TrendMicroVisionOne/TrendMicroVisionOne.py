@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa: F401
 import base64
 import json
 import requests
+import urllib3
 import re
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Union
@@ -159,7 +160,7 @@ table_name = {
     DELETE_SUSPICIOUS_LIST_COMMAND: TABLE_DELETE_SUSPICIOUS_LIST
 }
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def check_datetime_aware(d):
