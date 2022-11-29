@@ -424,6 +424,9 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             Client.xsoar_comments_field: comments
         }
 
+    for key in extra_fields:
+        extra_fields[key] = list_of_single_to_str(extra_fields[key])
+
     entry: Dict = {
         "value": indicator,
         "type": xdr_types_to_demisto.get(ioc.get('IOC_TYPE')),
