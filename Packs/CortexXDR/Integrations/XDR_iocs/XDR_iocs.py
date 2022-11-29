@@ -6,7 +6,7 @@ import secrets
 import string
 import tempfile
 from datetime import timezone
-from typing import Dict, Optional, List, Tuple, Union, Iterable
+from typing import Dict, Optional, List, Sequence, Tuple, Union, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
 
@@ -388,13 +388,23 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
-def _parse_xdr_comments(raw_comment: str | None) -> list[str]:
+def _parse_xdr_comments(raw_comment: str) -> list[str]:
     if not raw_comment:
         return []
 
     if ',' in raw_comment:
         return raw_comment.split(',')
     return [raw_comment]
+
+
+def dedupe_keep_order(values: Iterable[str]) -> list[str]:
+    return list({k: None for k in values}.keys())
+
+
+def list_of_single_to_str(values: list[str]) -> list[str] | str:
+    if isinstance(values, list) and len(values) == 1:
+        return values[0]
+    return values
 
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
@@ -404,10 +414,10 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     score = get_indicator_xdr_score(indicator, xdr_server_score)
     severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
 
-    comments = _parse_xdr_comments(ioc.get('RULE_COMMENT'))
+    comments = _parse_xdr_comments(ioc.get('RULE_COMMENT', ''))
 
     if Client.xsoar_comments_field == 'tags':
-        extra_fields = {"tags": list(set(filter(None, comments + [Client.tag])))}
+        extra_fields = {"tags": dedupe_keep_order(filter(None, comments + [Client.tag]))}
     else:
         extra_fields = {
             "tags": [Client.tag],

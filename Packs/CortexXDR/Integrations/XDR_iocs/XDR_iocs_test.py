@@ -874,6 +874,7 @@ def test_severity_validate(value: str):
      ('hello,world', 'hello,world'),
      (['hello', 'world'], 'hello,world'),
      ([], None),
+     ('', None),
      ))
 def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
     """
