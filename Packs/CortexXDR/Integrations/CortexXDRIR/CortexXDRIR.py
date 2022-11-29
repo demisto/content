@@ -1,10 +1,11 @@
 import hashlib
 import secrets
 import string
+from itertools import zip_longest
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
-from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1461,6 +1462,10 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-replace-featured-field':
             return_results(replace_featured_field_command(client, args))
+        elif command == 'xdr-endpoint-tag-add':
+            return_results(add_tag_to_endpoints_command(client, args))
+        elif command == 'xdr-endpoint-tag-remove':
+            return_results(remove_tag_from_endpoints_command(client, args))
 
     except Exception as err:
         return_error(str(err))
