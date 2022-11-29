@@ -78,7 +78,7 @@ validate-content-conf:
 
 create-instances:
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .default-job-settings
   rules:
