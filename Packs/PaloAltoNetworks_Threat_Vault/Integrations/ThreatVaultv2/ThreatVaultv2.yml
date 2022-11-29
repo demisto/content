@@ -600,13 +600,13 @@ script:
       - rtdns
       - spywarec2
     - default: false
-      description:  Page number to get result from. Needs to be used with the page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description:  The page size of the returned results. Needs to be used with the page argument.
+      description: The page size of the returned results. Needs to be used with the page argument.
       isArray: false
       name: page_size
       required: false
@@ -784,7 +784,7 @@ script:
     - contextPath: ThreatVault.Fileformat.latest_release_time
       description: The latest release time of the signature.
       type: String
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.38400
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -794,5 +794,5 @@ script:
   type: python
 tests:
 - PANW Threat Vault v2 - Test
-fromversion: 5.0.0
+fromversion: 6.5.0
 deprecated: false
