@@ -124,25 +124,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A comma-separated list of SHA256 hashes of the antivirus signature. ## checks
+      description: A comma-separated list of SHA256 hashes of the antivirus signature.
       isArray: true
       name: sha256
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of MD5 hash of the antivirus signature. ## checks
+      description: A comma-separated list of MD5 hash of the antivirus signature.
       isArray: true
       name: md5
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the anti-spyware or antivirus signature ## checks
+      description: A comma-separated list of IDs of the anti-spyware or antivirus signature.
       isArray: true
       name: signature_id
       required: false
       secret: false
     deprecated: false
-    description: Gets the antivirus or anti-spyware or files signature. ## checks
+    description: Gets the antivirus or anti-spyware or files signature.
     execution: false
     name: threatvault-threat-signature-get
     outputs:
@@ -306,7 +306,7 @@ script:
       description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.Fileformat.cve
-      description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Fileformat.vendor
       description: The file format identifier issued by vendor on advisories.
@@ -469,7 +469,7 @@ script:
     deprecated: false
     description: Retrieve the threats signature metadata by id, name or sample hash (sha256 or md5) in batch mode. Batch limit is 100 entries.
     execution: false
-    name: threatvault-threat-batch-search ## not done, I need add the outputs
+    name: threatvault-threat-batch-search
     outputs:
     - contextPath: ThreatVault.Antivirus.id
       description: The unique ID of the signature.
@@ -566,7 +566,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The right boundary of version range query (used with the from-release-version argument). ## not done
+      description: The right boundary of version range query (used with the from-release-version argument).
       isArray: false
       name: to-release-version
       required: false
@@ -758,7 +758,7 @@ script:
       description: The default action when the signature is triggered.
       type: String
     - contextPath: ThreatVault.Fileformat.cve
-      description: The CVE (Common Vulnerabilities and Exposures) of the threat. ## not done
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
       type: Array
     - contextPath: ThreatVault.Fileformat.vendor
       description: The file format identifier issued by the vendor on advisories.
