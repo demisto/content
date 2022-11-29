@@ -6,13 +6,13 @@ alter
     tmp_zmins_part = to_integer(arraystring(regextract(_raw_log, "\:\d{2}\:\d{2}\:\d{2}\s[\+|\-]\d{2}(\d{2})\]"), ""))
 | alter
     tmp_timestamp = to_epoch(parse_timestamp("%d/%b/%Y %H:%M:%S", arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")), "seconds"),	
-	tmp_zhrssec_part = multiply(tmp_zhrs_part, 3600),
-    tmp_zminsec_part = multiply(tmp_zmins_part, 60)
+	tmp_zhrssec_part = if(tmp_zhrs_part <= 24, multiply(tmp_zhrs_part, 3600), 0),
+    tmp_zminsec_part = if(tmp_zmins_part <= 60, multiply(tmp_zmins_part, 60), 0)
 | alter
 	tmp_change_seconds = add(tmp_zhrssec_part, tmp_zminsec_part),
 	tmp_zone_validate_po_ne = arraystring(regextract(_raw_log, "\:\d{2}\:\d{2}\:\d{2}\s(\+|\-)\d{4}\]"), "")
 | alter
-   tmp_timeseconds = if(tmp_zone_validate_po_ne = "+", add(tmp_timestamp, tmp_change_seconds), subtract(tmp_timestamp, tmp_change_seconds))    
+    tmp_timeseconds = if(tmp_zone_validate_po_ne = "+", add(tmp_timestamp, tmp_change_seconds), subtract(tmp_timestamp, tmp_change_seconds))
 | alter
     _time = if( tmp_timeseconds != null, to_timestamp(to_integer(tmp_timeseconds), "seconds"), _insert_time)
-| fields -tmp_get_date, tmp_get_time, tmp_zhrs_part, tmp_zmins_part, tmp_timestamp, tmp_zhrssec_part, tmp_zminsec_part, tmp_change_seconds, tmp_zone_validate_po_ne, tmp_timeseconds, tmp_convert;
+| fields -tmp_get_date, tmp_get_time, tmp_zhrs_part, tmp_zmins_part, tmp_timestamp, tmp_zhrssec_part, tmp_zminsec_part, tmp_change_seconds, tmp_zone_validate_po_ne, tmp_timeseconds;
