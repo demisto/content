@@ -287,6 +287,8 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.", default='.')
     parser.add_argument("-cb", "--content-branch", nargs="?",
                         help="The content branch name, if empty will run on current branch.")
+    parser.add_argument("-tb", "--test-branch", nargs="?",
+                        help="The content test branch name to create and test on.")
     parser.add_argument("-a", "--artifacts_path", help="Path to store the script's output", default=".")
     parser.add_argument("-g", "--gitlab-mirror-token", help="Gitlab mirror token for pushing commits "
                                                             "directly to gitlab repo")
@@ -305,7 +307,7 @@ def main():
         original_branch = repo.active_branch
 
     try:
-        new_branch_name = f"{original_branch}_upload_test_branch_{time.time()}"
+        new_branch_name = args.test_branch if args.test_branch else f"{original_branch}_upload_test_branch_{time.time()}"
         content_path = Path(__file__).parent.parent.parent
         packs_path = content_path / 'Packs'
         branch = create_new_branch(repo, new_branch_name)
