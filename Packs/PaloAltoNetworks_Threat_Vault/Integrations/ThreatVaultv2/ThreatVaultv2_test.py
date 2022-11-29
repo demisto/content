@@ -312,10 +312,10 @@ RESP_TO_HR_ARGS = [
 ]
 
 
-@pytest.mark.parametrize('resp, type_, extra, expected', RESP_TO_HR_ARGS)
-def test_resp_to_hr(resp, type_, extra, expected):
+@pytest.mark.parametrize('resp, type_, expanded, expected', RESP_TO_HR_ARGS)
+def test_resp_to_hr(resp, type_, expanded, expected):
 
-    result = resp_to_hr(resp, type_, extra)
+    result = resp_to_hr(resp, type_, expanded)
     assert len(result.keys()) == expected
 
 
@@ -689,7 +689,7 @@ def test_cve_command(mocker, args, resp, expected_results):
                 'args': {
                     'file': 'test',
                     'sha256': 'test',
-                    'extra': True
+                    'expanded': True
                 }
             }
         ),
@@ -702,7 +702,7 @@ def test_cve_command(mocker, args, resp, expected_results):
                 'args': {
                     'file': 'test',
                     'md5': 'test',
-                    'extra': True
+                    'expanded': True
                 }
             }
         ),
@@ -716,7 +716,7 @@ def test_cve_command(mocker, args, resp, expected_results):
                     'file': 'test,test1,test2',
                     'sha256': 'test,test1',
                     'md5': 'test2',
-                    'extra': True
+                    'expanded': True
                 }
             }
         ),
@@ -729,7 +729,7 @@ def test_cve_command(mocker, args, resp, expected_results):
                 'args': {
                     'signature_id': 'test,test1',
                     'file': '',
-                    'extra': True
+                    'expanded': True
                 }
             }
         ),
