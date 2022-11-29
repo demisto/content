@@ -1,0 +1,86 @@
+{
+  "ticket": {
+    "url": "https://subdomain.zendesk.com/api/v2/tickets/20.json",
+    "id": 20,
+    "external_id": null,
+    "via": {
+      "channel": "voice",
+      "source": {
+        "rel": "voicemail",
+        "from": {
+          "formatted_phone": "+1 (717) 171-7171",
+          "phone": "+17171717171",
+          "name": "Caller +1 (717) 171-7171"
+        },
+        "to": {
+          "formatted_phone": "+1 (212) 121-2121",
+          "phone": "+12121212121",
+          "name": "Palo Alto Networks",
+          "brand_id": 3978483693597
+        }
+      }
+    },
+    "created_at": "2022-08-22T19:44:08Z",
+    "updated_at": "2022-08-23T23:25:56Z",
+    "type": null,
+    "subject": "Voicemail from: Caller +1 (717) 171-7171",
+    "raw_subject": "Voicemail from: Caller +1 (717) 171-7171",
+    "description": "Call from: +1 (717) 171-7171\\nTime of call: August 22, 2022 at 7:43:28 PM",
+    "priority": null,
+    "status": "new",
+    "recipient": null,
+    "requester_id": 8427092320869,
+    "submitter_id": 8427092320869,
+    "assignee_id": null,
+    "organization_id": null,
+    "group_id": 3378483739805,
+    "collaborator_ids": [
+      7378475376157
+    ],
+    "follower_ids": [
+      7378475376157
+    ],
+    "email_cc_ids": [],
+    "forum_topic_id": null,
+    "problem_id": null,
+    "has_incidents": false,
+    "is_public": false,
+    "due_at": null,
+    "tags": [],
+    "custom_fields": [
+      {
+        "id": 7989262090301,
+        "value": null
+      },
+      {
+        "id": 8689315926301,
+        "value": null
+      },
+      {
+        "id": 9789325233821,
+        "value": null
+      }
+    ],
+    "satisfaction_rating": null,
+    "sharing_agreement_ids": [],
+    "fields": [
+      {
+        "id": 7989262090301,
+        "value": null
+      },
+      {
+        "id": 8689315926301,
+        "value": null
+      },
+      {
+        "id": 9789325233821,
+        "value": null
+      }
+    ],
+    "followup_ids": [],
+    "ticket_form_id": 2478483688349,
+    "brand_id": 3978483693597,
+    "allow_channelback": false,
+    "allow_attachments": true
+  }
+}

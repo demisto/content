@@ -130,7 +130,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -138,7 +138,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -260,7 +260,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.agent_status
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
             iscontext: true
           right:
             value:
@@ -268,7 +268,7 @@ tasks:
         - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.agent_status
+              simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
             iscontext: true
           right:
             value:
@@ -312,7 +312,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -320,7 +320,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -335,7 +335,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -343,7 +343,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -391,7 +391,7 @@ tasks:
       grid_id:
         simple: xdrdisconnectedendpoints
       keys:
-        simple: host_name,agent_status,agent_type,endpoint_id,last_seen
+        simple: host_name,endpoint_status,agent_type,endpoint_id,last_seen
     separatecontext: false
     view: |-
       {
@@ -433,7 +433,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -441,7 +441,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.EndpoiPaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:

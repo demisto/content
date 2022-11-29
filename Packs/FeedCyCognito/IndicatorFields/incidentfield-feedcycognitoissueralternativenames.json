@@ -1,0 +1,31 @@
+{
+    "id": "indicator_feedcycognitoissueralternativenames",
+    "version": -1,
+    "modified": "2022-05-28T16:50:57.295599709+05:30",
+    "name": "FeedCyCognito Issuer Alternative Names",
+    "ownerOnly": false,
+    "cliName": "feedcycognitoissueralternativenames",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": true,
+    "associatedTypes": [
+        "CyCognito Asset"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

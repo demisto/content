@@ -1,17 +1,18 @@
 from collections import defaultdict
 
+
 import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
-import requests
+import urllib3
 import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

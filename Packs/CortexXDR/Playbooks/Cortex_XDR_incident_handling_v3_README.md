@@ -8,27 +8,27 @@ After the remediation, if there are no new alerts, the playbook stops the alert 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Calculate Severity - Generic v2
-* Block Indicators - Generic v2
-* Entity Enrichment - Generic v3
-* Cortex XDR device control violations
 * Cortex XDR Alerts Handling
+* Calculate Severity - Generic v2
 * Palo Alto Networks - Hunting And Threat Detection
+* Cortex XDR device control violations
+* Entity Enrichment - Generic v3
+* Block Indicators - Generic v2
 
 ### Integrations
 * CortexXDRIR
 * Cortex XDR - IR
 
 ### Scripts
-* Set
 * DBotFindSimilarIncidents
 * SetGridField
+* Set
 
 ### Commands
-* xdr-update-incident
-* linkIncidents
-* xdr-get-incident-extra-data
 * closeInvestigation
+* xdr-update-incident
+* xdr-get-incident-extra-data
+* linkIncidents
 
 ## Playbook Inputs
 ---
@@ -36,7 +36,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | incident_id | Incident ID. | incident.xdrincidentid | Optional |
-| similarIncidentFields | A comma-separated list of similar incident field keys. | xdrdescription | Optional |
 | LinkSimilarIncidents | This input indicates whether the playbook will link similar incidents. To link similar incidents, Specify Yes/No. | Yes | Optional |
 | Hunting | This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No. | Yes | Optional |
 | InternalRange | A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list <br/>"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). <br/>If a list is not provided, will use the default list provided in the IsIPInRanges, |  | Optional |
@@ -47,6 +46,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the \| character to separate values such as \(paloaltonetworks.com\|test.com\). |  | Optional |
 | TimeStamp | Timestamp in relative date format for query device control events from Cortex XDR. | 10 days | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | False | Optional |
+| XDRDomain | XDR instance domain | incident.xdrurl | Optional |
 
 ## Playbook Outputs
 ---
@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/813a815564305b3a82a324dc3c08024fe1470f9b/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)
+![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3.png)

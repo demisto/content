@@ -9,15 +9,14 @@
   "categories": [
     "Case Management"
   ],
-  "tags": [
+  "tags": [],
+  "useCases": [],
+  "keywords": [
     "Breach",
     "GDPR",
     "Compliance",
-    "HIPAA"
-  ],
-  "useCases": [],
-  "keywords": [
-    "privacy"
+    "HIPAA",
+    "Privacy"
   ],
   "marketplaces": [
     "xsoar",

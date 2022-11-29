@@ -8,20 +8,10 @@
     "email": "sales@cybersixgill.com",
     "created": "2020-03-10T08:37:18Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "Forensics & Malware Analysis"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "Threat Intelligence",
-        "Dark Web",
-        "Malware"
-    ],
-    "useCases": [
-        "Threat Intelligence Management",
-        "Incident Response",
-        "Malware",
-        "Hunting"
-    ],
+    "tags": [],
+    "useCases": [],
     "certification": "certified",
     "keywords": [
         "sixgill",

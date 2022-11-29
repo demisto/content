@@ -14,12 +14,12 @@ RESULT_URL = 'https://urlscan.io/api/v1/result/'
 
 @pytest.mark.parametrize('continue_on_blacklisted_urls', [(True), (False)])
 def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_blacklisted_urls):
-    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGE, Client
+    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGES, Client
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     response_json = {
         'status': 400,
         'message': 'Scan prevented ...',
-        'description': BLACKLISTED_URL_ERROR_MESSAGE,
+        'description': BLACKLISTED_URL_ERROR_MESSAGES[0],
     }
     args = {
         'continue_on_blacklisted_urls': continue_on_blacklisted_urls
@@ -36,7 +36,10 @@ def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_bl
         assert return_error_mock.call_count == 0
     else:
         assert response[0].get('is_error') is True
-        assert "The submitted domain is on our blacklist, we will not scan it." in response[0].get('error_string')
+        assert (
+            'The submitted domain is on our blacklist. '
+            'For your own safety we did not perform this scan...'
+        ) in response[0].get('error_string')
 
 
 def test_endless_loop_on_failed_response(requests_mock, mocker):

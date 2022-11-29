@@ -710,7 +710,7 @@ def get_events(siteName, from_time=None, until_time=None, sort=None, since_id=No
     url = SERVER_URL + GET_EVENTS_SUFFIX.format(CORPNAME, siteName)
     data_for_request = create_get_event_data_from_args(from_time, until_time, sort, since_id, max_id,
                                                        limit, page, action, tag, ip, status)
-    events_data_response = http_request('GET', url, data=data_for_request)
+    events_data_response = http_request('GET', url, params_dict=data_for_request)
 
     return events_data_response
 
@@ -1335,7 +1335,7 @@ def get_sites_command():
 
 def fetch_incidents():
     now_utc = datetime.utcnow()
-    most_recent_event_time = None
+    most_recent_event_time = ""
 
     last_run_data = demisto.getLastRun()
     if last_run_data:

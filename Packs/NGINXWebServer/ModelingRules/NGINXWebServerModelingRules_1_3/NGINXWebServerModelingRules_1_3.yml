@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: NGINXWebServer
+name: NGINX Web Server
+rules: ''
+schema: ''
+tags: NGINX Web Server

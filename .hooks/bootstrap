@@ -55,7 +55,7 @@ poetry check
 echo "Installing dependencies..."
 if [ -n "$CI" ]; then
     echo "Detected CI env. Running extra requiements"
-    poetry install -E build
+    poetry install --with ci
 else
     echo "Detected local env."
     poetry install

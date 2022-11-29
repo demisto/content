@@ -133,9 +133,6 @@
 				"assigned_user_mail": {
 					"simple": "xdrassigneduseremail"
 				},
-				"assigned_user_pretty_name": {
-					"simple": "owner"
-				},
 				"manual_severity": {
 					"complex": {
 						"filters": [],
@@ -210,24 +207,6 @@
 				},
 				"resolve_comment": {
 					"simple": "closeNotes"
-				},
-				"status": {
-					"complex": {
-						"filters": [],
-						"root": ".",
-						"transformers": [
-							{
-								"args": {
-									"dt": {
-										"value": {
-											"simple": ".=val \u0026\u0026 val.status == 1 ? \"under_investigation\" :(val.closeReason.indexOf(\"False Positive\") \u003e -1 ? \"resolved_false_positive\" :  (val.closeReason.indexOf(\"Duplicate\") \u003e -1 ? \"resolved_duplicate\" :  (val.closeReason.indexOf(\"True Positive\") \u003e -1 ? \"resolved_true_positive\" :  \"resolved_other\")))"
-										}
-									}
-								},
-								"operator": "DT"
-							}
-						]
-					}
 				}
 			}
 		}
