@@ -493,7 +493,7 @@ test_upload_flow:
         exit 0
       fi
     - section_start "Create Testing Branch"
-    - export BRANCH="$CI_COMMIT_BRANCH_upload_test_branch_$(date +%s)"
+    - export BRANCH="${CI_COMMIT_BRANCH}_upload_test_branch_${date +%s}"
     - echo $BRANCH
     # - export branch=$(python3 ./Utils/test_upload_flow/create_test_branch.py -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN)
     - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a $ARTIFACTS_FOLDER -g $GITLAB_PUSH_TOKEN
