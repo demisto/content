@@ -3,3 +3,6 @@ ignore=IF100
 
 [known_words]
 ASM
+
+[file:Cortex_ASM_-_ASM_Alert.yml]
+ignore=PB121
