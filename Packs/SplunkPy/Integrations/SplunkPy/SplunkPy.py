@@ -2012,7 +2012,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
     return headers
 
 
-def get_current_results_batch(search_job, batch_size, results_offset):
+def get_current_results_batch(search_job: client.Job, batch_size, results_offset):
     current_batch_kwargs = {
         "count": batch_size,
         "offset": results_offset
