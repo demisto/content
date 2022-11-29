@@ -2729,12 +2729,6 @@ script:
       name: cve_id
       isArray: true
       required: true
-    - default: true
-      description: ''
-      isArray: true
-      name: cve
-      required: true
-      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cve
     outputs:

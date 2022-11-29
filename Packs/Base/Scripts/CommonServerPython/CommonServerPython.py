@@ -137,7 +137,6 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
-from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 OS_LINUX = False
@@ -3984,9 +3983,6 @@ class Common(object):
 
             if self.stix_id:
                 cve_context['STIXID'] = self.stix_id
-
-            if self.publications:
-                cve_context['publications'] = self.publications
 
             if self.relationships:
                 relationships_context = [relationship.to_context() for relationship in self.relationships if

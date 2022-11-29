@@ -3982,7 +3982,7 @@ def create_relationships(cve: dict) -> List:
     for entity_b in list_with_actors_field:
         relationships_list.append(EntityRelationship(entity_a=cve.get('id'),
                                                      entity_a_type=FeedIndicatorType.CVE,
-                                                     name='targeted by',
+                                                     name=EntityRelationship.Relationships.TARGETED_BY,
                                                      entity_b=entity_b,
                                                      entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
                                                      brand=INTEGRATION_NAME,
@@ -3991,50 +3991,46 @@ def create_relationships(cve: dict) -> List:
     return relationships_list
 
 
-def get_cve_command(args: dict) -> CommandResults:
+def get_cve_command(args: dict) -> list[CommandResults]:
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
-    cve_indicator_list = []
-    cve_relationships_list = []
-    outputs = []
+    command_results_list = []
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
     url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
     #  raw_res = search_device(filter_operator='OR')
     raw_res = http_request('GET', '/spotlight/combined/vulnerabilities/v1',
                            params={'filter': url_filter, 'facet': 'cve'})
-    cve_res = [res_element.get('cve') for res_element in raw_res.get('resources', [])]
-    if not cve_res:
+    raw_cve = [res_element.get('cve') for res_element in raw_res.get('resources', [])]
+    if not raw_cve:
         raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
-    for cve in cve_res:
-        outputs.append({'ID': cve.get('id'),
-                        'Severity': cve.get('severity'),
-                        'Description': cve.get('description'),
-                        'Published Date': cve.get('published_date'),
-                        'Base Score': cve.get('base_score')})
 
-    hr = tableToMarkdown('CrowdStrike Falcon CVE', outputs,
-                         headers=['ID', 'Severity', 'Published Date', 'Base Score'])
-
-    for cve in cve_res:
+    for cve in raw_cve:
         relationships_list = create_relationships(cve)
-        cve_indicator_list.append(Common.CVE(id=cve.get('id'),
-                                             cvss='',
-                                             published=cve.get('published_date'),
-                                             modified='',
-                                             description=cve.get('description'),
-                                             cvss_score=cve.get('base_score'),
-                                             cvss_vector=cve.get('vector'),
-                                             publications=[{'link': cve.get('vendor_advisory'),
-                                                            'title': cve.get('references')}],
-                                             relationships=relationships_list))
-        #  id, cvss, published, modified, description
-        cve_relationships_list.append(relationships_list)
-
-    return CommandResults(readable_output=hr,
-                          outputs_key_field='id',
-                          outputs=cve_res,
-                          relationships=cve_relationships_list,
-                          indicators=cve_indicator_list)
+        publications = [Common.Publications(title=cve.get('references'), link=cve.get('vendor_advisory'))]
+        cve_indicator = Common.CVE(id=cve.get('id'),
+                                   cvss='',
+                                   published=cve.get('published_date'),
+                                   modified='',
+                                   description=cve.get('description'),
+                                   cvss_score=cve.get('base_score'),
+                                   cvss_vector=cve.get('vector'),
+                                   publications=publications,
+                                   relationships=relationships_list)
+        cve_human_readable = {'ID': cve.get('id'),
+                              'Severity': cve.get('severity'),
+                              'Description': cve.get('description'),
+                              'Published Date': cve.get('published_date'),
+                              'Base Score': cve.get('base_score')}
+        human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
+                                         headers=['ID', 'Severity', 'Published Date', 'Base Score'])
+        command_results_list.append(CommandResults(raw_response=raw_cve,
+                                                   readable_output=human_readable,
+                                                   outputs_key_field='id',
+                                                   outputs=cve,
+                                                   outputs_prefix="cve",
+                                                   relationships=relationships_list,
+                                                   indicator=cve_indicator))
+    return command_results_list
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -4167,12 +4163,12 @@ def main():
             return_results(rtr_remove_file_command(args))
 
         elif command == 'cs-falcon-rtr-list-processes':
-            host_id=args.get('host_id')
+            host_id = args.get('host_id')
             return_results(
                 rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
-            host_id=args.get('host_id')
+            host_id = args.get('host_id')
             return_results(
                 rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
                                              True))
@@ -4181,8 +4177,8 @@ def main():
             return_results(rtr_read_registry_keys_command(args))
 
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
-            full_command=f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
-            host_ids=argToList(args.get('host_ids'))
+            full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
+            host_ids = argToList(args.get('host_ids'))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
                                                         execute_run_batch_admin_cmd_with_timer))
         elif command == 'cs-falcon-rtr-retrieve-file':
@@ -4202,7 +4198,7 @@ def main():
         elif command == 'cs-falcon-spotlight-list-host-by-vulnerability':
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
-            return(get_cve_command(args))
+            return_results(get_cve_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
