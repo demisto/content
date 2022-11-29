@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:classifier-User_Profile_-_Active_Directory_(Outgoing).json]
 ignore=BA101
+
+[file:IAMInitADUser.yml]
+ignore=RM109,CJ105
