@@ -7,7 +7,7 @@
         "instance_configuration": "Allows to configure integration instance non-parameters classifier and incoming mapper.",
         "instance_names": "Specific instance names the test should run on. Can hold a list.",
         "integrations": "Integrations that the test uses. Can hold a list.",
-        "is_mockable": "Determines whether the results can be mocked in the test. A boolean.",
+        "is_mockable": "Determines whether the results can bexed in the test. A boolean.",
         "memory_threshold": "Maximum amount of memory required for this test. A number.",
         "nightly": "Determines whether the test will run only on a nightly build. Relevant only for nightly packs. A boolean.",
         "pid_threshold": "Maximum amount of processes allowed for this test. A number.",
@@ -4228,6 +4228,10 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "Microsoft Graph"
+            ],
+            "instance_names": [
+                "ms_graph_security_prod",
+                "ms_graph_security_dev"
             ]
         },
         {
@@ -4606,6 +4610,14 @@
                 "OpenLDAP"
             ],
             "instance_names": "LDAP Authentication (Active Directory)"
+        },
+        {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (OpenLDAP)"
         },
         {
             "playbookID": "FireEye-Detection-on-Demand-Test",
@@ -5162,12 +5174,23 @@
             "playbookID": "VerifyCIDR-Test"
         },
         {
+            "integrations": "CiscoESA",
+            "playbookID": "CiscoESA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
+        },
+        {
+            "integrations": "Cisco Umbrella Reporting",
+            "playbookID": "Cisco Umbrella Reporting Test",
+            "fromversion": "6.5.0"
         }
     ],
     "skipped_tests": {
+        "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
@@ -5316,9 +5339,11 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
+        "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2"
     },
     "skipped_integrations": {
+        "Lastline v2": "No license",
         "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5434,7 +5459,9 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated"
+        "LogRhythm": "The integration is deprecated",
+        "CiscoESA": "No instance - developed by Qmasters",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
     },
     "nightly_integrations": [
     ],
