@@ -94,7 +94,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       device-group:
         complex:
