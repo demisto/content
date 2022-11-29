@@ -176,7 +176,7 @@ script:
     - contextPath: File.References.Date
       description: The time the system first referenced the file.
       type: Unknown
-  dockerimage: demisto/dxl2:1.0.0.24033
+  dockerimage: demisto/dxl2:1.0.0.38570
   feed: false
   isfetch: false
   longRunning: false
