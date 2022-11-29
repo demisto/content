@@ -21,8 +21,10 @@ except ImportError:
 urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
-                                'For your own safety we did not perform this scan...'
+BLACKLISTED_URL_ERROR_MESSAGES = [
+    'The submitted domain is on our blacklist. For your own safety we did not perform this scan...',
+    'The submitted domain is on our blacklist, we will not scan it.'
+]
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -134,7 +136,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
         response_json = r.json()
         error_description = response_json.get('description')
         should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls', False))
-        if should_continue_on_blacklisted_urls and error_description == BLACKLISTED_URL_ERROR_MESSAGE:
+        if should_continue_on_blacklisted_urls and error_description in BLACKLISTED_URL_ERROR_MESSAGES:
             response_json['url_is_blacklisted'] = True
             requested_url = JSON.loads(json)['url']
             blacklisted_message = 'The URL {} is blacklisted, no results will be returned for it.'.format(requested_url)
@@ -144,7 +146,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
         response_json['is_error'] = True
         response_json['error_string'] = 'Error in API call to URLScan.io [%d] - %s: %s' % (r.status_code, r.reason,
                                                                                            error_description)
-        return response_json, ErrorTypes.GENERAL_ERROR
+        return response_json, ErrorTypes.GENERAL_ERROR, None
     return r.json(), None, None
 
 

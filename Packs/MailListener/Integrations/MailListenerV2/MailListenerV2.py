@@ -3,7 +3,7 @@ from datetime import timezone
 from typing import Any, Dict, Tuple, List, Optional
 
 from dateparser import parse
-from mailparser import parse_from_bytes
+from mailparser import parse_from_bytes, parse_from_string
 from imap_tools import OR
 from imapclient import IMAPClient
 
@@ -27,9 +27,10 @@ class Email(object):
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
-
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
+        except Exception:
+            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
 
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
