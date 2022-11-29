@@ -329,8 +329,12 @@ def main():
         json_write(os.path.join(args.artifacts_path, 'packs_items.json'), pack_items_dict)
         json_write(os.path.join(args.artifacts_path, 'versions_dict.json'), versions_dict)
 
-        os.environ['branch'] = new_branch_name
-        return new_branch_name
+        os.environ.setdefault('BRANCH', str(new_branch_name))
+        if os.environ.get('BRANCH') == new_branch_name:
+            logging.info('Successful assigned the BRANCH var')
+        else:
+            logging.info('Failed to assigned the BRANCH var')
+        # return new_branch_name
         # print(new_branch_name)  # prints out to the bash variable
 
 
