@@ -15,7 +15,7 @@ args:
   default: false
   description: The character encoding of the file
   isArray: false
-  name: input_encoding
+  name: encoding
   predefined:
   - binary
   - utf-8
@@ -33,15 +33,13 @@ args:
   description: The data type to which the output data is converted
   defaultValue: raw
   secret: false
-- name: output_meta_data
+- name: output_metadata
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
   isArray: false
-  description: Set to true to output the meta data with the payload to `ReadFile`
-    in the context, otherwise only the payload will be output to `FileData` in the
-    context
+  description: Set true in order to output additional metadata on the file, to context
   defaultValue: "false"
   secret: false
 comment: Load the contents of a file into context.

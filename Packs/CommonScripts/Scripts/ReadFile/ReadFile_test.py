@@ -14,9 +14,13 @@ def test_extract_indicators(mocker):
             Validate the right output returns.
         """
     mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_file.txt'})
-    results = read_file({})
+
+    mocker.patch.object(demisto, 'results')
+    read_file({})
+    results = demisto.results.call_args[0][0]
+
     assert results == {'Type': 1, 'ContentsFormat': 'text', 'Contents': {'FileData': 'abcabcabc'},
-                       'HumanReadable': 'Read 9 charactors from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
+                       'HumanReadable': 'Read 9 bytes from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
 
 
 def test_extract_indicators_empty_file(mocker):
@@ -67,7 +71,10 @@ def test_read_binary_to_base64(mocker):
     }
 
     mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_binary.bin'})
-    results = read_file(args)
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
     assert results == expected
 
 
@@ -94,7 +101,7 @@ def test_read_utf8_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 9 charactors from file.',
+        'HumanReadable': 'Read 9 bytes from file.',
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -103,7 +110,10 @@ def test_read_utf8_to_json(mocker):
     }
 
     mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_json_utf8.bin'})
-    results = read_file(args)
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
     assert results == expected
 
 
@@ -130,7 +140,7 @@ def test_read_utf16be_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 charactors from file.',
+        'HumanReadable': 'Read 10 bytes from file.',
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -139,7 +149,10 @@ def test_read_utf16be_to_json(mocker):
     }
 
     mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_json_utf16be.bin'})
-    results = read_file(args)
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
     assert results == expected
 
 
@@ -166,7 +179,7 @@ def test_read_utf16le_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 charactors from file.',
+        'HumanReadable': 'Read 10 bytes from file.',
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -175,14 +188,17 @@ def test_read_utf16le_to_json(mocker):
     }
 
     mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_json_utf16le.bin'})
-    results = read_file(args)
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
     assert results == expected
 
 
 def test_read_file_default_with_meta(mocker):
     """
         Given:
-            A file containing text with `output_meta_data' = true
+            A file containing text with `output_metadata' = true
 
         When:
             Running script on file
@@ -194,7 +210,7 @@ def test_read_file_default_with_meta(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryID': '1',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -208,7 +224,7 @@ def test_read_file_default_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 9 charactors from file.',
+        'HumanReadable': 'Read 9 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -225,7 +241,7 @@ def test_read_file_default_with_meta(mocker):
 def test_read_file_as_binary_with_meta(mocker):
     """
         Given:
-            A file containing text with `output_meta_data' = true.
+            A file containing text with `output_metadata' = true.
 
         When:
             Running script to read a file as binary
@@ -238,7 +254,7 @@ def test_read_file_as_binary_with_meta(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'entryID': '1',
         'input_encoding': 'binary',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -269,7 +285,7 @@ def test_read_file_as_binary_with_meta(mocker):
 def test_read_file_incomplete_with_meta(mocker):
     """
         Given:
-            A file containing text with `output_meta_data' = true.
+            A file containing text with `output_metadata' = true.
 
         When:
             Running script to read a file over maxFileSize
@@ -282,7 +298,7 @@ def test_read_file_incomplete_with_meta(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'entryID': '1',
         'maxFileSize': 3,
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -296,7 +312,7 @@ def test_read_file_incomplete_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 3 charactors from file.',
+        'HumanReadable': 'Read 3 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -313,7 +329,7 @@ def test_read_file_incomplete_with_meta(mocker):
 def test_read_empty_file_with_meta(mocker):
     """
         Given:
-            Name of empty file with `output_meta_data' = true.
+            Name of empty file with `output_metadata' = true.
 
         When:
             Running script on file
@@ -325,7 +341,7 @@ def test_read_empty_file_with_meta(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'entryID': '1',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -339,7 +355,7 @@ def test_read_empty_file_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 0 charactors from file.',
+        'HumanReadable': 'Read 0 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -356,7 +372,7 @@ def test_read_empty_file_with_meta(mocker):
 def test_read_binary_to_base64_with_meta(mocker):
     """
         Given:
-            A file containing binary data with `output_meta_data' = true.
+            A file containing binary data with `output_metadata' = true.
 
         When:
             Running script on file to convert it in base64
@@ -370,7 +386,7 @@ def test_read_binary_to_base64_with_meta(mocker):
         'entryID': '1',
         'input_encoding': 'binary',
         'output_data_type': 'base64',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -401,7 +417,7 @@ def test_read_binary_to_base64_with_meta(mocker):
 def test_read_utf8_to_json_with_meta(mocker):
     """
         Given:
-            A file containing a json text in UTF-8 with `output_meta_data' = true.
+            A file containing a json text in UTF-8 with `output_metadata' = true.
 
         When:
             Running script on file to convert it in json structure.
@@ -415,7 +431,7 @@ def test_read_utf8_to_json_with_meta(mocker):
         'entryID': '1',
         'input_encoding': 'utf-8',
         'output_data_type': 'json',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -431,7 +447,7 @@ def test_read_utf8_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 9 charactors from file.',
+        'HumanReadable': 'Read 9 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -448,7 +464,7 @@ def test_read_utf8_to_json_with_meta(mocker):
 def test_read_utf16be_to_json_with_meta(mocker):
     """
         Given:
-            A file containing a json text in UTF-16BE with `output_meta_data' = true.
+            A file containing a json text in UTF-16BE with `output_metadata' = true.
 
         When:
             Running script on file to convert it in json structure.
@@ -462,7 +478,7 @@ def test_read_utf16be_to_json_with_meta(mocker):
         'entryID': '1',
         'input_encoding': 'utf-16',
         'output_data_type': 'json',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -478,7 +494,7 @@ def test_read_utf16be_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 10 charactors from file.',
+        'HumanReadable': 'Read 10 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -495,7 +511,7 @@ def test_read_utf16be_to_json_with_meta(mocker):
 def test_read_utf16le_to_json_with_meta(mocker):
     """
         Given:
-            A file containing a json text in UTF-16LE with `output_meta_data' = true.
+            A file containing a json text in UTF-16LE with `output_metadata' = true.
 
         When:
             Running script on file to convert it in json structure.
@@ -509,7 +525,7 @@ def test_read_utf16le_to_json_with_meta(mocker):
         'entryID': '1',
         'input_encoding': 'utf-16',
         'output_data_type': 'json',
-        'output_meta_data': True,
+        'output_metadata': True,
     })
 
     file_info = {
@@ -525,7 +541,7 @@ def test_read_utf16le_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 10 charactors from file.',
+        'HumanReadable': 'Read 10 bytes from file.',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
