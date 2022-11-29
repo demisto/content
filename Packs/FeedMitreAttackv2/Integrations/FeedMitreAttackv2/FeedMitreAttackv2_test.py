@@ -203,5 +203,7 @@ def test_create_relationships_invalid():
 
 def test_create_relationship_with_unknown_relationship_name():
     from FeedMitreAttackv2 import create_relationship
-    output = create_relationship(RELATIONSHIP_ENTITY, RELATIONSHIP_ENTITY)
+    item_json = {'source_ref--source_ref': 'source_ref',
+                 'target_ref--target_ref': 'target_ref'}
+    output = create_relationship(RELATIONSHIP_ENTITY, item_json)
     assert output is not None
