@@ -775,4 +775,4 @@ script:
   type: python
 fromversion: 6.5.0
 tests:
-- PrismaSASE TestPlaybook
+- PrismaSASE Test
