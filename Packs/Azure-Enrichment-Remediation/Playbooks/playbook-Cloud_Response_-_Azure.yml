@@ -1214,7 +1214,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: alertJson._all_events.referenced_resource_name
+                  simple: inputs.resourceName
                 iscontext: true
           - operator: uniq
     separatecontext: false
