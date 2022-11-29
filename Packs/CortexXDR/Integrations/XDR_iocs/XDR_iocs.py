@@ -397,14 +397,14 @@ def _parse_xdr_comments(raw_comment: str) -> list[str]:
     return [raw_comment]
 
 
-def dedupe_keep_order(values: Iterable[str]) -> list[str]:
-    return list({k: None for k in values}.keys())
+def dedupe_keep_order(values: Iterable[str]) -> tuple[str, ...]:
+    return tuple({k: None for k in values}.keys())
 
 
-def list_of_single_to_str(values: list[str]) -> list[str] | str:
-    if isinstance(values, list) and len(values) == 1:
+def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
+    if len(values) == 1:
         return values[0]
-    return values
+    return list(values)
 
 
 def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
@@ -417,15 +417,14 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     comments = _parse_xdr_comments(ioc.get('RULE_COMMENT', ''))
 
     if Client.xsoar_comments_field == 'tags':
-        extra_fields = {"tags": dedupe_keep_order(filter(None, comments + [Client.tag]))}
+        extra_fields = {"tags": list_of_single_to_str(dedupe_keep_order(filter(None, comments + [Client.tag])))}
     else:
         extra_fields = {
-            "tags": [Client.tag],
-            Client.xsoar_comments_field: comments
+            "tags": Client.tag,
+            Client.xsoar_comments_field: list_of_single_to_str(comments)
         }
 
-    for key in extra_fields:
-        extra_fields[key] = list_of_single_to_str(extra_fields[key])
+    extra_fields = {k: v for k, v in extra_fields.items() if v}
 
     entry: Dict = {
         "value": indicator,
