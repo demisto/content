@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: QualysV2_test
+  id: QualysV2
   version: -1
 configuration:
 - defaultvalue: https://qualysguard.qg2.apps.qualys.com
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys v2
-name: QualysV2_test
+name: QualysV2
 script:
   commands:
   - arguments:
@@ -2272,13 +2272,6 @@ script:
       predefined:
       - '0'
       - '1'
-    - auto: PREDEFINED
-      defaultValue: assets
-      description: Specify “assets” (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify “tags” when your scan target will include asset tags.
-      name: target_from
-      predefined:
-      - assets
-      - tags
     - description: Specifies the name of the Scanner Appliance for the map, when the map target has private use internal IPs. Using Express Lite, Internal Scanning must be enabled in your account.
       name: iscanner_name
     - description: Filter IPs/ranges in “ip” parameter (valid when the networks feature is enabled).
@@ -2567,12 +2560,12 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-        - parent
-        - provider
-        - ruleType
-        - name
-        - id
-        - criticalityScore
+      - parent
+      - provider
+      - ruleType
+      - name
+      - id
+      - criticalityScore
     - description: Operator assign to the search criteria.
       name: operator
       required: true
@@ -2584,27 +2577,27 @@ script:
     description: List asset tag based on several search criteria.
     name: qualys-asset-tag-list
     outputs:
-        - contextPath: Qualys.AssetTags.id
-          description: Parent asset tag ID.
-          type: Number
-        - contextPath: Qualys.AssetTags.name
-          description: Parent asset tag name.
-          type: String
-        - contextPath: Qualys.AssetTags.criticality_score
-          description: Criticality score assign to the asset tag.
-          type: Number
-        - contextPath: Qualys.AssetTags.chlid_id
-          description: Child asset tags ID.
-          type: Number
-        - contextPath: Qualys.AssetTags.chlid_id.child_name
-          description: Child asset tags name.
-          type: String
-        - contextPath: Qualys.AssetTags.tag_name.rule_type
-          description: Created tag rule type.
-          type: String
-        - contextPath: Qualys.AssetTags.tag_name.rule_text
-          description: Created tag rule text.
-          type: String
+    - contextPath: Qualys.AssetTags.id
+      description: Parent asset tag ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.name
+      description: Parent asset tag name.
+      type: String
+    - contextPath: Qualys.AssetTags.criticality_score
+      description: Criticality score assign to the asset tag.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id
+      description: Child asset tags ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id.child_name
+      description: Child asset tags name.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_type
+      description: Created tag rule type.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_text
+      description: Created tag rule text.
+      type: String
   - arguments:
     - description: Name of the created tag.
       name: name
@@ -2617,42 +2610,40 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-        - INSTALLED_SOFTWARE
-        - NETWORK_RANGE
-        - NAME_CONTAINS
-        - OPEN_PORTS
-        - VULN_EXIST
-        - STATIC
+      - INSTALLED_SOFTWARE
+      - NETWORK_RANGE
+      - NAME_CONTAINS
+      - OPEN_PORTS
+      - VULN_EXIST
+      - STATIC
     - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of the rule types.
-      additionalinfo: By choosing STATIC rule type, a static tag will be created and will not assign automatically to asset.
       name: rule_text
     - description: Criticality score of the asset tag.
       name: criticality_score
-      additionalinfo: Values range from 1 to 5, with 1 being the least critical.
     description: Create a new asset tag.
     name: qualys-asset-tag-create
     outputs:
-      - contextPath: Qualys.AssetTags.id
-        description: Parent asset tag id.
-        type: String
-      - contextPath: Qualys.AssetTags.name
-        description: Parent asset tag name.
-        type: String
-      - contextPath: Qualys.AssetTags.criticality_score
-        description: Criticality score assign to the asset tag. Values between 1 (lowest) and 5 (highest).
-        type: Number
-      - contextPath: Qualys.AssetTags.chlid_id
-        description: Child asset tags ID.
-        type: Number
-      - contextPath: Qualys.AssetTags.chlid_id.child_name
-        description: Child asset tags name.
-        type: String
-      - contextPath: Qualys.AssetTags.tag_name.rule_type
-        description: Created tag rule type.
-        type: String
-      - contextPath: Qualys.AssetTags.tag_name.rule_text
-        description: Created tag rule text.
-        type: String
+    - contextPath: Qualys.AssetTags.id
+      description: Parent asset tag id.
+      type: String
+    - contextPath: Qualys.AssetTags.name
+      description: Parent asset tag name.
+      type: String
+    - contextPath: Qualys.AssetTags.criticality_score
+      description: Criticality score assign to the asset tag. Values between 1 (lowest) and 5 (highest).
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id
+      description: Child asset tags ID.
+      type: Number
+    - contextPath: Qualys.AssetTags.chlid_id.child_name
+      description: Child asset tags name.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_type
+      description: Created tag rule type.
+      type: String
+    - contextPath: Qualys.AssetTags.tag_name.rule_text
+      description: Created tag rule text.
+      type: String
   - arguments:
     - description: ID of the tag you wish to update.
       name: id
@@ -2660,28 +2651,23 @@ script:
     - description: Name of the created tag.
       name: name
       required: true
-    - description: Names of the created child tags.
-      name: child_name
-      isArray: true
     - description: Type of rule to dynamically tagging host.
       name: rule_type
       required: true
       auto: PREDEFINED
       predefined:
-        - INSTALLED_SOFTWARE
-        - NETWORK_RANGE
-        - NAME_CONTAINS
-        - OPEN_PORTS
-        - VULN_EXIST
-        - STATIC
+      - INSTALLED_SOFTWARE
+      - NETWORK_RANGE
+      - NAME_CONTAINS
+      - OPEN_PORTS
+      - VULN_EXIST
+      - STATIC
     - description: Criteria for the rule. Optional for STATIC rule type, required for the rest of rule types.
-      additionalinfo: By choosing STATIC rule type, a static tag will be created and will not assign automatically to asset.
       name: rule_text
     - description: Child tag to remove from the child tag list.
       name: child_to_remove
     - description: Criticality score of the asset tag.
       name: criticality_score
-      additionalinfo: Values range from 1 to 5, with 1 being the least critical.
     description: Update an existing asset tag.
     name: qualys-asset-tag-update
   - arguments:
@@ -2691,7 +2677,7 @@ script:
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
 
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.8.37753
   runonce: false
   script: ''
   subtype: python3

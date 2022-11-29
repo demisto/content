@@ -1080,7 +1080,19 @@ class TestAssetTags:
         assert Qualysv2.generate_asset_tag_xml_request_body(args, command_name) == xml_request_body
 
     def test_handle_asset_tag_result(self):
-        raw_response = '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n  <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n  <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      <created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n      <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          <TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          </TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n    </Tag>\n  </data>\n</ServiceResponse>'
+        raw_response = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
+            + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
+            + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
+            + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
+            + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
+            + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
+            + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
+            + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
+            + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
+            + "    </Tag>\n  </data>\n</ServiceResponse>"
+        )
         command_name = "qualys-asset-tag-list"
         expected_result = {
             "id": "71163393",

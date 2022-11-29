@@ -300,12 +300,12 @@ COMMANDS_PARSE_AND_OUTPUT_DATA: Dict[str, Dict[Any, Any]] = {
     "qualys-asset-tag-list": {
         "table_name": "Tags identified by the specified filter",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": ["id", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
+        "table_headers": ["id", "name", "criticalityScore", "ruleType", "ruleText", "childTags"],
     },
     "qualys-asset-tag-create": {
         "table_name": "Asset Tags Created",
         "json_path": ["ServiceResponse", "data", "Tag"],
-        "table_headers": ["id", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
+        "table_headers": ["id", "name", "criticalityScore", "ruleType", "ruleText", "childTags"],
     },
     "qualys-asset-tag-update": {
         "human_readable_massage": "Asset tag updated.",
@@ -1842,28 +1842,44 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
             criteria.text = args.get("search_data", "")
 
         case "qualys-asset-tag-create" | "qualys-asset-tag-update":
+            rule_text_arg = args.get("rule_text", "")
+            rule_type_arg = args.get("rule_type", "")
+            if rule_type_arg != "STATIC" and not rule_text_arg:
+                return_error(
+                    "Rule Type argument is passed but Rule Text argument is missing."
+                    + " Rule Text is optional only when Rule Type is 'STATIC'."
+                )
+
             ServiceRequest = ET.Element("ServiceRequest")
             data = ET.SubElement(ServiceRequest, "data")
             tag = ET.SubElement(data, "Tag")
             name = ET.SubElement(tag, "name")
             name.text = args.get("name", "")
             rule_type = ET.SubElement(tag, "ruleType")
-            rule_type.text = args.get("rule_type", "")
-            rule_text = ET.SubElement(tag, "ruleText")
-            rule_text.text = args.get("rule_text", "")
+            rule_type.text = rule_type_arg
+            if rule_text_arg:
+                rule_text = ET.SubElement(tag, "ruleText")
+                rule_text.text = rule_text_arg
 
-            if _criticality_score := args.get("criticality_score"):
+            if criticality_score_arg := args.get("criticality_score"):
                 criticality_score = ET.SubElement(tag, "criticalityScore")
-                criticality_score.text = _criticality_score
+                criticality_score.text = str(criticality_score_arg)
 
             if child_names := argToList(args.get("child_name")):
                 children = ET.SubElement(tag, "children")
-                _action = "set" if "create" in command_name else "remove"
-                action = ET.SubElement(children, _action)
+                action = ET.SubElement(children, "set")
 
                 for child in child_names:
                     tag_simple = ET.SubElement(action, "TagSimple")
                     child_name_tag = ET.SubElement(tag_simple, "name")
+                    child_name_tag.text = str(child)
+
+            elif child_ids := argToList(args.get("child_to_remove")):
+                children = ET.SubElement(tag, "children")
+                action = ET.SubElement(children, "remove")
+                for child in child_ids:
+                    tag_simple = ET.SubElement(action, "TagSimple")
+                    child_name_tag = ET.SubElement(tag_simple, "id")
                     child_name_tag.text = str(child)
 
     return ET.tostring(ServiceRequest)
@@ -2395,9 +2411,6 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
         return handled_result, readable_output
 
     if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
-        for child_tag_dict in children_list:
-            child_tag_dict["id"] = child_tag_dict.pop("id")
-            child_tag_dict["name"] = child_tag_dict.pop("name")
         handled_result["childTags"] = children_list
         handled_result.pop("children")
 
