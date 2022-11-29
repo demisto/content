@@ -280,7 +280,7 @@ script:
     - description: A comma-separated list of destination networks.
       name: destination
       required: true
-    - description:  A comma-separated list of destination HIPs.
+    - description: A comma-separated list of destination HIPs.
       name: destination_hip
     - description: Security profiles to apply to the traffic.
       name: profile_setting
@@ -293,7 +293,7 @@ script:
       required: true
     - description: A comma-separated list of source HIPs.
       name: source_hip
-    - description: A semi-colon (;) separated list of source user(s).  
+    - description: A semi-colon (;) separated list of source user(s).
       name: source_user
       required: true
     - description: A comma-separated list of rule tags.
