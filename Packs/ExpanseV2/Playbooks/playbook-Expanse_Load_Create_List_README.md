@@ -1,8 +1,6 @@
-Subplaybook to support Expanse Handle Incident playbook.
-Load a list to be used in Expanse playbook.
-Create the list if it does not exist.
-
-Supported Cortex XSOAR versions: 6.0.0 and later.
+Sub-playbook to support Expanse Handle Incident playbook.
+Loads a list to be used in the Expanse playbook.
+Creates the list if it does not exist.
 
 
 ## Dependencies
@@ -27,8 +25,9 @@ This playbook does not use any integrations.
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| ListName | Name of the list to load. List will be created if it does not exist/empty. |  | Required |
+| --- | --- | --- |--------------|
+| ListName | Name of the list to load. List will be created if it does not exist or is empty. |  | Required     |
+| ListValues | If the list does not exist or is empty, it will be created with these values. In case this input is empty, the default value would be "\{\}". |  | Optional     |
 
 ## Playbook Outputs
 ---
@@ -39,4 +38,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Expanse Load-Create List](https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Expanse_Load_Create_List.png)
+![Expanse Load_Create List](../doc_files/Expanse_Load_Create_List.png)
