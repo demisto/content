@@ -5173,6 +5173,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoSMA",
+            "playbookID": "CiscoSMA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
