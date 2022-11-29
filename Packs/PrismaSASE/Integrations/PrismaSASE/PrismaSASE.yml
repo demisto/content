@@ -34,7 +34,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: An integration that provides commands for interaction with Prisma SASE API.
+description: Provides commands for interaction with Prisma SASE API.
 display: Prisma SASE
 name: Prisma SASE
 script:
