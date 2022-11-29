@@ -82,7 +82,7 @@ class WordParser:
             document.core_properties.keywords + " " + \
             document.core_properties.subject + " " + \
             document.core_properties.title + " "
-        return " ".join(all_properties_txt.split())
+        return " " + " ".join(all_properties_txt.split()) + " "
 
     def get_hyperlinks(self, document):
         all_hyperlinks = ""
@@ -120,7 +120,7 @@ def main():
 
     # Returning Indicators:
     indicators_hr = demisto.executeCommand("extractIndicators", {
-        'text': parser.all_data})[0][u'Contents']
+        'text': parser.all_data})[0]['Contents']
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],

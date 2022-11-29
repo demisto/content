@@ -7,18 +7,10 @@
   "url": "www.socradar.io",
   "email": "xsoar@socradar.io",
   "categories": [
-    "Analytics & SIEM",
-    "Data Enrichment & Threat Intelligence"
+    "Analytics & SIEM"
   ],
-  "tags": [
-    "Threat Intelligence",
-    "Alerts",
-    "Incident Response"
-  ],
-  "useCases": [
-    "Incident Response",
-    "Threat Intelligence Management"
-  ],
+  "tags": [],
+  "useCases": [],
   "keywords": [
     "Threat Intelligence",
     "CTI",

@@ -5,7 +5,7 @@ import os
 import requests
 
 BASE_URL = 'http://api.ipstack.com'
-API_KEY = demisto.params().get('apikey')
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('apikey')
 RELIABILITY = demisto.params().get('integrationReliability', 'C - Fairly reliable')
 BRAND_NAME = "Ipstack"
 
@@ -59,49 +59,63 @@ def do_ip(ip):
 
 
 def do_ip_command():
-    ip = demisto.args().get('ip')
-    raw_response = do_ip(ip)
-    human_readable_data = {
-        "Address": raw_response.get('ip'),
-        "Country": raw_response.get('country_name'),
-        "Latitude": raw_response.get('latitude'),
-        "Longitude": raw_response.get('longitude')
-    }
+    ips = demisto.args().get('ip')
+    list_ips = argToList(ips)
 
-    if DBotScoreReliability.is_valid_type(RELIABILITY):
-        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
-    else:
-        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+    ips_results = []
 
-    dbot_score = Common.DBotScore(indicator=ip,
-                                  indicator_type=DBotScoreType.IP,
-                                  integration_name=BRAND_NAME,
-                                  reliability=dbot_reliability,
-                                  score=Common.DBotScore.NONE)
-
-    outputs = {
-        'IP(val.Address == obj.Address)': {
-            'Address': raw_response.get('ip'),
-            'Geo': {
-                'Location': "{}:{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
-                'Country': raw_response.get('country_name')
-            }
-        },
-        'Ipstack.ip(val.ID==obj.ID)': {
-            'address': raw_response.get('ip'),
-            'type': raw_response.get('type'),
-            'continent_name': raw_response.get('continent_name'),
-            'latitude': raw_response.get('latitude'),
-            'longitude': raw_response.get('longitude'),
+    for ip in list_ips:
+        raw_response = do_ip(ip)
+        human_readable_data = {
+            "Address": raw_response.get('ip'),
+            "Country": raw_response.get('country_name'),
+            "Latitude": raw_response.get('latitude'),
+            "Longitude": raw_response.get('longitude')
         }
-    }
 
-    outputs.update(dbot_score.to_context())
+        if DBotScoreReliability.is_valid_type(RELIABILITY):
+            dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
+        else:
+            raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
-    headers = ['Address', 'Country', 'Latitude', 'Longitude']
-    human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data,
-                                     headers=headers)
-    return_outputs(human_readable, outputs, raw_response)
+        dbot_score = Common.DBotScore(indicator=ip,
+                                      indicator_type=DBotScoreType.IP,
+                                      integration_name=BRAND_NAME,
+                                      reliability=dbot_reliability,
+                                      score=Common.DBotScore.NONE)
+
+        outputs = {
+            'IP(val.Address == obj.Address)': {
+                'Address': raw_response.get('ip'),
+                'Geo': {
+                    'Location': "{}:{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
+                    'Country': raw_response.get('country_name')
+                }
+            },
+            'Ipstack.ip(val.ID==obj.ID)': {
+                'address': raw_response.get('ip'),
+                'type': raw_response.get('type'),
+                'continent_name': raw_response.get('continent_name'),
+                'latitude': raw_response.get('latitude'),
+                'longitude': raw_response.get('longitude'),
+            }
+        }
+
+        outputs.update(dbot_score.to_context())
+
+        headers = ['Address', 'Country', 'Latitude', 'Longitude']
+        human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data,
+                                         headers=headers)
+
+        result = CommandResults(
+            readable_output=human_readable,
+            outputs=outputs,
+            raw_response=raw_response
+        )
+
+        ips_results.append(result)
+
+    return_results(ips_results)
 
 
 def test_module():

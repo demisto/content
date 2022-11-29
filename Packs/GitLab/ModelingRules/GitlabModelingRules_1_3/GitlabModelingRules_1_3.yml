@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: gitlab_mapping_rules
+name: Gitlab Mapping Rules
+rules: ''
+schema: ''
+tags: gitlab

@@ -7,12 +7,9 @@
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
-        "Messaging"
+        "Network Security"
     ],
-    "tags": [
-        "Spam",
-        "Email"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

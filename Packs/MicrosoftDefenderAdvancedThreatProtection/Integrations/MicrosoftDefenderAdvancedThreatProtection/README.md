@@ -16,8 +16,8 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 ---
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
+- [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
@@ -27,21 +27,21 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
-* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-* File.Read.All - Application / Delegated
-* Ip.Read.All - Application / Delegated
-* Machine.CollectForensics - Application / Delegated
-* Machine.Isolate - Application / Delegated
-* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-* Machine.RestrictExecution - Application / Delegated
-* Machine.Scan - Application / Delegated
-* Machine.StopAndQuarantine - Application / Delegated
-* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application / Delegated
-* User.Read.All - Application / Delegated
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+* WindowsDefenderATP - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* WindowsDefenderATP - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* WindowsDefenderATP - File.Read.All - Application / Delegated
+* WindowsDefenderATP - Ip.Read.All - Application / Delegated
+* WindowsDefenderATP - Machine.CollectForensics - Application / Delegated
+* WindowsDefenderATP - Machine.Isolate - Application / Delegated
+* WindowsDefenderATP - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
+* WindowsDefenderATP - Machine.Scan - Application / Delegated
+* WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
+* WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* WindowsDefenderATP - Url.Read.All - Application / Delegated
+* WindowsDefenderATP - User.Read.All - Application / Delegated
+* WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* WindowsDefenderATP - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -53,23 +53,27 @@ Please add the following permissions to the app registration. Choose application
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
+    | Fetches Incidents | Whether to fetch the incidents. | N/A |
+    | Incident Type | The type of incident to select. | Phishing |
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-    | ID | The ID used to gain access to the integration. | N/A |
-    | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | ID | The ID used to gain access to the integration. Your Client/Application ID. | N/A |
+    | Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID. | eea810f5-a6f6 |
+    | Key | Your client secret. | |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
-    | Fetch Incidents | Whether to fetch the incidents. | N/A |
-    | Incident Type | The type of incident to select. | Phishing |
-    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
-    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
-    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
-    | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
-    | self-deployed | Use a self-deployed Azure Application. |  N/A |
-    | Using GCC | Whether a GCC edpoint is used. |  False |
     | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
     | Application redirect URI (for authorization code mode) |  | False |
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
+    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
+    | Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch. | 50 |
+    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
+    | Fetch alert evidence | When selected, fetches alerts in Microsoft Defender. | N/A |
+    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
+    | Use a self-deployed Azure Appliction | For authorization code flow, mark this as true. |  N/A |
+    | First Fetch Timestamp | The first timestamp to be fetched in the format \<number\> \<time unit\>. | 12 hours, 7 days |
+    | Using Microsoft GCC | Whether a GCC edpoint is used. |  False |
+
 
 
 
@@ -1080,7 +1084,13 @@ The alert da637200417169017725_183736971 has been updated successfully
 
 ### 9. microsoft-atp-advanced-hunting
 ---
-Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). You can only run a query on data from the last 30 days. The maximum number of rows is 10,000. The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). 
+- You can only run a query on data from the last 30 days. 
+- The maximum number of rows is 10,000. 
+- The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+- This API can only query tables belonging to Microsoft Defender for Endpoint.
+The following reference - [Data Schema](https://learn.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-schema-tables?view=o365-worldwide#learn-the-schema-tables),
+lists all the tables in the schema. Each table name links to a page describing the column names for that table and which service it applies to. 
 
 ##### Required Permissions
 AdvancedQuery.Read.All	

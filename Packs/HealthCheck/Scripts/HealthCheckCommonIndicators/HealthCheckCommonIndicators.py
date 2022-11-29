@@ -32,7 +32,7 @@ def main(args):
 
     indicator_thresholds = args.get('Thresholds', THRESHOLDS)
     indicator_res = execute_command('demisto-api-post', {
-        'uri': f'{account_name}/indicators/search',
+        'uri': f'{account_name}indicators/search',
         'body': body,
     })
 

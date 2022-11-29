@@ -1,0 +1,206 @@
+[
+    {
+        "Category": "Data Enrichment & Threat Intelligence",
+        "Relationships": null,
+        "APIExecutionMetrics": null,
+        "ModuleName": "Active Directory Query v2",
+        "System": "",
+        "PollingCommand": "",
+        "Note": false,
+        "Version": 0,
+        "PollingArgs": null,
+        "ReadableContentsFormat": "markdown",
+        "Type": 1,
+        "Metadata": {
+            "reputationSize": 0,
+            "startDate": "0001-01-01T00:00:00Z",
+            "recurrent": false,
+            "InstanceID": "f71a5199-3fed-4aa5-8b58-56c9e0a62744",
+            "file": "",
+            "retryTime": "0001-01-01T00:00:00Z",
+            "endingDate": "0001-01-01T00:00:00Z",
+            "id": "",
+            "contents": "",
+            "cronView": false,
+            "category": "",
+            "note": false,
+            "isTodo": false,
+            "tags": null,
+            "system": "",
+            "mirrored": false,
+            "pinned": false,
+            "instance": "Active Directory Query v2",
+            "version": 0,
+            "parentId": "611@403762e2-be4e-4f12-8a17-26cdb21b129e",
+            "type": 1,
+            "timezoneOffset": 0,
+            "scheduled": false,
+            "parentEntryTruncated": false,
+            "format": "json",
+            "brand": "Active Directory Query v2",
+            "Relationships": null,
+            "incidentCreationTime": "0001-01-01T00:00:00Z",
+            "reputations": null,
+            "cacheVersn": 0,
+            "user": "",
+            "taskId": "",
+            "parentContent": "!ad-search filter=\"(&(objectClass=user)(mail=user@test.local))\" attributes=\"displayname,manager\" size-limit=\"50\" context-output=\"yes\"",
+            "fileMetadata": null,
+            "tagsRaw": null,
+            "errorSource": "",
+            "entryTask": null,
+            "created": "2022-09-19T10:25:05.167669351Z",
+            "IndicatorTimeline": [],
+            "modified": "0001-01-01T00:00:00Z",
+            "times": 0,
+            "investigationId": "403762e2-be4e-4f12-8a17-26cdb21b129e",
+            "playbookId": "",
+            "contentsSize": 0,
+            "fileID": ""
+        },
+        "ContentsFormat": "json",
+        "Tags": null,
+        "Brand": "Active Directory Query v2",
+        "HumanReadable": "### Active Directory Search\n|displayName|dn|manager|\n|---|---|---|\n| Sample User | CN=Sample User,CN=Users,DC=example_dc,DC=local | CN=Sample Manager,CN=Users,DC=example_dc,DC=local |\n",
+        "PollingItemsRemaining": 0,
+        "Timeout": "",
+        "ID": "",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "IndicatorTimeline": null,
+        "NextRun": "",
+        "Evidence": false,
+        "EntryContext": {
+            "ActiveDirectory.Search(obj.dn == val.dn)": [
+                {
+                    "dn": "CN=Sample User,CN=Users,DC=example_dc,DC=local",
+                    "manager": [
+                        "CN=Sample Manager,CN=Users,DC=example_dc,DC=local"
+                    ],
+                    "displayName": [
+                        "Sample User"
+                    ]
+                }
+            ]
+        },
+        "Contents": [
+            {
+                "dn": "CN=Sample User,CN=Users,DC=example_dc,DC=local",
+                "attributes": {
+                    "manager": [
+                        "CN=Sample Manager,CN=Users,DC=example_dc,DC=local"
+                    ],
+                    "displayName": [
+                        "Sample User"
+                    ]
+                }
+            }
+        ],
+        "File": "",
+        "EvidenceID": "",
+        "FileMetadata": null,
+        "ImportantEntryContext": null
+    },
+        {
+        "Category": "Data Enrichment & Threat Intelligence",
+        "Relationships": null,
+        "APIExecutionMetrics": null,
+        "ModuleName": "Active Directory Query v2",
+        "System": "",
+        "PollingCommand": "",
+        "Note": false,
+        "Version": 0,
+        "PollingArgs": null,
+        "ReadableContentsFormat": "markdown",
+        "Type": 1,
+        "Metadata": {
+            "reputationSize": 0,
+            "startDate": "0001-01-01T00:00:00Z",
+            "recurrent": false,
+            "InstanceID": "f71a5199-3fed-4aa5-8b58-56c9e0a62744",
+            "file": "",
+            "retryTime": "0001-01-01T00:00:00Z",
+            "endingDate": "0001-01-01T00:00:00Z",
+            "id": "",
+            "contents": "",
+            "cronView": false,
+            "category": "",
+            "note": false,
+            "isTodo": false,
+            "tags": null,
+            "system": "",
+            "mirrored": false,
+            "pinned": false,
+            "instance": "Active Directory Query v2",
+            "version": 0,
+            "parentId": "685@403762e2-be4e-4f12-8a17-26cdb21b129e",
+            "type": 1,
+            "timezoneOffset": 0,
+            "scheduled": false,
+            "parentEntryTruncated": false,
+            "format": "json",
+            "brand": "Active Directory Query v2",
+            "Relationships": null,
+            "incidentCreationTime": "0001-01-01T00:00:00Z",
+            "reputations": null,
+            "cacheVersn": 0,
+            "user": "",
+            "taskId": "",
+            "parentContent": "!ad-search filter=\"(&(objectClass=User)(distinguishedName=CN=Sample Manager,CN=Users,DC=example_dc,DC=local))\" attributes=\"displayName,mail\" size-limit=\"50\" context-output=\"yes\"",
+            "fileMetadata": null,
+            "tagsRaw": null,
+            "errorSource": "",
+            "entryTask": null,
+            "created": "2022-09-20T08:08:02.853314939Z",
+            "IndicatorTimeline": [],
+            "modified": "0001-01-01T00:00:00Z",
+            "times": 0,
+            "investigationId": "403762e2-be4e-4f12-8a17-26cdb21b129e",
+            "playbookId": "",
+            "contentsSize": 0,
+            "fileID": ""
+        },
+        "ContentsFormat": "json",
+        "Tags": null,
+        "Brand": "Active Directory Query v2",
+        "HumanReadable": "### Active Directory Search\n|displayName|dn|mail|\n|---|---|---|\n|  | CN=Sample Manager,CN=Users,DC=example_dc,DC=local | manager@test.local |\n",
+        "PollingItemsRemaining": 0,
+        "Timeout": "",
+        "ID": "",
+        "FileID": "",
+        "IgnoreAutoExtract": false,
+        "IndicatorTimeline": null,
+        "NextRun": "",
+        "Evidence": false,
+        "EntryContext": {
+            "ActiveDirectory.Search(obj.dn == val.dn)": [
+                {
+                    "dn": "CN=Sample Manager,CN=Users,DC=example_dc,DC=local",
+                    "mail": [
+                        "manager@test.local"
+                    ],
+                    "displayName": [
+                        "Sample Manager"
+                    ]
+                }
+            ]
+        },
+        "Contents": [
+            {
+                "dn": "CN=Sample Manager,CN=Users,DC=example_dc,DC=local",
+                "attributes": {
+                    "mail": [
+                        "manager@test.local"
+                    ],
+                    "displayName": [
+                        "Sample Manager"
+                    ]
+                }
+            }
+        ],
+        "File": "",
+        "EvidenceID": "",
+        "FileMetadata": null,
+        "ImportantEntryContext": null
+    }
+]

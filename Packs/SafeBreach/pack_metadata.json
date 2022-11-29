@@ -10,19 +10,11 @@
     "created": "2020-03-11T12:59:01Z",
     "certification": "certified",
     "categories": [
-        "Breach and Attack Simulation",
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Breach",
-        "Simulation",
-        "Attack",
-        "TIM"
     ],
     "useCases": [
-        "Breach Notification",
-        "Threat Intelligence Management",
-        "Breach and Attack Simulation"
     ],
     "keywords": [
         "SafeBreach",

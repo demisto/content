@@ -66,7 +66,7 @@ script:
   - name: taegis-fetch-alerts
     arguments:
     - name: ids
-      description: A list of alert IDs to return
+      description: A list of alert IDs or string of comma-separated alert IDs to return
       isArray: true
     - name: cql_query
       description: The Taegis CQL query to for searching Alerts
@@ -133,11 +133,15 @@ script:
       predefined:
       - Open
       - Active
+      - Awaiting Action
       - Suspended
       - 'Closed: Authorized Activity'
-      - 'Closed: False Positive alert'
+      - 'Closed: Confirmed Security Incident'
+      - 'Closed: False Positive Alert'
+      - 'Closed: Inconclusive'
       - 'Closed: Informational'
       - 'Closed: Not Vulnerable'
+      - 'Closed: Threat Mitigated'
       description: New status for the investigation
     - name: service_desk_id
       description: An ticket or ID for to an external system for reference
@@ -184,7 +188,55 @@ script:
     - contextPath: TaegisXDR.PlaybookExecution
       description: Returns related execution information
     description: Fetch the results of a Taegis playbook instance execution
-  dockerimage: demisto/python3:3.10.5.31928
+  - name: taegis-fetch-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to fetch
+    outputs:
+    - contextPath: TaegisXDR.Comment
+      description: Return the comment
+    description: Fetch comment by comment ID
+  - name: taegis-fetch-comments
+    arguments:
+    - name: parent_id
+      required: true
+      description: The ID of the parent related to the comments
+    - name: parent_type
+      description: The parent type that the comments belong to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.Comments
+      description: A list of comments to return
+    description: Fetch comments by Parent Type and ID
+  - name: taegis-create-comment
+    arguments:
+    - name: comment
+      required: true
+      description: The comment string to add to the parent
+    - name: parent_id
+      required: true
+      description: The parent that the comment is being added to
+    - name: parent_type
+      description: The parent type that the comment is being added to
+      defaultValue: investigation
+    outputs:
+    - contextPath: TaegisXDR.CommentCreate
+      description: The created comment information
+    description: Create a comment on an investigation
+  - name: taegis-update-comment
+    arguments:
+    - name: id
+      required: true
+      description: The ID of the comment to update
+    - name: comment
+      required: true
+      description: String to update/replace the comment with
+    outputs:
+    - contextPath: TaegisXDR.CommentUpdate
+      description: The comment update results
+    description: Update an existing comment
+  dockerimage: demisto/python3:3.10.8.36650
   runonce: false
   subtype: python3
   isfetch: true

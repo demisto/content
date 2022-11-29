@@ -5,37 +5,31 @@ contentitemexportablefields:
 name: Block File - Cybereason
 description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
   integration.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 5e4385e3-76c2-48e2-80a4-c3798cdae027
     type: start
     task:
       id: 5e4385e3-76c2-48e2-80a4-c3798cdae027
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 9cf85355-9028-4a01-8304-3a371020c9b3
     type: condition
     task:
@@ -45,15 +39,15 @@ tasks:
       description: Checks if Cybereason is enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "8"
+      - '9'
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -82,20 +76,14 @@ tasks:
                 accessor: brand
             iscontext: true
           ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 200
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 200\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 0f02e921-eb9a-47bd-8d9c-93759602036f
     type: condition
     task:
@@ -107,15 +95,15 @@ tasks:
         in the MD5 field.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "10"
+      - '9'
+      yes:
+      - '10'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -123,20 +111,14 @@ tasks:
               complex:
                 root: inputs.MD5
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 520,
-          "y": 370
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 370\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
     type: title
     task:
@@ -145,23 +127,17 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 710
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 710\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 907db366-4c70-4890-8184-071b0fbc5508
     type: regular
     task:
@@ -175,42 +151,23 @@ tasks:
       brand: Cybereason
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       md5:
         complex:
           root: inputs.MD5
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 760,
-          "y": 540
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 540\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
 system: true
-view: |-
-  {
-    "linkLabelsPosition": {
-      "6_8_yes": 0.55,
-      "6_9_#default#": 0.65,
-      "8_10_yes": 0.59,
-      "8_9_#default#": 0.35
-    },
-    "paper": {
-      "dimensions": {
-        "height": 725,
-        "width": 875,
-        "x": 265,
-        "y": 50
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {\n    \"6_8_yes\": 0.55,\n    \"6_9_#default#\"\
+  : 0.65,\n    \"8_10_yes\": 0.59,\n    \"8_9_#default#\": 0.35\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 725,\n      \"width\": 875,\n    \
+  \  \"x\": 265,\n      \"y\": 50\n    }\n  }\n}"
 inputs:
 - key: MD5
   value:

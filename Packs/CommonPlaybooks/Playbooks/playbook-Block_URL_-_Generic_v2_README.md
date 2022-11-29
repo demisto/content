@@ -17,9 +17,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Checkpoint - Block URL
 
 ### Integrations
-* Zscaler
 * Netcraft
 * Forcepoint
+* Zscaler
 
 ### Scripts
 * IsIntegrationAvailable
@@ -27,9 +27,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 * fp-add-address-to-category
-* netcraft-report-attack
 * zscaler-blacklist-url
 * setIndicator
+* netcraft-report-attack
 
 ## Playbook Inputs
 ---
@@ -41,10 +41,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoCommit | This input establishes whether to commit the configuration automatically.<br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
 | CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
-| Tag | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | UserVerification | Possible values:True/False. Default:True.<br/>Specify if User Verification is Requrired | True | Optional |
 | EDLServerIP | EDL Server IP Address |  | Optional |
+| device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 
 ## Playbook Outputs
 ---

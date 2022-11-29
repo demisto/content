@@ -729,10 +729,23 @@ tasks:
       '#none#':
       - "24"
     scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
       Domain:
         complex:
-          root: Domain
-          accessor: Name
+          root: Domain.Name
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.XDRDomain
+                iscontext: true
           transformers:
           - operator: uniq
       Email:
@@ -777,8 +790,17 @@ tasks:
           - operator: uniq
       URL:
         complex:
-          root: URL
-          accessor: Data
+          root: URL.Data
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: URL.Data
+                iscontext: true
+              right:
+                value:
+                  simple: incident.xdrurl
+                iscontext: true
           transformers:
           - operator: uniq
       Username:
@@ -1865,8 +1887,24 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether remediation will be run automatically or manually. If set to
-    "True" - remediation will be automatic.
+  description: Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic.
+  playbookInputQuery:
+- key: XDRDomain
+  value:
+    complex:
+      root: incident
+      accessor: xdrurl
+      transformers:
+      - operator: Cut
+        args:
+          delimiter:
+            value:
+              simple: /
+          fields:
+            value:
+              simple: "3"
+  required: false
+  description: XDR instance domain
   playbookInputQuery:
 outputs: []
 tests:
