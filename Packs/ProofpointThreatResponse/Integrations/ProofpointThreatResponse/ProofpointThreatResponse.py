@@ -238,8 +238,7 @@ def get_emails_context(event):
     """
     emails_context = []
     for email in event.get('emails', []):
-        emails_context.append(
-            assign_params(**{
+        email_obj = {
                 'sender': email.get('sender', {}).get('email'),
                 'recipient': email.get('recipient', {}).get('email'),
                 'subject': email.get('subject'),
@@ -252,7 +251,17 @@ def get_emails_context(event):
                 'sender_vap': email.get('sender', {}).get('vap'),
                 'recipient_vap': email.get('recipient', {}).get('vap'),
                 'attachments': email.get('attachments'),
-            }))
+            }
+        message_delivery_time = email.get('messageDeliveryTime', {})
+        # Our instance return messageDeliveryTime of type dictionary
+        if message_delivery_time and isinstance(message_delivery_time, dict):
+            email_obj['message_delivery_time'] = message_delivery_time.get('millis')
+        # Customers instance return messageDeliveryTime of type str
+        elif message_delivery_time and isinstance(message_delivery_time, str):
+            email_obj['message_delivery_time'] = message_delivery_time
+        emails_context.append(
+            assign_params(**email_obj)
+        )
 
     return emails_context
 
