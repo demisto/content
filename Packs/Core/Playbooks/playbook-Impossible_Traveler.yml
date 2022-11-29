@@ -691,7 +691,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 440
+          "y": 240
         }
       }
     note: false
@@ -999,8 +999,6 @@ tasks:
                 value:
                   simple: inputs.AllowlistCIDR
                 iscontext: true
-              ignorecase: true
-          accessor: ip
           transformers:
           - operator: uniq
       UserContainment:
@@ -1050,7 +1048,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.preAutoContainment
+                root: inputs.preInvestigationContainment
             iscontext: true
           right:
             value:
