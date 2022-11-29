@@ -1539,11 +1539,11 @@ tasks:
       InputEnrichment:
         simple: "False"
       RuleDirection:
-        simple: outbound
+        simple: inbound
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1766,7 +1766,7 @@ tasks:
     task:
       id: b00c02fa-87ff-4541-82aa-8117ebf4a1e0
       version: -1
-      name: Set selected users to remediate
+      name: Set selected indicators to remediate
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular

@@ -1463,11 +1463,11 @@ tasks:
       InputEnrichment:
         simple: "False"
       RuleDirection:
-        simple: outbound
+        simple: inbound
       RuleName:
         simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
-        simple: "True"
+        simple: "False"
     separatecontext: true
     continueonerrortype: ""
     loop:
