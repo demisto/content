@@ -115,7 +115,7 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_da
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder, overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -126,7 +126,7 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing", overwrite_rate_limit_retry=True)
 
 
 def test_add_second_to_str_date():
