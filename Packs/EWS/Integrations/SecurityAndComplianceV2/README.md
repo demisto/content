@@ -28,19 +28,19 @@ Organization Management role group). The Role Management role allows users to vi
 
 1. From the side menu, click **Permissions**.
 
-   ![side-menu](../../doc_imgs/security-and-compliance-side-menu.png)
+   ![side-menu](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-side-menu.png)
 
 2. Search for and select the **Data Investigator** role.
 
 3. Click **Edit role group**. 
 
-   ![roles-edit-1](../../doc_imgs/security-and-compliance-edit-1.png)
+   ![roles-edit-1](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-1.png)
 
 4. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
 
-   ![roles-edit-2](../../doc_imgs/security-and-compliance-edit-2.png)
+   ![roles-edit-2](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-2.png)
 5. Click **Add**.
-   ![roles-edit-3](../../doc_imgs/security-and-compliance-edit-3.png)
+   ![roles-edit-3](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/security-and-compliance-edit-3.png)
 6. Choose which members to add from the displayed list and click **Add**.
 7. Click **Done**.
 
@@ -58,7 +58,7 @@ Because the session which the integration uses is containerized, the notificatio
 
 ### Creating a Certificate
 
-If you are using a linux environment (macOS included), you can run the script [provided here](../../doc_imgs/create_o365_security_and_compliance_cert.sh) to create the certificates.
+If you are using a linux environment (macOS included), you can run the script [provided here](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/create_o365_security_and_compliance_cert.sh) to create the certificates.
 
 If you are using Powershell, please use the script [found here](https://github.com/SharePoint/PnP-Partner-Pack/blob/master/scripts/Create-SelfSignedCertificate.ps1).
 
