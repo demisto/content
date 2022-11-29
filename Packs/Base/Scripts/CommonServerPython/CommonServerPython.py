@@ -3912,6 +3912,9 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type publications: ``str``
+        :param publications: Unique system-assigned ID of the vulnerability evaluation logic
+
         :return: None
         :rtype: ``None``
         """
@@ -3919,7 +3922,7 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None):
+                     tags=None, traffic_light_protocol=None, publications=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3938,7 +3941,8 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
-
+            self.publications = publications
+            
             # XSOAR Fields
             self.relationships = relationships
             self.dbot_score = Common.DBotScore(
@@ -3981,6 +3985,9 @@ class Common(object):
             if self.stix_id:
                 cve_context['STIXID'] = self.stix_id
 
+            if self.publications:
+                cve_context['publications'] = self.publications
+
             if self.relationships:
                 relationships_context = [relationship.to_context() for relationship in self.relationships if
                                          relationship.to_context()]
@@ -3994,6 +4001,9 @@ class Common(object):
 
             if self.traffic_light_protocol:
                 cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.publications:
+                cve_context['Publications'] = self.create_context_table(self.publications)
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -4670,102 +4680,6 @@ class Common(object):
 
             return ret_value
 
-    class cve(Indicator):
-        """ ignore docstring
-        cve indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
-        """
-        # Compare by both ID and Vendor if both exist, otherwise just by ID.
-        CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'
-
-        def __init__(self, id, hostname=None, ip_address=None, domain=None, mac_address=None,
-                     os=None, os_version=None, dhcp_server=None, bios_version=None, model=None,
-                     memory=None, processors=None, processor=None, relationships=None, vendor=None, status=None,
-                     is_isolated=None):
-            self.id = id
-            self.hostname = hostname
-            self.ip_address = ip_address
-            self.domain = domain
-            self.mac_address = mac_address
-            self.os = os
-            self.os_version = os_version
-            self.dhcp_server = dhcp_server
-            self.bios_version = bios_version
-            self.model = model
-            self.memory = memory
-            self.processors = processors
-            self.processor = processor
-            self.vendor = vendor
-            self.status = status
-            self.is_isolated = is_isolated
-            self.relationships = relationships
-
-        def to_context(self):
-            endpoint_context = {
-                'ID': self.id
-            }
-
-            if self.hostname:
-                endpoint_context['Hostname'] = self.hostname
-
-            if self.ip_address:
-                endpoint_context['IPAddress'] = self.ip_address
-
-            if self.domain:
-                endpoint_context['Domain'] = self.domain
-
-            if self.mac_address:
-                endpoint_context['MACAddress'] = self.mac_address
-
-            if self.os:
-                endpoint_context['OS'] = self.os
-
-            if self.os_version:
-                endpoint_context['OSVersion'] = self.os_version
-
-            if self.dhcp_server:
-                endpoint_context['DHCPServer'] = self.dhcp_server
-
-            if self.bios_version:
-                endpoint_context['BIOSVersion'] = self.bios_version
-
-            if self.model:
-                endpoint_context['Model'] = self.model
-
-            if self.memory:
-                endpoint_context['Memory'] = self.memory
-
-            if self.processors:
-                endpoint_context['Processors'] = self.processors
-
-            if self.processor:
-                endpoint_context['Processor'] = self.processor
-
-            if self.relationships:
-                relationships_context = [relationship.to_context() for relationship in self.relationships if
-                                         relationship.to_context()]
-                endpoint_context['Relationships'] = relationships_context
-
-            if self.vendor:
-                endpoint_context['Vendor'] = self.vendor
-
-            if self.status:
-                if self.status not in ENDPOINT_STATUS_OPTIONS:
-                    raise ValueError('Status does not have a valid value such as: Online or Offline')
-                endpoint_context['Status'] = self.status
-
-            if self.is_isolated:
-                if self.is_isolated not in ENDPOINT_ISISOLATED_OPTIONS:
-                    raise ValueError('Is Isolated does not have a valid value such as: Yes, No, Pending'
-                                     ' isolation or Pending unisolation')
-                endpoint_context['IsIsolated'] = self.is_isolated
-
-            ret_value = {
-                Common.Endpoint.CONTEXT_PATH: endpoint_context
-            }
-
-            return ret_value
-
-
     class Account(Indicator):
         """
         Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
@@ -5303,6 +5217,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 gn=None,  # type: Optional[Common.GeneralName]
@@ -5342,6 +5257,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 issuer=None,  # type: Optional[List[Common.GeneralName]]
@@ -5385,6 +5301,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 full_name=None,  # type: Optional[List[Common.GeneralName]]
@@ -5424,6 +5341,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 policy_identifier,  # type: str
@@ -5456,6 +5374,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 access_method,  # type: str
@@ -5484,6 +5403,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 ca,  # type: bool
@@ -6191,6 +6111,7 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -6223,7 +6144,6 @@ class IndicatorsTimeline:
 
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
-
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -6281,7 +6201,6 @@ def arg_to_number(arg, arg_name=None, required=False):
 
 def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
     # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
-
     """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -7135,6 +7054,7 @@ class ExecutionMetrics(object):
         :return: None
         :rtype: ``None``
     """
+
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
         self._metrics = []
@@ -7319,6 +7239,7 @@ class CommandRunner:
         :return: None
         :rtype: ``None``
         """
+
         def __init__(self, commands, args_lst, brand=None, instance=None):
             """
 
@@ -7368,6 +7289,7 @@ class CommandRunner:
         :return: None
         :rtype: ``None``
         """
+
         def __init__(self, command, args, brand, instance, result):
             """
             :param command: command that was run.
@@ -8733,7 +8655,7 @@ if 'requests' in sys.modules:
                 return response.status_code in status_codes
             return response.ok
 
-        def  client_error_handler(self, res):
+        def client_error_handler(self, res):
             """Generic handler for API call error
             Constructs and throws a proper error for the API call response.
 
@@ -9596,6 +9518,7 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
+
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
@@ -10087,6 +10010,7 @@ class PollResult:
     :rtype: ``PollResult``
 
     """
+
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
         """
         Constructor for PollResult
@@ -10689,6 +10613,7 @@ class OutputArgument:
     :return: The OutputArgument object
     :rtype: ``OutputArgument``
     """
+
     def __init__(self,
                  name,
                  output_type=dict,
@@ -10707,6 +10632,7 @@ class InputArgument:
     :return: The InputArgument object
     :rtype: ``InputArgument``
     """
+
     def __init__(self,
                  name=None,
                  description=None,
@@ -10730,6 +10656,7 @@ class ConfKey:
     :return: The ConfKey object
     :rtype: ``ConfKey``
     """
+
     def __init__(self,
                  name,
                  display=None,
@@ -10753,6 +10680,7 @@ class YMLMetadataCollector:
     :return: The YMLMetadataCollector object
     :rtype: ``YMLMetadataCollector``
     """
+
     def __init__(self, integration_name, docker_image="demisto/python3:latest",
                  description=None, category="Utilities", conf=None,
                  is_feed=False, is_fetch=False, is_runonce=False,
