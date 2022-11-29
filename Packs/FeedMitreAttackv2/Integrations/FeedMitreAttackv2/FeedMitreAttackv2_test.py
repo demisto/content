@@ -203,4 +203,5 @@ def test_create_relationships_invalid():
 
 def test_create_relationship_with_unknown_relationship_name():
     from FeedMitreAttackv2 import create_relationship
-    assert create_relationship(RELATIONSHIP_ENTITY, RELATIONSHIP_ENTITY)
+    output = create_relationship(RELATIONSHIP_ENTITY, RELATIONSHIP_ENTITY)
+    assert output is not None
