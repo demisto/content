@@ -22,6 +22,10 @@
         "Cortex XDR - XCLOUD",
         "Cortex XDR - XCLOUD Cryptomining"
     ],
+    "systemAssociatedTypes": [
+        "Cortex XDR - XCLOUD",
+        "Cortex XDR - XCLOUD Cryptomining"
+    ],
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
