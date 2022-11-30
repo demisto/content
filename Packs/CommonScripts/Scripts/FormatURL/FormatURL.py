@@ -393,6 +393,10 @@ class URLCheck(object):
 
         elif char in self.brackets:
             return len(self.modified_url), part
+        
+        elif char == '\\':
+            if self.modified_url[index + 1] == "\"":
+                return len(self.modified_url), part
 
         elif not char.isalnum() and char not in self.url_code_points:
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
