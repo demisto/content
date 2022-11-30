@@ -17,13 +17,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Account Enrichment - Generic v2.1
 
 ### Integrations
-Whois
+* Whois
 
 ### Scripts
-* CopyContextToField
 * If-Then-Else
-* IsInCidrRanges
 * Set
+* CopyContextToField
+* IsInCidrRanges
 
 ### Commands
 * setIncident
@@ -34,13 +34,24 @@ Whois
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ResolveIP | Determines whether to convert the IP address to a host name using a DNS query \(True/ False\). | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
+| ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. \\nFor IP Enrichment - Generic v2 playbook. |  | Optional |
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| IP | The IP objects | unknown |
+| DBotScore | Indicator, Score, Type, Vendor | unknown |
+| Account | The account object. | unknown |
+| IAM | Generic IAM output. | unknown |
+| ASNType | Checks for cloud ASNs. | unknown |
+| isKnownRegion | Checks if any recent activity was seen in the region. | unknown |
+| isKnownProject | Checks if any recent activity was seen in the project. | unknown |
+| resourceCount | Involved resource count. | unknown |
+| uniqueRegionCount | Involved region distinct count. | unknown |
 
 ## Playbook Image
 ---
-![Cloud Enrichment](../doc_files/Cortex_XDR_-_Cloud_Enrichment.png)
+![Cortex XDR - Cloud Enrichment](../doc_files/Cortex_XDR_-_Cloud_Enrichment.png)
