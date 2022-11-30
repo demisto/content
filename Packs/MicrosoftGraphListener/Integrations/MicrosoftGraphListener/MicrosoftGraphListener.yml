@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
