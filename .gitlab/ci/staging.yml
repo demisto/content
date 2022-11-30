@@ -6,7 +6,6 @@
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-    - if: '$INSTANCE_TESTS'
   cache:
     policy: pull
   variables:
