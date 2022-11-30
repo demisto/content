@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0380c172-06a9-4008-8e91-ccf0de7e8029
+    taskid: 0380c172-06a9-4008-8e91-ccf0de7e8028
     type: start
     task:
-      id: 0380c172-06a9-4008-8e91-ccf0de7e8029
+      id: 0380c172-06a9-4008-8e91-ccf0de7e8028
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d9
+    taskid: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d8
     type: condition
     task:
-      id: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d9
+      id: 8a7d3671-2e73-4532-8a7a-d9ae3f3b50d8
       version: -1
       name: Validate compliance search created
       description: 'Validate compliance search creation with all additional arguments. '
@@ -100,10 +100,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 5c86e0fd-5b8b-46ce-8ee8-905b478836fa
+    taskid: 5c86e0fd-5b8b-46ce-8ee8-905b478836fb
     type: regular
     task:
-      id: 5c86e0fd-5b8b-46ce-8ee8-905b478836fa
+      id: 5c86e0fd-5b8b-46ce-8ee8-905b478836fb
       version: -1
       name: Remove search
       description: Remove compliance search by name from the Security & Compliance
@@ -139,10 +139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d2f408a6-1d08-43ef-8065-035b42a85a7f
+    taskid: d2f408a6-1d08-43ef-8065-035b42a85a7g
     type: regular
     task:
-      id: d2f408a6-1d08-43ef-8065-035b42a85a7f
+      id: d2f408a6-1d08-43ef-8065-035b42a85a7g
       version: -1
       name: Get search
       description: Get compliance search from the Security & Compliance Center.
@@ -177,10 +177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ec1da44b-7f8a-483c-8f92-d9da2534e523
+    taskid: ec1da44b-7f8a-483c-8f92-d9da2534e524
     type: condition
     task:
-      id: ec1da44b-7f8a-483c-8f92-d9da2534e523
+      id: ec1da44b-7f8a-483c-8f92-d9da2534e524
       version: -1
       name: Validate !o365-sc-get-search and !o365-sc-set-search commands
       description: 'Validate compliance search modified with all additional arguments. '
@@ -220,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: b9c86fad-4ad5-41d3-8c90-bd87535b5515
+    taskid: b9c86fad-4ad5-41d3-8c90-bd87535b5516
     type: regular
     task:
-      id: b9c86fad-4ad5-41d3-8c90-bd87535b5515
+      id: b9c86fad-4ad5-41d3-8c90-bd87535b5516
       version: -1
       name: Remove search
       description: Remove compliance search by name from the Security & Compliance
@@ -259,10 +259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc5e14af-7416-40bf-8042-72e82548da23
+    taskid: bc5e14af-7416-40bf-8042-72e82548da24
     type: regular
     task:
-      id: bc5e14af-7416-40bf-8042-72e82548da23
+      id: bc5e14af-7416-40bf-8042-72e82548da24
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -290,10 +290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: a6cc55e0-5108-424a-85b7-302b0feea09c
+    taskid: a6cc55e0-5108-424a-85b7-302b0feea09d
     type: condition
     task:
-      id: a6cc55e0-5108-424a-85b7-302b0feea09c
+      id: a6cc55e0-5108-424a-85b7-302b0feea09d
       version: -1
       name: Validate !o365-sc-new-search-action (Generic polling playbook) and !o365-sc-get-search-action
       type: condition
@@ -329,10 +329,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: ec0d59f0-611c-4e4e-8c7e-301c08000079
+    taskid: ec0d59f0-611c-4e4e-8c7e-301c08000078
     type: regular
     task:
-      id: ec0d59f0-611c-4e4e-8c7e-301c08000079
+      id: ec0d59f0-611c-4e4e-8c7e-301c08000078
       version: -1
       name: Get search action
       description: Get compliance search action from the Security & Compliance Center. This command must come after executing the command o365-sc-start-search.
@@ -369,10 +369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b6f21599-2d87-426c-8072-c9ac2523d0c7
+    taskid: b6f21599-2d87-426c-8072-c9ac2523d0c8
     type: regular
     task:
-      id: b6f21599-2d87-426c-8072-c9ac2523d0c7
+      id: b6f21599-2d87-426c-8072-c9ac2523d0c8
       version: -1
       name: Remove search action
       description: Remove compliance search action by search action name from the
@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: d8590049-3c13-4dfb-8423-43161ed74fdc
+    taskid: d8590049-3c13-4dfb-8423-43161ed74fdd
     type: regular
     task:
-      id: d8590049-3c13-4dfb-8423-43161ed74fdc
+      id: d8590049-3c13-4dfb-8423-43161ed74fdd
       version: -1
       name: Stop search
       description: Stop running compliance search in the Security & Compliance Center.
@@ -446,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 70c827d3-1c21-4ce5-8bfa-67c67267c01e
+    taskid: 70c827d3-1c21-4ce5-8bfa-67c67267c01f
     type: regular
     task:
-      id: 70c827d3-1c21-4ce5-8bfa-67c67267c01e
+      id: 70c827d3-1c21-4ce5-8bfa-67c67267c01f
       version: -1
       name: Set search
       description: Modify non-running compliance search in the Security & Compliance
@@ -488,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 93974714-bf76-459e-8bf0-2b707063b229
+    taskid: 93974714-bf76-459e-8bf0-2b707063b220
     type: condition
     task:
-      id: 93974714-bf76-459e-8bf0-2b707063b229
+      id: 93974714-bf76-459e-8bf0-2b707063b220
       version: -1
       name: Check if search action created
       type: condition
@@ -527,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: e3a6250b-ff26-486e-891c-1f4e63704e63
+    taskid: e3a6250b-ff26-486e-891c-1f4e63704e64
     type: regular
     task:
-      id: e3a6250b-ff26-486e-891c-1f4e63704e63
+      id: e3a6250b-ff26-486e-891c-1f4e63704e64
       version: -1
       name: Remove search action
       description: Remove compliance search action by search action name from the
@@ -566,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 04a48d34-6a5b-43c4-84c1-0b2c91483c93
+    taskid: 04a48d34-6a5b-43c4-84c1-0b2c91483c94
     type: title
     task:
-      id: 04a48d34-6a5b-43c4-84c1-0b2c91483c93
+      id: 04a48d34-6a5b-43c4-84c1-0b2c91483c94
       version: -1
       name: Test playbook finished successfully
       type: title
@@ -592,10 +592,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca23
+    taskid: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca24
     type: playbook
     task:
-      id: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca23
+      id: a0dfe10c-c84e-4790-8a6c-22dfb9a9ca24
       version: -1
       name: O365 - Security And Compliance - Search
       description: |-
@@ -655,10 +655,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: e15a3448-13a7-4a4f-846a-4bf54e332553
+    taskid: e15a3448-13a7-4a4f-846a-4bf54e332554
     type: playbook
     task:
-      id: e15a3448-13a7-4a4f-846a-4bf54e332553
+      id: e15a3448-13a7-4a4f-846a-4bf54e332554
       version: -1
       name: O365 - Security And Compliance - Search Action - Preview
       description: |-
@@ -704,10 +704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6924f760-17a0-4224-81c2-6d48fcdf30ea
+    taskid: 6924f760-17a0-4224-81c2-6d48fcdf30eb
     type: regular
     task:
-      id: 6924f760-17a0-4224-81c2-6d48fcdf30ea
+      id: 6924f760-17a0-4224-81c2-6d48fcdf30eb
       version: -1
       name: Start search
       description: Starts stopped, completed, or not started compliance search in
