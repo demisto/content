@@ -2,6 +2,9 @@
     {
         "AssetId": 2,
         "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
         "Name": null,
         "Site": "Test",
         "Exploits": 0,
@@ -16,6 +19,9 @@
     {
         "AssetId": 3,
         "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
         "Name": null,
         "Site": "Test",
         "Exploits": 0,
@@ -30,6 +36,9 @@
     {
         "AssetId": 4,
         "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
         "Name": null,
         "Site": "Test",
         "Exploits": 0,

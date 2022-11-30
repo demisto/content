@@ -1,5 +1,6 @@
 {
     "AssetId": 13,
+    "Address": "192.0.2.0",
     "Addresses": [
         "192.0.2.0"
     ],
