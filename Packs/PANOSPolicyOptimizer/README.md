@@ -1,4 +1,4 @@
-Automate your AppID Adoption by using the PAN-OS Policy Optimizer integration and playbooks together with your Palo Alto Networks Next-Generation Firewall or Panorama.
+Automate your AppID Adoption by using the PAN-OS Policy Optimizer (beta) integration and playbooks together with your Palo Alto Networks Next-Generation Firewall or Panorama.
 
 
 ## What Does This Pack Do?

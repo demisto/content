@@ -33,7 +33,7 @@ filter _time != null
 | alter severity = if(severity_val = 0        ,"Emergency" ,severity_val = 1        ,"Alert" ,severity_val = 2        ,"Critical" ,severity_val = 3        ,"Error" ,severity_val = 4        ,"Warning" ,severity_val = 5        ,"Notice" ,severity_val = 6        ,"Informational" ,severity_val = 7        ,"Debug")
 | alter facility = if(facility_val = 0,        "kern" ,facility_val = 1,        "user" ,facility_val = 2,        "mail" ,facility_val = 3,        "daemon" ,facility_val = 4,        "auth" ,facility_val = 5,        "syslog" ,facility_val = 6,        "lpr" ,facility_val = 7,        "news" ,facility_val = 8,        "uucp" ,facility_val = 9,        "cron" ,facility_val = 10,        "authpriv" ,facility_val = 11,        "ftp" ,facility_val = 12,        "ntp" ,facility_val = 13,        "security" ,facility_val = 14,        "console" ,facility_val = 15,        "solaris-cron" ,facility_val = 16, "local")
 /*---------------- END ----------------*/
-| filter _log_source_file_name in("syslog*", "message") or facility_val not in(4,10,13)
+| filter _log_source_file_name in("syslog*", "messages") or facility_val not in(4,10,13)
 
 | alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
 | alter timestamp = arrayindex(regextract(_raw_log , "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)

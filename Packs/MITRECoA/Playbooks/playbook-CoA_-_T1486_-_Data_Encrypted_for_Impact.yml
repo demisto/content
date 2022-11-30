@@ -1,0 +1,358 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels: []
+description: "This playbook Remediates the Data Encrypted for Impact technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1486: Data Encrypted for Impact\n\nKill Chain phases:\n- Impact\n\nMITRE ATT&CK Description:\n\nAdversaries may encrypt data on target systems or on large numbers of systems in a network to interrupt availability to system and network resources. They can attempt to render stored data inaccessible by encrypting files or data on local and remote drives and withholding access to a decryption key. This may be done in order to extract monetary compensation from a victim in exchange for decryption or a decryption key (ransomware) or to render data permanently inaccessible in cases where the key is not saved or transmitted.[1][2][3][4] In the case of ransomware, it is typical that common user files like Office documents, PDFs, images, videos, audio, text, and source code files will be encrypted. In some cases, adversaries may encrypt critical system files, disk partitions, and the MBR.\n\nTo maximize impact on the target organization, malware designed for encrypting data may have worm-like features to propagate across a network by leveraging other attack techniques like Valid Accounts, OS Credential Dumping, and SMB/Windows Admin Shares.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1486 - Data Encrypted for Impact
+inputs: []
+name: MITRE ATT&CK CoA - T1486 - Data Encrypted for Impact
+outputs:
+- contextPath: Handled.Techniques
+  description: The technique handled in this playbook
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: deff1ce7-83c0-4fda-8656-c5295638c60f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: deff1ce7-83c0-4fda-8656-c5295638c60f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -290
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd2bb624-c4d7-412a-82b5-94e8a90b4f7a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: bd2bb624-c4d7-412a-82b5-94e8a90b4f7a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 890
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1486
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b1d578cc-8f75-440c-8651-259dfca2b235
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: b1d578cc-8f75-440c-8651-259dfca2b235
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b4b65d52-4488-466f-80f3-29562de588c9
+      iscommand: false
+      name: Deploy Cortex XSOAR Playbook – Access Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: b4b65d52-4488-466f-80f3-29562de588c9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -145
+        }
+      }
+  "17":
+    continueonerror: true
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: c4af6b41-1611-4f7e-89d8-58f780aeb0c5
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: c4af6b41-1611-4f7e-89d8-58f780aeb0c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      id: da0a25ed-80ab-4f0e-82ad-ea0d1f5a1e36
+      iscommand: false
+      name: Ransomware Playbook - Manual
+      playbookName: Ransomware Playbook - Manual
+      type: playbook
+      version: -1
+      description: ''
+    taskid: da0a25ed-80ab-4f0e-82ad-ea0d1f5a1e36
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 170
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AutoRemediation:
+        simple: "False"
+      EmailBody:
+        simple: |-
+          During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
+          To get more information, go to this incident in XSOAR: ${incident.id}.
+      NotificationEmail:
+        complex:
+          accessor: "0"
+          root: Provide details for "Post Intrusion Ransomware Investigation" playbook.Answers
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cacd033-c46b-4612-8964-1b439bcad9d6
+      iscommand: false
+      name: Post Intrusion Ransomware Investigation
+      playbookId: Post Intrusion Ransomware Investigation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 9cacd033-c46b-4612-8964-1b439bcad9d6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      Automated:
+      - "21"
+      Manual:
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 25994371-9b40-4cee-860f-47b7fcac28dc
+      iscommand: false
+      name: Use automated / manual ransomware playbook?
+      description: Use automated / manual ransomware playbook?
+      type: condition
+      version: -1
+    taskid: 25994371-9b40-4cee-860f-47b7fcac28dc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 0
+        }
+      }
+  "21":
+    form:
+      description: Please provide a notification Email address.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide a notification Email address.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Provide details for "Post Intrusion Ransomware Investigation" playbook
+      totalanswers: 0
+    id: "21"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Please provide a notification Email address.
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Read-Only
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 82ca2763-a1ce-4f83-8bb3-ec8b328155c3
+      iscommand: false
+      name: Provide details for "Post Intrusion Ransomware Investigation" playbook
+      description: Provide details for "Post Intrusion Ransomware Investigation" playbook.
+      type: collection
+      version: -1
+    taskid: 82ca2763-a1ce-4f83-8bb3-ec8b328155c3
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "20_18_Manual": 0.51,
+      "20_21_Automated": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 1130,
+        "x": -300,
+        "y": -290
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
