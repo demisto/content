@@ -496,6 +496,28 @@ class GwClient(GwRequests):
             )
             return False
 
+    def list_alerts(self) -> dict:
+        """Get the latest elasticsearch alerts sorted by date
+        in descending order (most recent first in the list).
+
+        Returns:
+            Alerts lists.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint="/api/raw-alerts/"
+        )
+        if response.status_code == 200:
+            demisto.info(f"List alerts on GCenter {self.ip}: [OK]")
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"List alerts on GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
     def get_alert(self, uid: str) -> dict:
         """Get an elasticsearch alert by uid.
 
@@ -1291,6 +1313,28 @@ def test_module(client: GwClient) -> str:  # noqa: E501
         return "Authentication error, please check ip/user/password/token: [ERROR]"
 
 
+def gw_list_alerts(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
+    """Get the latest elasticsearch alerts sorted by date in
+    descending order (most recent first in the list) command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Alert.List" prefix.
+    """
+    result = client.list_alerts()
+    readable_result = tableToMarkdown("Elasticsearch alerts list", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Alert.List",
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
+    )
+
+
 def gw_get_alert(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Get an elasticsearch alert by uid command.
 
@@ -1906,6 +1950,10 @@ def main() -> None:
         if command == "test-module":
             return_results(
                 test_module(client=client)
+            )
+        elif command == "gw-list-alerts":
+            return_results(
+                gw_list_alerts(client=client, args=args)
             )
         elif command == "gw-get-alert":
             return_results(
