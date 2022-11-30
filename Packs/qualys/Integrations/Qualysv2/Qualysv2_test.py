@@ -1197,7 +1197,7 @@ def test_calculate_ip_original_amount():
         IP addresses and ranges are represented by a list of items, unless there's only a single item,
         then it's a string.
     When
-        - a command that returns a list of IP's is run.
+        - A command that returns a list of IP's is run.
     Then
         - An integer which is the amount of ip addresses and ranges will be returned
     """
@@ -1238,8 +1238,8 @@ def test_build_ip_and_range_dicts():
     """
     Given
         - ips_and_ranges: A list that might contain both ips and ranges of ips
-            Returns: A list that has one list which consists of single value dictionaries of ips
-             and another list which consists of single values dictionaries of ranges
+        Returns: A list that has one list which consists of single value dictionaries of ips
+        and another list which consists of single values dictionaries of ranges
     When
         - build_ip_list_from_single_value or build_ip_list_output functions are run
     Then

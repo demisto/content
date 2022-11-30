@@ -1845,10 +1845,8 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
             rule_text_arg = args.get("rule_text", "")
             rule_type_arg = args.get("rule_type", "")
             if rule_type_arg != "STATIC" and not rule_text_arg:
-                return_error(
-                    "Rule Type argument is passed but Rule Text argument is missing."
-                    + " Rule Text is optional only when Rule Type is 'STATIC'."
-                )
+                raise DemistoException(message="Rule Type argument is passed but Rule Text argument is missing."
+                                       + " Rule Text is optional only when Rule Type is 'STATIC'.")
 
             ServiceRequest = ET.Element("ServiceRequest")
             data = ET.SubElement(ServiceRequest, "data")
