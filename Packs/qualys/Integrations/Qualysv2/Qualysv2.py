@@ -2043,7 +2043,7 @@ def format_and_validate_response(response: Union[bytes, requests.Response]) -> D
 
 
 @logger
-def handle_asset_tag_result(raw_response: requests.Response, command_name: str) -> object | None:
+def handle_asset_tag_result(raw_response: requests.Response, command_name: str):
     """
     Handles asset tag commands. Parses, validates and finally returns the response parsed.
     Will raise an exception if needed.

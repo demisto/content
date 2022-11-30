@@ -1166,28 +1166,84 @@ class TestAssetTags:
 
 
 def test_handle_asset_tag_request_parameters():
+    """
+    Given
+        - id argument
+        - the command supports sending an XML request body
+    When
+        - Am asset-tag command is run
+    Then
+        - add an id to the http request and generate a request body
+    """
     Qualysv2.handle_asset_tag_request_parameters({'id': '1234'}, "qualys-asset-tag-list")
 
 
 def test_input_validation():
+    """
+    Given
+        - A command name
+    When
+        - Any command is run
+    Then
+        - the input_validation command will validate the command name exists 
+    """
     assert Qualysv2.input_validation("qualys-asset-tag-list") is None
 
 
 def test_calculate_ip_original_amount():
+    """
+    Given 
+        - A Parsed output, a dictionary that might contain a list of single ips and a list of ranges of ips.
+        IP addresses and ranges are represented by a list of items, unless there's only a single item,
+        then it's a string.
+    When
+        - a command that returns a list of IP's is run.
+    Then
+        - An integer which is the amount of ip addresses and ranges will be returned
+    """
     result = {'Address': 'address', 'Range': 'range'}
     assert Qualysv2.calculate_ip_original_amount(result) == 2
 
 
 def test_create_ip_list_markdown_table():
+    """
+    Given
+        - A dictionary of IP's
+    When
+        - Dictionary IP's is a part of the API result
+    Then
+        - create_ip_list_markdown_table will generate a markdown for the IP's
+    """
     dicts_of_ranges_and_ips = [{'1': 1}, {'2': 2}]
     readable_output = '|1|\n|---|\n| 1 |\n\n|2|\n|---|\n| 2 |\n'
     assert Qualysv2.create_ip_list_markdown_table(dicts_of_ranges_and_ips) == readable_output
 
 
 def test_create_single_host_list():
+    """
+    Given
+        - ip_and_range_lists: A dictionary that can have either a single ip as a string or
+        a list of single ips in the key 'Address' and/or a single range as a string or
+        a list of range of ips in the key 'Range'
+    When
+        - build_ip_list_output is run
+    Then
+        - create_single_host_list function will generate a list that has both ips and ranges of ips
+    """
     ip_and_range_lists = {'Address': 'address', 'Range': 'range'}
     assert Qualysv2.create_single_host_list(ip_and_range_lists) == ['address', 'range']
 
 
 def test_build_ip_and_range_dicts():
+    """
+    Given
+        - ips_and_ranges: A list that might contain both ips and ranges of ips
+            Returns: A list that has one list which consists of single value dictionaries of ips
+             and another list which consists of single values dictionaries of ranges
+    When
+        - build_ip_list_from_single_value or build_ip_list_output functions are run 
+    Then
+        - build_ip_and_range_dicts will generate a list that has one list which consists of single value dictionaries of ips
+             and another list which consists of single values dictionaries of ranges
+    """
     assert Qualysv2.build_ip_and_range_dicts(['-', 'example']) == [[{'ip': 'example'}], [{'range': '-'}]]
