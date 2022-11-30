@@ -14,7 +14,9 @@ configuration:
 - display: 2FA Token
   name: token
   required: false
-  type: 4
+  type: 9
+  hiddenusername: true
+  displaypassword: 2FA Token
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false

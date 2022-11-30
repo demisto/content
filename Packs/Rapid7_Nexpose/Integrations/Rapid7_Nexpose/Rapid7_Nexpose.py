@@ -5187,7 +5187,7 @@ def main():  # pragma: no cover
             url=params["server"],
             username=params["credentials"].get("identifier"),
             password=params["credentials"].get("password"),
-            token=params.get("token"),
+            token=params.get("token", {}).get("identifier"),
             verify=not params.get("unsecure")
         )
 
