@@ -20,8 +20,6 @@ PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
 
 file_path_to_sha: Dict[str, str] = {}
 
-new_files = []
-modified_files = []
 files_path = []
 
 
@@ -78,7 +76,7 @@ def get_file_sha(branch_name: str, content_file: ContentFile, get_files_command:
     return file_path_to_sha.get(full_path)
 
 
-def commit_content_item(branch_name: str, content_file: ContentFile):
+def commit_content_item(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch_name': branch_name, 'file_text': content_file.file_text}
@@ -102,7 +100,7 @@ def commit_content_item(branch_name: str, content_file: ContentFile):
         raise DemistoException(commit_res)
 
 
-def commit_content_item_gitlab(branch_name: str, content_file: ContentFile):
+def commit_content_item_gitlab(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
     commit_args = {'commit_message': f'Added {content_file.file_name}',
                    'file_path': f'{content_file.path_to_file}/{content_file.file_name}',
                    'branch': branch_name, 'file_content': content_file.file_text}
@@ -141,7 +139,7 @@ def does_file_exist(branch_name: str, content_file: ContentFile) -> bool:
     return False
 
 
-def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile):
+def commit_content_item_bitbucket(branch_name: str, content_file: ContentFile, new_files: List, modified_files: List):
     commit_args = {"message": f"Added {content_file.file_name}",
                    "file_name": f"{content_file.path_to_file}/{content_file.file_name}",
                    "branch": f"{branch_name}",
@@ -238,13 +236,14 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
     return content_files
 
 
-def commit_git(git_integration: str, branch_name: str, content_file: ContentFile):  # pragma: no cover
+def commit_git(git_integration: str, branch_name: str, content_file: ContentFile,
+               new_files: List, modified_files: List):  # pragma: no cover
     if git_integration == 'Gitlab':
-        commit_content_item_gitlab(branch_name, content_file)
+        commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':
-        commit_content_item(branch_name, content_file)
+        commit_content_item(branch_name, content_file, new_files, modified_files)
     else:  # git_integration == 'Bitbucket'
-        commit_content_item_bitbucket(branch_name, content_file)
+        commit_content_item_bitbucket(branch_name, content_file, new_files, modified_files)
 
 
 ''' MAIN FUNCTION '''
@@ -259,6 +258,8 @@ def main():  # pragma: no cover
         comment = demisto.getArg('comment')
         template = demisto.getArg('template')
         git_integration = demisto.getArg('git_integration')
+        new_files: List[str] = []
+        modified_files: List[str] = []
 
         if not template:
             template = PR_TEMPLATE
@@ -282,10 +283,10 @@ def main():  # pragma: no cover
                 # split automation file to yml and script files
                 content_files = split_yml_file(content_file)
                 for file_to_commit in content_files:
-                    commit_git(git_integration, branch_name, file_to_commit)
+                    commit_git(git_integration, branch_name, file_to_commit, new_files, modified_files)
 
             else:
-                commit_git(git_integration, branch_name, content_file)
+                commit_git(git_integration, branch_name, content_file, new_files, modified_files)
 
         incident_url = demisto.demistoUrls().get('investigation')
 

@@ -1,3 +1,4 @@
+import os
 import demistomock as demisto
 from CommitFiles import ContentFile
 
@@ -38,7 +39,7 @@ def test_commit_content_item_bitbucket(mocker):
         'file_content': f'{content_file.file_text}'
     }
     request = mocker.patch.object(demisto, 'executeCommand')
-    commit_content_item_bitbucket(branch_name, content_file)
+    commit_content_item_bitbucket(branch_name, content_file, [], [])
     request.assert_called_with('bitbucket-commit-create', args=expected_args)
 
 
@@ -83,7 +84,8 @@ files = [
         "Size": 2504,
         "SHA1": "fe3c5c440d9a8297c1c6dfdb316bcbbb1c8ded3e",
         "SHA256": "f0820c96cd19894a2a21404d202d87c926e2ff2da9386729d66a6d1ff5b40aad",
-        "SHA512": "3b44b3a48b64d3b069a965e00692e80fe0eb69fbd60e574e8aa3a747e33d1a76508a47992e560fbb17ce40ddbbaf2e45fdb4f8b0a6c1dc2deb8a1d7cc417193f",
+        "SHA512": "3b44b3a48b64d3b069a965e00692e80fe0eb69fbd60e574e8aa3a747e33d1a76508a4799"
+                  "2e560fbb17ce40ddbbaf2e45fdb4f8b0a6c1dc2deb8a1d7cc417193f",
         "Name": "automation-NewBranchName.yml",
         "SSDeep": "48:onZUdy98RuUQrJ0re9MV3YSxdidyJlwWkWriI21e+JC0x4w6:v7eJkeGlYSZlA60Xx4F",
         "EntryID": "8@47",
@@ -94,14 +96,12 @@ files = [
     }
 ]
 
-user = {
-        "email": "admintest@demisto.com",
+user = {"email": "admintest@demisto.com",
         "isAway": False,
         "name": "Admin Dude",
         "phone": "+650-123456",
         "roles": ["demisto: [Administrator]"],
-        "username": "admin"
-    }
+        "username": "admin"}
 
 
 def test_main(mocker):
@@ -119,7 +119,10 @@ def test_main(mocker):
     pack_name = "BranchNameScript"
     gitIntegration = "Bitbucket"
     incident_url = demisto.demistoUrls().get('investigation')
-    expected_pr_body = f'### Pull Request created in Cortex XSOAR\n**Created by:** {user.get("username")} ({user.get("email")})\n\n**Pack:** {pack_name}\n\n**Branch:** {branch_name}\n\n**Link to incident in Cortex XSOAR:** {incident_url}\n\n\n\n\n\n---\n\n### New files\n- NewBranchName.yml\n- NewBranchName.py'
+    expected_pr_body = f'### Pull Request created in Cortex XSOAR\n**Created by:** {user.get("username")} ' \
+                       f'({user.get("email")})\n\n**Pack:** {pack_name}\n\n**Branch:** {branch_name}\n\n' \
+                       f'**Link to incident in Cortex XSOAR:** {incident_url}\n\n\n\n\n\n---\n\n### New files\n' \
+                       f'- NewBranchName.yml\n- NewBranchName.py'
     mocker.patch.object(
         demisto, 'args', return_value={
             'files': files,
@@ -140,3 +143,17 @@ def test_main(mocker):
     main()
     pr_body = moc.call_args.args[0].get('HumanReadable')
     assert expected_pr_body == pr_body
+    delete_files()
+
+
+def delete_files():
+    unified_yml_path = os.path.abspath('automation-NewBranchName.yml')
+    # new_dir_path = os.path.abspath('CommitFiles/NewBranchName')
+    script_path = os.path.abspath('NewBranchName/NewBranchName.py')
+    yml_path = os.path.abspath('NewBranchName/NewBranchName.yml')
+    if unified_yml_path:
+        os.remove(unified_yml_path)
+    if script_path:
+        os.remove(script_path)
+    if yml_path:
+        os.remove(yml_path)
