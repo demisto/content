@@ -534,8 +534,8 @@ def get_asset_details_command() -> CommandResults:
         attrs = send_asset_attributes_request(asset_id)
         if attrs:
             attributes = []
-            for attr in attrs["attributes"]:
-                attributes.append({attr['name']: attr['value']})
+            for attr in attrs.get("attributes", []):
+                attributes.append({attr.get('name', ''): attr.get('value', '')})
             info["info"]["attributes"] = attributes
 
     except DemistoException as e:
