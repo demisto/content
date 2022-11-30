@@ -282,7 +282,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
 tests:
 - No Test
 
