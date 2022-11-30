@@ -10693,10 +10693,13 @@ def add_system_fields_to_events(events):
     url = params.get('url')
     brand = calling_context.get('IntegrationBrand', '')
     integration_instance = calling_context.get('IntegrationInstance', '')
-    for event in events:
-        event['_final_reporting_device_name'] = url
-        event['_collector_type'] = brand
-        event['_collector_name'] = integration_instance
+    if isinstance(events[0], str):
+        
+    else:
+        for event in events:
+            event['_final_reporting_device_name'] = url
+            event['_collector_type'] = brand
+            event['_collector_name'] = integration_instance
     return events
 
 
@@ -10743,7 +10746,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         data = '\n'.join(events)
 
     elif isinstance(events, str):
-        amount_of_events = len(events.split('\n'))
+        events = add_system_fields_to_events(events.split('\n'))
+        amount_of_events = len(events)
+        data = '\n'.join(events)
 
     else:
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
