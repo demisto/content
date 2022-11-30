@@ -12,9 +12,9 @@ This integration was integrated and tested with version xx of Rapid7 Nexpose
     | Server URL (e.g. https://192.0.2.0:8080) | True |
     | Username | True |
     | Password | True |
+    | 2FA Token | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
-    | 2FA Token | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -75,718 +75,6 @@ Returns the specified asset.
 | Endpoint.OS | string | Endpoint operating system. | 
 | CVE.ID | string | Common Vulnerabilities and Exposures ids | 
 
-#### Command example
-```!nexpose-get-asset id=1```
-#### Context Example
-```json
-{
-    "CVE": [
-        {
-            "CVSS": {},
-            "ID": "CVE-1999-0524"
-        },
-        {
-            "CVSS": {},
-            "ID": "CVE-2015-4000"
-        },
-        {
-            "CVSS": {},
-            "ID": "CVE-2016-2183"
-        }
-    ],
-    "DBotScore": [
-        {
-            "Indicator": "CVE-1999-0524",
-            "Score": 0,
-            "Type": "cve",
-            "Vendor": "Rapid7 Nexpose"
-        },
-        {
-            "Indicator": "CVE-2015-4000",
-            "Score": 0,
-            "Type": "cve",
-            "Vendor": "Rapid7 Nexpose"
-        },
-        {
-            "Indicator": "CVE-2016-2183",
-            "Score": 0,
-            "Type": "cve",
-            "Vendor": "Rapid7 Nexpose"
-        }
-    ],
-    "Endpoint": {
-        "ID": 1,
-        "IPAddress": "192.0.2.0",
-        "OS": "Linux 3.10",
-        "Vendor": "Rapid7 Nexpose"
-    },
-    "Nexpose": {
-        "Asset": {
-            "Addresses": "192.0.2.0",
-            "AssetId": 1,
-            "Hardware": "00:0C:29:9A:D8:2C",
-            "LastScanDate": "2022-11-02T14:54:19.040Z",
-            "LastScanId": "-",
-            "OperatingSystem": "Linux 3.10",
-            "RiskScore": 1727.206298828125,
-            "Service": [
-                {
-                    "Name": "SSH",
-                    "Port": 22,
-                    "Product": "OpenSSH",
-                    "Protocol": "tcp",
-                    "configurations": [
-                        {
-                            "name": "ssh.algorithms.compression",
-                            "value": "none,zlib@openssh.com"
-                        },
-                        {
-                            "name": "ssh.algorithms.encryption",
-                            "value": "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc"
-                        },
-                        {
-                            "name": "ssh.algorithms.hostkey",
-                            "value": "ssh-rsa,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp256,ssh-ed25519"
-                        },
-                        {
-                            "name": "ssh.algorithms.kex",
-                            "value": "curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1"
-                        },
-                        {
-                            "name": "ssh.algorithms.mac",
-                            "value": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1"
-                        },
-                        {
-                            "name": "ssh.banner",
-                            "value": "SSH-2.0-OpenSSH_7.4"
-                        },
-                        {
-                            "name": "ssh.protocol.version",
-                            "value": "2.0"
-                        },
-                        {
-                            "name": "ssh.rsa.pubkey.fingerprint",
-                            "value": "A74AFD453C6FBD15CF99481E0FFFC110"
-                        }
-                    ],
-                    "family": "OpenSSH",
-                    "vendor": "OpenBSD",
-                    "version": "7.4"
-                }
-            ],
-            "Site": "Test",
-            "Software": null,
-            "User": null,
-            "Vulnerabilities": 7,
-            "Vulnerability": [
-                {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "generic-icmp-timestamp",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2019-06-11",
-                    "PublishedOn": "1997-08-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "ICMP timestamp response"
-                },
-                {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "generic-tcp-timestamp",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2018-03-21",
-                    "PublishedOn": "1997-08-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "TCP timestamp response"
-                },
-                {
-                    "CVSS": 0,
-                    "Exploit": 0,
-                    "Id": "ssh-3des-ciphers",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-03-31",
-                    "PublishedOn": "2009-02-01",
-                    "Risk": 0,
-                    "Severity": "Moderate",
-                    "Title": "SSH Server Supports 3DES Cipher Suite"
-                },
-                {
-                    "CVSS": 2.6,
-                    "Exploit": 0,
-                    "Id": "ssh-cbc-ciphers",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-03-31",
-                    "PublishedOn": "2013-02-08",
-                    "Risk": 521.99,
-                    "Severity": "Moderate",
-                    "Title": "SSH CBC vulnerability"
-                },
-                {
-                    "CVSS": 4.3,
-                    "Exploit": 0,
-                    "Id": "ssh-cve-2015-4000",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-07-13",
-                    "PublishedOn": "2015-05-20",
-                    "Risk": 209.11,
-                    "Severity": "Severe",
-                    "Title": "SSH Server Supports diffie-hellman-group1-sha1"
-                },
-                {
-                    "CVSS": 5,
-                    "Exploit": 0,
-                    "Id": "ssh-cve-2016-2183-sweet32",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-04-01",
-                    "PublishedOn": "2016-08-24",
-                    "Risk": 544.64,
-                    "Severity": "Severe",
-                    "Title": "SSH Birthday attacks on 64-bit block ciphers (SWEET32)"
-                },
-                {
-                    "CVSS": 4.3,
-                    "Exploit": 0,
-                    "Id": "ssh-weak-kex-algorithms",
-                    "Instances": 1,
-                    "Malware": 0,
-                    "ModifiedOn": "2020-04-07",
-                    "PublishedOn": "2017-07-13",
-                    "Risk": 451.47,
-                    "Severity": "Severe",
-                    "Title": "SSH Server Supports Weak Key Exchange Algorithms"
-                }
-            ],
-            "addresses": [
-                {}
-            ],
-            "assessedForPolicies": false,
-            "assessedForVulnerabilities": true,
-            "history": [
-                {
-                    "date": "2020-11-19T08:34:55.732Z",
-                    "scanId": 731,
-                    "type": "SCAN",
-                    "version": 661
-                },
-                {
-                    "date": "2020-11-19T11:43:22.530Z",
-                    "scanId": 732,
-                    "type": "SCAN",
-                    "version": 662
-                },
-                {
-                    "date": "2020-11-19T11:48:46.222Z",
-                    "scanId": 733,
-                    "type": "SCAN",
-                    "version": 663
-                }
-            ],
-            "ip": "192.0.2.0",
-            "mac": "00:0C:29:9A:D8:2C",
-            "osFingerprint": {
-                "cpe": {
-                    "part": "o",
-                    "product": "linux_kernel",
-                    "targetHW": "arm64",
-                    "v2.2": "cpe:/o:linux:linux_kernel:3.10.0::~~~~arm64~",
-                    "v2.3": "cpe:2.3:o:linux:linux_kernel:3.10.0:*:*:*:*:*:arm64:*",
-                    "vendor": "linux",
-                    "version": "3.10.0"
-                },
-                "description": "Linux 3.10",
-                "family": "Linux",
-                "id": 6,
-                "product": "Linux",
-                "systemName": "Linux",
-                "type": "General",
-                "vendor": "Linux",
-                "version": "3.10"
-            },
-            "rawRiskScore": 1727.206298828125,
-            "services": [
-                {
-                    "Name": "SSH",
-                    "Port": 22,
-                    "Product": "OpenSSH",
-                    "Protocol": "tcp",
-                    "configurations": [
-                        {
-                            "name": "ssh.algorithms.compression",
-                            "value": "none,zlib@openssh.com"
-                        },
-                        {
-                            "name": "ssh.algorithms.encryption",
-                            "value": "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc"
-                        },
-                        {
-                            "name": "ssh.algorithms.hostkey",
-                            "value": "ssh-rsa,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp256,ssh-ed25519"
-                        },
-                        {
-                            "name": "ssh.algorithms.kex",
-                            "value": "curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1"
-                        },
-                        {
-                            "name": "ssh.algorithms.mac",
-                            "value": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1"
-                        },
-                        {
-                            "name": "ssh.banner",
-                            "value": "SSH-2.0-OpenSSH_7.4"
-                        },
-                        {
-                            "name": "ssh.protocol.version",
-                            "value": "2.0"
-                        },
-                        {
-                            "name": "ssh.rsa.pubkey.fingerprint",
-                            "value": "A74AFD453C6FBD15CF99481E0FFFC110"
-                        }
-                    ],
-                    "family": "OpenSSH",
-                    "vendor": "OpenBSD",
-                    "version": "7.4"
-                }
-            ],
-            "vulnerabilities": [
-                {
-                    "added": "2004-11-01",
-                    "categories": [
-                        "Network"
-                    ],
-                    "cves": [
-                        "CVE-1999-0524"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "L",
-                            "accessVector": "L",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "N",
-                            "exploitScore": 3.9487,
-                            "impactScore": 0,
-                            "integrityImpact": "N",
-                            "score": 0,
-                            "vector": "AV:L/AC:L/Au:N/C:N/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>The remote host responded to an ICMP timestamp request.  The ICMP timestamp response\n      contains the remote host&#39;s date and time.  This information could theoretically be\n      used against some systems to exploit weak time-based random number generators in\n      other services.</p>\n    \n\n<p>In addition, the versions of some operating systems can be accurately fingerprinted\n      by analyzing their responses to invalid ICMP timestamp requests.</p>",
-                        "text": "The remote host responded to an ICMP timestamp request. The ICMP timestamp response contains the remote host's date and time. This information could theoretically be used against some systems to exploit weak time-based random number generators in other services.\n\nIn addition, the versions of some operating systems can be accurately fingerprinted by analyzing their responses to invalid ICMP timestamp requests."
-                    },
-                    "exploits": 0,
-                    "id": "generic-icmp-timestamp",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2019-06-11",
-                    "pci": {
-                        "adjustedCVSSScore": 0,
-                        "adjustedSeverityScore": 1,
-                        "fail": false,
-                        "status": "Pass"
-                    },
-                    "published": "1997-08-01",
-                    "results": [
-                        {
-                            "proof": "<p><p>Able to determine remote system time.</p></p>",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable"
-                        }
-                    ],
-                    "riskScore": 0,
-                    "severity": "Moderate",
-                    "severityScore": 1,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "ICMP timestamp response"
-                },
-                {
-                    "added": "2011-04-01",
-                    "categories": [
-                        "Network"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "L",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "N",
-                            "exploitScore": 9.9968,
-                            "impactScore": 0,
-                            "integrityImpact": "N",
-                            "score": 0,
-                            "vector": "AV:N/AC:L/Au:N/C:N/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      The remote host responded with a TCP timestamp.  The TCP timestamp response\n      can be used to approximate the remote host&#39;s uptime, potentially aiding in\n      further attacks.  Additionally, some operating systems can be fingerprinted\n      based on the behavior of their TCP timestamps.\n    </p>",
-                        "text": "The remote host responded with a TCP timestamp. The TCP timestamp response can be used to approximate the remote host's uptime, potentially aiding in further attacks. Additionally, some operating systems can be fingerprinted based on the behavior of their TCP timestamps."
-                    },
-                    "exploits": 0,
-                    "id": "generic-tcp-timestamp",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2018-03-21",
-                    "pci": {
-                        "adjustedCVSSScore": 0,
-                        "adjustedSeverityScore": 1,
-                        "fail": false,
-                        "status": "Pass"
-                    },
-                    "published": "1997-08-01",
-                    "results": [
-                        {
-                            "proof": "<p><p>Able to determine system boot time.</p></p>",
-                            "since": "2020-05-03T08:11:38.006Z",
-                            "status": "vulnerable"
-                        }
-                    ],
-                    "riskScore": 0,
-                    "severity": "Moderate",
-                    "severityScore": 1,
-                    "since": "2020-05-03T08:11:38.006Z",
-                    "status": "vulnerable",
-                    "title": "TCP timestamp response"
-                },
-                {
-                    "added": "2020-03-31",
-                    "categories": [
-                        "Network",
-                        "SSH"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "H",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "N",
-                            "exploitScore": 4.928,
-                            "impactScore": 0,
-                            "integrityImpact": "N",
-                            "score": 0,
-                            "vector": "AV:N/AC:H/Au:N/C:N/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      Since 3DES (Triple Data Encryption Standard) only provides an effective security of 112 bits, it is considered close to end of life by some agencies.\n      ECRYPT II (from 2012) recommends for generic application independent long-term protection of at least 128 bits security. The same recommendation has also been reported by BSI Germany (from 2015) and ANSSI France (from 2014), 128 bit is the recommended symmetric size and should be mandatory after 2020. While NIST (from 2012) still considers 3DES being appropriate to use until the end of 2030.\n    </p>",
-                        "text": "Since 3DES (Triple Data Encryption Standard) only provides an effective security of 112 bits, it is considered close to end of life by some agencies. ECRYPT II (from 2012) recommends for generic application independent long-term protection of at least 128 bits security. The same recommendation has also been reported by BSI Germany (from 2015) and ANSSI France (from 2014), 128 bit is the recommended symmetric size and should be mandatory after 2020. While NIST (from 2012) still considers 3DES being appropriate to use until the end of 2030."
-                    },
-                    "exploits": 0,
-                    "id": "ssh-3des-ciphers",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2020-03-31",
-                    "pci": {
-                        "adjustedCVSSScore": 0,
-                        "adjustedSeverityScore": 1,
-                        "fail": false,
-                        "status": "Pass"
-                    },
-                    "published": "2009-02-01",
-                    "results": [
-                        {
-                            "port": 22,
-                            "proof": "<p><ul><li>Running SSH service</li><li>Insecure 3DES ciphers in use: 3des-cbc</li></ul></p>",
-                            "protocol": "tcp",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable-version"
-                        }
-                    ],
-                    "riskScore": 0,
-                    "severity": "Moderate",
-                    "severityScore": 1,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "SSH Server Supports 3DES Cipher Suite"
-                },
-                {
-                    "added": "2020-03-31",
-                    "categories": [
-                        "Network",
-                        "SSH"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "H",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "P",
-                            "exploitScore": 4.928,
-                            "impactScore": 2.8627,
-                            "integrityImpact": "N",
-                            "score": 2.6,
-                            "vector": "AV:N/AC:H/Au:N/C:P/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n        SSH contains a vulnerability in the way certain types of errors are handled. Attacks leveraging this vulnerabilty would lead to the loss of the SSH session. According to CPNI Vulnerability Advisory SSH:\n    </p>\n    \n<p>\n        If exploited, this attack can potentially allow an attacker to recover up to 32 bits of plaintext from an arbitrary block of \n        ciphertext from a connection secured using the SSH protocol in the standard configuration. If OpenSSH is used in the standard \n        configuration, then the attacker&#39;s success probability for recovering 32 bits of plaintext is 2^{-18}. A variant of the attack \n        against OpenSSH in the standard configuration can verifiably recover 14 bits of plaintext with probability 2^{-14}. The success \n        probability of the attack for other implementations of SSH is not known.\n    </p>",
-                        "text": "SSH contains a vulnerability in the way certain types of errors are handled. Attacks leveraging this vulnerabilty would lead to the loss of the SSH session. According to CPNI Vulnerability Advisory SSH: \n\n If exploited, this attack can potentially allow an attacker to recover up to 32 bits of plaintext from an arbitrary block of ciphertext from a connection secured using the SSH protocol in the standard configuration. If OpenSSH is used in the standard  configuration, then the attacker's success probability for recovering 32 bits of plaintext is 2^{-18}. A variant of the attack against OpenSSH in the standard configuration can verifiably recover 14 bits of plaintext with probability 2^{-14}. The success  probability of the attack for other implementations of SSH is not known."
-                    },
-                    "exploits": 0,
-                    "id": "ssh-cbc-ciphers",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2020-03-31",
-                    "pci": {
-                        "adjustedCVSSScore": 2,
-                        "adjustedSeverityScore": 2,
-                        "fail": false,
-                        "status": "Pass"
-                    },
-                    "published": "2013-02-08",
-                    "results": [
-                        {
-                            "port": 22,
-                            "proof": "<p><ul><li>Running SSH service</li><li>Insecure CBC ciphers in use: aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc</li></ul></p>",
-                            "protocol": "tcp",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable-version"
-                        }
-                    ],
-                    "riskScore": 521.99,
-                    "severity": "Moderate",
-                    "severityScore": 3,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "SSH CBC vulnerability"
-                },
-                {
-                    "added": "2020-03-31",
-                    "categories": [
-                        "Network",
-                        "SSH"
-                    ],
-                    "cves": [
-                        "CVE-2015-4000"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "M",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "N",
-                            "exploitScore": 8.5888,
-                            "impactScore": 2.8627,
-                            "integrityImpact": "P",
-                            "score": 4.3,
-                            "vector": "AV:N/AC:M/Au:N/C:N/I:P/A:N"
-                        },
-                        "v3": {
-                            "attackComplexity": "H",
-                            "attackVector": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "N",
-                            "exploitScore": 2.2212,
-                            "impactScore": 1.4124,
-                            "integrityImpact": "L",
-                            "privilegeRequired": "N",
-                            "scope": "U",
-                            "score": 3.7,
-                            "userInteraction": "N",
-                            "vector": "CVSS:3.0/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:L/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      The prime modulus offered when diffie-hellman-group1-sha1 is used only has a size of 1024 bits. This\n      size is considered weak and within theoretical range of the so-called Logjam attack.\n    </p>",
-                        "text": "The prime modulus offered when diffie-hellman-group1-sha1 is used only has a size of 1024 bits. This size is considered weak and within theoretical range of the so-called Logjam attack."
-                    },
-                    "exploits": 0,
-                    "id": "ssh-cve-2015-4000",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2020-07-13",
-                    "pci": {
-                        "adjustedCVSSScore": 4,
-                        "adjustedSeverityScore": 3,
-                        "fail": true,
-                        "status": "Fail"
-                    },
-                    "published": "2015-05-20",
-                    "results": [
-                        {
-                            "port": 22,
-                            "proof": "<p><ul><li>Running SSH service</li><li>Insecure key exchange in use: diffie-hellman-group1-sha1</li></ul></p>",
-                            "protocol": "tcp",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable-version"
-                        }
-                    ],
-                    "riskScore": 209.11,
-                    "severity": "Severe",
-                    "severityScore": 4,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "SSH Server Supports diffie-hellman-group1-sha1"
-                },
-                {
-                    "added": "2020-03-31",
-                    "categories": [
-                        "Network",
-                        "SSH"
-                    ],
-                    "cves": [
-                        "CVE-2016-2183"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "L",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "P",
-                            "exploitScore": 9.9968,
-                            "impactScore": 2.8627,
-                            "integrityImpact": "N",
-                            "score": 5,
-                            "vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N"
-                        },
-                        "v3": {
-                            "attackComplexity": "L",
-                            "attackVector": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "H",
-                            "exploitScore": 3.887,
-                            "impactScore": 3.5952,
-                            "integrityImpact": "N",
-                            "privilegeRequired": "N",
-                            "scope": "U",
-                            "score": 7.5,
-                            "userInteraction": "N",
-                            "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      Legacy block ciphers having a block size of 64 bits are vulnerable to a practical collision attack when used in CBC\n      mode. The security of a block cipher is often reduced to the key size k: the best attack should\n      be the exhaustive search of the key, with complexity 2 to the power of k. However, the block size n is also an\n      important security parameter, defining the amount of data that can be encrypted under the same key. This is\n      particularly important when using common modes of operation: we require block ciphers to be secure with up to 2 to\n      the power of n queries, but most modes of operation (e.g. CBC, CTR, GCM, OCB, etc.) are unsafe with more than 2\n      to the power of half n blocks of message (the birthday bound). With a modern block cipher with 128-bit blocks such\n      as AES, the birthday bound corresponds to 256 exabytes. However, for a block cipher with 64-bit blocks, the birthday\n      bound corresponds to only 32 GB, which is easily reached in practice. Once a collision between two cipher blocks\n      occurs it is possible to use the collision to extract the plain text data.\n    </p>",
-                        "text": "Legacy block ciphers having a block size of 64 bits are vulnerable to a practical collision attack when used in CBC mode. The security of a block cipher is often reduced to the key size k: the best attack should be the exhaustive search of the key, with complexity 2 to the power of k. However, the block size n is also an important security parameter, defining the amount of data that can be encrypted under the same key. This is particularly important when using common modes of operation: we require block ciphers to be secure with up to 2 to the power of n queries, but most modes of operation (e.g. CBC, CTR, GCM, OCB, etc.) are unsafe with more than 2 to the power of half n blocks of message (the birthday bound). With a modern block cipher with 128-bit blocks such as AES, the birthday bound corresponds to 256 exabytes. However, for a block cipher with 64-bit blocks, the birthday bound corresponds to only 32 GB, which is easily reached in practice. Once a collision between two cipher blocks occurs it is possible to use the collision to extract the plain text data."
-                    },
-                    "exploits": 0,
-                    "id": "ssh-cve-2016-2183-sweet32",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2020-04-01",
-                    "pci": {
-                        "adjustedCVSSScore": 5,
-                        "adjustedSeverityScore": 3,
-                        "fail": true,
-                        "status": "Fail"
-                    },
-                    "published": "2016-08-24",
-                    "results": [
-                        {
-                            "port": 22,
-                            "proof": "<p><ul><li>Running SSH service</li><li>Insecure 3DES ciphers in use: 3des-cbc</li></ul></p>",
-                            "protocol": "tcp",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable-version"
-                        }
-                    ],
-                    "riskScore": 544.64,
-                    "severity": "Severe",
-                    "severityScore": 5,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "SSH Birthday attacks on 64-bit block ciphers (SWEET32)"
-                },
-                {
-                    "added": "2020-03-31",
-                    "categories": [
-                        "Network",
-                        "SSH"
-                    ],
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "M",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "P",
-                            "exploitScore": 8.5888,
-                            "impactScore": 2.8627,
-                            "integrityImpact": "N",
-                            "score": 4.3,
-                            "vector": "AV:N/AC:M/Au:N/C:P/I:N/A:N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      The server supports one or more weak key exchange algorithms. It is highly adviseable to remove weak key exchange algorithm support from SSH configuration files on hosts to prevent them from being used to establish connections.\n    </p>",
-                        "text": "The server supports one or more weak key exchange algorithms. It is highly adviseable to remove weak key exchange algorithm support from SSH configuration files on hosts to prevent them from being used to establish connections."
-                    },
-                    "exploits": 0,
-                    "id": "ssh-weak-kex-algorithms",
-                    "instances": 1,
-                    "malwareKits": 0,
-                    "modified": "2020-04-07",
-                    "pci": {
-                        "adjustedCVSSScore": 4,
-                        "adjustedSeverityScore": 3,
-                        "fail": true,
-                        "status": "Fail"
-                    },
-                    "published": "2017-07-13",
-                    "results": [
-                        {
-                            "port": 22,
-                            "proof": "<p><ul><li>Running SSH service</li><li>Insecure key exchange algorithms in use: diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1</li></ul></p>",
-                            "protocol": "tcp",
-                            "since": "2020-04-20T13:56:34.818Z",
-                            "status": "vulnerable-version"
-                        }
-                    ],
-                    "riskScore": 451.47,
-                    "severity": "Severe",
-                    "severityScore": 4,
-                    "since": "2020-04-20T13:56:34.818Z",
-                    "status": "vulnerable",
-                    "title": "SSH Server Supports Weak Key Exchange Algorithms"
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Nexpose Asset 1
->| AssetId |Addresses|Hardware|Site|OperatingSystem|LastScanDate|LastScanId|RiskScore|
----------|---|---|---|---|---|---|---|---|
->| 1 | 192.0.2.0 | 00:0C:29:9A:D8:2C | Test | Linux 3.10 | 2022-11-02T14:54:19.040Z | - | 1727.206298828125 |
->### Vulnerabilities
->|Id|Title|Malware|Exploit|CVSS|Risk|PublishedOn|ModifiedOn|Severity|Instances|
->|---|---|---|---|---|---|---|---|---|---|
->| generic-icmp-timestamp | ICMP timestamp response | 0 | 0 | 0.0 | 0.0 | 1997-08-01 | 2019-06-11 | Moderate | 1 |
->| generic-tcp-timestamp | TCP timestamp response | 0 | 0 | 0.0 | 0.0 | 1997-08-01 | 2018-03-21 | Moderate | 1 |
->| ssh-3des-ciphers | SSH Server Supports 3DES Cipher Suite | 0 | 0 | 0.0 | 0.0 | 2009-02-01 | 2020-03-31 | Moderate | 1 |
->| ssh-cbc-ciphers | SSH CBC vulnerability | 0 | 0 | 2.6 | 521.99 | 2013-02-08 | 2020-03-31 | Moderate | 1 |
->| ssh-cve-2015-4000 | SSH Server Supports diffie-hellman-group1-sha1 | 0 | 0 | 4.3 | 209.11 | 2015-05-20 | 2020-07-13 | Severe | 1 |
->| ssh-cve-2016-2183-sweet32 | SSH Birthday attacks on 64-bit block ciphers (SWEET32) | 0 | 0 | 5.0 | 544.64 | 2016-08-24 | 2020-04-01 | Severe | 1 |
->| ssh-weak-kex-algorithms | SSH Server Supports Weak Key Exchange Algorithms | 0 | 0 | 4.3 | 451.47 | 2017-07-13 | 2020-04-07 | Severe | 1 |
->### Services
->|Name|Port|Product|Protocol|
->|---|---|---|---|
->| SSH | 22 | OpenSSH | tcp |
-
-
 ### nexpose-get-assets
 ***
 Returns all assets for which you have access.
@@ -800,7 +88,7 @@ Returns all assets for which you have access.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 
@@ -832,204 +120,68 @@ Returns all assets for which you have access.
 {
     "Endpoint": [
         {
-            "ID": 2,
-            "IPAddress": "192.0.2.0",
-            "OS": "Linux 3.10",
+            "Hostname": "pool-96-252-18-158.bstnma.fios.verizon.net",
+            "ID": 9,
+            "IPAddress": "192.0.2.1",
             "Vendor": "Rapid7 Nexpose"
         },
         {
-            "ID": 3,
-            "IPAddress": "192.0.2.0",
+            "Hostname": "angular.testsparker.com",
+            "ID": 11,
+            "IPAddress": "192.0.2.2",
+            "OS": "Ubuntu Linux",
             "Vendor": "Rapid7 Nexpose"
         },
         {
-            "ID": 4,
-            "IPAddress": "192.0.2.0",
+            "ID": 12,
+            "IPAddress": "192.0.2.3",
+            "OS": "Microsoft Windows",
             "Vendor": "Rapid7 Nexpose"
         }
     ],
     "Nexpose": {
         "Asset": [
             {
-                "Address": "192.0.2.0",
+                "Address": "192.0.2.1",
                 "Assessed": true,
-                "AssetId": 2,
+                "AssetId": 9,
                 "Exploits": 0,
-                "LastScanDate": "2022-11-02T14:54:19.040Z",
-                "LastScanId": "-",
+                "LastScanDate": "2020-10-01T22:37:33.710Z",
+                "LastScanId": 650,
                 "Malware": 0,
-                "OperatingSystem": "Linux 3.10",
-                "RiskScore": 1727.206298828125,
-                "Site": "Test",
-                "Vulnerabilities": 7,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0",
-                        "mac": "00:0C:29:9A:D8:2C"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "history": [
-                    {
-                        "date": "2020-11-26T06:59:48.177Z",
-                        "scanId": 753,
-                        "type": "SCAN",
-                        "version": 683
-                    },
-                    {
-                        "date": "2020-11-26T07:53:35.544Z",
-                        "scanId": 754,
-                        "type": "SCAN",
-                        "version": 684
-                    },
-                    {
-                        "date": "2020-11-26T13:39:42.885Z",
-                        "scanId": 755,
-                        "type": "SCAN",
-                        "version": 685
-                    }
-                ],
-                "mac": "00:0C:29:9A:D8:2C",
-                "osFingerprint": {
-                    "cpe": {
-                        "part": "o",
-                        "product": "linux_kernel",
-                        "targetHW": "arm64",
-                        "v2.2": "cpe:/o:linux:linux_kernel:3.10.0::~~~~arm64~",
-                        "v2.3": "cpe:2.3:o:linux:linux_kernel:3.10.0:*:*:*:*:*:arm64:*",
-                        "vendor": "linux",
-                        "version": "3.10.0"
-                    },
-                    "description": "Linux 3.10",
-                    "family": "Linux",
-                    "id": 6,
-                    "product": "Linux",
-                    "systemName": "Linux",
-                    "type": "General",
-                    "vendor": "Linux",
-                    "version": "3.10"
-                },
-                "rawRiskScore": 1727.206298828125,
-                "services": [
-                    {
-                        "configurations": [
-                            {
-                                "name": "ssh.algorithms.compression",
-                                "value": "none,zlib@openssh.com"
-                            },
-                            {
-                                "name": "ssh.algorithms.encryption",
-                                "value": "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc"
-                            },
-                            {
-                                "name": "ssh.algorithms.hostkey",
-                                "value": "ssh-rsa,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp256,ssh-ed25519"
-                            },
-                            {
-                                "name": "ssh.algorithms.kex",
-                                "value": "curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1"
-                            },
-                            {
-                                "name": "ssh.algorithms.mac",
-                                "value": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1"
-                            },
-                            {
-                                "name": "ssh.banner",
-                                "value": "SSH-2.0-OpenSSH_7.4"
-                            },
-                            {
-                                "name": "ssh.protocol.version",
-                                "value": "2.0"
-                            },
-                            {
-                                "name": "ssh.rsa.pubkey.fingerprint",
-                                "value": "A74AFD453C6FBD15CF99481E0FFFC110"
-                            }
-                        ],
-                        "family": "OpenSSH",
-                        "name": "SSH",
-                        "port": 22,
-                        "product": "OpenSSH",
-                        "protocol": "tcp",
-                        "vendor": "OpenBSD",
-                        "version": "7.4"
-                    }
-                ],
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 4,
-                    "severe": 3
-                }
+                "Name": "pool-96-252-18-158.bstnma.fios.verizon.net",
+                "OperatingSystem": null,
+                "RiskScore": 0,
+                "Site": "PANW",
+                "Vulnerabilities": 0
             },
             {
-                "Address": "192.0.2.0",
+                "Address": "192.0.2.2",
                 "Assessed": true,
-                "AssetId": 3,
-                "Exploits": 0,
-                "LastScanDate": "2020-07-27T12:40:34.550Z",
-                "LastScanId": 402,
-                "Malware": 0,
-                "RiskScore": 0,
-                "Site": "Test",
-                "Vulnerabilities": 0,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "history": [
-                    {
-                        "date": "2020-07-26T09:54:20.099Z",
-                        "scanId": 400,
-                        "type": "SCAN",
-                        "version": 1
-                    },
-                    {
-                        "date": "2020-07-27T12:40:34.550Z",
-                        "scanId": 402,
-                        "type": "SCAN",
-                        "version": 2
-                    }
-                ],
-                "rawRiskScore": 0,
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 0,
-                    "severe": 0
-                }
-            },
-            {
-                "Address": "192.0.2.0",
-                "Assessed": false,
-                "AssetId": 4,
-                "Exploits": 0,
-                "LastScanDate": "2020-07-29T11:11:57.552Z",
+                "AssetId": 11,
+                "Exploits": 2,
+                "LastScanDate": "2022-11-02T14:54:19.055Z",
                 "LastScanId": "-",
                 "Malware": 0,
-                "RiskScore": 0,
-                "Vulnerabilities": 0,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "history": [
-                    {
-                        "date": "2020-07-29T11:11:57.552Z",
-                        "description": "nxadmin",
-                        "type": "ASSET-IMPORT",
-                        "user": "nxadmin",
-                        "version": 1
-                    }
-                ],
-                "rawRiskScore": 0,
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 0,
-                    "severe": 0
-                }
+                "Name": "angular.testsparker.com",
+                "OperatingSystem": "Ubuntu Linux",
+                "RiskScore": 7718.4091796875,
+                "Site": "PANW",
+                "Vulnerabilities": 26
+            },
+            {
+                "Address": "192.0.2.3",
+                "Assessed": true,
+                "AssetId": 12,
+                "Exploits": 4,
+                "LastScanDate": "2049-03-01T04:31:56Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": null,
+                "OperatingSystem": "Microsoft Windows",
+                "RiskScore": 18819.919921875,
+                "Site": "PANW",
+                "Vulnerabilities": 45
             }
         ]
     }
@@ -1038,10 +190,10 @@ Returns all assets for which you have access.
 
 #### Human Readable Output
 
->### Nexpose Asset
->|AssetId|Address|Exploits|Malware|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
->|---|---|---|---|---|---|---|---|---|
->| 4 | 192.0.2.0 | 0 | 0 | 0 | 0.0 | false | 2020-07-29T11:11:57.552Z | - |
+>### Nexpose Asset 12
+>|AssetId|Address|Site|Exploits|Malware|OperatingSystem|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 12 | 192.0.2.3 | PANW | 4 | 0 | Microsoft Windows | 45 | 18819.919921875 | true | 2049-03-01T04:31:56Z | - |
 
 
 ### nexpose-search-assets
@@ -1056,9 +208,9 @@ Search all assets matching filters (with Returns all assets for which you have a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ';' separator. For example: 'ip-address in-range 192.0.2.0,192.0.2.0;host-name is myhost'. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
+| query | Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ';' separator. For example: 'ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost'. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';' separator. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
 | ipAddressIs | A specific IP address to search. | Optional | 
@@ -1097,140 +249,30 @@ Search all assets matching filters (with Returns all assets for which you have a
 {
     "Endpoint": [
         {
-            "ID": 2,
-            "IPAddress": "192.0.2.0",
-            "OS": "Linux 3.10",
-            "Vendor": "Rapid7 Nexpose"
-        },
-        {
             "Hostname": "angular.testsparker.com",
             "ID": 11,
-            "IPAddress": "192.0.2.0",
+            "IPAddress": "192.0.2.2",
             "OS": "Ubuntu Linux",
             "Vendor": "Rapid7 Nexpose"
         },
         {
             "ID": 12,
-            "IPAddress": "192.0.2.0",
+            "IPAddress": "192.0.2.3",
             "OS": "Microsoft Windows",
+            "Vendor": "Rapid7 Nexpose"
+        },
+        {
+            "Hostname": "57.27.185.35.bc.googleusercontent.com",
+            "ID": 13,
+            "IPAddress": "192.0.2.4",
+            "OS": "Linux 2.6.18",
             "Vendor": "Rapid7 Nexpose"
         }
     ],
     "Nexpose": {
         "Asset": [
             {
-                "Address": "192.0.2.0",
-                "Assessed": true,
-                "AssetId": 2,
-                "Exploits": 0,
-                "LastScanDate": "2022-11-02T14:54:19.040Z",
-                "LastScanId": "-",
-                "Malware": 0,
-                "OperatingSystem": "Linux 3.10",
-                "RiskScore": 1727.206298828125,
-                "Site": "Test",
-                "Vulnerabilities": 7,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0",
-                        "mac": "00:0C:29:9A:D8:2C"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "history": [
-                    {
-                        "date": "2020-11-24T02:17:33.306Z",
-                        "scanId": 745,
-                        "type": "SCAN",
-                        "version": 675
-                    },
-                    {
-                        "date": "2020-11-24T17:51:19.010Z",
-                        "scanId": 746,
-                        "type": "SCAN",
-                        "version": 676
-                    },
-                    {
-                        "date": "2020-11-24T21:53:57.781Z",
-                        "scanId": 747,
-                        "type": "SCAN",
-                        "version": 677
-                    }
-                ],
-                "mac": "00:0C:29:9A:D8:2C",
-                "osFingerprint": {
-                    "cpe": {
-                        "part": "o",
-                        "product": "linux_kernel",
-                        "targetHW": "arm64",
-                        "v2.2": "cpe:/o:linux:linux_kernel:3.10.0::~~~~arm64~",
-                        "v2.3": "cpe:2.3:o:linux:linux_kernel:3.10.0:*:*:*:*:*:arm64:*",
-                        "vendor": "linux",
-                        "version": "3.10.0"
-                    },
-                    "description": "Linux 3.10",
-                    "family": "Linux",
-                    "id": 6,
-                    "product": "Linux",
-                    "systemName": "Linux",
-                    "type": "General",
-                    "vendor": "Linux",
-                    "version": "3.10"
-                },
-                "rawRiskScore": 1727.206298828125,
-                "services": [
-                    {
-                        "configurations": [
-                            {
-                                "name": "ssh.algorithms.compression",
-                                "value": "none,zlib@openssh.com"
-                            },
-                            {
-                                "name": "ssh.algorithms.encryption",
-                                "value": "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc"
-                            },
-                            {
-                                "name": "ssh.algorithms.hostkey",
-                                "value": "ssh-rsa,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp256,ssh-ed25519"
-                            },
-                            {
-                                "name": "ssh.algorithms.kex",
-                                "value": "curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1"
-                            },
-                            {
-                                "name": "ssh.algorithms.mac",
-                                "value": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1"
-                            },
-                            {
-                                "name": "ssh.banner",
-                                "value": "SSH-2.0-OpenSSH_7.4"
-                            },
-                            {
-                                "name": "ssh.protocol.version",
-                                "value": "2.0"
-                            },
-                            {
-                                "name": "ssh.rsa.pubkey.fingerprint",
-                                "value": "A74AFD453C6FBD15CF99481E0FFFC110"
-                            }
-                        ],
-                        "family": "OpenSSH",
-                        "name": "SSH",
-                        "port": 22,
-                        "product": "OpenSSH",
-                        "protocol": "tcp",
-                        "vendor": "OpenBSD",
-                        "version": "7.4"
-                    }
-                ],
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 4,
-                    "severe": 3
-                }
-            },
-            {
-                "Address": "192.0.2.0",
+                "Address": "192.0.2.2",
                 "Assessed": true,
                 "AssetId": 11,
                 "Exploits": 2,
@@ -1239,249 +281,37 @@ Search all assets matching filters (with Returns all assets for which you have a
                 "Malware": 0,
                 "Name": "angular.testsparker.com",
                 "OperatingSystem": "Ubuntu Linux",
-                "RiskScore": 7689.2607421875,
+                "RiskScore": 7718.4091796875,
                 "Site": "PANW",
-                "Vulnerabilities": 26,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "history": [
-                    {
-                        "date": "2020-10-01T22:40:08.844Z",
-                        "scanId": 650,
-                        "type": "SCAN",
-                        "version": 1
-                    },
-                    {
-                        "date": "2022-07-10T11:51:17.898Z",
-                        "description": "nxadmin",
-                        "type": "VULNERABILITY_EXCEPTION_APPLIED",
-                        "version": 2,
-                        "vulnerabilityExceptionId": 1
-                    },
-                    {
-                        "date": "2022-11-02T14:54:19.055Z",
-                        "description": "nxadmin",
-                        "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
-                        "version": 3,
-                        "vulnerabilityExceptionId": 1
-                    }
-                ],
-                "hostNames": [
-                    {
-                        "name": "angular.testsparker.com",
-                        "source": "user"
-                    }
-                ],
-                "osFingerprint": {
-                    "description": "Ubuntu Linux",
-                    "family": "Linux",
-                    "id": 7,
-                    "product": "Linux",
-                    "systemName": "Ubuntu Linux",
-                    "vendor": "Ubuntu"
-                },
-                "rawRiskScore": 7689.2607421875,
-                "services": [
-                    {
-                        "configurations": [
-                            {
-                                "name": "http.banner",
-                                "value": "Apache/2.4.29 (Ubuntu)"
-                            },
-                            {
-                                "name": "http.banner.server",
-                                "value": "Apache/2.4.29 (Ubuntu)"
-                            },
-                            {
-                                "name": "verbs-1",
-                                "value": "GET"
-                            },
-                            {
-                                "name": "verbs-2",
-                                "value": "HEAD"
-                            },
-                            {
-                                "name": "verbs-3",
-                                "value": "OPTIONS"
-                            },
-                            {
-                                "name": "verbs-4",
-                                "value": "POST"
-                            },
-                            {
-                                "name": "verbs-count",
-                                "value": "4"
-                            }
-                        ],
-                        "family": "Apache",
-                        "name": "HTTP",
-                        "port": 80,
-                        "product": "HTTPD",
-                        "protocol": "tcp",
-                        "vendor": "Apache",
-                        "version": "2.4.29"
-                    },
-                    {
-                        "configurations": [
-                            {
-                                "name": "http.banner",
-                                "value": "Apache/2.4.29 (Ubuntu)"
-                            },
-                            {
-                                "name": "http.banner.server",
-                                "value": "Apache/2.4.29 (Ubuntu)"
-                            }
-                        ],
-                        "family": "Apache",
-                        "name": "HTTP",
-                        "port": 8000,
-                        "product": "HTTPD",
-                        "protocol": "tcp",
-                        "vendor": "Apache",
-                        "version": "2.4.29"
-                    }
-                ],
-                "vulnerabilities": {
-                    "critical": 1,
-                    "moderate": 2,
-                    "severe": 23
-                }
+                "Vulnerabilities": 26
             },
             {
-                "Address": "192.0.2.0",
+                "Address": "192.0.2.3",
                 "Assessed": true,
                 "AssetId": 12,
                 "Exploits": 4,
                 "LastScanDate": "2049-03-01T04:31:56Z",
                 "LastScanId": "-",
                 "Malware": 0,
+                "Name": null,
                 "OperatingSystem": "Microsoft Windows",
-                "RiskScore": 19446.267578125,
+                "RiskScore": 18819.919921875,
                 "Site": "PANW",
-                "Vulnerabilities": 46,
-                "addresses": [
-                    {
-                        "ip": "192.0.2.0"
-                    }
-                ],
-                "assessedForPolicies": false,
-                "databases": [
-                    {
-                        "id": 0,
-                        "name": "test"
-                    }
-                ],
-                "history": [
-                    {
-                        "date": "2020-10-01T22:40:08.974Z",
-                        "scanId": 650,
-                        "type": "SCAN",
-                        "version": 1
-                    },
-                    {
-                        "date": "2021-06-29T06:58:48.740Z",
-                        "scanId": 762,
-                        "type": "SCAN",
-                        "version": 2
-                    },
-                    {
-                        "date": "2049-03-01T04:31:56Z",
-                        "description": "nxadmin",
-                        "type": "ASSET-IMPORT",
-                        "user": "nxadmin",
-                        "version": 3
-                    }
-                ],
-                "osFingerprint": {
-                    "description": "Microsoft Windows",
-                    "family": "Windows",
-                    "id": 11,
-                    "product": "Windows",
-                    "systemName": "Microsoft Windows",
-                    "vendor": "Microsoft"
-                },
-                "rawRiskScore": 19446.267578125,
-                "services": [
-                    {
-                        "configurations": [
-                            {
-                                "name": "PHP",
-                                "value": "7.1.26"
-                            },
-                            {
-                                "name": "http.banner",
-                                "value": "Apache/2.4.25 (Debian)"
-                            },
-                            {
-                                "name": "http.banner.server",
-                                "value": "Apache/2.4.25 (Debian)"
-                            },
-                            {
-                                "name": "http.banner.x-powered-by",
-                                "value": "PHP/7.1.26"
-                            },
-                            {
-                                "name": "verbs-1",
-                                "value": "GET"
-                            },
-                            {
-                                "name": "verbs-count",
-                                "value": "1"
-                            }
-                        ],
-                        "family": "Apache",
-                        "name": "HTTP",
-                        "port": 80,
-                        "product": "HTTPD",
-                        "protocol": "tcp",
-                        "vendor": "Apache",
-                        "version": "2.4.25"
-                    },
-                    {
-                        "configurations": [
-                            {
-                                "name": "PHP",
-                                "value": "7.1.26"
-                            },
-                            {
-                                "name": "http.banner",
-                                "value": "Apache/2.4.25 (Debian)"
-                            },
-                            {
-                                "name": "http.banner.server",
-                                "value": "Apache/2.4.25 (Debian)"
-                            },
-                            {
-                                "name": "http.banner.x-powered-by",
-                                "value": "PHP/7.1.26"
-                            },
-                            {
-                                "name": "verbs-1",
-                                "value": "GET"
-                            },
-                            {
-                                "name": "verbs-count",
-                                "value": "1"
-                            }
-                        ],
-                        "family": "Apache",
-                        "name": "HTTP",
-                        "port": 8080,
-                        "product": "HTTPD",
-                        "protocol": "tcp",
-                        "vendor": "Apache",
-                        "version": "2.4.25"
-                    }
-                ],
-                "vulnerabilities": {
-                    "critical": 7,
-                    "moderate": 0,
-                    "severe": 39
-                }
+                "Vulnerabilities": 45
+            },
+            {
+                "Address": "192.0.2.4",
+                "Assessed": true,
+                "AssetId": 13,
+                "Exploits": 0,
+                "LastScanDate": "2022-11-15T11:53:25.281Z",
+                "LastScanId": "-",
+                "Malware": 0,
+                "Name": "57.27.185.35.bc.googleusercontent.com",
+                "OperatingSystem": "Linux 2.6.18",
+                "RiskScore": 1323.0916748046875,
+                "Site": "PANW",
+                "Vulnerabilities": 2
             }
         ]
     }
@@ -1490,10 +320,10 @@ Search all assets matching filters (with Returns all assets for which you have a
 
 #### Human Readable Output
 
->### Nexpose Asset
->|AssetId|Address|Site|Exploits|Malware|OperatingSystem|RiskScore|Assessed|LastScanDate|LastScanId|
->|---|---|---|---|---|---|---|---|---|---|
->| 12 | 192.0.2.0 | PANW | 4 | 0 | Microsoft Windows | 19446.267578125 | true | 2049-03-01T04:31:56Z | - |
+>### Nexpose Asset 13
+>|AssetId|Address|Name|Site|Exploits|Malware|OperatingSystem|RiskScore|Assessed|LastScanDate|LastScanId|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 13 | 192.0.2.4 | 57.27.185.35.bc.googleusercontent.com | PANW | 0 | 0 | Linux 2.6.18 | 1323.0916748046875 | true | 2022-11-15T11:53:25.281Z | - |
 
 
 ### nexpose-get-scan
@@ -1508,7 +338,7 @@ Get a specific scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of a specific scan to retrieve.  Can be a comma-separated list. | Required | 
+| id | ID of a specific scan to retrieve. Can be a comma-separated list. | Required | 
 
 
 #### Context Output
@@ -1537,24 +367,13 @@ Get a specific scan.
             "Assets": 0,
             "Completed": "2019-12-03T20:48:01.368Z",
             "Id": 1,
+            "Message": null,
             "ScanName": "Tue 03 Dec 2019 10:47 PM",
             "ScanType": "Manual",
+            "StartedBy": null,
             "Status": "finished",
             "TotalTime": "51.316 seconds",
             "Vulnerabilities": {
-                "Critical": 0,
-                "Moderate": 0,
-                "Severe": 0,
-                "Total": 0
-            },
-            "engineId": 3,
-            "engineIds": [
-                3
-            ],
-            "engineName": "Local scan engine",
-            "startTime": "2019-12-03T20:47:10.052Z",
-            "startedByUsername": "nxadmin",
-            "vulnerabilities": {
                 "Critical": 0,
                 "Moderate": 0,
                 "Severe": 0,
@@ -1624,16 +443,23 @@ Returns details and possible remediations for an asset's vulnerability.
 | CVE.ID | string | Common Vulnerabilities and Exposures ids | 
 
 #### Command example
-```!nexpose-get-asset-vulnerability id=1 vulnerabilityId=ssh-cve-2016-2183-sweet32```
+```!nexpose-get-asset-vulnerability id=1 vulnerabilityId=apache-httpd-cve-2017-15710```
 #### Context Example
 ```json
 {
     "CVE": {
-        "CVSS": {},
-        "ID": "CVE-2016-2183"
+        "CVSS": {
+            "Score": 7.5,
+            "Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "Version": "3"
+        },
+        "Description": "The affected asset is vulnerable to this vulnerability ONLY if it is running one of the following modules: mod_authnz_ldap. Review your web server configuration for validation. mod_authnz_ldap, if configured with AuthLDAPCharsetConfig, uses the Accept-Language header value to lookup the right charset encoding when verifying the user's credentials. If the header value is not present in the charset conversion table, a fallback mechanism is used to truncate it to a two characters value to allow a quick retry (for example, 'en-US' is truncated to 'en'). A header value of less than two characters forces an out of bound write of one NUL byte to a memory location that is not part of the string. In the worst case, quite unlikely, the process would crash which could be used as a Denial of Service attack. In the more likely case, this memory is already reserved for future use and the issue has no effect at all.",
+        "ID": "CVE-2017-15710",
+        "Modified": "2020-01-30",
+        "Published": "2018-03-26"
     },
     "DBotScore": {
-        "Indicator": "CVE-2016-2183",
+        "Indicator": "CVE-2017-15710",
         "Score": 0,
         "Type": "cve",
         "Vendor": "Rapid7 Nexpose"
@@ -1643,101 +469,52 @@ Returns details and possible remediations for an asset's vulnerability.
             "AssetId": "1",
             "Vulnerability": [
                 {
-                    "Added": "2020-03-31",
+                    "Added": "2018-03-26",
                     "CVES": [
-                        "CVE-2016-2183"
+                        "CVE-2017-15710"
                     ],
-                    "CVSS": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+                    "CVSS": "AV:N/AC:L/Au:N/C:N/I:N/A:P",
                     "CVSSScore": 5,
-                    "CVSSV3": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                    "CVSSV3": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
                     "CVSSV3Score": 7.5,
                     "Categories": [
-                        "Network",
-                        "SSH"
+                        "Apache",
+                        "Apache HTTP Server",
+                        "Denial of Service",
+                        "LDAP",
+                        "Web"
                     ],
                     "Check": [
                         {
-                            "Port": 22,
-                            "Proof": "Running SSH serviceInsecure 3DES ciphers in use: 3des-cbc",
+                            "Port": 80,
+                            "Proof": "Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29",
                             "Protocol": "tcp",
-                            "Since": "2020-04-20T13:56:34.818Z",
+                            "Since": "2020-10-01T22:40:08.844Z",
+                            "Status": "vulnerable-version"
+                        },
+                        {
+                            "Port": 8000,
+                            "Proof": "Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29",
+                            "Protocol": "tcp",
+                            "Since": "2020-10-01T22:40:08.844Z",
                             "Status": "vulnerable-version"
                         }
                     ],
-                    "Id": "ssh-cve-2016-2183-sweet32",
-                    "Modified": "2020-04-01",
-                    "Published": "2016-08-24",
-                    "RiskScore": 544.64,
+                    "Id": "apache-httpd-cve-2017-15710",
+                    "Modified": "2020-01-30",
+                    "Published": "2018-03-26",
+                    "RiskScore": 175.22,
                     "Severity": "Severe",
                     "Solution": [
                         {
-                            "Estimate": "10.0 minutes",
-                            "Steps": "Remove all 3DES ciphers from the cipher list specified in sshd_config.",
-                            "Summary": "Disable SSH support for 3DES cipher suite",
-                            "Type": "configuration",
-                            "confidence": "exact",
-                            "id": "ssh-disable-3des-ciphers",
-                            "matches": [
-                                {
-                                    "confidence": "exact",
-                                    "fingerprint": {
-                                        "description": "OpenBSD OpenSSH 7.4",
-                                        "family": "OpenSSH",
-                                        "product": "OpenSSH",
-                                        "vendor": "OpenBSD",
-                                        "version": "7.4"
-                                    },
-                                    "solution": "ssh-disable-3des-ciphers",
-                                    "type": "service"
-                                }
-                            ],
-                            "steps": {
-                                "html": "<p>\n<p>Remove all 3DES ciphers from the cipher list specified in sshd_config.</p></p>"
-                            },
-                            "summary": {
-                                "html": "Disable SSH support for 3DES cipher suite"
-                            }
+                            "AdditionalInformation": "The latest version of Apache HTTPD is 2.4.48.\n\nMany platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system.",
+                            "Estimate": "2 hours",
+                            "Steps": "Download and apply the upgrade from: http://archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz (http://archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz)",
+                            "Summary": "Upgrade to the latest version of Apache HTTPD",
+                            "Type": "rollup-patch"
                         }
                     ],
-                    "Title": "SSH Birthday attacks on 64-bit block ciphers (SWEET32)",
-                    "cvss": {
-                        "v2": {
-                            "accessComplexity": "L",
-                            "accessVector": "N",
-                            "authentication": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "P",
-                            "exploitScore": 9.9968,
-                            "impactScore": 2.8627,
-                            "integrityImpact": "N"
-                        },
-                        "v3": {
-                            "attackComplexity": "L",
-                            "attackVector": "N",
-                            "availabilityImpact": "N",
-                            "confidentialityImpact": "H",
-                            "exploitScore": 3.887,
-                            "impactScore": 3.5952,
-                            "integrityImpact": "N",
-                            "privilegeRequired": "N",
-                            "scope": "U",
-                            "userInteraction": "N"
-                        }
-                    },
-                    "denialOfService": false,
-                    "description": {
-                        "html": "<p>\n      Legacy block ciphers having a block size of 64 bits are vulnerable to a practical collision attack when used in CBC\n      mode. The security of a block cipher is often reduced to the key size k: the best attack should\n      be the exhaustive search of the key, with complexity 2 to the power of k. However, the block size n is also an\n      important security parameter, defining the amount of data that can be encrypted under the same key. This is\n      particularly important when using common modes of operation: we require block ciphers to be secure with up to 2 to\n      the power of n queries, but most modes of operation (e.g. CBC, CTR, GCM, OCB, etc.) are unsafe with more than 2\n      to the power of half n blocks of message (the birthday bound). With a modern block cipher with 128-bit blocks such\n      as AES, the birthday bound corresponds to 256 exabytes. However, for a block cipher with 64-bit blocks, the birthday\n      bound corresponds to only 32 GB, which is easily reached in practice. Once a collision between two cipher blocks\n      occurs it is possible to use the collision to extract the plain text data.\n    </p>",
-                        "text": "Legacy block ciphers having a block size of 64 bits are vulnerable to a practical collision attack when used in CBC mode. The security of a block cipher is often reduced to the key size k: the best attack should be the exhaustive search of the key, with complexity 2 to the power of k. However, the block size n is also an important security parameter, defining the amount of data that can be encrypted under the same key. This is particularly important when using common modes of operation: we require block ciphers to be secure with up to 2 to the power of n queries, but most modes of operation (e.g. CBC, CTR, GCM, OCB, etc.) are unsafe with more than 2 to the power of half n blocks of message (the birthday bound). With a modern block cipher with 128-bit blocks such as AES, the birthday bound corresponds to 256 exabytes. However, for a block cipher with 64-bit blocks, the birthday bound corresponds to only 32 GB, which is easily reached in practice. Once a collision between two cipher blocks occurs it is possible to use the collision to extract the plain text data."
-                    },
-                    "exploits": 0,
-                    "malwareKits": 0,
-                    "pci": {
-                        "adjustedCVSSScore": 5,
-                        "adjustedSeverityScore": 3,
-                        "fail": true,
-                        "status": "Fail"
-                    },
-                    "severityScore": 5
+                    "Title": "Apache HTTPD: Out of bound write in mod_authnz_ldap when using too small Accept-Language values (CVE-2017-15710)"
                 }
             ]
         }
@@ -1747,18 +524,19 @@ Returns details and possible remediations for an asset's vulnerability.
 
 #### Human Readable Output
 
->### Vulnerability ssh-cve-2016-2183-sweet32
+>### Vulnerability apache-httpd-cve-2017-15710
 >|Id|Title|Severity|RiskScore|CVSS|CVSSV3|Published|Added|Modified|CVSSScore|CVSSV3Score|Categories|CVES|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| ssh-cve-2016-2183-sweet32 | SSH Birthday attacks on 64-bit block ciphers (SWEET32) | Severe | 544.64 | AV:N/AC:L/Au:N/C:P/I:N/A:N | CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N | 2016-08-24 | 2020-03-31 | 2020-04-01 | 5.0 | 7.5 | Network,<br/>SSH | CVE-2016-2183 |
+>| apache-httpd-cve-2017-15710 | Apache HTTPD: Out of bound write in mod_authnz_ldap when using too small Accept-Language values (CVE-2017-15710) | Severe | 175.22 | AV:N/AC:L/Au:N/C:N/I:N/A:P | CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H | 2018-03-26 | 2018-03-26 | 2020-01-30 | 5.0 | 7.5 | Apache,<br/>Apache HTTP Server,<br/>Denial of Service,<br/>LDAP,<br/>Web | CVE-2017-15710 |
 >### Checks
 >|Port|Protocol|Since|Proof|Status|
 >|---|---|---|---|---|
->| 22 | tcp | 2020-04-20T13:56:34.818Z | Running SSH serviceInsecure 3DES ciphers in use: 3des-cbc | vulnerable-version |
+>| 80 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
+>| 8000 | tcp | 2020-10-01T22:40:08.844Z | Running HTTP serviceProduct HTTPD exists -- Apache HTTPD 2.4.29Vulnerable version of product HTTPD found -- Apache HTTPD 2.4.29 | vulnerable-version |
 >### Solutions
->|Type|Summary|Steps|Estimate|
->|---|---|---|---|
->| configuration | Disable SSH support for 3DES cipher suite | Remove all 3DES ciphers from the cipher list specified in sshd_config. | 10.0 minutes |
+>|Type|Summary|Steps|Estimate|AdditionalInformation|
+>|---|---|---|---|---|
+>| rollup-patch | Upgrade to the latest version of Apache HTTPD | Download and apply the upgrade from: http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz (http:<span>//</span>archive.apache.org/dist/httpd/httpd-2.4.48.tar.gz) | 2 hours | The latest version of Apache HTTPD is 2.4.48.<br/><br/>Many platforms and distributions provide pre-built binary packages for Apache HTTP server. These pre-built packages are usually customized and optimized for a particular distribution, therefore we recommend that you use the packages if they are available for your operating system. |
 
 
 ### nexpose-create-shared-credential
@@ -1808,23 +586,6 @@ Create a new shared credential. For detailed explanation of all parameters of th
 | --- | --- | --- |
 | Nexpose.SharedCredential.id | number | ID of the generated credential. | 
 
-#### Command example
-```!nexpose-create-shared-credential name="Test" service=FTP site_assignment="All-Sites" username="test" password="test"```
-#### Context Example
-```json
-{
-    "Nexpose": {
-        "SharedCredential": {
-            "id": 24
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->New shared credential has been created with ID 24.
-
 ### nexpose-create-site
 ***
 Creates a new site with the specified configuration.
@@ -1864,10 +625,10 @@ Create a new vulnerability exception.
 | --- | --- | --- |
 | expires | The date and time the vulnerability exception is set to expire in an ISO 8601 date format. | Optional | 
 | vulnerability_id | ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536. | Required | 
-| scope_type | The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required. Possible values are: Global, Site, Asset, Asset-Group. | Required | 
-| state | State of the vulnerability exception. Possible values are: Expired, Approved, Rejected, Under-Review. | Required | 
+| scope_type | The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required. Possible values are: Global, Site, Asset, Asset Group. | Required | 
+| state | State of the vulnerability exception. Possible values are: Expired, Approved, Rejected, Under Review. | Required | 
 | comment | A comment from the submitter as to why the exception was submitted. | Optional | 
-| reason | Reason why the vulnerability exception was submitted. Possible values are: False-Positive, Compensating-Control, Acceptable-Use, Acceptable-Risk, Other. | Required | 
+| reason | Reason why the vulnerability exception was submitted. Possible values are: False Positive, Compensating Control, Acceptable Use, Acceptable Risk, Other. | Required | 
 | scope_id | ID of the chosen `scope_type` (site ID, asset ID, etc.). Required if `scope_type` is anything other than `Global`. | Optional | 
 
 
@@ -1892,6 +653,15 @@ Delete an asset.
 | id | ID of the asset to delete. | Required | 
 
 
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nexpose-delete-asset id=1```
+#### Human Readable Output
+
+>Asset 1 has been deleted.
+
 ### nexpose-delete-scan-schedule
 ***
 Delete a scheduled scan.
@@ -1909,6 +679,9 @@ Delete a scheduled scan.
 | schedule_id | ID of the scheduled scan to delete. | Required | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-delete-shared-credential
 ***
 > **Note:**
@@ -1927,6 +700,9 @@ Delete a shared credential.
 | id | ID of the shared credential to delete. | Required | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-delete-site-scan-credential
 ***
 > **Note:**
@@ -1947,6 +723,9 @@ Delete a site scan credential.
 | credential_id | ID of the site scan credential to delete. | Required | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-delete-site
 ***
 Deletes a site.
@@ -1963,6 +742,9 @@ Deletes a site.
 | site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-delete-vulnerability-exception
 ***
 Delete a vulnerability exception.
@@ -1997,7 +779,7 @@ Retrieves accessible sites.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
 
@@ -2015,7 +797,7 @@ Retrieves accessible sites.
 | Nexpose.Site.LastScan | date | The date and time of the site's last scan. | 
 
 #### Command example
-```!nexpose-get-sites limit=10```
+```!nexpose-get-sites limit=5```
 #### Context Example
 ```json
 {
@@ -2023,55 +805,30 @@ Retrieves accessible sites.
         "Site": [
             {
                 "Assets": 4,
-                "Id": 3,
+                "Id": 1,
                 "LastScan": "2021-08-03T14:09:15.321Z",
                 "Name": "Authenticated-Assets",
-                "Risk": 20402,
+                "Risk": 20416,
                 "Type": "static",
-                "Vulnerabilities": 41,
-                "importance": "normal",
-                "scanEngine": 3,
-                "scanTemplate": "full-audit-without-web-spider",
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 16,
-                    "severe": 25
-                }
+                "Vulnerabilities": 41
             },
             {
-                "Assets": 19,
+                "Assets": 18,
                 "Id": 2,
                 "LastScan": "2021-06-29T07:06:54.733Z",
                 "Name": "PANW",
-                "Risk": 216326,
+                "Risk": 213245,
                 "Type": "static",
-                "Vulnerabilities": 461,
-                "importance": "normal",
-                "scanEngine": 3,
-                "scanTemplate": "full-audit-without-web-spider",
-                "vulnerabilities": {
-                    "critical": 141,
-                    "moderate": 13,
-                    "severe": 307
-                }
+                "Vulnerabilities": 455
             },
             {
-                "Assets": 9,
-                "Id": 1,
+                "Assets": 10,
+                "Id": 3,
                 "LastScan": "2020-11-26T17:13:54.117Z",
                 "Name": "Test",
-                "Risk": 21173,
+                "Risk": 18820,
                 "Type": "static",
-                "Vulnerabilities": 53,
-                "description": "This is a test site with test asset",
-                "importance": "very_low",
-                "scanEngine": 3,
-                "scanTemplate": "full-audit-without-web-spider",
-                "vulnerabilities": {
-                    "critical": 7,
-                    "moderate": 4,
-                    "severe": 42
-                }
+                "Vulnerabilities": 45
             }
         ]
     }
@@ -2080,12 +837,12 @@ Retrieves accessible sites.
 
 #### Human Readable Output
 
->### Nexpose sites
+>### Nexpose Sites
 >| Id  |Name|Assets|Vulnerabilities|Risk|Type|LastScan|
 -----|---|---|---|---|---|---|---|
->| 3 | Authenticated-Assets | 4 | 41 | 20402.0 | static | 2021-08-03T14:09:15.321Z |
->| 2 | PANW | 19 | 461 | 216326.0 | static | 2021-06-29T07:06:54.733Z |
->| 1 | Test | 9 | 53 | 21173.0 | static | 2020-11-26T17:13:54.117Z |
+>| 1   | Authenticated-Assets | 4 | 41 | 20416.0 | static | 2021-08-03T14:09:15.321Z |
+>| 2 | PANW | 18 | 455 | 213245.0 | static | 2021-06-29T07:06:54.733Z |
+>| 3   | Test | 10 | 45 | 18820.0 | static | 2020-11-26T17:13:54.117Z |
 
 
 ### nexpose-get-report-templates
@@ -2120,93 +877,43 @@ There are no input arguments for this command.
                 "Description": "Provides comprehensive details about discovered assets, vulnerabilities, and users.",
                 "Id": "audit-report",
                 "Name": "Audit Report",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "ExecutiveSummary",
-                    "ScanSettings",
-                    "SystemOverview",
-                    "VulnerabilityDetailListing",
-                    "ServiceListing",
-                    "UserGroupListing",
-                    "DatabaseListing",
-                    "FileSystemListing",
-                    "PolicyEvaluation",
-                    "SpideredWebsite"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Compares current scan results to those of an earlier baseline scan.",
                 "Id": "baseline-comparison",
                 "Name": "Baseline Comparison",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "ExecutiveSummary",
-                    "BaselineComparison"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Provides a high-level view of security data, including general results information and statistical charts.",
                 "Id": "executive-overview",
                 "Name": "Executive Overview",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "ExecutiveSummary",
-                    "BaselineComparison"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Provides information and metrics about 10 discovered vulnerabilities with the highest risk scores.",
                 "Id": "highest-risk-vulns",
                 "Name": "Highest Risk Vulnerabilities",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "TOC",
-                    "HighestRiskVulnerabilities"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Lists results for standard policy scans (AS/400, Oracle, Domino, Windows Group, CIFS/SMB account). Does not include Policy Manager results.",
                 "Id": "policy-eval",
                 "Name": "Policy Evaluation",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "PolicyEvaluation"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Provides detailed remediation instructions for each discovered vulnerability.",
                 "Id": "remediation-plan",
                 "Name": "Remediation Plan",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "SystemOverview",
-                    "RiskAssessment",
-                    "RemediationPlan"
-                ]
+                "Type": "document"
             },
             {
                 "Description": "Lists test results for each discovered vulnerability, including how it was verified.",
                 "Id": "report-card",
                 "Name": "Report Card",
-                "Type": "document",
-                "builtin": true,
-                "sections": [
-                    "CoverPage",
-                    "VulnerabilityReportCardByNode",
-                    "VulnerabilityIndex"
-                ]
+                "Type": "document"
             }
         ]
     }
@@ -2215,7 +922,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->### Nexpose templates
+>### Nexpose Templates
 >|Id|Name|Description|Type|
 >|---|---|---|---|
 >| audit-report | Audit Report | Provides comprehensive details about discovered assets, vulnerabilities, and users. | document |
@@ -2251,7 +958,24 @@ Create a new asset.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.Site.Asset.id | string | ID of the newly created asset. | 
+| Nexpose.Asset.id | string | ID of the newly created asset. | 
+
+#### Command example
+```!nexpose-create-asset site_id="1" date="2022-01-01T10:00:00Z" ip="192.0.2.0"```
+#### Context Example
+```json
+{
+    "Nexpose": {
+        "Asset": {
+            "id": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>New asset has been created with ID 1.
 
 ### nexpose-create-assets-report
 ***
@@ -2414,9 +1138,9 @@ Generates a new report for a specified scan.
     "Nexpose": {
         "Report": {
             "Format": "pdf",
-            "ID": 2725,
-            "InstanceID": 2701,
-            "Name": "report 2022-11-10 10:52:10.882635"
+            "ID": 3241,
+            "InstanceID": 3212,
+            "Name": "report 2022-11-30 09:25:36.359529"
         }
     }
 }
@@ -2427,7 +1151,7 @@ Generates a new report for a specified scan.
 >### Report Information
 >|Format|ID|InstanceID|Name|
 >|---|---|---|---|
->| pdf | 2725 | 2701 | report 2022-11-10 10:52:10.882635 |
+>| pdf | 3241 | 3212 | report 2022-11-30 09:25:36.359529 |
 
 
 ### nexpose-create-scan-schedule
@@ -2484,7 +1208,7 @@ Retrieve information about shared credentials for a specific site.
 | --- | --- | --- |
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
-| limit | A number of records to limit the response to. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -2505,21 +1229,21 @@ Retrieve information about shared credentials for a specific site.
         "AssignedSharedCredential": [
             {
                 "enabled": true,
-                "id": 6,
-                "name": "shared credentials",
-                "service": "as400"
+                "id": 1,
+                "name": "Test 1",
+                "service": "ftp"
             },
             {
                 "enabled": true,
-                "id": 7,
-                "name": "shared credentials",
-                "service": "ssh"
+                "id": 2,
+                "name": "Test 2",
+                "service": "ftp"
             },
             {
                 "enabled": true,
-                "id": 8,
-                "name": "shared credentials",
-                "service": "snmpv3"
+                "id": 3,
+                "name": "Test 3",
+                "service": "ftp"
             }
         ]
     }
@@ -2531,9 +1255,9 @@ Retrieve information about shared credentials for a specific site.
 >### Nexpose Assigned Shared Credentials
 >| Id  |Name|Service|Enabled|
 -----|---|---|---|---|
->| 1 | shared credentials | as400 | true |
->| 2 | shared credentials | ssh | true |
->| 3 | shared credentials | snmpv3 | true |
+>| 1   | Test 1 | ftp | true |
+>| 2  | Test 2 | ftp | true |
+>| 3  | Test 3 | ftp | true |
 
 
 ### nexpose-list-vulnerability
@@ -2550,7 +1274,7 @@ Retrieve information about all or a specific vulnerability.
 | --- | --- | --- |
 | id | ID of a specific vulnerability to retrieve. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
 
@@ -2647,7 +1371,7 @@ Retrieve information about all or a specific vulnerability.
                     "status": "Fail"
                 },
                 "published": "2009-03-29",
-                "riskScore": 898.42,
+                "riskScore": 898.63,
                 "severity": "Critical",
                 "severityScore": 10,
                 "title": "7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7"
@@ -2705,7 +1429,7 @@ Retrieve information about all or a specific vulnerability.
                     "status": "Fail"
                 },
                 "published": "2016-12-13",
-                "riskScore": 715.39,
+                "riskScore": 717.53,
                 "severity": "Critical",
                 "severityScore": 9,
                 "title": "7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability"
@@ -2764,7 +1488,7 @@ Retrieve information about all or a specific vulnerability.
                     "status": "Fail"
                 },
                 "published": "2017-05-22",
-                "riskScore": 576.96,
+                "riskScore": 578.88,
                 "severity": "Severe",
                 "severityScore": 7,
                 "title": "7-Zip: CVE-2016-7804: Untrusted search path vulnerability"
@@ -2779,9 +1503,9 @@ Retrieve information about all or a specific vulnerability.
 >### Nexpose Vulnerabilities
 >|Title|MalwareKits|Exploits|CVSS|CVSSv3|Risk|PublishedOn|ModifiedOn|Severity|
 >|---|---|---|---|---|---|---|---|---|
->| 7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7 | 0 | 0 | 10.0 |  | 898.42 | 2009-03-29 | 2018-06-08 | Critical |
->| 7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability | 0 | 0 | 9.3 | 7.8 | 715.39 | 2016-12-13 | 2018-06-08 | Critical |
->| 7-Zip: CVE-2016-7804: Untrusted search path vulnerability | 0 | 0 | 6.8 | 7.8 | 576.96 | 2017-05-22 | 2018-06-08 | Severe |
+>| 7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7 | 0 | 0 | 10.0 |  | 898.63 | 2009-03-29 | 2018-06-08 | Critical |
+>| 7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability | 0 | 0 | 9.3 | 7.8 | 717.53 | 2016-12-13 | 2018-06-08 | Critical |
+>| 7-Zip: CVE-2016-7804: Untrusted search path vulnerability | 0 | 0 | 6.8 | 7.8 | 578.88 | 2017-05-22 | 2018-06-08 | Severe |
 
 
 ### nexpose-list-scan-schedule
@@ -2802,7 +1526,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | schedule_id | ID of the scheduled scan (optional, will return a single specific scan if used). | Optional | 
-| limit | A number of records to limit the response to. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -2826,12 +1550,6 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.ScanSchedule.repeat.scanName | unknown | A user-defined name for the scan launched by the schedule. | 
 | Nexpose.ScanSchedule.repeat.scanTemplateId | unknown | The identifier of the scan template to be used for this scan schedule. If not set, the site's assigned scan template will be used. | 
 | Nexpose.ScanSchedule.repeat.start | unknown | The scheduled start date and time. Repeating schedules will determine the next schedule to begin based on this date and time. | 
-
-#### Command example
-```!nexpose-list-scan-schedule site_id=1 limit=3```
-#### Human Readable Output
-
->No scan schedules were found for the site.
 
 ### nexpose-list-shared-credential
 ***
@@ -2937,11 +1655,11 @@ Retrieve information about all or a specific shared credential.
 #### Human Readable Output
 
 >### Nexpose Shared Credentials
->| Id  |Name|Service|UserName|AvailableToSites|
------|---|---|---|---|---|
->| 1 | shared credentials | snmpv3 | test | 1 |
->| 2 | shared credentials | as400 | test | 1 |
->| 3 | shared credentials | ssh | test | 1 |
+>| Id  |Name|Service|UserName|
+-----|---|---|---|---|
+>| 1   | shared credentials | snmpv3 | test |
+>| 2   | shared credentials | as400 | test |
+>| 3   | shared credentials | ssh | test |
 
 
 ### nexpose-list-site-scan-credential
@@ -2962,7 +1680,7 @@ Retrieve information about all or a specific sca credential.
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | credential_id | ID of a specific scan credential to retrieve. | Optional | 
-| limit | A number of records to limit the response to. Default is 50. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -2996,12 +1714,6 @@ Retrieve information about all or a specific sca credential.
 | Nexpose.SiteScanCredential.name | string | Name of the credential. | 
 | Nexpose.SiteScanCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`host_restriction\` is used. | 
 
-#### Command example
-```!nexpose-list-site-scan-credential site_id=1 limit=3```
-#### Human Readable Output
-
->No site scan credentials were found for site "1".
-
 ### nexpose-list-vulnerability-exceptions
 ***
 Retrieve information about scan schedules for a specific site or a specific scan schedule
@@ -3016,9 +1728,9 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | --- | --- | --- |
 | id | ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. Default is submit.date,ASC. | Optional | 
-| limit | A number of records to limit the response to. | Optional | 
+| limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -3040,7 +1752,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.VulnerabilityException.submit.user | int | The identifier of the user that submitted the vulnerability exception. | 
 
 #### Command example
-```!nexpose-list-vulnerability-exceptions sort="submit.date,ASC"```
+```!nexpose-list-vulnerability-exceptions sort="submit.date,ASC" limit=3```
 #### Context Example
 ```json
 {
@@ -3048,7 +1760,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
         "VulnerabilityException": [
             {
                 "expires": "2028-03-01T04:31:56Z",
-                "id": 2,
+                "id": 1,
                 "review": {
                     "comment": "Auto approved by submitter.",
                     "date": "2022-10-31T14:39:15.736Z",
@@ -3068,7 +1780,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 }
             },
             {
-                "id": 4,
+                "id": 2,
                 "review": {
                     "date": "2022-10-30T13:54:31.084Z",
                     "name": "nxadmin",
@@ -3087,7 +1799,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 }
             },
             {
-                "id": 5,
+                "id": 3,
                 "scope": {
                     "type": "global",
                     "vulnerability": "cifs-smb-signing-disabled"
@@ -3099,134 +1811,6 @@ Retrieve information about scan schedules for a specific site or a specific scan
                     "reason": "acceptable use",
                     "user": 1
                 }
-            },
-            {
-                "id": 6,
-                "scope": {
-                    "type": "global",
-                    "vulnerability": "apache-httpd-cve-2017-3167"
-                },
-                "state": "under review",
-                "submit": {
-                    "date": "2022-10-27T11:42:05.995090Z",
-                    "name": "nxadmin",
-                    "reason": "acceptable use",
-                    "user": 1
-                }
-            },
-            {
-                "id": 7,
-                "review": {
-                    "comment": "Auto approved by submitter.",
-                    "date": "2022-10-27T11:55:14.550Z",
-                    "name": "nxadmin",
-                    "user": 1
-                },
-                "scope": {
-                    "id": 1,
-                    "type": "asset group",
-                    "vulnerability": "apache-httpd-cve-2009-1195"
-                },
-                "state": "approved",
-                "submit": {
-                    "date": "2022-10-27T11:55:14.539218Z",
-                    "name": "nxadmin",
-                    "reason": "false positive",
-                    "user": 1
-                }
-            },
-            {
-                "id": 8,
-                "review": {
-                    "comment": "Auto approved by submitter.",
-                    "date": "2022-10-27T11:57:31.969Z",
-                    "name": "nxadmin",
-                    "user": 1
-                },
-                "scope": {
-                    "id": 3,
-                    "type": "asset group",
-                    "vulnerability": "certificate-common-name-mismatch"
-                },
-                "state": "approved",
-                "submit": {
-                    "date": "2022-10-27T11:57:31.955017Z",
-                    "name": "nxadmin",
-                    "reason": "acceptable use",
-                    "user": 1
-                }
-            },
-            {
-                "id": 9,
-                "scope": {
-                    "id": 1,
-                    "type": "site",
-                    "vulnerability": "apache-httpd-cve-2017-3167"
-                },
-                "state": "under review",
-                "submit": {
-                    "date": "2022-10-27T12:04:12.622393Z",
-                    "name": "nxadmin",
-                    "reason": "acceptable use",
-                    "user": 1
-                }
-            },
-            {
-                "id": 10,
-                "scope": {
-                    "id": 3,
-                    "type": "asset group",
-                    "vulnerability": "apache-httpd-cve-2017-3167"
-                },
-                "state": "under review",
-                "submit": {
-                    "date": "2022-10-27T12:04:49.768889Z",
-                    "name": "nxadmin",
-                    "reason": "acceptable use",
-                    "user": 1
-                }
-            },
-            {
-                "id": 11,
-                "review": {
-                    "comment": "Auto approved by submitter.",
-                    "date": "2022-10-30T09:21:40.349Z",
-                    "name": "nxadmin",
-                    "user": 1
-                },
-                "scope": {
-                    "id": 1,
-                    "type": "site",
-                    "vulnerability": "apache-httpd-cve-2010-1452"
-                },
-                "state": "approved",
-                "submit": {
-                    "date": "2022-10-30T09:21:40.345560Z",
-                    "name": "nxadmin",
-                    "reason": "other",
-                    "user": 1
-                }
-            },
-            {
-                "id": 13,
-                "review": {
-                    "comment": "Auto approved by submitter.",
-                    "date": "2022-10-30T09:39:43.162Z",
-                    "name": "nxadmin",
-                    "user": 1
-                },
-                "scope": {
-                    "id": 15,
-                    "type": "asset",
-                    "vulnerability": "apache-httpd-cve-2010-1623"
-                },
-                "state": "approved",
-                "submit": {
-                    "date": "2022-10-30T09:39:43.151066Z",
-                    "name": "nxadmin",
-                    "reason": "other",
-                    "user": 1
-                }
             }
         ]
     }
@@ -3236,18 +1820,11 @@ Retrieve information about scan schedules for a specific site or a specific scan
 #### Human Readable Output
 
 >### Nexpose Vulnerability Exceptions
->|Id|Vulnerability|ExceptionScope|Reason|ReportedBy|ReviewStatus|ReviewedOn|ExpiresOn|
->|---|---|---|---|---|---|---|---|
->| 2 | tlsv1_0-enabled | global | false positive | nxadmin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
->| 4 | php-cve-2018-10545 | global | acceptable use | nxadmin | rejected | 2022-10-30T13:54:31.084Z |  |
->| 5 | cifs-smb-signing-disabled | global | acceptable use | nxadmin | under review |  |  |
->| 6 | apache-httpd-cve-2017-3167 | global | acceptable use | nxadmin | under review |  |  |
->| 7 | apache-httpd-cve-2009-1195 | asset group | false positive | nxadmin | approved | 2022-10-27T11:55:14.550Z |  |
->| 8 | certificate-common-name-mismatch | asset group | acceptable use | nxadmin | approved | 2022-10-27T11:57:31.969Z |  |
->| 9 | apache-httpd-cve-2017-3167 | site | acceptable use | nxadmin | under review |  |  |
->| 10 | apache-httpd-cve-2017-3167 | asset group | acceptable use | nxadmin | under review |  |  |
->| 11 | apache-httpd-cve-2010-1452 | site | other | nxadmin | approved | 2022-10-30T09:21:40.349Z |  |
->| 13 | apache-httpd-cve-2010-1623 | asset | other | nxadmin | approved | 2022-10-30T09:39:43.162Z |  |
+>| Id  |Vulnerability|ExceptionScope|Reason|ReportedBy|ReviewStatus|ReviewedOn|ExpiresOn|
+-----|---|---|---|---|---|---|---|---|
+>| 1   | tlsv1_0-enabled | global | false positive | nxadmin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
+>| 2   | php-cve-2018-10545 | global | acceptable use | nxadmin | rejected | 2022-10-30T13:54:31.084Z |  |
+>| 3   | cifs-smb-signing-disabled | global | acceptable use | nxadmin | under review |  |  |
 
 
 ### nexpose-start-site-scan
@@ -3376,7 +1953,7 @@ Return a list of scans. Returns only active scans by default (active=true).
 | --- | --- | --- |
 | active | Whether to return only active scans or not. Possible values are: true, false. Default is true. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
-| page | A specific page to retrieve when pagination is used. | Optional | 
+| page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 | sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
 
@@ -3404,64 +1981,34 @@ Return a list of scans. Returns only active scans by default (active=true).
                 "Assets": 0,
                 "Completed": "2019-12-03T20:48:01.368Z",
                 "Id": 1,
+                "Message": null,
                 "ScanName": "Tue 03 Dec 2019 10:47 PM",
                 "ScanType": "Manual",
+                "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "51.316 seconds",
-                "engineId": 3,
-                "engineName": "Local scan engine",
-                "siteId": 1,
-                "siteName": "Test",
-                "startTime": "2019-12-03T20:47:10.052Z",
-                "startedByUsername": "N/A",
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 0,
-                    "severe": 0,
-                    "total": 0
-                }
+                "TotalTime": "51.316 seconds"
             },
             {
                 "Assets": 0,
                 "Completed": "2019-12-03T20:53:09.453Z",
                 "Id": 2,
+                "Message": null,
                 "ScanName": "Tue 03 Dec 2019 10:52 PM",
                 "ScanType": "Manual",
+                "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "29.91 seconds",
-                "engineId": 3,
-                "engineName": "Local scan engine",
-                "siteId": 1,
-                "siteName": "Test",
-                "startTime": "2019-12-03T20:52:39.543Z",
-                "startedByUsername": "N/A",
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 0,
-                    "severe": 0,
-                    "total": 0
-                }
+                "TotalTime": "29.91 seconds"
             },
             {
                 "Assets": 0,
                 "Completed": "2019-12-03T21:01:33.970Z",
                 "Id": 3,
+                "Message": null,
                 "ScanName": "scan 2019-12-03 19:58:25.961787",
                 "ScanType": "Manual",
+                "StartedBy": null,
                 "Status": "finished",
-                "TotalTime": "28.904 seconds",
-                "engineId": 3,
-                "engineName": "Local scan engine",
-                "siteId": 1,
-                "siteName": "Test",
-                "startTime": "2019-12-03T21:01:05.066Z",
-                "startedByUsername": "N/A",
-                "vulnerabilities": {
-                    "critical": 0,
-                    "moderate": 0,
-                    "severe": 0,
-                    "total": 0
-                }
+                "TotalTime": "28.904 seconds"
             }
         ]
     }
@@ -3470,7 +2017,7 @@ Return a list of scans. Returns only active scans by default (active=true).
 
 #### Human Readable Output
 
->### Nexpose scans
+>### Nexpose Scans
 >|Id|ScanType|ScanName|Assets|TotalTime|Completed|Status|
 >|---|---|---|---|---|---|---|
 >| 1 | Manual | Tue 03 Dec 2019 10:47 PM | 0 | 51.316 seconds | 2019-12-03T20:48:01.368Z | finished |
@@ -3533,19 +2080,15 @@ Returns the generated report.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2324@403762e2-be4e-4f12-8a17-26cdb21b129e",
+        "EntryID": "4127@403762e2-be4e-4f12-8a17-26cdb21b129e",
         "Extension": "pdf",
         "Info": "application/pdf",
-        "Name": "report 2022-11-10 10:52:56.050804.pdf",
+        "Name": "report 2022-11-30 09:25:43.835638.pdf",
         "Size": 76699,
         "Type": "PDF document, version 1.4"
     }
 }
 ```
-
-#### Human Readable Output
-
-
 
 ### nexpose-enable-shared-credential
 ***
@@ -3649,6 +2192,9 @@ Update an existing site scan schedule.
 | scan_template | ID of the scan template to use. | Optional | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-update-site-scan-credential
 ***
 > **Note:**
@@ -3694,6 +2240,9 @@ Update an existing site scan credential. For detailed explanation of all paramet
 | username | Username for the credential. | Optional | 
 
 
+#### Context Output
+
+There is no context output for this command.
 ### nexpose-update-vulnerability-exception-expiration
 ***
 Update an existing vulnerability exception.
@@ -3711,7 +2260,7 @@ Update an existing vulnerability exception.
 
 
 #### Command example
-```!nexpose-update-vulnerability-exception-expiration id=12 expiration=2024-10-10T10:00:00Z```
+```!nexpose-update-vulnerability-exception-expiration id=1 expiration=2024-10-10T10:00:00Z```
 #### Human Readable Output
 
 >Successfully updated expiration date of vulnerability exception 1.
@@ -3779,3 +2328,7 @@ Update an existing shared credential.
 | use_windows_authentication | Whether to use Windows authentication. Possible values are: true, false. | Optional | 
 | username | Username for the credential. | Optional | 
 
+
+#### Context Output
+
+There is no context output for this command.

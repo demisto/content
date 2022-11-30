@@ -3,7 +3,7 @@ commonfields:
   id: Rapid7 Nexpose
   version: -1
 configuration:
-- display: Server URL (e.g. https://192.168.0.1:8080)
+- display: Server URL (e.g. https://192.0.2.0:8080)
   name: server
   required: true
   type: 0
@@ -223,7 +223,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: 'Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a '';'' separator. For example: ''ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
+      description: 'Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a '';'' separator. For example: ''ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
       isArray: false
       name: query
       required: false
@@ -352,7 +352,7 @@ script:
       type: string
   - arguments:
     - default: false
-      description: ID of a specific scan to retrieve.  Can be a comma-separated list.
+      description: ID of a specific scan to retrieve. Can be a comma-separated list.
       isArray: true
       name: id
       required: true

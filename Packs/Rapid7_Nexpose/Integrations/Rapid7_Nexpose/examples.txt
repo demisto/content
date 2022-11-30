@@ -1,4 +1,4 @@
-!nexpose-create-asset
+!nexpose-create-asset site_id="1" date="2022-01-01T10:00:00Z" ip="192.0.2.0"
 !nexpose-create-assets-report
 !nexpose-create-scan-report scan=1 download_immediately=false
 !nexpose-create-scan-schedule
@@ -15,20 +15,20 @@
 !nexpose-disable-shared-credential
 !nexpose-download-report report_id=1 instance_id=latest
 !nexpose-enable-shared-credential
-!nexpose-get-asset id=1
+!nexpose-get-asset id=18
 !nexpose-get-asset-vulnerability id=1 vulnerabilityId=ssh-cve-2016-2183-sweet32
 !nexpose-get-assets limit=3
 !nexpose-get-report-status report_id=1 instance_id=latest
 !nexpose-get-report-templates
 !nexpose-get-scan id=1
 !nexpose-get-scans active=false limit=3
-!nexpose-get-sites limit=10
+!nexpose-get-sites limit=5
 !nexpose-list-assigned-shared-credential site_id=1 limit=3
 !nexpose-list-scan-schedule site_id=1 limit=3
 !nexpose-list-shared-credential limit=3
 !nexpose-list-site-scan-credential site_id=1 limit=3
 !nexpose-list-vulnerability limit=3
-!nexpose-list-vulnerability-exceptions sort="submit.date,ASC"
+!nexpose-list-vulnerability-exceptions sort="submit.date,ASC" limit=3
 !nexpose-pause-scan
 !nexpose-resume-scan
 !nexpose-search-assets match=all riskScoreHigherThan=1000 limit=3
