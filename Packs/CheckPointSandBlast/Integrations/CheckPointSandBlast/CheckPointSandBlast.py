@@ -64,11 +64,6 @@ QUOTA_HEADERS = [
     'QuotaExpiration',
     'Action',
 ]
-DBOT_SCORE_TRANSLATOR_DICT = {
-    1: "Benign",
-    2: "Suspicious",
-    3: "Malicious"
-}
 
 
 ''' CLIENT CLASS '''
@@ -325,7 +320,7 @@ def file_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
                 continue
 
             file_indicator = get_file_indicator(file_hash, hash_type, raw_response, client.reliability)
-            verdict_str = DBOT_SCORE_TRANSLATOR_DICT.get(file_indicator.dbot_score.score)
+            verdict_str = file_indicator.dbot_score.to_readable()
 
             score_description = {
                 'confidence': dict_safe_get(raw_response, ['response', 'te', 'confidence']),
