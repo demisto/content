@@ -10687,23 +10687,60 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def add_system_fields_to_events(events):
+def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" ", end_of_event_sign="}"):
+    """
+    Add general fields to all the events
+
+    :type events: ``Union[str, list]``
+    :param events: The events to add the fields to:
+        1. List of strings or dicts where each string or dict represents an event.
+        2. String containing raw events separated by a new line.
+
+    :type separator: ``str``
+    :param separator: The separator to seperate the event's fields by (relevant in case of string events).
+
+    :type value_sign: ``str``
+    :param value_sign: The sign that seperates between keys and values (relevant in case of string events).
+
+    :type spaces: ``str``
+    :param spaces: The spaces that should seprate between each field (relevant in case of string events).
+
+    :type end_of_event_sign: ``str``
+    :param end_of_event_sign: The sign that should be at the end of the an event (relevant in case of string events).
+
+    :return: the list of the updated events.
+    :rtype: List
+    """
+    demisto.info("i'm here")
+    demisto.debug("i'm here")
+    demisto.log("i'm here")
     params = demisto.params()
     calling_context = demisto.callingContext.get('context', {})
     url = params.get('url')
     brand = calling_context.get('IntegrationBrand', '')
     integration_instance = calling_context.get('IntegrationInstance', '')
     if isinstance(events[0], str):
-        
+        temp_ls = []
+        str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
+                     f"_collector_type{value_sign}{spaces}{brand}{separator}{spaces}_collector_name{value_sign}{spaces}" \
+                     f"{integration_instance}"
+        for event in events:
+            if events[-1] == end_of_event_sign or events[-1] == ".":
+                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}{end_of_event_sign}"
+            else:
+                event = f"{event}{str_to_add}"
+            temp_ls.append(event)
+        events = temp_ls
     else:
         for event in events:
             event['_final_reporting_device_name'] = url
-            event['_collector_type'] = brand
-            event['_collector_name'] = integration_instance
+            event['_brand'] = brand
+            event['_instance_name'] = integration_instance
     return events
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None):
+def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",", value_sign=":",
+                         spaces=" ", end_of_event_sign="}"):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10722,6 +10759,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
+    :type separator: ``str``
+    :param separator: The separator to seperate the event's fields by (relevant in case of string events).
+
+    :type value_sign: ``str``
+    :param value_sign: The sign that seperates between keys and values (relevant in case of string events).
+
+    :type spaces: ``str``
+    :param spaces: The spaces that should seprate between each field (relevant in case of string events).
+
+    :type end_of_event_sign: ``str``
+    :param end_of_event_sign: The sign that should be at the end of the an event (relevant in case of string events).
+
     :return: None
     :rtype: ``None``
     """
@@ -10736,17 +10785,25 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        add_system_fields_to_events(events)
+        demisto.info("i'm there")
+        demisto.debug("i'm there")
+        demisto.log("i'm there")
+        add_system_fields_to_events(events, separator=separator, value_sign=value_sign, spaces=spaces,
+                                    end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
+        demisto.info(f"updated event: {events[0]}")
+        demisto.debug(f"updated event: {events[0]}")
+        demisto.log(f"updated event: {events[0]}")
         # Separating each event with a new line
         data = '\n'.join(events)
 
     elif isinstance(events, str):
-        events = add_system_fields_to_events(events.split('\n'))
+        events = add_system_fields_to_events(events.split('\n'), separator=separator, value_sign=value_sign, spaces=spaces,
+                                             end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
         data = '\n'.join(events)
 
