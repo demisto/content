@@ -2062,7 +2062,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str) 
         raise DemistoException(response_error_details.get("errorMessage"))
 
     elif formatted_response.get("ServiceResponse", {}).get("count") == "0":
-        return None
+        return
 
     elif path_list := COMMANDS_PARSE_AND_OUTPUT_DATA[command_name]["json_path"]:
         if len(path_list) == 0:
@@ -2072,7 +2072,7 @@ def handle_asset_tag_result(raw_response: requests.Response, command_name: str) 
         if not response_requested_value:
             raise ValueError()
         return response_requested_value
-    return None
+    return
 
 
 @logger
