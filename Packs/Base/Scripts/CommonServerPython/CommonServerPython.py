@@ -10687,6 +10687,19 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
+def add_system_fields_to_events(events):
+    params = demisto.params()
+    calling_context = demisto.callingContext.get('context', {})
+    url = params.get('url')
+    brand = calling_context.get('IntegrationBrand', '')
+    integration_instance = calling_context.get('IntegrationInstance', '')
+    for event in events:
+        event['_final_reporting_device_name'] = url
+        event['_collector_type'] = brand
+        event['_collector_name'] = integration_instance
+    return events
+
+
 def send_events_to_xsiam(events, vendor, product, data_format=None):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -10720,14 +10733,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
+        add_system_fields_to_events(events)
         amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
-            events = add_system_fields_to_events(events)
             events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
-        else:
         data = '\n'.join(events)
 
     elif isinstance(events, str):
@@ -10749,6 +10761,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'vendor': vendor,
         'content-encoding': 'gzip'
     }
+
     header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
@@ -10778,6 +10791,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
+
+    zipped_data = gzip.compress(data.encode('utf-8'))   # type: ignore[AttributeError,attr-defined]
+    client = BaseClient(base_url=xsiam_url)
+    res = client._http_request(method='POST', full_url=urljoin(xsiam_url, '/logs/v1/xsiam'), data=zipped_data,
+                               headers=headers,
+                               error_handler=events_error_handler)
+    if res.get('error').lower() != 'false':
+        raise DemistoException(header_msg + res.get('error'))
+
+    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
 def is_scheduled_command_retry():
