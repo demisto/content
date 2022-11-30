@@ -34,15 +34,17 @@ Please add the following permissions to the app registration. Choose application
 * Machine.CollectForensics - Application / Delegated
 * Machine.Isolate - Application / Delegated
 * Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* Machine.Read.All - Application / Machine.Read - Delegated
 * Machine.RestrictExecution - Application / Delegated
 * Machine.Scan - Application / Delegated
 * Machine.StopAndQuarantine - Application / Delegated
+* Machine.LiveResponse - Application / Delegated
 * ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
 * Url.Read.All - Application / Delegated
 * User.Read.All - Application / Delegated
 * Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
 * Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
-
+* Software.Read.All - Application / Software.Read - Delegated
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
 
@@ -157,7 +159,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 48. microsoft-atp-get-alert-by-id
 49. microsoft-atp-request-and-download-investigation-package
 50. microsoft-atp-offboard-machine
-
+51. microsoft-atp-list-software
+52. microsoft-atp-list-software-version-distribution
+53. microsoft-atp-list-machines-by-software
+54. microsoft-atp-list-vulnerabilities-by-software
+55. microsoft-atp-list-vulnerabilities-by-machine
+56. microsoft-atp-list-vulnerabilities
+57. microsoft-atp-list-missing-kb-by-software
 ### 1. microsoft-atp-isolate-machine
 ---
 Isolates a machine from accessing external network.
@@ -6078,3 +6086,656 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+
+### microsoft-atp-list-software
+***
+Retrieves the organization software inventory.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+| name | Software name. | Optional |
+| vendor | Software publisher name. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| page | The page number from which to start a search. | Optional |
+| page_size | Specifies the page size of the result set. Default is 25. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Software.id | String | Software ID. |
+| MicrosoftATP.Software.name | String | Software name. |
+| MicrosoftATP.Software.vendor | String | Software publisher name. |
+| MicrosoftATP.Software.weaknesses | Number | Number of discovered vulnerabilities. |
+| MicrosoftATP.Software.publicExploit | Boolean | Public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.Software.activeAlert | Boolean | Active alert is associated with this software. |
+| MicrosoftATP.Software.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.Software.installedMachines | Number | Number of installed Machines. |
+| MicrosoftATP.Software.impactScore | Number | Exposure score impact of this software. |
+| MicrosoftATP.Software.isNormalized | Boolean | Is normalized. |
+| MicrosoftATP.Software.category | String | Software category. |
+| MicrosoftATP.Software.distributions | String | Distributions. |
+ 
+#### Command example
+```!microsoft-atp-list-software id=centos-_-python-ipy page_size=2```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "Software": {
+           "activeAlert": false,
+           "category": "",
+           "distributions": [],
+           "exposedMachines": 0,
+           "id": "centos-_-python-ipy",
+           "impactScore": 0,
+           "installedMachines": 1,
+           "isNormalized": false,
+           "name": "python-ipy",
+           "publicExploit": false,
+           "vendor": "centos",
+           "weaknesses": 0
+       }
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP list software:
+>|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|
+>|---|---|---|---|---|---|---|---|
+>| centos-_-python-ipy | python-ipy | centos | 0 | false | 0 | 1 | false |
+
+
+### microsoft-atp-list-software-version-distribution
+***
+Retrieves a list of your organization's software version distribution.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-software-version-distribution`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareVersion.version | String | Version number. |
+| MicrosoftATP.SoftwareVersion.installations | Number | Number of installations. |
+| MicrosoftATP.SoftwareVersion.vulnerabilities | Number | Number of vulnerabilities. |
+ 
+#### Command example
+```!microsoft-atp-list-software-version-distribution id=microsoft-_-powershell```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareVersion": [
+           {
+               "installations": 1,
+               "version": "6.2.4.0",
+               "vulnerabilities": 0
+           },
+           {
+               "installations": 2,
+               "version": "7.0.2.0",
+               "vulnerabilities": 7
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP software version distribution:
+>|version|installations|vulnerabilities|
+>|---|---|---|
+>| 6.2.4.0 | 1 | 0 |
+>| 7.0.2.0 | 2 | 7 |
+
+
+### microsoft-atp-list-machines-by-software
+***
+Retrieve a list of device references that has this software installed.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-machines-by-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareMachine.id | String | Machine identity. |
+| MicrosoftATP.SoftwareMachine.computerDnsName | String | Machine fully qualified name. |
+| MicrosoftATP.SoftwareMachine.osPlatform | String | Operating system platform. |
+| MicrosoftATP.SoftwareMachine.rbacGroupName | String | Machine group Name. |
+| MicrosoftATP.SoftwareMachine.rbacGroupId | Number | Machine group ID. |
+ 
+#### Command example
+```!microsoft-atp-list-machines-by-software id=microsoft-_-powershell```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareMachine": [
+           {
+               "computerDnsName": "win2016-msde-agent.msde.lab.demisto",
+               "id": "4cceb3c642212014e0e9553aa8b59e999ea515ff",
+               "osPlatform": "WindowsServer2016",
+               "rbacGroupId": 2353,
+               "rbacGroupName": "UnassignedGroup"
+           },
+           {
+               "computerDnsName": "msde-agent-host-win2016-dc.msde.lab.demisto",
+               "id": "96444b946be252d1f4550354edef5fdc23aca2c5",
+               "osPlatform": "WindowsServer2016",
+               "rbacGroupId": 2353,
+               "rbacGroupName": "UnassignedGroup"
+           },
+           {
+               "computerDnsName": "desktop-s2455r8",
+               "id": "4899036531e374137f63289c3267bad772c13fef",
+               "osPlatform": "Windows10",
+               "rbacGroupId": 2353,
+               "rbacGroupName": "UnassignedGroup"
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP listmachines by software: microsoft-_-powershell
+>|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|
+>|---|---|---|---|---|
+>| 4cceb3c642212014e0e9553aa8b59e999ea515ff | win2016-msde-agent.msde.lab.demisto | WindowsServer2016 | UnassignedGroup | 2353 |
+>| 96444b946be252d1f4550354edef5fdc23aca2c5 | msde-agent-host-win2016-dc.msde.lab.demisto | WindowsServer2016 | UnassignedGroup | 2353 |
+>| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | UnassignedGroup | 2353 |
+ 
+
+### microsoft-atp-list-vulnerabilities-by-software
+***
+Retrieves a list of all the vulnerabilities affecting the organization per software.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-vulnerabilities-by-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareCVE.id | String | Vulnerability ID. |
+| MicrosoftATP.SoftwareCVE.name | String | Vulnerability title. |
+| MicrosoftATP.SoftwareCVE.description | String | Vulnerability description. |
+| MicrosoftATP.SoftwareCVE.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical" |
+| MicrosoftATP.SoftwareCVE.cvssV3 | Number | CVSS v3 score. |
+| MicrosoftATP.SoftwareCVE.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.SoftwareCVE.publishedOn | Date | Date when vulnerability was published. |
+| MicrosoftATP.SoftwareCVE.updatedOn | Date | Date when vulnerability was updated. |
+| MicrosoftATP.SoftwareCVE.publicExploit | Boolean | Public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.SoftwareCVE.exploitVerified | Boolean | Public exploit exists. |
+| MicrosoftATP.SoftwareCVE.exploitInKit | Boolean | Exploit is part of an exploit kit. |
+| MicrosoftATP.SoftwareCVE.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local" |
+| MicrosoftATP.SoftwareCVE.exploitUris | String | Exploit source URLs |
+ 
+#### Command example
+```!microsoft-atp-list-vulnerabilities-by-software id=microsoft-_-powershell```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareCVE": [
+           {
+               "cvssV3": 7.5,
+               "description": "This vulnerability affects the following vendors: Microsoft, Fedora, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2022-23267",
+               "name": "CVE-2022-23267",
+               "publicExploit": false,
+               "publishedOn": "2022-05-10T00:00:00Z",
+               "severity": "High",
+               "updatedOn": "2022-10-18T14:59:00Z"
+           },
+           {
+               "cvssV3": 7.8,
+               "description": "PowerShell Elevation of Privilege Vulnerability",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2022-26788",
+               "name": "CVE-2022-26788",
+               "publicExploit": false,
+               "publishedOn": "2022-04-12T00:00:00Z",
+               "severity": "High",
+               "updatedOn": "2022-10-18T15:00:00Z"
+           },
+           {
+               "cvssV3": 5,
+               "description": "This vulnerability affects the following vendors: Microsoft, Oracle, Centos, Red_Hat. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2021-34485",
+               "name": "CVE-2021-34485",
+               "publicExploit": false,
+               "publishedOn": "2021-08-10T00:00:00Z",
+               "severity": "Medium",
+               "updatedOn": "2021-08-19T07:00:00Z"
+           },
+           {
+               "cvssV3": 5.9,
+               "description": "This vulnerability affects the following vendors: Microsoft, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2022-34716",
+               "name": "CVE-2022-34716",
+               "publicExploit": false,
+               "publishedOn": "2022-08-09T00:00:00Z",
+               "severity": "Medium",
+               "updatedOn": "2022-09-16T20:17:00Z"
+           },
+           {
+               "cvssV3": 5.3,
+               "description": "This vulnerability affects the following vendors: Google, Debian, Fedora, Canonical, Opensuse, Microsoft, Oracle, Centos, Red_Hat, Ubuntu, Suse. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2020-8927",
+               "name": "CVE-2020-8927",
+               "publicExploit": false,
+               "publishedOn": "2020-08-27T00:00:00Z",
+               "severity": "Medium",
+               "updatedOn": "2022-11-09T00:00:00Z"
+           },
+           {
+               "cvssV3": 6.3,
+               "description": "This vulnerability affects the following vendors: Microsoft, Fedora, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2022-24512",
+               "name": "CVE-2022-24512",
+               "publicExploit": false,
+               "publishedOn": "2022-03-08T00:00:00Z",
+               "severity": "Medium",
+               "updatedOn": "2022-05-12T16:27:00Z"
+           },
+           {
+               "cvssV3": 7.5,
+               "description": "This vulnerability affects the following vendors: Microsoft, Oracle, Centos, Red_Hat. To view more details about this vulnerability please visit the vendor website.",
+               "exploitInKit": false,
+               "exploitTypes": [],
+               "exploitUris": [],
+               "exploitVerified": false,
+               "exposedMachines": 2,
+               "id": "CVE-2021-26423",
+               "name": "CVE-2021-26423",
+               "publicExploit": false,
+               "publishedOn": "2021-08-10T00:00:00Z",
+               "severity": "High",
+               "updatedOn": "2021-08-19T16:56:00Z"
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP vulnerabilities by software: microsoft-_-powershell
+>|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|
+>|---|---|---|---|---|---|---|---|---|
+>| CVE-2022-23267 | CVE-2022-23267 | This vulnerability affects the following vendors: Microsoft, Fedora, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website. | High | 2022-05-10T00:00:00Z | 2022-10-18T14:59:00Z | 2 | false | false |
+>| CVE-2022-26788 | CVE-2022-26788 | PowerShell Elevation of Privilege Vulnerability | High | 2022-04-12T00:00:00Z | 2022-10-18T15:00:00Z | 2 | false | false |
+>| CVE-2021-34485 | CVE-2021-34485 | This vulnerability affects the following vendors: Microsoft, Oracle, Centos, Red_Hat. To view more details about this vulnerability please visit the vendor website. | Medium | 2021-08-10T00:00:00Z | 2021-08-19T07:00:00Z | 2 | false | false |
+>| CVE-2022-34716 | CVE-2022-34716 | This vulnerability affects the following vendors: Microsoft, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website. | Medium | 2022-08-09T00:00:00Z | 2022-09-16T20:17:00Z | 2 | false | false |
+>| CVE-2020-8927 | CVE-2020-8927 | This vulnerability affects the following vendors: Google, Debian, Fedora, Canonical, Opensuse, Microsoft, Oracle, Centos, Red_Hat, Ubuntu, Suse. To view more details about this vulnerability please visit the vendor website. | Medium | 2020-08-27T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |
+>| CVE-2022-24512 | CVE-2022-24512 | This vulnerability affects the following vendors: Microsoft, Fedora, Oracle, Red_Hat. To view more details about this vulnerability please visit the vendor website. | Medium | 2022-03-08T00:00:00Z | 2022-05-12T16:27:00Z | 2 | false | false |
+>| CVE-2021-26423 | CVE-2021-26423 | This vulnerability affects the following vendors: Microsoft, Oracle, Centos, Red_Hat. To view more details about this vulnerability please visit the vendor website. | High | 2021-08-10T00:00:00Z | 2021-08-19T16:56:00Z | 2 | false | false |
+ 
+
+### microsoft-atp-list-vulnerabilities-by-machine
+***
+Retrieves a list of all the vulnerabilities affecting the organization per machine.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-vulnerabilities-by-machine`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A comma-separated list of machine IDs used for getting the machines. | Optional |
+| software_id | A comma-separated list of software IDs used for getting the machines. | Optional |
+| cve_id | A comma-separated list of CVE IDs used for getting the machines. | Optional |
+| fixing_kb_id | Fixing KB ID. | Optional |
+| product_name | Product name. | Optional |
+| product_version | Related software name. | Optional |
+| severity | A comma-separated list of vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". Possible values are: Low, Medium, High, Critical. | Optional |
+| product_vendor | Product vendor. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| page | The page number from which to start a search. | Optional |
+| page_size | Specifies the page size of the result set. Default is 25. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.CVEMachine.id | String | Vulnerability ID. |
+| MicrosoftATP.CVEMachine.cveId | String | CVE ID. |
+| MicrosoftATP.CVEMachine.machineId | String | Machine ID. |
+| MicrosoftATP.CVEMachine.fixingKbId | String | Fixing KB ID. |
+| MicrosoftATP.CVEMachine.productName | String | Product name. |
+| MicrosoftATP.CVEMachine.productVendor | String | Product vendor. |
+| MicrosoftATP.CVEMachine.productVersion | String | Product version. |
+| MicrosoftATP.CVEMachine.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". |
+ 
+#### Command example
+```!microsoft-atp-list-vulnerabilities-by-machine cve_id=CVE-2022-22977 page_size=2```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "CVEMachine": {
+           "cveId": "CVE-2022-22977",
+           "fixingKbId": null,
+           "id": "4899036531e374137f63289c3267bad772c13fef-_-CVE-2022-22977-_-vmware-_-tools-_-10.3.10.12406962-_-",
+           "machineId": "4899036531e374137f63289c3267bad772c13fef",
+           "productName": "tools",
+           "productVendor": "vmware",
+           "productVersion": "10.3.10.12406962",
+           "severity": "Medium"
+       }
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP vulnerabilities:
+>|id|cveId|machineId|productName|productVendor|productVersion|severity|
+>|---|---|---|---|---|---|---|
+>| 4899036531e374137f63289c3267bad772c13fef-_-CVE-2022-22977-_-vmware-_-tools-_-10.3.10.12406962-_- | CVE-2022-22977 | 4899036531e374137f63289c3267bad772c13fef | tools | vmware | 10.3.10.12406962 | Medium |
+
+
+### microsoft-atp-list-vulnerabilities
+***
+Retrieves a list of all vulnerabilities.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-vulnerabilities`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Vulnerability ID. | Optional |
+| name | Vulnerability title. | Optional |
+| description | Vulnerability description. | Optional |
+| published_on | Date when vulnerability was published. | Optional |
+| cvss | CVSS v3 score. | Optional |
+| severity | A comma-separated list of vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". Possible values are: Low, Medium, High, Critical. | Optional |
+| updated_on | Date when vulnerability was updated. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| page | The page number from which to start a search. | Optional |
+| page_size | Specifies the page size of the result set. Default is 25. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Vulnerability.id | String | Vulnerability ID. |
+| MicrosoftATP.Vulnerability.name | String | Vulnerability title. |
+| MicrosoftATP.Vulnerability.description | String | Vulnerability description. |
+| MicrosoftATP.Vulnerability.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". |
+| MicrosoftATP.Vulnerability.cvssV3 | Number | CVSS v3 score. |
+| MicrosoftATP.Vulnerability.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.Vulnerability.publishedOn | Date | Date when vulnerability was published. |
+| MicrosoftATP.Vulnerability.updatedOn | Date | Date when vulnerability was updated. |
+| MicrosoftATP.Vulnerability.publicExploit | Boolean | Public exploit exists. |
+| MicrosoftATP.Vulnerability.exploitVerified | Boolean | Exploit is verified to work. |
+| MicrosoftATP.Vulnerability.exploitInKit | Boolean | Exploit is part of an exploit kit. |
+ 
+#### Command example
+```!microsoft-atp-list-vulnerabilities id="CVE-2022-23238" page_size=2```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "Vulnerability": {
+           "cvssV3": 6.5,
+           "description": "Linux deployments of StorageGRID (formerly StorageGRID Webscale) versions 11.6.0 through 11.6.0.2 deployed with a Linux kernel version less than 4.7.0 are susceptible to a vulnerability which could allow a remote unauthenticated attacker to view limited metrics information and modify alert email recipients and content.",
+           "exploitInKit": false,
+           "exploitTypes": [],
+           "exploitUris": [],
+           "exploitVerified": false,
+           "exposedMachines": 0,
+           "id": "CVE-2022-23238",
+           "name": "CVE-2022-23238",
+           "publicExploit": false,
+           "publishedOn": "2022-08-08T00:00:00Z",
+           "severity": "Medium",
+           "updatedOn": "2022-08-15T20:19:00Z"
+       }
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP vulnerabilities:
+>|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|
+>|---|---|---|---|---|---|---|---|---|---|
+>| CVE-2022-23238 | CVE-2022-23238 | Linux deployments of StorageGRID (formerly StorageGRID Webscale) versions 11.6.0 through 11.6.0.2 deployed with a Linux kernel version less than 4.7.0 are susceptible to a vulnerability which could allow a remote unauthenticated attacker to view limited metrics information and modify alert email recipients and content. | Medium | 2022-08-08T00:00:00Z | 2022-08-15T20:19:00Z | 0 | false | false | 6.5 |
+
+
+### microsoft-atp-list-missing-kb-by-software
+***
+Retrieves missing KBs (security updates) by software ID.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-missing-kb-by-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareKB.id | String | Software ID. |
+| MicrosoftATP.SoftwareKB.name | String | Software name. |
+| MicrosoftATP.SoftwareKB.osBuild | String | The operating system build number. |
+| MicrosoftATP.SoftwareKB.productsNames | String | Products Names. |
+| MicrosoftATP.SoftwareKB.url | String |  |
+| MicrosoftATP.SoftwareKB.machineMissedOn | Number |  |
+| MicrosoftATP.SoftwareKB.cveAddressed | Number | CVE Addressed. |
+ 
+#### Command example
+```!microsoft-atp-list-missing-kb-by-software id=microsoft-_-.net_framework page_size=2```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareKB": [
+           {
+               "cveAddressed": 2,
+               "id": "4556813",
+               "machineMissedOn": 1,
+               "name": "January 2020 Security Updates (Last updated at June 2020)",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4556813"
+           },
+           {
+               "cveAddressed": 2,
+               "id": "4534271",
+               "machineMissedOn": 1,
+               "name": "January 2020 Security Updates (Last updated at May 2020)",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4534271"
+           },
+           {
+               "cveAddressed": 2,
+               "id": "4580346",
+               "machineMissedOn": 1,
+               "name": "July 2020 Security Updates (Last updated at October 2020)",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4580346"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "4571694",
+               "machineMissedOn": 1,
+               "name": "August 2020 Security Updates",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4571694"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "4601318",
+               "machineMissedOn": 1,
+               "name": "February 2021 Security Updates",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4601318"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "5009546",
+               "machineMissedOn": 1,
+               "name": "January 2022 Security Updates",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5009546"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "5012596",
+               "machineMissedOn": 1,
+               "name": "April 2022 Security Updates (Last updated at June 2022)",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5012596"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "5017305",
+               "machineMissedOn": 1,
+               "name": "September 2022 Security Updates",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5017305"
+           },
+           {
+               "cveAddressed": 1,
+               "id": "5013952",
+               "machineMissedOn": 1,
+               "name": "May 2022 Security Updates",
+               "osBuild": 14393,
+               "productsNames": [
+                   ".net_framework"
+               ],
+               "url": "https://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5013952"
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP missing kb by software: microsoft-_-.net_framework
+>|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|
+>|---|---|---|---|---|---|---|
+>| 4556813 | January 2020 Security Updates (Last updated at June 2020) | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4556813 | 1 | 2 |
+>| 4534271 | January 2020 Security Updates (Last updated at May 2020) | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4534271 | 1 | 2 |
+>| 4580346 | July 2020 Security Updates (Last updated at October 2020) | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4580346 | 1 | 2 |
+>| 4571694 | August 2020 Security Updates | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4571694 | 1 | 1 |
+>| 4601318 | February 2021 Security Updates | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4601318 | 1 | 1 |
+>| 5009546 | January 2022 Security Updates | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5009546 | 1 | 1 |
+>| 5012596 | April 2022 Security Updates (Last updated at June 2022) | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5012596 | 1 | 1 |
+>| 5017305 | September 2022 Security Updates | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5017305 | 1 | 1 |
+>| 5013952 | May 2022 Security Updates | 14393 | .net_framework | https:<span>//</span>catalog.update.microsoft.com/v7/site/Search.aspx?q=KB5013952 | 1 | 1 |
+
+
+
+
+

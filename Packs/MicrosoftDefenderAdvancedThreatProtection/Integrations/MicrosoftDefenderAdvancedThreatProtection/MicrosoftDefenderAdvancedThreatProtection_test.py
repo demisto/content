@@ -12,7 +12,7 @@ from MicrosoftDefenderAdvancedThreatProtection import MsClient, get_future_time,
     print_ip_addresses, get_machine_details_command, run_polling_command, run_live_response_script_action, \
     get_live_response_file_action, put_live_response_file_action, HuntingQueryBuilder, assign_params, \
     get_machine_users_command, get_machine_alerts_command, SECURITY_GCC_RESOURCE, SECURITY_CENTER_RESOURCE, \
-    get_advanced_hunting_command
+    get_advanced_hunting_command, create_filters_conjunction, create_filters_disjunctions, create_filter
 
 ARGS = {'id': '123', 'limit': '2', 'offset': '0'}
 with open('test_data/expected_hunting_queries.json') as expected_json:
@@ -423,7 +423,7 @@ INVESTIGATION_SAS_URI_API_RES = {
     "value": 'https://userrequests-us.securitycenter.windows.com:443/safedownload/'
              'WDATP_Investigation_Package.zip?token=test1'
 }
-STOP_AND_QUARANTINE_FILE_RAW_RESPONSE = {
+STOP_AND_QUARANTINE_FILE_RAW_RESPONSE: dict = {
     "cancellationComment": None,
     "cancellationDateTimeUtc": None,
     "cancellationRequestor": None,
@@ -649,7 +649,7 @@ MACHINE_RESPONSE_API = {
     ]
 }
 
-SINGLE_MACHINE_RESPONSE_API = {
+SINGLE_MACHINE_RESPONSE_API: dict = {
     "@odata.context": "https://api-eu.securitycenter.windows.com/api/$metadata#Machines/$entity",
     "aadDeviceId": None,
     "agentVersion": "10.7740.19041.1151",
@@ -819,7 +819,7 @@ MACHINE_ALERTS_OUTPUT = {
     "Title": "Network connection to a risky host",
 }
 
-MACHINE_OFFBOARD_API_RESPONSE = {
+MACHINE_OFFBOARD_API_RESPONSE: dict = {
     "@odata.context": "https://api.securitycenter.windows.com/api/$metadata#MachineActions/$entity",
     "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
     "type": "Offboard",
@@ -1217,7 +1217,7 @@ ALERTS = [
      'evidence': []},
 ]
 
-EMPTY_LAST_RUN = {}
+EMPTY_LAST_RUN: dict = {}
 OLD_LAST_RUN_WITH_IDS = {'last_alert_fetched_time': '2022-02-17T02:07:23',
                          'existing_ids': ['da637806604436477417_-578430041',
                                           'da637806604436712653_-30042333']}
@@ -2422,3 +2422,416 @@ def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exce
         get_advanced_hunting_command(client_mocker, args)
 
     assert str(e.value) == exception
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetDto)',  # noqa: E501
+     'value': [{'id': '4899036531e374137f63289c3267bad772c13fef', 'computerDnsName': 'desktop-s2455r8',
+                'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353},
+               {'id': '4cceb3c642212014e0e9553aa8b59e999ea515ff', 'computerDnsName': 'win2016-msde-agent.msde.lab.demisto',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353},
+               {'id': '96444b946be252d1f4550354edef5fdc23aca2c5',
+                'computerDnsName': 'msde-agent-host-win2016-dc.msde.lab.demisto',
+                'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353}]},
+     '### Microsoft Defender ATP list machines by software: some_id\n|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|\n|---|---|---|---|---|\n| 4899036531e374137f63289c3267bad772c13fef | desktop-s2455r8 | Windows10 | UnassignedGroup | 2353 |\n| 4cceb3c642212014e0e9553aa8b59e999ea515ff | win2016-msde-agent.msde.lab.demisto | WindowsServer2016 | UnassignedGroup | 2353 |\n| 96444b946be252d1f4550354edef5fdc23aca2c5 | msde-agent-host-win2016-dc.msde.lab.demisto | WindowsServer2016 | UnassignedGroup | 2353 |\n',  # noqa: E501
+     [{'id': '4899036531e374137f63289c3267bad772c13fef', 'computerDnsName': 'desktop-s2455r8',
+       'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353},
+      {'id': '4cceb3c642212014e0e9553aa8b59e999ea515ff',
+       'computerDnsName': 'win2016-msde-agent.msde.lab.demisto',
+       'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353},
+      {'id': '96444b946be252d1f4550354edef5fdc23aca2c5', 'computerDnsName':
+       'msde-agent-host-win2016-dc.msde.lab.demisto', 'osPlatform': 'WindowsServer2016',
+       'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 2353}])
+])
+def test_list_machines_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_machines_by_software.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_machines_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_machines_by_software', return_value=return_value)
+    result_list_software = list_machines_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicDistributionDto)',  # noqa: E501
+     'value': [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+               {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}]},
+     '### Microsoft Defender ATP software version distribution:\n'
+     '|version|installations|vulnerabilities|\n|---|---|---|\n|'
+     ' 6.2.4.0 | 1 | 0 |\n| 7.0.2.0 | 2 | 7 |\n',
+     [{'version': '6.2.4.0', 'installations': 1, 'vulnerabilities': 0},
+      {'version': '7.0.2.0', 'installations': 2, 'vulnerabilities': 7}])
+])
+def test_list_software_version_distribution_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_version_distribution_command
+    mocker.patch.object(client_mocker, 'get_list_software_version_distribution', return_value=return_value)
+    result_list_software = list_software_version_distribution_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'microsoft-_-.net_framework'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicProductFixDto)',  # noqa: E501
+     'value': [{'id': '4556813', 'name': 'some_name', 'osBuild': 14393,
+                'productsNames': ['.net_framework'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2},
+               {'id': '4534271', 'name': 'some_name', 'osBuild': 14393,
+                'productsNames': ['.net_framework'], 'url': 'some_url',
+                'machineMissedOn': 1, 'cveAddressed': 2}]},
+     '### Microsoft Defender ATP missing kb by software: microsoft-_-.net_framework\n'
+     '|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|\n'
+     '|---|---|---|---|---|---|---|\n'
+     '| 4556813 | some_name | 14393 | .net_framework | some_url | 1 | 2 |\n'
+     '| 4534271 | some_name | 14393 | .net_framework | some_url | 1 | 2 |\n',
+     [{'id': '4556813', 'name': 'some_name', 'osBuild': 14393,
+       'productsNames': ['.net_framework'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2},
+      {'id': '4534271', 'name': 'some_name', 'osBuild': 14393,
+       'productsNames': ['.net_framework'], 'url': 'some_url',
+       'machineMissedOn': 1, 'cveAddressed': 2}])
+])
+def test_list_missing_kb_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_missing_kb_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_missing_kb_by_software', return_value=return_value)
+    result_list_software = list_missing_kb_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'id': 'some_id'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#PublicVulnerabilityDto',
+     'value': [{'id': 'CVE-2020-8927', 'name': 'CVE-2020-8927', 'description': 'vulnerability_description',
+                'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2, 'publishedOn': '2020-08-27T00:00:00Z',
+                'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-34716', 'name': 'CVE-2022-34716',
+                'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.9, 'exposedMachines': 2,
+                'publishedOn': '2022-08-09T00:00:00Z', 'updatedOn': '2022-09-16T20:17:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-24512', 'name': 'CVE-2022-24512',
+                'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 6.3, 'exposedMachines': 2,
+                'publishedOn': '2022-03-08T00:00:00Z', 'updatedOn': '2022-05-12T16:27:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2021-26423', 'name': 'CVE-2021-26423', 'description': 'vulnerability_description',
+                'severity': 'High', 'cvssV3': 7.5, 'exposedMachines': 2, 'publishedOn': '2021-08-10T00:00:00Z',
+                'updatedOn': '2021-08-19T16:56:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-26788', 'name': 'CVE-2022-26788', 'description': 'vulnerability_description', 'severity': 'High',
+                'cvssV3': 7.8, 'exposedMachines': 2, 'publishedOn': '2022-04-12T00:00:00Z',
+                'updatedOn': '2022-10-18T15:00:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2021-34485', 'name': 'CVE-2021-34485', 'description': 'vulnerability_description',
+                'severity': 'Medium', 'cvssV3': 5.0, 'exposedMachines': 2, 'publishedOn': '2021-08-10T00:00:00Z',
+                'updatedOn': '2021-08-19T07:00:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-23267', 'name': 'CVE-2022-23267', 'description': 'vulnerability_description',
+                'severity': 'High', 'cvssV3': 7.5, 'exposedMachines': 2, 'publishedOn': '2022-05-10T00:00:00Z',
+                'updatedOn': '2022-10-18T14:59:00Z', 'publicExploit': False, 'exploitVerified': False,
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerabilities by software: some_id\n|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|\n| CVE-2020-8927 | CVE-2020-8927 | vulnerability_description | Medium | 2020-08-27T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n| CVE-2022-34716 | CVE-2022-34716 | vulnerability_description | Medium | 2022-08-09T00:00:00Z | 2022-09-16T20:17:00Z | 2 | false | false |\n| CVE-2022-24512 | CVE-2022-24512 | vulnerability_description | Medium | 2022-03-08T00:00:00Z | 2022-05-12T16:27:00Z | 2 | false | false |\n| CVE-2021-26423 | CVE-2021-26423 | vulnerability_description | High | 2021-08-10T00:00:00Z | 2021-08-19T16:56:00Z | 2 | false | false |\n| CVE-2022-26788 | CVE-2022-26788 | vulnerability_description | High | 2022-04-12T00:00:00Z | 2022-10-18T15:00:00Z | 2 | false | false |\n| CVE-2021-34485 | CVE-2021-34485 | vulnerability_description | Medium | 2021-08-10T00:00:00Z | 2021-08-19T07:00:00Z | 2 | false | false |\n| CVE-2022-23267 | CVE-2022-23267 | vulnerability_description | High | 2022-05-10T00:00:00Z | 2022-10-18T14:59:00Z | 2 | false | false |\n',  # noqa: E501
+     [{'id': 'CVE-2020-8927', 'name': 'CVE-2020-8927', 'description': 'vulnerability_description',  # noqa: E501
+       'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
+       'publishedOn': '2020-08-27T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
+       'exploitVerified': False,
+       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-34716', 'name': 'CVE-2022-34716',
+       'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.9, 'exposedMachines': 2,
+       'publishedOn': '2022-08-09T00:00:00Z', 'updatedOn': '2022-09-16T20:17:00Z', 'publicExploit': False,
+       'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-24512', 'name': 'CVE-2022-24512', 'description': 'vulnerability_description',
+       'severity': 'Medium', 'cvssV3': 6.3, 'exposedMachines': 2, 'publishedOn': '2022-03-08T00:00:00Z',
+       'updatedOn': '2022-05-12T16:27:00Z', 'publicExploit': False, 'exploitVerified': False,
+       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2021-26423', 'name': 'CVE-2021-26423',
+       'description': 'vulnerability_description', 'severity': 'High', 'cvssV3': 7.5, 'exposedMachines': 2,
+       'publishedOn': '2021-08-10T00:00:00Z', 'updatedOn': '2021-08-19T16:56:00Z', 'publicExploit': False,
+       'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-26788', 'name': 'CVE-2022-26788', 'description': 'vulnerability_description',
+       'severity': 'High', 'cvssV3': 7.8, 'exposedMachines': 2, 'publishedOn': '2022-04-12T00:00:00Z',
+       'updatedOn': '2022-10-18T15:00:00Z', 'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False,
+      'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2021-34485', 'name': 'CVE-2021-34485',
+       'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.0, 'exposedMachines': 2,
+       'publishedOn': '2021-08-10T00:00:00Z', 'updatedOn': '2021-08-19T07:00:00Z', 'publicExploit': False,
+       'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-23267', 'name': 'CVE-2022-23267',
+       'description': 'vulnerability_description', 'severity': 'High', 'cvssV3': 7.5, 'exposedMachines': 2,
+       'publishedOn': '2022-05-10T00:00:00Z', 'updatedOn': '2022-10-18T14:59:00Z', 'publicExploit': False,
+       'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}])
+])
+def test_list_vulnerabilities_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_software_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_software', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('filters_arg_list, name, expected_result', [
+    (['id1'], 'id', "id eq 'id1'"),
+    (['id1', 'id2'], 'id', "id eq 'id1' or id eq 'id2'"),
+    (['id1', 'id2', 'id3'], 'id', "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], 'id', "")
+
+])
+def test_create_filters_conjunction(filters_arg_list, name, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_conjunction function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_conjunction_result = create_filters_conjunction(filters_arg_list, name)
+
+    assert create_filters_conjunction_result == expected_result
+
+
+@pytest.mark.parametrize('filters_arg_list, expected_result', [
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'", "vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"],
+     "id eq 'id1' or id eq 'id2' or id eq 'id3' and vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"),
+    (["id eq 'id1' or id eq 'id2' or id eq 'id3'"], "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
+    ([], ""),
+
+])
+def test_create_filters_disjunctions(filters_arg_list, expected_result):
+    """
+    Given:
+        - filters_arg_list, name.
+
+    When:
+        - executing create_filters_disjunctions function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_disjunctions_result = create_filters_disjunctions(filters_arg_list)
+
+    assert create_filters_disjunctions_result == expected_result
+
+
+@pytest.mark.parametrize('args_and_name_list, expected_result', [
+    ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "id eq 'id1' and vendor eq 'vendor1' or vendor eq 'vendor2'"),
+    ([(['id1', 'id2'], 'id'), (['vendor1', 'vendor2'], 'vendor')],
+     "id eq 'id1' or id eq 'id2' and vendor eq 'vendor1' or vendor eq 'vendor2'")
+])
+def test_create_filter(args_and_name_list, expected_result):
+    """
+    Given:
+        - args_and_name_list.
+
+    When:
+        - executing create_filter function.
+
+    Then:
+        - the returned filter string is valid.
+    """
+    create_filters_result = create_filter(args_and_name_list)
+
+    assert create_filters_result == expected_result
+
+
+@pytest.mark.parametrize('id_and_severity, name, description, published_on, cvss, updated_on, expected_result', [
+    ("", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z")
+])
+def test_create_filter_list_vulnerabilities(id_and_severity, name, description, published_on, cvss, updated_on, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import create_filter_list_vulnerabilities
+    result = create_filter_list_vulnerabilities(id_and_severity, name, description, published_on, cvss, updated_on)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('args, return_value_get_list_software,expected_human_readable,expected_outputs', [
+    ({'vendor': 'some_vendor'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Software', 'value':
+     [{'id': 'some_id', 'name': 'some_name',
+       'vendor': 'some_vendor', 'weaknesses': 0, 'publicExploit': False,
+       'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor', 'weaknesses': 0,
+       'publicExploit': False, 'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1,
+       'impactScore': 0, 'isNormalized': False, 'category': '', 'distributions': []}]},
+        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |\n| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
+     [{'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []},
+      {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
+       'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
+       'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
+       'isNormalized': False, 'category': '', 'distributions': []}])
+])
+def test_list_software_command(mocker, args, return_value_get_list_software, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_software_command
+    mocker.patch.object(client_mocker, 'get_list_software', return_value=return_value_get_list_software)
+    result_list_software = list_software_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'cve_id': 'CVE-2021-26423'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
+     'value': [{'id': 'some_id',
+                'cveId': 'CVE-2021-26423', 'machineId': 'some_machine_id', 'fixingKbId': None,
+                'productName': 'powershell', 'productVendor': 'microsoft', 'productVersion': '7.0.2.0', 'severity': 'High'},
+               {'id': 'some_id',
+                'cveId': 'CVE-2021-26423', 'machineId': 'some_machine_id', 'fixingKbId': None,
+                'productName': 'powershell', 'productVendor': 'microsoft', 'productVersion': '7.0.2.0', 'severity': 'High'}]},
+     '### Microsoft Defender ATP vulnerabilities:\n'
+     '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
+     '|---|---|---|---|---|---|---|\n|'
+     ' some_id | CVE-2021-26423 |'
+     ' some_machine_id |'
+     ' powershell | microsoft | 7.0.2.0 | High |\n|'
+     ' some_id | CVE-2021-26423 |'
+     ' some_machine_id | powershell | microsoft | 7.0.2.0 | High |\n',
+     [{'id': 'some_id',
+       'cveId': 'CVE-2021-26423', 'machineId': 'some_machine_id',
+       'fixingKbId': None, 'productName': 'powershell', 'productVendor': 'microsoft',
+       'productVersion': '7.0.2.0', 'severity': 'High'},
+      {'id': 'some_id',
+       'cveId': 'CVE-2021-26423', 'machineId': 'some_machine_id', 'fixingKbId': None,
+       'productName': 'powershell', 'productVendor': 'microsoft', 'productVersion': '7.0.2.0', 'severity': 'High'}])
+])
+def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_machine_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_machine', return_value=return_value)
+    result_list_software = list_vulnerabilities_by_machine_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
+    ({'published_on': '1 days ago'},
+     {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Vulnerabilities',
+     'value': [{'id': 'CVE-2022-44401', 'name': 'CVE-2022-44401',
+                'description': 'some_description',
+                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2022-11-28T15:15:00Z',
+                'updatedOn': '2022-11-28T19:15:00Z', 'publicExploit': False,
+                'exploitVerified': False, 'exploitInKit': False,
+                'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-44400', 'name': 'CVE-2022-44400',
+                'description': 'some_description',
+                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+                'publishedOn': '2022-11-28T15:15:00Z', 'updatedOn': '2022-11-28T19:14:00Z',
+                'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+               {'id': 'CVE-2022-36193', 'name': 'CVE-2022-36193',
+                'description': 'some_description'
+                ' some_description',
+                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2022-11-28T13:15:00Z',
+                'updatedOn': '2022-11-28T19:15:00Z', 'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False,
+                'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerabilities:\n'
+     '|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|\n'
+     '|---|---|---|---|---|---|---|---|---|---|\n|'
+     ' CVE-2022-44401 | CVE-2022-44401 | '
+     'some_description |'
+     ' Critical | 2022-11-28T15:15:00Z | 2022-11-28T19:15:00Z | 0 | false | false | 9.8 |\n| CVE-2022-44400 | CVE-2022-44400 |'
+     ' some_description |'
+     ' Critical | 2022-11-28T15:15:00Z | 2022-11-28T19:14:00Z | 0 | false | false | 9.8 |\n|'
+     ' CVE-2022-36193 | CVE-2022-36193 |'
+     ' some_description'
+     ' some_description |'
+     ' Critical | 2022-11-28T13:15:00Z | 2022-11-28T19:15:00Z | 0 | false | false | 9.8 |\n',
+     [{'id': 'CVE-2022-44401',
+       'name': 'CVE-2022-44401',
+       'description': 'some_description',
+       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+       'publishedOn': '2022-11-28T15:15:00Z',
+       'updatedOn': '2022-11-28T19:15:00Z',
+       'publicExploit': False, 'exploitVerified': False,
+       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-44400', 'name': 'CVE-2022-44400',
+       'description': 'some_description',
+       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+       'publishedOn': '2022-11-28T15:15:00Z', 'updatedOn': '2022-11-28T19:14:00Z',
+       'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
+      {'id': 'CVE-2022-36193', 'name': 'CVE-2022-36193',
+       'description': 'some_description'
+       ' some_description',
+       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2022-11-28T13:15:00Z',
+       'updatedOn': '2022-11-28T19:15:00Z', 'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False,
+       'exploitTypes': [], 'exploitUris': []}])
+])
+def test_list_vulnerabilities_command(mocker, args, return_value, expected_human_readable, expected_outputs):
+    """
+    Given:
+        - args to the command.
+
+    When:
+        - executing list_software_command.
+
+    Then:
+        -the outputs and human readable are valid.
+    """
+    from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_command
+    mocker.patch.object(client_mocker, 'get_list_vulnerabilities', return_value=return_value)
+    result_list_software = list_vulnerabilities_command(client_mocker, args)
+    assert result_list_software.readable_output == expected_human_readable
+    assert result_list_software.outputs == expected_outputs
