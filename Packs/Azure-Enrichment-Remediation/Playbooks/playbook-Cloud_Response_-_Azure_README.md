@@ -1,5 +1,5 @@
 This playbook provides response actions to Azure. The following are available for execution automatically/manually:
-- Resource remediation:    
+- Resource remediation    
    - Delete the instance
    - Power off the instance
 - Identity remediation:
@@ -11,19 +11,19 @@ This playbook provides response actions to Azure. The following are available fo
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Block IP - Generic v3
+* Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-Set
+* Set
 
 ### Commands
-* msgraph-user-account-disable
-* msgraph-user-delete
 * azure-vm-poweroff-instance
 * azure-vm-delete-instance
+* msgraph-user-delete
+* msgraph-user-account-disable
 
 ## Playbook Inputs
 ---
@@ -38,6 +38,7 @@ Set
 | resourceName | The resource name to take action on. |  | Optional |
 | resourceGroup | The resource group. |  | Optional |
 | username | The username to take action on. |  | Optional |
+| sourceIP | The source IP address of the attacker. |  | Optional |
 
 ## Playbook Outputs
 ---

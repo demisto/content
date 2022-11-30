@@ -400,7 +400,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -773,7 +773,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1028,8 +1028,7 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: alertJson._all_events
-            accessor: caller_ip
+            root: inputs.sourceIP
             transformers:
             - operator: uniq
         fieldassociated: ""
@@ -1390,6 +1389,11 @@ inputs:
   value: {}
   required: false
   description: The username to take action on.
+  playbookInputQuery:
+- key: sourceIP
+  value: {}
+  required: false
+  description: The source IP address of the attacker.
   playbookInputQuery:
 outputs: []
 tests:
