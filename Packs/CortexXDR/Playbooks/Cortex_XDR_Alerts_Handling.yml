@@ -516,8 +516,8 @@ tasks:
     task:
       id: 18ea3ba1-78ee-4ce3-844b-44853df600da
       version: -1
-      name: Is XCLOUD Cryptomining alert available?
-      description: Checks if there is an available cloud cryptomining alert.
+      name: Was XCLOUD Cryptomining alert found?
+      description: Checks if XCLOUD Cryptomining alert is present in the incident.
       type: condition
       iscommand: false
       brand: ""
