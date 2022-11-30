@@ -43,4 +43,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud Enrichment](../doc_files/Cloud_Enrichment.png)
+![Cloud Enrichment](../doc_files/Cortex_XDR_-_Cloud_Enrichment.png)

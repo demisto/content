@@ -1,6 +1,6 @@
-id: Cloud Enrichment
+id: Cortex XDR - Cloud Enrichment
 version: -1
-name: Cloud Enrichment
+name: Cortex XDR - Cloud Enrichment
 description: |-
   This playbook is responsible for collecting data from Cortex XDR detector and enriching data for further usage and building the layout.
 

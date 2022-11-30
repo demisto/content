@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud Cryptomining](../doc_files/Cloud_Cryptomining.png)
+![Cloud Cryptomining](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)

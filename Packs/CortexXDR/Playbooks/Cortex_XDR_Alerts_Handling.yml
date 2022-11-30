@@ -400,8 +400,8 @@ tasks:
     task:
       id: 819510f8-39d8-4237-82e5-fb57fd806749
       version: -1
-      name: Cloud Cryptomining
-      playbookName: Cloud Cryptomining
+      name: Cortex XDR - Cloud Cryptomining
+      playbookName: Cortex XDR - Cloud Cryptomining
       type: playbook
       iscommand: false
       brand: ""
