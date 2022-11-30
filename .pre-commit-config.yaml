@@ -51,7 +51,7 @@ repos:
       rev: v0.982
       hooks:
           - id: mypy
-            exclude: tests/.*|demisto_sdk/commands/init/templates/.*
+            exclude: CommonServerPython.py
             language: system
     - repo: https://gitlab.com/smop/pre-commit-hooks
       rev: v1.0.0
