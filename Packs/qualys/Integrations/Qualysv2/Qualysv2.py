@@ -2508,7 +2508,7 @@ def qualys_command_flow_manager(
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
 
     base_url = params["url"]
