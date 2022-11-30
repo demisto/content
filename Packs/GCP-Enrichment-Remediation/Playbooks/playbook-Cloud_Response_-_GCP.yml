@@ -609,7 +609,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: username
+                  simple: inputs.username
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -993,7 +993,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: username
+                  simple: inputs.username
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -1457,7 +1457,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: alertJson._all_events.caller_ip
+                  simple: inputs.sourceIP
                 iscontext: true
           - operator: uniq
       InputEnrichment:
@@ -1750,7 +1750,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: username
+                  simple: inputs.username
                 iscontext: true
           - operator: uniq
     separatecontext: false
