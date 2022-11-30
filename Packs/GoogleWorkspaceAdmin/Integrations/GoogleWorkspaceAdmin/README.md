@@ -38,8 +38,7 @@ Takes an action that affects a mobile device. For example, remotely wiping a dev
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Google.mobileAction.Response | String | Whether the action was successful or failure. | 
-| Google.mobileAction.Reason | String | The reason the command failed. | 
+| Google.mobileAction.Status | String | Whether the action was successful or failure. | 
 
 ### google-mobiledevice-list
 ***
@@ -574,5 +573,4 @@ Takes an action that affects a ChromeOS Device. This includes deprovisioning, di
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Google.mobileAction.Response | String | Whether the action was successful or failure. | 
-| Google.mobileAction.Reason | String | The reason the command failed. | 
+| Google.chromeOSAction.Status | String | Whether the action was successful or failure. | 

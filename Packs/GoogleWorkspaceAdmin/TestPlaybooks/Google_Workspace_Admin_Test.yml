@@ -1,5 +1,5 @@
 id: b6efece6-051a-43f3-8858-fd4bbdae29df
-version: 14
+version: 20
 vcShouldKeepItemLegacyProdMachine: false
 name: Google Workspace Admin Test
 starttaskid: "0"
@@ -351,7 +351,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "9"
+        - "13"
     separatecontext: false
     conditions:
       - label: "yes"
@@ -393,7 +393,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 3440
         }
       }
     note: false
@@ -443,6 +443,378 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4bcd7fda-b91d-40fe-8c63-64977039e99d
+    type: regular
+    task:
+      id: 4bcd7fda-b91d-40fe-8c63-64977039e99d
+      version: -1
+      name: GetMobileDeviceToPerformAction
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GoogleWorkspaceAdmin|||google-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GoogleWorkspaceAdmin
+    nexttasks:
+      "#none#":
+        - "12"
+    scriptarguments:
+      order_by:
+        simple: LAST_SYNC
+      projection:
+        simple: FULL
+      query:
+        simple: id:${inputs.mobile_device_id} status:approved
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 73961a3d-999a-4f02-8eca-9fd0bf6e0be8
+    type: regular
+    task:
+      id: 73961a3d-999a-4f02-8eca-9fd0bf6e0be8
+      version: -1
+      name: PerformActionOnMobileDevice
+      description:
+        Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
+      script: GoogleWorkspaceAdmin|||google-mobiledevice-action
+      type: regular
+      iscommand: true
+      brand: GoogleWorkspaceAdmin
+    nexttasks:
+      "#none#":
+        - "14"
+    scriptarguments:
+      action:
+        simple: block
+      resource_id:
+        simple: ${Google.mobileEvent.mobileListObjects.resourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 36e9b4f9-701c-4830-8fb9-f00c05e25082
+    type: regular
+    task:
+      id: 36e9b4f9-701c-4830-8fb9-f00c05e25082
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0dadefce-5ee9-4a7b-8da3-207ec876239f
+    type: condition
+    task:
+      id: 0dadefce-5ee9-4a7b-8da3-207ec876239f
+      version: -1
+      name: CheckActionStatus
+      description:
+        Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "16"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Google.mobileAction.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 512b9eea-ef1f-4c6b-8596-57bb82ab6bf9
+    type: regular
+    task:
+      id: 512b9eea-ef1f-4c6b-8596-57bb82ab6bf9
+      version: -1
+      name: GetMobileDeviceToCheckStatus
+      description: Retrieves a paginated list that includes company-owned mobile devices.
+      script: GoogleWorkspaceAdmin|||google-mobiledevice-list
+      type: regular
+      iscommand: true
+      brand: GoogleWorkspaceAdmin
+    nexttasks:
+      "#none#":
+        - "17"
+    scriptarguments:
+      order_by:
+        simple: LAST_SYNC
+      projection:
+        simple: FULL
+      query:
+        simple: id:${inputs.mobile_device_id} status:blocked
+      sort_order:
+        simple: ASCENDING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a3470fbb-1f45-4864-892a-66664b736c7e
+    type: regular
+    task:
+      id: a3470fbb-1f45-4864-892a-66664b736c7e
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2b511177-cf3c-4c17-85f8-cf108ed2b5db
+    type: condition
+    task:
+      id: 2b511177-cf3c-4c17-85f8-cf108ed2b5db
+      version: -1
+      name: CheckMobileDeviceStatusAfterAction
+      description:
+        Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "18"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Google.mobileEvent.mobileListObjects.status
+                iscontext: true
+              right:
+                value:
+                  simple: BLOCKED
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d9311305-4e30-4dd4-8d70-a4c9e883f91d
+    type: regular
+    task:
+      id: d9311305-4e30-4dd4-8d70-a4c9e883f91d
+      version: -1
+      name: RevertMobileDeviceStatus
+      description:
+        Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
+      script: GoogleWorkspaceAdmin|||google-mobiledevice-action
+      type: regular
+      iscommand: true
+      brand: GoogleWorkspaceAdmin
+    nexttasks:
+      "#none#":
+        - "19"
+    scriptarguments:
+      action:
+        simple: approve
+      resource_id:
+        simple: ${Google.mobileEvent.mobileListObjects.resourceId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f1405473-1d07-4d07-895e-b265f1a94357
+    type: condition
+    task:
+      id: f1405473-1d07-4d07-895e-b265f1a94357
+      version: -1
+      name: CheckActionStatus
+      description:
+        Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "9"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Google.mobileAction.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -450,7 +822,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1785,
+        "height": 3455,
         "width": 380,
         "x": 50,
         "y": 50
@@ -475,6 +847,12 @@ inputs:
       simple: "3"
     required: false
     description: The page size
+    playbookInputQuery: null
+  - key: mobile_device_id
+    value:
+      simple: 311fc9cb34adecd6
+    required: false
+    description: The mobile device id to perform the action command on it.
     playbookInputQuery: null
 outputs: []
 quiet: true
