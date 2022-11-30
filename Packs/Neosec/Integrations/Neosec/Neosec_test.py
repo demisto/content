@@ -12,12 +12,14 @@ you are implementing with your integration
 
 import json
 
+import pytest
+
 from Neosec import NeosecClient, fetch_incidents, NeosecNodeClient, set_alert_status
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_NODE_URL = "http://124-fake-api.com"
 MOCK_TENANT_KEY = "fake_tenant"
-MOCK_FIRST_TIME_TIMESTAMP = 0
+MOCK_FIRST_TIME_TIMESTAMP = 1
 
 MOCK_ALL_EVENTS = {
     "items": [
@@ -414,6 +416,97 @@ MOCK_ALL_EVENTS = {
 MOCK_NODE_ALL_EVENTS = {"Message": json.dumps(MOCK_ALL_EVENTS["items"])}
 MOCK_ALERT_ID = "a299b804-52f3-48eb-abd1-87909d0f9ffd"
 MOCK_NODE_HEALTH_CHECK = {"Status": "ok"}
+MOCK_NODE_HEALTH_CHECK_FAILED = {"Status": "failed"}
+MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT = {
+    "items": [
+        {
+            "id": "a29ceff4-52f3-efba-aabc-87909d0fbff2",
+            "name": "Suspicious Privileged Operation Attempt",
+            "timestamp": "2022-05-05T19:39:49.504000Z",
+            "status": "Open",
+            "severity": "Low",
+            "description": "* Endpoint 'DELETE /v2/invoicing/invoices/{invoices_id}' in service 'Invoicing' \n"
+                           "* MerchantID '1c4ce8d6-5847-4f38-a689-4d83991ac3297' tried to access what might be"
+                           " high-privileged function \n* All 1 requested failed with '403 Forbbiden'  ",
+            "category": "Data Access",
+            "source": None,
+            "author": "Analytics",
+            "sequence_ids": None,
+            "entities": [
+                {
+                    "value": "1c4ce8d6-5847-4f38-a689-4d83991ac329",
+                    "name": "MerchantID",
+                    "pretty_name": None,
+                    "class": "user",
+                    "family": "actor",
+                    "value_type": "String"
+                },
+                {
+                    "value": "E1SDajS6s1is7_13u+BW9uO_PHS80YQBj4nOpaXv9oOJ___KlA7pxr0WeAlQPiFeEi-"
+                             "XQM1eLbHOlK_Uh0aZRcJvy6BFVmeCP",
+                    "name": "AccessToken",
+                    "pretty_name": None,
+                    "class": "token",
+                    "family": "actor",
+                    "value_type": "String"
+                },
+                {
+                    "value": "127.0.0.1",
+                    "name": "IP",
+                    "pretty_name": None,
+                    "class": "ip",
+                    "family": "actor",
+                    "value_type": "IPv4"
+                }
+            ],
+            "endpoints": [
+                {
+                    "id": "a94da4aa-52ce-b6d2-5c3a-55edcf1db288",
+                    "method": "DELETE",
+                    "endpoint_path": "/v2/invoicing/invoices/{invoices_id}",
+                    "service_name": "Invoicing",
+                    "labels": None,
+                    "endpoint_labels": None,
+                    "hidden_at": None,
+                    "hidden_by": None,
+                    "hidden": None,
+                    "call_count": None,
+                    "call_percentage": None,
+                    "max_severity": None,
+                    "first_seen": None,
+                    "last_seen": None
+                }
+            ],
+            "caller_ips": [
+                "127.0.0.1"
+            ],
+            "labels": [
+                "OWASP API1",
+                "OWASP A5",
+                "OWASP API5",
+                "Data Leak",
+                "PII"
+            ],
+            "alert_type": "UserBehaviorAlert",
+            "recommendations": "* Is the resource being accessed private to the actor entity type accessing it?"
+                               "\n* Is the actor entity accessing this resource an admin?\n* Investigate the"
+                               " behavior of the API consumer around the time of the alert",
+            "alert_info": "Some functions and resources in the API are accessible only by high-privilege or "
+                          "admin users. When a low-privilege API consumer abnormally tries to use those functions,"
+                          " they may be looking for an authorization bypass vulnerability, often called BFLA"
+                          " (broken function level authorization).",
+            "triggered_at": "201322-05-05T19:39:49.504000Z",
+            "detection_model_id": "fa10ba69-89a0-4c15-876a-cdaf911fda25",
+            "endpoint": "DELETE /v2/invoicing/invoices/{invoices_id}",
+            "base_risk_score": 0,
+            "call_ids": [
+                "4fce6687-1c78-4083-a427-a82e1880d605"
+            ]
+        }
+    ],
+    "count": 4,
+    "total": 4
+}
 
 
 def test_first_fetch_incidents(requests_mock):
@@ -439,6 +532,29 @@ def test_first_fetch_incidents(requests_mock):
 
     assert len(incidents) == 4
     assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+
+
+def test_first_fetch_incidents_invalid_triggered_at(requests_mock):
+    requests_mock.post(
+        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
+        json=MOCK_ALL_EVENTS_INVALID_TRIGGERED_AT)
+
+    client = NeosecClient(
+        base_url=MOCK_URL,
+        verify=True,
+        proxy=False,
+        tenant_key=MOCK_TENANT_KEY,
+        headers={}
+    )
+
+    with pytest.raises(ValueError):
+        fetch_incidents(
+            client=client,
+            node_client=None,
+            max_results=50,
+            last_run={},
+            first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
+        )
 
 
 def test_first_fetch_incidents_with_filters(requests_mock):
@@ -569,6 +685,31 @@ def test_test_module_with_detok_sanity(requests_mock):
 
     result = test_module(client, node_client, None, None, None, 50)
     assert result == 'ok'
+
+
+def test_test_module_with_detok_failed(requests_mock):
+    from Neosec import test_module
+
+    requests_mock.post(
+        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
+        json=MOCK_ALL_EVENTS)
+    requests_mock.get(MOCK_NODE_URL + '/healthcheck', json=MOCK_NODE_HEALTH_CHECK_FAILED)
+
+    client = NeosecClient(
+        base_url=MOCK_URL,
+        verify=True,
+        proxy=False,
+        tenant_key=MOCK_TENANT_KEY,
+        headers={}
+    )
+    node_client = NeosecNodeClient(
+        base_url=MOCK_NODE_URL,
+        verify=True,
+        proxy=False,
+    )
+
+    result = test_module(client, node_client, None, None, None, 50)
+    assert result != 'ok'
 
 
 def test_set_alert_status_command(requests_mock):

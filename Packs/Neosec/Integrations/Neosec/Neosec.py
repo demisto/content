@@ -328,11 +328,6 @@ def main() -> None:
     # get the service API url
     base_url = urljoin(params["url"], "/v4")
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not params.get("insecure", False)
-
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
         arg=params.get("first_fetch", "3 days"),
@@ -344,12 +339,6 @@ def main() -> None:
     )
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
     assert isinstance(first_fetch_timestamp, int)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get("proxy", False)
-
-    tenant_key = params.get("tenant_key")
 
     demisto.debug(f"Command being called is {command}")
     try:
@@ -364,26 +353,17 @@ def main() -> None:
             )
 
         neosec_node_client = (
-            NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=proxy)
+            NeosecNodeClient(base_url=neosec_node_url, verify=False, proxy=params.get("proxy", False))
             if is_tokenized and neosec_node_url
             else None
         )
-
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {"X-API-Key": api_key}
-
         client = NeosecClient(
             base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy,
-            tenant_key=tenant_key,
+            verify=not params.get("insecure", False),
+            headers={"X-API-Key": api_key},
+            proxy=params.get("proxy", False),
+            tenant_key=params.get("tenant_key"),
         )
-
-        # Set and define the fetch incidents command to run after activated via integration settings.
-        alert_status = params.get("alert_status", None)
-        alert_type = params.get("alert_type", None)
-        severities = params.get("severities", None)
 
         # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
         max_results = arg_to_number(
@@ -397,9 +377,9 @@ def main() -> None:
             result = test_module(
                 client,
                 neosec_node_client,
-                alert_status,
-                severities,
-                alert_type,
+                params.get("alert_status", None),
+                params.get("severities", None),
+                params.get("alert_type", None),
                 max_results
             )
             return_results(result)
@@ -411,9 +391,9 @@ def main() -> None:
                 max_results=max_results,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                 first_fetch_time=first_fetch_timestamp,
-                alert_status=alert_status,
-                severities=severities,
-                alert_type=alert_type,
+                alert_status=params.get("alert_status", None),
+                severities=params.get("severities", None),
+                alert_type=params.get("alert_type", None),
             )
 
             # saves next_run for the time fetch-incidents is invoked
@@ -423,9 +403,7 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == "neosec-alert-status-set":
-            alert_id = args.get("alert_id")
-            alert_status = args.get("alert_status")
-            set_alert_status(client, alert_id, alert_status)
+            set_alert_status(client, args.get("alert_id"), args.get("alert_status"))
 
     # Log exceptions and return errors
     except Exception as e:
