@@ -50,7 +50,7 @@ script:
           contextPath: Google.mobileAction.Status
           description: "Whether the action was successful or failure."
     - name: google-mobiledevice-list
-      description: "Retrieves a paginated list that includes company-owned devices."
+      description: "Retrieves a paginated list that includes company-owned mobile devices."
       arguments:
         - auto: PREDEFINED
           name: projection

@@ -14,7 +14,8 @@ BASE_URL = 'https://admin.googleapis.com/'
 OUTPUT_PREFIX = 'Google'
 INTEGRATION_NAME = 'Google Workspace Admin'
 
-
+# The following dictionary is used to map error messages returned from the API that don't
+# share enough information to meaningful error messages.
 ERROR_MESSAGES_MAPPING = {
     'Bad Request': 'Please check the customer ID parameter.',
     'Internal error encountered.': 'Please check the resource_id argument.',
@@ -25,14 +26,6 @@ ERROR_MESSAGES_MAPPING = {
 MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
-
-
-class ActionCommandIncorrectArguments(Exception):
-    """
-    This class is in charge of catching errors that occur when the user supplies incorrect arguments
-    to the commands that affect the device by supplying an action.
-    """
-    pass
 
 
 requests.packages.urllib3.disable_warnings()
@@ -338,7 +331,7 @@ def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
     """
     human_readable: List[dict] = []
     for mobile_device in context_data.get('mobileListObjects', []):
-        human_readable.append({'Serial Number': mobile_device.get('deviceId'),
+        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
                                'User Names': mobile_device.get('name'),
                                'Model Name': mobile_device.get('model'),
                                'OS': mobile_device.get('os'),
@@ -478,9 +471,10 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
             failure_reason = str(e)
         readable_output = f'{status}. An error has occurred when running the command:\n{failure_reason}'
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.mobileAction',
+        outputs_prefix=f'{OUTPUT_PREFIX}',
+        outputs_key_field='mobileAction.Status',
         readable_output=readable_output,
-        outputs={'Status': status},
+        outputs={'mobileAction': {'Status': status}},
     )
     return command_results
 
@@ -509,9 +503,10 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
         readable_output = f'{status}. An error has occurred when running the command:\n{failure_reason}'
 
     command_results = CommandResults(
-        outputs_prefix=f'{OUTPUT_PREFIX}.chromeOSAction',
+        outputs_prefix=f'{OUTPUT_PREFIX}',
+        outputs_key_field='chromeOSAction.Status',
         readable_output=readable_output,
-        outputs={'Status': status},
+        outputs={'chromeOSAction': {'Status': status}},
     )
     return command_results
 
