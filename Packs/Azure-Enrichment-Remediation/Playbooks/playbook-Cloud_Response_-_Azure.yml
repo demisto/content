@@ -745,7 +745,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: alertJson._all_events.caller_ip
+                  simple: inputs.sourceIP
                 iscontext: true
           - operator: uniq
       InputEnrichment:
