@@ -83,7 +83,7 @@ TIME_IS_MISSING = 'time_is_missing'
 
 # =========== Enrich User Mechanism ============
 class UserMappingObject:
-    def __init__(self, service, should_map_user, table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
+    def __init__(self, service: client.Service, should_map_user, table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
                  splunk_user_column_name='splunk_user'):
         self.service = service
         self.should_map = should_map_user
@@ -93,7 +93,8 @@ class UserMappingObject:
 
     def _get_record(self, col, value_to_search):
         """ Gets the records with the value found in the relevant column. """
-        return self.service.kvstore[self.table_name].data.query(query=json.dumps({col: value_to_search}))
+        kvstore: client.KVStoreCollection = self.service.kvstore[self.table_name]
+        return kvstore.data.query(query=json.dumps({col: value_to_search}))
 
     def get_xsoar_user_by_splunk(self, splunk_user):
 
