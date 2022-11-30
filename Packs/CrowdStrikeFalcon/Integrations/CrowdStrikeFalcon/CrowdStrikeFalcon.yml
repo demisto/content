@@ -1998,6 +1998,12 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2729,6 +2735,12 @@ script:
       name: cve_id
       isArray: true
       required: true
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2827,7 +2839,7 @@ script:
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_ids
       isArray: true
-      required: false
+      required: true
     description: Retrieve vulnerability details for a specific ID and host. Supported with CrowdStrike Spotlight license.
     name: cs-falcon-spotlight-list-host-by-vulnerability
     outputs:
@@ -2906,7 +2918,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.8.39276
   isfetch: true
   ismappable: true
   isremotesyncin: true

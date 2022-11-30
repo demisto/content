@@ -1,0 +1,233 @@
+id: f58e9c00-de2f-4e46-805f-5c5c34fed9e4
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-CrowdStrike_Falcon_-_vulnerabilities_list
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 12b802f7-a8eb-4983-8d66-8667a574120f
+    type: start
+    task:
+      id: 12b802f7-a8eb-4983-8d66-8667a574120f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b23a93ca-09c0-4487-88ec-1af42f4f8032
+    type: regular
+    task:
+      id: b23a93ca-09c0-4487-88ec-1af42f4f8032
+      version: -1
+      name: cs-falcon-spotlight-search-vulnerability
+      description: Retrieve vulnerability details according to the selected filter.
+        Each request requires at least one filter parameter. Supported with CrowdStrike
+        Spotlight license.
+      script: '|||cs-falcon-spotlight-search-vulnerability'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      cve_id:
+        simple: CVE-2021-34484
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e0a7af58-8511-44b9-88e0-a07329013713
+    type: title
+    task:
+      id: e0a7af58-8511-44b9-88e0-a07329013713
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f821af7d-74e5-46c4-8441-a4c1d57ed283
+    type: condition
+    task:
+      id: f821af7d-74e5-46c4-8441-a4c1d57ed283
+      version: -1
+      name: Verify list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Vulnerability.cve.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.Vulnerability.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5eb58041-9993-4755-8237-d62af1dd3eba
+    type: regular
+    task:
+      id: 5eb58041-9993-4755-8237-d62af1dd3eba
+      version: -1
+      name: cs-falcon-spotlight-list-host-by-vulnerability
+      description: Retrieve vulnerability details for a specific ID and host. Supported
+        with CrowdStrike Spotlight license.
+      script: '|||cs-falcon-spotlight-list-host-by-vulnerability'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cve_ids:
+        simple: CVE-2021-34484,CVE-2013-3900
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 78dc0c35-4c5d-45a2-8e28-cd3f3ebc78e2
+    type: condition
+    task:
+      id: 78dc0c35-4c5d-45a2-8e28-cd3f3ebc78e2
+      version: -1
+      name: Verify by host
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.VulnerabilityHost.host_info.hostname
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

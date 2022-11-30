@@ -3928,8 +3928,8 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
                         'CVE Vector': vulnerability.get('cve', {}).get('vector')
                         })
     human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
-    return CommandResults(raw_response=vulnerability_response.get('resources'),
-                          readable_output=human_readable, outputs=outputs,
+    return CommandResults(raw_response=vulnerability_response,
+                          readable_output=human_readable, outputs=vulnerability_response.get('resources'),
                           outputs_prefix="CrowdStrike.Vulnerability", outputs_key_field="id")
 
 
@@ -3938,8 +3938,6 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
-        cve.id%3A%5B%27CVE-2013-3900%27%2C%27CVE-2021-1675%5D&facet=host_info&limit=50
-        cve.id%3A%5B%27CVE-2013-3900%27%2C%27CVE-2021-1675
     """
     endpoint_url = '/spotlight/combined/vulnerabilities/v1'
     if not args or not args.get('cve_ids'):
@@ -3961,8 +3959,8 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                         'Host Info Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
                         'Host Info Site Name': vulnerability.get('host_info', {}).get('site_name')})
     human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
-    return CommandResults(raw_response=vulnerability_response.get('resources'),
-                          readable_output=human_readable, outputs=outputs,
+    return CommandResults(raw_response=vulnerability_response,
+                          readable_output=human_readable, outputs=vulnerability_response.get('resources'),
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
@@ -4023,7 +4021,7 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                               'Base Score': cve.get('base_score')}
         human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
                                          headers=['ID', 'Severity', 'Published Date', 'Base Score'])
-        command_results_list.append(CommandResults(raw_response=raw_cve,
+        command_results_list.append(CommandResults(raw_response=cve,
                                                    readable_output=human_readable,
                                                    outputs_key_field='id',
                                                    outputs=cve,
