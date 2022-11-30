@@ -319,7 +319,7 @@ def main():
         return_results(results)
 
     def test_module():
-        return_results(True)
+        return_results('ok')
 
     command_map = {
         'fancy-email-make-table': make_table_command,
