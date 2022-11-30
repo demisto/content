@@ -122,7 +122,7 @@ def construct_entities_block(entities_data: dict) -> str:
     """
     release_notes = ''
     for entity_type, entities_description in sorted(entities_data.items()):
-        pretty_entity_type = re.sub(r'(\w)([A-Z])', r'\1 \2', entity_type)
+        pretty_entity_type = re.sub(r'([a-z])([A-Z])', r'\1 \2', entity_type)
         release_notes += f'#### {pretty_entity_type}\n'
         if '[special_msg]' in entities_description:
             release_notes += f'{str(entities_description.pop("[special_msg]"))}\n'
