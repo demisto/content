@@ -5,18 +5,24 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def concat_values(item1: Any, item2: Any) -> List[Any]:
+def concat_values(item1: Any, item2: Any, remove_null: bool = False) -> List[Any]:
     """
     Concatinate item1 and item2 into a list
 
     :param item1: The leading values to be concatinated.
     :param item2: The values to add to item1.
+    :param remove_null: Set to True to remove None from the lists, otherwise False.
     :return: The result in list.
     """
     item1 = item1 or []
     item1 = item1 if isinstance(item1, list) else [item1]
+    if remove_null:
+        item1 = [v for v in item1 if v is not None]
+
     item2 = item2 or []
     item2 = item2 if isinstance(item2, list) else [item2]
+    if remove_null:
+        item2 = [v for v in item2 if v is not None]
     return item1 + item2
 
 
@@ -74,8 +80,8 @@ def main():
     value_takes = args.get('value_takes') or 'text'
     if value_takes == 'text':
         # Pattern matching for each text in the input order
-        regex_list = concat_values(args.get('regex'), [])
-        text_list = concat_values(args.get('value'), args.get('text'))
+        regex_list = concat_values(args.get('regex'), [], True)
+        text_list = concat_values(args.get('value'), args.get('text'), True)
 
         regexes = [re.compile(str(r), flags=regex_flags) for r in regex_list if isinstance(r, (str, int))]
         for text in text_list:
@@ -87,8 +93,8 @@ def main():
 
     elif value_takes == 'regex':
         # Pattern matching for each regex in the input order
-        regex_list = concat_values(args.get('value'), args.get('regex'))
-        text_list = concat_values(args.get('text'), [])
+        regex_list = concat_values(args.get('value'), args.get('regex'), True)
+        text_list = concat_values(args.get('text'), [], True)
 
         for regex_pattern in regex_list:
             if isinstance(regex_pattern, (str, int)):
