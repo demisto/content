@@ -35,7 +35,7 @@ Create a new security rule.
 | --- | --- | --- |
 | folder | Prisma access folder location for the rule. | Required | 
 | position | Rule position. Possible values are: pre, post. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | name | Friendly name of the rule. | Required | 
 | action | Rule action. | Required | 
 | description | Rule description. | Optional | 
@@ -150,7 +150,7 @@ List the security rules.
 | name | Name of the security rule. | Optional | 
 | limit | The maximum number of results to return. Default is 10. | Optional | 
 | offset | Results paging offset. | Optional | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -398,7 +398,7 @@ Push the candidate configuration.
 | --- | --- | --- |
 | folders | Comma-separated list of targets (Remote Networks, Mobile Users, Service Connections). | Required | 
 | description | Configuration push job description. | Optional | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -446,7 +446,7 @@ Edit an existing security rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the rule to be changed. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | name | Friendly name of the rule. | Required | 
 | action | Rule action. | Required | 
 | description | Rule description. | Optional | 
@@ -554,7 +554,7 @@ Query the aggregate monitor API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | query_data | Query data. | Optional | 
 | uri | Aggregate monitor URI to query (for example: mt/monitor/v1/agg/threats). | Required | 
 
@@ -611,7 +611,7 @@ Get a security rule using the name.
 | name | Name of the security rule to search. | Required | 
 | folder | Prisma access folder location for the rule. | Required | 
 | position | Rule position. Possible values are: pre, post. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -703,7 +703,7 @@ Get a specific configuration job by the job ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | A comma-separated list of job IDs. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -790,7 +790,7 @@ List configuration jobs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | limit | The maximum number of results to return. Default is 200. | Optional | 
 | offset | Results paging offset. | Optional | 
 
@@ -932,7 +932,7 @@ Delete a security rule.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | rule_id | Rule ID of the rule to be deleted. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -1022,7 +1022,7 @@ Create a new address object
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder | Prisma Access Folder Location for the Object. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | name | Friendly name of the address object. | Required | 
 | description | Address object description. | Optional | 
 | ip_netmask | IP/Netmask of the object using slash notation. | Required | 
@@ -1078,7 +1078,7 @@ Edit address object
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the address object to edit. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 | name | Friendly name of the address object. | Required | 
 | description | Address Object description. | Optional | 
 | ip_netmask | IP/Netmask of the object using slash notation. | Required | 
@@ -1134,7 +1134,7 @@ Delete address object
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the address object to delete. | Required | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output
@@ -1189,7 +1189,7 @@ List address objects.
 | name | Name of the security object. | Optional | 
 | limit | The maximum number of results to return. Default is 10. | Optional | 
 | offset | Results paging offset. | Optional | 
-| tsg_id | Tenant services group ID. | Optional | 
+| tsg_id | Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default. | Optional | 
 
 
 #### Context Output

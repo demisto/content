@@ -373,15 +373,21 @@ class Client(BaseClient):
         )
 
     def get_access_token(self, tsg_id: str):
-        """Get access token to use for API call
-        Args:
-            tsg_id: Target Prisma SASE tenant ID
-        Returns:
-            Outputs.
+        """Get access token to use for API call.
+
+        The SASE API is multi-tenant capable and the tenant structure is hierarchical.
+        The TSG (tenant services group) is an identifier for a particular tenant.
+        A single API service account can have access to the root tenant and any number of sub-tenants underneath.
+        The scope / target of the API call is determined via the requested authorization token.
 
         If there is an existing access token, and it has not expired, set it as the access token for this request
         Else request a new access token for the provided TSG and store it in the integration context and add the TSG ID
         as a prefix.
+
+        Args:
+            tsg_id: Target Prisma SASE tenant ID
+        Returns:
+            The access token
         """
 
         integration_context = get_integration_context()
@@ -872,7 +878,13 @@ def main():
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
     oauth_url = params.get('oauth_url')
+
+    # The SASE API is multi-tenant capable and the tenant structure is hierarchical.
+    # The TSG (tenant services group) is an identifier for a particular tenant.
+    # A single API service account can have access to the root tenant and any number of sub-tenants underneath.
+    # If a tsg_id is not provided in a certain command args the tsg_id parameter will be used as the default.
     default_tsg_id = params.get('tsg_id')
+
     verify_certificate = not argToBoolean(params.get('insecure', False))
     proxy = argToBoolean(params.get('proxy', False))
     handle_proxy()

@@ -49,7 +49,7 @@ script:
       predefined:
       - pre
       - post
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Friendly name of the rule.
       name: name
@@ -174,7 +174,7 @@ script:
       name: limit
     - description: Results paging offset.
       name: offset
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: List the security rules.
     name: prisma-access-list-security-rules
@@ -238,7 +238,7 @@ script:
       required: true
     - description: Configuration push job description.
       name: description
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Push the candidate configuration.
     name: prisma-access-push-candidate-config
@@ -258,7 +258,7 @@ script:
     - description: ID of the rule to be changed.
       name: id
       required: true
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Friendly name of the rule.
       name: name
@@ -361,7 +361,7 @@ script:
       description: Security rule to field (destination zone(s)).
       type: String
   - arguments:
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Query data
       name: query_data
@@ -389,7 +389,7 @@ script:
       predefined:
       - pre
       - post
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Get a security rule using the name.
     name: prisma-access-get-security-rule-by-name
@@ -446,7 +446,7 @@ script:
       isArray: true
       name: id
       required: true
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Get a specific configuration job by the job ID.
     name: prisma-access-get-config-jobs-by-id
@@ -523,7 +523,7 @@ script:
       description: Configuration job uname.
       type: String
   - arguments:
-    - description: Tenant services group ID
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - defaultValue: "200"
       description: The maximum number of results to return.
@@ -581,7 +581,7 @@ script:
     - description: Rule ID of the rule to be deleted.
       name: rule_id
       required: true
-    - description: Tenant services group ID
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Delete a security rule.
     name: prisma-access-delete-security-rule
@@ -634,7 +634,7 @@ script:
     - description: Prisma Access Folder Location for the Object
       name: folder
       required: true
-    - description: Tenant services group ID
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Friendly name of the address object.
       name: name
@@ -671,7 +671,7 @@ script:
     - description: ID of the address object to edit.
       name: id
       required: true
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Friendly name of the address object.
       name: name
@@ -708,7 +708,7 @@ script:
     - description: ID of the address object to delete.
       name: id
       required: true
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Delete address object
     name: prisma-access-delete-address-object
@@ -742,7 +742,7 @@ script:
       name: limit
     - description: Results paging offset.
       name: offset
-    - description: Tenant services group ID.
+    - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: List address objects.
     name: prisma-access-list-address-objects
