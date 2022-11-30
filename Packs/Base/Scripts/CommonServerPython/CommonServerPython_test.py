@@ -8210,7 +8210,6 @@ class TestSendEventsToXSIAMTest:
             expected_data = self.test_data[events_use_case]['expected_data']
             arguments_called = _http_request_mock.call_args[1]
             decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
-            print(decompressed_data)
             assert arguments_called['headers']['format'] == expected_format
             assert decompressed_data == expected_data
         else:

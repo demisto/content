@@ -10711,9 +10711,6 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
     :return: the list of the updated events.
     :rtype: List
     """
-    demisto.info("i'm here")
-    demisto.debug("i'm here")
-    demisto.log("i'm here")
     params = demisto.params()
     calling_context = demisto.callingContext.get('context', {})
     url = params.get('url')
@@ -10723,7 +10720,7 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
         str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
                      f"_instance_name{value_sign}{spaces}{integration_instance}{end_of_event_sign}"
         for event in events:
-            if events[-1] == end_of_event_sign or events[-1] == ".":
+            if event[-1] == end_of_event_sign or event[-1] == ".":
                 event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
             else:
                 event = f"{event}{str_to_add}"
@@ -10782,9 +10779,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        demisto.info("i'm there")
-        demisto.debug("i'm there")
-        demisto.log("i'm there")
         add_system_fields_to_events(events, separator=separator, value_sign=value_sign, spaces=spaces,
                                     end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
@@ -10792,9 +10786,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
         if isinstance(events[0], dict):
             events = [json.dumps(event) for event in events]
             data_format = 'json'
-        demisto.info(f"updated event: {events[0]}")
-        demisto.debug(f"updated event: {events[0]}")
-        demisto.log(f"updated event: {events[0]}")
         # Separating each event with a new line
         data = '\n'.join(events)
 
