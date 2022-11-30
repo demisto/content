@@ -190,8 +190,10 @@ def detokenize_alerts(
 def test_module(
         client: NeosecClient,
         node_client: Optional[NeosecNodeClient],
-        params: Dict[str, Any],
-        first_fetch_timestamp: int,
+        alert_status: Optional[str],
+        severities: Optional[List[str]],
+        alert_types: Optional[List[str]],
+        max_results: int,
 ) -> str:
     """Tests API connectivity and authentication'
 
@@ -209,37 +211,13 @@ def test_module(
     try:
         # This  should validate all the inputs given in the integration configuration panel,
         # either manually or by using an API that uses them.
-
-        alert_status = params.get("alert_status", None)
-        alert_type = params.get("alert_type", None)
-        severities = params.get("severities", None)
-
-        # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-        max_results = arg_to_number(
-            arg=params.get("max_fetch"), arg_name="max_fetch", required=False
+        client.search_alerts(
+            max_results=max_results,
+            alert_status=alert_status,
+            severities=severities,
+            alert_types=alert_types,
+            start_time=None,
         )
-        if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-            max_results = MAX_INCIDENTS_TO_FETCH
-
-        if params.get("isfetch"):  # Tests fetch incident:
-            fetch_incidents(
-                client=client,
-                node_client=node_client,
-                max_results=max_results,
-                first_fetch_time=first_fetch_timestamp,
-                last_run={},
-                alert_status=alert_status,
-                severities=severities,
-                alert_type=alert_type,
-            )
-        else:
-            client.search_alerts(
-                max_results=max_results,
-                alert_status=alert_status,
-                severities=severities,
-                alert_types=alert_type,
-                start_time=first_fetch_timestamp,
-            )
 
         if node_client:
             status = node_client.health_check()
@@ -402,26 +380,31 @@ def main() -> None:
             tenant_key=tenant_key,
         )
 
+        # Set and define the fetch incidents command to run after activated via integration settings.
+        alert_status = params.get("alert_status", None)
+        alert_type = params.get("alert_type", None)
+        severities = params.get("severities", None)
+
+        # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
+        max_results = arg_to_number(
+            arg=params.get("max_fetch"), arg_name="max_fetch", required=False
+        )
+        if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
+            max_results = MAX_INCIDENTS_TO_FETCH
+
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(
-                client, neosec_node_client, params, first_fetch_timestamp
+                client,
+                neosec_node_client,
+                alert_status,
+                severities,
+                alert_type,
+                max_results
             )
             return_results(result)
 
         elif command == "fetch-incidents":
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            alert_status = params.get("alert_status", None)
-            alert_type = params.get("alert_type", None)
-            severities = params.get("severities", None)
-
-            # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
-            max_results = arg_to_number(
-                arg=params.get("max_fetch"), arg_name="max_fetch", required=False
-            )
-            if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
-                max_results = MAX_INCIDENTS_TO_FETCH
-
             next_run, incidents = fetch_incidents(
                 client=client,
                 node_client=neosec_node_client,

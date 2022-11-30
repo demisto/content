@@ -413,6 +413,7 @@ MOCK_ALL_EVENTS = {
 
 MOCK_NODE_ALL_EVENTS = {"Message": json.dumps(MOCK_ALL_EVENTS["items"])}
 MOCK_ALERT_ID = "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+MOCK_NODE_HEALTH_CHECK = {"Status": "ok"}
 
 
 def test_first_fetch_incidents(requests_mock):
@@ -434,6 +435,34 @@ def test_first_fetch_incidents(requests_mock):
         max_results=50,
         last_run={},
         first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP
+    )
+
+    assert len(incidents) == 4
+    assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+
+
+def test_first_fetch_incidents_with_filters(requests_mock):
+    requests_mock.post(
+        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
+        json=MOCK_ALL_EVENTS)
+
+    client = NeosecClient(
+        base_url=MOCK_URL,
+        verify=True,
+        proxy=False,
+        tenant_key=MOCK_TENANT_KEY,
+        headers={}
+    )
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        node_client=None,
+        max_results=50,
+        last_run={},
+        first_fetch_time=MOCK_FIRST_TIME_TIMESTAMP,
+        alert_status="Open",
+        severities=["Info"],
+        alert_type=["Posture"]
     )
 
     assert len(incidents) == 4
@@ -496,6 +525,50 @@ def test_first_fetch_incidents_with_detok(requests_mock):
 
     assert len(incidents) == 4
     assert json.loads(incidents[3]['rawJSON'])["id"] == "a299b804-52f3-48eb-abd1-87909d0f9ffd"
+
+
+def test_test_module_sanity(requests_mock):
+    from Neosec import test_module
+
+    requests_mock.post(
+        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
+        json=MOCK_ALL_EVENTS)
+
+    client = NeosecClient(
+        base_url=MOCK_URL,
+        verify=True,
+        proxy=False,
+        tenant_key=MOCK_TENANT_KEY,
+        headers={}
+    )
+
+    result = test_module(client, None, None, None, None, 50)
+    assert result == 'ok'
+
+
+def test_test_module_with_detok_sanity(requests_mock):
+    from Neosec import test_module
+
+    requests_mock.post(
+        MOCK_URL + f'/organizations/{MOCK_TENANT_KEY}/alerts/query',
+        json=MOCK_ALL_EVENTS)
+    requests_mock.get(MOCK_NODE_URL + '/healthcheck', json=MOCK_NODE_HEALTH_CHECK)
+
+    client = NeosecClient(
+        base_url=MOCK_URL,
+        verify=True,
+        proxy=False,
+        tenant_key=MOCK_TENANT_KEY,
+        headers={}
+    )
+    node_client = NeosecNodeClient(
+        base_url=MOCK_NODE_URL,
+        verify=True,
+        proxy=False,
+    )
+
+    result = test_module(client, node_client, None, None, None, 50)
+    assert result == 'ok'
 
 
 def test_set_alert_status_command(requests_mock):
