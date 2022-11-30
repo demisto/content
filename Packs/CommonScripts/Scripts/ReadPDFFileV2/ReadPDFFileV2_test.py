@@ -12,36 +12,6 @@ def open_html_file(file):
         return f.read()
 
 
-COPY_PROTECTED_CASES = [
-    (f'{CWD}/copy_protect_with_images.pdf', 'ahsdkljhakjhdasjk\n\n\x0c\x0c', 1)
-]
-
-
-@pytest.mark.parametrize('pdf_file, expected_text, num_of_images', COPY_PROTECTED_CASES)
-def test_copy_protected(tmp_path, pdf_file, expected_text, num_of_images):
-    """
-    Given:
-        - A `copy-protected` file that has text and images in it.
-    When:
-        - Trying to extract data from it.
-    Then:
-        - We bypass this limitation and proceed to extract the relevant data.
-    """
-    from ReadPDFFileV2 import get_pdf_text, get_images_paths_in_path, get_pdf_htmls_content
-    from pikepdf import Pdf
-    import shutil
-    with Pdf.open(pdf_file) as pdf:
-        assert not pdf._allow_extract, 'The file provided must be `copy-protected`'
-    cpy_file_path = f'{tmp_path}/WorkingReadPDF.pdf'
-    shutil.copy(pdf_file, cpy_file_path)
-
-    text = get_pdf_text(file_path=cpy_file_path, pdf_text_output_path=f'{tmp_path}/text_output.txt')
-    get_pdf_htmls_content(cpy_file_path, tmp_path)
-    images = get_images_paths_in_path(tmp_path)
-    assert text in expected_text
-    assert len(images) == num_of_images, 'Failed to extract images'
-
-
 def test_urls_are_found_correctly(mocker):
     """
     Given
@@ -147,7 +117,6 @@ def test_get_metadata_without_encrypted(mocker, raw_result, expected_result):
     assert metadata == expected_result
 
 
-# TODO Ask what to do in this case?
 def test_get_pdf_text_with_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text, handling_pdf_credentials
     file_path = f'{CWD}/encrypted.pdf'
@@ -170,7 +139,6 @@ def test_get_pdf_text_with_encrypted(tmp_path):
     assert text.startswith(expected)
 
 
-# TODO Ask what to do with the hebrew text?
 def test_get_pdf_text_without_encrypted(tmp_path):
     from ReadPDFFileV2 import get_pdf_text
     # assert error raised
@@ -251,14 +219,11 @@ def test_build_readpdf_entry_object_empty_extract(mocker):
 def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     """
     This test verifies URL and Emails extraction from an encrypted PDF file.
-
         Given:
         A path to an encrypted PDF file with a certain encoding:
             1. A pdf created with google docs.
             2. A pdf created with mac os Notes.
-
         Both PDFs include URLs and Email addresses from different kinds that should be extracted:
-
             * 'https://test1.com/' - A text url ended with a slash /.
             * 'https://test2.com' - A text url ended without a slash /.
             * 'www.test3.net' - A text url without the http prefix.
@@ -267,13 +232,10 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
                address in it.
             * 'http://www.test7.com' - A text hyperlink of a url.
             * 'https://test8.com/' - An embedded url (a url that is hyperlinked to an image).
-
         When:
             Running 'get_urls_and_emails_from_pdf_annots' function on the PDF file.
-
         Then:
             Verify that the URLs Emails was extracted successfully.
-
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, handling_pdf_credentials
 
@@ -310,14 +272,11 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
 def test_get_urls_and_emails_from_pdf_annots_without_encrypt(file_path):
     """
     This test verifies URL and Emails extraction from a non-encrypted PDF file.
-
         Given:
         A path to a PDF file with a certain encoding:
             1. A pdf created with google docs.
             2. A pdf created with mac os Notes.
-
         Both PDFs include URLs and Email addresses from different kinds that should be extracted:
-
             * 'https://test1.com/' - A text url ended with a slash /.
             * 'https://test2.com' - A text url ended without a slash /.
             * 'www.test3.net' - A text url without the http prefix.
@@ -326,13 +285,10 @@ def test_get_urls_and_emails_from_pdf_annots_without_encrypt(file_path):
                address in it.
             * 'http://www.test7.com' - A text hyperlink of a url.
             * 'https://test8.com/' - An embedded url (a url that is hyperlinked to an image).
-
         When:
             Running 'get_urls_and_emails_from_pdf_annots' function on the PDF file.
-
         Then:
             Verify that the URLs Emails was extracted successfully.
-
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots
 
@@ -354,16 +310,12 @@ def test_get_urls_and_emails_from_pdf_annots_without_encrypt(file_path):
 def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     """
     This test verifies URL and Emails extraction from an encrypted PDF file.
-
         Given:
         A path to an encrypted PDF file with a certain encoding (Libreoffice Encoding).
-
         When:
             Running 'extract_urls_and_emails_from_pdf_file' function on the PDF file.
-
         Then:
             Verify that the URLs Emails was extracted successfully.
-
     """
     from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file, handling_pdf_credentials
 
@@ -393,16 +345,12 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
 def test_get_urls_and_emails_from_pdf_file_without_encrypt(tmp_path):
     """
     This test verifies URL and Emails extraction from a non-encrypted PDF file.
-
         Given:
         A path to a PDF file with a certain encoding (Libreoffice Encoding).
-
         When:
             Running 'extract_urls_and_emails_from_pdf_file' function on the PDF file.
-
         Then:
             Verify that the URLs Emails was extracted successfully.
-
     """
     from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file
 
