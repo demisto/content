@@ -414,7 +414,7 @@ def test_list_emails_raw_response_contains_list(mocker):
                         "replyTo": [],
                         "sender": {
                             "emailAddress": {
-                                "address": "john.doe2@company.com",
+                                "address": "john.doe@company.com",
                                 "name": "John Doe"
                             }
                         },
