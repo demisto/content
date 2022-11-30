@@ -13,9 +13,7 @@ TIMEOUT = 60 * 60 * 6  # 6 hours - TODO - Decrease after replacing id-set with g
 
 def get_pipeline_info(pipeline_id, token):
     url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id
-    res = requests.get(url,
-                       headers={'Authorization': f'Bearer {token}'},
-                       verify=False)
+    res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
     if res.status_code != 200:
         logging.error(f'Failed to get status of pipeline {pipeline_id}, request to '
                       f'{GITLAB_CONTENT_PIPELINES_BASE_URL} failed with error: {str(res.content)}')
@@ -36,9 +34,7 @@ def get_upload_job_status(pipeline_id, token):
     been reached. If not, this means some other job failed, and that the upload did not happen.
     """
     url = GITLAB_CONTENT_PIPELINES_BASE_URL + pipeline_id + '/jobs'
-    res = requests.get(url,
-                       headers={'Authorization': f'Bearer {token}'},
-                       verify=False)
+    res = requests.get(url, headers={'Authorization': f'Bearer {token}'})
     if res.status_code != 200:
         logging.error(f'Failed to get status of pipeline {pipeline_id}, request to '
                       f'{GITLAB_CONTENT_PIPELINES_BASE_URL} failed with error: {str(res.content)}')
