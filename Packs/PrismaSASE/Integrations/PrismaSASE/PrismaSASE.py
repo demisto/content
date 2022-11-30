@@ -672,7 +672,8 @@ def query_agg_monitor_api_command(client: Client, args: Dict[str, Any]) -> Comma
     raw_response = client.query_agg_monitor_api(tsg_id, args.get('uri'), query)  # type: ignore
 
     return CommandResults(
-        readable_output=tableToMarkdown('Aggregate Monitor API Query Response', raw_response),
+        readable_output=tableToMarkdown('Aggregate Monitor API Query Response', raw_response,
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response,
         outputs=raw_response,
         outputs_prefix='PrismaSASE.AggregateQueryResponse'
@@ -797,7 +798,8 @@ def get_security_rule_by_name_command(client: Client, args: Dict[str, Any]) -> C
         outputs_prefix=f'{PA_OUTPUT_PREFIX}FoundSecurityRule',
         outputs_key_field='id',
         outputs=outputs,
-        readable_output=tableToMarkdown('Security Rules', outputs),
+        readable_output=tableToMarkdown('Security Rules', outputs,
+                                        headerTransform=string_to_table_header),
         raw_response=raw_response
     )
 
