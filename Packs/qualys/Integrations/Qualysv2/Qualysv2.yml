@@ -2280,9 +2280,9 @@ script:
       name: option_id
     - description: End a scan after some number of hours. A valid value is from 0 to 119.
       name: end_after
-    - auto: PREDEFINED
-      description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
+    - description: (Optional) Specify "assets" (the default) when your scan target will include IP addresses/ranges and/or asset groups. Specify "tags" when your scan target will include asset tags.
       name: target_from
+      auto: PREDEFINED
       predefined:
       - assets
       - tag
@@ -2677,7 +2677,7 @@ script:
     description: Delete an existing asset tag.
     name: qualys-asset-tag-delete
 
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
   runonce: false
   script: ''
   subtype: python3
