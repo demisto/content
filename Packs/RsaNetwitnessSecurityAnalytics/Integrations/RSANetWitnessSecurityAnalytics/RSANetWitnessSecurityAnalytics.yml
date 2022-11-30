@@ -17,7 +17,6 @@ configuration:
   type: 0
   required: true
 - displaypassword: Secret Key
-  hiddenusername: false
   name: credentials
   display: Access Key
   required: false
