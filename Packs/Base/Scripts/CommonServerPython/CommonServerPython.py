@@ -10723,7 +10723,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
-            events = [json.dumps(event) for event in events]›
+            events = [json.dumps(event) for event in events]
             data_format = 'json'
         # Separating each event with a new line
         data = '\n'.join(events)
