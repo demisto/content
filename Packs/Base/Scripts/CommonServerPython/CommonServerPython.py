@@ -6364,6 +6364,8 @@ class EntityRelationship:
         CREATES = 'creates'
         DELIVERED_BY = 'delivered-by'
         DELIVERS = 'delivers'
+        DETECTS = 'detects'
+        DETECTED_BY = 'detected-by'
         DOWNLOADS = 'downloads'
         DOWNLOADS_FROM = 'downloads-from'
         DROPPED_BY = 'dropped-by'
@@ -6414,8 +6416,6 @@ class EntityRelationship:
         USED_ON = 'used-on'
         USES = 'uses'
         VARIANT_OF = 'variant-of'
-        DETECTS = 'detects'
-        DETECTED_BY = 'detected-by'
 
         RELATIONSHIPS_NAMES = {'applied': 'applied-on',
                                'attachment-of': 'attaches',
@@ -6437,6 +6437,8 @@ class EntityRelationship:
                                'creates': 'created-by',
                                'delivered-by': 'delivers',
                                'delivers': 'delivered-by',
+                               'detects': 'detected-by',
+                               'detected-by': 'detects',
                                'downloads': 'downloaded-by',
                                'downloads-from': 'hosts',
                                'dropped-by': 'drops',
@@ -6486,8 +6488,7 @@ class EntityRelationship:
                                'used-by': 'uses',
                                'used-on': 'targeted-by',
                                'uses': 'used-by',
-                               'variant-of': 'variant-of',
-                               'detects': 'detected-by'}
+                               'variant-of': 'variant-of'}
 
         @staticmethod
         def is_valid(_type):
@@ -6509,8 +6510,11 @@ class EntityRelationship:
             :return: Returns the reversed relationship name
             :rtype: ``str``
             """
-
-            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            try:
+                return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            except KeyError:
+                demisto.debug('Cannot find a reverse name for relationship name, using "related-to" instead.')
+                return EntityRelationship.Relationships.RELATED_TO
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
                  reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
