@@ -1,5 +1,5 @@
 This playbook provides response actions to Azure. The following are available for execution automatically/manually:
- - Resource remediation
+ - Resource remediation:
    - Terminate the instance
    - Stop the instance
  - Identity remediation:
@@ -14,21 +14,21 @@ This playbook provides response actions to Azure. The following are available fo
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Block IP - Generic v3
+* Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-Set
+* Set
 
 ### Commands
-* aws-ec2-terminate-instances
-* aws-iam-delete-user
-* aws-ec2-stop-instances
 * aws-iam-delete-login-profile
+* aws-iam-delete-user
 * aws-iam-update-access-key
+* aws-ec2-stop-instances
 * aws-iam-delete-access-key
+* aws-ec2-terminate-instances
 
 ## Playbook Inputs
 ---
@@ -46,6 +46,7 @@ Set
 | region | The resource's region. |  | Optional |
 | username | The username to take action on. |  | Optional |
 | accessKeyId | The user's access key ID. |  | Optional |
+| sourceIP | The source IP address of the attacker. |  | Optional |
 
 ## Playbook Outputs
 ---
