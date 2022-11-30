@@ -6558,6 +6558,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
