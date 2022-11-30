@@ -147,7 +147,7 @@ class CondIterator:
         if isinstance(cond, (list, dict)):
             return cond
         else:
-            return extract_value(cond, extract_dt, self.__dx, self.__node)
+            return extract_value(cond, self.__dx, self.__node)
 
 
 class CondItemIterator:
@@ -161,11 +161,11 @@ class CondItemIterator:
 
     def __next__(self):
         k, v = self.__iter.__next__()
-        k = extract_value(k, extract_dt, self.__dx, self.__node)
+        k = extract_value(k, self.__dx, self.__node)
         if isinstance(v, (list, dict)):
             return k, v
         else:
-            return k, extract_value(v, extract_dt, self.__dx, self.__node)
+            return k, extract_value(v, self.__dx, self.__node)
 
 
 def exit_error(err_msg: str):
@@ -336,76 +336,125 @@ def match_pattern(
     return False
 
 
-def extract_value(source: Any,
-                  extractor: Callable[[str,
-                                       Optional[ContextData],
-                                       Optional[Dict[str, Any]]],
-                                      Optional[Dict[str, Any]]],
-                  dx: Optional[ContextData],
-                  node: Optional[Dict[str, Any]] = None) -> Any:
-    """ Extract value including dt expression
+class Formatter:
+    def __init__(self, start_marker: str, end_marker: str, keep_symbol_to_null: bool):
+        if not start_marker:
+            raise ValueError('start-marker is required.')
 
-    :param source: The value to be extracted that may include dt expressions.
-    :param extractor: The extractor to get real value within ${dt}.
-    :param dx: The demisto context.
-    :param node: The current node.
-    :return: The value extracted.
-    """
-    def _extract(source: str,
-                 extractor: Optional[Callable[[str,
-                                               Optional[ContextData],
-                                               Optional[Dict[str, Any]]],
-                                              Any]],
-                 dx: Optional[ContextData],
-                 node: Optional[Dict[str, Any]],
-                 si: int,
-                 endc: Optional[str]) -> Tuple[Any, int]:
-        val = None
+        self.__start_marker = start_marker
+        self.__end_marker = end_marker
+        self.__keep_symbol_to_null = keep_symbol_to_null
+
+    @staticmethod
+    def __is_end_mark(source: str, ci: int, end_marker: str) -> bool:
+        if end_marker:
+            return source[ci:ci + len(end_marker)] == end_marker
+        else:
+            c = source[ci]
+            if c.isspace():
+                return True
+            elif c.isascii():
+                return c != '_' and not c.isalnum()
+            else:
+                return False
+
+    def __extract(self,
+                  source: str,
+                  extractor: Optional[Callable[[str,
+                                                Optional[ContextData],
+                                                Optional[Dict[str, Any]]],
+                                               Any]],
+                  dx: Optional[ContextData],
+                  node: Optional[Dict[str, Any]],
+                  si: int,
+                  markers: Optional[Tuple[str, str]]) -> Tuple[Any, Optional[int]]:
+        """ Extract a template text, or an enclosed value within starting and ending marks
+
+        :param source: The template text, or the enclosed value starts with the next charactor of a start marker
+        :param extractor: The function to extract an enclosed value as DT
+        :param dx: The context data
+        :param node: The current node
+        :param si: The index of `source` to start extracting
+        :param markers: The start and end marker to find an end position for parsing an enclosed value.
+                        It must be None when the template text is given to `source`.
+        :return: The extracted value and index of `source` when parsing ended.
+                 The index is the next after the end marker when extracting the enclosed value.
+        """
+        out = None
         ci = si
         while ci < len(source):
-            if endc is not None and source[ci] == endc:
-                if not extractor:
-                    return '', ci + len(endc)
-                xval = extractor(source[si:ci], dx, node)
-                if val is None:
-                    val = xval
-                elif xval is not None:
-                    val = str(val) + str(xval)
-                si = ci = ci + len(endc)
-                endc = None
-            else:
-                nextec = {'(': ')', '{': '}',
-                          '[': ']', '"': '"', "'": "'"}.get(source[ci])
-                if nextec:
-                    _, ci = _extract(source, None, dx, node, ci + 1, nextec)
-                elif extractor and source[ci:ci + 2] == '${':
-                    if si != ci:
-                        val = source[si:ci] if val is None else str(val) + source[si:ci]
-                    si = ci = ci + 2
-                    endc = '}'
-                elif source[ci] == '\\':
-                    ci += 2
+            if markers is not None and Formatter.__is_end_mark(source, ci, markers[1]):
+                key = source[si:ci] if out is None else str(out) + source[si:ci]
+                if extractor:
+                    if (xval := extractor(key, dx, node)) is None and self.__keep_symbol_to_null:
+                        xval = markers[0] + key + markers[1]
                 else:
-                    ci += 1
-        if not extractor:
-            return ('', ci)
-        elif si >= len(source):
-            return (val, 0)
-        elif val is None:
-            return (source[si:], 0)
-        else:
-            return (str(val) + source[si:], 0)
+                    xval = key
+                return xval, ci + len(markers[1])
+            elif extractor and source[ci:ci + len(self.__start_marker)] == self.__start_marker:
+                xval, ei = self.__extract(source, extractor, dx, node,
+                                          ci + len(self.__start_marker),
+                                          (self.__start_marker, self.__end_marker))
+                if si != ci:
+                    out = source[si:ci] if out is None else str(out) + source[si:ci]
 
-    if isinstance(source, dict):
-        return {
-            extract_value(k, extractor, dx, node): extract_value(v, extractor, dx, node)
-            for k, v in source.items()}
-    elif isinstance(source, list):
-        return [extract_value(v, extractor, dx, node) for v in source]
-    elif isinstance(source, str):
-        return _extract(source, extractor, dx, node, 0, None)[0] if source else ''
-    else:
-        return source
+                if ei is None:
+                    xval = self.__start_marker
+                    ei = ci + len(self.__start_marker)
+
+                if out is None:
+                    out = xval
+                elif xval is not None:
+                    out = str(out) + str(xval)
+                si = ci = ei
+            elif markers is None:
+                ci += 1
+            elif endc := {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'"}.get(source[ci]):
+                _, ei = self.__extract(source, None, dx, node, ci + 1, (source[ci], endc))
+                ci = ci + 1 if ei is None else ei
+            elif source[ci] == '\\':
+                ci += 2
+            else:
+                ci += 1
+
+        if markers is not None:
+            # unbalanced braces, brackets, quotes, etc.
+            return None, None
+        elif not extractor:
+            return None, ci
+        elif si >= len(source):
+            return out, ci
+        elif out is None:
+            return source[si:], ci
+        else:
+            return str(out) + source[si:], ci
+
+    def build(self,
+              template: Any,
+              extractor: Optional[Callable[[str,
+                                            Optional[ContextData],
+                                            Optional[Dict[str, Any]]],
+                                           Any]],
+              dx: Optional[ContextData],
+              node: Optional[Dict[str, Any]]) -> Any:
+        """ Format a text from a template including DT expressions
+
+        :param template: The template.
+        :param extractor: The extractor to get real value within ${dt}.
+        :param dx: The context instance.
+        :param node: The current node.
+        :return: The text built from the template.
+        """
+        if isinstance(template, dict):
+            return {
+                self.build(k, extractor, dx, node): self.build(v, extractor, dx, node)
+                for k, v in template.items()}
+        elif isinstance(template, list):
+            return [self.build(v, extractor, dx, node) for v in template]
+        elif isinstance(template, str):
+            return self.__extract(template, extractor, dx, node, 0, None)[0] if template else ''
+        else:
+            return template
 
 
 def extract_dt(dtstr: str,
@@ -414,11 +463,28 @@ def extract_dt(dtstr: str,
     """ Extract dt expression
 
     :param dtstr: The dt expressions (string within ${}).
+    :param dx: The context instance.
+    :param node: The current node.
+    :return: The value extracted.
+    """
+    try:
+        return dx.get(dtstr, node) if dx else dtstr
+    except Exception as err:
+        demisto.debug(f'failed to extract dt from "{dtstr=}". Error: {err}')
+        return None
+
+
+def extract_value(source: Any,
+                  dx: Optional[ContextData],
+                  node: Optional[Dict[str, Any]] = None) -> Any:
+    """ Extract value including dt expression
+
+    :param source: The value to be extracted that may include dt expressions.
     :param dx: The demisto context.
     :param node: The current node.
     :return: The value extracted.
     """
-    return dx.get(dtstr, node) if dx else dtstr
+    return Formatter('${', '}', False).build(source, extract_dt, dx, node)
 
 
 def get_parent_child(root: dict,
@@ -472,12 +538,7 @@ class ExtFilter:
     def __conds_extract_keys(
             self, conds: Dict[str, Any], node: Any) -> Dict[str, Any]:
         return {
-            extract_value(
-                k,
-                extract_dt,
-                self.__dx,
-                node): v for k,
-            v in conds.items()}
+            extract_value(k, self.__dx, node): v for k, v in conds.items()}
 
     def match_value(self, lhs: Any, optype: str, rhs: Any) -> bool:
         """ Matching with the conditional operator
@@ -1717,7 +1778,7 @@ class ExtFilter:
         :param node: The current node.
         :return: The value extracted.
         """
-        return extract_value(source, extract_dt, self.__dx, node)
+        return extract_value(source, self.__dx, node)
 
     def parse_conds_json(
             self,
@@ -1746,7 +1807,7 @@ class ExtFilter:
         :param node: The current node.
         :return: The value extracted.
         """
-        return extract_value(self.parse_conds_json(jstr), extract_dt, self.__dx, node)
+        return extract_value(self.parse_conds_json(jstr), self.__dx, node)
 
 
 def main():
