@@ -3,16 +3,12 @@ import json
 from Tests.scripts.utils import logging_wrapper as logging
 import sys
 import time
-import os
 import requests
-import logging
 from Tests.scripts.utils.log_util import install_logging
-install_logging('create_test_branch.log', logger=logging)
+
 
 GITLAB_CONTENT_PIPELINES_BASE_URL = 'http://code.pan.run/api/v4/projects/2596/pipelines/'  # disable-secrets-detection
-TIMEOUT = 60 * 60 * 6
-
-requests.packages.urllib3.disable_warnings()
+TIMEOUT = 60 * 60 * 6  # 6 hours - TODO - Decrease after replacing id-set with graph
 
 
 def get_pipeline_info(pipeline_id, token):
@@ -66,6 +62,8 @@ def get_job_status(job_name, pipelines_jobs_response):
 
 
 def main():
+    install_logging('wait_for_upload.log', logger=logging)
+
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('-g', '--gitlab-api-token', help='Github api token')
     arg_parser.add_argument('-p', '--pipeline-id', help='Pipeline id')
@@ -98,7 +96,6 @@ def main():
         sys.exit(1)
 
     logging.info(f'The upload has finished. See pipeline here: {pipeline_url}')
-    # TODO: check why 'logging' logs are not present in gitlab build
 
 
 if __name__ == "__main__":

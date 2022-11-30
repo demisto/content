@@ -12,13 +12,13 @@ from Tests.Marketplace.marketplace_services import init_storage_client
 from Tests.Marketplace.upload_packs import download_and_extract_index
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
-from Tests.scripts.utils.log_util import install_logging
+
 
 MSG_DICT = {
     "verify_new_pack": "verified the new pack in the index and that version 1.0.0 zip exists under the pack path",
     "verify_modified_pack": "verified the packs new version is in the index and that all the new items are present in the pack",
-    "verify_new_version": "verified the new pack's version exists in the index and that the release notes is parsed correctly in the "
-                          "changelog",
+    "verify_new_version": "verified the new pack's version exists in the index and that the release notes is parsed correctly "
+                          "in the changelog",
     "verify_rn": "verified the content of the release notes is in the changelog under the right version",
     "verify_hidden": "verified the pack does not exist in index",
     "verify_readme": "verified the readme content is parsed correctly and that there was no version bump "
@@ -40,27 +40,23 @@ def read_json(path):
 def logger(func):
     @functools.wraps(func)
     def wrapper(self, *args, **kwargs):
+
         logging.info(f"Starting validation - {func.__name__} for pack '{args[0]}'")
-        logging.debug(f"{args=}")
-        logging.debug(f"{kwargs=}")
-        # print(f'Starting {func.__name__}')
         try:
             result, pack_id = func(self, *args, **kwargs)
             self.is_valid = self.is_valid and result
-            
+
             if not result:
                 raise Exception(f"Failed when running validation - {func.__name__}")
 
             logging.info(f"Successful {MSG_DICT[func.__name__]} for pack {pack_id}.")
-            # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} for {pack_id} is {result}')
-            # # TODO: remove all prints once logging is present in the gitlab build
+
         except FileNotFoundError as e:
             logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
-            # print(f'Result of {func.__name__} - {MSG_DICT[func.__name__]} is False:\nException: {e}')
             self.is_valid = False
+
         except Exception as e:
             logging.info(f"Failed to verify {func.__name__} for pack {pack_id} -\n{e}")
-
     return wrapper
 
 
@@ -73,12 +69,15 @@ class GCP:
         self.extracting_destination = tempfile.mkdtemp()
         self.index_path, _, _ = download_and_extract_index(self.storage_bucket, self.extracting_destination,
                                                            self.storage_base_path)
-        # TODO: for testing, use these lines instead of the 2 above
+        # TODO: FOR TESTING - use these lines instead of the 2 above
         # self.extracting_destination = os.path.join(os.getcwd(), 'results')
+        # TODO: FOR TESTING - download the index once to this path and then work with it
         # self.index_path = '/Users/nmaimon/dev/demisto/content/Utils/test_upload_flow/results/index'
-        # TODO: download the index once to this path and then work with it, instead of downloading it again and again
 
     def download_and_extract_pack(self, pack_id, pack_version):
+        """
+        Downloads and extracts the pack with version zip from the bucket
+        """
         pack_path = os.path.join(self.storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
         pack = self.storage_bucket.blob(pack_path)
         if pack.exists():
@@ -91,6 +90,9 @@ class GCP:
             raise FileNotFoundError(f'{pack_id} pack of version {pack_version} was not found in the bucket')
 
     def download_image(self, pack_id):
+        """
+        Downloads the pack image.
+        """
         image_path = os.path.join(self.storage_base_path, pack_id, f"{pack_id}_image.png")
         image = self.storage_bucket.blob(image_path)
         if image.exists():
@@ -105,13 +107,16 @@ class GCP:
         return os.path.exists(pack_path)
 
     def get_changelog_rn_by_version(self, pack_id, version):
+        """
+        Returns the release notes of a pack from the changelog file
+        """
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
         changelog = read_json(changelog_path)
         return changelog.get(version, {}).get('releaseNotes', '')
 
     def get_pack_metadata(self, pack_id):
         """
-        returns the metadata.json of the latest pack version from the pack's zip
+        Returns the metadata.json of the latest pack version from the pack's zip
         """
         metadata_path = os.path.join(self.extracting_destination, 'index', pack_id, 'metadata.json')
         return read_json(metadata_path)
@@ -122,15 +127,17 @@ class GCP:
         """
         not_exists = []
         for item_path in item_file_paths:
-        # item_name_with_extension = Path(item_file_paths).name
             if not os.path.exists(os.path.join(self.extracting_destination, item_path)):
                 not_exists.append(item_path)
-        # exists = os.path.exists(extracted_item_path)
+
         if not_exists:
             raise FileNotFoundError(f"The following files were not found in the bucket: '{not_exists}'")
         return True
 
     def get_index_json(self):
+        """
+        Returns the index.json file from the bucket
+        """
         index_json_path = os.path.join(self.storage_base_path, 'index.json')
         index_json = self.storage_bucket.blob(index_json_path)
         if index_json.exists():
@@ -141,18 +148,33 @@ class GCP:
             raise FileNotFoundError('index.json was not found in the bucket')
 
     def get_flow_commit_hash(self):
+        """
+        Returns the flow commit hash from the index.json file
+
+        Returns:
+            str: The last flow commit hash
+        """
         index_json = self.get_index_json()
         return index_json.get('commit')
 
     def get_max_version(self, pack_id):
+        """
+        Returns the max version of a given pack
+        """
         changelog = self.get_changelog(pack_id)
-        return str(max([Version(key) for key, value in changelog.items()]))
+        return str(max([Version(key) for key in changelog.keys()]))
 
     def get_changelog(self, pack_id):
+        """
+        Returns the changelog file of a given pack from the index
+        """
         changelog_path = os.path.join(self.index_path, pack_id, 'changelog.json')
         return read_json(changelog_path)
 
     def get_pack_readme(self, pack_id):
+        """
+        Returns the pack README file
+        """
         item_path = os.path.join(self.extracting_destination, pack_id, 'README.md')
         with open(item_path, 'r') as f:
             return f.read()
@@ -234,7 +256,6 @@ class BucketVerifier:
         """
         Verify the path of the item is modified
         """
-
         self.gcp.download_and_extract_pack(pack_id, self.versions[pack_id])
         modified_item_exist = self.gcp.is_items_in_pack([modified_item_path])
         items_exists = [self.gcp.is_items_in_pack(item_file_paths) for item_file_paths
@@ -306,7 +327,7 @@ class BucketVerifier:
         # Case 9: Verify changed image - Armis
         self.verify_new_image('Armis', Path(
             __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png')
-        
+
         if self.bucket_name == XSIAM_BUCKET:
             self.run_xsiam_bucket_validations()
 
@@ -357,7 +378,7 @@ def main():
     is_valid = True
     if storage_bucket_name != 'All':
         if storage_bucket_name not in [XSOAR_BUCKET, XSIAM_BUCKET]:
-            logging.error('Storage bucket is not valid.')
+            logging.error('The given storage bucket is invalid.')
             sys.exit(1)
 
         is_valid = validate_bucket(service_account, storage_base_path, storage_bucket_name, versions_dict, items_dict)
@@ -371,5 +392,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()        
+    main()
     logging.success('XSOAR and XSIAM buckets are valid!')

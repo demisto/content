@@ -55,7 +55,7 @@ def get_pack_content_paths(pack_path: Path, marketplace='xsoar'):
 
     for content_item_type in sub_dirs:
         if content_item_type not in ['ReleaseNotes', 'TestPlaybooks']:
-            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path), 
+            content_dict[content_item_type] = ['/'.join(p.parts[1:]) for p in Path(os.path.join(str(new_pack_path),
                                                                                                 content_item_type)).glob('*')]
     shutil.rmtree('./content_packs')
     return content_dict
@@ -67,6 +67,29 @@ def modify_item_path(item: Path, new_name: str):
     """
     parent = item.parent
     item.rename(parent.joinpath(new_name))
+
+
+def get_current_version(pack: Path):
+    """
+    Returns the current version of a pack
+    """
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    return base_metadata['currentVersion']
+
+
+def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
+    """
+    Creates a new branch in a given repository
+    """
+    branch = repo.create_head(new_branch_name)
+    branch.checkout()
+    logging.info(f"Created new branch {repo.active_branch}")
+    return branch
+
+
+# TEST CHANGES FUNCTIONS
 
 
 def add_changed_pack(func):
@@ -89,8 +112,7 @@ def add_changed_pack(func):
 @add_changed_pack
 def create_new_pack():
     """
-        Creates new pack with given pack name
-        returns a dict with the created content items in the form of {item_type: item_path}
+    Creates a new pack with a given pack name
     """
     content_path = Path(__file__).parent.parent.parent
     source_path = Path(__file__).parent / 'TestUploadFlow'
@@ -104,6 +126,9 @@ def create_new_pack():
 
 @add_changed_pack
 def add_dependency(base_pack: Path, new_depndency_pack: Path):
+    """
+    Adds a new dependency to a given pack
+    """
     metadata_json = base_pack / 'pack_metadata.json'
     with metadata_json.open('r') as fr:
         base_metadata = json.load(fr)
@@ -118,6 +143,9 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
 
 @add_changed_pack
 def enhance_release_notes(pack: Path):
+    """
+    Bumping a new version for a given pack with release notes
+    """
     subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
                     f'{pack}', "--force", '--text', 'testing adding new RN'], stdout=subprocess.DEVNULL)
     return pack, get_current_version(pack), None
@@ -125,6 +153,9 @@ def enhance_release_notes(pack: Path):
 
 @add_changed_pack
 def change_image(pack: Path):
+    """
+    Changes an existing image of a given pack
+    """
     new_image = pack.parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
         shutil.copy(new_image, p)
@@ -133,6 +164,9 @@ def change_image(pack: Path):
 
 @add_changed_pack
 def update_existing_release_notes(pack: Path, version: str):
+    """
+    Modifies an existing pack release notes
+    """
     version_rn = version.replace('.', '_')
     path = pack / 'ReleaseNotes' / f'{version_rn}.md'
     if not path.exists():
@@ -145,6 +179,9 @@ def update_existing_release_notes(pack: Path, version: str):
 
 @add_changed_pack
 def set_pack_hidden(pack: Path):
+    """
+    Sets a given pack to hidden
+    """
     metadata_json = pack / 'pack_metadata.json'
     with metadata_json.open('r') as f:
         base_metadata = json.load(f)
@@ -156,6 +193,9 @@ def set_pack_hidden(pack: Path):
 
 @add_changed_pack
 def update_readme(pack: Path):
+    """
+    Updates a pack README file
+    """
     for path in pack.glob('**/*README.md'):
         with path.open('a') as f:
             f.write("readme test upload flow")
@@ -165,8 +205,8 @@ def update_readme(pack: Path):
 @add_changed_pack
 def create_failing_pack(pack: Path):
     """
-    Modify a pack such that the upload fails on it - modifying a pack
-    without adding release notes and without bumping the version.
+    Modify a pack such that the upload fails on it - bumping the pack version
+    without adding release notes.
     """
     metadata_json = pack / 'pack_metadata.json'
     with metadata_json.open('r') as f:
@@ -193,7 +233,7 @@ def modify_pack(pack: Path, integration: str):
 @add_changed_pack
 def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
-    Modify modeling rules path, in order to verify that the pack was uploaded again
+    Modify modeling rules path, in order to verify that the pack was uploaded correctly and that the path was changed
     """
     modify_item_path(modeling_rule / f'{old_name}.xif', f'{new_name}.xif')
     modify_item_path(modeling_rule / f'{old_name}.yml', f'{new_name}.yml')
@@ -207,7 +247,7 @@ def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str
 @add_changed_pack
 def modify_script_path(script: Path, old_name: str, new_name: str):
     """
-    Modify script path, in order to verify that the pack was uploaded again and that the path was changed.
+    Modify script path, in order to verify that the pack was uploaded correctly and that the path was changed
     """
     modify_item_path(script / f'{old_name}.py', f'{new_name}.py')
     modify_item_path(script / f'{old_name}.yml', f'{new_name}.yml')
@@ -218,26 +258,9 @@ def modify_script_path(script: Path, old_name: str, new_name: str):
     return pack_path, get_current_version(pack_path), get_pack_content_paths(pack_path)
 
 
-def get_current_version(pack: Path):
-    metadata_json = pack / 'pack_metadata.json'
-    with metadata_json.open('r') as f:
-        base_metadata = json.load(f)
-    return base_metadata['currentVersion']
-
-
-def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
-    branch = repo.create_head(new_branch_name)
-    branch.checkout()
-    logging.info(f"Created new branch {repo.active_branch}")
-    return branch
-
-
 def do_changes_on_branch(packs_path: Path):
     """
     Makes the test changes on the created branch
-
-    Args:
-        packs_path (Path): Path to the packs.
     """
     # Case 1: Verify new pack - TestUploadFlow
     new_pack_path, _, _ = create_new_pack()
@@ -256,7 +279,7 @@ def do_changes_on_branch(packs_path: Path):
 
     # Case 6: Verify pack is set to hidden - Microsoft365Defender
     # TODO: fix after hidden pack mechanism is fixed - CIAC-3848
-    # set_pack_hidden(packs_path / 'Microsoft365Defender') 
+    # set_pack_hidden(packs_path / 'Microsoft365Defender')
 
     # Case 7: Verify changed readme - Maltiverse
     update_readme(packs_path / 'Maltiverse')
@@ -276,6 +299,9 @@ def do_changes_on_branch(packs_path: Path):
                        'XDRSyncScript', 'XDRSyncScript_new_name')
 
     logging.info("Finished making test changes on the branch")
+
+
+# MAIN FUNCTION
 
 
 def parse_arguments() -> argparse.Namespace:
