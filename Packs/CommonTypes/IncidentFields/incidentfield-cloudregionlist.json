@@ -19,7 +19,8 @@
     "hidden": false,
     "openEnded": true,
     "associatedTypes": [
-        "Cortex XDR - XCLOUD"
+        "Cortex XDR - XCLOUD",
+        "Cortex XDR - XCLOUD Cryptomining"
     ],
     "associatedToAll": false,
     "unmapped": false,
