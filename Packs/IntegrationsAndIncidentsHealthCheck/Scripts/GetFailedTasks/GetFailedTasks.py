@@ -144,9 +144,8 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
         try:
             tasks = get_incident_tasks_using_internal_request(incident)
         except Exception:
+            # if using_internal_request fails, using rest api call
             tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
-
-
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
     if task_outputs:
