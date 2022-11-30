@@ -315,6 +315,9 @@ def build_fetch_query(dem_params):
             field_trimmed = field.strip()
             fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
 
+    if 'sort 0 _time' not in fetch_query:
+        fetch_query = fetch_query + ' | sort 0 _time'
+        demisto.debug('adding the " | sort 0 _time" to sort results by time')
     return fetch_query
 
 
@@ -337,6 +340,8 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
     kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
     fetch_query = build_fetch_query(dem_params)
 
+    demisto.debug('[SplunkPy] fetch query = {}'.format(fetch_query))
+    demisto.debug('[SplunkPy] oneshot query args = {}'.format(kwargs_oneshot))
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
@@ -356,8 +361,9 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
             notables.append(notable_incident)
+            demisto.debug('[SplunkPy] - Fetched incident {} to be created.'.format(item.get('event_id', incident_id)))
         else:
-            extensive_log('[SplunkPy] SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
+            demisto.debug('[SplunkPy] - Dropped incident {} due to duplication.'.format(item.get('event_id', incident_id)))
 
     current_epoch_time = int(time.time())
     extensive_log('[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
