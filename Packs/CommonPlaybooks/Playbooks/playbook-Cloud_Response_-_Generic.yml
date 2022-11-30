@@ -240,6 +240,10 @@ tasks:
         complex:
           root: alertJson._all_events
           accessor: actor_effective_username
+      sourceIP:
+        complex:
+          root: alertJson._all_events
+          accessor: caller_ip
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -309,6 +313,10 @@ tasks:
         complex:
           root: alertJson._all_events
           accessor: actor_effective_username
+      sourceIP:
+        complex:
+          root: alertJson._all_events
+          accessor: caller_ip
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -443,6 +451,10 @@ tasks:
         complex:
           root: alertJson._all_events
           accessor: identity_name
+      sourceIP:
+        complex:
+          root: alertJson._all_events
+          accessor: caller_ip
     separatecontext: false
     continueonerrortype: ""
     loop:
