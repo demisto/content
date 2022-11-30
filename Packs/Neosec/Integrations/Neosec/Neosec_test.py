@@ -14,8 +14,8 @@ import json
 
 from Neosec import NeosecClient, fetch_incidents, NeosecNodeClient, set_alert_status
 
-MOCK_URL = "http://www.fake.com"
-MOCK_NODE_URL = "http://www.node_fake.com"
+MOCK_URL = "http://123-fake-api.com"
+MOCK_NODE_URL = "http://124-fake-api.com"
 MOCK_TENANT_KEY = "fake_tenant"
 MOCK_FIRST_TIME_TIMESTAMP = 0
 
@@ -53,7 +53,7 @@ MOCK_ALL_EVENTS = {
                     "value_type": "String"
                 },
                 {
-                    "value": "141.226.145.7",
+                    "value": "127.0.0.1",
                     "name": "IP",
                     "pretty_name": None,
                     "class": "ip",
@@ -80,7 +80,7 @@ MOCK_ALL_EVENTS = {
                 }
             ],
             "caller_ips": [
-                "141.226.145.7"
+                "127.0.0.1"
             ],
             "labels": [
                 "OWASP API1",
@@ -112,7 +112,7 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Endpoint 'POST /v1/oauth2/token' in service 'Authentication'\n* It received 30"
-                           " or more bad requests in the last hour from IP 141.226.145.7\n* The average bad "
+                           " or more bad requests in the last hour from IP 127.0.0.1\n* The average bad "
                            "request ratio per 10 minutes per IP for this endpoint was 20 in the last 5 days.",
             "category": "Account Takeover",
             "source": None,
@@ -120,7 +120,7 @@ MOCK_ALL_EVENTS = {
             "sequence_ids": None,
             "entities": [
                 {
-                    "value": "141.226.145.7",
+                    "value": "127.0.0.1",
                     "name": "IP",
                     "pretty_name": None,
                     "class": "ip",
@@ -147,7 +147,7 @@ MOCK_ALL_EVENTS = {
                 }
             ],
             "caller_ips": [
-                "141.226.145.7"
+                "127.0.0.1"
             ],
             "labels": [
                 "OWASP API2",
@@ -210,7 +210,7 @@ MOCK_ALL_EVENTS = {
             "status": "Open",
             "severity": "Low",
             "description": "* Query parameter 'total_required' in endpoint 'GET /v2/invoicing/invoices' "
-                           "in service 'Invoicing'\n* IP '141.226.145.7' used 52 unique 'total_required'"
+                           "in service 'Invoicing'\n* IP '127.0.0.1' used 52 unique 'total_required'"
                            " query parameter values in 10 minutes\n* 5 of IP requests returned 200 OK\n*"
                            " On average, a single IP uses 6 unique query parameter values in 10 minutes, "
                            "failing 2 of these requests.",
@@ -237,7 +237,7 @@ MOCK_ALL_EVENTS = {
                     "value_type": "String"
                 },
                 {
-                    "value": "141.226.145.7",
+                    "value": "127.0.0.1",
                     "name": "IP",
                     "pretty_name": None,
                     "class": "ip",
@@ -264,7 +264,7 @@ MOCK_ALL_EVENTS = {
                 }
             ],
             "caller_ips": [
-                "141.226.145.7"
+                "127.0.0.1"
             ],
             "labels": [
                 "OWASP API1",
@@ -378,7 +378,7 @@ MOCK_ALL_EVENTS = {
                 }
             ],
             "caller_ips": [
-                "141.226.145.7"
+                "127.0.0.1"
             ],
             "labels": [
                 "OWASP API9",
