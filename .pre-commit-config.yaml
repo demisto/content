@@ -8,10 +8,7 @@ repos:
             exclude: .devcontainer/|.vscode|Pipfile.lock
           - id: check-ast
           - id: check-toml
-          - id: check-xml
-
           - id: check-merge-conflict
-          - id: check-docstring-first
 
           # formatting
           - id: trailing-whitespace
@@ -60,7 +57,3 @@ repos:
       rev: v1.0.0
       hooks:
           - id: check-poetry
-    - repo: https://github.com/jendrikseipp/vulture
-      rev: "v2.3"
-      hooks:
-          - id: vulture
