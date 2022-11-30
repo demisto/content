@@ -23,7 +23,7 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
+        token_retrieval_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
                             if 'Client' not in connection_type \
                             else None
 
