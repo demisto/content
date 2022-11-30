@@ -970,7 +970,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.38400
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: false
   longRunning: false
