@@ -8,7 +8,6 @@ import pytest
     ({"unknown_key": "some key"}.items(), {})
 ])
 def test_get_known_args_from_input(input, expected):
-
     """
     Given:
         - A dictionary view with Jira fields
