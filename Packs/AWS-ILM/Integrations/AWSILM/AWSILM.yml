@@ -374,7 +374,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
   isfetch: false
   longRunning: false
   longRunningPort: false
