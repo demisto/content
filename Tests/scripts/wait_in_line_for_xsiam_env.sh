@@ -1,5 +1,5 @@
 #! /bin/bash
-# Script that locks XSIAM machines for testing.
+# Script that locks claud machines for testing.
 # We lock one machine for each job. The lock identifier contains $CI_JOB_ID.
 # We release the lock after the job ends. Other jobs check that the job's status that locking the machine is not `running`.
 # If there is a lock for some machine, and its job status is not running, the lock is removed.
@@ -12,7 +12,6 @@
 #   Consts
 #==================================
 
-export GCS_LOCKS_PATH=gs://xsoar-ci-artifacts/content-locks-xsiam
 export LOCK_IDENTIFIER=lock
 export ALLOWED_STATES=running
 export JOBS_STATUS_API=https://code.pan.run/api/v4/projects/2596/jobs   # disable-secrets-detection # check jobs in content repo
@@ -182,7 +181,7 @@ function poll_for_env() {
           echo "Environment $TEST_MACHINE in use. Trying another..."
         else
           echo "Environment $TEST_MACHINE not in use. Removing unnecessary lock files."
-          gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/$TEST_MACHINE-lock-*"
+          gsutil rm $GCS_LOCKS_PATH/$TEST_MACHINE-lock-*"
           lock_machine	# create lock file, writes ChosenMachine file
           break
         fi
