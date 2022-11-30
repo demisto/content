@@ -1041,7 +1041,7 @@ Create a new address object
 | PrismaAccess.CreatedAddress.name | String | Address name. | 
 
 #### Command example
-```!prisma-access-create-address-object folder="Shared" ip_netmask="10.10.10.10/32" name="XSOAR Test Object A" description="Test Object Creation from XSOAR"```
+```!prisma-access-create-address-object folder="Shared" ip_netmask="1.1.1.1/32" name="XSOAR Test Object A" description="Test Object Creation from XSOAR"```
 #### Context Example
 ```json
 {
@@ -1050,7 +1050,7 @@ Create a new address object
             "description": "Test Object Creation from XSOAR",
             "folder": "Shared",
             "id": "########-####-####-####-############",
-            "ip_netmask": "10.10.10.10/32",
+            "ip_netmask": "1.1.1.1/32",
             "name": "XSOAR Test Object A"
         }
     }
@@ -1062,7 +1062,7 @@ Create a new address object
 >### Address Object Created
 >|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| Test Object Creation from XSOAR | Shared | ########-####-####-####-############ | 10.10.10.10/32 | XSOAR Test Object A |
+>| Test Object Creation from XSOAR | Shared | ########-####-####-####-############ | 1.1.1.1/32 | XSOAR Test Object A |
 
 
 ### prisma-access-edit-address-object
@@ -1097,7 +1097,7 @@ Edit address object
 | PrismaAccess.EditedAddress.name | String | Address name. | 
 
 #### Command example
-```!prisma-access-edit-address-object id="########-####-####-####-############" ip_netmask="10.10.10.11/32" name="XSOAR Test Object B" description="XSOAR edited object"```
+```!prisma-access-edit-address-object id="########-####-####-####-############" ip_netmask="1.1.1.11/32" name="XSOAR Test Object B" description="XSOAR edited object"```
 #### Context Example
 ```json
 {
@@ -1106,7 +1106,7 @@ Edit address object
             "description": "XSOAR edited object",
             "folder": "Shared",
             "id": "########-####-####-####-############",
-            "ip_netmask": "10.10.10.11/32",
+            "ip_netmask": "1.1.1.11/32",
             "name": "XSOAR Test Object B"
         }
     }
@@ -1118,7 +1118,7 @@ Edit address object
 >### Address Object Edited
 >|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | ########-####-####-####-############ | 10.10.10.11/32 | XSOAR Test Object B |
+>| XSOAR edited object | Shared | ########-####-####-####-############ | 1.1.1.11/32 | XSOAR Test Object B |
 
 
 ### prisma-access-delete-address-object
@@ -1158,7 +1158,7 @@ Delete address object
             "description": "XSOAR edited object",
             "folder": "Shared",
             "id": "########-####-####-####-############",
-            "ip_netmask": "10.10.10.11/32",
+            "ip_netmask": "1.1.1.11/32",
             "name": "XSOAR Test Object B"
         }
     }
@@ -1170,7 +1170,7 @@ Delete address object
 >### Address Object Deleted
 >|Description|Folder|Id|Ip Netmask|Name|
 >|---|---|---|---|---|
->| XSOAR edited object | Shared | ########-####-####-####-############ | 10.10.10.11/32 | XSOAR Test Object B |
+>| XSOAR edited object | Shared | ########-####-####-####-############ | 1.1.1.11/32 | XSOAR Test Object B |
 
 
 ### prisma-access-list-address-objects
@@ -1221,14 +1221,14 @@ List address objects.
             {
                 "folder": "Shared",
                 "id": "########-####-####-####-############",
-                "ip_netmask": "10.0.0.0/16",
+                "ip_netmask": "1.1.1.1/16",
                 "name": "GP-Users"
             },
             {
                 "description": "Test Object Creation from XSOAR",
                 "folder": "Shared",
                 "id": "########-####-####-####-############",
-                "ip_netmask": "10.10.10.10/32",
+                "ip_netmask": "1.1.1.1/32",
                 "name": "XSOAR Test Object B"
             }
         ]
@@ -1242,6 +1242,6 @@ List address objects.
 >|Name|Description|Ip Netmask|Fqdn|
 >|---|---|---|---|
 >| Palo Alto Networks Sinkhole | Palo Alto Networks sinkhole |  | sinkhole.paloaltonetworks.com |
->| GP-Users |  | 10.0.0.0/16 |  |
->| XSOAR Test Object B | Test Object Creation from XSOAR | 10.10.10.10/32 |  |
+>| GP-Users |  | 1.1.1.1/16 |  |
+>| XSOAR Test Object B | Test Object Creation from XSOAR | 1.1.1.1/32 |  |
 

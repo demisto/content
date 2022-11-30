@@ -418,8 +418,8 @@ class Client(BaseClient):
                 try:
                     res = res.json()
                 except ValueError as exception:
-                    raise DemistoException('Failed to parse json object from response: {}'.format(res.content),
-                                           exception)
+                    raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
+                                           f'Error: {exception}')
 
                 if access_token := res.get('access_token'):
                     expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)

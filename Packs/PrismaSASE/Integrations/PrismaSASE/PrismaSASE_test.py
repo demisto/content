@@ -265,7 +265,8 @@ def test_get_security_rule_by_name_command(mocker, requests_mock, args):
 
     from PrismaSASE import get_security_rule_by_name_command
     mock_response = json.loads(load_mock_response('get-security-rule-by-name.json'))
-    mock_url = f'http://base_url/sse/config/v1/security-rules?folder=Shared&position=pre&name={args.get("name")}&limit=1&offset=0'
+    mock_url = f'http://base_url/sse/config/v1/security-rules?folder=' \
+               f'Shared&position=pre&name={args.get("name")}&limit=1&offset=0'
 
     requests_mock.get(mock_url, json=mock_response)
     client = Client(base_url='http://base_url',
@@ -392,7 +393,7 @@ def test_delete_security_rule_command(mocker, requests_mock, args):
         {"name": "TestXSOARAddress",
          "folder": "Shared",
          "description": "Test address created by xsoar",
-         "ip_netmask": "192.168.1.0/24",
+         "ip_netmask": "1.1.1.1/24",
          "tsg_id": "1234567"}
     ]
 )
@@ -403,7 +404,7 @@ def test_create_address_object_command(mocker, requests_mock, args):
         "description": "Test address created by xsoar",
         "folder": "Shared",
         "id": "####f837-379e-4c48-a967-####7a52ec14",
-        "ip_netmask": "192.168.1.0/24",
+        "ip_netmask": "1.1.1.1/24",
         "name": "TestXSOARAddress"}
 
     requests_mock.post('http://base_url/sse/config/v1/addresses', json=mock_response)
@@ -434,7 +435,7 @@ def test_create_address_object_command(mocker, requests_mock, args):
         {"name": "TestXSOARAddress",
          "folder": "Shared",
          "description": "Test address created by xsoar changed",
-         "ip_netmask": "192.168.2.0/24",
+         "ip_netmask": "1.1.1.1/24",
          "id": "####f837-379e-4c48-a967-####7a52ec14",
          "tsg_id": "1234567"}
     ]
@@ -446,7 +447,7 @@ def test_edit_address_object_command(mocker, requests_mock, args):
         "description": "Test address created by xsoar changed",
         "folder": "Shared",
         "id": "####f837-379e-4c48-a967-####a52ec14",
-        "ip_netmask": "192.168.2.0/24",
+        "ip_netmask": "1.1.1.1/24",
         "name": "TestXSOARAddress"}
 
     mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
@@ -488,7 +489,7 @@ def test_delete_address_object_command(mocker, requests_mock, args):
         "description": "Test address created by xsoar changed",
         "folder": "Shared",
         "id": "####f837-379e-4c48-a967-####7a52ec14",
-        "ip_netmask": "192.168.2.0/24",
+        "ip_netmask": "1.1.1.1/24",
         "name": "TestXSOARAddress"}
 
     mock_url = f'http://base_url/sse/config/v1/addresses/{args.get("id")}'
