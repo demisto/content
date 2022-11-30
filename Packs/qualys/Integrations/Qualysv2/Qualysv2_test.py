@@ -1185,14 +1185,14 @@ def test_input_validation():
     When
         - Any command is run
     Then
-        - the input_validation command will validate the command name exists 
+        - the input_validation command will validate the command name exists
     """
     assert Qualysv2.input_validation("qualys-asset-tag-list") is None
 
 
 def test_calculate_ip_original_amount():
     """
-    Given 
+    Given
         - A Parsed output, a dictionary that might contain a list of single ips and a list of ranges of ips.
         IP addresses and ranges are represented by a list of items, unless there's only a single item,
         then it's a string.
@@ -1241,7 +1241,7 @@ def test_build_ip_and_range_dicts():
             Returns: A list that has one list which consists of single value dictionaries of ips
              and another list which consists of single values dictionaries of ranges
     When
-        - build_ip_list_from_single_value or build_ip_list_output functions are run 
+        - build_ip_list_from_single_value or build_ip_list_output functions are run
     Then
         - build_ip_and_range_dicts will generate a list that has one list which consists of single value dictionaries of ips
              and another list which consists of single values dictionaries of ranges
