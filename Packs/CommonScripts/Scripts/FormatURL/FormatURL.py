@@ -395,6 +395,7 @@ class URLCheck(object):
             return len(self.modified_url), part
 
         elif char == '\\':
+            # Edge case of the url ending with quotes and an escape char before them
             if self.modified_url[index + 1] == "\"":
                 return len(self.modified_url), part
 
