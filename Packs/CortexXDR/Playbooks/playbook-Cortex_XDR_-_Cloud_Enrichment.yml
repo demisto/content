@@ -956,7 +956,34 @@ inputs:
   required: false
   description: A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook.
   playbookInputQuery:
-outputs: []
+outputs:
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: DBotScore
+  description: Indicator, Score, Type, Vendor
+  type: unknown
+- contextPath: Account
+  description: The account object.
+  type: unknown
+- contextPath: IAM
+  description: Generic IAM output.
+  type: unknown
+- contextPath: ASNType
+  description: Checks for cloud ASNs.
+  type: unknown
+- contextPath: isKnownRegion
+  description: Checks if any recent activity was seen in the region.
+  type: unknown
+- contextPath: isKnownProject
+  description: Checks if any recent activity was seen in the project.
+  type: unknown
+- contextPath: resourceCount
+  description: Involved resource count.
+  type: unknown
+- contextPath: uniqueRegionCount
+  description: Involved region distinct count.
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

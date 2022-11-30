@@ -212,7 +212,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -282,6 +282,8 @@ tasks:
     scriptarguments:
       ResolveIP:
         simple: "True"
+      InternalRange:
+        simple: inputs.InternalRange
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -929,6 +931,13 @@ inputs:
   required: false
   description: Whether to require an analyst review after the alert remediation.
   playbookInputQuery:
+- key: InternalRange
+  value:
+    simple:
+  required: false
+  description: A list of internal IP ranges to check IP addresses against.
+  playbookInputQuery:
+    InternalRange
 outputs: []
 tests:
 - No tests (auto formatted)

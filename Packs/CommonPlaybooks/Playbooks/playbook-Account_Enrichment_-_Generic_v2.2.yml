@@ -1412,6 +1412,32 @@ outputs:
 - contextPath: UserManagerDisplayName
   description: The display name of the user's manager.
   type: unknown
+- contextPath: MSGraphUser.ID
+  description: User's ID.
+- contextPath: MSGraphUser.DisplayName
+  description: User's display name.
+- contextPath: MSGraphUser.GivenName
+  description: User's given name.
+- contextPath: MSGraphUser.JobTitle
+  description: User's job title.
+- contextPath: MSGraphUser.Mail
+  description: User's mail address.
+- contextPath: MSGraphUser.Surname
+  description: User's surname.
+- contextPath: MSGraphUser.UserPrincipalName
+  description: User's principal name.
+- contextPath: MSGraphUserManager.Manager.ID
+  description: Manager's user ID.
+- contextPath: MSGraphUserManager.Manager.DisplayName
+  description: User's display name.
+- contextPath: MSGraphUserManager.Manager.GivenName
+  description: User's given name.
+- contextPath: MSGraphUserManager.Manager.Mail
+  description: User's mail address.
+- contextPath: MSGraphUserManager.Manager.Surname
+  description: User's surname.
+- contextPath: MSGraphUserManager.Manager.UserPrincipalName
+  description: User's principal name.
 tests:
 - Account Enrichment - Generic v2.1 - Test
 fromversion: 6.5.0
