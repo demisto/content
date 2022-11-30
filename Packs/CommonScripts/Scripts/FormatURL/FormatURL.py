@@ -393,7 +393,7 @@ class URLCheck(object):
 
         elif char in self.brackets:
             return len(self.modified_url), part
-       
+
         elif char == '\\':
             if self.modified_url[index + 1] == "\"":
                 return len(self.modified_url), part
