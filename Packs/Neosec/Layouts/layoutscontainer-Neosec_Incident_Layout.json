@@ -329,7 +329,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "recommendations",
+                                "fieldId": "neosecrecommendations",
                                 "height": 106,
                                 "id": "55b9d830-5f62-11ed-a981-49b13658a962",
                                 "index": 1,
