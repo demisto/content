@@ -74,6 +74,14 @@
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_device_code",
+            "is_mockable": false,
+            "timeout": 700
+        },
+        {
+            "integrations": "Microsoft Teams Management",
+            "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
             "timeout": 700
         },
