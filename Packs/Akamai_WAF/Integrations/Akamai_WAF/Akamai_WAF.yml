@@ -1197,6 +1197,9 @@ script:
       required: true
     - description: whether to convert value to json format. yes/no
       name: value_to_json
+      predefined:
+      - 'yes'
+      - 'no'
     description: Generic JSON patch command for Papi Property Default Rule
     name: akamai-patch-papi-property-rule-generic
   - arguments:
