@@ -4,8 +4,6 @@
         "description": "test description",
         "id": "1234",
         "osType": "windows",
-        "scopeName": "scopeName",
-        "scopePath": "scopePath",
         "source": "source",
         "type": "type",
         "updatedAt": "1900-01-01T00:00:00",
