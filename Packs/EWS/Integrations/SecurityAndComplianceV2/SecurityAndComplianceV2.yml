@@ -975,7 +975,7 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.38895
+  dockerimage: devdemisto/pwsh-exchangev3:1.0.0.38894
   isfetch: false
   longRunning: false
   longRunningPort: false
