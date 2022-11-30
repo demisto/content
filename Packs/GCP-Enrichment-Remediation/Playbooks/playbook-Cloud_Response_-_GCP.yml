@@ -294,7 +294,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -624,7 +624,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1246,7 +1246,7 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: username
+            root: inputs.username
             transformers:
             - operator: uniq
         fieldassociated: ""
@@ -1485,7 +1485,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1621,8 +1621,7 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: alertJson._all_events
-            accessor: caller_ip
+            root: inputs.sourceIP
             transformers:
             - operator: uniq
         fieldassociated: ""
@@ -1766,7 +1765,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2042,6 +2041,11 @@ inputs:
   description: |-
     The access key name in the following format:
     projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}
+  playbookInputQuery:
+- key: sourceIP
+  value: {}
+  required: false
+  description: The source IP address of the attacker.
   playbookInputQuery:
 outputs: []
 tests:

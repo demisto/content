@@ -1,4 +1,4 @@
-This playbook provides response actions to GCP, the following are available for execution automatically/manually:
+This playbook provides response actions to GCP. The following are available for execution automatically/manually:
 - Resource remediation:
    - Delete the instance
    - Stop the instance
@@ -14,22 +14,22 @@ This playbook provides response actions to GCP, the following are available for 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Block IP - Generic v3
+* Block IP - Generic v3
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-Set
+* Set
 
 ### Commands
-* gcp-iam-service-account-delete
-* gcp-iam-service-account-key-delete
 * gcp-iam-service-account-disable
-* gcp-compute-stop-instance
-* gcp-compute-delete-instance
 * gcp-iam-service-account-key-disable
 * gsuite-user-delete
+* gcp-compute-stop-instance
+* gcp-iam-service-account-delete
+* gcp-iam-service-account-key-delete
+* gcp-compute-delete-instance
 
 ## Playbook Inputs
 ---
@@ -47,6 +47,7 @@ Set
 | resourceZone | The resource's zone. |  | Optional |
 | username | The username to take action on. |  | Optional |
 | accessKeyName | The access key name in the following format:<br/>projects/\{PROJECT_ID\}/serviceAccounts/\{ACCOUNT\}/keys/\{key\} |  | Optional |
+| sourceIP | The source IP address of the attacker. |  | Optional |
 
 ## Playbook Outputs
 ---
