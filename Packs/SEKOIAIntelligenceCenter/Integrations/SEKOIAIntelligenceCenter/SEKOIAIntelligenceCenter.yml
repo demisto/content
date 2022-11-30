@@ -893,6 +893,9 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
