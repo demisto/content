@@ -2,7 +2,7 @@ import json
 import os
 import sys
 
-from Tests.scripts.GoogleSecretManagerModule import GoogleSecreteManagerModule
+from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 
 
 def run(json_path_file):
