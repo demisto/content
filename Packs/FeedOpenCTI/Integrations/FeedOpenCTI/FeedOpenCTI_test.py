@@ -1,6 +1,7 @@
 from FeedOpenCTI import get_indicators_command, fetch_indicators_command, get_indicators
 from test_data.feed_data import RESPONSE_DATA, RESPONSE_DATA_WITHOUT_INDICATORS
 from CommonServerPython import CommandResults
+from pycti import StixCyberObservable
 
 
 class StixObservable:
@@ -10,7 +11,7 @@ class StixObservable:
 
 class Client:
     temp = ''
-    stix_observable = StixObservable
+    stix_cyber_observable = StixCyberObservable
 
 
 def test_get_indicators(mocker):
@@ -26,7 +27,7 @@ def test_get_indicators(mocker):
             command.
     """
     client = Client
-    mocker.patch.object(client.stix_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     new_last_id, indicators = get_indicators(client, indicator_type=['registry-key-value', 'user-account'], limit=10)
     assert len(indicators) == 2
     assert new_last_id == 'YXJyYXljb25uZWN0aW9uOjI='
@@ -43,7 +44,7 @@ def test_fetch_indicators_command(mocker):
         - validate the length of the indicators list
     """
     client = Client
-    mocker.patch.object(client.stix_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     indicators = fetch_indicators_command(client, indicator_type=['registry-key-value', 'user-account'], max_fetch=200)
     assert len(indicators) == 2
 
@@ -63,7 +64,7 @@ def test_get_indicators_command(mocker):
         'indicator_types': 'registry-key-value,user-account',
         'limit': 2
     }
-    mocker.patch.object(client.stix_observable, 'list', return_value=RESPONSE_DATA)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA)
     results: CommandResults = get_indicators_command(client, args)
     assert len(results.raw_response) == 2
     assert "Indicators from OpenCTI" in results.readable_output
@@ -82,6 +83,6 @@ def test_get_indicators_command_with_no_data_to_return(mocker):
     args = {
         'indicator_types': ['registry-key-value', 'user-account']
     }
-    mocker.patch.object(client.stix_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
+    mocker.patch.object(client.stix_cyber_observable, 'list', return_value=RESPONSE_DATA_WITHOUT_INDICATORS)
     results: CommandResults = get_indicators_command(client, args)
     assert "No indicators" in results.readable_output
