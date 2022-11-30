@@ -137,9 +137,6 @@ class LdapClient:
             tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=self._get_ssl_version(),
                       ciphers=self.CIPHERS_STRING)
 
-            # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
-            # and server support (can be SSL or TLS versions).
-
         return tls
 
     def _initialize_ldap_server(self):

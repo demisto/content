@@ -1,18 +1,21 @@
 import demistomock as demisto
+from ldap3.core.exceptions import LDAPBindError, LDAPSocketOpenError, LDAPStartTLSError, LDAPSocketReceiveError
+
 from CommonServerPython import *
 from typing import List, Dict, Optional
-from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef
+from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry, Reader, ObjectDef, \
+    AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
-import traceback
 import os
 from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
                              set_library_log_hide_sensitive_data, EXTENDED)
 from ldap3.utils.conv import escape_filter_chars
 
-CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:ECDH+AES:DH+AES:' \
-                 'RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
+                 'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
 
 # global connection
 conn: Optional[Connection] = None
@@ -66,54 +69,54 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
 ''' HELPER FUNCTIONS '''
 
 
+def get_tls_object(unsecure):
+    """
+        Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
+    """
+    if unsecure:  # Trust any certificate is checked
+        # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
+        # and allow the use of all possible ciphers.
+        tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, ciphers=CIPHERS_STRING)
+
+    else:  # Trust any certificate is unchecked
+        # Trust any certificate = False means that the LDAP server's certificate must be valid -
+        # i.e if the server's certificate is not valid the connection will fail.
+        tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
+
+    return tls
+
+
 def initialize_server(host, port, secure_connection, unsecure):
     """
-    uses the instance configuration to initialize the LDAP server
+    Uses the instance configuration to initialize the LDAP server.
+    Supports both encrypted and non encrypted connection.
 
     :param host: host or ip
     :type host: string
     :param port: port or None
     :type port: number
-    :param secure_connection: SSL or None
+    :param secure_connection: SSL, Start TLS or None
     :type secure_connection: string
-    :param unsecure: trust any cert
+    :param unsecure: trust any certificate
     :type unsecure: boolean
     :return: ldap3 Server
     :rtype: Server
     """
+    if secure_connection == 'SSL':  # Secure connection (SSL\TLS)
+        demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure})."
+                     f" port: {port or 'default(636)'}")
+        tls = get_tls_object(unsecure)
+        return Server(host=host, port=port, use_ssl=True, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
-    if secure_connection == "TLS":
-        demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        if unsecure:
-            # Add support for all CIPHERS_STRING
-            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
-        else:
-            tls = Tls(validate=ssl.CERT_NONE)
-        if port:
-            return Server(host, port=port, use_ssl=unsecure, tls=tls)
-        return Server(host, use_ssl=unsecure, tls=tls)
+    elif secure_connection == 'Start TLS':  # Secure connection (STARTTLS)
+        demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
+                     f" during bind. (unsecure: {unsecure}). port: {port or 'default(389)'}")
+        tls = get_tls_object(unsecure)
+        return Server(host=host, port=port, use_ssl=False, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
-    if secure_connection == "SSL":
-        # intialize server with ssl
-        # port is configured by default as 389 or as 636 for LDAPS if not specified in configuration
-        demisto.debug(f"initializing sever with SSL (unsecure: {unsecure}). port: {port or 'default(636)'}")
-        # If Trust any certificate is false
-        if not unsecure:
-            demisto.debug("will require server certificate.")
-            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
-            if port:
-                return Server(host, port=port, use_ssl=True, tls=tls)
-            return Server(host, use_ssl=True, tls=tls)
-        else:
-            # Add support for all CIPHERS_STRING
-            tls = Tls(ciphers=CIPHERS_STRING)
-            if port:
-                return Server(host, port=port, use_ssl=True, tls=tls)
-            return Server(host, use_ssl=True, tls=tls)
-    demisto.debug(f"initializing server without secure connection. port: {port or 'default(389)'}")
-    if port:
-        return Server(host, port=port)
-    return Server(host)
+    else:  # Unsecure (non encrypted connection initialized) - connection type is None
+        demisto.info(f"Initializing LDAP sever without a secure connection. port: {port or 'default(389)'}")
+        return Server(host=host, port=port, connect_timeout=DEFAULT_TIMEOUT)
 
 
 def user_account_to_boolean_fields(user_account_control):
@@ -383,7 +386,7 @@ def search(search_filter, search_base, attributes=None, size_limit=0, time_limit
 
     Args:
         search_base: the location in the DIT where the search will start
-        search_filte: LDAP query string
+        search_filter: LDAP query string
         attributes: the attributes to specify for each entry found in the DIT
 
     """
@@ -1713,10 +1716,34 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
+def get_auto_bind_value(secure_connection) -> str:
+    """
+        Returns the proper auto bind value according to the desirable connection type.
+        The 'TLS' in the auto_bind parameter refers to the STARTTLS LDAP operation, that can be performed only on a
+        cleartext connection (unsecure connection - port 389).
+
+        If the Client's connection type is Start TLS - the secure level will be upgraded to TLS during the
+        connection bind itself and thus we use the AUTO_BIND_TLS_BEFORE_BIND constant.
+
+        If the Client's connection type is SSL - the connection is already secured (server was initialized with
+        use_ssl=True and port 636) and therefore we use the AUTO_BIND_NO_TLS constant.
+
+        Otherwise, the Client's connection type is None - the connection is unsecured and should stay unsecured,
+        thus we use the AUTO_BIND_NO_TLS constant here as well.
+    """
+    if secure_connection == 'Start TLS':
+        auto_bind = AUTO_BIND_TLS_BEFORE_BIND
+    else:
+        auto_bind = AUTO_BIND_NO_TLS
+
+    return auto_bind
+
+
 def main():
     """ INSTANCE CONFIGURATION """
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
 
     SERVER_IP = params.get('server_ip')
     USERNAME = params.get('credentials')['identifier']
@@ -1738,60 +1765,35 @@ def main():
         PORT = int(PORT)
     last_log_detail_level = None
     try:
-        try:
-            set_library_log_hide_sensitive_data(True)
-            if is_debug_mode():
-                demisto.info('debug-mode: setting library log detail to EXTENDED')
-                last_log_detail_level = get_library_log_detail_level()
-                set_library_log_detail_level(EXTENDED)
-            server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
-        except Exception as e:
-            return_error(str(e))
-            return
+        set_library_log_hide_sensitive_data(True)
+        if is_debug_mode():
+            demisto.info('debug-mode: setting library log detail to EXTENDED')
+            last_log_detail_level = get_library_log_detail_level()
+            set_library_log_detail_level(EXTENDED)
+
+        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
+
         global conn
+        auto_bind = get_auto_bind_value(SECURE_CONNECTION)
+
         if NTLM_AUTH:
-            # intialize connection to LDAP server with NTLM authentication
+            # initialize connection to LDAP server with NTLM authentication
             # user example: domain\user
             domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
+            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM, auto_bind=auto_bind)
         else:
             # here username should be the user dn
-            conn = Connection(server, user=USERNAME, password=PASSWORD)
+            conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
 
-        if SECURE_CONNECTION == 'TLS':
-            conn.open()
-            conn.start_tls()
-
-        # bind operation is the “authenticate” operation.
-        try:
-            # open socket and bind to server
-            if not conn.bind():
-                message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
-                    json.dumps(conn.result))
-                return_error(message)
-                return
-        except Exception as e:
-            exc_msg = str(e)
-            demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
-                                                                + "\nTrace:\n{}".format(traceback.format_exc())))
-            message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
-            if 'ssl wrapping error' in exc_msg:
-                message = "Failed to access LDAP server. SSL error."
-                if not UNSECURE:
-                    message += ' Try using: "Trust any certificate" option.'
-            return_error(message)
-            return
-
-        demisto.info('Established connection with AD LDAP server')
+        demisto.info(f'Established connection with AD LDAP server.\nLDAP Connection Details: {conn}')
 
         if not base_dn_verified(DEFAULT_BASE_DN):
-            message = "Failed to verify the base DN configured for the instance.\n" \
-                      "Last connection result: {}\n" \
-                      "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+            message = (f"Failed to verify the base DN configured for the instance.\n"
+                       f"Last connection result: {json.dumps(conn.result)}\n"
+                       f"Last error from LDAP server: {json.dumps(conn.last_error)}")
             return_error(message)
-            return
 
-        demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
+        demisto.info(f'Verified base DN "{DEFAULT_BASE_DN}"')
 
         ''' COMMAND EXECUTION '''
 
@@ -1801,86 +1803,84 @@ def main():
                 raise Exception("Failed to authenticate user")
             demisto.results('ok')
 
-        args = demisto.args()
-
-        if command == 'ad-search':
+        elif command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-modify-password-never-expire':
+        elif command == 'ad-modify-password-never-expire':
             set_password_not_expire(DEFAULT_BASE_DN)
 
-        if command == 'ad-expire-password':
+        elif command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)
 
-        if command == 'ad-set-new-password':
+        elif command == 'ad-set-new-password':
             set_user_password(DEFAULT_BASE_DN, PORT)
 
-        if command == 'ad-unlock-account':
+        elif command == 'ad-unlock-account':
             unlock_account(DEFAULT_BASE_DN)
 
-        if command == 'ad-disable-account':
+        elif command == 'ad-disable-account':
             disable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-enable-account':
+        elif command == 'ad-enable-account':
             enable_user(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-remove-from-group':
+        elif command == 'ad-remove-from-group':
             remove_member_from_group(DEFAULT_BASE_DN)
 
-        if command == 'ad-add-to-group':
+        elif command == 'ad-add-to-group':
             add_member_to_group(DEFAULT_BASE_DN)
 
-        if command == 'ad-create-user':
+        elif command == 'ad-create-user':
             create_user()
 
-        if command == 'ad-delete-user':
+        elif command == 'ad-delete-user':
             delete_user()
 
-        if command == 'ad-update-user':
+        elif command == 'ad-update-user':
             update_user(DEFAULT_BASE_DN)
 
-        if command == 'ad-update-group':
+        elif command == 'ad-update-group':
             update_group(DEFAULT_BASE_DN)
 
-        if command == 'ad-modify-computer-ou':
+        elif command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)
 
-        if command == 'ad-create-contact':
+        elif command == 'ad-create-contact':
             create_contact()
 
-        if command == 'ad-update-contact':
+        elif command == 'ad-update-contact':
             update_contact()
 
-        if command == 'ad-get-user':
+        elif command == 'ad-get-user':
             search_users(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-get-computer':
+        elif command == 'ad-get-computer':
             search_computers(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-get-group-members':
+        elif command == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
-        if command == 'ad-create-group':
+        elif command == 'ad-create-group':
             create_group()
 
-        if command == 'ad-delete-group':
+        elif command == 'ad-delete-group':
             delete_group()
 
         # IAM commands
-        if command == 'iam-get-user':
+        elif command == 'iam-get-user':
             user_profile = get_user_iam(DEFAULT_BASE_DN, args, mapper_in, mapper_out)
             return return_results(user_profile)
 
-        if command == 'iam-create-user':
+        elif command == 'iam-create-user':
             user_profile = create_user_iam(DEFAULT_BASE_DN, args, mapper_out, disabled_users_group_cn)
             return return_results(user_profile)
 
-        if command == 'iam-update-user':
+        elif command == 'iam-update-user':
             user_profile = update_user_iam(DEFAULT_BASE_DN, args, create_if_not_exists, mapper_out,
                                            disabled_users_group_cn)
             return return_results(user_profile)
 
-        if command == 'iam-disable-user':
+        elif command == 'iam-disable-user':
             user_profile = disable_user_iam(DEFAULT_BASE_DN, disabled_users_group_cn, args, mapper_out)
             return return_results(user_profile)
 
@@ -1888,13 +1888,26 @@ def main():
             mapping_fields = get_mapping_fields_command(DEFAULT_BASE_DN)
             return return_results(mapping_fields)
 
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented')
+
     except Exception as e:
-        message = str(e)
-        if conn:
-            message += "\nLast connection result: {}\nLast error from LDAP server: {}".format(
-                json.dumps(conn.result), conn.last_error)
-        return_error(message)
-        return
+        err_msg = str(e)
+        if isinstance(e, LDAPBindError):
+            msg = f'Failed to bind server. Please validate that the credentials are configured correctly.\n' \
+                  f' Additional details: {err_msg}.\n'
+        elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
+            msg = f'Failed to connect to LDAP server. \n Additional details: {err_msg}.\n'
+            if not UNSECURE:
+                msg += ' Try using: "Trust any certificate" option.\n'
+        elif conn:
+            msg = f"{err_msg}.\nLast connection result: {json.dumps(conn.result)}.\n" \
+                  f"Last error from LDAP server: {conn.last_error}"
+        else:
+            msg = err_msg
+
+        return_error(msg)
+
     finally:
         # disconnect and close the connection
         if conn:
