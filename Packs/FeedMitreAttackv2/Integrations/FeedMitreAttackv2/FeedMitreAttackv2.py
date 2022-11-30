@@ -331,7 +331,7 @@ def create_relationship(item_json, id_to_name):
         'firstseenbysource': item_json.get('created')
     }
     if item_json.get('relationship_type') not in RELATIONSHIP_TYPES:
-        demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
+        demisto.debug(f"Unknown relationship name: {item_json.get('relationship_type')}")
 
     entity_a = id_to_name.get(item_json.get('source_ref'))
     entity_b = id_to_name.get(item_json.get('target_ref'))
