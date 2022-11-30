@@ -1929,3 +1929,27 @@ def test_informative_error_in_get_token(mocker):
         Client('test_client')
 
     assert str(err.value) == 'Unauthorized - Incorrect user id or password'
+
+
+def test_headers_file_acquisition_package_request(requests_mock, mocker):
+    """
+    Given:
+        - mock client, acquisition_id
+    When:
+        - running the file_acquisition_package_request
+    Then:
+        - ensure that the headers of this command is what expected:
+            1. Token exists
+            2. Header Accept is octet-stream
+    """
+    from FireEyeHXv2 import Client
+
+    base_url = 'https://example.com/hx/api/v3'
+    mocker.patch.object(Client, 'get_token_request', return_value='test')
+    client = Client(base_url=base_url, auth=('username', 'password'), verify=True, proxy=False)
+    url = 'https://example.com/hx/api/v3/acqs/files/acquisition_id.zip'
+
+    requests_mock.get(url, json={'some_bytes': 'test'})
+    client.file_acquisition_package_request('acquisition_id')
+    assert requests_mock.request_history[0].headers.get('Accept') == 'application/octet-stream'
+    assert requests_mock.request_history[0].headers.get('X-FeApi-Token') == 'test'

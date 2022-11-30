@@ -653,6 +653,35 @@ def test_get_attachment(client):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachments_without_attachment_id(mocker, client):
+    """
+    Given:
+        - A user ID 'ex@example.com'
+
+    When:
+        - Calling 'get_attachment_command' method.
+
+    Then:
+        - Validate that the message object created successfully and all the attachment where downloaded.
+
+    """
+    from MicrosoftGraphMail import get_attachment_command
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
+    with open('test_data/mail_with_attachments') as mail_json:
+        user_id = 'ex@example.com'
+        test_args = {'user_id': user_id}
+        raw_response = json.load(mail_json)
+        mocker.patch.object(client, 'get_attachment', return_value=raw_response)
+        res = get_attachment_command(client, test_args)
+        assert isinstance(res, List)
+        assert len(res) == len(raw_response)
+        for i, attachment in enumerate(res):
+            output = attachment.to_context().get('EntryContext', {})
+            assert output.get(output_prefix).get('ID') == f'exampleID{i}'
+            assert output.get(output_prefix).get('Subject') == f'Test it{i}'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_get_attachment_unsupported_type(client):
     """
     Given:
