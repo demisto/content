@@ -10717,16 +10717,14 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
     params = demisto.params()
     calling_context = demisto.callingContext.get('context', {})
     url = params.get('url')
-    brand = calling_context.get('IntegrationBrand', '')
     integration_instance = calling_context.get('IntegrationInstance', '')
     if isinstance(events[0], str):
         temp_ls = []
         str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
-                     f"_collector_type{value_sign}{spaces}{brand}{separator}{spaces}_collector_name{value_sign}{spaces}" \
-                     f"{integration_instance}"
+                     f"_instance_name{value_sign}{spaces}{integration_instance}{end_of_event_sign}"
         for event in events:
             if events[-1] == end_of_event_sign or events[-1] == ".":
-                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}{end_of_event_sign}"
+                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
             else:
                 event = f"{event}{str_to_add}"
             temp_ls.append(event)
@@ -10734,7 +10732,6 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
     else:
         for event in events:
             event['_final_reporting_device_name'] = url
-            event['_brand'] = brand
             event['_instance_name'] = integration_instance
     return events
 

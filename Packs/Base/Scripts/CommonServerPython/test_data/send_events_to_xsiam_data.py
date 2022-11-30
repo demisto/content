@@ -12,7 +12,9 @@ events_dict = {
         ],
         "number_of_events": 2,
         "expected_format": "json",
-        "expected_data": '{"name": "my event 1", "data": "some data 1"}\n{"name": "my event 2", "data": "some data 2"}'
+        "expected_data": '{"name": "my event 1", "data": "some data 1", "_final_reporting_device_name": "www.example_url.com", \
+            "_instance_name": "test_integration_instance"}\n{"name": "my event 2", "data": "some data 2", \
+                "_final_reporting_device_name": "www.example_url.com", "_instance_name": "test_integration_instance"}'
     },
     "json_zero_events": {
         "events": [
@@ -21,18 +23,22 @@ events_dict = {
     },
     "text_list_events": {
         "events": [
-            "Some event 1",
-            "Some event 2"
+            "{name: event 1}",
+            "{name: event 2}"
         ],
         "number_of_events": 2,
         "expected_format": "text",
-        "expected_data": "Some event 1\nSome event 2"
+        "expected_data": '{name: event 1, _final_reporting_device_name: www.example_url.com, _instance_name: '
+                         'test_integration_instance}\n{name: event 2, _final_reporting_device_name: www.example_url.com, '
+                         '_instance_name: test_integration_instance}'
     },
     "text_events": {
-        "events": "Some event 1\nSome event 2",
+        "events": "{name: event 1}\n{name: event 2}",
         "number_of_events": 2,
         "expected_format": "text",
-        "expected_data": "Some event 1\nSome event 2"
+        "expected_data": '{name: event 1, _final_reporting_device_name: www.example_url.com, _instance_name: '
+                         'test_integration_instance}\n{name: event 2, _final_reporting_device_name: www.example_url.com, '
+                         '_instance_name: test_integration_instance}'
     },
     "cef_events": {
         "events": "Some cef event 1\nSome cef event 2",
