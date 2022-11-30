@@ -40,6 +40,15 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=self._headers)
 
     def _init_credentials(self) -> service_account.Credentials:
+        """This function is in charge of initializing the service account credentials that
+        will be used to retrieve OAuth tokens in order to use the API requests.
+
+        Raises:
+            DemistoException: If the content of the service account's json has invalid values.
+
+        Returns:
+            service_account.Credentials: The instance that will be used to access OAuth tokens and refresh them if they expire.
+        """
         try:
             credentials = service_account.Credentials.from_service_account_info(
                 self._service_account_json,
@@ -543,7 +552,6 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'{command} command is not implemented.')
     except Exception as e:
         demisto.error(traceback.format_exc())  # Print the traceback
-        # print(str(e))
         return_error(f'Failed to execute {command} command.'
                      f'\nError:\n{str(e)}')
 
