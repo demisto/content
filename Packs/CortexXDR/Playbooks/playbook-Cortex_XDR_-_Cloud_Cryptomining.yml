@@ -937,7 +937,6 @@ inputs:
   required: false
   description: A list of internal IP ranges to check IP addresses against.
   playbookInputQuery:
-    InternalRange
 outputs: []
 tests:
 - No tests (auto formatted)
