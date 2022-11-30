@@ -1389,7 +1389,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook
