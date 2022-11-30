@@ -2,7 +2,7 @@ id: Cloud Response - GCP
 version: -1
 name: Cloud Response - GCP
 description: |-
-  This playbook provides response actions to Azure. The following are available for execution automatically/manually:
+  This playbook provides response actions to GCP. The following are available for execution automatically/manually:
   - Resource remediation:
      - Delete the instance
      - Stop the instance
