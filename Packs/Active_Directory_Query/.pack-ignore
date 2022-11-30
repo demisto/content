@@ -11,4 +11,4 @@ ignore=BA101
 ignore=BA101
 
 [file:IAMInitADUser.yml]
-ignore=RM109,CJ105
+ignore=CJ105

@@ -73,7 +73,7 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.8.39276
 runas: DBotWeakRole
 runonce: false
 tests:
