@@ -161,4 +161,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.1.png)
+![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.2.png)
