@@ -1,11 +1,66 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: check-yaml
-        exclude: .gitlab/ci/|.circleci/
-    -   id: check-json
-        exclude: .devcontainer/|.vscode|Pipfile.lock
-    -   id: check-ast
-    -   id: check-toml
-    -   id: check-xml
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.4.0
+      hooks:
+          - id: check-yaml
+            exclude: .gitlab/ci/|.circleci/
+          - id: check-json
+            exclude: .devcontainer/|.vscode|Pipfile.lock
+          - id: check-ast
+          - id: check-toml
+          - id: check-xml
+
+          - id: check-merge-conflict
+          - id: check-docstring-first
+
+          # formatting
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+
+    - repo: https://github.com/pre-commit/pygrep-hooks
+      rev: v1.9.0
+      hooks:
+          - id: python-check-mock-methods
+          - id: python-check-blanket-noqa
+    - repo: https://github.com/asottile/yesqa
+      rev: v1.4.0
+      hooks:
+          - id: yesqa
+
+    - repo: https://github.com/hadialqattan/pycln
+      rev: v2.1.2
+      hooks:
+          - id: pycln
+
+    - repo: https://github.com/pycqa/isort
+      rev: 5.10.1
+      hooks:
+          - id: isort
+            name: "isort (python)"
+            types: [python]
+            args: [--add-import, from CommonServerPython import *]
+
+    - repo: https://github.com/pre-commit/mirrors-autopep8
+      rev: "v2.0.0"
+      hooks:
+          - id: autopep8
+
+    - repo: https://github.com/pycqa/flake8
+      rev: 5.0.4
+      hooks:
+          - id: flake8
+
+    - repo: https://github.com/pre-commit/mirrors-mypy
+      rev: v0.982
+      hooks:
+          - id: mypy
+            exclude: tests/.*|demisto_sdk/commands/init/templates/.*
+            language: system
+    - repo: https://gitlab.com/smop/pre-commit-hooks
+      rev: v1.0.0
+      hooks:
+          - id: check-poetry
+    - repo: https://github.com/jendrikseipp/vulture
+      rev: "v2.3"
+      hooks:
+          - id: vulture
