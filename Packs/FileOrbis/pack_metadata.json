@@ -10,15 +10,13 @@
         "IT Services"
     ],
     "tags": [
-        "IT",
-        "Security"
     ],
     "useCases": [
-        "Employee Offboarding",
-        "Identity and Access Management",
-        "IT Services"
     ],
-    "keywords": [],
+    "keywords": [
+        "Offboarding",
+        "IT"
+    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",

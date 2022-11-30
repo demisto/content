@@ -1,7 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union
+from typing import Any, Iterator, Optional, Union, NamedTuple
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -9,7 +9,7 @@ from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS_XSOAR
 from Tests.scripts.collect_tests.exceptions import (
     BlankPackNameException, DeprecatedPackException, NonDictException,
     NonexistentPackException, NonXsoarSupportedPackException,
@@ -265,7 +265,7 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
-        if pack in ALWAYS_INSTALLED_PACKS:
+        if pack in ALWAYS_INSTALLED_PACKS_XSOAR:
             return
         if not pack:
             raise BlankPackNameException(pack)
@@ -311,3 +311,8 @@ def hotfix_detect_old_script_yml(path: Path):
     if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
         return FileType.SCRIPT
     return None
+
+
+class FilesToCollect(NamedTuple):
+    changed_files: tuple[str, ...]
+    pack_ids_files_were_removed_from: tuple[str, ...]

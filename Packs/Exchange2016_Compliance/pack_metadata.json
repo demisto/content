@@ -8,10 +8,14 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Messaging"
+        "IT Services"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Use Case"
+    ],
+    "useCases": [
+        "Compliance"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar",

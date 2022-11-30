@@ -5,9 +5,10 @@ from CommonServerPython import *
 import base64
 import re
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 handle_proxy()

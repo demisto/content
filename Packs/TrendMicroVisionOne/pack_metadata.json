@@ -8,17 +8,9 @@
     "url": "https://success.trendmicro.com",
     "email": "integrations@trendmicro.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Analytics & SIEM"
     ],
-    "tags": [
-        "Alerts",
-        "Attack",
-        "Incident Handling",
-        "Incident Response",
-        "Malware",
-        "MITRE ATT&CK",
-        "Threat Intelligence"
-    ],
+    "tags": [],
     "created": "2022-01-06T09:00:00Z",
     "useCases": [],
     "keywords": [

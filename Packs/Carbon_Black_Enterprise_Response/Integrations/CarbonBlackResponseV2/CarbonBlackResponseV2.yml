@@ -2047,7 +2047,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: true
   longRunning: false
