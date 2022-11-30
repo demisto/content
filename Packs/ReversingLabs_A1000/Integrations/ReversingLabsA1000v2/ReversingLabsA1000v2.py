@@ -1,7 +1,7 @@
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
-VERSION = "v2.0.0"
+VERSION = "v2.0.7"
 USER_AGENT = f"ReversingLabs XSOAR A1000 {VERSION}"
 HOST = demisto.getParam('host')
 TOKEN = demisto.getParam('token')
@@ -389,7 +389,7 @@ def advanced_search(a1000):
     query = demisto.getArg('query')
 
     try:
-        limit = demisto.getArg("result-limit")
+        limit = demisto.getArg("result_limit")
         if not isinstance(limit, int):
             limit = int(limit)
     except KeyError:

@@ -1,0 +1,9 @@
+{
+    "account_type": "local",
+    "authentication_profile": null,
+    "email": "dummy-dev@fake.local",
+    "id": 123,
+    "last_login": "2022-10-01T12:34:56Z",
+    "role": "Analyst",
+    "username": "dummy-dev"
+}
