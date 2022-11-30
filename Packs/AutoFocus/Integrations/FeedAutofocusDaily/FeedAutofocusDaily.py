@@ -1,13 +1,11 @@
-from typing import List, Tuple, Optional
 
 # IMPORTS
-import requests
-from CommonServerUserPython import *
-
+from typing import List, Tuple, Optional
+import urllib3
 from CommonServerPython import *
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 class Client(BaseClient):
