@@ -1906,7 +1906,7 @@ def handle_asset_tag_request_parameters(args: Dict[str, str], command_name: str)
     if TAG_ASSET_COMMANDS_API_DATA[command_name].get("request_body"):
         TAG_ASSET_COMMANDS_API_DATA[command_name]["request_body"] = generate_asset_tag_xml_request_body(args, command_name)
 
-    return None
+    return
 
 
 """ PARSERS """

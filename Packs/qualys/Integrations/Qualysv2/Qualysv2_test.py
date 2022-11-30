@@ -1163,3 +1163,31 @@ class TestAssetTags:
             ],
         }
         assert Qualysv2.build_tag_asset_output(**args)[0] == handled_result
+
+
+def test_handle_asset_tag_request_parameters():
+    Qualysv2.handle_asset_tag_request_parameters({'id': '1234'}, "qualys-asset-tag-list")
+
+
+def test_input_validation():
+    assert Qualysv2.input_validation("qualys-asset-tag-list") is None
+
+
+def test_calculate_ip_original_amount():
+    result = {'Address': 'address', 'Range': 'range'}
+    assert Qualysv2.calculate_ip_original_amount(result) == 2
+
+
+def test_create_ip_list_markdown_table():
+    dicts_of_ranges_and_ips = [{'1': 1}, {'2': 2}]
+    readable_output = '|1|\n|---|\n| 1 |\n\n|2|\n|---|\n| 2 |\n'
+    assert Qualysv2.create_ip_list_markdown_table(dicts_of_ranges_and_ips) == readable_output
+
+
+def test_create_single_host_list():
+    ip_and_range_lists = {'Address': 'address', 'Range': 'range'}
+    assert Qualysv2.create_single_host_list(ip_and_range_lists) == ['address', 'range']
+
+
+def test_build_ip_and_range_dicts():
+    assert Qualysv2.build_ip_and_range_dicts(['-', 'example']) == [[{'ip': 'example'}], [{'range': '-'}]]
