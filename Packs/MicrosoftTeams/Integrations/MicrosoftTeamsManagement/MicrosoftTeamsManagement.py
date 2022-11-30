@@ -23,12 +23,14 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
+                            if 'Client' not in connection_type \
+                            else None
+
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
-                                if 'Client' not in connection_type
-                                else '',
+            token_retrieval_url=token_retrieval_url,
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url='https://graph.microsoft.com',
             verify=verify,
@@ -38,6 +40,7 @@ class Client:
             tenant_id=tenant_id,
             enc_key=enc_key
         )
+        self.ms_client = MicrosoftClient(**client_args)
         self.connection_type = connection_type
 
     @logger
