@@ -24,8 +24,8 @@ class Client:
             set_integration_context(integration_context)
 
         token_retrieval_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
-                            if 'Client' not in connection_type \
-                            else None
+                              if 'Client' not in connection_type \
+                              else None
 
         client_args = assign_params(
             self_deployed=True,
