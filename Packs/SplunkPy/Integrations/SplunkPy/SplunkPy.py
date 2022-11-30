@@ -763,7 +763,7 @@ class Cache:
     def dump_to_integration_context(self, integration_context):
         integration_context[CACHE] = json.dumps(self, default=lambda obj: obj.__dict__)
         demisto.debug('$$$$$$$$ SAVING INTEGRATION_CONTEXT: {}'.format(str(integration_context)))
-        set_integration_context(integration_context)
+        set_to_integration_context_with_retries(integration_context)
 
 
 def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backslash=False):
