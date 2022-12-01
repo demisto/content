@@ -288,7 +288,6 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
     report_templates_data = load_test_data("api_mock", report_templates_mock_file)
     mocker.patch.object(Client, "get_report_templates", return_value=report_templates_data)
     mocker.patch.object(Client, "create_report_config", return_value=report_config_mock_data)
-
     mocker.patch.object(Client, "_http_request", return_value=report_mock_data)
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
@@ -561,7 +560,7 @@ def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_
 def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
                                expected_output_context_file: str):
     api_data = load_test_data("api_mock", api_mock_file)
-    mocker.patch.object(Client, "search_assets", return_value=api_data,)
+    mocker.patch.object(Client, "_paged_http_request", return_value=api_data,)
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
@@ -572,3 +571,68 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
     # Using `sorted` to not fail test in case the order of CommandResults changes
     assert sorted([result.outputs for result in results], key=lambda d: d["AssetId"]) == \
            sorted(expected_output_context, key=lambda d: d["AssetId"])
+
+
+@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
+                         [
+                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
+                               "service": "FTP", "username": "Test1", "password": "Test2"},
+                              {
+                                  "name": "Test",
+                                  "siteAssignment": "all-sites",
+                                  "account": {
+                                      "service": "ftp",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                  }},
+                              )
+                         ])
+def test_update_shared_credential_command(mocker, mock_client: Client,
+                                          test_input_kwargs: dict, expected_post_data: dict):
+    http_request = mocker.patch.object(BaseClient, "_http_request")
+    update_shared_credential_command(client=mock_client, **test_input_kwargs)
+
+    http_request.assert_called_with(
+        method="PUT",
+        url_suffix=f"/shared_credentials/{test_input_kwargs['shared_credential_id']}",
+        json_data=expected_post_data,
+        resp_type="json",
+    )
+
+
+@pytest.mark.parametrize("vulnerability_exception_id, expiration_date",
+                         [
+                             ("1", "2050-01-01T10:00:00Z"),
+                         ])
+def test_update_vulnerability_exception_expiration_command(mocker, mock_client: Client,
+                                                           vulnerability_exception_id: str, expiration_date: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request")
+    update_vulnerability_exception_expiration_command(client=mock_client,
+                                                      vulnerability_exception_id=vulnerability_exception_id,
+                                                      expiration_date=expiration_date)
+
+    http_request.assert_called_with(
+        url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
+        method="PUT",
+        data=json.dumps(expiration_date),
+        resp_type="json",
+    )
+
+
+@pytest.mark.parametrize("vulnerability_exception_id, status",
+                         [
+                             ("1", "Approve"),
+                             ("2", "Reject"),
+                         ])
+def test_update_vulnerability_exception_status_command(mocker, mock_client: Client,
+                                                       vulnerability_exception_id: str, status: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request")
+    update_vulnerability_exception_status_command(client=mock_client,
+                                                  vulnerability_exception_id=vulnerability_exception_id,
+                                                  status=status)
+
+    http_request.assert_called_with(
+        url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.lower()}",
+        method="POST",
+        resp_type="json",
+    )
