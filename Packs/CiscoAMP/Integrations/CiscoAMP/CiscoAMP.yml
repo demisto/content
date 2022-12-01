@@ -1834,7 +1834,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with a given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: The computer's key returns information about the last 1000 connectors on which the vulnerable application was observed.'
+    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: computers key returns information about the last 1000 Connectors on which the vulnerable application was observed.'
     execution: false
     name: cisco-amp-vulnerability-list
     outputs:
