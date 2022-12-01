@@ -77,6 +77,26 @@ def get_session(client: Client, user_name_n_password_encoded: str) -> str:
     return encode_to_base64(f'{session.get("session")}:{session.get("userId")}')
 
 
+def pagination(records_list: List, limit: int, page: int) -> List:
+    """ Returns the wanted records.
+    Args:
+        records_list: List - The original list of objects.
+        limit: str - The amount of records to be returned
+        page: int - The page of the results (The results in page 1, 2 ...)
+    Returns:
+        The wanted records.
+    """
+    if page == 1:
+        return records_list[:limit]
+    else:
+        min_size = (limit * (page - 1))
+        if min_size < len(records_list):
+            results_list = records_list[min_size:]
+            return results_list[:limit]
+        else:
+            return []
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -107,11 +127,11 @@ def list_domain_firewall_policy_command(client: Client, args: Dict, user_name_n_
     domain_id = args.get('domain_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    page_size = min(limit, 100)
     session_str = get_session(client, user_name_n_password_encoded)
 
     response = client.list_domain_firewall_policy_request(session_str, domain_id)
     result = response.get('FirewallPoliciesForDomainResponseList', [])
+    result = pagination(result, limit, page)
     human_readable = []
     for value in result:
         d = {'policyId': value.get('policyId'),
