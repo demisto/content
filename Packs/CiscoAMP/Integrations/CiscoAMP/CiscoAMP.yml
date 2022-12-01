@@ -61,7 +61,7 @@ configuration:
   type: 0
 - display: Event types
   name: event_types
-  additionalinfo: Comma separated list of Event Type IDs. The IDs can be received from the command cisco-amp-event-type-list.
+  additionalinfo: Comma-separated list of event type IDs. The IDs can be retrieved from the cisco-amp-event-type-list command.
   required: false
   type: 0
 - display: Incident type
@@ -72,17 +72,17 @@ configuration:
   name: isFetch
   required: false
   type: 8
-description: "Cisco Advanced malware protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware."
+description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 display: Cisco AMP Secure Endpoint
 name: CiscoAMP
 script:
   commands:
   - arguments:
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -90,11 +90,11 @@ script:
       isArray: false
       name: limit
       required: false
-    - description: connector_guid for a specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: false
-    - description: Coma separated list of host names to filter by (has auto complete capabilities).
+    - description: Comma-separated list of host names to filter by (has auto complete capabilities).
       isArray: true
       name: hostname
       required: false
@@ -106,20 +106,20 @@ script:
       isArray: false
       name: external_ip
       required: false
-    - description: Coma separated list of group GUIDs to filter by.
+    - description: Comma-separated list of group GUIDs to filter by.
       isArray: true
       name: group_guid
       required: false
-    - description: "Time range  to filter by."
+    - description: Time range to filter by.
       isArray: false
       name: last_seen_within
       required: false
-    - description: "Time range  to filter over by."
+    - description: Time range to filter over by.
       isArray: false
       name: last_seen_over
       required: false
     deprecated: false
-    description: Fetch computers to shows information about them. Can be filtered by a variety of criteria.
+    description: Fetch computers to show information about them. Can be filtered by a variety of criteria.
     execution: false
     name: cisco-amp-computer-list
     outputs:
@@ -134,7 +134,7 @@ script:
       description: Windows processor ID.
     - type: Boolean
       contextPath: CiscoAMP.Computer.active
-      description: Is the computer active.
+      description: Whether the computer is active.
     - type: String
       contextPath: CiscoAMP.Computer.connector_version
       description: Version of the connector.
@@ -146,7 +146,7 @@ script:
       description: Operating system version.
     - type: String
       contextPath: CiscoAMP.Computer.internal_ips
-      description: List of internal IP's.
+      description: List of internal IPs.
     - type: String
       contextPath: CiscoAMP.Computer.external_ip
       description: External IP.
@@ -158,10 +158,10 @@ script:
       description: Installation date.
     - type: Boolean
       contextPath: CiscoAMP.Computer.is_compromised
-      description: Is the computer compromised.
+      description: Whether the computer is compromised.
     - type: Boolean
       contextPath: CiscoAMP.Computer.demo
-      description: Demo.
+      description: Whether the computer is a demo.
     - type: String
       contextPath: CiscoAMP.Computer.network_addresses.mac
       description: List of MAC addresses.
@@ -188,7 +188,7 @@ script:
       description: Faults.
     - type: Boolean
       contextPath: CiscoAMP.Computer.isolation.available
-      description: Is the isolation available.
+      description: Whether the isolation is available.
     - type: String
       contextPath: CiscoAMP.Computer.isolation.status
       description: Status of the isolation.
@@ -220,19 +220,19 @@ script:
       description: The integration name of the endpoint vendor.
       type: String
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
-    - description: 'Freeform query string which currently accepts: IP address, SHA-256 or URL.'
+    - description: 'Freeform query string that currently accepts an: IP address, SHA-256, or URL.'
       isArray: false
       name: query_string
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 5000.
+    - description: Number of results in a page. Maximum is 5000.
       isArray: false
       name: page_size
       required: false
@@ -241,7 +241,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Provides a list of all activities associated with a particular computer. This analogous to the Device Trajectory on the FireAMP console.
+    description: Provides a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP console.
     execution: false
     name: cisco-amp-computer-trajectory-list
     outputs:
@@ -256,7 +256,7 @@ script:
       description: Event's timestamp.
     - type: Number
       contextPath: CiscoAMP.ComputerTrajectory.timestamp_nanoseconds
-      description: Event's timestamp nano seconds.
+      description: Event's timestamp in nano seconds.
     - type: Date
       contextPath: CiscoAMP.ComputerTrajectory.date
       description: Event's date.
@@ -307,10 +307,10 @@ script:
       description: SHA-256 of parent.
     - type: String
       contextPath: CiscoAMP.ComputerTrajectory.scan.description
-      description: Description.
+      description: Description of the scan.
     - type: Boolean
       contextPath: CiscoAMP.ComputerTrajectory.scan.clean
-      description: Whether it is clean.
+      description: Whether the scan is clean.
     - type: Number
       contextPath: CiscoAMP.ComputerTrajectory.scan.scanned_files
       description: Number of scanned files.
@@ -328,11 +328,11 @@ script:
       isArray: false
       name: username
       required: true
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -341,7 +341,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of computers that have observed activity by given username.
+    description: Fetch a list of computers that have observed activity by the given username.
     execution: false
     name: cisco-amp-computer-user-activity-list
     outputs:
@@ -352,10 +352,10 @@ script:
       description: Host's name.
       type: String
     - contextPath: CiscoAMP.ComputerUserActivity.active
-      description: Is the computer active.
+      description: Whether the computer is active.
       type: Boolean
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
@@ -363,11 +363,11 @@ script:
       isArray: false
       name: username
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 5000.
+    - description: Number of results in a page. Maximum is 5000.
       isArray: false
       name: page_size
       required: false
@@ -376,7 +376,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a specific computer's trajectory with given connector_guid and filter for events with user name activity.
+    description: Fetch a specific computer's trajectory with a given connector GUID and filter for events with user name activity.
     execution: false
     name: cisco-amp-computer-user-trajectory-list
     outputs:
@@ -391,7 +391,7 @@ script:
       description: Event's timestamp.
     - type: Number
       contextPath: CiscoAMP.ComputerUserTrajectory.timestamp_nanoseconds
-      description: Event's timestamp nano seconds.
+      description: Event's timestamp in nano seconds.
     - type: Date
       contextPath: CiscoAMP.ComputerUserTrajectory.date
       description: Event's date.
@@ -442,10 +442,10 @@ script:
       description: SHA-256 of parent.
     - type: String
       contextPath: CiscoAMP.ComputerUserTrajectory.scan.description
-      description: Description.
+      description: Description of the scan.
     - type: Boolean
       contextPath: CiscoAMP.ComputerUserTrajectory.scan.clean
-      description: Whether it is clean.
+      description: Whether the scan is clean.
     - type: Number
       contextPath: CiscoAMP.ComputerUserTrajectory.scan.scanned_files
       description: Number of scanned files.
@@ -459,23 +459,23 @@ script:
       contextPath: CiscoAMP.ComputerUserTrajectory.scan.malicious_detections
       description: Number of malicious detections.
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
-    - description: Inclusive (The list will include vulnerable programs detected at start_time)
+    - description: The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time.
       isArray: false
       name: start_time
       required: false
-    - description: Exclusive - if end_time is a time (The list will only include vulnerable programs detected before end_time); Inclusive - if end_time is a date (The list will include vulnerable programs detected on the date)
+    - description: The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date.
       isArray: false
       name: end_time
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -525,16 +525,16 @@ script:
       contextPath: CiscoAMP.ComputerVulnerability.latest_date
       description: Vulnerability latest date.
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
-    - description: group_guid to move the computer to.
+    - description: Group GUID to move the computer to.
       isArray: false
       name: group_guid
       required: true
     deprecated: false
-    description: Moves a computer to a group with given connector_guid and group_guid.
+    description: Moves a computer to a group with the given connector_guid and group_guid.
     execution: false
     name: cisco-amp-computer-move
     outputs:
@@ -549,7 +549,7 @@ script:
       description: Windows processor ID.
     - type: Boolean
       contextPath: CiscoAMP.Computer.active
-      description: Is the computer active.
+      description: Whether the computer is active.
     - type: String
       contextPath: CiscoAMP.Computer.connector_version
       description: Version of the connector.
@@ -561,7 +561,7 @@ script:
       description: Operating system version.
     - type: String
       contextPath: CiscoAMP.Computer.internal_ips
-      description: List of internal IP's.
+      description: List of internal IPs.
     - type: String
       contextPath: CiscoAMP.Computer.external_ip
       description: External IP.
@@ -573,10 +573,10 @@ script:
       description: Installation date.
     - type: Boolean
       contextPath: CiscoAMP.Computer.is_compromised
-      description: Is the computer compromised.
+      description: Whether the computer is compromised.
     - type: Boolean
       contextPath: CiscoAMP.Computer.demo
-      description: Demo.
+      description: Whether the computer is a demo.
     - type: String
       contextPath: CiscoAMP.Computer.network_addresses.mac
       description: List of MAC addresses.
@@ -603,7 +603,7 @@ script:
       description: Faults.
     - type: Boolean
       contextPath: CiscoAMP.Computer.isolation.available
-      description: Is the isolation available.
+      description: Whether the isolation is available.
     - type: String
       contextPath: CiscoAMP.Computer.isolation.status
       description: Status of the isolation.
@@ -611,7 +611,7 @@ script:
       contextPath: CiscoAMP.Computer.orbital.status
       description: Status of the orbital.
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
@@ -620,15 +620,15 @@ script:
     execution: false
     name: cisco-amp-computer-delete
   - arguments:
-    - description: 'Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, File Name and a URL Fragment.'
+    - description: 'Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, file name, and a URL fragment.'
       isArray: false
       name: query_string
       required: true
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -637,7 +637,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of computers that have observed files with given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
+    description: Fetch a list of computers that have observed files with a given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
     execution: false
     name: cisco-amp-computer-activity-list
     outputs:
@@ -651,24 +651,24 @@ script:
       description: Windows processor ID.
       type: String
     - contextPath: CiscoAMP.ComputerActivity.active
-      description: Is the computer active.
+      description: Whether the computer is active.
       type: Boolean
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
     deprecated: false
-    description: Performs a feature availability request on a computer. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
+    description: Performs a feature availability request on a computer. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
     execution: false
     name: cisco-amp-computer-isolation-feature-availability-get
   - arguments:
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
     deprecated: false
-    description: Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
+    description: Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
     execution: false
     name: cisco-amp-computer-isolation-get
     outputs:
@@ -679,7 +679,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -704,7 +704,7 @@ script:
       name: timeout_in_seconds
       required: false
       defaultValue: '600'
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
@@ -716,12 +716,12 @@ script:
       isArray: false
       name: unlock_code
       required: true
-    - description: argument to indicate the current run.
+    - description: Status of the current run.
       isArray: false
       name: status
       required: false
     deprecated: false
-    description: Request isolation for a computer. Supports Polling. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
+    description: Request isolation for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
     execution: false
     name: cisco-amp-computer-isolation-create
     polling: true
@@ -733,7 +733,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -755,7 +755,7 @@ script:
       name: timeout_in_seconds
       required: false
       defaultValue: '600'
-    - description: connector_guid for specific computer.
+    - description: The connector GUID for a specific computer.
       isArray: false
       name: connector_guid
       required: true
@@ -763,12 +763,12 @@ script:
       isArray: false
       name: comment
       required: false
-    - description: argument to indicate the current run.
+    - description: Status of the current run.
       isArray: false
       name: status
       required: false
     deprecated: false
-    description: Request isolation stop for a computer. Supports Polling. Isolation must be enabled within the computer's Policy, this can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation
+    description: Request isolation stop for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
     execution: false
     name: cisco-amp-computer-isolation-delete
     polling: true
@@ -777,7 +777,7 @@ script:
       description: Set to true if isolation can be performed on the computer.
       type: Boolean
     - contextPath: CiscoAMP.ComputerIsolation.status
-      description: "Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
+      description: "Status of the computer isolation. Will be set to one of: not_isolated, pending_start, isolated and pending_stop."
       type: String
     - contextPath: CiscoAMP.ComputerIsolation.unlock_code
       description: Isolation unlock code.
@@ -789,7 +789,7 @@ script:
       description: Isolation initiator.
       type: String
   - arguments:
-    - description: "Detection  SHA-256 to filter by."
+    - description: Detection  SHA-256 to filter by.
       isArray: false
       name: detection_sha256
       required: false
@@ -797,27 +797,27 @@ script:
       isArray: false
       name: application_sha256
       required: false
-    - description: Comma separated list for connector GUIDs to filter by.
+    - description: Comma-separated list for connector GUIDs to filter by.
       isArray: true
       name: connector_guid
       required: false
-    - description: Comma separated list for group GUIDs to filter by.
+    - description: Comma-separated list for group GUIDs to filter by.
       isArray: true
       name: group_guid
       required: false
-    - description: Fetch events that are newer than given time.
+    - description: Fetch events that are newer than the given time.
       isArray: false
       name: start_date
       required: false
-    - description: Comma separated list for event types to filter by.
+    - description: Comma-separated list for event types to filter by.
       isArray: true
       name: event_type
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -826,7 +826,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
+    description: Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, and each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
     execution: false
     name: cisco-amp-event-list
     outputs:
@@ -838,7 +838,7 @@ script:
       description: Event's timestamp.
     - type: Number
       contextPath: CiscoAMP.Event.timestamp_nanoseconds
-      description: Event's timestamp nano seconds.
+      description: Event's timestamp in nano seconds.
     - type: Date
       contextPath: CiscoAMP.Event.date
       description: Event's date.
@@ -874,7 +874,7 @@ script:
       description: External IP.
     - type: Boolean
       contextPath: CiscoAMP.Event.computer.active
-      description: Is the computer active.
+      description: Whether the computer is active.
     - type: String
       contextPath: CiscoAMP.Event.computer.user
       description: Computer user.
@@ -907,7 +907,7 @@ script:
       description: Parent's process ID.
     - type: String
       contextPath: CiscoAMP.Event.file.parent.file_name
-      description: Parent's file name
+      description: Parent's file name.
     - type: String
       contextPath: CiscoAMP.Event.file.parent.disposition
       description: Parent's disposition.
@@ -922,10 +922,10 @@ script:
       description: Parent's MD5.
     - type: String
       contextPath: CiscoAMP.Event.scan.description
-      description: Description.
+      description: Description of the scan.
     - type: Boolean
       contextPath: CiscoAMP.Event.scan.clean
-      description: Whether it is clean.
+      description: Whether the scan is clean.
     - type: Number
       contextPath: CiscoAMP.Event.scan.scanned_files
       description: Number of scanned files.
@@ -978,11 +978,11 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -991,7 +991,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Fetch a list of event types. Events are identified and filtered by a unique ID.
+    description: Fetches a list of event types. Events are identified and filtered by a unique ID.
     execution: false
     name: cisco-amp-event-type-list
     outputs:
@@ -1014,15 +1014,15 @@ script:
       predefined:
       - Application Blocking
       - Simple Custom Detection
-    - description: Coma separated list for name to filter by (has auto complete capabilities).
+    - description: Comma-separated list of name to filter by (has auto complete capabilities).
       isArray: true
       name: name
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1053,11 +1053,11 @@ script:
       isArray: false
       name: file_list_guid
       required: true
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1106,7 +1106,7 @@ script:
       name: description
       required: false
     deprecated: false
-    description: Create a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
+    description: Creates a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
     execution: false
     name: cisco-amp-file-list-item-create
     outputs:
@@ -1129,7 +1129,7 @@ script:
       name: sha256
       required: true
     deprecated: false
-    description: Deletes a file list item with a given SHA-256 and associated to file list with given file_list_guid.
+    description: Deletes a file list item with a given SHA-256 and associated to a file list with a given file_list_guid.
     execution: false
     name: cisco-amp-file-list-item-delete
   - arguments:
@@ -1137,11 +1137,11 @@ script:
       isArray: false
       name: name
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1149,7 +1149,7 @@ script:
       isArray: false
       name: limit
       required: false
-    - description: Groups GUID.
+    - description: Group's GUID.
       isArray: false
       name: group_guid
       required: false
@@ -1196,7 +1196,7 @@ script:
       description: Child group GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.name
-      description: Policy Name.
+      description: Policy name.
     - type: String
       contextPath: CiscoAMP.Group.policies.description
       description: Policy description.
@@ -1205,16 +1205,16 @@ script:
       description: Policy GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.product
-      description: Policy OS product.
+      description: Policy operating system product.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.default
-      description: Is the policy default.
+      description: Whether the policy is the default policy.
     - type: Number
       contextPath: CiscoAMP.Group.policies.serial_number
       description: Policy serial number.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.inherited
-      description: Is the policy inherited.
+      description: Whether the policy is inherited.
     - type: String
       contextPath: CiscoAMP.Group.policies.file_lists.name
       description: File list name.
@@ -1241,18 +1241,18 @@ script:
       description: Exclusion set GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.name
-      description: Name of the group it is used in.
+      description: Name of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.description
-      description: Description of the group it is used in.
+      description: Description of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.guid
-      description: GUID of the group it is used in.
+      description: GUID of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.source
-      description: Creation source of the group it is used in.
+      description: Creation source of the group the policy is used in.
   - arguments:
-    - description: Groups GUID.
+    - description: Group's GUID.
       isArray: false
       name: group_guid
       required: true
@@ -1315,7 +1315,7 @@ script:
       description: Child group GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.name
-      description: Policy Name.
+      description: Policy name.
     - type: String
       contextPath: CiscoAMP.Group.policies.description
       description: Policy description.
@@ -1324,16 +1324,16 @@ script:
       description: Policy GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.product
-      description: Policy OS product.
+      description: Policy operating system product.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.default
-      description: Is the policy default.
+      description: Whether the policy is the default policy.
     - type: Number
       contextPath: CiscoAMP.Group.policies.serial_number
       description: Policy serial number.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.inherited
-      description: Is the policy inherited.
+      description: Whether the policy is inherited.
     - type: String
       contextPath: CiscoAMP.Group.policies.file_lists.name
       description: File list name.
@@ -1360,18 +1360,18 @@ script:
       description: Exclusion set GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.name
-      description: Name of the group it is used in.
+      description: Name of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.description
-      description: Description of the group it is used in.
+      description: Description of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.guid
-      description: GUID of the group it is used in.
+      description: GUID of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.source
-      description: Creation source of the group it is used in.
+      description: Creation source of the group the policy is used in.
   - arguments:
-    - description: Groups GUID.
+    - description: Group's GUID.
       isArray: false
       name: child_guid
       required: true
@@ -1422,7 +1422,7 @@ script:
       description: Child group GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.name
-      description: Policy Name.
+      description: Policy name.
     - type: String
       contextPath: CiscoAMP.Group.policies.description
       description: Policy description.
@@ -1431,16 +1431,16 @@ script:
       description: Policy GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.product
-      description: Policy OS product.
+      description: Policy operating system product.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.default
-      description: Is the policy default.
+      description: Whether the policy is the default policy.
     - type: Number
       contextPath: CiscoAMP.Group.policies.serial_number
       description: Policy serial number.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.inherited
-      description: Is the policy inherited.
+      description: Whether the policy is inherited.
     - type: String
       contextPath: CiscoAMP.Group.policies.file_lists.name
       description: File list name.
@@ -1467,16 +1467,16 @@ script:
       description: Exclusion set GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.name
-      description: Name of the group it is used in.
+      description: Name of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.description
-      description: Description of the group it is used in.
+      description: Description of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.guid
-      description: GUID of the group it is used in.
+      description: GUID of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.source
-      description: Creation source of the group it is used in.
+      description: Creation source of the group the policy is used in.
   - arguments:
     - description: Group name.
       isArray: false
@@ -1517,7 +1517,7 @@ script:
       description: Number of computers from descendant groups.
     - type: String
       contextPath: CiscoAMP.Group.policies.name
-      description: Policy Name.
+      description: Policy name.
     - type: String
       contextPath: CiscoAMP.Group.policies.description
       description: Policy description.
@@ -1526,16 +1526,16 @@ script:
       description: Policy GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.product
-      description: Policy OS product.
+      description: Policy operating system product.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.default
-      description: Is the policy default.
+      description: Whether the policy is the default policy.
     - type: Number
       contextPath: CiscoAMP.Group.policies.serial_number
       description: Policy serial number.
     - type: Boolean
       contextPath: CiscoAMP.Group.policies.inherited
-      description: Is the policy inherited.
+      description: Whether the policy is inherited.
     - type: String
       contextPath: CiscoAMP.Group.policies.file_lists.name
       description: File list name.
@@ -1562,23 +1562,23 @@ script:
       description: Exclusion set GUID.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.name
-      description: Name of the group it is used in.
+      description: Name of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.description
-      description: Description of the group it is used in.
+      description: Description of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.guid
-      description: GUID of the group it is used in.
+      description: GUID of the group the policy is used in.
     - type: String
       contextPath: CiscoAMP.Group.policies.used_in_groups.source
-      description: Creation source of the group it is used in.
+      description: Creation source of the group the policy is used in.
   - arguments:
-    - description: Groups GUID.
+    - description: Group's GUID.
       isArray: false
       name: group_guid
       required: true
     deprecated: false
-    description: Destroys a group with a given guid.
+    description: Destroys a group with a given GUID.
     execution: false
     name: cisco-amp-group-delete
   - arguments:
@@ -1586,11 +1586,11 @@ script:
       isArray: false
       name: indicator_guid
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1650,19 +1650,19 @@ script:
       isArray: false
       name: policy_guid
       required: false
-    - description: Comma separated list for products to filter by.
+    - description: Comma-separated list for products to filter by.
       isArray: true
       name: product
       required: false
-    - description: Comma separated list for names to filter by (has auto complete capabilities).
+    - description: Comma-separated list for names to filter by (has auto complete capabilities).
       isArray: true
       name: name
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1671,7 +1671,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Get information about policies by filtering with product and name or a specific one with policy_guid.
+    description: Gets information about policies by filtering with a product and name of a specific policy with a policy_guid.
     execution: false
     name: cisco-amp-policy-list
     outputs:
@@ -1689,7 +1689,7 @@ script:
       description: Product used.
     - type: Boolean
       contextPath: CiscoAMP.Policy.default
-      description: Is the policy default.
+      description: Whether the policy is the default policy.
     - type: Number
       contextPath: CiscoAMP.Policy.serial_number
       description: Policy serial number.
@@ -1731,11 +1731,11 @@ script:
       isArray: false
       name: ios_bid
       required: true
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1744,7 +1744,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: Retrieve app_trajectory queries for a given ios bundle id.
+    description: Retrieve app_trajectory queries for a given IOS bundle ID.
     execution: false
     name: cisco-amp-app-trajectory-query-list
     outputs:
@@ -1756,10 +1756,10 @@ script:
       description: Bundle ID.
     - type: String
       contextPath: CiscoAMP.AppTrajectoryQuery.group_guids
-      description: List of groups GUID.
+      description: List of group's GUIDs.
     - type: String
       contextPath: CiscoAMP.AppTrajectoryQuery.cdhash
-      description: CD Hash.
+      description: CD hHash.
     - type: Number
       contextPath: CiscoAMP.AppTrajectoryQuery.timestamp
       description: Observed timestamp.
@@ -1789,7 +1789,7 @@ script:
       description: Local Port.
     - type: String
       contextPath: CiscoAMP.AppTrajectoryQuery.network_info.direction
-      description: Outgoing or ingoing connection.
+      description: Outgoing or incoming connection.
     - type: String
       contextPath: CiscoAMP.AppTrajectoryQuery.network_info.protocol
       description: Communication protocol used.
@@ -1809,23 +1809,23 @@ script:
       isArray: false
       name: sha256
       required: false
-    - description: Comma separated list for group GUIDs to filter by.
+    - description: Comma-separated list for group GUIDs to filter by.
       isArray: true
       name: group_guid
       required: false
-    - description: Inclusive (The list will include vulnerable programs detected at start_time)
+    - description: The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time.
       isArray: false
       name: start_time
       required: false
-    - description: Exclusive - if end_time is a time (The list will only include vulnerable programs detected before end_time); Inclusive - if end_time is a date (The list will include vulnerable programs detected on the date)
+    - description: The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date.
       isArray: false
       name: end_time
       required: false
-    - description: Page number to return
+    - description: Page number to return.
       isArray: false
       name: page
       required: false
-    - description: Number of results in a page. Max 500.
+    - description: Number of results in a page. Maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -1834,7 +1834,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: computers key returns information about the last 1000 Connectors on which the vulnerable application was observed.'
+    description: 'Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with a given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: The computer's key returns information about the last 1000 connectors on which the vulnerable application was observed.'
     execution: false
     name: cisco-amp-vulnerability-list
     outputs:
@@ -1870,7 +1870,7 @@ script:
       description: Windows processor ID.
     - type: Boolean
       contextPath: CiscoAMP.Vulnerability.active
-      description: Is the computer active.
+      description: Whether the computer is active.
     - type: String
       contextPath: CiscoAMP.Vulnerability.group_guid
       description: Group's GUID.
@@ -1906,7 +1906,7 @@ script:
       description: Windows processor ID.
     - type: Boolean
       contextPath: CiscoAMP.Vulnerability.computers.active
-      description: Is the computer active.
+      description: Whether the computer is active.
   - arguments:
     - default: false
       description: The endpoint ID. Takes priority over the IP and hostname arguments.
@@ -1915,7 +1915,7 @@ script:
       required: false
       secret: false
     - default: true
-      description: The endpoint IP address. The ip argument has priority over the hostname argument.
+      description: The endpoint IP address. The IP argument has priority over the hostname argument.
       isArray: true
       name: ip
       required: false
@@ -1986,7 +1986,7 @@ script:
       description: The vendor that reported the file as malicious.
       type: String
     - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious.
+      description: A description of why the file was determined to be malicious.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -2003,7 +2003,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: true
   longRunning: false
