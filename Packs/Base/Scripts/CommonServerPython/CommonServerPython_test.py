@@ -25,7 +25,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, add_system_fields_to_events, ExecutionMetrics
 
 try:
     from StringIO import StringIO
@@ -8276,6 +8276,25 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
 
+    @pytest.mark.parametrize('test_case', ["test_add_system_fields_to_events_case_1", "test_add_system_fields_to_events_case_2",
+                                           "test_add_system_fields_to_events_case_3", "test_add_system_fields_to_events_case_4"])
+    def test_add_system_fields_to_events(self, mocker, test_case):
+        if not IS_PY3:
+            return
+        mocker.patch.object(demisto, 'params', return_value={"url": "www.example_url.com"})
+        mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': "test_integration_instance"}})
+        events = self.test_data[test_case]['events']
+        separator = self.test_data[test_case]['separator']
+        value_sign = self.test_data[test_case]['value_sign']
+        spaces = self.test_data[test_case]['spaces']
+        end_of_event_sign = self.test_data[test_case]['end_of_event_sign']
+        run_parameterless = self.test_data[test_case]['run_parameterless']
+        expected_results = self.test_data[test_case]['expected_results']
+        if run_parameterless:
+            res = add_system_fields_to_events(events)
+        else:
+            res = add_system_fields_to_events(events, separator, value_sign, spaces, end_of_event_sign)
+        assert res == expected_results
 
 class TestIsMetricsSupportedByServer:
     @classmethod
