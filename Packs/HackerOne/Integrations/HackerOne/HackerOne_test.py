@@ -331,8 +331,7 @@ def test_fetch_incident_when_valid_result_is_returned(client, requests_mock):
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
     fetched_incidents = fetch_incidents(client, last_run)
 
-    next_run = {'next_page': 1,
-                'next_created_at': '2021-08-09T13:41:38.039Z',
+    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
                 'report_ids': ['1295856']}
 
     incidents = [
@@ -362,13 +361,13 @@ def test_fetch_incident_when_getting_already_fetched_report(client, requests_moc
     incident_data = util_load_json(
         os.path.join("test_data", "incident/raw_response.json"))
 
-    last_run = {'next_page': 1, 'next_created_at': '2021-08-09T13:41:38.039Z',
+    last_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
                 'report_ids': ['1295856']}
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
 
     fetched_incidents = fetch_incidents(client, last_run)
-    next_run = {'next_page': 2, 'next_created_at': '2021-08-09T13:41:38.039Z',
+    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
                 'report_ids': ['1295856']}
     assert fetched_incidents == (next_run, [])
 
@@ -389,16 +388,14 @@ def test_fetch_incident_when_report_ids_should_be_replaced(client, requests_mock
     incident_data = util_load_json(
         os.path.join("test_data", "incident/raw_response.json"))
 
-    last_run = {'next_page': 2,
-                'next_created_at': '2020-09-07T04:59:51Z',
+    last_run = {'next_created_at': '2020-09-07T04:59:51Z',
                 'report_ids': ['1295852']}
 
     requests_mock.get(BASE_URL + URL_SUFFIX["REPORTS"], json=incident_data, status_code=200)
 
     fetched_incidents = fetch_incidents(client, last_run)
 
-    next_run = {'next_page': 1,
-                'next_created_at': '2021-08-09T13:41:38.039Z',
+    next_run = {'next_created_at': '2021-08-09T13:41:38.039Z',
                 'report_ids': ['1295856']}
 
     incidents = [

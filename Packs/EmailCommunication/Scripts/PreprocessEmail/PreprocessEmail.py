@@ -62,18 +62,13 @@ def create_email_html(email_html='', entry_id_list=None):
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
-            email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")',
-                                f'src=entry/download/{image_entry_id}',
-                                email_html
-                                )
+            email_html = re.sub(f'src="[^>]+"(?=[^>]+alt="{image_name}")', f'src=entry/download/{image_entry_id}',
+                                email_html)
         # Handling inline attachments from Outlook mailboxes
         # Note: when tested, entry id list and inline attachments were in the same order, so there was no need in
         # special validation that the right src was being replaced.
         else:
-            email_html = re.sub('(src="cid(.*?"))',
-                                f'src=entry/download/{image_entry_id}',
-                                email_html, count=1,
-                                )
+            email_html = re.sub('(src="cid(.*?"))', f'src=entry/download/{image_entry_id}', email_html, count=1, )
     return email_html
 
 
@@ -105,8 +100,7 @@ def add_entries(email_reply, email_related_incident):
         email_reply: The email reply.
         email_related_incident: The related incident.
     """
-    entries_str = json.dumps(
-        [{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
+    entries_str = json.dumps([{"Type": 1, "ContentsFormat": 'html', "Contents": email_reply, "tags": ['email-thread']}])
     res = demisto.executeCommand("addEntries", {"entries": entries_str, 'id': email_related_incident})
     if is_error(res):
         demisto.error(ERROR_TEMPLATE.format('addEntries', res['Contents']))
@@ -156,9 +150,9 @@ def get_incident_by_query(query):
 
     query_from_date = str(parse_date_range(query_time)[0])
 
-    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "fromDate": query_from_date,
-                                                         "timeField": "modified",
-                                                         "populateFields": "id,status,type,emailsubject"})[0]
+    res = demisto.executeCommand("GetIncidentsByQuery",
+                                 {"query": query, "fromDate": query_from_date, "timeField": "modified",
+                                  "populateFields": "id,status,type,emailsubject"})[0]
 
     if is_error(res):
         return_results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
@@ -183,14 +177,13 @@ def check_incident_status(incident_details, email_related_incident):
             raise DemistoException(ERROR_TEMPLATE.format(f'Reopen incident {email_related_incident}', res['Contents']))
 
 
-def get_attachments_using_instance(email_related_incident, labels):
+def get_attachments_using_instance(email_related_incident, labels, email_to):
     """Use the instance from which the email was received to fetch the attachments.
         Only supported with: EWS V2, Gmail
 
     Args:
         email_related_incident (str): ID of the incident to attach the files to.
         labels (Dict): Incident's labels to fetch the relevant data from.
-
     """
     message_id = ''
     instance_name = ''
@@ -214,8 +207,12 @@ def get_attachments_using_instance(email_related_incident, labels):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
-    # Note: attachments are downloaded by default when emails are fetched using the graph integrations,
-    # so this method isn't needed for them.
+    elif integration_name in ['MicrosoftGraphMail']:
+        demisto.executeCommand("executeCommandAt",
+                               {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
+                                'arguments': {'user_id': email_to, 'message_id': str(message_id),
+                                              'using': instance_name}})
+
     else:
         demisto.debug('Attachments could only be retrieved from EWS v2 or Gmail')
 
@@ -295,9 +292,8 @@ def get_unique_code():
     return code
 
 
-def create_thread_context(email_code, email_cc, email_bcc, email_text, email_from, email_html,
-                          email_latest_message, email_received, email_replyto, email_subject, email_to,
-                          incident_id, attachments):
+def create_thread_context(email_code, email_cc, email_bcc, email_text, email_from, email_html, email_latest_message,
+                          email_received, email_replyto, email_subject, email_to, incident_id, attachments):
     """Creates a new context entry to store the email in the incident context.  Checks current threads
     stored on the incident to get the thread number associated with this new message, if present.
     Args:
@@ -327,8 +323,8 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
             if isinstance(incident_email_threads, dict):
                 incident_email_threads = [incident_email_threads]
 
-            search_result = next((i for i, item in enumerate(incident_email_threads) if
-                                  item["EmailCommsThreadId"] == email_code), None)
+            search_result = next(
+                (i for i, item in enumerate(incident_email_threads) if item["EmailCommsThreadId"] == email_code), None)
             if search_result is not None:
                 thread_number = incident_email_threads[search_result]['EmailCommsThreadNumber']
                 thread_found = True
@@ -352,28 +348,17 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         else:
             attachment_names = ["None"]
 
-        email_message = {
-            'EmailCommsThreadId': email_code,
-            'EmailCommsThreadNumber': thread_number,
-            'EmailCC': email_cc,
-            'EmailBCC': email_bcc,
-            'EmailBody': email_text,
-            'EmailFrom': email_from,
-            'EmailHTML': email_html,
-            'MessageID': email_latest_message,
-            'EmailReceived': email_received,
-            'EmailReplyTo': email_replyto,
-            'EmailSubject': email_subject,
-            'EmailTo': email_to,
-            'EmailAttachments': f'{attachment_names}',
-            'MessageDirection': 'inbound',
-            'MessageTime': get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC")
-        }
+        email_message = {'EmailCommsThreadId': email_code, 'EmailCommsThreadNumber': thread_number, 'EmailCC': email_cc,
+                         'EmailBCC': email_bcc, 'EmailBody': email_text, 'EmailFrom': email_from,
+                         'EmailHTML': email_html, 'MessageID': email_latest_message, 'EmailReceived': email_received,
+                         'EmailReplyTo': email_replyto, 'EmailSubject': email_subject, 'EmailTo': email_to,
+                         'EmailAttachments': f'{attachment_names}', 'MessageDirection': 'inbound',
+                         'MessageTime': get_utc_now().strftime("%Y-%m-%dT%H:%M:%SUTC")}
         # Add email message to context key
         try:
-            demisto.executeCommand('executeCommandAt', {
-                'command': 'Set', 'incidents': incident_id, 'arguments':
-                    {'key': 'EmailThreads', 'value': email_message, 'append': 'true'}})
+            demisto.executeCommand('executeCommandAt', {'command': 'Set', 'incidents': incident_id,
+                                                        'arguments': {'key': 'EmailThreads', 'value': email_message,
+                                                                      'append': 'true'}})
         except Exception as e:
             demisto.error(f"Failed to append new email to context of incident {incident_id}. Reason: {e}")
     except Exception as e:
@@ -406,7 +391,7 @@ def main():
         incident_details = get_incident_by_query(query)[0]
 
         check_incident_status(incident_details, email_related_incident)
-        get_attachments_using_instance(email_related_incident, incident.get('labels'))
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
         time.sleep(5)
@@ -422,8 +407,7 @@ def main():
             add_entries(email_reply, email_related_incident)
         else:
             # For all other incident types, add message details as context entry
-            demisto.debug(
-                f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
+            demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
             create_thread_context(email_related_incident_code, email_cc, email_bcc, email_text, email_from, html_body,
                                   email_latest_message, email_received, email_replyto, email_subject, email_to,
                                   email_related_incident, attachments)
@@ -432,8 +416,8 @@ def main():
         return_results(False)
 
     except (IndexError, ValueError, DemistoException) as e:
-        demisto.executeCommand('setIncident', {'id': incident.get('id'),
-                                               'customFields': {'emailgeneratedcode': get_unique_code()}})
+        demisto.executeCommand('setIncident',
+                               {'id': incident.get('id'), 'customFields': {'emailgeneratedcode': get_unique_code()}})
         # Return True - tell pre-processing to create new incident
         return_results(True)
         if type(e).__name__ == 'IndexError':
