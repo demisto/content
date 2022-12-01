@@ -1,6 +1,6 @@
 [INGEST:vendor="okta", product="oag", target_dataset="okta_oag_raw", no_hit=keep]
 alter 
-	tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_date_part = arraystring(regextract(_raw_log, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(_raw_log, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
     tmp_mili_part = arraystring(regextract(_raw_log, "\.(\d{3})[\-|\+]"), ""),
     tmp_zhrs_part = to_integer(arraystring(regextract(_raw_log, "[\-|\+](\d{2})\:"), "")),
