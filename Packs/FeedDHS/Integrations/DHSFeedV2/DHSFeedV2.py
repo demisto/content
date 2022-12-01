@@ -12,13 +12,7 @@ MAX_FETCH_INTERVAL = '48 hours'
 DEFAULT_FETCH_INTERVAL = '24 hours'
 DEFAULT_LIMIT_PER_REQUEST = 1000
 
-''' COMMAND FUNCTIONS '''
-
-
-def command_test_module(client: Taxii2FeedClient):
-    if client.collections:
-        return 'ok'
-    return 'Could not connect to server'
+''' HELPER FUNCTIONS '''
 
 
 def get_limited_interval(given_interval: Union[str, datetime],
@@ -30,30 +24,6 @@ def get_limited_interval(given_interval: Union[str, datetime],
                               date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
     demisto.debug(f'{given_interval=}, {fetch_interval=}')
     return max(given_interval.replace(tzinfo=utc), fetch_interval.replace(tzinfo=utc))  # closer time is bigger
-
-
-def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
-                             initial_interval: str = DEFAULT_FETCH_INTERVAL, fetch_from_feed_start: bool = False) \
-        -> Tuple[list, dict]:
-    """
-    Fetch indicators from TAXII 2 server
-    :param client: Taxii2FeedClient
-    :param limit: upper limit of indicators to fetch
-    :param last_run_ctx: last run dict with {collection_id: last_run_time string}
-    :param initial_interval: initial interval in human readable format
-    :return: indicators in cortex TIM format, updated last_run_ctx
-    """
-    initial_interval: datetime = get_limited_interval(
-        dateparser.parse(initial_interval or DEFAULT_FETCH_INTERVAL, date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
-
-    if client.collection_to_fetch:
-        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx,
-                                                        fetch_from_feed_start)  # type: ignore[arg-type]
-    else:
-        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx,
-                                                         fetch_from_feed_start)  # type: ignore[arg-type]
-
-    return indicators, last_run_ctx
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
@@ -95,6 +65,39 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
             if limit <= 0:
                 break
         demisto.debug(f'{limit=}')
+
+    return indicators, last_run_ctx
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def command_test_module(client: Taxii2FeedClient):
+    if client.collections:
+        return 'ok'
+    return 'Could not connect to server'
+
+
+def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL, fetch_from_feed_start: bool = False) \
+        -> Tuple[list, dict]:
+    """
+    Fetch indicators from TAXII 2 server
+    :param client: Taxii2FeedClient
+    :param limit: upper limit of indicators to fetch
+    :param last_run_ctx: last run dict with {collection_id: last_run_time string}
+    :param initial_interval: initial interval in human readable format
+    :return: indicators in cortex TIM format, updated last_run_ctx
+    """
+    initial_interval: datetime = get_limited_interval(
+        dateparser.parse(initial_interval or DEFAULT_FETCH_INTERVAL, date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
+
+    if client.collection_to_fetch:
+        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx,
+                                                        fetch_from_feed_start)  # type: ignore[arg-type]
+    else:
+        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx,
+                                                         fetch_from_feed_start)  # type: ignore[arg-type]
 
     return indicators, last_run_ctx
 
