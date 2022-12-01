@@ -127,7 +127,7 @@ let dst_value = args.value;
 const src_array = Array.isArray(args.merge_with) ? args.merge_with : [args.merge_with];
 const key_map = make_keymap(args.mapping);
 const appendable = args.appendable.toLowerCase() == 'true';
-if (src_array) {
+if (src_array && args.merge_with !== null) {
     if (args.array_path) {
         dst_value.forEach(v => {
             let dst_array = dq(v, args.array_path);

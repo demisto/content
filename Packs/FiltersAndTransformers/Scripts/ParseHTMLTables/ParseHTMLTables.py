@@ -350,7 +350,8 @@ def main():
             tables.append({overwriting_title or original_title: rows})
 
     except Exception as err:
-        return_error(err)
+        # Don't return an error by return_error() as this is transformer.
+        raise DemistoException(str(err))
 
     return_results(tables)
 

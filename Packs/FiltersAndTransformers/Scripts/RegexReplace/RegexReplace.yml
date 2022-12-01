@@ -31,8 +31,6 @@ args:
 - name: action_dt
   description: The last action for each matched value to transform
 comment: |-
-  Deprecated. Use Filters And Transformers instead.
-
   Format patterns matched with regex. If the regex does not match any pattern, the original value is returned.
 
   Example 1:
@@ -49,9 +47,8 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
-deprecated: true
 name: RegexReplace
 runas: DBotWeakRole
 runonce: false

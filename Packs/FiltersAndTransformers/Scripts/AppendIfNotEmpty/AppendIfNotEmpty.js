@@ -15,7 +15,7 @@ function toArray(value, raw) {
         return [];
     } else if (Array.isArray(value)) {
         return value;
-    } else if (raw && typeof(value) === 'string') {
+    } else if (!raw && typeof(value) === 'string') {
         return argToList(value);
     } else {
         return [value];
