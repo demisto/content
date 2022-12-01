@@ -95,7 +95,7 @@ configuration:
   required: false
   type: 0
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon
+display: CrowdstrikeFalcon
 name: CrowdstrikeFalcon
 script:
   commands:
@@ -2735,12 +2735,6 @@ script:
       name: cve_id
       isArray: true
       required: true
-    - default: true
-      description: ''
-      isArray: true
-      name: cve
-      required: true
-      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cve
     outputs:

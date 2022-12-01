@@ -3911,6 +3911,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
         url_facet += "&facet=evaluation_logic"
     if argToBoolean(args.get('display_host_info')):
         url_facet += "&facet=host_info"
+    # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + \
         url_filter + url_facet + "&limit=" + args.get('limit', '50')
     vulnerability_response = http_request('GET', endpoint_url)
@@ -3988,22 +3989,40 @@ def create_relationships(cve: dict) -> List:
     return relationships_list
 
 
+def create_publications(cve: dict) -> list:
+    publications = []
+    if cve.get('references'):
+        for reference in cve.get('references', {}):
+            publications.append(Common.Publications(title='references', link=reference))
+    if cve.get('vendor_advisory'):
+        for vendor_advisory in cve.get('vendor_advisory', {}):
+            publications.append(Common.Publications(title='vendor_advisory', link=vendor_advisory))
+    return publications
+
+
 def get_cve_command(args: dict) -> list[CommandResults]:
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of cve indicators according to the user.
+    """
+    print('ok1')
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
     command_results_list = []
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
     url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
     #  raw_res = search_device(filter_operator='OR')
+    print('ok2')
     raw_res = http_request('GET', '/spotlight/combined/vulnerabilities/v1',
                            params={'filter': url_filter, 'facet': 'cve'})
+    print('ok3')
+
     raw_cve = [res_element.get('cve') for res_element in raw_res.get('resources', [])]
     if not raw_cve:
         raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
-
     for cve in raw_cve:
         relationships_list = create_relationships(cve)
-        publications = [Common.Publications(title=cve.get('references'), link=cve.get('vendor_advisory'))]
         cve_indicator = Common.CVE(id=cve.get('id'),
                                    cvss='',
                                    published=cve.get('published_date'),
@@ -4011,10 +4030,9 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                    description=cve.get('description'),
                                    cvss_score=cve.get('base_score'),
                                    cvss_vector=cve.get('vector'),
-                                   publications=publications,
+                                   publications=create_publications(cve),
                                    relationships=relationships_list)
         cve_human_readable = {'ID': cve.get('id'),
-                              'Severity': cve.get('severity'),
                               'Description': cve.get('description'),
                               'Published Date': cve.get('published_date'),
                               'Base Score': cve.get('base_score')}
@@ -4022,9 +4040,9 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                          headers=['ID', 'Severity', 'Published Date', 'Base Score'])
         command_results_list.append(CommandResults(raw_response=cve,
                                                    readable_output=human_readable,
-                                                   outputs_key_field='id',
-                                                   outputs=cve,
-                                                   outputs_prefix="cve",
+                                                   # outputs_key_field='id',
+                                                   #  outputs=cve,
+                                                   #  outputs_prefix="cve",
                                                    relationships=relationships_list,
                                                    indicator=cve_indicator))
     return command_results_list
