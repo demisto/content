@@ -534,12 +534,18 @@ def search_devices_command(client: Client, args: dict):
     if results:
         headers = [
             'riskLevel',
+            'id',
             'name',
             'type',
             'ipAddress',
+            'ipv6',
+            'macAddress',
+            'operatingSystem',
+            'operatingSystemVersion',
+            'manufacturer',
+            'model',
             'tags',
-            'user',
-            'id',
+            'user'
         ]
         return CommandResults(
             outputs_prefix='Armis.Device',
