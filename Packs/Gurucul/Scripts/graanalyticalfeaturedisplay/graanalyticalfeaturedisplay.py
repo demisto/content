@@ -26,7 +26,7 @@ def displayAnalyticalFeatures():
         if label['value'] is not None and label['type'] == 'anomalies':
             anomalies = str(label['value']).replace("null", "\"\"")
 
-    if int(entityTypeId) == 1:
+    if int(entityTypeId) > 0:
         anomaliesDetailString = json.loads(anomalies)
         for anomalyDetailString in anomaliesDetailString:
             anomalyName = ''
@@ -42,7 +42,8 @@ def displayAnalyticalFeatures():
                                       'entityValue': entityValue,
                                       'modelName': anomalyName,
                                       'fromDate': fromDate,
-                                      'toDate': toDate
+                                      'toDate': toDate,
+                                      'entityTypeId': entityTypeId
                                   }
                                   )
             if res is not None:
