@@ -1224,7 +1224,7 @@ script:
     outputs:
     - contextPath: Akamai.PapiProperty.DefaultRule
       description: Papi Property default rule
-  dockerimage: demisto/akamai:1.0.0.38691
+  dockerimage: demisto/akamai:1.0.0.39599
   runonce: false
   script: ''
   subtype: python3
