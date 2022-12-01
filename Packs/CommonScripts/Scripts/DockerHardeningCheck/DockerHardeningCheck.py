@@ -172,14 +172,14 @@ def check_network(network_check: str) -> str:
     """
     Check that Cloud provider metadata service is not exposed and that access to localhost is not available.
     """
-    return_res = "" 
+    return_res = ""
     if network_check in ("all", "cloud_metadata"):
         LOG('Check cloud metadata server access...')
         try:
             res = requests.get(CLOUD_METADATA_URL, timeout=1)
             LOG(f'cloud metadata server returned successfuly: {res.status_code} {res.headers}')
             return_res += (f"Access to cloud metadata server: {CLOUD_METADATA_URL} is open. It seems that you haven't blocked "
-                           f"access to the cloud metadata server. Response status code: [{res.status_code}]." 
+                           f"access to the cloud metadata server. Response status code: [{res.status_code}]."
                            f"Response headers: {res.headers}")
         except Exception as ex:
             LOG(f'cloud metadata server returned exception (this is good. means there is no access to the server.): {ex}')
@@ -232,7 +232,7 @@ def main():
             status: check_pids(pids) or success,
         },
         {
-            check: "Network Access",
+            check: "Network",
             status: check_network(network_check) or success
         },
     ]
