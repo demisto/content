@@ -134,9 +134,9 @@ FORMAT_IPv6 = [
 ]
 
 FORMAT_PATH = [
-    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),
-    ('www.test.com/check', 'www.test.com/check'),
-    ('https://test.test/Test\\"', 'https://test.test/Test'),
+    ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
+    ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
+    ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
