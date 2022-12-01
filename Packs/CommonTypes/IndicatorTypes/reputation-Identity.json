@@ -13,6 +13,6 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
-    "layout": "b13257ad-b214-4796-8de3-8fc86c387c97",
+    "layout": "Identity",
     "fromVersion": "6.5.0"
 }
