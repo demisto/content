@@ -1,5 +1,6 @@
 from pytz import utc
 from taxii2client.common import _ensure_datetime_to_string
+from taxii2client.exceptions import InvalidJSONError
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -15,15 +16,19 @@ DEFAULT_LIMIT_PER_REQUEST = 1000
 ''' HELPER FUNCTIONS '''
 
 
+def get_datetime(given_interval: Union[str, datetime]) -> datetime:
+    if isinstance(given_interval, datetime):
+        return given_interval
+    date = dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])
+    return date.replace(tzinfo=utc)  # type: ignore[union-attr]
+
+
 def get_limited_interval(given_interval: Union[str, datetime],
                          fetch_interval: Optional[Union[str, datetime]] = MAX_FETCH_INTERVAL) -> datetime:
-    given_interval: datetime = given_interval if isinstance(given_interval, datetime) \
-        else dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
-    fetch_interval: datetime = fetch_interval if isinstance(fetch_interval, datetime) \
-        else dateparser.parse(fetch_interval or MAX_FETCH_INTERVAL,
-                              date_formats=[TAXII_TIME_FORMAT])  # type: ignore[assignment]
+    given_interval: datetime = get_datetime(given_interval)
+    fetch_interval: datetime = get_datetime(fetch_interval or MAX_FETCH_INTERVAL)
     demisto.debug(f'{given_interval=}, {fetch_interval=}')
-    return max(given_interval.replace(tzinfo=utc), fetch_interval.replace(tzinfo=utc))  # closer time is bigger
+    return max(given_interval, fetch_interval)  # closer time is bigger
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
@@ -89,8 +94,7 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     :param initial_interval: initial interval in human readable format
     :return: indicators in cortex TIM format, updated last_run_ctx
     """
-    initial_interval: datetime = get_limited_interval(
-        dateparser.parse(initial_interval or DEFAULT_FETCH_INTERVAL, date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
+    initial_interval: datetime = get_limited_interval(get_datetime(initial_interval or DEFAULT_FETCH_INTERVAL))
 
     if client.collection_to_fetch:
         indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx,
@@ -114,8 +118,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     :return: indicators in cortex TIM format
     """
     limit = arg_to_number(args.get('limit')) or 10
-    added_after: datetime = get_limited_interval(dateparser.parse(args.get('added_after', DEFAULT_FETCH_INTERVAL),
-                                                                  date_formats=[TAXII_TIME_FORMAT]))  # type: ignore[arg-type]
+    added_after: datetime = get_limited_interval(get_datetime(args.get('added_after', DEFAULT_FETCH_INTERVAL)))
     raw = argToBoolean(args.get('raw', 'false'))
 
     if client.collection_to_fetch:

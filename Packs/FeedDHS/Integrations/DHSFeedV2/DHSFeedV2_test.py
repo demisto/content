@@ -174,3 +174,27 @@ def test_get_limited_interval_twice(given_interval, fetch_interval, expected_min
     returned_min_interval = get_limited_interval(get_limited_interval(given_interval or DEFAULT_FETCH_INTERVAL), fetch_interval)
     expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
     assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0, tzinfo=utc)
+
+
+first_human_second_none = ('24 hours', None, datetime(2022, 11, 22, 11, 00, 00, tzinfo=utc))
+first_timestamp_second_none = ('2022-11-30T00:28:24Z', None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+first_datetime_second_none = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), None,
+                              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+first_none_second_human = (None, MAX_FETCH_INTERVAL, datetime(2022, 11, 21, 11, 00, 00, tzinfo=utc))
+first_none_second_timestamp = (None, '2022-11-30T00:28:24Z', datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+first_none_second_datetime = (None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc),
+                              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+take_first = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), '24 hours',
+              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+
+
+@freeze_time("2022-11-23 11:00:00 UTC")  # works only with lint
+@pytest.mark.parametrize('given_interval, default_value, expected_datetime', [first_human_second_none,
+                                                                              first_timestamp_second_none,
+                                                                              first_datetime_second_none,
+                                                                              first_none_second_human,
+                                                                              first_none_second_timestamp,
+                                                                              first_none_second_datetime,
+                                                                              take_first])
+def test_get_datetime(given_interval, default_value, expected_datetime):
+    assert get_datetime(given_interval or default_value) == expected_datetime
