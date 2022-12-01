@@ -1,6 +1,6 @@
+name: McAfeeEpo Parsing Rule
+id: McAfeeEpo Parsing Rule
 fromversion: 6.10.0
-id: Tenable_io_modeling_rule
-name: Tenable.io Modeling Rule
+tags: []
 rules: ''
-schema: ''
-tags: tenable
+samples: ''
