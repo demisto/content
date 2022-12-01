@@ -17,6 +17,9 @@ DEFAULT_LIMIT_PER_REQUEST = 1000
 
 
 def get_datetime(given_interval: Union[str, datetime]) -> datetime:
+    """
+    Receives a given interval and returns the corresponding datetime.
+    """
     if isinstance(given_interval, datetime):
         return given_interval
     date = dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])
@@ -25,6 +28,9 @@ def get_datetime(given_interval: Union[str, datetime]) -> datetime:
 
 def get_limited_interval(given_interval: Union[str, datetime],
                          fetch_interval: Optional[Union[str, datetime]] = MAX_FETCH_INTERVAL) -> datetime:
+    """
+    Returns the closer time between the two time intervals given.
+    """
     given_interval: datetime = get_datetime(given_interval)
     fetch_interval: datetime = get_datetime(fetch_interval or MAX_FETCH_INTERVAL)
     demisto.debug(f'{given_interval=}, {fetch_interval=}')
@@ -159,7 +165,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 
 def main():  # pragma: no cover
-    demisto.debug('version 2.7.6')
+    demisto.debug('version 2.7.8')
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')

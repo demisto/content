@@ -135,7 +135,15 @@ class TestFetchIndicators:
         assert last_run.get(mock_client.collections[1]) == 'test'
 
 
-def test_get_collections_function():
+def test_get_collections_command():
+    """
+    Given:
+        - A taxii2 feed with collections
+    When:
+        - Running 'dhs-get-collections' command
+    Then:
+        - Returns the collections that the feed has
+    """
     mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
     mock_client.collections = [MockCollection("first id", 'first name'), MockCollection("second id", 'second name')]
 
@@ -158,6 +166,14 @@ take_closer_first_value = ('1 hour', '2 hours', '1 hour')
                                                                                    take_closer_second_value,
                                                                                    take_closer_first_value])
 def test_get_limited_interval(given_interval, fetch_interval, expected_min_interval):
+    """
+    Given:
+        - Two time intervals
+    When:
+        - Running fetch indicators
+    Then:
+        - Returns the closer time
+    """
     returned_min_interval = get_limited_interval(given_interval, fetch_interval)
     expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
     assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0, tzinfo=utc)
@@ -171,30 +187,43 @@ take_min_sent_without_value = (None, '50 hours', DEFAULT_FETCH_INTERVAL)
 @pytest.mark.parametrize('given_interval, fetch_interval, expected_min_interval', [take_min_sent_with_value,
                                                                                    take_min_sent_without_value])
 def test_get_limited_interval_twice(given_interval, fetch_interval, expected_min_interval):
+    """
+    Given:
+        - Two time intervals, one which passes get_limited_interval twice
+    When:
+        - Running fetch indicators with initial_interval value
+    Then:
+        - Returns the closer time
+    """
     returned_min_interval = get_limited_interval(get_limited_interval(given_interval or DEFAULT_FETCH_INTERVAL), fetch_interval)
     expected_min_interval = dateparser.parse(expected_min_interval, date_formats=[TAXII_TIME_FORMAT])
     assert returned_min_interval.replace(microsecond=0) == expected_min_interval.replace(microsecond=0, tzinfo=utc)
 
 
-first_human_second_none = ('24 hours', None, datetime(2022, 11, 22, 11, 00, 00, tzinfo=utc))
-first_timestamp_second_none = ('2022-11-30T00:28:24Z', None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
-first_datetime_second_none = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), None,
-                              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
-first_none_second_human = (None, MAX_FETCH_INTERVAL, datetime(2022, 11, 21, 11, 00, 00, tzinfo=utc))
-first_none_second_timestamp = (None, '2022-11-30T00:28:24Z', datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
-first_none_second_datetime = (None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc),
-                              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
-take_first = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), '24 hours',
-              datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+human_to_datetime = ('24 hours', datetime(2022, 11, 22, 11, 00, 00, tzinfo=utc))
+timestamp_to_datetime = ('2022-11-30T00:28:24Z', datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+datetime_to_datetime = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc), datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+none_or_human_to_datetime = (None or MAX_FETCH_INTERVAL, datetime(2022, 11, 21, 11, 00, 00, tzinfo=utc))
+timestamp_or_none_to_datetime = ('2022-11-30T00:28:24Z' or None, datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
+datetime_or_human_to_datetime = (datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc) or '24 hours',
+                                 datetime(2022, 11, 30, 00, 28, 24, tzinfo=utc))
 
 
 @freeze_time("2022-11-23 11:00:00 UTC")  # works only with lint
-@pytest.mark.parametrize('given_interval, default_value, expected_datetime', [first_human_second_none,
-                                                                              first_timestamp_second_none,
-                                                                              first_datetime_second_none,
-                                                                              first_none_second_human,
-                                                                              first_none_second_timestamp,
-                                                                              first_none_second_datetime,
-                                                                              take_first])
-def test_get_datetime(given_interval, default_value, expected_datetime):
-    assert get_datetime(given_interval or default_value) == expected_datetime
+@pytest.mark.parametrize('given_interval, expected_datetime', [human_to_datetime,
+                                                               timestamp_to_datetime,
+                                                               datetime_to_datetime,
+                                                               none_or_human_to_datetime,
+                                                               timestamp_or_none_to_datetime,
+                                                               datetime_or_human_to_datetime,
+                                                               ])
+def test_get_datetime(given_interval, expected_datetime):
+    """
+    Given:
+        - Time interval
+    When:
+        - Turning it into datetime
+    Then:
+        - Returns the corresponding datetime
+    """
+    assert get_datetime(given_interval) == expected_datetime
