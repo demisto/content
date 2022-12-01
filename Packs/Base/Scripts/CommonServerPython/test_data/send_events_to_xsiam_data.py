@@ -48,31 +48,30 @@ _instance_name: test_integration_instance}'
         "expected_data": 'name=event 1 _final_reporting_device_name=www.example_url.com _instance_name=test_integration_instance\n\
 name=event 2 _final_reporting_device_name=www.example_url.com _instance_name=test_integration_instance'
     },
-    "test_add_system_fields_to_events_case_1":{
+    "test_add_system_fields_to_events_case_1": {
         'events': [{"name": "my event 1"}, {"name": "my event 2"}],
         'separator': "",
         'value_sign': "",
         'spaces': "",
         'end_of_event_sign': "",
         'run_parameterless': True,
-        'expected_results':[{"name": "my event 1",
-           "_final_reporting_device_name": "www.example_url.com", "_instance_name": "test_integration_instance"}, 
-           {"name": "my event 2", "_final_reporting_device_name": "www.example_url.com", "_instance_name":
-            "test_integration_instance"}]
+        'expected_results': [{"name": "my event 1", "_final_reporting_device_name": "www.example_url.com", "_instance_name":
+                             "test_integration_instance"}, {"name": "my event 2", "_final_reporting_device_name":
+                             "www.example_url.com", "_instance_name": "test_integration_instance"}]
     },
-    "test_add_system_fields_to_events_case_2":{
-        'events': [{"name": "my event 1"}, {"name": "my event 2"}], 
-        'separator':  ",",
+    "test_add_system_fields_to_events_case_2": {
+        'events': [{"name": "my event 1"}, {"name": "my event 2"}],
+        'separator': ",",
         'value_sign': ":",
         'spaces': " ",
         'end_of_event_sign': "}",
         'run_parameterless': False,
         'expected_results': [{"name": "my event 1", "_final_reporting_device_name": "www.example_url.com", "_instance_name":
-            "test_integration_instance"}, {"name": "my event 2", "_final_reporting_device_name": "www.example_url.com",
-                                           "_instance_name": "test_integration_instance"}]
+                             "test_integration_instance"}, {"name": "my event 2", "_final_reporting_device_name":
+                             "www.example_url.com", "_instance_name": "test_integration_instance"}]
     },  
-    "test_add_system_fields_to_events_case_3":{
-        'events': ["{name: event 1}", "{name: event 2}"], 
+    "test_add_system_fields_to_events_case_3": {
+        'events': ["{name: event 1}", "{name: event 2}"],
         'separator': "",
         'value_sign': "",
         'spaces': "",
@@ -81,9 +80,9 @@ name=event 2 _final_reporting_device_name=www.example_url.com _instance_name=tes
         'expected_results': ['{name: event 1, _final_reporting_device_name: www.example_url.com, _instance_name: \
 test_integration_instance}', '{name: event 2, _final_reporting_device_name: www.example_url.com, \
 _instance_name: test_integration_instance}']
-    },  
-    "test_add_system_fields_to_events_case_4":{
-        'events': ["name=event 1", "name=event 2"], 
+    },
+    "test_add_system_fields_to_events_case_4": {
+        'events': ["name=event 1", "name=event 2"],
         'separator': " ",
         'value_sign': "=",
         'spaces': "",
@@ -92,6 +91,15 @@ _instance_name: test_integration_instance}']
         'expected_results': ['name=event 1 _final_reporting_device_name=www.example_url.com \
 _instance_name=test_integration_instance', 'name=event 2 _final_reporting_device_name=www.example_url.com \
 _instance_name=test_integration_instance']
+    },
+    "test_add_system_fields_to_events_case_5": {
+        'events': [],
+        'separator': " ",
+        'value_sign': "=",
+        'spaces': "",
+        'end_of_event_sign': "",
+        'run_parameterless': True,
+        'expected_results': []
     }
 }
 

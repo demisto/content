@@ -10715,6 +10715,8 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
     calling_context = demisto.callingContext.get('context', {})
     url = params.get('url')
     integration_instance = calling_context.get('IntegrationInstance', '')
+    if not events:
+        return []
     if isinstance(events[0], str):
         temp_ls = []
         str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
@@ -10722,7 +10724,7 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
         for event in events:
             if len(end_of_event_sign) == 0:
                 event = f"{event}{str_to_add}"
-            elif event[-len(end_of_event_sign):] == end_of_event_sign or event[:-len(end_of_event_sign)] == ".":
+            elif event[-len(end_of_event_sign):] == end_of_event_sign:
                 event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
             temp_ls.append(event)
         events = temp_ls

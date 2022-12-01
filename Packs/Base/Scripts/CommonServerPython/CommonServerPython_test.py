@@ -8277,8 +8277,45 @@ class TestSendEventsToXSIAMTest:
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
 
     @pytest.mark.parametrize('test_case', ["test_add_system_fields_to_events_case_1", "test_add_system_fields_to_events_case_2",
-                                           "test_add_system_fields_to_events_case_3", "test_add_system_fields_to_events_case_4"])
+                                           "test_add_system_fields_to_events_case_3", "test_add_system_fields_to_events_case_4",
+                                           "test_add_system_fields_to_events_case_5"])
     def test_add_system_fields_to_events(self, mocker, test_case):
+        """
+        Test for the add_system_fields_to_events function
+        Given:
+            Case a: a list containing dicts representing events.
+            Case b: a list containing dicts representing events.
+            Case c: a list containing strings where each string is representing an event dict.
+            Case d: a list containing strings where each string is representing an event in CEF format.
+            Case e: an empty list of events.
+
+        When:
+            Case a: Calling the add_system_fields_to_events function with the default punctuation signs.
+            Case b: Calling the add_system_fields_to_events function with edited punctuation signs.
+            Case c: Calling the add_system_fields_to_events function with the default punctuation signs.
+            Case d: Calling the add_system_fields_to_events function with edited punctuation signs.
+            Case e: Calling the add_system_fields_to_events function with the default punctuation signs.
+
+        Then ensure that:
+            Case a:
+                - The relevant data for the fields were parsed correctly from the integration params and context.
+                - The events data was edited correctly.
+            Case b:
+                - The relevant data for the fields were parsed correctly from the integration params and context.
+                - The events data was edited correctly.
+                - The given punctuation signs were ignore as this was a dict input and not string.
+            Case c:
+                - The relevant data for the fields were parsed correctly from the integration params and context.
+                - The events data was edited correctly.
+                - The default punctuation signs were used to parse the events.
+            Case d:
+                - The relevant data for the fields were parsed correctly from the integration params and context.
+                - The events data was edited correctly.
+                - The given punctuation signs were used correctly to parse the events.
+            Case e:
+                - The function can handle empty lists.
+                - An empty list was returned.
+        """
         if not IS_PY3:
             return
         mocker.patch.object(demisto, 'params', return_value={"url": "www.example_url.com"})
