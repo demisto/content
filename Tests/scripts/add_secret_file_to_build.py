@@ -12,7 +12,8 @@ def run(json_path_file):
     secrets = secret_conf.list_secrets(project_id, with_secret=True)
     print(f'secrets from API: {secrets[0:20]}')
     with open(json_path_file, 'w') as secrets_out_file:
-        secrets_out_file.write(json.dump(secrets))
+        secrets_out_file.write(json.dumps(secrets))
+    print(json_path_file)
 
 
 def get_secret_service_account_config() -> str:
