@@ -8202,8 +8202,13 @@ class TestSendEventsToXSIAMTest:
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']
         data_format = self.test_data[events_use_case].get('format')
-
-        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+        
+        if events_use_case == "cef_events":
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
+                                 separator=" ", value_sign="=", spaces="", end_of_event_sign="")
+        
+        else:
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']

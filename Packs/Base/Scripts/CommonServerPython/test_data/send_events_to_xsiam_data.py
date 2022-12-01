@@ -28,9 +28,9 @@ events_dict = {
         ],
         "number_of_events": 2,
         "expected_format": "text",
-        "expected_data": '{name: event 1, _final_reporting_device_name: www.example_url.com, _instance_name: '
-                         'test_integration_instance}\n{name: event 2, _final_reporting_device_name: www.example_url.com, '
-                         '_instance_name: test_integration_instance}'
+        "expected_data": '{name: event 1, _final_reporting_device_name: www.example_url.com, _instance_name: \
+test_integration_instance}\n{name: event 2, _final_reporting_device_name: www.example_url.com, \
+_instance_name: test_integration_instance}'
     },
     "text_events": {
         "events": "{name: event 1}\n{name: event 2}",
@@ -41,11 +41,12 @@ test_integration_instance}\n{name: event 2, _final_reporting_device_name: www.ex
 _instance_name: test_integration_instance}'
     },
     "cef_events": {
-        "events": "Some cef event 1\nSome cef event 2",
+        "events": "name=event 1\nname=event 2",
         "number_of_events": 2,
         "format": "cef",
         "expected_format": "cef",
-        "expected_data": "Some cef event 1\nSome cef event 2",
+        "expected_data": 'name=event 1 _final_reporting_device_name=www.example_url.com _instance_name=test_integration_instance\n\
+name=event 2 _final_reporting_device_name=www.example_url.com _instance_name=test_integration_instance'
     }
 }
 

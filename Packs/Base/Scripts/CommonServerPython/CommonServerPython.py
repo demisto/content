@@ -10720,10 +10720,10 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
         str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
                      f"_instance_name{value_sign}{spaces}{integration_instance}{end_of_event_sign}"
         for event in events:
-            if event[-1] == end_of_event_sign or event[-1] == ".":
-                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
-            else:
+            if len(end_of_event_sign) == 0:
                 event = f"{event}{str_to_add}"
+            elif event[-len(end_of_event_sign):] == end_of_event_sign or event[:-len(end_of_event_sign)] == ".":
+                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
             temp_ls.append(event)
         events = temp_ls
     else:
@@ -10779,8 +10779,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        add_system_fields_to_events(events, separator=separator, value_sign=value_sign, spaces=spaces,
-                                    end_of_event_sign=end_of_event_sign)
+        events = add_system_fields_to_events(events, separator=separator, value_sign=value_sign, spaces=spaces,
+                                             end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
