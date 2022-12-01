@@ -42,9 +42,21 @@ class Client(BaseClient):
                 encoded_str: str - The string that contains username:password in base64.
                 domain_id: int - The id of the domain.
             Returns:
-                A dictionary with the session details.
+                A dictionary with the firewall policy list.
         """
         url_suffix = f'/sdkapi/domain/{domain_id}/firewallpolicy'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def get_firewall_policy_request(self, encoded_str: str, policy_id) -> Dict:
+        """ Gets the Firewall Policy details.
+            Args:
+                encoded_str: str - The string that contains username:password in base64.
+                policy_id: int - The id of the policy.
+            Returns:
+                A dictionary with the policy details.
+        """
+        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
@@ -115,19 +127,18 @@ def test_module(client: Client, encoded_str: str) -> str:
         raise Exception(e.message)
 
 
-def list_domain_firewall_policy_command(client: Client, args: Dict, user_name_n_password_encoded: str) -> CommandResults:
+def list_domain_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
     """ Gets the list of Firewall Policies defined in a particular domain.
     Args:
         client: client - A McAfeeNSM client.
         args: Dict - The function arguments.
-        user_name_n_password_encoded: str - The string that contains username:password in base64
+        session_str: str - The session string for authentication.
     Returns:
-        The list of Firewall Policies defined in a particular domain.
+        A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
     domain_id = args.get('domain_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    session_str = get_session(client, user_name_n_password_encoded)
 
     response = client.list_domain_firewall_policy_request(session_str, domain_id)
     result = response.get('FirewallPoliciesForDomainResponseList', [])
@@ -164,6 +175,43 @@ def list_domain_firewall_policy_command(client: Client, args: Dict, user_name_n_
     )
 
 
+def get_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Gets the Firewall Policy details.
+    Args:
+        client: client - A McAfeeNSM client.
+        args: Dict - The function arguments.
+        session_str: str - The session string for authentication.
+    Returns:
+        A CommandResult object with the Firewall Policy details.
+    """
+    policy_id = args.get('policy_id')
+    response = client.get_firewall_policy_request(session_str, policy_id)
+    human_readable = {'FirewallPolicyId': response.get('FirewallPolicyId'),
+                      'Name': response.get('Name'),
+                      'Description': response.get('Description'),
+                      'VisibleToChild': response.get('VisibleToChild'),
+                      'IsEditable': response.get('IsEditable'),
+                      'PolicyType': response.get('PolicyType'),
+                      'PolicyVersion': response.get('PolicyVersion'),
+                      'LastModifiedUser': response.get('LastModifiedUser'),
+                      'LastModifiedTime': response.get('LastModifiedTime')}
+    headers = ['PolicyId', 'Name', 'Description', 'VisibleToChild', 'IsEditable', 'PolicyType', 'PolicyVersion',
+               'LastModifiedUser', 'LastModifiedTime']
+    readable_output = tableToMarkdown(
+        name=f'Firewall Policy {policy_id}',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Policy',
+        outputs=response,
+        raw_response=response,
+        outputs_key_field='name'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -191,14 +239,20 @@ def main() -> None:  # pragma: no cover
 
         client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
         user_name_n_password_encoded = encode_to_base64(f'{user_name}:{password}')
+        session_str = ''
+        if demisto.command() != 'test-module':
+            session_str = get_session(client, user_name_n_password_encoded)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, user_name_n_password_encoded)
             return_results(result)
         elif demisto.command() == 'nsm-list-domain-firewall-policy':
-            result = list_domain_firewall_policy_command(client, demisto.args(), user_name_n_password_encoded)
+            result = list_domain_firewall_policy_command(client, demisto.args(), session_str)
             return_results(result)
+        elif demisto.command() == 'nsm-get-firewall-policy':
+            results = get_firewall_policy_command(client, demisto.args(), session_str)
+            return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
 

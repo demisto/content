@@ -68,6 +68,119 @@ script:
         - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.lastModUser
           description: Last User that modified the policy.
           type: String
+    - name: nsm-get-firewall-policy
+      description: Gets the Firewall Policy details.
+      arguments:
+        - name: policy_id
+          required: true
+          description: The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.
+          isArray: false
+      outputs:
+        - contextPath: NSM.Policy.FirewallPolicyId
+          description: Unique Firewall Policy ID.
+          type: Number
+        - contextPath: NSM.Policy.Name
+          description: Policy Name.
+          type: String
+        - contextPath: NSM.Policy.DomainId
+          description: Id of Domain to which this firewall policy belongs to.
+          type: Number
+        - contextPath: NSM.Policy.VisibleToChild
+          description: Policy visible to Child Domain.
+          type: Boolean
+        - contextPath: NSM.Policy.Description
+          description: Firewall Policy Description.
+          type: String
+        - contextPath: NSM.Policy.LastModifiedTime
+          description: Last Modified Time of the Firewall Policy.
+          type: Date
+        - contextPath: NSM.Policy.IsEditable
+          description: Policy is editable or not.
+          type: Boolean
+        - contextPath: NSM.Policy.PolicyType
+          description: Policy Type, can be "ADVANCED" / "CLASSIC".
+          type: String
+        - contextPath: NSM.Policy.PolicyVersion
+          description: Policy Version.
+          type: Number
+        - contextPath: NSM.Policy.LastModifiedUser
+          description: Last User that modified the policy.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Description
+          description: Rule Description.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Enabled
+          description: Is Rule Enabled or not
+          type: Boolean
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Response
+          description: Action to be performed if the traffic matches this rule. Can be "SCAN" / "DROP" / "DENY" / "IGNORE" / "STATELESS_IGNORE" / "STATELESS_DROP" / "REQUIRE_AUTHENTICATION".
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.IsLogging
+          description: Is Logging enabled for this rule.
+          type: Boolean
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Direction
+          description: Rule Direction, can be "INBOUND" / "OUTBOUND" / "EITHER".
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectId
+          description: Unique Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType
+          description: 	Source / Destination Mode. Can be "COUNTRY" / "HOST_DNS_NAME" / "HOST_IPV_4" / "HOST_IPV_6" / "IPV_4_ADDRESS_RANGE" / "IPV_6_ADDRESS_RANGE" / "NETWORK_IPV_4" / "NETWORK_IPV_6" / "NETWORK_GROUP".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectId
+          description: Unique Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType
+          description: Source / Destination Mode. Can be "COUNTRY" / "HOST_DNS_NAME" / "HOST_IPV_4" / "HOST_IPV_6" / "IPV_4_ADDRESS_RANGE" / "IPV_6_ADDRESS_RANGE" / "NETWORK_IPV_4" / "NETWORK_IPV_6" / "NETWORK_GROUP".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectId
+          description: 	Unique Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectType
+          description: Source User. Can be "USER" / "USER_GROUP".
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.RuleObjectId
+          description: Unique Service Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.RuleObjectType
+          description: 	Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.ApplicationType
+          description: Application Type. Can be "DEFAULT" / "CUSTOM".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.RuleObjectId
+          description: Unique Service Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.RuleObjectType
+          description: Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ApplicationObjectList.ApplicationType
+          description: Application Type. Can be "DEFAULT" / "CUSTOM".
+          type: Unknown
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectId
+          description: Unique Service Rule Object ID.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.Name
+          description: Rule Object Name.
+          type: String
+        - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectType
+          description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP"	.
+          type: Unknown
   isfetch: false
   runonce: false
   script: '-'
