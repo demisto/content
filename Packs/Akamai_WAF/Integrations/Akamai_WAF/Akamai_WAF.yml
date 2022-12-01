@@ -29,8 +29,9 @@ configuration:
   required: false
   type: 8
 description: |-
-  Integration to Deploy Akamai GTM Domain, Ion Property and Security configuration.
-  Copied from Marketplace on Nov 28, 2022.
+  Use the Akamai WAF integration to manage common sets of lists used by various Akamai security products and features.
+
+  This is the modified version where a new command "akamai-update-network-list-elements" was added by the SA.
 display: Akamai WAF
 name: Akamai WAF
 script:
