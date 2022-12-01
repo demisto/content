@@ -126,13 +126,15 @@ def search_incidents(args: Dict):   # pragma: no cover
     incident_found: bool = check_if_found_incident(res)
     if incident_found is False:
         if platform == 'x2':
-            return 'Alerts not found.', {}, {}
-        return 'Incidents not found.', {}, {}
+            return 'Alerts not found.', [{}], [{}]
+        return 'Incidents not found.', [{}], [{}]
 
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data, platform)
     if not data:
-        return 'Incidents not found.', [{}], []
+        if platform == 'x2':
+            return 'Alerts not found.', [{}], [{}]
+        return 'Incidents not found.', [{}], [{}]
 
     headers: List[str]
     if platform == 'x2':
