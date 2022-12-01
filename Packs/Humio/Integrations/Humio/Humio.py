@@ -260,7 +260,7 @@ def humio_list_notifiers(client, args, headers):
         if not response.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
     
-        actions = response["data"]["actions"]
+        actions = response.get('data', {}).get('actions')
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
@@ -293,7 +293,7 @@ def humio_get_notifier_by_id(client, args, headers):
         if not response.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
         
-        actions = response["data"]["action"]
+        actions = response.get('data', {}).get('actions')
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
