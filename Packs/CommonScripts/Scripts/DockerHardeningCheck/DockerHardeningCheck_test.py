@@ -1,6 +1,10 @@
-from DockerHardeningCheck import check_memory, mem_size_to_bytes, check_pids, check_fd_limits, check_non_root, check_cpus
+from DockerHardeningCheck import (check_memory, mem_size_to_bytes, check_pids, check_fd_limits, check_non_root, check_cpus,
+                                  get_default_gateway, check_network, CLOUD_METADATA_URL)
 from pytest import skip
 import os
+import ipaddress
+import requests_mock
+from pytest_mock import MockerFixture
 
 
 def test_check_memory():
@@ -29,3 +33,18 @@ def test_check_cpus():
         skip("skipping as in CI we run with a single CPU")
         return
     assert check_cpus(1)  # during unit tests we should fail
+
+
+def test_get_default_gateway():
+    res = get_default_gateway()
+    assert res
+    # verify we have an ip
+    assert ipaddress.ip_address(res)
+
+
+def test_check_network(requests_mock: requests_mock.Mocker, mocker: MockerFixture):
+    requests_mock.get(CLOUD_METADATA_URL, text="access is open", headers={'test': 'mock header'})
+    requests_mock.get()
+    res = check_network('all')
+    assert CLOUD_METADATA_URL in res
+    assert 'mock header' in res
