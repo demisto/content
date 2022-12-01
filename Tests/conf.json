@@ -5173,6 +5173,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoSMA",
+            "playbookID": "CiscoSMA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
@@ -5434,6 +5439,9 @@
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+        "CiscoESA": "No instance - developed by Qmasters",
+        "CiscoSMA": "No instance - developed by Qmasters",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -5453,9 +5461,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "CiscoESA": "No instance - developed by Qmasters",
-        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
     ],
