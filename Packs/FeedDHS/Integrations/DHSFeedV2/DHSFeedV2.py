@@ -11,14 +11,14 @@ from TAXII2ApiModule import *  # noqa: E402
 COMPLEX_OBSERVATION_MODE_SKIP = 'Skip indicators with more than a single observation'
 MAX_FETCH_INTERVAL = '48 hours'
 DEFAULT_FETCH_INTERVAL = '24 hours'
-DEFAULT_LIMIT_PER_REQUEST = 1000
+DEFAULT_LIMIT_PER_REQUEST = 1000  # DHS default limit
 
 ''' HELPER FUNCTIONS '''
 
 
 def get_datetime(given_interval: Union[str, datetime]) -> datetime:
     """
-    Receives a given interval and returns the corresponding datetime.
+    Receives an interval and returns the corresponding datetime.
     """
     if isinstance(given_interval, datetime):
         return given_interval
@@ -98,6 +98,7 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     :param limit: upper limit of indicators to fetch
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :param initial_interval: initial interval in human readable format
+    :param fetch_from_feed_start: determines whether to run the request without "added_after" and fetch all feed information
     :return: indicators in cortex TIM format, updated last_run_ctx
     """
     initial_interval: datetime = get_limited_interval(get_datetime(initial_interval or DEFAULT_FETCH_INTERVAL))

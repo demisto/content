@@ -115,9 +115,25 @@ configuration:
   options:
   - indicator
   - relationship
-  - location
-  - identity
-  - opinion
+  - report
+  - malware
+  - campaign
+  - attack-pattern
+  - course-of-action
+  - intrusion-set
+  - tool
+  - threat-actor
+  - infrastructure
+  - autonomous-system
+  - domain-name
+  - email-addr
+  - file
+  - ipv4-addr
+  - ipv6-addr
+  - mutex
+  - url
+  - user-account
+  - windows-registry-key
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
