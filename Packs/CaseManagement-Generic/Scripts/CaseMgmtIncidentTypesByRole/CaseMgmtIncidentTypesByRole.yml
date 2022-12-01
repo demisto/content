@@ -1,4 +1,4 @@
-comment: "Restricts the Incident Types a user can create manually, based on their assigned XSOAR Role(s). \n\nRequirements - Create an XSOAR List called IncidentTypeRBAC with the following structure:\n\n{\n\"Default\":[\"DefaultIncidentTypeforAllUsers\"]\n\"Role\":[\"IncidentType1\",\"IncidentType2\"]\n}"
+comment: "Restricts the Incident Types a user can create manually, based on their assigned XSOAR Role(s). \n\nRequirements - Create an XSOAR List called IncidentTypeRBAC with the following structure, the names must match exactly to the names in the Incident Types under Settings!\n\nExample List:\n{\n\"Default\":[\"Case\",\"Job\",\"Unclassified\"],\n\"Analyst\":[\"Phishing\",\"Malware\"],\n\"ThreatHunters\":[\"Hunt\"]\n}"
 commonfields:
   id: CaseMgmtIncidentTypesByRole
   version: -1

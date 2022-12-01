@@ -1,21 +1,47 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# get the users roles
-roles = demisto.executeCommand("getUsers", {"current": "true"})[0].get("Contents")[0].get("allRoles")
+# check if this is a new Incident or not
+incident = demisto.incident().get("id")
 
-# get the XSOAR list
-role_list = json.loads(demisto.executeCommand("getList", {"listName": "IncidentTypeRBAC"})[0]["Contents"])
+# if new Incident, the ID will be empty:
+if not incident:
 
-# set default Incident types for all roles
-allowedTypes = role_list["Default"]
+    # get the XSOAR IncidentTypesRBAC XSOAR List
+    types_list = demisto.executeCommand("getList", {"listName": "IncidentTypesRBAC"})[0]["Contents"]
 
-# for each role the user has, add their types
-for role in roles:
-    allowedTypes.extend(role_list[role])
+    # check if the list exists, if not, display the default options.
+    if "Item not found" in types_list:
+        # do nothing, return the original values from the field
+        pass
+    else:
+        # make sure the list is valid json, if it's invalid or another error, return the original values from the field
+        try:
+            role_list = json.loads(types_list)
 
-# make the list unique
-allowedTypes = list(set(allowedTypes))
+            # get the users roles
+            roles = demisto.executeCommand("getUsers", {"current": "true"})[0].get("Contents")[0].get("allRoles")
 
-# magic
-demisto.results({'hidden': False, 'options': allowedTypes})
+            # set default Incident types for all roles
+            allowedTypes = role_list["Default"]
+
+            # for each role the user has, add their types
+            for role in roles:
+                allowedTypes.extend(role_list[role])
+
+            # remove duplicates
+            allowedTypes = list(set(allowedTypes))
+
+            demisto.results({'hidden': False, 'options': allowedTypes})
+        except ValueError as e:
+            pass
+        except:
+            pass
+else:
+    # if it's an existing Incident, prevent changing the type from the UI.
+    # get the current Incident Type, and only return that type.
+    incident_type = demisto.incident().get("type")
+    return_results({'hidden': False, 'options': [incident_type]})
+
+
+register_module_line('CaseMgmtIncidentTypesByRole', 'end', __line__())
