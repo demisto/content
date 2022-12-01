@@ -19,9 +19,8 @@ configuration:
   required: false
   type: 8
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search (Deprecated)
+display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
-deprecated: true
 script:
   commands:
   - deprecated: false
