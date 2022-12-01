@@ -1,5 +1,5 @@
 # Cisco AMP Secure Endpoint
-Cisco Advanced malware protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems.
+Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems.
 Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 
 # See the API Documentation
@@ -11,7 +11,11 @@ Incidents are fetched through the command: `cisco-amp-event-list`.</br>
 The fetched event types can be controlled through `event_id` that can be received from the command: `cisco-amp-event-type-list`.
 
 # Polling Command
-The commands: `cisco-amp-computer-isolation-create` and `cisco-amp-computer-isolation-delete` supports polling.</br> The polling is done when the status of an endpoint has changed.
+The following commands support polling: 
+- `cisco-amp-computer-isolation-create`
+- `cisco-amp-computer-isolation-delete`
+
+The polling is done when the status of an endpoint has changed.
 
 # Integration Commands
 - cisco-amp-app-trajectory-query-list
