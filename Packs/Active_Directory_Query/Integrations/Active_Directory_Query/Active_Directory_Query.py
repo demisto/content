@@ -1898,7 +1898,7 @@ def main():
                   f' Additional details: {err_msg}.\n'
         elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
             msg = f'Failed to connect to LDAP server. \n Additional details: {err_msg}.\n'
-            if not UNSECURE:
+            if not UNSECURE and SECURE_CONNECTION in ('SSL', 'Start TLS'):
                 msg += ' Try using: "Trust any certificate" option.\n'
         elif conn:
             msg = f"{err_msg}.\nLast connection result: {json.dumps(conn.result)}.\n" \

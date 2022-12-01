@@ -21,21 +21,41 @@ RETURN_ERROR_TARGET = 'Active_Directory_Query.return_error'
 
 
 def test_bad_host_no_ssl(mocker):
+    """
+        Given:
+            - Demisto.params() with an invalid server (host), and insecure connection type (None).
+        When:
+            - Running the 'main()' function.
+        Then:
+            - Verify that the expected error message was raised.
+    """
+    params = BASE_TEST_PARAMS
+    params['server_ip'] = '127.0.0.'
     mocker.patch.object(demisto, 'params',
                         return_value=BASE_TEST_PARAMS)
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     # validate our mock of params
-    assert demisto.params().get('server_ip') == '127.0.0.1'
+    assert demisto.params().get('server_ip') == '127.0.0.'
     main()
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
-    assert 'Failed to access' in err_msg
+    assert 'Failed to connect' in err_msg
+    assert 'invalid server address' in err_msg
 
 
 @pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_bad_ssl(mocker):
+    """
+        Given:
+            - Demisto.params() with an ssl connection type (SSL) and a server (host) that will cause
+              an SSL socket error.
+        When:
+            - Running the 'main()' function.
+        Then:
+            - Verify that the expected error message was raised.
+    """
     params = BASE_TEST_PARAMS.copy()
     params['server_ip'] = '185.199.108.153'  # disable-secrets-detection
     params['secure_connection'] = 'SSL'
@@ -50,9 +70,8 @@ def test_bad_ssl(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert len(err_msg) < 100
-    assert 'Failed to access' in err_msg
-    assert 'SSL error' in err_msg
+    assert 'Failed to connect' in err_msg
+    assert 'Try using: "Trust any certificate" option.' in err_msg
 
 
 def ssl_bad_socket_server(port):
