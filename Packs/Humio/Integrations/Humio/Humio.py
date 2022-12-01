@@ -254,7 +254,7 @@ def humio_list_notifiers(client, args, headers):
     data = {"query" : graphql_query}
     json_data = json.dumps(data)
 
-    response = client.http_request("POST", url, json_data, headers).json()
+    response = client.http_request("POST", url, json_data, headers)
 
     if response.status_code == 200:
         if not response.get("data"):
@@ -288,7 +288,7 @@ def humio_get_notifier_by_id(client, args, headers):
     data = {"query" : graphql_query}
     json_data = json.dumps(data)
 
-    response = client.http_request("POST", url, json_data, headers).json()
+    response = client.http_request("POST", url, json_data, headers)
     if response.status_code == 200:        
         if not response.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
