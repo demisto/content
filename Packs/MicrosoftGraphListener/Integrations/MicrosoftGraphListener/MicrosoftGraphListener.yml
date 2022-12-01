@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -570,7 +570,7 @@ script:
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     polling: true
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.39526
   isfetch: true
   runonce: false
   script: ''

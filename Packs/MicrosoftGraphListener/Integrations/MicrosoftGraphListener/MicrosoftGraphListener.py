@@ -1091,7 +1091,11 @@ def list_mails_command(client: MsGraphClient, args):
     if mail_context:
         entry_context = mail_context
         if next_page:
-            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
+            if isinstance(entry_context, dict):
+                entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
+            else:
+                entry_context[-1]['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] =\
+                    {'NextPage': next_page}  # type: ignore
 
         # human_readable builder
         human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \
