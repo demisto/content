@@ -10719,13 +10719,16 @@ def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" 
         return []
     if isinstance(events[0], str):
         temp_ls = []
-        str_to_add = f"{separator}{spaces}_final_reporting_device_name{value_sign}{spaces}{url}{separator}{spaces}" \
-                     f"_instance_name{value_sign}{spaces}{integration_instance}{end_of_event_sign}"
+        str_to_add = '{}{}_final_reporting_device_name{}{}{}{}{}_instance_name{}{}{}{}'.format(separator, spaces, value_sign,
+                                                                                               spaces, url, separator, spaces,
+                                                                                               value_sign, spaces,
+                                                                                               integration_instance,
+                                                                                               end_of_event_sign)
         for event in events:
             if len(end_of_event_sign) == 0:
-                event = f"{event}{str_to_add}"
+                event = '{}{}'.format(event, str_to_add)
             elif event[-len(end_of_event_sign):] == end_of_event_sign:
-                event = f"{event[:-len(end_of_event_sign)]}{str_to_add}"
+                event = '{}{}'.format(event[:-len(end_of_event_sign)], str_to_add)
             temp_ls.append(event)
         events = temp_ls
     else:
