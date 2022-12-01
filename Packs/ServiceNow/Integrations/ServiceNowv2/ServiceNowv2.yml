@@ -1903,6 +1903,16 @@ script:
       description: Offset of the ticket notes.
       name: offset
     - auto: PREDEFINED
+      default: false
+      description: Whether to use sysparm_display_value=true to retrieve comments and work notes. Overrides the value set in the instance configuration.
+      isArray: false
+      name: use_display_value
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
       defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
         "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".

@@ -491,12 +491,13 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 def split_notes(raw_notes, note_type):
     notes = []
-    # todo: verify that this is the correct split
     notes_split = raw_notes.split('\n\n')
     for note in notes_split:
+        if not note:
+            continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
-        created_by = created_by.split(' (Additional')[0]
+        created_by = created_by.split(' (')[0]
         note_dict = {
             "sys_created_on": created_on,
             "value": note_value,
@@ -511,17 +512,17 @@ def convert_to_notes_result(full_response):
     """
     Converts the response of a ticket to the response format when making a query for notes only.
     """
-    if not full_response or 'result' not in full_response:
+    if not full_response or 'result' not in full_response or not full_response.get('result'):
         return []
 
     all_notes = []
 
-    raw_comments = full_response.get('comments')
+    raw_comments = full_response.get('result', {}).get('comments')
     if raw_comments:
         comments = split_notes(raw_comments, 'comments')
         all_notes.extend(comments)
 
-    raw_work_notes = full_response.get('work_notes')
+    raw_work_notes = full_response.get('result', {}).get('work_notes')
     if raw_work_notes:
         work_notes = split_notes(raw_work_notes, 'work_notes')
         all_notes.extend(work_notes)
@@ -665,6 +666,7 @@ class Client(BaseClient):
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': f}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
+                        demisto.debug(f'Sending request with url: {url} and data: {body} \n and params: {params}')
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
@@ -1417,15 +1419,10 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     sys_param_limit = args.get('limit', client.sys_param_limit)
     sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    use_display_value = args.get('use_display_value', client.use_display_value)  # todo: check if it indeed takes the value from the client in case this parameter is not overridden in the command.
-
-    # todo: check that this works also for tables other than 'incident'
-    # todo: check if it works also with number (see get-ticket command for params) or only with  sys_id
-    # todo: check about work_notes
+    use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
 
     if use_display_value:  # make query using sysparm_display_value=true (requires less permissions)
-        ticket_type = client.get_table_name(str(args.get('ticket_type', '')))  # todo: check if we want this or use self.ticket_type
-        assert ticket_type, ValueError('ticket_type must be specified when retrieving comments using display value.')  # todo: check if this is necessary or just set a default to `incident`
+        ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         # number = str(args.get('number', ''))  # todo: check if this should be added
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'true'}
@@ -2327,13 +2324,23 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 file['Tags'] = [params.get('file_tag_from_service_now')]
                 entries.append(file)
 
-    sys_param_limit = args.get('limit', client.sys_param_limit)
-    sys_param_offset = args.get('offset', client.sys_param_offset)
+    if client.use_display_value:
+        ticket_type = client.get_table_name(client.ticket_type)
+        path = f'table/{ticket_type}/{ticket_id}'
+        query_params = {'sysparm_limit': client.sys_param_limit, 'sysparm_offset': client.sys_param_offset,
+                        'sysparm_display_value': 'true',
+                        'sysparm_query': f'sys_created_on>{datetime.fromtimestamp(last_update)}'}
 
-    sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-                      f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+        full_result = client.send_request(path, 'GET', params=query_params)
+        comments_result = convert_to_notes_result(full_result)
+    else:
+        sys_param_limit = args.get('limit', client.sys_param_limit)
+        sys_param_offset = args.get('offset', client.sys_param_offset)
 
-    comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
+        sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
+                          f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+
+        comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
 
     if not comments_result or 'result' not in comments_result:
@@ -2808,7 +2815,7 @@ def main():
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
-    use_display_value = params.get('use_display_value')
+    use_display_value = argToBoolean(params.get('use_display_value'))
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (
