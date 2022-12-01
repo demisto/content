@@ -25,21 +25,49 @@ display: 'McAfeeNSMv2'
 name: McAfeeNSMv2
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - name: nsm-list-domain-firewall-policy
+      description: Gets the list of Firewall Policies defined in a particular domain.
+      arguments:
+        - name: domain_id
+          required: true
+          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display.
+      outputs:
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyId
+          description: The id of the policy.
+          type: Number
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyName
+          description: Name of the Firewall Policy.
+          type: String
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.domainId
+          description: The id of the domain.
+          type: Number
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.visibleToChild
+          description: Is Policy visible to child domains.
+          type: Boolean
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.description
+          description: Policy Description.
+          type: String
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.isEditable
+          description: Is Policy editable or not.
+          type: Boolean
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyType
+          description: Policy Type, can be "ADVANCED" or "CLASSIC".
+          type: String
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyVersion
+          description: Policy version.
+          type: Number
+        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.lastModUser
+          description: Last User that modified the policy.
+          type: String
   isfetch: false
   runonce: false
   script: '-'

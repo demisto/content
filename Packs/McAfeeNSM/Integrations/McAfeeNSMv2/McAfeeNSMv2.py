@@ -28,11 +28,23 @@ class Client(BaseClient):
     def get_session_request(self, encoded_str: str) -> Dict:
         """ Gets a session from the API.
             Args:
-                encoded_str: str - The string that contains username:password in base64
+                encoded_str: str - The string that contains username:password in base64.
             Returns:
                 A dictionary with the session details.
         """
         url_suffix = '/sdkapi/session'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def list_domain_firewall_policy_request(self, encoded_str: str, domain_id: int) -> Dict:
+        """ Gets the list of Firewall Policies defined in a particular domain.
+            Args:
+                encoded_str: str - The string that contains username:password in base64.
+                domain_id: int - The id of the domain.
+            Returns:
+                A dictionary with the session details.
+        """
+        url_suffix = f'/sdkapi/domain/{domain_id}/firewallpolicy'
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
@@ -41,9 +53,28 @@ class Client(BaseClient):
 
 
 def encode_to_base64(str_to_convert: str) -> str:
+    """ Converts a string to base64 string.
+    Args:
+        str_to_convert: str - The string that needs to be converted to base64.
+    Returns:
+        The converted string.
+    """
     b = base64.b64encode(bytes(str_to_convert, 'utf-8'))  # bytes
     base64_str = b.decode('utf-8')  # convert bytes to string
     return base64_str
+
+
+def get_session(client: Client, user_name_n_password_encoded: str) -> str:
+    """ Gets the session string.
+    Args:
+        client: Client - A McAfeeNSM client.
+        user_name_n_password_encoded: str - The username and password that needs to be converted to base64
+            in order to get the session information.
+    Returns:
+        The converted string.
+    """
+    session = client.get_session_request(user_name_n_password_encoded)
+    return encode_to_base64(f'{session.get("session")}:{session.get("userId")}')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -52,7 +83,7 @@ def encode_to_base64(str_to_convert: str) -> str:
 def test_module(client: Client, encoded_str: str) -> str:
     """ Test the connection to McAfee NSM.
     Args:
-        client: A McAfeeNSM client.
+        client: Client - A McAfeeNSM client.
         encoded_str: str - The string that contains username:password in base64
     Returns:
         'ok' if the connection was successful, else throws exception.
@@ -64,22 +95,53 @@ def test_module(client: Client, encoded_str: str) -> str:
         raise Exception(e.message)
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_domain_firewall_policy_command(client: Client, args: Dict, user_name_n_password_encoded: str) -> CommandResults:
+    """ Gets the list of Firewall Policies defined in a particular domain.
+    Args:
+        client: client - A McAfeeNSM client.
+        args: Dict - The function arguments.
+        user_name_n_password_encoded: str - The string that contains username:password in base64
+    Returns:
+        The list of Firewall Policies defined in a particular domain.
+    """
+    domain_id = args.get('domain_id')
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    page_size = min(limit, 100)
+    session_str = get_session(client, user_name_n_password_encoded)
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    response = client.list_domain_firewall_policy_request(session_str, domain_id)
+    result = response.get('FirewallPoliciesForDomainResponseList', [])
+    human_readable = []
+    for value in result:
+        d = {'policyId': value.get('policyId'),
+             'policyName': value.get('policyName'),
+             'domainId': value.get('domainId'),
+             'visibleToChild': value.get('visibleToChild'),
+             'description': value.get('description'),
+             'isEditable': value.get('isEditable'),
+             'policyType': value.get('policyType'),
+             'policyVersion': value.get('policyVersion'),
+             'lastModUser': value.get('lastModUser')}
+        human_readable.append(d)
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    hr_title = 'Firewall Policies List'
+    headers = ['policyId', 'policyName', 'domainId', 'visibleToChild', 'description', 'isEditable', 'policyType',
+               'policyVersion', 'lastModUser']
+    readable_output = tableToMarkdown(
+        name=hr_title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
+        readable_output=readable_output,
+        outputs_prefix='NSM.Policy',
+        outputs_key_field='policyId',
         outputs=result,
+        raw_response=result
     )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
@@ -114,11 +176,11 @@ def main() -> None:  # pragma: no cover
             # This is the call made when pressing the integration Test button.
             result = test_module(client, user_name_n_password_encoded)
             return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'nsm-list-domain-firewall-policy':
+            result = list_domain_firewall_policy_command(client, demisto.args(), user_name_n_password_encoded)
+            return_results(result)
+        else:
+            raise NotImplementedError('This command is not implemented yet.')
 
     # Log exceptions and return errors
     except Exception as e:
