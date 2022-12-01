@@ -224,8 +224,9 @@ def main():  # pragma: no cover
                         '"Trust any certificate (not secure)" in the instance configuration.'
         elif isinstance(error, requests.HTTPError):
             error_msg = 'Encountered an HTTP error. Please check your certificate and key, and that you are trying to reach a ' \
-                        'valid URL and API root. If this occurs when the test works, change the "limit" in the instance ' \
-                        'configuration or command argument.'
+                        'valid URL and API root. If this occurs when the test works, increase the "Max STIX Objects Per Poll" ' \
+                        'in the instance configuration, reduce the "Max Indicators Per Fetch" in the instance configuration or ' \
+                        'reduce the "limit" in the command argument.'
         return_error(error_msg, error)
 
 
