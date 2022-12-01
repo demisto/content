@@ -86,6 +86,7 @@ args:
   - injects-into
   - investigates
   - is-also
+  - located-at
   - mitigated-by
   - mitigates
   - originated-from

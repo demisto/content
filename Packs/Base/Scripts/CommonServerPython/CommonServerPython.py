@@ -6387,6 +6387,7 @@ class EntityRelationship:
         INJECTS_INTO = 'injects-into'
         INVESTIGATES = 'investigates'
         IS_ALSO = 'is-also'
+        LOCATED_AT = 'located-at'
         MITIGATED_BY = 'mitigated-by'
         MITIGATES = 'mitigates'
         ORIGINATED_FROM = 'originated-from'
