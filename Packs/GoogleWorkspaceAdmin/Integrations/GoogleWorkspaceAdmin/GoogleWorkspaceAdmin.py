@@ -88,7 +88,7 @@ class Client(BaseClient):
                 self._service_account_json,
             )
             return credentials
-        except Exception:
+        except ValueError:
             raise DemistoException('Please check the service account\'s json content')
 
     def http_request(self, method: str, url_suffix: str, headers: Dict[str, str], params: dict = None,
@@ -374,7 +374,7 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
             pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
             if not pagination_result.data:
                 markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
-                            f' for page size of {pagination_args.get("page_size")}')
+                            f' for page size of {pagination_args.get("page_size")} with the respected arguments')
         if not markdown:
             human_readable = mobile_device_list_to_human_readable(context_data=pagination_result.data)
             num_of_devices = len(pagination_result.data[MobileDeviceListConfig.cd_devices_list_key])
@@ -458,7 +458,7 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
             pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
             if not pagination_result.data:
                 markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
-                            f' for page size of {pagination_args.get("page_size")}')
+                            f' for page size of {pagination_args.get("page_size")} with the respected arguments')
         if not markdown:
             human_readable = chromeos_device_list_to_human_readable(context_data=pagination_result.data)
             num_of_devices = len(pagination_result.data[ChromeOSDeviceListConfig.cd_devices_list_key])

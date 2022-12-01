@@ -128,7 +128,8 @@ def test_invalid_service_account_json():
     """
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
-        Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={'wrong': 'service_account'})
+        Client(base_url='https://example.com/', verify=False, proxy=False, customer_id='id',
+               service_account_json={'wrong': 'service_account'})
     assert 'Please check the service account\'s json content' in str(e)
 
 
