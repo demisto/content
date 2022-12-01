@@ -13,6 +13,6 @@
     "updateAfter": 0,
     "mergeContext": false,
     "expiration": 0,
-    "layout": "4834667c-f521-45bb-8f9e-70643f7de336",
+    "layout": "Location",
     "fromVersion": "6.5.0"
 }
