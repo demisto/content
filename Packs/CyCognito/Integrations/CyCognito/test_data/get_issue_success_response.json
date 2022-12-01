@@ -1,0 +1,76 @@
+{
+  "raw_response": {
+    "affected_asset": "ip/127.0.0.1",
+    "id": "issue/127.0.0.1-test",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Information Disclosure",
+    "tags": [
+      "Vulnerable Software",
+      "Pulse Secure"
+    ],
+    "organizations": [
+      "Acme Interior Design",
+      "Acme Corporation"
+    ],
+    "issue_id": "test",
+    "summary": "| This is dummy data.",
+    "resolved_at": null,
+    "investigation_status": "investigating",
+    "locations": [
+      "IND"
+    ],
+    "detection_complexity": "Service Detection",
+    "title": "Pulse Secure Arbitrary File Reading",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "comment": null,
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the Pulse Secure VPN to the latest version."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Data compromise"
+    ]
+  },
+  "outputs": {
+    "affected_asset": "ip/127.0.0.1",
+    "id": "issue/127.0.0.1-test",
+    "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+    "potential_threat": "Information Disclosure",
+    "tags": [
+      "Vulnerable Software",
+      "Pulse Secure"
+    ],
+    "organizations": [
+      "Acme Interior Design",
+      "Acme Corporation"
+    ],
+    "issue_id": "test",
+    "summary": "| This is dummy data.",
+    "investigation_status": "investigating",
+    "locations": [
+      "IND"
+    ],
+    "detection_complexity": "Service Detection",
+    "title": "Pulse Secure Arbitrary File Reading",
+    "exploitation_score": 3,
+    "issue_type": "Vulnerable Software",
+    "severity": "critical",
+    "remediation_steps": [
+      "Patch the Pulse Secure VPN to the latest version."
+    ],
+    "potential_impact": [
+      "Loss of integrity",
+      "Loss of confidentiality",
+      "Data compromise"
+    ]
+  }
+}

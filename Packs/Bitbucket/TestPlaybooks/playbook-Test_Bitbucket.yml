@@ -8,24 +8,24 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8fd9966e-686a-49d1-8cce-c973ec1dfe2e
+    taskid: b1a61b87-6acb-40a3-84a6-3b51ae699916
     type: start
     task:
-      id: 8fd9966e-686a-49d1-8cce-c973ec1dfe2e
+      id: b1a61b87-6acb-40a3-84a6-3b51ae699916
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "57"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 40
+          "y": -130
         }
       }
     note: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 4ae282e4-55bf-4621-810f-f50ed0ffec1a
+    taskid: 55c8c5f9-3ddd-48cb-83f8-c4b125310ff9
     type: regular
     task:
-      id: 4ae282e4-55bf-4621-810f-f50ed0ffec1a
+      id: 55c8c5f9-3ddd-48cb-83f8-c4b125310ff9
       version: -1
       name: Projects List
       script: Bitbucket|||bitbucket-project-list
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b3881aef-eccf-483a-83ee-ba1dafc720e6
+    taskid: e8e414eb-adb3-4c09-8b3d-894402ca57e8
     type: condition
     task:
-      id: b3881aef-eccf-483a-83ee-ba1dafc720e6
+      id: e8e414eb-adb3-4c09-8b3d-894402ca57e8
       version: -1
       name: Verify List Projects output
       type: condition
@@ -119,10 +119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 30e3306b-5dad-4eb2-8812-d639179c0bf3
+    taskid: 430a6baf-823c-4b73-823d-d6e1380d75b1
     type: title
     task:
-      id: 30e3306b-5dad-4eb2-8812-d639179c0bf3
+      id: 430a6baf-823c-4b73-823d-d6e1380d75b1
       version: -1
       name: Finish
       type: title
@@ -146,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 57e91c03-51a2-4ae3-8c9d-a0f7e25f9908
+    taskid: 9ce90f14-f5c3-4b9b-8249-ae6dcc9756ef
     type: regular
     task:
-      id: 57e91c03-51a2-4ae3-8c9d-a0f7e25f9908
+      id: 9ce90f14-f5c3-4b9b-8249-ae6dcc9756ef
       version: -1
       name: Open Branch List
       script: Bitbucket|||bitbucket-open-branch-list
@@ -178,10 +178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 71af6dd3-f40e-4940-8b02-f5975112325b
+    taskid: 995d9268-c2e6-4575-807e-b6e66721ec3b
     type: condition
     task:
-      id: 71af6dd3-f40e-4940-8b02-f5975112325b
+      id: 995d9268-c2e6-4575-807e-b6e66721ec3b
       version: -1
       name: Verify Open Branch List outputs
       type: condition
@@ -233,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: d3990533-9a59-49cc-8d95-d2c2f6d7edd1
+    taskid: 8308e7d8-f8b4-466e-8102-7d8a70666b69
     type: regular
     task:
-      id: d3990533-9a59-49cc-8d95-d2c2f6d7edd1
+      id: 8308e7d8-f8b4-466e-8102-7d8a70666b69
       version: -1
       name: Branch Get
       script: Bitbucket|||bitbucket-branch-get
@@ -267,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: d65e3300-47aa-46fb-8646-96d5055d3700
+    taskid: fd95edaa-75fe-46be-819a-26ff39b1f312
     type: regular
     task:
-      id: d65e3300-47aa-46fb-8646-96d5055d3700
+      id: fd95edaa-75fe-46be-819a-26ff39b1f312
       version: -1
       name: Branch Create
       script: Bitbucket|||bitbucket-branch-create
@@ -303,10 +303,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1beebd87-0668-4bec-8798-682aa48beab2
+    taskid: 85351de6-db00-4b04-874c-720145b22934
     type: condition
     task:
-      id: 1beebd87-0668-4bec-8798-682aa48beab2
+      id: 85351de6-db00-4b04-874c-720145b22934
       version: -1
       name: Verify Branch Create outputs
       description: Check whether the values provided in arguments are equal. If either
@@ -351,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3fc6c54e-34a3-46f8-85ab-1a90d1708307
+    taskid: 813d03b2-23f0-4590-820e-481ca3bd34ab
     type: regular
     task:
-      id: 3fc6c54e-34a3-46f8-85ab-1a90d1708307
+      id: 813d03b2-23f0-4590-820e-481ca3bd34ab
       version: -1
       name: Branch Delete
       script: Bitbucket|||bitbucket-branch-delete
@@ -382,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 97455a4a-ef10-42c5-859c-83fdcb7d45c6
+    taskid: 00218b06-9914-4e3d-8153-15f43ecc0c61
     type: regular
     task:
-      id: 97455a4a-ef10-42c5-859c-83fdcb7d45c6
+      id: 00218b06-9914-4e3d-8153-15f43ecc0c61
       version: -1
       name: Commit Create
       script: Bitbucket|||bitbucket-commit-create
@@ -422,10 +422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 75b7dced-72a4-4034-8bbb-af689c2818d6
+    taskid: 22fe2bfa-565d-412b-8761-0f313867ae7f
     type: regular
     task:
-      id: 75b7dced-72a4-4034-8bbb-af689c2818d6
+      id: 22fe2bfa-565d-412b-8761-0f313867ae7f
       version: -1
       name: Commit List
       script: Bitbucket|||bitbucket-commit-list
@@ -458,10 +458,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 55cf97f0-a3c2-4f91-8cb3-ac4a5425b8fd
+    taskid: d2380b81-bdd4-4259-8cd6-93fc29a490cb
     type: condition
     task:
-      id: 55cf97f0-a3c2-4f91-8cb3-ac4a5425b8fd
+      id: d2380b81-bdd4-4259-8cd6-93fc29a490cb
       version: -1
       name: Verify Commit List outputs
       type: condition
@@ -501,10 +501,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c1f22489-0006-4db0-8992-9cc895d1b6a5
+    taskid: 01b5d45b-60c7-48f3-8a2b-0795f1c6f840
     type: regular
     task:
-      id: c1f22489-0006-4db0-8992-9cc895d1b6a5
+      id: 01b5d45b-60c7-48f3-8a2b-0795f1c6f840
       version: -1
       name: File Delete command
       script: Bitbucket|||bitbucket-file-delete
@@ -539,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 584101b8-db8f-45a3-811f-a98f342b3ff5
+    taskid: cbd9e4c3-196f-4d12-8bed-a97327fbd1ca
     type: regular
     task:
-      id: 584101b8-db8f-45a3-811f-a98f342b3ff5
+      id: cbd9e4c3-196f-4d12-8bed-a97327fbd1ca
       version: -1
       name: Raw File Get
       script: Bitbucket|||bitbucket-raw-file-get
@@ -575,10 +575,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: cab950e9-284f-422c-8c52-88e934e1cca4
+    taskid: 5cc8eb50-a01e-4094-89db-0e7e4b229e04
     type: condition
     task:
-      id: cab950e9-284f-422c-8c52-88e934e1cca4
+      id: 5cc8eb50-a01e-4094-89db-0e7e4b229e04
       version: -1
       name: Verify Raw File Get output
       type: condition
@@ -624,10 +624,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8895b9df-054a-4cd6-8d65-be78e92f0425
+    taskid: 6ba8ddd8-b32f-49c0-8f8d-2bf60637fd9c
     type: regular
     task:
-      id: 8895b9df-054a-4cd6-8d65-be78e92f0425
+      id: 6ba8ddd8-b32f-49c0-8f8d-2bf60637fd9c
       version: -1
       name: Issue Create
       description: Creates an issue in Bitbucket. In order to perform this command,
@@ -669,10 +669,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 42ee9c89-9070-4d4b-8009-d288d4c96727
+    taskid: 74677cd0-87d3-419f-8afb-110ff504291b
     type: regular
     task:
-      id: 42ee9c89-9070-4d4b-8009-d288d4c96727
+      id: 74677cd0-87d3-419f-8afb-110ff504291b
       version: -1
       name: Issue List
       script: Bitbucket|||bitbucket-issue-list
@@ -703,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a50d6df3-a1e5-4e83-836f-0e27d4f7767f
+    taskid: fea6d3ce-a750-4590-8f41-1b7e6ed20d9b
     type: condition
     task:
-      id: a50d6df3-a1e5-4e83-836f-0e27d4f7767f
+      id: fea6d3ce-a750-4590-8f41-1b7e6ed20d9b
       version: -1
       name: Verify Issue List outputs
       type: condition
@@ -748,10 +748,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c25dceed-3e06-4719-885d-98f4ffa456c7
+    taskid: d0f37227-b148-4a5f-84e6-ae7c21f9e600
     type: regular
     task:
-      id: c25dceed-3e06-4719-885d-98f4ffa456c7
+      id: d0f37227-b148-4a5f-84e6-ae7c21f9e600
       version: -1
       name: Pull Request Create
       script: Bitbucket|||bitbucket-pull-request-create
@@ -786,10 +786,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ac2860c6-34b2-453c-86aa-f4caabba83d1
+    taskid: 37cb1e8e-b8cb-499c-813f-6f5c849b11e7
     type: condition
     task:
-      id: ac2860c6-34b2-453c-86aa-f4caabba83d1
+      id: 37cb1e8e-b8cb-499c-813f-6f5c849b11e7
       version: -1
       name: Verify Pull Request Create outputs
       type: condition
@@ -832,10 +832,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 36462532-5b01-4056-89bd-fa8fa85a1597
+    taskid: 97a797e3-442f-424c-8ae8-3d3305f1b1e3
     type: regular
     task:
-      id: 36462532-5b01-4056-89bd-fa8fa85a1597
+      id: 97a797e3-442f-424c-8ae8-3d3305f1b1e3
       version: -1
       name: Pull Request Update
       script: Bitbucket|||bitbucket-pull-request-update
@@ -868,10 +868,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 21a12577-a3be-49f4-83d9-f94cbd5dfb80
+    taskid: 6dd9d22c-c671-4222-84e9-55131b08bede
     type: condition
     task:
-      id: 21a12577-a3be-49f4-83d9-f94cbd5dfb80
+      id: 6dd9d22c-c671-4222-84e9-55131b08bede
       version: -1
       name: Verify Pull Request Update
       type: condition
@@ -916,10 +916,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 06dff108-30a8-4ad1-8c20-bcb3895739ef
+    taskid: 20921e75-b992-426e-8016-df3587dae662
     type: regular
     task:
-      id: 06dff108-30a8-4ad1-8c20-bcb3895739ef
+      id: 20921e75-b992-426e-8016-df3587dae662
       version: -1
       name: Pull Request List
       description: Returns a list of the pull requests. If a state is provided than
@@ -953,10 +953,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: dbe461b3-61bf-46e5-86ae-749a88471cc8
+    taskid: 445934a4-f1b2-41bd-8c85-e36625ff97f4
     type: condition
     task:
-      id: dbe461b3-61bf-46e5-86ae-749a88471cc8
+      id: 445934a4-f1b2-41bd-8c85-e36625ff97f4
       version: -1
       name: Verify Pull Request List outputs
       type: condition
@@ -998,10 +998,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 65afdace-7957-4f97-8f21-94cdd6affba1
+    taskid: 0c0e4caf-55ee-4960-8503-444a040037cc
     type: regular
     task:
-      id: 65afdace-7957-4f97-8f21-94cdd6affba1
+      id: 0c0e4caf-55ee-4960-8503-444a040037cc
       version: -1
       name: Issue Comment Create
       description: Creates a comment on an issue in Bitbucket.
@@ -1035,10 +1035,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 775d6a70-5d99-45c2-8fbc-a10dcc5fae1b
+    taskid: afda17b6-1540-446a-8b51-3e9d3ece53a4
     type: regular
     task:
-      id: 775d6a70-5d99-45c2-8fbc-a10dcc5fae1b
+      id: afda17b6-1540-446a-8b51-3e9d3ece53a4
       version: -1
       name: Issue Comment Delete
       description: Deletes a comment on an issue in Bitbucket.
@@ -1074,10 +1074,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: fe708891-f941-44e6-8893-6b24a62c6ed4
+    taskid: 35828acb-4ff1-4cb5-8e2a-d6a9424a4d61
     type: regular
     task:
-      id: fe708891-f941-44e6-8893-6b24a62c6ed4
+      id: 35828acb-4ff1-4cb5-8e2a-d6a9424a4d61
       version: -1
       name: delete context
       description: |-
@@ -1114,10 +1114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 9da79fab-ebde-4f5f-80f0-4dbfb8218bae
+    taskid: 35495d97-fc81-49b2-8479-e4525389ef97
     type: regular
     task:
-      id: 9da79fab-ebde-4f5f-80f0-4dbfb8218bae
+      id: 35495d97-fc81-49b2-8479-e4525389ef97
       version: -1
       name: Test issue comment list command
       description: Returns a list of comments on a specific issue. If a comment_id
@@ -1152,10 +1152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 0f5b2077-e9b8-437b-84d3-a11ff55bb268
+    taskid: 891e840e-5ec0-4261-85ec-b1418772d141
     type: condition
     task:
-      id: 0f5b2077-e9b8-437b-84d3-a11ff55bb268
+      id: 891e840e-5ec0-4261-85ec-b1418772d141
       version: -1
       name: check issue comment list output
       type: condition
@@ -1195,10 +1195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: e2dd02f6-5383-4e20-8d89-3a6e155d4aa2
+    taskid: 40e56304-6c91-4b2e-842f-3e8785f45ba5
     type: regular
     task:
-      id: e2dd02f6-5383-4e20-8d89-3a6e155d4aa2
+      id: 40e56304-6c91-4b2e-842f-3e8785f45ba5
       version: -1
       name: Pull Request Comment Create
       description: Creates a new comment on a pull request.
@@ -1232,10 +1232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: b475ec43-4ffe-491e-8dd1-f6a981859ed4
+    taskid: fa572041-143d-4cdf-8e2c-877023154523
     type: condition
     task:
-      id: b475ec43-4ffe-491e-8dd1-f6a981859ed4
+      id: fa572041-143d-4cdf-8e2c-877023154523
       version: -1
       name: Verify Pull Request Comment
       type: condition
@@ -1278,10 +1278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 9cd1fafe-6932-4c22-81e8-5c43ada7fcdc
+    taskid: d1f2b8cd-aa92-4f4b-8f25-9e09f176d646
     type: regular
     task:
-      id: 9cd1fafe-6932-4c22-81e8-5c43ada7fcdc
+      id: d1f2b8cd-aa92-4f4b-8f25-9e09f176d646
       version: -1
       name: Pull Request Comment Update
       description: updates a comment in a specific pull request.
@@ -1317,10 +1317,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: b62258b5-8c16-4696-80bc-a2e790a7fc79
+    taskid: 05265d1f-32f1-44ba-84a7-53abc92fbe84
     type: condition
     task:
-      id: b62258b5-8c16-4696-80bc-a2e790a7fc79
+      id: 05265d1f-32f1-44ba-84a7-53abc92fbe84
       version: -1
       name: Verify Pull Request Comment Update
       type: condition
@@ -1363,10 +1363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 03daaf82-e1fe-4067-82b5-66b5f4ee3862
+    taskid: 5e4d42e1-8dae-4547-8851-4a7686ba532d
     type: regular
     task:
-      id: 03daaf82-e1fe-4067-82b5-66b5f4ee3862
+      id: 5e4d42e1-8dae-4547-8851-4a7686ba532d
       version: -1
       name: Pull Request Comment List
       description: returns a list of comments of a specific pull request.
@@ -1402,10 +1402,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 92d49280-d31d-4f2e-8cd0-bdd73f6f07ca
+    taskid: 4cabdd85-4e75-4601-816f-4149b47004ae
     type: condition
     task:
-      id: 92d49280-d31d-4f2e-8cd0-bdd73f6f07ca
+      id: 4cabdd85-4e75-4601-816f-4149b47004ae
       version: -1
       name: Verify Pull Request Comment List outputs
       type: condition
@@ -1447,10 +1447,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: b3f717b1-e4e6-424e-8adf-3900255e0b5d
+    taskid: 6a677d3b-bb2d-49e0-873a-48084212f688
     type: regular
     task:
-      id: b3f717b1-e4e6-424e-8adf-3900255e0b5d
+      id: 6a677d3b-bb2d-49e0-873a-48084212f688
       version: -1
       name: Issue Update - Resolved
       description: Updates an issue in Bitbucket. In order to perform this command,
@@ -1488,10 +1488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: c22d350e-4ad5-4f1b-8b50-95487870b3c8
+    taskid: 7aef33b2-8056-42be-820c-45734c8fe4d8
     type: condition
     task:
-      id: c22d350e-4ad5-4f1b-8b50-95487870b3c8
+      id: 7aef33b2-8056-42be-820c-45734c8fe4d8
       version: -1
       name: Verify Issue Update - Resolved
       type: condition
@@ -1529,10 +1529,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f34b6fc3-6a45-4d2b-84a1-006def4f1df5
+    taskid: 9a512b4c-70ad-4340-8639-ce76323a8ebd
     type: regular
     task:
-      id: f34b6fc3-6a45-4d2b-84a1-006def4f1df5
+      id: 9a512b4c-70ad-4340-8639-ce76323a8ebd
       version: -1
       name: Pull Request Comment Delete
       description: deletes a comment in a specific pull request.
@@ -1566,10 +1566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: b821691f-064a-4082-8095-428d677cddf0
+    taskid: 713ff52d-e18c-4a25-804d-fb75c0b36d63
     type: regular
     task:
-      id: b821691f-064a-4082-8095-428d677cddf0
+      id: 713ff52d-e18c-4a25-804d-fb75c0b36d63
       version: -1
       name: Workspace Member List
       description: returns a list of all the members in the workspace.
@@ -1601,10 +1601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: d604e012-c603-445f-80ce-5624a6539cbe
+    taskid: ccd9f44d-091b-4ee0-8e9c-b91474d1671d
     type: condition
     task:
-      id: d604e012-c603-445f-80ce-5624a6539cbe
+      id: ccd9f44d-091b-4ee0-8e9c-b91474d1671d
       version: -1
       name: Verify Workspace Member List outputs
       type: condition
@@ -1641,10 +1641,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: c6b1ba24-ca60-475c-8576-dc9d58ada50d
+    taskid: a6b8b541-981f-40c0-8e16-786549ceff66
     type: condition
     task:
-      id: c6b1ba24-ca60-475c-8576-dc9d58ada50d
+      id: a6b8b541-981f-40c0-8e16-786549ceff66
       version: -1
       name: Verify Branch Get outputs
       type: condition
@@ -1679,10 +1679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 064a8a16-67d7-4dd2-892b-16c9268b6322
+    taskid: d71adb99-c390-4bc2-8b85-02123b2a0fde
     type: condition
     task:
-      id: 064a8a16-67d7-4dd2-892b-16c9268b6322
+      id: d71adb99-c390-4bc2-8b85-02123b2a0fde
       version: -1
       name: Verify Issue Comment Create
       type: condition
@@ -1722,10 +1722,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 8152f762-e776-4720-89d3-4ac6898f41df
+    taskid: 03a2c9d2-5c3c-4e61-8fc8-5f11c1cb3b7c
     type: regular
     task:
-      id: 8152f762-e776-4720-89d3-4ac6898f41df
+      id: 03a2c9d2-5c3c-4e61-8fc8-5f11c1cb3b7c
       version: -1
       name: Issue Comment Update
       description: Updates a specific comment on a given issue.
@@ -1761,10 +1761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 614c7e95-97ae-4c2e-843d-5719f882c486
+    taskid: 54465312-3b4a-4540-8cf9-b79d723b91f9
     type: condition
     task:
-      id: 614c7e95-97ae-4c2e-843d-5719f882c486
+      id: 54465312-3b4a-4540-8cf9-b79d723b91f9
       version: -1
       name: Verify Issue Comment Update outputs
       type: condition
@@ -1807,10 +1807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 1692bf1b-a995-48cb-88a6-e35a3a60b5df
+    taskid: 28687916-f93f-4506-8d47-34aa2f9f1365
     type: condition
     task:
-      id: 1692bf1b-a995-48cb-88a6-e35a3a60b5df
+      id: 28687916-f93f-4506-8d47-34aa2f9f1365
       version: -1
       name: Verify Issue Create
       type: condition
@@ -1847,10 +1847,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: f7103fa8-7feb-4fcd-8c07-d89de9dbb149
+    taskid: 904f9839-16b3-4a9e-8776-31ffe5603d36
     type: condition
     task:
-      id: f7103fa8-7feb-4fcd-8c07-d89de9dbb149
+      id: 904f9839-16b3-4a9e-8776-31ffe5603d36
       version: -1
       name: Verify Open Branch List outputs
       type: condition
@@ -1902,10 +1902,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 986da7fe-0a31-4f88-8073-e13aae5776c8
+    taskid: c8de35b6-a5ff-4e93-8954-254750a563d7
     type: regular
     task:
-      id: 986da7fe-0a31-4f88-8073-e13aae5776c8
+      id: c8de35b6-a5ff-4e93-8954-254750a563d7
       version: -1
       name: Branch Create
       script: Bitbucket|||bitbucket-branch-create
@@ -1936,15 +1936,55 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 16ea39e6-4016-427d-8428-43c9881540ed
+    type: regular
+    task:
+      id: 16ea39e6-4016-427d-8428-43c9881540ed
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7645,
+        "height": 7815,
         "width": 1250,
         "x": 30,
-        "y": 40
+        "y": -130
       }
     }
   }

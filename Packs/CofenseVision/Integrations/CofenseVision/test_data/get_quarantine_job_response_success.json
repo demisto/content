@@ -1,0 +1,47 @@
+{
+  "id": 17,
+  "createdBy": "cds",
+  "createdDate": "2022-07-07T09:43:34.98169",
+  "modifiedBy": "system",
+  "modifiedDate": "2022-07-07T09:45:22.046993",
+  "stopRequested": true,
+  "quarantineEmails": [
+    {
+      "id": 7,
+      "recipientAddress": "dummy",
+      "internetMessageId": "<dummy>",
+      "ewsMessageId": null,
+      "status": "UNKNOWN_MAILBOX",
+      "errorMessage": "No primary addresses were found for 7/xxxxx@dummy.test.com",
+      "createdDate": "2022-07-07T09:06:16.787887",
+      "quarantinedDate": null,
+      "originalFolderId": null
+    }
+  ],
+  "quarantineJobRuns": [
+    {
+      "id": 63,
+      "jobRunType": "QUARANTINE",
+      "status": "COMPLETED",
+      "startedDate": "2022-07-07T09:43:37.021197",
+      "completedDate": "2022-07-07T09:43:37.547392",
+      "total": 1,
+      "error": 1
+    },
+    {
+      "id": 64,
+      "jobRunType": "RESTORE",
+      "status": "COMPLETED",
+      "startedDate": "2022-07-07T09:45:22.047505",
+      "completedDate": "2022-07-07T09:45:22.916759",
+      "total": 1,
+      "error": 1
+    }
+  ],
+  "autoQuarantine": false,
+  "matchingIOCs": [],
+  "matchingSources": [],
+  "matchingIocInfo": [],
+  "searchId": null,
+  "emailCount": 1
+}

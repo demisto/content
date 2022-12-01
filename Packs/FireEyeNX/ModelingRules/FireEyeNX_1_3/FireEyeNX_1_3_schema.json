@@ -1,0 +1,76 @@
+{
+    "fireeye_mps_raw": {
+      "rt": {
+        "type": "int",
+        "is_array": false
+      },
+      "dpt": {
+        "type": "int",
+        "is_array": false
+      },
+      "spt": {
+        "type": "int",
+        "is_array": false
+      },
+      "act": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "dmac": {
+        "type": "string",
+        "is_array": false
+      },
+      "smac": {
+        "type": "string",
+        "is_array": false
+      },
+      "dproc": {
+        "type": "string",
+        "is_array": false
+      },
+      "fname": {
+        "type": "string",
+        "is_array": false
+      },
+      "proto": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvchost": {
+        "type": "string",
+        "is_array": false
+      },
+      "request": {
+        "type": "string",
+        "is_array": false
+      },
+      "filePath": {
+        "type": "string",
+        "is_array": false
+      },
+      "fileHash": {
+        "type": "string",
+        "is_array": false
+      },
+      "fileType": {
+        "type": "string",
+        "is_array": false
+      },
+      "requestMethod": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

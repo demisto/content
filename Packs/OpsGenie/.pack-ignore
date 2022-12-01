@@ -12,3 +12,9 @@ ignore=IM111
 
 [file:classifier-OpsGenie_-_Classifier.json]
 ignore=BA101
+
+[file:incidentfield-OpsGenie_AlertId.json]
+ignore=IF115
+
+[known_words]
+AlertId

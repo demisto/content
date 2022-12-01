@@ -5,11 +5,24 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Name",
+            "displayName": "Key",
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "name",
+            "key": "key",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
             "orgType": "shortText",
             "required": false,
             "script": "",
