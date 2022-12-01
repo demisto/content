@@ -1,18 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -20,6 +5,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any
+import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -33,64 +19,49 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, url: str, auth: tuple, headers: Dict, proxy: bool = False, verify: bool = True):
+        self.url = url
+        self.headers = headers
+        super().__init__(base_url=url, verify=verify, proxy=proxy, auth=auth, headers=headers)
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+    def get_session_request(self, encoded_str: str) -> Dict:
+        """ Gets a session from the API.
+            Args:
+                encoded_str: str - The string that contains username:password in base64
+            Returns:
+                A dictionary with the session details.
         """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        url_suffix = '/sdkapi/session'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def encode_to_base64(str_to_convert: str) -> str:
+    b = base64.b64encode(bytes(str_to_convert, 'utf-8'))  # bytes
+    base64_str = b.decode('utf-8')  # convert bytes to string
+    return base64_str
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+def test_module(client: Client, encoded_str: str) -> str:
+    """ Test the connection to McAfee NSM.
+    Args:
+        client: A McAfeeNSM client.
+        encoded_str: str - The string that contains username:password in base64
+    Returns:
+        'ok' if the connection was successful, else throws exception.
     """
-
-    message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
+        client.get_session_request(encoded_str)
+        return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+        raise Exception(e.message)
 
 
 # TODO: REMOVE the following dummy command function
@@ -114,44 +85,34 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    url = demisto.params().get('url')
+    user_name = demisto.params().get('credentials', {}).get('identifier', "")
+    password = demisto.params().get('credentials', {}).get('password', "")
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
+    auth = (user_name, password)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        headers: Dict = {
+            'Accept': 'application/vnd.nsm.v1.0+json',
+            'Content-Type': 'application/json'
+        }
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
+        user_name_n_password_encoded = encode_to_base64(f'{user_name}:{password}')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, user_name_n_password_encoded)
             return_results(result)
 
         # TODO: REMOVE the following dummy command case:

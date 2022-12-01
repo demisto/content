@@ -3,16 +3,14 @@ commonfields:
   id: McAfeeNSMv2
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- display: 'URL (for example: https://192.168.0.1:5000)'
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  defaultvalue: ""
+- display: User Name
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
@@ -22,7 +20,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+description: McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
 display: 'McAfeeNSMv2'
 name: McAfeeNSMv2
 script:
