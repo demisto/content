@@ -16,6 +16,9 @@ ignore=IN126,IN135
 [file:SecurityAndCompliance.yml]
 ignore=IN128,IN145
 
+[file:SecurityAndComplianceV2.yml]
+ignore=IN145
+
 [file:README.md]
 ignore=RM102,RM106
 
