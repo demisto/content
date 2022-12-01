@@ -252,15 +252,14 @@ def humio_list_notifiers(client, args, headers):
     """.format(repoName=args.get("repository"))
 
     data = {"query" : graphql_query}
-    json_data = json.dumps(data)
 
-    response = client.http_request("POST", url, json_data, headers)
+    response = client.http_request("POST", url, data, headers)
 
     if response.status_code == 200:
         if not response.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
     
-        actions = response.get('data', {}).get('actions')
+        actions = response.get('data', {}).get('searchDomain', {}).get('actions')
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
@@ -286,14 +285,13 @@ def humio_get_notifier_by_id(client, args, headers):
     headers["Accept"] = "application/json"
 
     data = {"query" : graphql_query}
-    json_data = json.dumps(data)
 
-    response = client.http_request("POST", url, json_data, headers)
+    response = client.http_request("POST", url, data, headers)
     if response.status_code == 200:        
         if not response.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
         
-        actions = response.get('data', {}).get('actions')
+        actions = response.get('data', {}).get('searchDomain', {}).get('actions')
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
