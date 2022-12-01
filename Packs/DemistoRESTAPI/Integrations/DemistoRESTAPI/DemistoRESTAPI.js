@@ -3,6 +3,21 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
+getTenantAccountName = function () {
+    var urls = demistoUrls()
+    const server_url = urls['server'].toString()
+    var account_name = ''
+    if (server_url.indexOf("/acc_") >= 0){
+        words = server_url.split('acc_')
+        tenant_name = words[words.length - 1]
+        if (tenant_name !== "") {
+            account_name = 'acc_' + tenant_name
+        }
+    }
+    log(account_name)
+    return account_name
+}
+
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
     if (uri.slice(-1) !== '/') {
@@ -56,6 +71,9 @@ var sendRequest = function(method, uri, body, raw) {
     var requestUrl = serverURL;
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
+    }
+    if (args.use_tenant){
+        requestUrl += "/" + getTenantAccountName();
     }
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];

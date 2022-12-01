@@ -29,6 +29,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Use tenant
+  name: use_tenant
+  type: 8
+  defaultValue: 'false'
+  required: false
 script:
   script: ''
   type: javascript
