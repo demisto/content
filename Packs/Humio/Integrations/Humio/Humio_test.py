@@ -203,7 +203,7 @@ def test_humio_list_notifiers(requests_mock):
 
     mock_response = util_load_json("test_data/list_notifiers_results.json")
     requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/alertnotifiers",
+        "https://test.com/graphql",
         json=mock_response,
     )
 
@@ -220,7 +220,7 @@ def test_humio_get_notifier_by_id(requests_mock):
 
     mock_response = util_load_json("test_data/notifier_by_id_results.json")
     requests_mock.get(
-        "https://test.com/api/v1/repositories/sandbox/alertnotifiers/BTkuj8QArhIFMh_L39FoN0tnyTUEXplc",
+        "https://test.com/graphql",
         json=mock_response,
     )
 
