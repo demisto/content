@@ -23,14 +23,14 @@
             },
             {
                 "date": "2022-07-10T11:51:17.874Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 692,
                 "vulnerabilityExceptionId": 1
             },
             {
                 "date": "2022-11-02T14:54:19.040Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
                 "version": 693,
                 "vulnerabilityExceptionId": 1
@@ -161,9 +161,9 @@
         "history": [
             {
                 "date": "2020-07-29T11:11:57.552Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "ASSET-IMPORT",
-                "user": "nxadmin",
+                "user": "admin",
                 "version": 1
             }
         ],

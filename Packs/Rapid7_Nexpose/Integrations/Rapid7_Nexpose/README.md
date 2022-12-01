@@ -1,5 +1,5 @@
 Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-This integration was integrated and tested with version xx of Rapid7 Nexpose
+This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose
 
 ## Configure Rapid7 Nexpose on Cortex XSOAR
 
@@ -1764,7 +1764,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 "review": {
                     "comment": "Auto approved by submitter.",
                     "date": "2022-10-31T14:39:15.736Z",
-                    "name": "nxadmin",
+                    "name": "admin",
                     "user": 1
                 },
                 "scope": {
@@ -1774,7 +1774,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 "state": "approved",
                 "submit": {
                     "date": "2022-06-29T16:10:06.616880Z",
-                    "name": "nxadmin",
+                    "name": "admin",
                     "reason": "false positive",
                     "user": 1
                 }
@@ -1783,7 +1783,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 "id": 2,
                 "review": {
                     "date": "2022-10-30T13:54:31.084Z",
-                    "name": "nxadmin",
+                    "name": "admin",
                     "user": 1
                 },
                 "scope": {
@@ -1793,7 +1793,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 "state": "rejected",
                 "submit": {
                     "date": "2022-07-13T13:27:31.647402Z",
-                    "name": "nxadmin",
+                    "name": "admin",
                     "reason": "acceptable use",
                     "user": 1
                 }
@@ -1807,7 +1807,7 @@ Retrieve information about scan schedules for a specific site or a specific scan
                 "state": "under review",
                 "submit": {
                     "date": "2022-10-27T11:40:34.109268Z",
-                    "name": "nxadmin",
+                    "name": "admin",
                     "reason": "acceptable use",
                     "user": 1
                 }
@@ -1822,9 +1822,9 @@ Retrieve information about scan schedules for a specific site or a specific scan
 >### Nexpose Vulnerability Exceptions
 >| Id  |Vulnerability|ExceptionScope|Reason|ReportedBy|ReviewStatus|ReviewedOn|ExpiresOn|
 -----|---|---|---|---|---|---|---|---|
->| 1   | tlsv1_0-enabled | global | false positive | nxadmin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
->| 2   | php-cve-2018-10545 | global | acceptable use | nxadmin | rejected | 2022-10-30T13:54:31.084Z |  |
->| 3   | cifs-smb-signing-disabled | global | acceptable use | nxadmin | under review |  |  |
+>| 1   | tlsv1_0-enabled | global | false positive | admin | approved | 2022-10-31T14:39:15.736Z | 2028-03-01T04:31:56Z |
+>| 2   | php-cve-2018-10545 | global | acceptable use | admin | rejected | 2022-10-30T13:54:31.084Z |  |
+>| 3   | cifs-smb-signing-disabled | global | acceptable use | admin | under review |  |  |
 
 
 ### nexpose-start-site-scan

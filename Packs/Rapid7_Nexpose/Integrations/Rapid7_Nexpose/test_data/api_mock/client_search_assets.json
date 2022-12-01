@@ -28,14 +28,14 @@
             },
             {
                 "date": "2049-03-01T04:31:56Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "ASSET-IMPORT",
-                "user": "nxadmin",
+                "user": "admin",
                 "version": 3
             },
             {
                 "date": "2022-11-10T10:53:29.782Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 4,
                 "vulnerabilityExceptionId": 10
@@ -152,42 +152,42 @@
             },
             {
                 "date": "2022-07-10T11:51:17.910Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 2,
                 "vulnerabilityExceptionId": 1
             },
             {
                 "date": "2022-10-30T09:21:40.355Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 3,
                 "vulnerabilityExceptionId": 11
             },
             {
                 "date": "2022-10-30T09:38:22.218Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 4,
                 "vulnerabilityExceptionId": 12
             },
             {
                 "date": "2022-11-02T14:54:19.059Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
                 "version": 5,
                 "vulnerabilityExceptionId": 1
             },
             {
                 "date": "2022-11-10T10:06:10.004Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
                 "version": 6,
                 "vulnerabilityExceptionId": 12
             },
             {
                 "date": "2022-11-10T10:53:29.792Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 7,
                 "vulnerabilityExceptionId": 10
@@ -317,28 +317,28 @@
             },
             {
                 "date": "2022-06-29T16:10:06.743Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 2,
                 "vulnerabilityExceptionId": 2
             },
             {
                 "date": "2022-07-10T11:51:17.892Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 3,
                 "vulnerabilityExceptionId": 1
             },
             {
                 "date": "2022-10-27T11:57:32.017Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_APPLIED",
                 "version": 4,
                 "vulnerabilityExceptionId": 8
             },
             {
                 "date": "2022-11-02T14:54:19.045Z",
-                "description": "nxadmin",
+                "description": "admin",
                 "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
                 "version": 5,
                 "vulnerabilityExceptionId": 1
