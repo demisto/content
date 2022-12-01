@@ -3,7 +3,6 @@ import io
 import pytest
 from GoogleWorkspaceAdmin import Client
 
-BASE_URL = 'https://example.com/'
 OUTPUT_PREFIX = 'Google'  # TODO Ask if we should keep this
 
 
@@ -28,7 +27,7 @@ def create_test_client(mocker) -> Client:
         Client: A mock client instance
     """
     mocker.patch('GoogleWorkspaceAdmin.Client._init_credentials', return_value=None)
-    return Client(base_url=BASE_URL, verify=False, proxy=False, customer_id='id', service_account_json={})
+    return Client(base_url='https://example.com/', verify=False, proxy=False, customer_id='id', service_account_json={})
 
 
 def test_invalid_resource_id_mobile_action_command(mocker):
@@ -86,7 +85,7 @@ def test_invalid_customer_id_client_connection(mocker):
     Then:
         - Validate that the ambiguous error message is mapped to a more human readable error message.
     """
-    from GoogleWorkspaceAdmin import test_module
+    from GoogleWorkspaceAdmin import test_module, INVALID_CUSTOMER_ID_ERROR
     from CommonServerPython import DemistoException
     response_mock = MockResponse(json_data={'error': {'message': 'Bad Request'}})
     mocker.patch('GoogleWorkspaceAdmin.Client._get_oauth_token', return_value='token')
@@ -94,7 +93,7 @@ def test_invalid_customer_id_client_connection(mocker):
     client = create_test_client(mocker=mocker)
     with pytest.raises(DemistoException) as e:
         test_module(client=client)
-    assert 'Please check the customer ID parameter.' in str(e)
+    assert INVALID_CUSTOMER_ID_ERROR in str(e)
 
 
 def test_unauthorized_service_account_client_connection(mocker):
@@ -107,7 +106,7 @@ def test_unauthorized_service_account_client_connection(mocker):
     Then:
         - Validate that the ambiguous error message is mapped to a more human readable error message.
     """
-    from GoogleWorkspaceAdmin import test_module
+    from GoogleWorkspaceAdmin import test_module, UNAUTHORIZED_SERVICE_ACCOUNT_ERROR
     from CommonServerPython import DemistoException
     response_mock = MockResponse(json_data={'error': {'message': 'Not Authorized to access this resource/api'}})
     mocker.patch('GoogleWorkspaceAdmin.Client._get_oauth_token', return_value='token')
@@ -115,7 +114,7 @@ def test_unauthorized_service_account_client_connection(mocker):
     client = create_test_client(mocker=mocker)
     with pytest.raises(DemistoException) as e:
         test_module(client=client)
-    assert 'Please check the authorizations of the configured service account.' in str(e)
+    assert UNAUTHORIZED_SERVICE_ACCOUNT_ERROR in str(e)
 
 
 def test_invalid_service_account_json():

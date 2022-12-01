@@ -6,6 +6,11 @@ display: Google Workspace Admin
 category: Utilities
 description: Google Workspace Mobile Management includes Android, Google Sync, iOS devices, and Google Chrome devices that run on ChromeOS.
 configuration:
+  - defaultvalue: https://admin.googleapis.com/
+    display: Base URL of the service
+    name: base_url
+    required: true
+    type: 0
   - display: Customer ID
     name: customer_id
     required: true
@@ -15,12 +20,12 @@ configuration:
     required: true
     type: 4
   - name: proxy
-    display: Use system proxy
+    display: Use system proxy settings
     defaultvalue: "false"
     type: 8
     required: false
   - name: insecure
-    display: Trust any certificate
+    display: Trust any certificate (not secure)
     defaultvalue: "false"
     type: 8
     required: false
@@ -600,17 +605,17 @@ script:
             - upgrade_transfer
       outputs:
         - type: String
-          contextPath: Google.mobileAction.Status
+          contextPath: Google.chromeOSAction.Status
           description: "Whether the action was successful or failure."
   type: python
   subtype: python3
-  dockerimage: demisto/googleapi-python3:1.0.0.36486
+  dockerimage: demisto/googleapi-python3:1.0.0.37871
   feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: "-"
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
-  - No tests (auto formatted)
+  - Google Workspace Admin Test
