@@ -21,8 +21,7 @@ args:
 - name: text
   description: A match target text.
 - name: template
-  description: The template text that will be returned for the output by doing backslash
-    substitution to the patterns matched.
+  description: The template text that will be returned for the output by doing backslash substitution to the patterns matched.
 - name: template_type
   auto: PREDEFINED
   predefined:
@@ -36,20 +35,18 @@ args:
   predefined:
   - text
   - regex
-  description: Which type of value takes from the value argument, 'text' (match target)
-    or 'regex'.
+  description: Which type of value takes from the value argument, 'text' (match target) or 'regex'.
   defaultValue: text
 - name: flags
-  description: The comma separated flags for pattern matching in regex. "dotall" (s),
-    "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
+  description: The comma separated flags for pattern matching in regex. "dotall" (s), "multiline" (m), "ignorecase" (i) and "unicode" (u) are supported.
 - name: search_limit
   description: The maximum limit for scanning patterns. (0 means unlimited)
   defaultValue: "0"
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.8.39276
 runas: DBotWeakRole
-fromversion: 6.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

@@ -47,7 +47,7 @@ comment: |-
 commonfields:
   id: RegexReplace
   version: -1
-dockerimage: demisto/python3:3.10.7.33922
+dockerimage: demisto/python3:3.10.8.39276
 enabled: true
 name: RegexReplace
 runas: DBotWeakRole
@@ -59,7 +59,7 @@ tags:
 - transformer
 - string
 type: python
-fromversion: 5.0.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
