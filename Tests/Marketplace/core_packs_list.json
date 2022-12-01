@@ -8,7 +8,7 @@
   "CommonScripts",
   "CommonTypes",
   "CommonWidgets",
-  "CortexXDRIR",
+  "CortexXDR",
   "DefaultPlaybook",
   "DemistoLocking",
   "DemistoRESTAPI",
