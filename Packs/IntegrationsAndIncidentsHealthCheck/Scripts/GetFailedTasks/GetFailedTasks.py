@@ -125,7 +125,7 @@ def get_incident_tasks_using_internal_request(incident: dict):
     return tasks
 
 
-def get_incident_data(incident: dict, rest_api_instance: str = None):
+def get_incident_data(incident: dict, rest_api_instance: str):
     """
         Returns the failing task objects of an incident.
         The request is done using a Demisto Rest API instance if given,
