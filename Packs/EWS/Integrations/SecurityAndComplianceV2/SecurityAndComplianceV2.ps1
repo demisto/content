@@ -289,12 +289,12 @@ class SecurityAndComplianceClient {
         Connect-IPPSSession @cmd_params -WarningAction:SilentlyContinue | Out-Null
     }
 
-    CreateDelegatedSession([string]$CommandName){
+    CreateDelegatedSession(){
         if ($null -eq $this.delegated_password) {
             ReturnError "Error: For this command, delegated access is required." | Out-Null
         }
         $delegated_cred = New-Object System.Management.Automation.PSCredential ($this.upn, $this.delegated_password)
-        Connect-IPPSSession -Credential $delegated_cred -CommandName $CommandName -WarningAction:SilentlyContinue | Out-Null
+        Connect-IPPSSession -Credential $delegated_cred -CommandName New-ComplianceSearchAction,Start-ComplianceSearch,Get-ComplianceSearchAction -WarningAction:SilentlyContinue | Out-Null
     }
 
     DisconnectSession(){
@@ -531,7 +531,7 @@ class SecurityAndComplianceClient {
 
     StartSearch([string]$search_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession("Start-ComplianceSearch")
+        $this.CreateDelegatedSession()
         # Execute command
         Start-ComplianceSearch -Identity $search_name -Confirm:$false -Force:$true
 
@@ -579,7 +579,7 @@ class SecurityAndComplianceClient {
 
     [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
         # Establish session to remote
-        $this.CreateDelegatedSession("New-ComplianceSearchAction")
+        $this.CreateDelegatedSession()
         # Execute command
         $cmd_params = @{
             "SearchName" = $search_name
@@ -681,7 +681,7 @@ class SecurityAndComplianceClient {
 
     [psobject]GetSearchAction([string]$search_action_name) {
         # Establish session to remote
-        $this.CreateDelegatedSession("Get-ComplianceSearchAction")
+        $this.CreateDelegatedSession()
 
         # Execute command
         $response = Get-ComplianceSearchAction -Identity $search_action_name
@@ -1000,6 +1000,7 @@ function Main {
             $Demisto.results($file_entry)
         }
     } catch {
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
         $Demisto.debug("Integration: $script:INTEGRATION_NAME
 Command: $command
 Arguments: $($command_arguments | ConvertTo-Json)
