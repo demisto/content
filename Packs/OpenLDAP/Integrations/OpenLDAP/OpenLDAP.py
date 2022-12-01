@@ -6,7 +6,8 @@ from CommonServerUserPython import *
 import ssl
 from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.utils.dn import parse_dn
-from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
+from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError, \
+    LDAPSocketReceiveError, LDAPStartTLSError
 from typing import Tuple, List
 
 ''' LDAP Authentication CLIENT '''
@@ -693,8 +694,10 @@ def main():  # pragma: no coverage
         msg = str(e)
         if isinstance(e, LDAPBindError):
             msg = f'LDAP Authentication - authentication connection failed. Additional details: {msg}'
-        elif isinstance(e, LDAPSocketOpenError):
+        elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
             msg = f'LDAP Authentication - Failed to connect to LDAP server. Additional details: {msg}'
+            if not params.get('insecure', False):
+                msg += ' Try using: "Trust any certificate" option.\n'
         elif isinstance(e, LDAPInvalidPortError):
             msg = 'LDAP Authentication - Not valid ldap server input.' \
                   ' Check that server input is of form: ip or ldap://ip'
