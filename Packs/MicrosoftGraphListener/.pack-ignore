@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:classifier-MicrosoftGraphListener.json]
 ignore=BA101
+
+[known_words]
+msgraph
