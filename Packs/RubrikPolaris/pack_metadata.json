@@ -8,18 +8,10 @@
     "email": "support@rubrik.com",
     "created": "2020-12-20T10:47:58Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Analytics & SIEM"
     ],
-    "tags": [
-        "Breach",
-        "Attack",
-        "Threat Intelligence",
-        "Security"
-    ],
-    "useCases": [
-        "Threat Intelligence Management",
-        "Ransomware"
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "Rubrik",
         "Polaris",

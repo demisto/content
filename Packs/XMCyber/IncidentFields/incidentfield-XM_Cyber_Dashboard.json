@@ -3,7 +3,7 @@
     "version": -1,
     "fromVersion": "6.0.0",
     "modified": "2020-10-25T16:17:56.419560765Z",
-    "name": "XM Cyber Dashboard",
+    "name": "XM Cyber dashboard",
     "ownerOnly": false,
     "cliName": "xmcyberdashboard",
     "type": "url",

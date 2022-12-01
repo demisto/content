@@ -248,8 +248,10 @@ A log file will be generated in the Playground. Examine the log file for further
 
 ### Microsoft SQL Server
 We provide two options for connecting to Microsoft SQL Server:
-* **Microsoft SQL Server**: Uses the open source FreeTDS driver to communicate with Microsoft SQL Server.
+* **Microsoft SQL Server**: Uses the open source FreeTDS driver to communicate with Microsoft SQL Server. This driver supports authentication via domain logins (`DOMAIN\username`) with a password. If you do not require a domain login for authentication, we recommend using the `Microsoft SQL Server - MS ODBC Driver`.
 * **Microsoft SQL Server - MS ODBC Driver**: Official driver from Microsoft for Linux.
+
+**Note:** Kerberos authentication is not supported.
 
 If you experience any issues communicating with your Microsoft SQL Sever, try using both options as we've seen cases where one option works while the other doesn't.
 
@@ -264,7 +266,10 @@ It means there is a communication problem from the Generic SQL docker to the SQL
 echo "select @@version" | sudo docker run --rm -i  demisto/genericsql:1.1.0.9726 tsql -H <sql_server_host> -p <sql_port_number> -U <user> -P <password> -D <db_to_connect> -v -o v
 ```
 
-**Note:** Kerberos authentication is not supported.
+**Autocommit**: If you are seeing that insert/update operations are NOT being performed and no error is received, it could be a case that autocommit is not enabled on the connection and the transacation is rolledback. To enable autocommit, add the following to the connection arguments instance configuration option:
+```
+autocommit=True
+```
 
 ### Oracle
 If you require connecting to Oracle via a **SERVICE_NAME**, leave the `Database Name` parameter empty and add to the `Connection Arguments` the following:

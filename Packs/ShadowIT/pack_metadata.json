@@ -8,12 +8,10 @@
     "email": "",
     "created": "2020-11-18T14:55:33Z",
     "categories": [
-        "IT Services",
-        "Case Management"
+        "IT Services"
     ],
     "tags": [
-        "Security",
-        "Compliance"
+        "Use Case"
     ],
     "useCases": [
         "Compliance"
