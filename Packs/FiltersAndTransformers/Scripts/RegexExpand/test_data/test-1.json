@@ -121,31 +121,5 @@
     "result": [
       "1"
     ]
-  },
-  {
-    "value": [null],
-    "regex": ".*",
-    "text": "xxx",
-    "template": null,
-    "template_type": "text",
-    "value_takes": "text",
-    "flags": "",
-    "search_limit": 0,
-    "result": [
-      "xxx"
-    ]
-  },
-  {
-    "value": [null],
-    "regex": ".*",
-    "text": ["xxx", null],
-    "template": null,
-    "template_type": "text",
-    "value_takes": "text",
-    "flags": "",
-    "search_limit": 0,
-    "result": [
-      "xxx"
-    ]
   }
 ]

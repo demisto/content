@@ -13,7 +13,10 @@ args:
   predefined:
   - "true"
   - "false"
-comment: Append item(s) to the end of the list if they are not empty.
+comment:  |-
+  Deprecated. Use Filters And Transformers instead.
+
+  Append item(s) to the end of the list if they are not empty.
 commonfields:
   id: AppendIfNotEmpty
   version: -1
@@ -22,6 +25,7 @@ contentitemexportablefields:
     fromServerVersion: ""
 enabled: true
 name: AppendIfNotEmpty
+deprecated: true
 runas: DBotWeakRole
 runonce: false
 script: ''

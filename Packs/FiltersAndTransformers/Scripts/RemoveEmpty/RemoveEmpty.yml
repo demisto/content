@@ -11,8 +11,12 @@ tags:
 - transformer
 - entirelist
 - general
-comment: Remove empty items, entries or nodes from the array.
+comment: |-
+  Deprecated. Use Filters And Transformers instead.
+
+  Remove empty items, entries or nodes from the array.
 enabled: true
+deprecated: true
 args:
 - name: value
   required: true

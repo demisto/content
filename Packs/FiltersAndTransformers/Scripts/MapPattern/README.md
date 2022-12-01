@@ -123,7 +123,7 @@ Transform a severity name to the corresponding number.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "Unknown": 0,
         "Informational|Info": 0.5,
@@ -132,7 +132,7 @@ Transform a severity name to the corresponding number.
         "High": 3,
         "Critical": 4
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -159,14 +159,14 @@ Normalize a human readable phrase to a cannonical name.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "*Low*": "low",
         "*Medium*": "medium",
         "*High*": "high",
         "*": "unknown"
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -194,11 +194,10 @@ Remove all the heading "Re:" or "Fw:" from an email subject.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "( *(Re: *|Fw: *)*)(.*)": "\\3"
     }
-```
 
 | **Input** | **Output** |
 | --- | --- |
@@ -225,14 +224,14 @@ Extract the user name field from an text in an Active Directory user account for
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "([^@]+)@.+": "\\1",
         "[^\\\\]+\\\\(.+)": "\\1",
-        "[a-zA-Z_][0-9a-zA-Z\\.-_]*": null,
+        "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
         ".*": "<unknown>"
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -260,23 +259,23 @@ Extract the user name field from an quoted text in an Active Directory user acco
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "\"(.*)\"": {
             "output": "\\1",
             "next": {
                 "([^@]+)@.+": "\\1",
                 "[^\\\\]+\\\\(.+)": "\\1",
-                "[a-zA-Z_][0-9a-zA-Z\\.-_]*": "\\0",
+                "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": "\\0",
                 ".*": "<unknown>"
             }
         },
         "([^@]+)@.+": "\\1",
         "[^\\\\]+\\\\(.+)": "\\1",
-        "[a-zA-Z_][0-9a-zA-Z\\.-_]*": null,
+        "[a-zA-Z_]([0-9a-zA-Z\\.-_]*)": null,
         ".*": "<unknown>"
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -308,7 +307,7 @@ Extract first name and last name from an email address in `firstname.lastname@do
 > wildcards:
 
 #### mappings:
-```json
+
     [
         {
             "([^.]+)\\.([^@]+)@.+": {
@@ -321,7 +320,7 @@ Extract first name and last name from an email address in `firstname.lastname@do
             "([^@]+)@.+": "\\1"
         }
     ]
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -350,7 +349,7 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?Z": "\\1-\\2-\\3 \\4:\\5:\\6 GMT",
         "[^,]+, (\\d{1,2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": {
@@ -443,7 +442,7 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
             }
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -472,7 +471,7 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "(\\d{4})-(\\d{2})-(\\d{2})T(\\d{2}):(\\d{2}):(\\d{2})(\\.\\d+)?Z": "\\1-\\2-\\3 \\4:\\5:\\6 GMT",
         "[^,]+, (\\d{1,2}) ([^ ]+) (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2}) ([^ ]+)": {
@@ -493,7 +492,7 @@ Normalize a date/time text to `YYYY-MM-DD HH:mm:ss TZ`.
             }
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -521,7 +520,7 @@ Pattern matching for different nodes
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "IP": {
             "127.*": "localhost"
@@ -532,7 +531,7 @@ Pattern matching for different nodes
             "*": "other"
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -562,7 +561,7 @@ Make a text with the `value` field corresponding to the `score` field.
 > wildcards: *
 
 #### mappings:
-```json
+
     {
         "score": {
             "1": "low - ${.value}",
@@ -571,7 +570,7 @@ Make a text with the `value` field corresponding to the `score` field.
             "*": "unknown - ${.value}"
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -598,7 +597,7 @@ Make a text with the `value` field corresponding to the `score` field.
 > wildcards: *
 
 #### mappings:
-```json
+
     {
         "score": {
             "...=val < 30": "low - ${.value}",
@@ -607,7 +606,7 @@ Make a text with the `value` field corresponding to the `score` field.
             "*": "unknown - ${.value}"
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -636,7 +635,7 @@ Make a phrase based on the values of `score` and `type`.
 > wildcards: *
 
 #### mappings:
-```json
+
     {
         "score": {
             "...=val < 30": {
@@ -675,7 +674,7 @@ Make a phrase based on the values of `score` and `type`.
             "*": "unknown - ${.value}"
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
@@ -703,7 +702,7 @@ Check if the date is a leap day.
 > wildcards:
 
 #### mappings:
-```json
+
     {
         "(Jan|Mar|May|Jul|Aug|Oct|Dec) (\\d\\d?), \\d{4}": {
             "output": "\\2",
@@ -740,7 +739,7 @@ Check if the date is a leap day.
             }
         }
     }
-```
+
 
 | **Input** | **Output** |
 | --- | --- |
