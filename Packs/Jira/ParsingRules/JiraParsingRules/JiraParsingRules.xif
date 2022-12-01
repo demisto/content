@@ -1,6 +1,6 @@
 [INGEST:vendor="atlassian", product="jira", target_dataset="atlassian_jira_raw"]
 alter 
-	tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
+    tmp_date_part = arraystring(regextract(created, "^(\d{4}\-\d{2}\-\d{2})T"), ""),
     tmp_time_part = arraystring(regextract(created, "T(\d{2}\:\d{2}\:\d{2})\."), ""),
     tmp_mili_part = arraystring(regextract(created, "\.(\d{3})[\-|\+]"), ""),
     tmp_zhrs_part = to_integer(arraystring(regextract(created, "[\-|\+](\d{2})\d{2}"), "")),
