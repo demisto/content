@@ -9,3 +9,6 @@ ignore=IN145
 
 [file:AnsibleACME.yml]
 ignore=IN145
+
+[known_words]
+ansii

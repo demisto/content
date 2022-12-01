@@ -1,0 +1,65 @@
+[MODEL: dataset="Juniper_SRX_Log"]
+alter
+    event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
+| filter
+    event_type contains "["
+| alter timestamp = arrayindex(regextract(_raw_log,"(\d+\:\d+:\d+\.\d+)"), 0)
+| alter hostname = arrayindex(regextract(_raw_log,"([^\s]+)\s\w+\[\d+\]\:\s"),0)
+| alter process = arrayindex(regextract(_raw_log,"\s(\w+)\[\d+"),0)
+| alter processID = arrayindex(regextract(_raw_log,"\s\w+\[(\d+)\]\:\s"),0)
+| alter username = arrayindex(regextract(_raw_log,"ser\s\'([^\']+)"),0)
+| alter message = arrayindex(regextract(_raw_log,"\s\w+\[\d+\]\:\s[^\d]+:\s([^\\]+) "),0)
+| alter tag_name = arrayindex(regextract(_raw_log,"\:\s(\w+\_\w+)"),0)
+| alter
+    xdm.observer.name = hostname,
+    xdm.event.operation = process,
+    xdm.source.process.pid = to_number(processID),
+    xdm.source.user.username = username,
+    xdm.alert.description = message,
+    xdm.event.type = tag_name;
+
+alter start_raw_log = arrayindex(regextract(_raw_log , "^(\<\d+\>)"),0)
+| filter len(start_raw_log) >0
+| alter Timestamp = arrayindex(regextract(_raw_log,"(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
+| alter destination_address = arrayindex(regextract(_raw_log,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+| alter file_name = arrayindex(regextract(_raw_log,"\sfilename\=\"([^\"]+)\""),0)
+// extract url
+| alter url1 = arrayindex(regextract(_raw_log,"url\=\"(\S+)."),0)
+| alter url2 = arrayindex(regextract(_raw_log,"URL\=(\S+)"),0)
+| alter url = coalesce(url1,url2)
+// end extract url
+| alter source_port = arrayindex(regextract(_raw_log,"source\-port\=\"(\d+)"),0)
+| alter destination_port = arrayindex(regextract(_raw_log,"destination\-port\=\"(\d+)"),0)
+| alter Reason = arrayindex(regextract(_raw_log,"REASON\=\"([^\"]+)\""),0)
+| alter Object = arrayindex(regextract(_raw_log,"OBJ\=.(\S+)"),0)
+| alter profile_name = arrayindex(regextract(_raw_log,"PROFILE\=\"([^\"]+)"),0)
+| alter source_zone = arrayindex(regextract(_raw_log,"source\-zone\-name\=\"([^\"]+)"),0)
+| alter Packet_Incoming_Interface = arrayindex(regextract(_raw_log,"packet\-incoming\-interface\=\"([^\"]+)"),0)
+| alter Roles = arrayindex(regextract(_raw_log,"roles=\"([^\"]+)"),0)
+| alter Username = arrayindex(regextract(_raw_log,"username\=\"([^\"]+)"),0)
+| alter Destination_Zone_Name = arrayindex(regextract(_raw_log,"destination\-zone\-name\=\"([^\"]+)"),0)
+| alter Policy_Name = arrayindex(regextract(_raw_log,"policy\-name\=\"([^\"]+)"),0)
+| alter Protocol_ID = arrayindex(regextract(_raw_log,"protocol\-id\=\"([^\"]+)"),0)
+| alter Destination_Nat_Rule_Name = arrayindex(regextract(_raw_log,"dst\-nat\-rule\-name\=\"([^\"]+)"),0)
+| alter Source_Nat_Rule_Name = arrayindex(regextract(_raw_log,"src\-nat\-rule\-name\=\"([^\"]+)"),0)
+| alter Nat_Destination_Port = arrayindex(regextract(_raw_log,"nat\-destination\-port\=\"([^\"]+)"),0)
+| alter Nat_Source_Port = arrayindex(regextract(_raw_log,"nat\-source\-port\=\"([^\"]+)"),0)
+| alter Nat_Source_Address = arrayindex(regextract(_raw_log,"nat\-source\-address\=\"([^\"]+)"),0)
+| alter Service_Name = arrayindex(regextract(_raw_log,"service\-name=\"([^\"]+)"),0)
+| alter Nat_Destination_IP = arrayindex(regextract(_raw_log,"nat\-destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0)
+// extract source_ip
+| alter source_address_ipv4 = arrayindex(regextract(_raw_log,"source\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"), 0)
+| alter source_adderss_ipv6 = arrayindex(regextract(_raw_log,"source\-address\=\"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+// end extract source_ip
+| alter
+    xdm.source.ipv4 = source_address_ipv4,
+    xdm.source.ipv6 = source_adderss_ipv6,
+    xdm.target.ipv4 = Destination_address,
+    xdm.target.port = to_number(Destination_Port),
+    xdm.network.rule = Source_Nat_Rule_Name,
+    xdm.network.ip_protocol = Protocol_ID,
+    xdm.source.zone = Source_Zone,
+    xdm.target.zone = Destination_Zone_Name,
+    xdm.target.user.username = Username,
+    xdm.source.user.employee_id = Roles,
+    xdm.target.interface = Packet_Incoming_Interface;

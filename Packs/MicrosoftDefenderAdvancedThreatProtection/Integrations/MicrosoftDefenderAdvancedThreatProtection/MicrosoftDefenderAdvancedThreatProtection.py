@@ -4028,7 +4028,18 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        remote_ip_count=args.get('remote_ip_count'))
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**query_args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
         'smb_connections': query_builder.build_smb_connections_query,
@@ -4063,7 +4074,19 @@ def persistence_evidence_command(client, args):  # pragma: no cover
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        process_cmd=args.get('process_cmd'))
+    query_builder = HuntingQueryBuilder.PersistenceEvidence(**quey_args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
         'registry_entry': query_builder.build_registry_entry_query,
@@ -4101,7 +4124,17 @@ def file_origin_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.FileOrigin(**args)
+    quey_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.FileOrigin(**quey_params)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
@@ -4127,7 +4160,19 @@ def process_details_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.ProcessDetails(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        query_purpose=args.get('query_purpose')
+    )
+    query_builder = HuntingQueryBuilder.ProcessDetails(**query_params)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
         'grandparent_process': query_builder.build_grandparent_process_query,
@@ -4163,7 +4208,19 @@ def network_connections_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.NetworkConnections(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.NetworkConnections(**query_params)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
         'dns_query': query_builder.build_dns_query,
@@ -4195,7 +4252,13 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4220,7 +4283,14 @@ def tampering_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.Tampering(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.Tampering(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4246,7 +4316,20 @@ def cover_up_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.CoverUp(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        username=args.get('username')
+    )
+    query_builder = HuntingQueryBuilder.CoverUp(**quey_args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
         'event_log_cleared': query_builder.build_event_log_cleared_query,
@@ -4275,7 +4358,7 @@ def cover_up_command(client, args):  # pragma: no cover
 
 
 def test_module(client: MsClient):
-    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'}, overwrite_rate_limit_retry=True)
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):

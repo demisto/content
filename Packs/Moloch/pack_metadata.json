@@ -1,6 +1,7 @@
 {
     "name": "Moloch (Deprecated)",
     "description": "Deprecated. Use Arkime instead.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
@@ -8,7 +9,7 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Network Security"
+        "Forensics & Malware Analysis"
     ],
     "tags": [],
     "useCases": [],
