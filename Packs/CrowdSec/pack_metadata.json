@@ -1,6 +1,6 @@
 {
     "name": "CrowdSec",
-    "description": "Use the CrowdSec integration to enrich your Threat with the CrowdSec CTI",
+    "description": "Enrich the data you have on your threats with the most advanced real-world CTI.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "CrowdSec",
@@ -13,7 +13,13 @@
         "Threat Intelligence"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "ip",
+        "enrichment",
+        "threat",
+        "intelligence",
+        "crowd"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
