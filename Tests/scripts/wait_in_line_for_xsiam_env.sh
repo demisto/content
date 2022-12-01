@@ -22,6 +22,7 @@ export SELF_LOCK_PATTERN=*-$LOCK_IDENTIFIER-$CI_JOB_ID
 #   Variables
 #==================================
 
+export GCS_LOCKS_PATH=$1
 export START=$SECONDS
 export QUEUE_FILE_PATH=$GCS_LOCKS_PATH/$GCS_QUEUE_FILE
 export QUEUE_LOCK_PATTERN=$GCS_QUEUE_FILE-$LOCK_IDENTIFIER-*
