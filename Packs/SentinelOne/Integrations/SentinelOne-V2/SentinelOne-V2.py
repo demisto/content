@@ -22,10 +22,6 @@ urllib3.disable_warnings()
 IS_VERSION_2_1: bool
 OS_COUNT = 4
 
-API_VERSION = demisto.params().get('api_version', '2.1')
-IS_VERSION_2_1 = API_VERSION == '2.1'
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -89,7 +85,7 @@ def get_agents_outputs(agents):
 class Client(BaseClient):
 
     def __init__(self, base_url, verify=True, proxy=False, headers=None, global_block=None, block_site_ids=None):
-        super().__init__(base_url, verify, proxy, headers)
+        super().__init__(base_url, verify, proxy, headers=headers)
         self.block_site_ids = block_site_ids
         self.global_block = global_block == 'None'
 
@@ -155,7 +151,7 @@ class Client(BaseClient):
                 'filter': filt
             }
             demisto.debug(f'Site id: {site_id}')
-            response = self._http_request(method='POST', url_suffix='restrictions', json_data=body)
+            response = self._http_request(method='POST', url_suffix='restrictions', json_data=body, ok_codes=[200])
         return response.get('data') or {}
 
     def get_blocklist_request(self, tenant: bool, group_ids: str = None, site_ids: str = None, account_ids: str = None,
@@ -248,7 +244,7 @@ class Client(BaseClient):
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
         )
-        response = self._http_request(method='GET', url_suffix='threats', params=params)
+        response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
 
     def mark_as_threat_request(self, threat_ids, target_scope):
@@ -2906,14 +2902,20 @@ def threat_to_incident(threat) -> dict:
 def main():
     """ PARSE INTEGRATION PARAMETERS """
 
+    global IS_VERSION_2_1
+
     params = demisto.params()
     token = params.get('token') or params.get('credentials', {}).get('password')
     if not token:
         raise ValueError('The API Token parameter is required.')
+    api_version = params.get('api_version', '2.1')
     server = params.get('url', '').rstrip('/')
-    base_url = urljoin(server, f'/web/api/v{API_VERSION}/')
+    base_url = urljoin(server, f'/web/api/v{api_version}/')
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
+    IS_VERSION_2_1 = api_version == '2.1'
+
     first_fetch_time = params.get('fetch_time', '3 days')
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
@@ -2992,6 +2994,7 @@ def main():
     ''' COMMANDS MANAGER / SWITCH PANEL '''
     demisto.info(f'Command being called is {demisto.command()}')
     command = demisto.command()
+
     try:
         client = Client(
             base_url=base_url,
@@ -3010,10 +3013,10 @@ def main():
         else:
             if command in commands['common']:
                 return_results(commands['common'][command](client, demisto.args()))
-            elif command in commands[API_VERSION]:
-                return_results(commands[API_VERSION][command](client, demisto.args()))
+            elif command in commands[api_version]:
+                return_results(commands[api_version][command](client, demisto.args()))
             else:
-                raise NotImplementedError(f'The {command} command is not supported for API version {API_VERSION}')
+                raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

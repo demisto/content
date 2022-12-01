@@ -260,9 +260,9 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    assert outputs['status'] == 'Added to blocklist'
+    assert outputs['status'] == 'Added to scoped blocklist'
 
- 
+
 def test_remove_item_from_whitelist(mocker, requests_mock):
     """
     When:
