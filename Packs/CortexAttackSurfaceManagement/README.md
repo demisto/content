@@ -17,6 +17,9 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
 - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
 - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
+- [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
+- [Cortex ASM - ServiceNow CMDB Enrichment](#cortex-asm---servicenow-cmdb-enrichment)
+- [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenable.io-enrichment)
 - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
 
 
@@ -31,6 +34,18 @@ Playbook that looks at what ASM sub-type the alert is and directs it to differen
 #### Cortex ASM - Enrichment
 Playbook that is used as a container folder for all enrichments of ASM alerts.
 ![Cortex ASM - Enrichment](https://raw.githubusercontent.com/demisto/content/d6d88d2066ef1f0868e8e61c5f20a71766f3cae1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Enrichment.png)
+
+#### Cortex ASM - AWS Enrichment
+Playbook that given the IP address enriches AWS information relevant to ASM alerts.
+<TODO ADD LINK AFTER PR>
+
+#### Cortex ASM - ServiceNow CMDB Enrichment
+Playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
+<TODO ADD LINK AFTER PR>
+
+#### Cortex ASM - Tenable.io Enrichment
+Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
+<TODO ADD LINK AFTER PR>
 
 #### Cortex ASM - Remediation Guidance
 Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
