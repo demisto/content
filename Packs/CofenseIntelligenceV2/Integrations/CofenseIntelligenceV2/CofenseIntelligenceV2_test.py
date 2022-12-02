@@ -33,7 +33,7 @@ DOMAIN_RELATIONSHIP = [
 
 FILE_RELATIONSHIP = [
     {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
-     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': 'Domain', 'fields': {}, 'name': 'related-to',
+     'entityB': 'com', 'entityBFamily': 'Indicator', 'entityBType': None, 'fields': {}, 'name': 'related-to',
      'reverseName': 'related-to', 'type': 'IndicatorToIndicator'},
     {'brand': 'Cofense Intelligence', 'entityA': 'md5', 'entityAFamily': 'Indicator', 'entityAType': 'File',
      'entityB': '127.0.0.1', 'entityBFamily': 'Indicator', 'entityBType': 'IP', 'fields': {}, 'name': 'related-to',

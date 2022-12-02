@@ -3,13 +3,13 @@ import base64
 import traceback
 from typing import Any, Dict, List
 
-import requests
+import urllib3
 from requests import Response
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # noqa # pylint: disable=no-member
+urllib3.disable_warnings()  # noqa # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
