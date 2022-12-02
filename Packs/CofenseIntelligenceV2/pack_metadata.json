@@ -9,7 +9,7 @@
     "categories": [
       "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["xsoar", "marketplacev2", "common"],
+    "tags": ["Malware"],
     "useCases": [],
     "keywords": ["Cofense", "Phishing", "Intelligence", "Malware"],
     "githubUser": [
