@@ -239,16 +239,16 @@ def humio_list_notifiers(client, args, headers):
     headers["Accept"] = "application/json"
 
     graphql_query = """
-    query{searchDomain(name:"{repoName}"){actions{__typename,id, name 
-        ... on EmailAction{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}
-        ... on SlackAction{url, fields{fieldName, value}, useProxy}
-        ... on SlackPostMessageAction{apiToken, channels, fields{fieldName, value}, useProxy}
-        ... on WebhookAction{method, url, webhookBodyTemplate: bodyTemplate, headers{header,value}, ignoreSSL, useProxy}
-        ... on OpsGenieAction{apiUrl, genieKey, useProxy}
-        ... on VictorOpsAction{messageType, notifyUrl, useProxy}
-        ... on PagerDutyAction{severity, routingKey, useProxy}
-        ... on HumioRepoAction{ingestToken}
-        ... on UploadFileAction{fileName}}}}
+    query{{searchDomain(name:"{repoName}"){{actions{{__typename,id, name 
+        ... on EmailAction{{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}}
+        ... on SlackAction{{url, fields{{fieldName, value}}, useProxy}}
+        ... on SlackPostMessageAction{{apiToken, channels, fields{{fieldName, value}}, useProxy}}
+        ... on WebhookAction{{method, url, webhookBodyTemplate: bodyTemplate, headers{{header,value}}, ignoreSSL, useProxy}}
+        ... on OpsGenieAction{{apiUrl, genieKey, useProxy}}
+        ... on VictorOpsAction{{messageType, notifyUrl, useProxy}}
+        ... on PagerDutyAction{{severity, routingKey, useProxy}}
+        ... on HumioRepoAction{{ingestToken}}
+        ... on UploadFileAction{{{{fileName}}}}}}}}}}
     """.format(repoName=args.get("repository"))
 
     data = {"query" : graphql_query}
@@ -256,10 +256,11 @@ def humio_list_notifiers(client, args, headers):
     response = client.http_request("POST", url, data, headers)
 
     if response.status_code == 200:
-        if not response.get("data"):
+        result = response.json()
+        if not result.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
     
-        actions = response.get('data', {}).get('searchDomain', {}).get('actions')
+        actions = result.get('data', {}).get('searchDomain', {}).get('actions', [])
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions
@@ -269,16 +270,16 @@ def humio_list_notifiers(client, args, headers):
 def humio_get_notifier_by_id(client, args, headers):
     url = "/graphql"
     graphql_query = """
-    query{searchDomain(name:"{repoName}"){action(id:"{id}"){__typename,id, name 
-        ... on EmailAction{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}
-        ... on SlackAction{url, fields{fieldName, value}, useProxy}
-        ... on SlackPostMessageAction{apiToken, channels, fields{fieldName, value}, useProxy}
-        ... on WebhookAction{method, url, webhookBodyTemplate: bodyTemplate, headers{header,value}, ignoreSSL, useProxy}
-        ... on OpsGenieAction{apiUrl, genieKey, useProxy}
-        ... on VictorOpsAction{messageType, notifyUrl, useProxy}
-        ... on PagerDutyAction{severity, routingKey, useProxy}
-        ... on HumioRepoAction{ingestToken}
-        ... on UploadFileAction{fileName}}}}
+    query{{searchDomain(name:"{repoName}"){{action(id:"{id}"){{__typename,id, name 
+        ... on EmailAction{{id, name, recipients, subjectTemplate, emailBodyTemplate: bodyTemplate, useProxy, attachCsv}}
+        ... on SlackAction{{url, fields{{fieldName, value}}, useProxy}}
+        ... on SlackPostMessageAction{{apiToken, channels, fields{{fieldName, value}}, useProxy}}
+        ... on WebhookAction{{method, url, webhookBodyTemplate: bodyTemplate, headers{{header,value}}, ignoreSSL, useProxy}}
+        ... on OpsGenieAction{{apiUrl, genieKey, useProxy}}
+        ... on VictorOpsAction{{messageType, notifyUrl, useProxy}}
+        ... on PagerDutyAction{{severity, routingKey, useProxy}}
+        ... on HumioRepoAction{{ingestToken}}
+        ... on UploadFileAction{{fileName}}}}}}}}
     """.format(repoName=args.get("repository"), id=args.get("id"))
 
 
@@ -287,11 +288,12 @@ def humio_get_notifier_by_id(client, args, headers):
     data = {"query" : graphql_query}
 
     response = client.http_request("POST", url, data, headers)
-    if response.status_code == 200:        
-        if not response.get("data"):
+    if response.status_code == 200:
+        result = response.json()
+        if not result.get("data"):
             raise ValueError(f"Failed to execute request: {response['errors'][0]['message']}")
         
-        actions = response.get('data', {}).get('searchDomain', {}).get('actions')
+        actions = result.get('data', {}).get('searchDomain', {}).get('action')
         markdown = tableToMarkdown("Humio Notifiers", actions, removeNull=True)
         outputs = {"Humio.Notifier(val.id == obj.id)": actions}
         return markdown, outputs, actions

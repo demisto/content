@@ -202,7 +202,7 @@ def test_humio_list_notifiers(requests_mock):
     from Humio import Client, humio_list_notifiers
 
     mock_response = util_load_json("test_data/list_notifiers_results.json")
-    requests_mock.get(
+    requests_mock.post(
         "https://test.com/graphql",
         json=mock_response,
     )
@@ -211,7 +211,7 @@ def test_humio_list_notifiers(requests_mock):
     args = {"repository": "sandbox"}
 
     _, outputs, _ = humio_list_notifiers(client, args, headers)
-    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response
+    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response.get("data").get("searchDomain").get("actions")
 
 
 def test_humio_get_notifier_by_id(requests_mock):
@@ -219,7 +219,7 @@ def test_humio_get_notifier_by_id(requests_mock):
     from Humio import Client, humio_get_notifier_by_id
 
     mock_response = util_load_json("test_data/notifier_by_id_results.json")
-    requests_mock.get(
+    requests_mock.post(
         "https://test.com/graphql",
         json=mock_response,
     )
@@ -228,4 +228,4 @@ def test_humio_get_notifier_by_id(requests_mock):
     args = {"repository": "sandbox", "id": "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc"}
 
     _, outputs, _ = humio_get_notifier_by_id(client, args, headers)
-    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response
+    assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response.get("data").get("searchDomain").get("action")
