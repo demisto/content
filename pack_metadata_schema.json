@@ -1,0 +1,227 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "XSOAR Pack Metadata Schema",
+	"description": "JSON schema for pack_metadata.json",
+	"type": "object",
+	"properties": {
+		"name": {
+			"description": "The name of the Pack",
+			"type": "string",
+			"minLength": 1
+		},
+		"description": {
+			"description": "The Pack description",
+			"type": "string",
+			"minLength": 1
+		},
+		"support": {
+			"description": "Who supports the Pack",
+			"type": "string",
+			"pattern": "xsoar|partner|developer|community",
+			"minLength": 5
+		},
+		"currentVersion": {
+			"description": "The Pack version in format",
+			"type": "string",
+			"pattern": "[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2}",
+			"minLength": 5
+		},
+		"author": {
+			"description": "Author of the Pack",
+			"type": "string",
+			"minLength": 1
+		},
+		"email": {
+			"description": "Email address of support or author",
+			"type": "string",
+			"format": "email"
+		},
+		"categories": {
+			"description": "Categories applying to Pack. Taken from https://xsoar.pan.dev/docs/packs/packs-format#pack_metadatajson",
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"type": "string",
+				"enum": [
+					"Analytics & SIEM",
+					"Utilities",
+					"Messaging",
+					"Endpoint",
+					"Network Security",
+					"Vulnerability Management",
+					"Case Management",
+					"Forensics & Malware Analysis",
+					"IT Services",
+					"Data Enrichment & Threat Intelligence",
+					"Authentication",
+					"Database",
+					"Deception",
+					"Email Gateway"
+				]
+			}
+		},
+		"tags": {
+			"description": "Tags to be attached to the Pack in XSOAR Marketplace. Taken from Tests/Marketplace/approved_tags.json",
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"type": "string",
+				"enum": [
+					"Alerts",
+					"Attack",
+					"Breach",
+					"COVID-19",
+					"Compliance",
+					"Crisis",
+					"Dark Web",
+					"Email",
+					"Forensics",
+					"GDPR",
+					"HIPAA",
+					"IAM",
+					"Incident Handling",
+					"Incident Mirroring",
+					"Incident Response",
+					"IoT",
+					"IT",
+					"Machine Learning",
+					"Malware",
+					"Network",
+					"PII",
+					"Pandemic",
+					"Pcap",
+					"Scam",
+					"Security",
+					"Security Analytics",
+					"Private Offer",
+					"Simulation",
+					"Spam",
+					"TIM",
+					"Threat Intelligence",
+					"VPN",
+					"MITRE ATT&CK",
+					"Courses of Action",
+					"Unit 42",
+					"Best Practices",
+					"Use Case",
+					"New",
+					"Trending",
+					"Relationship",
+					"Elasticsearch",
+					"Iron Bank"
+				]
+			}
+		},
+		"useCases": {
+			"description": "Use cases associated to the Pack. Tests/Marketplace/approved_usecases.json",
+			"type": "array",
+			"uniqueItems": true,
+			"items": {
+				"type": "string",
+				"enum": [
+					"Access",
+					"Asset Management",
+					"Breach Notification",
+					"Breach and Attack Simulation",
+					"Brute Force",
+					"Case Management",
+					"Compliance",
+					"Crisis Management",
+					"Default",
+					"Email Communication",
+					"Employee Offboarding",
+					"GDPR Breach Notification",
+					"HIPAA Breach Notification",
+					"Health Check",
+					"Hunting",
+					"Identity and Access Management",
+					"Impossible Traveler",
+					"Incident Response",
+					"Lost or Stolen Device",
+					"Malware",
+					"NIST",
+					"PCAP Analysis",
+					"Phishing",
+					"Ransomware",
+					"SANS",
+					"Threat Intelligence Management",
+					"Vulnerability Management",
+					"Network Security",
+					"IT Services",
+					"Rapid Breach Response"
+				]
+			}
+		},
+		"keywords": {
+			"description": "Keywords to help the Pack to be discovered in the XSOAR Marketplace",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"marketplaces": {
+			"description": "The marketplaces where this Pack will be available",
+			"type": "array",
+			"items": {
+				"type": "string",
+				"enum": ["xsoar", "marketplacev2"]
+			},
+			"uniqueItems": true
+		},
+		"hidden": {
+			"description": "(Optional) Whether to hide the pack from Marketplace. Updates to this pack will not be published to Marketplace and the pack cannot be installed.",
+			"type": "boolean"
+		},
+		"eulaLink": {
+			"description": "Premium Packs only. URL to Pack license agreement.",
+			"type": "string",
+			"format": "uri"
+		},
+		"price": {
+			"description": "Premium Packs only. The price in Palo Alto Points",
+			"type": "number",
+			"exclusiveMinimum": 0
+		},
+		"dependencies": {
+			"description": "(Optional) An object that describes the content packs that the pack is dependant on. Should be kept empty on pack creation, as it is calculated by Cortex XSOAR content infrastructure.",
+			"type": "object"
+		},
+		"displayedImages": {
+			"description": "(Optional) Images to be displayed in Cortex XSOAR marketplace. Should be kept empty on pack creation, as it is calculated by Cortex XSOAR content infrastructure.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"githubUser": {
+			"description": "List of Github usernames to receive notification in the PR in case pack files were modified.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"devEmail": {
+			"description": "List of emails to receive notification in the PR in case pack files were modified.",
+			"type": "array",
+			"uniqueItems": true
+		},
+		"certification": {
+			"description": "If the pack is certifed the value of this fields should be 'certified'",
+			"type": "string",
+			"prefixItems": {
+				"enum": ["certifed"]
+			}
+		},
+		"itemPrefix": {
+			"description": "String to overwrite pack fields prefix. You can specify an alternative string instead of the default pack name enforced by the validation process.",
+			"type": "string"
+		}
+	},
+	"required": [
+		"name",
+		"description",
+		"support",
+		"author",
+		"email",
+		"categories",
+		"tags",
+		"useCases",
+		"keywords",
+		"githubUser",
+		"marketplaces"
+	]
+}
