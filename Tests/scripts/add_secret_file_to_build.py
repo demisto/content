@@ -16,7 +16,8 @@ def run(json_path_file):
         "integrations": secrets
     }
 
-    print(f'secrets from API: {secret_file[0:20]}')
+    print(f'secrets from API: {secret_file}')
+    print(f'json_path_file: {json_path_file}')
     with open(json_path_file, 'w') as secrets_out_file:
         secrets_out_file.write(json.dumps(secret_file))
     print(json_path_file)
