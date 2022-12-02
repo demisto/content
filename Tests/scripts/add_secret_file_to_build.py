@@ -10,9 +10,15 @@ def run(json_path_file):
     secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config())
     project_id = os.environ['GSM_PROJECT_ID']
     secrets = secret_conf.list_secrets(project_id, with_secret=True)
-    print(f'secrets from API: {secrets[0:20]}')
+    secret_file = {
+        "username": os.environ["DEMISTO_USERNAME"],
+        "userPassword": os.environ["DEMISTO_PASSWORD"],
+        "integrations": secrets
+    }
+
+    print(f'secrets from API: {secret_file[0:20]}')
     with open(json_path_file, 'w') as secrets_out_file:
-        secrets_out_file.write(json.dumps(secrets))
+        secrets_out_file.write(json.dumps(secret_file))
     print(json_path_file)
 
 
