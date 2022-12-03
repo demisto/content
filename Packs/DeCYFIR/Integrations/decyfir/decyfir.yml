@@ -1,0 +1,56 @@
+category: Endpoint
+commonfields:
+  id: decyfir
+  version: -1
+configuration:
+- defaultvalue: https://20.193.159.126:443
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: DeCYFIR API key
+  hidden: false
+  name: decyfir_api_key
+  required: false
+  type: 0
+- defaultvalue: 30 days
+  display: How much time before the first fetch to retrieve incidents
+  hidden: false
+  name: first_fetch_time
+  options:
+  - 10 days
+  - 15 days
+  - 30 days
+  - 60 days
+  - 90 days
+  required: false
+  type: 15
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+display: DeCYFIR
+name: decyfir
+script:
+  dockerimage: demisto/python3:3.7.4.2245
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
