@@ -5,7 +5,7 @@ import sys
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 
 
-def run(json_path_file):
+def run(json_path_file: str):
     print(f'******************conf file location: {json_path_file}')
     secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config())
     project_id = os.environ['GSM_PROJECT_ID']

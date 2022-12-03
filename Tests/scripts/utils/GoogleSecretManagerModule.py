@@ -6,7 +6,7 @@ import os
 
 
 class GoogleSecreteManagerModule:
-    def __init__(self, service_account_file=None):
+    def __init__(self, service_account_file: str = None):
         self.client = self.init_secret_manager_client(service_account_file)
 
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
