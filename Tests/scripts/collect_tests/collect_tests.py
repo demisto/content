@@ -517,21 +517,19 @@ class TestCollector(ABC):
                          f'using default={DEFAULT_MARKETPLACE_WHEN_MISSING}')
             content_item_marketplaces = to_tuple(DEFAULT_MARKETPLACE_WHEN_MISSING)
 
-        if self.marketplace not in content_item_marketplaces:
-            raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-        # match self.marketplace:
-        #     case MarketplaceVersions.MarketplaceV2:
-        #         # For XSIAM machines we collect packs that have not xsoar marketplace.
-        #         # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
-        #         # will run on xsiam machines only.
-        #         if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-        #                 (MarketplaceVersions.XSOAR in content_item_marketplaces):
-        #             raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-        #     case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
-        #         if self.marketplace not in content_item_marketplaces:
-        #             raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-        #     case _:
-        #         raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
+        match self.marketplace:
+            case MarketplaceVersions.MarketplaceV2:
+                # For XSIAM machines we collect tests that have not xsoar marketplace.
+                # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
+                # will run on xsiam machines only.
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
+                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
+                if self.marketplace not in content_item_marketplaces:
+                    raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
+            case _:
+                raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
