@@ -3726,12 +3726,6 @@ class Pack(object):
 
         return True
 
-        if valid_image and not os.path.exists(file_path):
-            logging.warning(f'Image: {file_path} was deleted and therefore will not be uploaded')
-            return False
-
-        return True
-
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:
         """ Generate preview image file name according to related file.
