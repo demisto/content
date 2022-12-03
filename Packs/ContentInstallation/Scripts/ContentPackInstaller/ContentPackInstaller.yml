@@ -18,6 +18,15 @@ args:
   name: pack_version_key
   required: true
   secret: false
+- name: install_dependencies
+  description: Whether to install the pack dependencies.
+  isArray: false
+  required: true
+  defaultValue: true
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
 commonfields:
   id: ContentPackInstaller
   version: -1
