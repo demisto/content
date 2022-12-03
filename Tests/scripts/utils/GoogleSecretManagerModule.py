@@ -7,7 +7,7 @@ import os
 
 class GoogleSecreteManagerModule:
     def __init__(self, service_account_file: str = None):
-        self.client = self.init_secret_manager_client(service_account_file)
+        self.client = self.init_secret_manager_client(service_account_file)  # type: ignore
 
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
@@ -43,7 +43,7 @@ class GoogleSecreteManagerModule:
             f = open(credentials_file_path, "w")
             f.write(json.dumps(json_object))
             f.close()
-            client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)
+            client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)# type: ignore # noqa
             return client
         finally:
             os.remove(credentials_file_path)
