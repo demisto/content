@@ -3715,6 +3715,8 @@ class Pack(object):
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
+        logging.info(f'Valid image: {valid_image}')
+        logging.info(f'Path exists: {os.path.exists(file_path)}')
         if not valid_image:
             return False
 
