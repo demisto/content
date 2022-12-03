@@ -152,6 +152,56 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     };
 };
 
+var installPackFromUrl = function(pack_url){
+    // download pack zip file
+    var res = http(
+    pack_url,
+    {
+        Method: 'GET',
+        Headers: {},
+        SaveToFile: true
+    });
+
+    if (res.StatusCode < 200 || res.StatusCode >= 300) {
+        throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
+    }
+
+    file_path = res.Path
+
+    // upload the pack
+    sendMultipart('contentpacks/installed/upload?skipVerify=true&skipValidation=true', file_path,'{}');
+};
+
+var installPacks = function(packs_to_install, file_url) {
+    if ((!packs_to_install) && (!file_url)) {
+        throw 'Either packs_to_install or file_url argument must be provided.';
+    }
+    else if (!packs_to_install) {
+        installPackFromUrl(file_url)
+        logDebug('Pack installed successfully from ' + file_url)
+        return 'The pack installed successfully from the file ' + file_url
+    }
+    else{
+        let installed_packs = []
+        let marketplace_url = params.marketplace_url
+        let packs = JSON.parse(packs_to_install);
+
+        for (let pack_index = 0; pack_index < packs.length; pack_index += 1) {
+            let pack = packs[pack_index];
+            let pack_id = Object.keys(pack)[0]
+            let pack_version = pack[pack_id]
+
+            let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
+
+            installPackFromUrl(pack_url)
+            logDebug(pack_id + ' pack installed successfully')
+            installed_packs.push(pack_id)
+        }
+
+        return 'The following packs installed successfully: ' + installed_packs.join(", ")
+    }
+};
+
 switch (command) {
     case 'test-module':
         sendRequest('GET','user');
@@ -189,6 +239,8 @@ switch (command) {
         var ids = argToList(args.ids);
         var fields = argToList(args.fields);
         return deleteIncidents(ids, fields);
+    case 'demisto-api-install-packs':
+        return installPacks(args.packs_to_install, args.file_url);
     default:
         throw 'Demisto REST APIs - unknown command';
 }
