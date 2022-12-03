@@ -3626,7 +3626,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
-                if self.is_preview_image(file.a_path):
+                if self.is_valid_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
                     image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
                     image_name = os.path.basename(file.a_path)
