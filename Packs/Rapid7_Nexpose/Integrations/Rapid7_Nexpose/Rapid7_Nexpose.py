@@ -262,6 +262,7 @@ class Client(BaseClient):
         """
         if ip_address is None and hostname is None:
             raise ValueError("At least one of \"ip\" and \"host_name\" arguments must be passed.")
+
         post_data: dict = {"date": date}
 
         if ip_address is not None:

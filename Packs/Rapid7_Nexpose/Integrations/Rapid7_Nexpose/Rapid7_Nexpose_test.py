@@ -169,6 +169,54 @@ def test_create_credential_creation_body(test_input_kwargs: dict, expected_outpu
     assert create_credential_creation_body(**test_input_kwargs) == expected_output
 
 
+@pytest.mark.parametrize("test_input_kwargs",
+                         [
+                             ({
+                                 "service": CredentialService.CIFSHASH, "domain": "Test1", "username": "Test2",
+                                 "password": "Test3"
+                             }),
+                             ({
+                                 "service": CredentialService.HTTP, "http_realm": "Test1", "username": "Test2",
+                             }),
+                             ({
+                                 "service": CredentialService.MS_SQL, "database_name": "Test1", "password": "Test3",
+                                 "use_windows_authentication": True, "domain": "Test4"
+                             }),
+                             ({
+                                 "service": CredentialService.ORACLE, "oracle_sid": "Test1", "username": "Test2",
+                                 "password": "Test3", "oracle_enumerate_sids": True,
+                             }),
+                             ({
+                                 "service": CredentialService.SNMP
+                             }),
+                             ({
+                                 "service": CredentialService.SNMPV3, "username": "Test1", "password": "Test2"
+                             }),
+                             ({
+                                 "service": CredentialService.SNMPV3,
+                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA, "username": "Test1"
+                             }),
+                             ({
+                                 "service": CredentialService.SNMPV3,
+                                 "snmpv3_authentication_type": SNMPv3AuthenticationType.SHA, "username": "Test1",
+                                 "password": "Test2", "snmpv3_privacy_type": SNMPv3PrivacyType.AES_256
+                             }),
+                             ({
+                                 "service": CredentialService.SSH, "username": "Test1", "password": "Test2",
+                                 "ssh_permission_elevation": SSHElevationType.PRIVILEGED_EXEC,
+                             }),
+                             ({
+                                 "service": CredentialService.SSH_KEY, "ssh_private_key_password": "Test2",
+                                 "username": "Test3", "ssh_permission_elevation": SSHElevationType.SUDO,
+                                 "ssh_permission_elevation_username": "Test4",
+                                 "ssh_permission_elevation_password": "Test5"
+                             }),
+                         ])
+def test_create_credential_creation_body_validations(test_input_kwargs: dict):
+    with pytest.raises(ValueError):
+        create_credential_creation_body(**test_input_kwargs)
+
+
 @pytest.mark.parametrize("test_input_kwargs, expected_output",
                          [
                              ({"a": "test", "b": 1, "c": None, "d": 6.1}, {"a": "test", "b": 1, "d": 6.1}),
@@ -226,6 +274,41 @@ def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
                            include_none: bool, expected_output: dict | list):
     result = generate_new_dict(test_input_data, name_mapping, include_none)
     assert result == expected_output
+
+
+@pytest.mark.parametrize("sites_mock_file, site_id, site_name, send_client, expected_output_id",
+                         [
+                             ("client_get_sites", "1", "Test 1", True, "1"),
+                             ("client_get_sites", "2", None, False, "2"),
+                             ("client_get_sites", None, "Test 3", True, "3"),
+                             ("client_get_sites", None, "Test 2", False, None),
+                             ("client_get_sites", None, "This site does not exist", True, None),
+                             ("client_get_sites", None, None, True, None),
+                         ])
+def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_client: bool,
+                   site_id: str | None, site_name: str | None, expected_output_id: str | None):
+    sites_api_data = load_test_data("api_mock", sites_mock_file)
+    mocker.patch.object(Client, "_paged_http_request", return_value=sites_api_data)
+    client = mock_client if send_client else None
+    site_names = [site["name"] for site in sites_api_data]
+
+    if site_id is None and site_name is None:
+        # Assure an error is raised when neither site id nor site name are provided
+        with pytest.raises(ValueError):
+            Site(client=client, site_id=site_id, site_name=site_name)
+
+    elif site_id is None and client is None:
+        # Assure an error is raised when site name is provided without ID, but without a client
+        with pytest.raises(ValueError):
+            Site(client=client, site_id=site_id, site_name=site_name)
+
+    elif site_id is None and site_name not in site_names:
+        # Assure an error is raised when site name is provided without ID, and a site with that name does not exist
+        with pytest.raises(DemistoException):
+            Site(client=client, site_id=site_id, site_name=site_name)
+
+    else:
+        Site(client=client, site_id=site_id, site_name=site_name).id == expected_output_id
 
 
 # --- Command & Client Functions Tests ---
@@ -294,12 +377,21 @@ def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expec
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
                          [
                              ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z", "ip_address": "192.0.2.0"},
-                              {"id": 1}, {"id": 1})
+                              {"id": 1}, {"id": 1}),
+                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z", "hostname": "localhost",
+                               "hostname_source": "LDAP"}, {"id": 1}, {"id": 1}),
+                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z"}, None, None),
                          ])
 def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                              api_mock_data: dict, expected_output_context: dict):
+                              api_mock_data: dict | None, expected_output_context: dict | None):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
-    assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
+    if test_input_kwargs.get("ip_address") is not None or test_input_kwargs.get("hostname") is not None:
+        assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
+
+    else:
+        # Assure an error is raised if neither of ip_address or hostname are provided
+        with pytest.raises(ValueError):
+            create_asset_command(client=mock_client, site=Site(site_id="1"), date="2022-01-01T10:00:00Z")
 
 
 @pytest.mark.parametrize("report_templates_mock_file, report_config_mock_data, report_mock_data, "
