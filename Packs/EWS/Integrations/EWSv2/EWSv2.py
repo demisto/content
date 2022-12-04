@@ -1079,6 +1079,7 @@ def parse_incident_from_item(item, is_fetch):
 
         incident['name'] = item.subject
         labels.append({'type': 'Email/subject', 'value': item.subject})
+        # todo: change to detetime_recieved
         incident['occurred'] = item.datetime_created.ewsformat()
 
         # handle recipients
@@ -1254,6 +1255,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         incidents = []
         incident = {}  # type: Dict[Any, Any]
         current_fetch_ids = set()
+        last_incident_run_time = None
 
         for item in last_emails:
             if item.message_id:
@@ -1262,14 +1264,15 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 demisto.debug('Parsed incident: {}'.format(item.message_id))
                 if incident:
                     incidents.append(incident)
-                    demisto.debug('Appended incident: {}, {}'.format(item.message_id, incident))
+                    last_incident_run_time = item.datetime_received
+                    demisto.debug('Appended incident: {}'.format(item.message_id))
 
                 if len(incidents) >= MAX_FETCH:
                     break
 
         demisto.debug('EWS V2 - ending fetch - got {} incidents.'.format(len(incidents)))
         last_fetch_time = last_run.get(LAST_RUN_TIME)
-        last_incident_run_time = incident.get("occurred", last_fetch_time)
+        last_incident_run_time = last_fetch_time if not last_incident_run_time else last_incident_run_time
 
         # making sure both last fetch time and the time of last incident are the same type for comparing.
         if isinstance(last_incident_run_time, EWSDateTime):
@@ -1288,7 +1291,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
-
+        # todo: handle if customer now uses datetime_created
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: folder_name,
