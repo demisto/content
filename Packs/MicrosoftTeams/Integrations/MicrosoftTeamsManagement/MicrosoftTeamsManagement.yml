@@ -1045,6 +1045,5 @@ script:
   subtype: python3
   type: python
 tests:
-- "Microsoft Teams - Test"
-- "Microsoft Teams Management - Test"
+- No test
 fromversion: 5.0.0
