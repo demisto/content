@@ -1,0 +1,26 @@
+[
+  {
+    "_key": "4856",
+    "_id": "Things/4856",
+    "_rev": "_eo0KoiK--A",
+    "category": "Interface",
+    "firstSeen": 1644553231785,
+    "identity": {
+      "company": "appnovi",
+      "type": "mac",
+      "value": "a0:6d:c2:65:76:00",
+      "datacenter": "global",
+      "domain": "global"
+    },
+    "lastSeen": 1660769051306,
+    "name": "a0:6d:c2:65:76:00",
+    "source": {
+      "vcenter": {
+        "lastSeen": 1647194901484.282
+      }
+    },
+    "userProperties": {
+      "owner": "Bart Simpson"
+    }
+  }
+]

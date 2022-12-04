@@ -176,3 +176,29 @@ def test_AWSClient_without_session_token():
             assert session
         except Exception:
             print('failed to create session:' + Exception)
+
+
+@pytest.mark.parametrize('access_key, session_token, expected',
+                         [
+                             ('access_key@@@session_token', None, ('access_key', 'session_token')),
+                             ('test1', None, ('test1', None)),
+                             ('test1', 'test2', ('test1', 'test2')),
+                             ('test1@@@test2', 'test3', ('test1@@@test2', 'test3')),
+                             ('', None, ('', None)),
+                             (None, '', (None, '')),
+                             (None, None, (None, None))
+                         ])
+def test_extract_session_from_access(access_key, session_token, expected):
+    """
+    Given
+    - Access key and session token
+
+    When
+    - Calling the extract_session_from_access function
+
+    Then
+    - Check that the function returns the expected access key and session token
+    """
+    result = extract_session_from_access(access_key, session_token)
+
+    assert result == expected
