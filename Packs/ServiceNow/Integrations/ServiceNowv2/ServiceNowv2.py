@@ -498,9 +498,12 @@ def split_notes(raw_notes, note_type, time_info=None):
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
         # todo: normalize time to be in the same timezone
-        if time_info and datetime.strptime(created_on, '%Y-%m-%d %H:%M:%S') < time_info.get('filter'):
+        demisto.debug(f'Note in display time: {created_on}, note: {note}')
+        created_on = datetime.strptime(created_on, '%Y-%m-%d %H:%M:%S') + time_info.get('timezone_offset')
+        demisto.debug(f'Note in UTC time: {created_on}')
+        if created_on < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
-            demisto.debug(f'Using time filter: {time_filter}. Not including note.')
+            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note.')
             continue
         created_by = created_by.split(' (')[0]
         note_dict = {
@@ -521,17 +524,19 @@ def convert_to_notes_result(full_response, time_info=None):
         return []
 
     all_notes = []
-
-    raw_comments = full_response.get('result', {}).get('comments')
-    if isinstance(raw_comments, dict):  # in case we use sysparm_display_value=all (used in mirroring)
-        raw_comments = raw_comments.get('display_values', '')
+    demisto.debug(f'full response: {full_response}')
+    raw_comments = full_response.get('result', {}).get('comments', {}).get('display_value', '')
+    demisto.debug(f'raw_comments: {full_response}')
+    # todo: use 'all' in both cases and avoid this if
+    # if isinstance(raw_comments, dict):  # in case we use sysparm_display_value=all (used in mirroring)
+    #     raw_comments = raw_comments.get('display_values', '')
     if raw_comments:
         comments = split_notes(raw_comments, 'comments', time_info=time_info)
         all_notes.extend(comments)
 
     raw_work_notes = full_response.get('result', {}).get('work_notes')
     if isinstance(raw_work_notes, dict):
-        raw_work_notes = raw_work_notes.get('display_values', '')
+        raw_work_notes = raw_work_notes.get('display_value', '')
     if raw_work_notes:
         work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info)
         all_notes.extend(work_notes)
@@ -1434,8 +1439,10 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         # number = str(args.get('number', ''))  # todo: check if this should be added
         path = f'table/{ticket_type}/{ticket_id}'
+        # todo: change to use 'all'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'true'}
         full_result = client.send_request(path, 'GET', params=query_params)
+        # todo: need to convert notes here as well to UTC time
         result = convert_to_notes_result(full_result)
     else:
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
@@ -2274,7 +2281,7 @@ def get_manual_timezone_offset(full_result):
     date_format = '%Y-%m-%d %H:%M:%S'
     local_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('display_value', ''), date_format)
     utc_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('value', ''), date_format)
-    offset = local_time - utc_time
+    offset = utc_time - local_time
     return offset
 
 
@@ -2369,11 +2376,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                         'sysparm_display_value': 'all'}
 
         full_result = client.send_request(path, 'GET', params=query_params)
-        timezone_offset = get_instance_timezone_offset(client.username)
         # todo: check if the ticket can be empty? maybe if closed?
-        if not timezone_offset:  # in case we are unable to find the timezone from the SNOW instance
-            timezone_offset = get_manual_timezone_offset(full_result)
+        timezone_offset = get_manual_timezone_offset(full_result)
         time_info = {'filter': datetime.fromtimestamp(last_update), 'timezone_offset': timezone_offset}
+        demisto.debug(f'time info: {time_info}')
         comments_result = convert_to_notes_result(full_result, time_info=time_info)
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)
