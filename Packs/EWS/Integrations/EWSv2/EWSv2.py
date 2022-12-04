@@ -1291,7 +1291,6 @@ def fetch_emails_as_incidents(account_email, folder_name):
             ids = current_fetch_ids
         else:
             ids = current_fetch_ids | excluded_ids
-        # todo: handle if customer now uses datetime_created
         new_last_run = {
             LAST_RUN_TIME: last_incident_run_time,
             LAST_RUN_FOLDER: folder_name,
