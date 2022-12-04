@@ -2058,17 +2058,14 @@ def event_type_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     pagination = get_pagination_parameters(page, page_size, limit)
     raw_response = client.event_type_list_request()
 
-    if pagination.is_automatic:
-        raw_response['data'] = raw_response['data'][:pagination.limit]
-
-    elif pagination.is_manual:
+    if pagination.is_manual:
         start = (pagination.page - 1) * pagination.page_size
         stop = pagination.page * pagination.page_size
 
         raw_response['data'] = raw_response['data'][start:stop]
 
     else:
-        raw_response['data'] = raw_response['data'][:MAX_PAGE_SIZE]
+        raw_response['data'] = raw_response['data'][:pagination.limit]
 
     context_output = get_context_output(raw_response, ['links'])
 
@@ -2695,17 +2692,14 @@ def app_trajectory_query_list_command(client: Client, args: Dict[str, Any]) -> C
 
     raw_response = client.app_trajectory_query_list_request(ios_bid=ios_bid)
 
-    if pagination.is_automatic:
-        raw_response['data'] = raw_response['data'][:pagination.limit]
-
-    elif pagination.is_manual:
+    if pagination.is_manual:
         start = (pagination.page - 1) * pagination.page_size
         stop = pagination.page * pagination.page_size
 
         raw_response['data'] = raw_response['data'][start:stop]
 
     else:
-        raw_response['data'] = raw_response['data'][:MAX_PAGE_SIZE]
+        raw_response['data'] = raw_response['data'][:pagination.limit]
 
     context_output = get_context_output(raw_response, ['links'])
     readable_output = get_readable_output(
@@ -3075,17 +3069,14 @@ def extract_pagination_from_response(pagination: Pagination, raw_response: Dict[
     Returns:
         Tuple[List, str]: Context output and Readable output.
     """
-    if pagination.is_automatic:
-        raw_response['data']['events'] = raw_response['data']['events'][:pagination.limit]
-
-    elif pagination.is_manual:
+    if pagination.is_manual:
         start = (pagination.page - 1) * pagination.page_size
         stop = pagination.page * pagination.page_size
 
         raw_response['data']['events'] = raw_response['data']['events'][start:stop]
 
-    else:  # The user hasn't entered any pagination parameter, therefore the pagination isn't manual or automatic.
-        raw_response['data']['events'] = raw_response['data']['events'][:MAX_PAGE_SIZE]
+    else:
+        raw_response['data']['events'] = raw_response['data']['events'][:pagination.limit]
 
     context_output = get_context_output(raw_response, ['links'])
     context_output = context_output[0]['events']
