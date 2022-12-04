@@ -7,7 +7,7 @@ type: python
 tags:
 - transformer
 - general
-comment: Build a text from a template which can include DT expressions.
+comment: Build text from a template that can include DT expressions.
 enabled: true
 args:
 - name: value
@@ -21,14 +21,14 @@ args:
 - name: ctx_inc
   description: '`demisto` context: Input ''incident'' (no quotation) on `From previous tasks` to enable ${incident.} expression in DT.'
 - name: variable_markers
-  description: The pair of start and end markers to bracket a variable name
+  description: The pair of start and end markers to bracket a variable name.
   defaultValue: ${,}
 - name: keep_symbol_to_null
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Set to true not to replace a value if the variable is null, otherwise false.
+  description: Set to true to not replace a value if the variable is null, otherwise false.
   defaultValue: "false"
 scripttarget: 0
 subtype: python3
