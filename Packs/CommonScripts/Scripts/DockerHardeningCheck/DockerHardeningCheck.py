@@ -14,7 +14,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-CLOUD_METADATA_URL = 'http://169.254.169.254/'
+CLOUD_METADATA_URL = 'http://169.254.169.254/'  # disable-secrets-detection
 
 
 def big_string(size):
