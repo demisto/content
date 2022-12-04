@@ -3280,7 +3280,7 @@ def get_readable_output(
     response: Dict[str, Any],
     header_by_keys: Dict[str, List[str]],
     keys_to_items_option_1: List[str],
-    keys_to_items_option_2: List[str] = None,
+    keys_to_items_option_2: List[str] = [],
     title: str = '',
 ) -> str:
     """
@@ -3300,6 +3300,9 @@ def get_readable_output(
     """
     if not (items := dict_safe_get(response, keys_to_items_option_1)):
         items = dict_safe_get(response, keys_to_items_option_2)
+
+    if not items:
+        return ''
 
     item_readable_arguments: List[Dict[str, Any]] = []
     headers = [header for header in header_by_keys]
