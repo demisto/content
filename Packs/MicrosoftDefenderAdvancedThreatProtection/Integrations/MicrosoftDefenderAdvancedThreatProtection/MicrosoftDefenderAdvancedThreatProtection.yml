@@ -4503,7 +4503,7 @@ script:
       description: The actual score.
       type: Number
     polling: true
-  - arguments: 
+  - arguments:
     - default: false
       description: Software ID.
       isArray: false
@@ -4610,13 +4610,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Software ID.
+      description: 'Software ID.'
       isArray: true
       name: id
-    - default: false
-      description: Software name.
+    - description: Software name.
       isArray: true
       name: name
+      default: false
     - default: false
       description: Software publisher name.
       isArray: true
@@ -4679,10 +4679,10 @@ script:
       isArray: true
       name: machine_id
       secret: false
-    - default: false
-      description: A comma-separated list of software IDs used for getting the vulnerabilities.
+    - description: A comma-separated list of software IDs used for getting the vulnerabilities.
       isArray: true
       name: software_id
+      default: false
       secret: false
     - default: false
       description: A comma-separated list of CVE IDs used for getting the vulnerabilities.
@@ -4690,7 +4690,7 @@ script:
       name: cve_id
       secret: false
     - default: false
-      description:  A comma-separated list of fixing kb ids used for getting the vulnerabilities.
+      description: A comma-separated list of fixing kb ids used for getting the vulnerabilities.
       isArray: true
       name: fixing_kb_id
       secret: false
@@ -4739,28 +4739,28 @@ script:
     description: Retrieves a list of all the vulnerabilities affecting the organization per machine.
     name: microsoft-atp-list-vulnerabilities-by-machine
     outputs:
-    - contextPath: MicrosoftATP.CVEMachine.id
+    - contextPath: MicrosoftATP.MachineCVE.id
       description: Vulnerability ID.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.cveId
+    - contextPath: MicrosoftATP.MachineCVE.cveId
       description: CVE ID.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.machineId
+    - contextPath: MicrosoftATP.MachineCVE.machineId
       description: Machine ID.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.fixingKbId
+    - contextPath: MicrosoftATP.MachineCVE.fixingKbId
       description: Fixing Kb ID.
       type: Unknown
-    - contextPath: MicrosoftATP.CVEMachine.productName
+    - contextPath: MicrosoftATP.MachineCVE.productName
       description: Product name.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.productVendor
+    - contextPath: MicrosoftATP.MachineCVE.productVendor
       description: Name of Product vendor.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.productVersion
+    - contextPath: MicrosoftATP.MachineCVE.productVersion
       description: Product version.
       type: String
-    - contextPath: MicrosoftATP.CVEMachine.severity
+    - contextPath: MicrosoftATP.MachineCVE.severity
       description: 'Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical".'
       type: String
   - arguments:
@@ -4800,10 +4800,10 @@ script:
       - Medium
       - High
       - Critical
-    - default: false
-      description: Date when vulnerability was updated.
+    - description: Date when vulnerability was updated.
       isArray: false
       name: updated_on
+      default: false
       secret: false
     - default: false
       description: Maximum number of results to retrieve. Default is 50.
@@ -4821,7 +4821,7 @@ script:
       name: page_size
       secret: false
     deprecated: false
-    description: Retrieves a list of all vulnerabilities.
+    description: 'Retrieves a list of all vulnerabilities.'
     name: microsoft-atp-list-vulnerabilities
     outputs:
     - contextPath: MicrosoftATP.Vulnerability.id
@@ -4870,7 +4870,8 @@ script:
       name: id
       secret: false
     deprecated: false
-    description: Retrieves a list of your organization's software version distribution.
+    description: |-
+      Retrieves a list of your organization's software version distribution.
     name: microsoft-atp-list-software-version-distribution
     outputs:
     - contextPath: MicrosoftATP.SoftwareVersion.version
@@ -4889,15 +4890,16 @@ script:
       name: cve_id
       required: true
       secret: false
-    - deprecated: true
-      description: flag for rate limit retry
+    - description: flag for rate limit retry
       isArray: false
       name: ran_once_flag
       required: false
+      deprecated: true
     deprecated: false
     description: Retrieves a list of machines affected by a vulnerability.
     execution: false
     name: microsoft-atp-list-machines-by-vulnerability
+    polling: true
     outputs:
     - contextPath: MicrosoftATP.CveMachine.ID
       description: The machine ID.
@@ -4914,7 +4916,6 @@ script:
     - contextPath: MicrosoftATP.CveMachine.CVE
       description: The given CVE IDs related to this machine.
       type: Unknown
-    polling: true
   - arguments:
     - default: true
       description: A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information.
@@ -4922,11 +4923,11 @@ script:
       name: hash
       required: true
       secret: false
-    - deprecated: true
-      description: flag for rate limit retry
+    - description: flag for rate limit retry
       isArray: false
       name: ran_once_flag
       required: false
+      deprecated: true
     deprecated: false
     description: Retrieves file information by a file hash (SHA1 or SHA256).
     execution: false
@@ -5119,22 +5120,21 @@ script:
       description: The machine Agent version.
       type: String
     polling: true
-  - arguments:
-    - default: false
-      description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
-      isArray: false
-      name: indicator_batch
-      required: true
-      secret: false
-    - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
-      required: false
-    deprecated: false
+  - name: microsoft-atp-indicator-batch-update
     description: Updates a batch of indicators. If an indicator does not exist, a new indicator is created.
-    execution: false
-    name: microsoft-atp-indicator-batch-update
+    deprecated: false
+    arguments:
+    - name: indicator_batch
+      description: 'A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]'
+      required: true
+      isArray: false
+      default: false
+      secret: false
+    - name: ran_once_flag
+      description: flag for rate limit retry
+      required: false
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Indicators.ID
       description: Created by the system when the indicator is ingested. Generated GUID/unique identifier.
@@ -5149,22 +5149,22 @@ script:
       description: Whether the update failed.
       type: Boolean
     polling: true
-  - arguments:
-    - default: false
-      description: A comma-separated list of alert IDs.
-      isArray: true
-      name: alert_ids
-      required: true
-      secret: false
-    - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
-      required: false
-    deprecated: false
-    description: Retrieves a specific alert by the given alert ID.
     execution: false
-    name: microsoft-atp-get-alert-by-id
+  - name: microsoft-atp-get-alert-by-id
+    description: Retrieves a specific alert by the given alert ID.
+    deprecated: false
+    arguments:
+    - name: alert_ids
+      description: A comma-separated list of alert IDs.
+      required: true
+      isArray: true
+      default: false
+      secret: false
+    - name: ran_once_flag
+      description: flag for rate limit retry
+      required: false
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.Alert.ID
       description: The alert ID.
@@ -5260,56 +5260,55 @@ script:
       description: The device RBAC group name.
       type: String
     polling: true
-  - arguments:
-    - default: true
+    execution: false
+  - name: microsoft-atp-live-response-get-file
+    description: 'Collects file from a device. Note: Backslashes in the path must be escaped.'
+    deprecated: false
+    arguments:
+    - name: machine_id
       description: Machine ID to add the file to.
-      isArray: false
-      name: machine_id
       required: true
+      isArray: false
+      default: true
       secret: false
-    - default: false
+    - name: comment
       description: A comment to associate with the action.
-      isArray: false
-      name: comment
       required: true
+      isArray: false
+      default: false
       secret: false
-    - default: false
+    - name: path
       description: File path to get from the device.
-      isArray: false
-      name: path
       required: true
-      secret: false
-    - default: false
-      description: Action ID to retrieve status and data for.
       isArray: false
-      name: machine_action_id
+      default: false
+      secret: false
+    - name: machine_action_id
+      description: Action ID to retrieve status and data for.
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: true
-    - default: false
+    - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      isArray: false
-      name: interval_in_seconds
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: false
-    - default: false
+    - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      isArray: false
-      name: timeout_in_seconds
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: false
-    - deprecated: true
+    - name: ran_once_flag
       description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
       required: false
-    deprecated: false
-    description: 'Collects file from a device. Note: Backslashes in the path must be escaped.'
-    execution: true
-    polling: true
-    name: microsoft-atp-live-response-get-file
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
       description: The machine action ID.
@@ -5392,63 +5391,63 @@ script:
     - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
       description: The machine action troubleshootInfo.
       type: String
-  - arguments:
-    - default: true
-      description: The machine ID to add the file to.
-      isArray: false
-      name: machine_id
-      required: true
-      secret: false
-    - default: false
-      description: A comment to associate with the action.
-      isArray: false
-      name: comment
-      required: true
-      secret: false
-    - default: false
-      description: The script name to run on the device.
-      isArray: false
-      name: scriptName
-      required: true
-      secret: false
-    - default: false
-      description: Arguments to run the script with.
-      isArray: false
-      name: arguments
-      required: false
-      secret: false
-    - default: false
-      description: The action ID to retrieve status and data for.
-      isArray: false
-      name: machine_action_id
-      required: false
-      secret: false
-      deprecated: true
-    - default: false
-      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      isArray: false
-      name: interval_in_seconds
-      required: false
-      secret: false
-      deprecated: false
-    - default: false
-      description: Timeout for polling. Default is 600 seconds.
-      isArray: false
-      name: timeout_in_seconds
-      required: false
-      secret: false
-      deprecated: false
-    - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
-      required: false
-    deprecated: false
+    polling: true
+    execution: true
+  - name: microsoft-atp-live-response-run-script
     description: |-
       Runs a script from the library on a device. The Args parameter is passed to your script. Timeouts after 10 minutes.
-    execution: true
-    name: microsoft-atp-live-response-run-script
-    polling: true
+    deprecated: false
+    arguments:
+    - name: machine_id
+      description: The machine ID to add the file to.
+      required: true
+      isArray: false
+      default: true
+      secret: false
+    - name: comment
+      description: A comment to associate with the action.
+      required: true
+      isArray: false
+      default: false
+      secret: false
+    - name: scriptName
+      description: The script name to run on the device.
+      required: true
+      isArray: false
+      default: false
+      secret: false
+    - name: arguments
+      description: Arguments to run the script with.
+      required: false
+      isArray: false
+      default: false
+      secret: false
+    - name: machine_action_id
+      description: The action ID to retrieve status and data for.
+      required: false
+      isArray: false
+      default: false
+      secret: false
+      deprecated: true
+    - name: interval_in_seconds
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+      required: false
+      isArray: false
+      default: false
+      secret: false
+      deprecated: false
+    - name: timeout_in_seconds
+      description: Timeout for polling. Default is 600 seconds.
+      required: false
+      isArray: false
+      default: false
+      secret: false
+      deprecated: false
+    - name: ran_once_flag
+      description: flag for rate limit retry
+      required: false
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.script_name
       description: The script name.
@@ -5462,56 +5461,56 @@ script:
     - contextPath: MicrosoftATP.LiveResponseAction.script_errors
       description: The script errors if found.
       type: String
-  - arguments:
-    - default: true
+    polling: true
+    execution: true
+  - name: microsoft-atp-live-response-put-file
+    description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
+    deprecated: false
+    arguments:
+    - name: machine_id
       description: The machine ID to add the file to.
-      isArray: false
-      name: machine_id
       required: true
+      isArray: false
+      default: true
       secret: false
-    - default: false
+    - name: comment
       description: A comment to associate with the action.
-      isArray: false
-      name: comment
       required: true
+      isArray: false
+      default: false
       secret: false
-    - default: false
+    - name: file_name
       description: File name to take from the library to the device.
-      isArray: false
-      name: file_name
       required: true
-      secret: false
-    - default: false
-      description: Action ID to retrieve status and data for.
       isArray: false
-      name: machine_action_id
+      default: false
+      secret: false
+    - name: machine_action_id
+      description: Action ID to retrieve status and data for.
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: true
-    - default: false
+    - name: interval_in_seconds
       description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
-      isArray: false
-      name: interval_in_seconds
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: false
-    - default: false
+    - name: timeout_in_seconds
       description: Timeout for polling. Default is 600 seconds.
-      isArray: false
-      name: timeout_in_seconds
       required: false
+      isArray: false
+      default: false
       secret: false
       deprecated: false
-    - deprecated: true
+    - name: ran_once_flag
       description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
       required: false
-    deprecated: false
-    description: Puts a file from the library to the device. Files are saved in a working folder and are deleted when the device restarts by default.
-    execution: true
-    name: microsoft-atp-live-response-put-file
-    polling: true
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
       description: The machine action ID.
@@ -5594,56 +5593,58 @@ script:
     - contextPath: MicrosoftATP.LiveResponseAction.troubleshootInfo
       description: The machine action troubleshootInfo.
       type: String
-  - arguments:
-    - default: true
-      description: The action ID to retrieve status and data for.
-      isArray: false
-      name: machine_action_id
-      required: true
-      secret: false
-    - default: false
-      description: A command index to retrieve the file for.
-      isArray: false
-      name: command_index
-      required: true
-      secret: false
-    - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
-      required: false
-    deprecated: false
-    description: Gets a result file for a specified action.
+    polling: true
     execution: true
-    name: microsoft-atp-live-response-result
+  - name: microsoft-atp-live-response-result
+    description: Gets a result file for a specified action.
+    deprecated: false
+    arguments:
+    - name: machine_action_id
+      description: The action ID to retrieve status and data for.
+      required: true
+      isArray: false
+      default: true
+      secret: false
+    - name: command_index
+      description: A command index to retrieve the file for.
+      required: true
+      isArray: false
+      default: false
+      secret: false
+    - name: ran_once_flag
+      description: flag for rate limit retry
+      required: false
+      isArray: false
+      deprecated: true
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction
       description: The machine action ID.
       type: String
-  - arguments:
-    - default: true
-      description: Action ID to retrieve status and data for.
-      isArray: false
-      name: machine_action_id
-      required: true
-      secret: false
-    - default: false
-      description: A comment to associate with the action.
-      isArray: false
-      name: comment
-      required: true
-      secret: false
-    - deprecated: true
-      description: flag for rate limit retry
-      isArray: false
-      name: ran_once_flag
-      required: false
-    deprecated: false
-    description: Cancels an action with an unfinished status.
     execution: true
-    name: microsoft-atp-live-response-cancel-action
+  - name: microsoft-atp-live-response-cancel-action
+    description: Cancels an action with an unfinished status.
+    deprecated: false
+    arguments:
+    - name: machine_action_id
+      description: Action ID to retrieve status and data for.
+      required: true
+      isArray: false
+      default: true
+      secret: false
+    - name: comment
+      description: A comment to associate with the action.
+      required: true
+      isArray: false
+      default: false
+      secret: false
+    - name: ran_once_flag
+      description: flag for rate limit retry
+      required: false
+      isArray: false
+      deprecated: true
     outputs: []
     polling: true
+    execution: true
   - name: microsoft-atp-advanced-hunting-lateral-movement-evidence
     description: Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
     deprecated: false
@@ -5752,15 +5753,12 @@ script:
       description: The query results for management_connection query_purpose.
       type: String
     polling: true
-  - name: microsoft-atp-advanced-hunting-persistence-evidence
-    description: Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
-    deprecated: false
-    arguments:
-    - name: query_purpose
-      auto: PREDEFINED
-      description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created? (On the local machine). "new_group" - Was a new group created? "group_user_change" - Was a user added to a group?  (On the local machine) "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?
-      required: true
+  - arguments:
+    - description: When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created? (On the local machine). "new_group" - Was a new group created? "group_user_change" - Was a user added to a group?  (On the local machine) "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?
       isArray: false
+      name: query_purpose
+      required: true
+      auto: PREDEFINED
       defaultValue: ''
       predefined:
       - scheduled_job
@@ -5774,10 +5772,10 @@ script:
       - group_user_change
       - local_firewall_change
       - host_file_change
-    - name: device_name
-      description: Device name to look for.
-      required: false
+    - description: Device name to look for.
       isArray: false
+      name: device_name
+      required: false
       defaultValue: ''
     - name: file_name
       description: File name to look for.
@@ -5854,6 +5852,9 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    deprecated: false
+    description: Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
+    name: microsoft-atp-advanced-hunting-persistence-evidence
     outputs:
     - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
       description: The query results for scheduled_job query_purpose.
@@ -5889,19 +5890,16 @@ script:
       description: The query results for host_file_change query_purpose.
       type: String
     polling: true
-  - name: microsoft-atp-advanced-hunting-file-origin
-    description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
-    deprecated: false
-    arguments:
-    - name: device_name
-      description: Device name to look for.
-      required: false
+  - arguments:
+    - description: Device name to look for.
       isArray: false
+      name: device_name
+      required: false
       defaultValue: ''
-    - name: file_name
-      description: File name to look for.
-      required: false
+    - description: File name to look for.
       isArray: false
+      name: file_name
+      required: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
@@ -5967,20 +5965,20 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    deprecated: false
+    description: Indicates how the file got on the machine. Possible details are "dropped_file" - Was the file dropped? From where? "created_file" - Created by another File (script, compiled binary). "network_shared" - Shared via network. "execution_chain" - What is the process execution chain.
+    name: microsoft-atp-advanced-hunting-file-origin
     outputs:
     - contextPath: MicrosoftATP.HuntFileOrigin.Result
       description: The query results.
       type: String
     polling: true
-  - name: microsoft-atp-advanced-hunting-process-details
-    description: Detects process details. When you select a “query_purpose” argument, a designated query template is used.
-    deprecated: false
-    arguments:
-    - name: query_purpose
-      auto: PREDEFINED
-      description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?
-      required: true
+  - arguments:
+    - description: When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?
       isArray: false
+      name: query_purpose
+      required: true
+      auto: PREDEFINED
       defaultValue: ''
       predefined:
       - parent_process
@@ -5989,30 +5987,30 @@ script:
       - beaconing_evidence
       - powershell_execution_unsigned_files
       - process_excecution_powershell
-    - name: device_name
-      description: Device name to look for.
-      required: false
+    - description: Device name to look for.
       isArray: false
+      name: device_name
+      required: false
       defaultValue: ''
-    - name: file_name
-      description: File name to look for.
-      required: false
+    - description: File name to look for.
       isArray: false
+      name: file_name
+      required: false
       defaultValue: ''
-    - name: sha1
-      description: SHA1 hash to look for.
-      required: false
+    - description: SHA1 hash to look for.
       isArray: false
+      name: sha1
+      required: false
       defaultValue: ''
-    - name: sha256
-      description: SHA256 hash to look for.
-      required: false
+    - description: SHA256 hash to look for.
       isArray: false
+      name: sha256
+      required: false
       defaultValue: ''
-    - name: md5
-      description: MD5 hash to look for.
-      required: false
+    - description: MD5 hash to look for.
       isArray: false
+      name: md5
+      required: false
       defaultValue: ''
     - name: device_id
       description: Device ID to look for.
@@ -6063,6 +6061,10 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    deprecated: false
+    description: Detects process details. When you select a “query_purpose” argument, a designated query template is used.
+    polling: true
+    name: microsoft-atp-advanced-hunting-process-details
     outputs:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
       description: The query results for parent_process query_purposeThe query results.
@@ -6082,30 +6084,26 @@ script:
     - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
       description: The query results for process_excecution_powershell query_purpose.
       type: String
-    polling: true
-  - name: microsoft-atp-advanced-hunting-network-connections
-    description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
-    deprecated: false
-    arguments:
-    - name: query_purpose
-      auto: PREDEFINED
-      description: When you select a “query_purpose” argument, a designated query template is used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one.
-      required: true
+  - arguments:
+    - description: When you select a “query_purpose” argument, a designated query template is used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one.
       isArray: false
+      name: query_purpose
+      required: true
+      auto: PREDEFINED
       defaultValue: ''
       predefined:
       - external_addresses
       - dns_query
       - encoded_commands
-    - name: device_name
-      description: Device name to look for.
+    - description: Device name to look for.
+      name: device_name
       required: false
       isArray: false
       defaultValue: ''
-    - name: file_name
-      description: File name to look for.
-      required: false
+    - description: File name to look for.
       isArray: false
+      name: file_name
+      required: false
       defaultValue: ''
     - name: sha1
       description: SHA1 hash to look for.
@@ -6171,6 +6169,8 @@ script:
       isArray: false
       name: ran_once_flag
       required: false
+    description: Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
+    name: microsoft-atp-advanced-hunting-network-connections
     outputs:
     - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
       description: The query results for external_addresses query_purpose.
@@ -6182,6 +6182,7 @@ script:
       description: The query results for encoded_commands query_purpose.
       type: String
     polling: true
+    deprecated: false
   - name: microsoft-atp-advanced-hunting-privilege-escalation
     description: Detects evidence of privilege escalation.
     deprecated: false

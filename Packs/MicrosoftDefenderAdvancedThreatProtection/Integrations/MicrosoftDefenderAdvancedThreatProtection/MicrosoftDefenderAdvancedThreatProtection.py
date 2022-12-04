@@ -4506,10 +4506,8 @@ def list_machines_by_software_command(client: MsClient, args: dict) -> CommandRe
     software_id = args.get('id')
     headers = ['id', 'computerDnsName', 'osPlatform', 'rbacGroupName', 'rbacGroupId']
     machines_response = client.get_list_machines_by_software(software_id)
-    # print("machines_response", machines_response)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list machines by software: {software_id}',
                                      machines_response.get('value'), headers=headers, removeNull=True)
-    # print("machines_response_human_readable", human_readable)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareMachine',
         outputs_key_field='id',
@@ -4550,10 +4548,8 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
     software_id = args.get('id')
     headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
     missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
-    # print("missing_kb_by_software_response", missing_kb_by_software_response)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
                                      missing_kb_by_software_response.get('value'), headers=headers, removeNull=True)
-    # print("human_readable", human_readable)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareKB',
         outputs_key_field='id',
@@ -4692,15 +4688,12 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
     filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'), (fixing_kb_id, 'fixingKbId'),
                                 (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
                                 (product_vendor, 'productVendor')])
-    # print(filter_req)
     headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
-    # print("list_vulnerabilities_response", list_vulnerabilities_response)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                      list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
-    # print("human_readable", human_readable)
     return CommandResults(
-        outputs_prefix='MicrosoftATP.CVEMachine',
+        outputs_prefix='MicrosoftATP.MachineCVE',
         outputs_key_field='id',
         outputs=list_vulnerabilities_response.get('value'),
         readable_output=human_readable,
