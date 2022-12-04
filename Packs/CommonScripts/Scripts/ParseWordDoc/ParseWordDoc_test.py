@@ -58,7 +58,7 @@ class TestParseWordDoc:
         assert result.get('File') == 'file-sample.txt'
 
 
-def test_extract_urls_xml():
+def test_extract_urls_xml_with_hyperlink():
     """
     Given:
         - A docx file with hyperlink
@@ -73,3 +73,20 @@ def test_extract_urls_xml():
     from ParseWordDoc import extract_urls_xml
     urls = extract_urls_xml('./TestData/file-sample2.docx')
     assert urls == ['https://typora.io']
+
+
+def test_extract_urls_xml_without_hyperlink():
+    """
+    Given:
+        - A docx file without hyperlink
+
+    When:
+        - Run the extract_urls_xml method
+
+    Then:
+        - Verify that the method extracting none urls from the document
+
+    """
+    from ParseWordDoc import extract_urls_xml
+    urls = extract_urls_xml('./TestData/file-sample.docx')
+    assert urls == []
