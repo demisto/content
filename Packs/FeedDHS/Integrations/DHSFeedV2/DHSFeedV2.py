@@ -134,6 +134,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     else:
         indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
 
+    demisto.debug(f'{indicators=}')
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
@@ -197,6 +198,7 @@ def main():  # pragma: no cover
             verify=verify_certificate,
             objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
+            field_map={'firstseenbysource': 'created', 'modified': 'modified'},
             tags=feed_tags,
             limit_per_request=limit_per_request,
             tlp_color=tlp_color,
@@ -214,6 +216,7 @@ def main():  # pragma: no cover
             last_run_indicators = demisto.getLastRun()
             indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval,
                                                                        fetch_from_feed_start)
+            demisto.debug(f'{last_run_indicators=}, {indicators=}')
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 

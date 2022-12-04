@@ -68,7 +68,9 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-
+    "identity": FeedIndicatorType.Identity,
+    "location": FeedIndicatorType.Location,
+    "vulnerability": FeedIndicatorType.CVE,
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
@@ -833,6 +835,86 @@ class Taxii2FeedClient:
         )
         return registry_key_indicator
 
+    def parse_identity(self, identity_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single identity object
+        :param identity_obj: identity object
+        :return: identity extracted from the identity object in cortex format
+        """
+        identity = {
+            'value': identity_obj.get('name'),
+            'type': FeedIndicatorType.Identity,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': identity_obj
+        }
+        fields = {
+            'stixid': identity_obj.get('id'),
+            'firstseenbysource': identity_obj.get('created'),
+            'modified': identity_obj.get('modified'),
+            'description': identity_obj.get('description', ''),
+            'identityclass': identity_obj.get('identity_class', ''),
+            'industrysectors': identity_obj.get('sectors', []),
+            'tags': list((set(identity_obj.get('labels', []))).union(set(self.tags))),
+        }
+        if self.update_tlp(fields):
+            fields['trafficlightprotocol'] = self.tlp_color
+        identity['fields'] = fields
+        return [identity]
+
+    def parse_location(self, location_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single location object
+        :param location_obj: location object
+        :return: location extracted from the location object in cortex format
+        """
+        location = {
+            'type': FeedIndicatorType.Location,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': location_obj
+        }
+        fields = {
+            'stixid': location_obj.get('id'),
+            'firstseenbysource': location_obj.get('created'),
+            'modified': location_obj.get('modified'),
+            'countrycode': location_obj.get('country', ''),
+            'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
+        }
+        if self.update_tlp(fields):
+            fields['trafficlightprotocol'] = self.tlp_color
+        location['fields'] = fields
+        return [location]
+
+    def parse_cve(self, cve_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single cve object
+        :param cve_obj: cve object
+        :return: cve extracted from the cve object in cortex format
+        """
+        name = ''
+        for external_reference in cve_obj.get('external_references', []):
+            if external_reference.get('source_name') == 'cve':
+                name = external_reference.get('external_id')
+                break
+
+        cve = {
+            'value': name,
+            'type': FeedIndicatorType.CVE,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': cve_obj
+        }
+        fields = {
+            'stixid': cve_obj.get('id'),
+            'firstseenbysource': cve_obj.get('created'),
+            'modified': cve_obj.get('modified'),
+            'tags': list((set(cve_obj.get('labels', []))).union(set(self.tags))),
+        }
+        if name:
+            fields['tags'].append(name)
+        if self.update_tlp(fields):
+            fields['trafficlightprotocol'] = self.tlp_color
+        cve['fields'] = fields
+        return [cve]
+
     def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.
 
@@ -929,7 +1011,10 @@ class Taxii2FeedClient:
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
-            "windows-registry-key": self.parse_sco_windows_registry_key_indicator
+            "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
+            "identity": self.parse_identity,
+            "location": self.parse_location,
+            "vulnerability": self.parse_cve
         }
 
         indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)
