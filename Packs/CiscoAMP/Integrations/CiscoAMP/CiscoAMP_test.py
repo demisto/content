@@ -773,7 +773,7 @@ def test_file_list_item_delete_error_command(requests_mock, mock_client):
         file_list_item_delete_command(mock_client, args)
 
         assert str(ve) == \
-            f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}".'
+            f'Failed to delete-\nFile List GUID: "{args["file_list_guid"]}"\nSHA-256: "{args["sha256"]}" not found.'
 
 
 @pytest.mark.parametrize(

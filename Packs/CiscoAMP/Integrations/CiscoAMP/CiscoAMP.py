@@ -2293,7 +2293,7 @@ def file_list_item_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
     if 'errors' in raw_response:
-        raise ValueError(f'Failed to delete-\nFile List GUID: "{file_list_guid}"\nSHA-256: "{sha256}".')
+        raise ValueError(f'Failed to delete-\nFile List GUID: "{file_list_guid}"\nSHA-256: "{sha256}" not found.')
 
     readable_output = f'SHA-256: "{sha256}" Successfully deleted from File List GUID: "{file_list_guid}".'
 
