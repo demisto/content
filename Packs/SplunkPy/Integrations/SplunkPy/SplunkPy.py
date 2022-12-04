@@ -83,15 +83,20 @@ TIME_IS_MISSING = 'time_is_missing'
 
 # =========== Enrich User Mechanism ============
 class UserMappingObject:
-    def __init__(self, service: client.Service, should_map_user, table_name='splunk_xsoar_users', xsoar_user_column_name='xsoar_user',
-                 splunk_user_column_name='splunk_user'):
+    def __init__(
+        self, service: client.Service,
+        should_map_user: bool,
+        table_name: str = 'splunk_xsoar_users',
+        xsoar_user_column_name: str = 'xsoar_user',
+        splunk_user_column_name: str = 'splunk_user'
+    ):
         self.service = service
         self.should_map = should_map_user
         self.table_name = table_name
         self.xsoar_user_column_name = xsoar_user_column_name
         self.splunk_user_column_name = splunk_user_column_name
 
-    def _get_record(self, col, value_to_search):
+    def _get_record(self, col: str, value_to_search: str):
         """ Gets the records with the value found in the relevant column. """
         kvstore: client.KVStoreCollection = self.service.kvstore[self.table_name]
         return kvstore.data.query(query=json.dumps({col: value_to_search}))
@@ -926,7 +931,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
     return job
 
 
-def identity_enrichment(service: client.Service, notable_data, num_enrichment_events):
+def identity_enrichment(service: client.Service, notable_data, num_enrichment_events) -> client.Job:
     """ Performs an identity enrichment.
 
     Args:
@@ -957,7 +962,7 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
     return job
 
 
-def asset_enrichment(service: client.Service, notable_data, num_enrichment_events):
+def asset_enrichment(service: client.Service, notable_data, num_enrichment_events) -> client.Job:
     """ Performs an asset enrichment.
 
     Args:
@@ -1017,7 +1022,7 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object, 
         demisto.debug("Handled {}/{} notables.".format(len(handled_notables), total))
 
 
-def handle_submitted_notable(service: client.Service, notable, enrichment_timeout):
+def handle_submitted_notable(service: client.Service, notable: Notable, enrichment_timeout: int):
     """ Handles submitted notable. If enrichment process timeout has reached, creates an incident.
 
     Args:
@@ -1061,7 +1066,7 @@ def handle_submitted_notable(service: client.Service, notable, enrichment_timeou
     return task_status
 
 
-def submit_notables(service: client.Service, incidents, cache_object, mapper):
+def submit_notables(service: client.Service, incidents: list, cache_object: Cache, mapper):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
@@ -1098,7 +1103,7 @@ def submit_notables(service: client.Service, incidents, cache_object, mapper):
                       'enrichment.'.format(len(failed_notables), [notable.id for notable in failed_notables]))
 
 
-def submit_notable(service: client.Service, notable, num_enrichment_events):
+def submit_notable(service: client.Service, notable: Notable, num_enrichment_events) -> bool:
     """ Submits fetched notable to Splunk for an Enrichment. Three enrichments possible: Drilldown, Asset & Identity.
      If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
      integration context for the next fetch to handle the submitted notable.
@@ -1231,7 +1236,7 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
-def get_remote_data_command(service: client.Service, args, close_incident, mapper):
+def get_remote_data_command(service: client.Service, args: dict, close_incident, mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
@@ -1940,7 +1945,7 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
+def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res):
     ec = {}
 
     if args.get('update_context', "true") == "true":
@@ -1952,7 +1957,7 @@ def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
     return ec
 
 
-def schedule_polling_command(command, args, interval_in_secs):
+def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     """
     Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
     """
@@ -1964,7 +1969,7 @@ def schedule_polling_command(command, args, interval_in_secs):
     )
 
 
-def build_search_human_readable(args, parsed_search_results):
+def build_search_human_readable(args: dict, parsed_search_results: list[dict | list[dict]]) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -1997,7 +2002,7 @@ def build_search_human_readable(args, parsed_search_results):
     return human_readable
 
 
-def update_headers_from_field_names(search_result, chosen_fields):
+def update_headers_from_field_names(search_result: list[dict], chosen_fields: list[str]) -> list[str]:
     headers = []
     search_result_keys = set().union(*(list(d.keys()) for d in search_result))  # type: Set
     for field in chosen_fields:
@@ -2013,7 +2018,7 @@ def update_headers_from_field_names(search_result, chosen_fields):
     return headers
 
 
-def get_current_results_batch(search_job: client.Job, batch_size, results_offset):
+def get_current_results_batch(search_job: client.Job, batch_size: int, results_offset: int):
     current_batch_kwargs = {
         "count": batch_size,
         "offset": results_offset
@@ -2047,7 +2052,7 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
-def splunk_search_command(service: client.Service):
+def splunk_search_command(service: client.Service) -> CommandResults:
     args = demisto.args()
 
     query = build_search_query(args)
@@ -2199,7 +2204,17 @@ def splunk_submit_event_command(service: client.Service):
         demisto.results('Event was created in Splunk index: ' + r.name)
 
 
-def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
+def splunk_submit_event_hec(
+    hec_token: str,
+    baseurl: str,
+    event: str,
+    fields: list[str],
+    host: str,
+    index: str,
+    source_type: str,
+    source: str,
+    time_: str
+):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -2252,7 +2267,7 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(base_url, token, auth_token, args):
+def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str, args: dict) -> None:
     session_key = token if not auth_token else None
 
     event_ids = None
@@ -2279,7 +2294,7 @@ def splunk_edit_notable_event_command(base_url, token, auth_token, args):
         demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service: client.Service, args):
+def splunk_job_status(service: client.Service, args: dict) -> CommandResults:
     sid = args.get('sid')
     try:
         job = service.job(sid)
@@ -2311,7 +2326,7 @@ def splunk_parse_raw_command():
     demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(rawDict), "EntryContext": ec})
 
 
-def test_module(service: client.Service):
+def test_module(service: client.Service) -> None:
     try:
         # validate connection
         service.info()
@@ -2353,7 +2368,7 @@ def test_module(service: client.Service):
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
-def replace_keys(data):
+def replace_keys(data: dict | str) -> dict | str:
     if not isinstance(data, dict):
         return data
     for key in list(data.keys()):
@@ -2365,12 +2380,12 @@ def replace_keys(data):
     return data
 
 
-def kv_store_collection_create(service: client.Service):
+def kv_store_collection_create(service: client.Service) -> None:
     service.kvstore.create(demisto.args()['kv_store_name'])
     return_outputs("KV store collection {} created successfully".format(service.namespace['app']), {}, {})
 
 
-def kv_store_collection_config(service: client.Service):
+def kv_store_collection_config(service: client.Service) -> None:
     args = demisto.args()
     app = service.namespace['app']
     kv_store_collection_name = args['kv_store_collection_name']
@@ -2388,7 +2403,7 @@ def kv_store_collection_config(service: client.Service):
     return_outputs("KV store collection {} configured successfully".format(app), {}, {})
 
 
-def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str):
+def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict:
     if json_data.startswith('[') and json_data.endswith(']'):
         record: Record = kv_data_service_client._post(
             'batch_save', headers=client.KVStoreCollectionData.JSON_HEADER, body=json_data.encode('utf-8'))
@@ -2400,7 +2415,7 @@ def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_d
                                '(e.g. {"key": "value"} or [{"key": "value"}, {"key": "value"}]')
 
 
-def kv_store_collection_add_entries(service: client.Service):
+def kv_store_collection_add_entries(service: client.Service) -> None:
     args = demisto.args()
     kv_store_data = args.get('kv_store_data', '')
     kv_store_collection_name = args['kv_store_collection_name']
@@ -2419,7 +2434,7 @@ def kv_store_collection_add_entries(service: client.Service):
     return_outputs("Data added to {}".format(kv_store_collection_name), timeline=timeline)
 
 
-def kv_store_collections_list(service: client.Service):
+def kv_store_collections_list(service: client.Service) -> None:
     app_name = service.namespace['app']
     names = list([x.name for x in service.kvstore.iter()])
     human_readable = "list of collection names {}\n| name |\n| --- |\n|{}|".format(app_name, '|\n|'.join(names))
@@ -2427,7 +2442,7 @@ def kv_store_collections_list(service: client.Service):
     return_outputs(human_readable, entry_context, entry_context)
 
 
-def kv_store_collection_data_delete(service: client.Service):
+def kv_store_collection_data_delete(service: client.Service) -> None:
     args = demisto.args()
     kv_store_collection_name = args['kv_store_collection_name'].split(',')
     for store in kv_store_collection_name:
@@ -2442,7 +2457,7 @@ def kv_store_collection_delete(service: client.Service):
     return_outputs('The following KV store {} were deleted successfully'.format(kv_store_names), {}, {})
 
 
-def build_kv_store_query(kv_store: client.KVStoreCollection, args):
+def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict) -> str:
     if 'key' in args and 'value' in args:
         _type = get_key_type(kv_store, args['key'])
         args['value'] = _type(args['value']) if _type else args['value']
@@ -2453,7 +2468,7 @@ def build_kv_store_query(kv_store: client.KVStoreCollection, args):
         return args.get('query', '{}')
 
 
-def kv_store_collection_data(service: client.Service):
+def kv_store_collection_data(service: client.Service) -> None:
     args = demisto.args()
     stores = args['kv_store_collection_name'].split(',')
 
@@ -2469,7 +2484,7 @@ def kv_store_collection_data(service: client.Service):
             return_outputs(get_kv_store_config(store), {}, {})
 
 
-def kv_store_collection_delete_entry(service: client.Service):
+def kv_store_collection_delete_entry(service: client.Service) -> None:
     args = demisto.args()
     store_name = args['kv_store_collection_name']
     indicator_path = args.get('indicator_path')
@@ -2489,7 +2504,7 @@ def kv_store_collection_delete_entry(service: client.Service):
     return_outputs('The values of the {} were deleted successfully'.format(store_name), timeline=timeline)
 
 
-def check_error(service: client.Service, args):
+def check_error(service: client.Service, args: dict) -> None:
     app = args.get('app_name')
     store_name = args.get('kv_store_collection_name')
     if app not in service.apps:
@@ -2498,7 +2513,7 @@ def check_error(service: client.Service, args):
         raise DemistoException('KV Store not found')
 
 
-def get_key_type(kv_store: client.KVStoreCollection, _key):
+def get_key_type(kv_store: client.KVStoreCollection, _key: str) -> str:
     keys_and_types = get_keys_and_types(kv_store)
     types = {
         'number': float,
@@ -2513,7 +2528,7 @@ def get_key_type(kv_store: client.KVStoreCollection, _key):
     return types.get(val_type)
 
 
-def get_keys_and_types(kv_store: client.KVStoreCollection):
+def get_keys_and_types(kv_store: client.KVStoreCollection) -> dict[str, str]:
     keys = kv_store.content()
     for key_name in list(keys.keys()):
         if not (key_name.startswith('field.') or key_name.startswith('index.')):
@@ -2521,7 +2536,7 @@ def get_keys_and_types(kv_store: client.KVStoreCollection):
     return keys
 
 
-def get_kv_store_config(kv_store: client.KVStoreCollection):
+def get_kv_store_config(kv_store: client.KVStoreCollection) -> str:
     keys = get_keys_and_types(kv_store)
     readable = ['#### configuration for {} store'.format(kv_store.name),
                 '| field name | type |',
@@ -2531,14 +2546,14 @@ def get_kv_store_config(kv_store: client.KVStoreCollection):
     return '\n'.join(readable)
 
 
-def get_auth_session_key(service: client.Service):
+def get_auth_session_key(service: client.Service) -> bool:
     """
     Get the session key or token for POST request based on whether the Splunk basic auth are true or not
     """
     return service and service.basic and service._auth_headers[0][1] or service.token
 
 
-def extract_indicator(indicator_path, _dict_objects):
+def extract_indicator(indicator_path: str, _dict_objects: list[dict]) -> list[str]:
     indicators = []
     indicator_paths = indicator_path.split('.')
     for indicator_obj in _dict_objects:
@@ -2561,7 +2576,7 @@ def get_store_data(service: client.Service):
         yield kvstore.data.query(**query)
 
 
-def get_connection_args():
+def get_connection_args() -> dict:
     """
     This function gets the connection arguments: host, port, app, and verify.
 
@@ -2603,7 +2618,7 @@ def main():
         connection_args['password'] = password
         connection_args['autologin'] = True
 
-    if proxy or VERIFY_CERTIFICATE:
+    if proxy or not VERIFY_CERTIFICATE:
         if proxy:
             handle_proxy()
         connection_args['handler'] = requests_handler
