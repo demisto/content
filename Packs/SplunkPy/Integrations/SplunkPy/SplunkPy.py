@@ -320,7 +320,7 @@ def build_fetch_query(dem_params):
     return fetch_query
 
 
-def fetch_notables(service: client.Service, mapper, cache_object=None, enrich_notables=False):
+def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_object: "Cache" = None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
@@ -375,7 +375,7 @@ def fetch_notables(service: client.Service, mapper, cache_object=None, enrich_no
                     'query: {} is: {}.'.format(last_run_time, now, fetch_query, len(incidents))
     extensive_log(debug_message)
 
-    if not enrich_notables:
+    if not enrich_notables or not cache_object:
         demisto.incidents(incidents)
     else:
         cache_object.not_yet_submitted_notables += notables
@@ -414,7 +414,7 @@ def fetch_notables(service: client.Service, mapper, cache_object=None, enrich_no
     demisto.setLastRun(last_run_data)
 
 
-def fetch_incidents(service: client.Service, mapper):
+def fetch_incidents(service: client.Service, mapper: UserMappingObject):
     if ENABLED_ENRICHMENTS:
         integration_context = get_integration_context()
         if not demisto.getLastRun() and integration_context:
@@ -458,7 +458,7 @@ class Enrichment:
         self.status = status if status else Enrichment.IN_PROGRESS
 
     @classmethod
-    def from_job(cls, enrichment_type, job):
+    def from_job(cls, enrichment_type, job: client.Job):
         """ Creates an Enrichment object from Splunk Job object
 
         Args:
@@ -534,7 +534,7 @@ class Notable:
                 return None
 
     @staticmethod
-    def create_incident(notable_data, occurred, mapper):
+    def create_incident(notable_data, occurred, mapper: UserMappingObject):
         incident = {}  # type: Dict[str,Any]
         rule_title, rule_name = '', ''
 
@@ -575,7 +575,7 @@ class Notable:
 
         return incident
 
-    def to_incident(self, mapper):
+    def to_incident(self, mapper: UserMappingObject):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
 
@@ -994,7 +994,7 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
     return job
 
 
-def handle_submitted_notables(service: client.Service, incidents, cache_object, mapper):
+def handle_submitted_notables(service: client.Service, incidents, cache_object: Cache, mapper: UserMappingObject):
     """ Handles submitted notables. For each submitted notable, tries to retrieve its results, if results aren't ready,
      it moves to the next submitted notable.
 
@@ -1006,6 +1006,8 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object, 
     """
     handled_notables = []
     enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
+    if not enrichment_timeout:
+        enrichment_timeout = 5
     notables = cache_object.submitted_notables
     total = len(notables)
     demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
@@ -1066,7 +1068,7 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
     return task_status
 
 
-def submit_notables(service: client.Service, incidents: list, cache_object: Cache, mapper):
+def submit_notables(service: client.Service, incidents: list, cache_object: Cache, mapper: UserMappingObject):
     """ Submits fetched notables to Splunk for an enrichment.
 
     Args:
@@ -1132,7 +1134,7 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
     return notable.submitted()
 
 
-def run_enrichment_mechanism(service: client.Service, integration_context, mapper):
+def run_enrichment_mechanism(service: client.Service, integration_context, mapper: UserMappingObject):
     """ Execute the enriching fetch mechanism
     1. We first handle submitted notables that have not been handled in the last fetch run
     2. If we finished handling and submitting all fetched notables, we fetch new notables
@@ -2002,7 +2004,7 @@ def build_search_human_readable(args: dict, parsed_search_results: list[dict | l
     return human_readable
 
 
-def update_headers_from_field_names(search_result: list[dict], chosen_fields: list[str]) -> list[str]:
+def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
     search_result_keys = set().union(*(list(d.keys()) for d in search_result))  # type: Set
     for field in chosen_fields:
@@ -2368,7 +2370,7 @@ def test_module(service: client.Service) -> None:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
 
-def replace_keys(data: dict | str) -> dict | str:
+def replace_keys(data):
     if not isinstance(data, dict):
         return data
     for key in list(data.keys()):
