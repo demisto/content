@@ -4,6 +4,7 @@ CiscoAMP (Advanced Malware Protection) API Integration for Cortex XSOAR (aka Dem
 import copy
 import math
 from typing import Callable, Dict, Any, MutableMapping, MutableSequence, Tuple
+from http import HTTPStatus
 from collections import namedtuple
 import demistomock as demisto
 from CommonServerPython import *  # pylint: disable=redefined-builtin, wildcard-import, unused-wildcard-import
@@ -1245,7 +1246,7 @@ def test_module(client: Client) -> str:
         client.version_get_request()
 
     except DemistoException as exc:
-        if '401' in exc.message:
+        if exc.res and exc.res.status_code == HTTPStatus.UNAUTHORIZED:
             return 'Authorization Error: Unknown API key or Client ID'
 
         return exc.message
@@ -1647,7 +1648,7 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     page_size = arg_to_number(args.get('page_size', 0))
     limit = arg_to_number(args.get('limit', 0))
 
-    filename_regex = r'[\w\-\.]+[\w\\-\. ]*'
+    filename_regex = r'[0-9a-zA-Z_\-.]+[0-9a-zA-Z_\-. ]*'
 
     if is_query_wrong(query_string) \
             and not bool(re.match(filename_regex, query_string)):
@@ -1709,7 +1710,7 @@ def computers_isolation_feature_availability_get_command(client: Client, args: D
         readable_output = get_isolation_options_readable_output(raw_response)
 
     except DemistoException as exc:
-        if '405' in exc.message:
+        if exc.res and exc.res.status_code == HTTPStatus.METHOD_NOT_ALLOWED:
             readable_output = 'Isolation is not allowed on policy.'
 
         else:
