@@ -1967,10 +1967,10 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
     page_size = arg_to_number(args.get('page_size', 0))
     limit = arg_to_number(args.get('limit', 0))
 
-    if detection_sha256 and sha256Regex.match(detection_sha256):
+    if detection_sha256 and not sha256Regex.match(detection_sha256):
         raise ValueError('detection_sha256 must be: SHA-256')
 
-    if application_sha256 and sha256Regex.match(application_sha256):
+    if application_sha256 and not sha256Regex.match(application_sha256):
         raise ValueError('application_sha256 must be: SHA-256')
 
     pagination = get_pagination_parameters(page, page_size, limit)
