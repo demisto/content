@@ -33,7 +33,6 @@ configuration:
   additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
   name: use_tenant
   type: 8
-  defaultValue: 'false'
   required: false
 script:
   script: ''
