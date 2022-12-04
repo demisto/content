@@ -3431,10 +3431,8 @@ def main() -> None:
     client_id = params['credentials']['identifier']
     api_key = params['credentials']['password']
     verify_certificate = not params.get('insecure', False)
-    reliability = params.get('integrationReliability')
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
     proxy = params.get('proxy', False)
-
-    reliability = reliability if reliability else DBotScoreReliability.C
 
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
