@@ -1986,7 +1986,7 @@ def event_list_command(client: Client, args: Dict[str, Any]) -> List[CommandResu
             connector_guids=connector_guid,
             group_guids=group_guid,
             start_date=start_date,
-            event_types=event_type,
+            event_types=event_type,  # type: ignore # List[Optional[int]] arg_to_number; expected Optional[List[int]]
             limit=pagination.limit,
             offset=None if pagination.offset is None else pagination.offset * request_number,
         ))
