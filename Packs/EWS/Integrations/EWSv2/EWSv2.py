@@ -920,7 +920,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
     for item in qs:
         demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
-            item.subject, item.message_id, item.datetime_created.ewsformat(), item.datetime_received.ewsformat()))
+            item.subject, item.message_id, item.datetime_created, item.datetime_received))
         try:
             if isinstance(item, Message) and item.message_id not in exclude_ids:
                 result.append(item)
