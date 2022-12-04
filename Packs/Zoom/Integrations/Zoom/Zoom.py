@@ -153,8 +153,7 @@ class Client(BaseClient):
         )
 
     def zoom_create_meeting(self, type: str, topic: str, user: str,
-                            auto_record_meeting: str, start_time: str, timezone: str):
-        auto_recording = "none"
+                            start_time: str, timezone: str, auto_record_meeting: str = "none"):
         if auto_record_meeting == 'yes':
             auto_recording = "cloud"
             params = {
