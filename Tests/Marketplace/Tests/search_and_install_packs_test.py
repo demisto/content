@@ -401,6 +401,8 @@ def test_search_and_install_packs_and_their_deprecated_dependencies(mocker):
     - Ensure that before the marketplace update, the deprecated pack will not be installed but the script won't fail.
     - Ensure that after the marketplace update, the deprecated pack will not be installed and the script will fail.
     """
+    # Reset success flag.
+    script.SUCCESS_FLAG = True
 
     def azure_is_deprecated(pack_path):
         if pack_path == 'Packs/AzureSentinel':
@@ -424,11 +426,11 @@ def test_search_and_install_packs_and_their_deprecated_dependencies(mocker):
                                                                                       after_update=False)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' not in installed_packs
-    assert success is True
+    assert script.SUCCESS_FLAG
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(['HelloWorld'],
                                                                                       client,
                                                                                       after_update=True)
     assert 'HelloWorld' in installed_packs
     assert 'AzureSentinel' not in installed_packs
-    assert success is False
+    assert not script.SUCCESS_FLAG
