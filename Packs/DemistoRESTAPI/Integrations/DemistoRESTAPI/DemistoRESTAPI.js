@@ -7,7 +7,7 @@ getTenantAccountName = function () {
     const urls = demistoUrls()
     const server_url = urls['server'].toString()
     // server_url example - https://account-testing-ysdkvou:443/acc_Test
-    var account_name = §''
+    var account_name = ''
     // check if server_url contains "/acc_" string
     if (server_url.indexOf("/acc_") >= 0){
         words = server_url.split('acc_')
