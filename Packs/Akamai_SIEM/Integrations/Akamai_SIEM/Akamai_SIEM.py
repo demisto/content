@@ -36,8 +36,8 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: Optional[str] = None, limit: Optional[Union[str, int]] = None,
-                   from_epoch: Optional[str] = None, to_epoch: Optional[str] = None) \
+    def get_events(self, config_ids: str, offset: Optional[str] = '', limit: Optional[Union[str, int]] = None,
+                   from_epoch: Optional[str] = '', to_epoch: Optional[str] = '') \
             -> Tuple[List[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
@@ -83,7 +83,7 @@ class Client(BaseClient):
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
             new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
         else:
-            new_offset = from_epoch
+            new_offset = str(from_epoch)
         return events, new_offset
 
 
