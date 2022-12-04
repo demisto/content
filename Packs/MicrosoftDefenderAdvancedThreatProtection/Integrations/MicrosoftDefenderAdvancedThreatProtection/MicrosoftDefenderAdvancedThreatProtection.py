@@ -4750,11 +4750,9 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
     published_on = args.get('published_on', '')
     published_on = dateparser.parse(published_on)
     published_on = published_on.strftime("%Y-%m-%dT%H:%M:%SZ") if published_on else ''
-    # print("published_on: ", published_on.replace("+00:00", "Z"))
     updated_on = args.get('updated_on', '')
     updated_on = dateparser.parse(updated_on)
     updated_on = updated_on.strftime("%Y-%m-%dT%H:%M:%SZ") if updated_on else ''
-    # print("updated_on: ", updated_on.replace("+00:00", "Z"))
     cvss = args.get('cvss', '')
     limit = int(args.get('limit', 50))
     page = arg_to_number(args.get('page'))
@@ -4763,11 +4761,9 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
     page_size, limit = get_correct_page_size_and_limit(page_size, limit)
     filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
     filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name, description, published_on, cvss, updated_on)
-    # print(filter_req)
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
                'exploitVerified', 'publicExploit', 'cvssV3']
     list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, page, page_size)
-    # print(list_vulnerabilities_response)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                      list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
 
