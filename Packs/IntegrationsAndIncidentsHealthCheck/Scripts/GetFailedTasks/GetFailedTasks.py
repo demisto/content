@@ -147,6 +147,9 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
             # using rest api call if using_internal_request fails on the following error:
             # ValueError: dial tcp connect: connection refused
             rest_api_instance = get_rest_api_instance_to_use()
+            if not rest_api_instance:
+                raise DemistoException('Could not find which Rest Api instance to use,'
+                                       'Please specify the rest_api_instance argument.')
             tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
