@@ -174,6 +174,15 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
 
 
 def test_pack_names_to_integration_names_no_integrations_folder(tmp_path):
+    """
+    Given:
+        - Pack without integrations dir.
+    When:
+        - Transforming pack names to integration names when installing integrations.
+    Then:
+        - Assert no exceptions are raised.
+        - Assert no integrations are found.
+    """
     packs_path = tmp_path / 'Packs'
     packs_path.mkdir()
     pack_path = packs_path / 'PackName'
