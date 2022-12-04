@@ -80,7 +80,7 @@ class TestCommandsFunctions:
                                                                     fetch_limit=5,
                                                                     config_ids='50170',
                                                                     last_run='1575966002')
-        expected_last_run = {'lastRun': "1576002507"}
+        expected_last_run = {'lastRun': "1575966002"}
         expected_incidents = []
         assert expected_incidents == tested_incidents, "Incidents - Last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and event available"
@@ -95,7 +95,7 @@ class TestCommandsFunctions:
                                                                     fetch_limit=5,
                                                                     config_ids='50170',
                                                                     last_run={})
-        expected_last_run = {'lastRun': "1576002507"}
+        expected_last_run = {'lastRun': "1575966002"}
         expected_incidents = []
         assert expected_incidents == tested_incidents, "Incidents - No last time exsits and no available data"
         assert tested_last_run == expected_last_run, "Last run - No last time exsits and no available data"
