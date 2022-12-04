@@ -159,7 +159,7 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
         return [], 0
 
 
-def main(): # pragma: no cover
+def main():
     args = demisto.args()
     query = args.get("query")
     max_incidents = arg_to_number(args.get("max_incidents")) or 300
