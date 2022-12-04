@@ -125,7 +125,7 @@ def get_incident_tasks_using_internal_request(incident: dict):
     return tasks
 
 
-def get_incident_data(incident: dict, rest_api_instance: str):
+def get_incident_data(incident: dict, rest_api_instance: str = None):
     """
         Returns the failing task objects of an incident.
         The request is done using a Demisto Rest API instance if given,
@@ -143,8 +143,10 @@ def get_incident_data(incident: dict, rest_api_instance: str):
     else:
         try:
             tasks = get_incident_tasks_using_internal_request(incident)
-        except Exception:
-            # if using_internal_request fails, using rest api call
+        except ValueError:
+            # using rest api call if using_internal_request fails on the following error:
+            # ValueError: dial tcp connect: connection refused
+            rest_api_instance = get_rest_api_instance_to_use()
             tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
     task_outputs, tasks_error_entries_number = get_failed_tasks_output(tasks, incident)
@@ -159,7 +161,7 @@ def main():
     query = args.get("query")
     max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
-    rest_api_instance = args.get("rest_api_instance", get_rest_api_instance_to_use())
+    rest_api_instance = args.get("rest_api_instance")
 
     number_of_failed_incidents = 0
     number_of_error_entries = 0
