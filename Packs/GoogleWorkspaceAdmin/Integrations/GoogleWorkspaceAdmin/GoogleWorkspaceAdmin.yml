@@ -32,7 +32,7 @@ configuration:
 script:
   commands:
     - name: google-mobiledevice-action
-      description: "Takes an action that affects a mobile device. For example, remotely wiping a device."
+      description: "Executes an action that affects a mobile device. For example, remotely wiping a device."
       arguments:
         - name: resource_id
           description: "The unique ID the API service uses to identify the mobile device."
@@ -59,19 +59,19 @@ script:
       arguments:
         - auto: PREDEFINED
           name: projection
-          description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status)"
+          description: "Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL"
           required: false
           isArray: false
           predefined:
             - BASIC
             - FULL
         - name: query
-          description: "Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators"
+          description: "Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators"
           required: false
           isArray: false
         - auto: PREDEFINED
           name: order_by
-          description: "Device property to use for sorting results."
+          description: "Device property to use for sorting results. Default is STATUS."
           required: false
           isArray: false
           predefined:
@@ -85,7 +85,7 @@ script:
             - TYPE
         - auto: PREDEFINED
           name: sort_order
-          description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter."
+          description: "Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING."
           required: false
           isArray: false
           predefined:
@@ -278,12 +278,12 @@ script:
             - ASCENDING
             - DESCENDING
         - name: org_unit_path
-          description: "The full path of the organizational unit (minus the leading /) or its unique ID."
+          description: "The full path of the organizational unit (without the leading /) or its unique ID."
           required: false
           isArray: false
         - auto: PREDEFINED
           name: include_child_org_units
-          description: "Whether to return devices from all child orgunits."
+          description: "Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided."
           required: false
           isArray: false
           predefined:
@@ -576,7 +576,7 @@ script:
           contextPath: Google.chromeosEvent.chromeosListObjects.firstEnrollmentTime
           description: "Date and time for the first time the device was enrolled."
     - name: google-chromeosdevice-action
-      description: "Takes an action that affects a ChromeOS Device. This includes deprovisioning, disabling, and re-enabling devices."
+      description: "Executes an action that affects a ChromeOS Device. This includes de-provisioning, disabling, and re-enabling devices."
       arguments:
         - name: resource_id
           description: "The unique ID of the device."
@@ -595,7 +595,7 @@ script:
             - pre_provisioned_reenable
         - auto: PREDEFINED
           name: deprovision_reason
-          description: "Only used when the action is deprovision. With the deprovision action, this field is required."
+          description: "Reason for deprovision. This field is required only when the action used is deprovision."
           required: false
           isArray: false
           predefined:

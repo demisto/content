@@ -9,18 +9,15 @@ To execute the commands with the help of the service account, perform the follow
 1. You must be signed in as a super administrator for this task.
 2. Open your Google Admin console (at https://admin.google.com).
 3. Go to Admin roles.
-4. Click the role you want to assign (the role must have the appropriate privileges in order to execute the commands).
-5. The necessary privileges: Admin console privileges => Services => Mobile Device Management => Manage Devices and Settings.
-6. Click on Assign Admin.
-7. On the opened page, click Assign Service Accounts.
-8. Append the email of the Service Account created and click ASSIGN ROLE to save.
+4. Click the role you want to assign (the role must have the appropriate privileges (listed below) in order to execute the commands).
+5. Click on Assign Admin.
+6. On the opened page, click Assign Service Accounts.
+7. Append the email of the Service Account created and click ASSIGN ROLE to save.
 
-### Commands and its scopes
-* google-mobiledevice-action
-	* https://www.googleapis.com/auth/admin.directory.device.mobile.action  
-* google-mobiledevice-list
-	* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
-* google-chromeosdevice-action
-	* https://www.googleapis.com/auth/admin.directory.device.chromeos
-* google-chromeosdevice-list 
-	* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
+#### The necessary privileges
+##### Mobile devices:
+1. Admin console privileges => Services => Mobile Device Management => Manage Devices and Settings.
+
+##### ChromeOs devices:
+1. Admin console privileges => Services => Chrome Management => Settings => Manage Chrome OS Devices => Read.
+2. Admin console privileges => Services => Chrome Management => Settings => Manage Chrome OS Device Settings.

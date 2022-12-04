@@ -1,6 +1,23 @@
 Google Workspace Mobile Management includes Android, Google Sync, iOS devices, and Google Chrome devices that run on ChromeOS.
 This integration was integrated and tested with version 1.0.0 of GoogleWorkspaceAdmin
 
+## Prerequisites
+
+### Get a New Private Key
+
+1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
+2.  In the IAM & admin section select **Service accounts**.
+3.  If you need to create a new project, click **CREATE** do the following:
+    1.  In the **New Project** window, type a project name, select an organization from the drop-down list, and then select a location.
+    2.  Click **CREATE**.
+4.  In the Service accounts section, click **Create Service Account**.
+5.  In the **Create service account** window, type a name for the service account, add a description and then click **CREATE**.
+6.  Click **Continue.**
+7.  In the **Create key** section, click **CREATE KEY**.
+8.  Select Key type **JSON** and click **CREATE**.
+9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.
+
+
 ## Configure Google Workspace Admin on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -22,6 +39,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Takes an action that affects a mobile device. For example, remotely wiping a device.
 
+##### Required Scopes
+* https://www.googleapis.com/auth/admin.directory.device.mobile.action
 
 #### Base Command
 
@@ -44,6 +63,8 @@ Takes an action that affects a mobile device. For example, remotely wiping a dev
 ***
 Retrieves a paginated list that includes company-owned devices.
 
+##### Required Scopes
+* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
 
 #### Base Command
 
@@ -272,171 +293,12 @@ Retrieves a paginated list that includes company-owned devices.
 >| 311fc9cb34adecd6 | example_name | Nexus 5X | Android 7.1.2 | ANDROID | APPROVED |
 
 
-#### Command example
-```!google-mobiledevice-list projection=full order_by=NAME sort_order=descending limit=3```
-#### Context Example
-```json
-{
-    "Google": {
-        "mobileEvent": {
-            "mobileListObjects": [
-                {
-                    "adbStatus": true,
-                    "basebandVersion": "example_baseband_version",
-                    "bootloaderVersion": "G960FXXU2BRJ3",
-                    "brand": "samsung",
-                    "buildNumber": "example_build_number",
-                    "defaultLanguage": "English",
-                    "developerOptionsStatus": true,
-                    "deviceCompromisedStatus": "No compromise detected",
-                    "deviceId": "example_device_id",
-                    "devicePasswordStatus": "On",
-                    "email": [
-                        "example@example.com",
-                        "example@example.com"
-                    ],
-                    "encryptionStatus": "Encrypted",
-                    "etag": "example_etag",
-                    "firstSync": "2020-01-23T14:30:23.686Z",
-                    "hardware": "samsungexynos9810",
-                    "hardwareId": "357164099163035",
-                    "imei": "357164099163035",
-                    "kernelVersion": "4.9.59-14479316-QB20051937",
-                    "kind": "admin#directory#mobiledevice",
-                    "lastSync": "2020-01-23T14:30:40.406Z",
-                    "managedAccountIsOnOwnerProfile": true,
-                    "manufacturer": "samsung",
-                    "meid": "",
-                    "model": "SM-G960F",
-                    "name": [
-                        "example_name"
-                    ],
-                    "networkOperator": "Cellcom",
-                    "os": "Android 8.0.0",
-                    "privilege": "Undetected",
-                    "releaseVersion": "8.0.0",
-                    "resourceId": "example_resource_id",
-                    "securityPatchLevel": "1538377200000",
-                    "serialNumber": "example_serial_number",
-                    "status": "WIPING",
-                    "supportsWorkProfile": true,
-                    "type": "ANDROID",
-                    "unknownSourcesStatus": true,
-                    "userAgent": "Google Apps Device Policy 14.20.00",
-                    "wifiMacAddress": ""
-                },
-                {
-                    "adbStatus": true,
-                    "basebandVersion": "example_baseband_version",
-                    "bootloaderVersion": "G960FXXU2CSB9",
-                    "brand": "samsung",
-                    "buildNumber": "example_build_number",
-                    "defaultLanguage": "English",
-                    "developerOptionsStatus": true,
-                    "deviceCompromisedStatus": "No compromise detected",
-                    "deviceId": "example_device_id",
-                    "devicePasswordStatus": "On",
-                    "email": [
-                        "example@example.com",
-                        "example@example.com"
-                    ],
-                    "encryptionStatus": "Encrypted",
-                    "etag": "example_etag",
-                    "firstSync": "2020-01-23T14:34:34.623Z",
-                    "hardware": "samsungexynos9810",
-                    "hardwareId": "357164099163035",
-                    "imei": "357164099163035",
-                    "kernelVersion": "4.9.59-15367606",
-                    "kind": "admin#directory#mobiledevice",
-                    "lastSync": "2021-12-10T10:50:06.711Z",
-                    "managedAccountIsOnOwnerProfile": true,
-                    "manufacturer": "samsung",
-                    "meid": "",
-                    "model": "SM-G960F",
-                    "name": [
-                        "example_name"
-                    ],
-                    "networkOperator": "Cellcom",
-                    "os": "Android 9",
-                    "privilege": "Device administrator",
-                    "releaseVersion": "9",
-                    "resourceId": "example_resource_id",
-                    "securityPatchLevel": "1549008000000",
-                    "serialNumber": "example_serial_number",
-                    "status": "APPROVED",
-                    "supportsWorkProfile": true,
-                    "type": "ANDROID",
-                    "unknownSourcesStatus": true,
-                    "userAgent": "Google Apps Device Policy 17.87.03",
-                    "wifiMacAddress": ""
-                },
-                {
-                    "adbStatus": false,
-                    "basebandVersion": "example_baseband_version",
-                    "bootloaderVersion": "",
-                    "brand": "",
-                    "buildNumber": "",
-                    "defaultLanguage": "",
-                    "developerOptionsStatus": false,
-                    "deviceCompromisedStatus": "Undetected",
-                    "deviceId": "example_device_id",
-                    "devicePasswordStatus": "On",
-                    "email": [
-                        "example@example.com",
-                        "example@example.com"
-                    ],
-                    "encryptionStatus": "",
-                    "etag": "example_etag",
-                    "firstSync": "2019-06-17T08:08:53.683Z",
-                    "hardware": "",
-                    "hardwareId": "",
-                    "imei": "",
-                    "kernelVersion": "",
-                    "kind": "admin#directory#mobiledevice",
-                    "lastSync": "2019-12-02T06:17:34.853Z",
-                    "managedAccountIsOnOwnerProfile": false,
-                    "manufacturer": "",
-                    "meid": "",
-                    "model": "iPhone8,1",
-                    "name": [
-                        "example_name"
-                    ],
-                    "networkOperator": "",
-                    "os": "iOS 13.1.2",
-                    "privilege": "Undetected",
-                    "releaseVersion": "",
-                    "resourceId": "example_resource_id",
-                    "securityPatchLevel": "0",
-                    "serialNumber": "example_serial_number",
-                    "status": "APPROVED",
-                    "supportsWorkProfile": false,
-                    "type": "IOS_SYNC",
-                    "unknownSourcesStatus": false,
-                    "userAgent": "",
-                    "wifiMacAddress": ""
-                }
-            ],
-            "resourceKind": "admin#directory#mobiledevices"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Google Workspace Admin - Mobile Devices List
->3 results were found
->|Serial Number|User Names|Model Name|OS|Type|Status|
->|---|---|---|---|---|---|
->| 33ab1f067ccf2ce4 | example_name | SM-G960F | Android 8.0.0 | ANDROID | WIPING |
->| 33ab1f067ccf2ce4 | example_name | SM-G960F | Android 9 | ANDROID | APPROVED |
->| 1755B888-B091-4465-954D-0B0EFA8FA113 | example_name | iPhone8,1 | iOS 13.1.2 | IOS_SYNC | APPROVED |
-
-
 ### google-chromeosdevice-list
 ***
 Retrieves a paginated list of company-owned ChromeOS devices.
 
+##### Required Scopes
+* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
 
 #### Base Command
 
@@ -556,6 +418,8 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 ***
 Takes an action that affects a ChromeOS Device. This includes deprovisioning, disabling, and re-enabling devices.
 
+##### Required Scopes
+* https://www.googleapis.com/auth/admin.directory.device.chromeos
 
 #### Base Command
 

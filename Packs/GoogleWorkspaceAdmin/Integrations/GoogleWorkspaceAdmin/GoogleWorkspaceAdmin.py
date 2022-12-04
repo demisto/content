@@ -16,16 +16,27 @@ MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
 
+''' SCOPES '''
+MOBILE_DEVICE_LIST_SCOPE = 'https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'
+MOBILE_DEVICE_ACTION_SCOPE = 'https://www.googleapis.com/auth/admin.directory.device.mobile.action'
+
+CHROMEOS_DEVICE_ACTION_SCOPE = 'https://www.googleapis.com/auth/admin.directory.device.chromeos'
+CHROMEOS_DEVICE_LIST_SCOPE = 'https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'
+
 ''' ERROR CONSTANTS '''
 INVALID_CUSTOMER_ID_ERROR = 'Please check the customer ID parameter.'
 INVALID_RESOURCE_ID_ERROR = 'Please check the resource_id argument.'
 UNAUTHORIZED_SERVICE_ACCOUNT_ERROR = 'Please check the authorizations of the configured service account.'
 REQUEST_ADAPTER_ERROR = 'An error has occurred while requesting a request adapter.'
 REFRESH_TOKEN_ERROR = 'Could not refresh token.'
-PAGE_NUMBER_NOT_SUPPLIED_ERROR = 'Please insert a page number.'
+PAGE_NUMBER_INVALID_ERROR = 'Please insert a valid page number.'
+LIMIT_ARG_INVALID_ERROR = 'Please insert a valid limit argument.'
 INVALID_PAGINATION_ARGS_SUPPLIED = ('In order to use pagination, please supply either the argument limit,'
                                     ' or the argument page, or the arguments page and page_size together.')
+ACCOUNT_NOT_FOUND = 'Please check if the account supplied in the service account exists.'
+INVALID_ORG_UNIT_PATH = 'Please insert a valid organization unit path (org_unit_path)'
 EXCEEDED_MAX_PAGE_SIZE_ERROR = f'The maximum page size is {MAX_PAGE_SIZE}'
+DEPROVISION_REASON_EMPTY_ERROR = 'Deprovision reason cannot be empty'
 # The following dictionary is used to map error messages returned from the API that don't
 # share enough information to meaningful error messages.
 ERROR_MESSAGES_MAPPING = {
@@ -104,11 +115,9 @@ class Client(BaseClient):
 
     def test_client_connection(self):
         try:
-            token = self._get_oauth_token(scopes={'https://www.googleapis.com/auth/admin.directory.device.mobile.readonly',
-                                                  })
-            headers = self._headers | {'Authorization': f'Bearer {token}'}
-            self._http_request('GET', f'admin/directory/v1/customer/{self._customer_id}/devices/mobile',
-                               headers=headers)
+            # We do requests on mobile devices and chrome os devices to also validate the authorizations.
+            self.google_mobile_device_list_request()
+            self.google_chromeos_device_list_request()
         except DemistoException as e:
             if(e.res is not None):
                 error_res_to_json = e.res.json()
@@ -143,10 +152,13 @@ class Client(BaseClient):
         if(not self._credentials.valid):
             try:
                 request = google.auth.transport.requests.Request()
+                self._credentials.refresh(request)
+                request.session.close()
             except google.auth.exceptions.TransportError:
                 raise DemistoException(REQUEST_ADAPTER_ERROR)
-            self._credentials.refresh(request)
-            request.session.close()
+            except google.auth.exceptions.RefreshError as e:
+                if 'account not found' in str(e):
+                    raise DemistoException(ACCOUNT_NOT_FOUND)
 
         if(not self._credentials.valid):
             raise DemistoException(REFRESH_TOKEN_ERROR)
@@ -154,7 +166,7 @@ class Client(BaseClient):
 
     def google_mobile_device_action_request(self, resource_id: str, action: str):
         json_body = {'action': action}
-        scopes = {'https://www.googleapis.com/auth/admin.directory.device.mobile.action'}
+        scopes = {MOBILE_DEVICE_ACTION_SCOPE}
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
@@ -162,12 +174,12 @@ class Client(BaseClient):
             json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_mobile_device_list_request(self, query_params: dict) -> dict:
+    def google_mobile_device_list_request(self, query_params: dict = {}) -> dict:
         # TODO Don't forget to delete the following lines (these are for testing purposes)
         # max_results = query_params['maxResults']
         # query_params['maxResults'] = 3 if max_results > 3 else max_results
 
-        scopes = {'https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'}
+        scopes = {MOBILE_DEVICE_LIST_SCOPE}
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
@@ -179,9 +191,11 @@ class Client(BaseClient):
     def google_chromeos_device_action_request(self, resource_id: str, action: str, deprovision_reason: str = ''):
         json_body = {'action': action}
         if action == 'deprovision':
+            if(not deprovision_reason):
+                raise DemistoException(DEPROVISION_REASON_EMPTY_ERROR)
             json_body['deprovisionReason'] = deprovision_reason
 
-        scopes = {'https://www.googleapis.com/auth/admin.directory.device.chromeos'}
+        scopes = {CHROMEOS_DEVICE_ACTION_SCOPE}
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
@@ -189,12 +203,12 @@ class Client(BaseClient):
             json_data=json_body, headers=headers, resp_type='response')
         return response
 
-    def google_chromeos_device_list_request(self, query_params: dict) -> dict:
+    def google_chromeos_device_list_request(self, query_params: dict = {}) -> dict:
         # TODO Don't forget to delete the following lines (these are for testing purposes)
         # max_results = query_params['maxResults']
         # query_params['maxResults'] = 3 if max_results > 3 else max_results
 
-        scopes = {'https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'}
+        scopes = {CHROMEOS_DEVICE_LIST_SCOPE}
         token = self._get_oauth_token(scopes=scopes)
         headers = self._headers | {'Authorization': f'Bearer {token}'}
         response = self.http_request(
@@ -233,15 +247,21 @@ def device_list_manual_pagination(api_request: Callable, query_params: dict, pag
         response = api_request(query_params=query_params)
         next_page_token = response.get('nextPageToken')  # Get the token of the next page if needed
         current_page_number += 1
-        if(current_page_number == page):
+        devices_list = response.get(response_devices_list_key, [])
+        if(current_page_number == page and devices_list):
             # If entered here, that means we found the required page
             get_data_from_api = False
             context_data['resourceKind'] = response.get('kind')
-            context_data[cd_devices_list_key] = response.get(response_devices_list_key, [])
+            context_data[cd_devices_list_key] = devices_list
             relevant_response = response
         elif(not next_page_token):
             # If entered here, that means we did not reach the required page, which means
             # the page was not found
+            if(not devices_list and current_page_number == 1):
+                # If entered here, that means we got no results from the first page, which implies that there
+                # are no results at all, so we change the current_page_number to zero to emphasize that there
+                # are no available pages.
+                current_page_number = 0
             get_data_from_api = False
 
     return PaginationResult(data=context_data, raw_response=[relevant_response], last_page_number=current_page_number)
@@ -271,7 +291,7 @@ def device_list_automatic_pagination(api_request: Callable, query_params: dict,
     next_page_token: str | None = None
     get_data_from_api = True  # This will decide if we should continue requesting from the API or that we should stop
     while get_data_from_api:
-        query_params['maxResults'] = results_limit
+        query_params['maxResults'] = results_limit if results_limit <= MAX_PAGE_SIZE else MAX_PAGE_SIZE
         query_params['pageToken'] = next_page_token
         response = api_request(query_params=query_params)
         responses.append(response)
@@ -303,8 +323,8 @@ def prepare_pagination_arguments(args: dict) -> dict:
         if('limit' in args):
             raise DemistoException(INVALID_PAGINATION_ARGS_SUPPLIED)
         page = arg_to_number(args.get('page', None))
-        if not page:
-            raise DemistoException(message=PAGE_NUMBER_NOT_SUPPLIED_ERROR)
+        if not page or page <= 0:
+            raise DemistoException(message=PAGE_NUMBER_INVALID_ERROR)
         page_size = arg_to_number(args.get('page_size', None))
         page_size = page_size if page_size else DEFAULT_PAGE_SIZE
         if page_size > MAX_PAGE_SIZE:
@@ -312,6 +332,8 @@ def prepare_pagination_arguments(args: dict) -> dict:
         return {'page_size': page_size, 'page': page}
 
     limit = arg_to_number(args.get('limit', None))
+    if(not limit or limit <= 0):
+        raise DemistoException(message=LIMIT_ARG_INVALID_ERROR)
     limit = limit if limit else DEFAULT_LIMIT
     return {'limit': limit}
 
@@ -328,33 +350,47 @@ def mobile_device_list_create_query_parameters(args: dict) -> dict:
     """
     query_params = assign_params(projection=args.get('projection', 'full').lower(),
                                  query=args.get('query', ''),
-                                 orderBy=args.get('order_by', '').lower(),
-                                 sortOrder=args.get('sort_order', '').lower(),
+                                 orderBy=args.get('order_by', 'status').lower(),
+                                 sortOrder=args.get('sort_order', 'ascending').lower(),
                                  )
     return query_params
 
 
-def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
-    """This function will take a context data from the mobile-device-list command, and
-    return human readable data for the UI.
-
-    Args:
-        context_data (dict): Context Data returned from the mobile-device-list command.
-
-    Returns:
-        List[dict]: A list of human readable data to print to the user.
-    """
+def device_list_to_human_readable(data: list, keys: list, keys_mapping: dict[str, str]) -> List[dict]:
     human_readable: List[dict] = []
-    for mobile_device in context_data.get('mobileListObjects', []):
-        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
-                               'User Names': mobile_device.get('name'),
-                               'Model Name': mobile_device.get('model'),
-                               'OS': mobile_device.get('os'),
-                               'Type': mobile_device.get('type'),
-                               'Status': mobile_device.get('status')
-                               })
+    for mobile_device in data:
+        human_readable_data = {}
+        for key in keys:
+            if key in keys_mapping:
+                human_readable_data[keys_mapping.get(key)] = mobile_device.get(key)
+            else:
+                human_readable_data[pascalToSpace(key)] = mobile_device.get(key)
+        human_readable.append(human_readable_data)
 
     return human_readable
+
+
+# def mobile_device_list_to_human_readable(context_data: dict) -> List[dict]:
+#     """This function will take a context data from the mobile-device-list command, and
+#     return human readable data for the UI.
+
+#     Args:
+#         context_data (dict): Context Data returned from the mobile-device-list command.
+
+#     Returns:
+#         List[dict]: A list of human readable data to print to the user.
+#     """
+#     human_readable: List[dict] = []
+#     for mobile_device in context_data.get('mobileListObjects', []):
+#         human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
+#                                'User Names': mobile_device.get('name'),
+#                                'Model Name': mobile_device.get('model'),
+#                                'OS': mobile_device.get('os'),
+#                                'Type': mobile_device.get('type'),
+#                                'Status': mobile_device.get('status')
+#                                })
+
+#     return human_readable
 
 
 def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResults:
@@ -373,13 +409,23 @@ def google_mobile_device_list_command(client: Client, **kwargs) -> CommandResult
         else:
             pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
             if not pagination_result.data:
-                markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
-                            f' for page size of {pagination_args.get("page_size")} with the respected arguments')
+                if pagination_result.last_page_number == 0:
+                    # If entered here, that means we got no results from the first page, which implies that there
+                    # are no results at all.
+                    markdown = 'No results were found with the respected arguments'
+                else:
+                    # If entered here, that means we got no results from the page the user asked,
+                    # but there are results in the previous pages.
+                    markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
+                                f' for page size of {pagination_args.get("page_size")} with the respected arguments')
         if not markdown:
-            human_readable = mobile_device_list_to_human_readable(context_data=pagination_result.data)
+            human_readable = device_list_to_human_readable(
+                data=pagination_result.data.get(MobileDeviceListConfig.cd_devices_list_key, []),
+                keys=['serialNumber', 'name', 'model', 'os', 'type', 'status'],
+                keys_mapping={'name': 'User Names', 'model': 'Model Name', 'os': 'OS'})
             num_of_devices = len(pagination_result.data[MobileDeviceListConfig.cd_devices_list_key])
             markdown = tableToMarkdown(MobileDeviceListConfig.table_title, human_readable,
-                                       headers=MobileDeviceListConfig.table_headers,
+                                    #    headers=MobileDeviceListConfig.table_headers,
                                        metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
         command_results = CommandResults(
             outputs_prefix=MobileDeviceListConfig.outputs_prefix,
@@ -419,26 +465,26 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
     return query_params
 
 
-def chromeos_device_list_to_human_readable(context_data: dict) -> List[dict]:
-    """This function will take a context data from the chromeos-device-list command, and
-    return human readable data for the UI.
+# def chromeos_device_list_to_human_readable(context_data: dict) -> List[dict]:
+#     """This function will take a context data from the chromeos-device-list command, and
+#     return human readable data for the UI.
 
-    Args:
-        context_data (dict): Context Data returned from the chromeos-device-list command.
+#     Args:
+#         context_data (dict): Context Data returned from the chromeos-device-list command.
 
-    Returns:
-        List[dict]: A list of human readable data to print to the user.
-    """
-    human_readable: List[dict] = []
-    for mobile_device in context_data.get('chromeosListObjects', []):
-        human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
-                               'User Name': mobile_device.get('annotatedUser'),
-                               'Model': mobile_device.get('model'),
-                               'OS': mobile_device.get('osVersion'),
-                               'Status': mobile_device.get('status')
-                               })
+#     Returns:
+#         List[dict]: A list of human readable data to print to the user.
+#     """
+#     human_readable: List[dict] = []
+#     for mobile_device in context_data.get('chromeosListObjects', []):
+#         human_readable.append({'Serial Number': mobile_device.get('serialNumber'),
+#                                'User Name': mobile_device.get('annotatedUser'),
+#                                'Model': mobile_device.get('model'),
+#                                'OS': mobile_device.get('osVersion'),
+#                                'Status': mobile_device.get('status')
+#                                })
 
-    return human_readable
+#     return human_readable
 
 
 def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResults:
@@ -457,13 +503,21 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
         else:
             pagination_result = device_list_manual_pagination(**mutual_pagination_args, **pagination_args)
             if not pagination_result.data:
-                markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
-                            f' for page size of {pagination_args.get("page_size")} with the respected arguments')
+                if pagination_result.last_page_number == 0:
+                    # If entered here, that means we got no results from the first page, which implies that there
+                    # are no results at all.
+                    markdown = 'No results were found with the respected arguments'
+                else:
+                    markdown = (f'No results were found. The maximum number of pages is {pagination_result.last_page_number}'
+                                f' for page size of {pagination_args.get("page_size")} with the respected arguments')
         if not markdown:
-            human_readable = chromeos_device_list_to_human_readable(context_data=pagination_result.data)
+            human_readable = device_list_to_human_readable(
+                data=pagination_result.data.get(ChromeOSDeviceListConfig.cd_devices_list_key, []),
+                keys=['serialNumber', 'annotatedUser', 'model', 'osVersion', 'status'],
+                keys_mapping={'annotatedUser': 'User Name', 'osVersion': 'OS'})
             num_of_devices = len(pagination_result.data[ChromeOSDeviceListConfig.cd_devices_list_key])
             markdown = tableToMarkdown(ChromeOSDeviceListConfig.table_title, human_readable,
-                                       headers=ChromeOSDeviceListConfig.table_headers,
+                                    #    headers=ChromeOSDeviceListConfig.table_headers,
                                        metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
         command_results = CommandResults(
             outputs_prefix=ChromeOSDeviceListConfig.outputs_prefix,
@@ -477,6 +531,8 @@ def google_chromeos_device_list_command(client: Client, **kwargs) -> CommandResu
         if(e.res is not None):
             error_res_to_json = e.res.json()
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
+            if 'INVALID_OU_ID' in error_message:
+                raise DemistoException(INVALID_ORG_UNIT_PATH)
             raise DemistoException(error_message)
         else:
             raise e
@@ -498,7 +554,7 @@ def google_mobile_device_action_command(client: Client, resource_id: str, action
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
-            if('Internal error encountered' in error_message):
+            if('Internal error encountered' in error_message or 'Bad Request' in error_message):
                 failure_reason = INVALID_RESOURCE_ID_ERROR
             else:
                 failure_reason = error_message
