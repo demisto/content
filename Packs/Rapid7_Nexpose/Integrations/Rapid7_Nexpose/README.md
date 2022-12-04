@@ -9,7 +9,7 @@ This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpos
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.0.2.0:8080) | True |
+    | Server URL (e.g., https://192.0.2.0:8080) | True |
     | Username | True |
     | Password | True |
     | 2FA Token | False |
@@ -43,13 +43,13 @@ Returns the specified asset.
 | Nexpose.Asset.AssetId | number | Id of the asset. | 
 | Nexpose.Asset.Hardware | string | The primary Media Access Control \(MAC\) address of the asset. The format is six groups of two hexadecimal digits separated by colons. | 
 | Nexpose.Asset.Aliases | unknown | All host names or aliases discovered on the asset. | 
-| Nexpose.Asset.HostType | string | The type of asset, Valid values are unknown, guest, hypervisor, physical, mobile | 
+| Nexpose.Asset.HostType | string | The type of asset. Valid values are unknown, guest, hypervisor, physical, mobile | 
 | Nexpose.Asset.Site | string | Asset site name. | 
 | Nexpose.Asset.OperatingSystem | string | Operating system of the asset. | 
 | Nexpose.Asset.Vulnerabilities | number | The total number of vulnerabilities on the asset. | 
 | Nexpose.Asset.CPE | string | The Common Platform Enumeration \(CPE\) of the operating system. | 
 | Nexpose.Asset.LastScanDate | date | Last scan date of the asset. | 
-| Nexpose.Asset.LastScanId | number | Id of the asset's last scan. | 
+| Nexpose.Asset.LastScanId | number | ID of the asset's last scan. | 
 | Nexpose.Asset.RiskScore | number | The risk score \(with criticality adjustments\) of the asset. | 
 | Nexpose.Asset.Software.Software | string | The description of the software. | 
 | Nexpose.Asset.Software.Version | string | The version of the software. | 
@@ -73,7 +73,7 @@ Returns the specified asset.
 | Endpoint.IP | string | Endpoint IP address. | 
 | Endpoint.HostName | string | Endpoint host name. | 
 | Endpoint.OS | string | Endpoint operating system. | 
-| CVE.ID | string | Common Vulnerabilities and Exposures ids | 
+| CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
 ### nexpose-get-assets
 ***
@@ -89,7 +89,7 @@ Returns all assets for which you have access.
 | --- | --- | --- |
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
@@ -198,8 +198,7 @@ Returns all assets for which you have access.
 
 ### nexpose-search-assets
 ***
-Search all assets matching filters (with Returns all assets for which you have access that match the given search criteria.
-
+Search and return all assets matching specific filters. Returns only assets the user has access to.
 
 #### Base Command
 
@@ -208,11 +207,11 @@ Search all assets matching filters (with Returns all assets for which you have a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ';' separator. For example: 'ip-address in-range 1.2.3.4,1.2.3.8;host-name is myhost'. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
+| query | Queries to use as a filter, according to the Search Criteria API standard. Multiple queries can be specified, separated by a ";" separator. For example: "ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost". For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';' separator. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC". | Optional | 
 | ipAddressIs | A specific IP address to search. | Optional | 
 | hostNameIs | A specific host name to search. | Optional | 
 | riskScoreHigherThan | A minimum risk score to use as a filter. | Optional | 
@@ -347,7 +346,7 @@ Get a specific scan.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | string | The name of the user that started the scan. | 
+| Nexpose.Scan.StartedBy | string | The name of the user who started the scan. | 
 | Nexpose.Scan.Assets | number | The number of assets found in the scan | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
@@ -426,7 +425,7 @@ Returns details and possible remediations for an asset's vulnerability.
 | Nexpose.Asset.Vulnerability.Published | date | The date the vulnerability was first published or announced. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Added | date | The date the vulnerability coverage was added. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Modified | date | The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD. | 
-| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score, which ranges from 0-10. | 
+| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score (ranges from 0-10). | 
 | Nexpose.Asset.Vulnerability.CVSSV3Score | number | The CVSS3 score, which ranges from 0-10. | 
 | Nexpose.Asset.Vulnerability.Categories | unknown | All vulnerability categories assigned to this vulnerability. | 
 | Nexpose.Asset.Vulnerability.CVES | unknown | All CVEs assigned to this vulnerability. | 
@@ -440,7 +439,7 @@ Returns details and possible remediations for an asset's vulnerability.
 | Nexpose.Asset.Vulnerability.Solution.Steps | string | The steps required to remediate the vulnerability. | 
 | Nexpose.Asset.Vulnerability.Solution.Estimate | string | The estimated duration to apply the solution, in minutes. | 
 | Nexpose.Asset.Vulnerability.Solution.AdditionalInformation | string | Additional information or resources that can assist in applying the remediation | 
-| CVE.ID | string | Common Vulnerabilities and Exposures ids | 
+| CVE.ID | string | Common Vulnerabilities and Exposures IDs. | 
 
 #### Command example
 ```!nexpose-get-asset-vulnerability id=1 vulnerabilityId=apache-httpd-cve-2017-15710```
@@ -541,7 +540,7 @@ Returns details and possible remediations for an asset's vulnerability.
 
 ### nexpose-create-shared-credential
 ***
-Create a new shared credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential
+Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential
 
 
 #### Base Command
@@ -623,7 +622,7 @@ Create a new vulnerability exception.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| expires | The date and time the vulnerability exception is set to expire in an ISO 8601 date format. | Optional | 
+| expires | The date and time the vulnerability exception is set to expire in ISO 8601 date format. | Optional | 
 | vulnerability_id | ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536. | Required | 
 | scope_type | The type of the exception scope. If set to anything other than `Global`, `scope_id` parameter is required. Possible values are: Global, Site, Asset, Asset Group. | Required | 
 | state | State of the vulnerability exception. Possible values are: Expired, Approved, Rejected, Under Review. | Required | 
@@ -674,7 +673,7 @@ Delete a scheduled scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| site_id | Id of the site to delete. | Optional | 
+| site_id | ID of the site to delete. | Optional | 
 | site_name | Name of the site to delete (can be used instead of `site_id`). | Optional | 
 | schedule_id | ID of the scheduled scan to delete. | Required | 
 
@@ -781,7 +780,7 @@ Retrieves accessible sites.
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 
 
 #### Context Output
@@ -948,10 +947,10 @@ Create a new asset.
 | --- | --- | --- |
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
-| date | The date the data was collected on the asset in an ISO 8601 format. | Required | 
+| date | The date the data was collected on the asset in ISO 8601 format. | Required | 
 | ip | Primary IPv4 or IPv6 address of the asset. | Required | 
 | host_name | Hostname of the asset. | Optional | 
-| host_name_source | The source used to detect the host name. "user" indicates the host name source is user-supplied. Possible values are: User, DNS, NetBIOS, DCE, EPSEC, LDAP, Other. | Optional | 
+| host_name_source | The source used to detect the host name. "User" indicates the host name source is user-supplied. Possible values are: User, DNS, NetBIOS, DCE, EPSEC, LDAP, Other. | Optional | 
 
 
 #### Context Output
@@ -1000,10 +999,10 @@ Generates a new report on given assets according to a template and arguments.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
 | InfoFile.Name | string | Name of the report file. | 
 | InfoFile.Extension | string | File extension of the report file. | 
-| InfoFile.Info | string | Informatiom about the report file. | 
+| InfoFile.Info | string | Information about the report file. | 
 | InfoFile.Size | number | Size of the report file \(in bytes\). | 
 | InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
@@ -1023,8 +1022,8 @@ Generates a new report on given sites according to a template and arguments.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sites | Site IDs to create the report on, can be a comma-separated list. | Optional | 
-| site_names | Names of sites to create the report on, can be a comma-separated list. | Optional | 
+| sites | Site IDs to create the report on. Can be a comma-separated list. | Optional | 
+| site_names | Names of sites to create the report on. Can be a comma-separated list. | Optional | 
 | template | Report template ID to use for report's creation. If not provided, the first available template will be used. | Optional | 
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text. | Optional | 
@@ -1035,12 +1034,12 @@ Generates a new report on given sites according to a template and arguments.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Info about the report file. | 
+| InfoFile.Size | number | Size of the report file. | 
+| InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
@@ -1051,7 +1050,7 @@ Generates a new report on given sites according to a template and arguments.
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
-Create a new site scan credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
+Create a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
 
 
 #### Base Command
@@ -1080,7 +1079,7 @@ Create a new site scan credential. For detailed explanation of all parameters of
 | community_name | SNMP community for authentication. | Optional | 
 | authentication_type | SNMPv3 authentication type for the credential. Possible values are: No-Authentication, MD5, SHA. | Optional | 
 | privacy_password | SNMPv3 privacy password to use. | Optional | 
-| privacy_type | SNMPv3 Privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
+| privacy_type | SNMPv3 privacy protocol to use. Possible values are: No-Privacy, DES, AES-128, AES-192, AES-192-With-3-DES-Key-Extension, AES-256, AES-256-With-3-DES-Key-Extension. | Optional | 
 | ssh_key_pem | PEM formatted private key. | Optional | 
 | ssh_permission_elevation | Elevation type to use for scans. Possible values are: None, sudo, sudosu, su, pbrun, Privileged-Exec. | Optional | 
 | ssh_permission_elevation_password | Password to use for elevation. | Optional | 
@@ -1119,12 +1118,12 @@ Generates a new report for a specified scan.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry ID of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Info about the report file. | 
+| InfoFile.Size | number | Size of the report file. | 
+| InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
@@ -1171,17 +1170,17 @@ Create a new site scan schedule.
 | --- | --- | --- |
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
-| enabled | Whether to enable the scheduled scan after creation or not. Possible values are: True, False. Default is True. | Optional | 
+| enabled | Whether to enable the scheduled scan after creation. Possible values are: True, False. Default is True. | Optional | 
 | on_scan_repeat | The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration. Possible values are: Restart-Scan, Resume-Scan. | Required | 
 | start | The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time. | Required | 
-| excluded_asset_group_ids | A list of ids for asset groups to exclude from the scan. | Optional | 
+| excluded_asset_group_ids | A list of IDs for asset groups to exclude from the scan. | Optional | 
 | excluded_addresses | A list of addresses to exclude from the scan. | Optional | 
-| included_asset_group_ids | A list of ids for asset groups to include in the scan. | Optional | 
+| included_asset_group_ids | A list of IDs for asset groups to include in the scan. | Optional | 
 | included_addresses | A list of addresses to include in the scan. | Optional | 
 | duration_days | Maximum duration of the scan in days. | Optional | 
 | duration_hours | Maximum duration of the scan in hours. | Optional | 
 | duration_minutes | Maximum duration of the scan in minutes. | Optional | 
-| frequency | How frequent should the schedule to repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
+| frequency | How frequently the schedule should repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
 | interval_time | The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used. | Optional | 
 | date_of_month | Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`. | Optional | 
 | scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
@@ -1208,7 +1207,7 @@ Retrieve information about shared credentials for a specific site.
 | --- | --- | --- |
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
-| limit | A number of records to limit the response to. Default is 10. | Optional | 
+| limit | The number of records to limit the response to. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -1275,38 +1274,38 @@ Retrieve information about all or a specific vulnerability.
 | id | ID of a specific vulnerability to retrieve. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
-| limit | A number of records to limit the response to. Default is 10. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| limit | The number of records to limit the response to. Default is 10. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Nexpose.Vulnerability.added | string | The date the vulnerability coverage was added in an ISO 8601 format. | 
+| Nexpose.Vulnerability.added | string | The date the vulnerability coverage was added in ISO 8601 format. | 
 | Nexpose.Vulnerability.categories | array | All vulnerability categories assigned to this vulnerability. | 
 | Nexpose.Vulnerability.cves | array | All CVEs assigned to this vulnerability. | 
-| Nexpose.Vulnerability.cvss.v2.accessComplexity | string | Access Complexity \(AC\) component which measures the complexity of the attack required to exploit the vulnerability once an attacker has gained access to the target system. | 
-| Nexpose.Vulnerability.cvss.v2.accessVector | string | Access Vector \(Av\) component which reflects how the vulnerability is exploited. | 
-| Nexpose.Vulnerability.cvss.v2.authentication | string | Authentication \(Au\) component which measures the number of times an attacker must authenticate to a target in order to exploit a vulnerability. | 
-| Nexpose.Vulnerability.cvss.v2.availabilityImpact | string | Availability Impact \(A\) component which measures the impact to availability of a successfully exploited vulnerability. | 
-| Nexpose.Vulnerability.cvss.v2.confidentialityImpact | string | Confidentiality Impact \(C\) component which measures the impact on confidentiality of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.accessComplexity | string | Access Complexity \(AC\) component that measures the complexity of the attack required to exploit the vulnerability once an attacker has gained access to the target system. | 
+| Nexpose.Vulnerability.cvss.v2.accessVector | string | Access Vector \(Av\) component that reflects how the vulnerability is exploited. | 
+| Nexpose.Vulnerability.cvss.v2.authentication | string | Authentication \(Au\) component that measures the number of times an attacker must authenticate to a target in order to exploit a vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.availabilityImpact | string | Availability Impact \(A\) component that measures the impact to availability of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.confidentialityImpact | string | Confidentiality Impact \(C\) component that measures the impact on confidentiality of a successfully exploited vulnerability. | 
 | Nexpose.Vulnerability.cvss.v2.exploitScore | number | The CVSS exploit score. | 
 | Nexpose.Vulnerability.cvss.v2.impactScore | number | The CVSS impact score. | 
-| Nexpose.Vulnerability.cvss.v2.integrityImpact | string | Integrity Impact \(I\) component measures the impact to integrity of a successfully exploited vulnerability. | 
-| Nexpose.Vulnerability.cvss.v2.score | number | The CVSS score, which ranges from 0-10. | 
+| Nexpose.Vulnerability.cvss.v2.integrityImpact | string | Integrity Impact \(I\) component that measures the impact to integrity of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v2.score | number | The CVSS score (ranges from 0-10). | 
 | Nexpose.Vulnerability.cvss.v2.vector | string | The CVSS v2 vector. | 
-| Nexpose.Vulnerability.cvss.v3.attackComplexity | string | Access Complexity \(AC\) component with measures the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. | 
-| Nexpose.Vulnerability.cvss.v3.attackVector | string | Attack Vector \(AV\) component which measures context by which vulnerability exploitation is possible. | 
-| Nexpose.Vulnerability.cvss.v3.availabilityImpact | string | Availability Impact \(A\) measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability. | 
-| Nexpose.Vulnerability.cvss.v3.confidentialityImpact | string | Confidentiality Impact \(C\) component which measures the impact on confidentiality of a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.attackComplexity | string | Access Complexity \(AC\) component that measures the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.attackVector | string | Attack Vector \(AV\) component that measures context by which vulnerability exploitation is possible. | 
+| Nexpose.Vulnerability.cvss.v3.availabilityImpact | string | Availability Impact \(A\) that measures the impact to the availability of the impacted component resulting from a successfully exploited vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.confidentialityImpact | string | Confidentiality Impact \(C\) component that measures the impact on confidentiality of a successfully exploited vulnerability. | 
 | Nexpose.Vulnerability.cvss.v3.exploitScore | number | The CVSS impact score. | 
 | Nexpose.Vulnerability.cvss.v3.impactScore | number | The CVSS exploit score. | 
-| Nexpose.Vulnerability.cvss.v3.integrityImpact | string | Integrity Impact \(I\) measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. | 
-| Nexpose.Vulnerability.cvss.v3.privilegeRequired | string | Privileges Required \(PR\) measures the level of privileges an attacker must possess before successfully exploiting the vulnerability. | 
-| Nexpose.Vulnerability.cvss.v3.scope | string | Scope \(S\) measures the collection of privileges defined by a computing authority \(e.g. an application, an operating system, or a sandbox environment\) when granting access to computing resources \(e.g. files, CPU, memory, etc\). These privileges are assigned based on some method of identification and authorization. | 
-| Nexpose.Vulnerability.cvss.v3.score | number | The CVSS score, which ranges from 0-10. | 
-| Nexpose.Vulnerability.cvss.v3.userInteraction | string | User Interaction \(UI\) measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component. | 
+| Nexpose.Vulnerability.cvss.v3.integrityImpact | string | Integrity Impact \(I\) that measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. | 
+| Nexpose.Vulnerability.cvss.v3.privilegeRequired | string | Privileges Required \(PR\) that measures the level of privileges an attacker must possess before successfully exploiting the vulnerability. | 
+| Nexpose.Vulnerability.cvss.v3.scope | string | Scope \(S\) that measures the collection of privileges defined by a computing authority \(e.g., an application, an operating system, or a sandbox environment\) when granting access to computing resources \(e.g., files, CPU, memory, etc.\). These privileges are assigned based on some method of identification and authorization. | 
+| Nexpose.Vulnerability.cvss.v3.score | number | The CVSS score (ranges from 0-10). | 
+| Nexpose.Vulnerability.cvss.v3.userInteraction | string | User Interaction \(UI\) that measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component. | 
 | Nexpose.Vulnerability.cvss.v3.vector | string | The CVSS v3 vector. | 
 | Nexpose.Vulnerability.denialOfService | boolean | Whether the vulnerability can lead to Denial of Service \(DoS\). | 
 | Nexpose.Vulnerability.description.html | string | Hypertext Markup Language \(HTML\) representation of the content. | 
@@ -1314,14 +1313,14 @@ Retrieve information about all or a specific vulnerability.
 | Nexpose.Vulnerability.exploits | number | The exploits that can be used to exploit a vulnerability. | 
 | Nexpose.Vulnerability.id | string | The identifier of the vulnerability. | 
 | Nexpose.Vulnerability.malwareKits | number | The malware kits that are known to be used to exploit the vulnerability. | 
-| Nexpose.Vulnerability.modified | string | The last date the vulnerability was modified in an ISO 8601 format. | 
+| Nexpose.Vulnerability.modified | string | The last date the vulnerability was modified in ISO 8601 format. | 
 | Nexpose.Vulnerability.pci.adjustedCVSSScore | number | The CVSS score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10. | 
 | Nexpose.Vulnerability.pci.adjustedSeverityScore | number | The severity score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10. | 
-| Nexpose.Vulnerability.pci.fail | boolean | Whether if present on a host this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise. | 
+| Nexpose.Vulnerability.pci.fail | boolean | Whether, if present on a host, this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise. | 
 | Nexpose.Vulnerability.pci.specialNotes | string | Any special notes or remarks about the vulnerability that pertain to PCI compliance. | 
 | Nexpose.Vulnerability.pci.status | string | The PCI compliance status of the vulnerability. Can be either "Pass", or "Fail". | 
-| Nexpose.Vulnerability.published | string | The date the vulnerability was first published or announced in an ISO 8601 format. | 
-| Nexpose.Vulnerability.riskScore | number | The risk score of the vulnerability, rounded to a maximum of to digits of precision. If using the default Rapid7 Real Risk model, this value ranges from 0-1000. | 
+| Nexpose.Vulnerability.published | string | The date the vulnerability was first published or announced in ISO 8601 format. | 
+| Nexpose.Vulnerability.riskScore | number | The risk score of the vulnerability, rounded to a maximum of two digits of precision. If using the default Rapid7 Real Risk model, this value ranges from 0-1000. | 
 | Nexpose.Vulnerability.severity | string | The severity of the vulnerability, can be either "Moderate", "Severe", or "Critical". | 
 | Nexpose.Vulnerability.severityScore | number | The severity score of the vulnerability, on a scale of 0-10. | 
 | Nexpose.Vulnerability.title | string | The title \(summary\) of the vulnerability. | 
@@ -1537,16 +1536,16 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.ScanSchedule.assets.excludedTargets.addresses | array | List of addresses that will be excluded from scans. | 
 | Nexpose.ScanSchedule.assets.includedAssetGroups.assetGroupIDs | array | List of asset group identifiers that will be included in scans. | 
 | Nexpose.ScanSchedule.assets.includedTargets.addresses | array | List of addresses that will be included in scans. | 
-| Nexpose.ScanSchedule.duration | string | Specifies the maximum duration the scheduled scan is allowed to run in an ISO 8601 duration format. | 
+| Nexpose.ScanSchedule.duration | string | Specifies in ISO 8601 duration format the maximum duration the scheduled scan is allowed to run. | 
 | Nexpose.ScanSchedule.enabled | string | Flag indicating whether the scan schedule is enabled. | 
 | Nexpose.ScanSchedule.id | int | The identifier of the scan schedule. | 
-| Nexpose.ScanSchedule.nextRuntimes | array | List the next 10 dates in the future the schedule will launch. | 
+| Nexpose.ScanSchedule.nextRuntimes | array | List the next 10 dates when the schedule will launch. | 
 | Nexpose.ScanSchedule.onScanRepeat | string | Specifies the desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching is maximum duration. | 
 | Nexpose.ScanSchedule.repeat.dayOfWeek | unknown | Specifies the desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching is maximum duration. | 
-| Nexpose.ScanSchedule.repeat.every | unknown | The frequency schedule repeats. Each value represents a different unit of time and is used in conjunction with the property interval. | 
-| Nexpose.ScanSchedule.repeat.interval | unknown | The interval time the schedule should repeat. The is depends on the value set in every. | 
-| Nexpose.ScanSchedule.repeat.weekOfMonth For This property only applies to schedules with a every value of "day-of-month". | unknown | The week of the month the scheduled task should repeat. | 
-| Nexpose.ScanSchedule.repeat.scanEngineId | unknown | A user-defined name for the scan launched by the schedule. | 
+| Nexpose.ScanSchedule.repeat.every | unknown | The frequency in which the schedule repeats. Each value represents a different unit of time and is used in conjunction with the property interval. | 
+| Nexpose.ScanSchedule.repeat.interval | unknown | The interval time the schedule should repeat. This depends on the value set in every. | 
+| Nexpose.ScanSchedule.repeat.weekOfMonth | unknown | This property only applies to schedules with an every value of "day-of-month". The week of the month the scheduled task should repeat. | 
+| Nexpose.ScanSchedule.repeat.scanEngineId | unknown | The identifier of the scan engine to be used for this scan schedule. If not set, the site's assigned scan engine will be used. | 
 | Nexpose.ScanSchedule.repeat.scanName | unknown | A user-defined name for the scan launched by the schedule. | 
 | Nexpose.ScanSchedule.repeat.scanTemplateId | unknown | The identifier of the scan template to be used for this scan schedule. If not set, the site's assigned scan template will be used. | 
 | Nexpose.ScanSchedule.repeat.start | unknown | The scheduled start date and time. Repeating schedules will determine the next schedule to begin based on this date and time. | 
@@ -1585,7 +1584,7 @@ Retrieve information about all or a specific shared credential.
 | Nexpose.SharedCredential.account.permissionElevationPassword | string | Password to use for elevation. | 
 | Nexpose.SharedCredential.account.permissionElevationUserName | string | Username to use for elevation. | 
 | Nexpose.SharedCredential.account.privacyPassword | string | SNMPv3 privacy password to use. | 
-| Nexpose.SharedCredential.account.privacyType | string | SNMPv3 Privacy protocol to use. | 
+| Nexpose.SharedCredential.account.privacyType | string | SNMPv3 privacy protocol to use. | 
 | Nexpose.SharedCredential.account.privateKeyPassword | string | Password for the private key. | 
 | Nexpose.SharedCredential.account.realm | string | HTTP realm. | 
 | Nexpose.SharedCredential.account.service | string | Credential service type. | 
@@ -1596,7 +1595,7 @@ Retrieve information about all or a specific shared credential.
 | Nexpose.SharedCredential.hostRestriction | string | Hostname or IP address to restrict the credentials to. | 
 | Nexpose.SharedCredential.id | number | ID of the shared credential. | 
 | Nexpose.SharedCredential.name | string | Name of the credential. | 
-| Nexpose.SharedCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`host_restriction\` is used. | 
+| Nexpose.SharedCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`hostRestriction\` is used. | 
 | Nexpose.SharedCredential.siteAssignment | string | Site assignment configuration for the credential. | 
 | Nexpose.SharedCredential.sites | array | List of site IDs for the shared credential that are explicitly assigned access to the shared scan credential, allowing it to use the credential during a scan. | 
 
@@ -1701,7 +1700,7 @@ Retrieve information about all or a specific sca credential.
 | Nexpose.SiteScanCredential.account.permissionElevationPassword | string | Password to use for elevation. | 
 | Nexpose.SiteScanCredential.account.permissionElevationUserName | string | Username to use for elevation. | 
 | Nexpose.SiteScanCredential.account.privacyPassword | string | SNMPv3 privacy password to use. | 
-| Nexpose.SiteScanCredential.account.privacyType | string | SNMPv3 Privacy protocol to use. | 
+| Nexpose.SiteScanCredential.account.privacyType | string | SNMPv3 privacy protocol to use. | 
 | Nexpose.SiteScanCredential.account.privateKeyPassword | string | Password for the private key. | 
 | Nexpose.SiteScanCredential.account.realm | string | HTTP realm. | 
 | Nexpose.SiteScanCredential.account.service | string | Credential service type. | 
@@ -1712,11 +1711,11 @@ Retrieve information about all or a specific sca credential.
 | Nexpose.SiteScanCredential.hostRestriction | string | Hostname or IP address to restrict the credentials to. | 
 | Nexpose.SiteScanCredential.id | number | ID of the credential. | 
 | Nexpose.SiteScanCredential.name | string | Name of the credential. | 
-| Nexpose.SiteScanCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`host_restriction\` is used. | 
+| Nexpose.SiteScanCredential.portRestriction | number | Further restricts the credential to attempt to authenticate on a specific port. Can be used only if \`hostRestriction\` is used. | 
 
 ### nexpose-list-vulnerability-exceptions
 ***
-Retrieve information about scan schedules for a specific site or a specific scan schedule
+Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
 
 #### Base Command
@@ -1726,10 +1725,10 @@ Retrieve information about scan schedules for a specific site or a specific scan
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the vulnerability exception to retrieve. If not set, all vulnerability exceptions. | Optional | 
+| id | ID of the vulnerability exception to retrieve. If not set, retrieve all vulnerability exceptions. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. Default is submit.date,ASC. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". Default is submit.date,ASC. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
 
 
@@ -1742,14 +1741,14 @@ Retrieve information about scan schedules for a specific site or a specific scan
 | Nexpose.VulnerabilityException.scope.id | int | The identifier of the vulnerability to which the exception applies. | 
 | Nexpose.VulnerabilityException.scope.key | string | If the scope type is "Instance", an optional key to discriminate the instance the exception applies to. | 
 | Nexpose.VulnerabilityException.scope.port | int | If the scope type is "Instance" and the vulnerability is detected on a service, the port on which the exception applies. | 
-| Nexpose.VulnerabilityException.scope.type | string | The type of the exception scope. One of: "Global", "Site", "Asset", "Asset Group", "Instance" | 
+| Nexpose.VulnerabilityException.scope.type | string | The type of the exception scope. One of: "Global", "Site", "Asset", "Asset Group", "Instance". | 
 | Nexpose.VulnerabilityException.scope.vulnerability | string | The identifier of the vulnerability to which the exception applies. | 
 | Nexpose.VulnerabilityException.state | string | The state of the vulnerability exception. One of: "Deleted", "Expired", "Approved", "Rejected", \`"Under Review". | 
 | Nexpose.VulnerabilityException.submit.comment | string | A comment from the submitter as to why the exception was submitted. | 
 | Nexpose.VulnerabilityException.submit.date | string | The date and time the vulnerability exception was submitted. | 
-| Nexpose.VulnerabilityException.submit.name | string | The login name of the user that submitted the vulnerability exception. | 
+| Nexpose.VulnerabilityException.submit.name | string | The login name of the user who submitted the vulnerability exception. | 
 | Nexpose.VulnerabilityException.submit.reason | string | The reason the vulnerability exception was submitted. One of: "False Positive", "Compensating Control", "Acceptable Use", "Acceptable Risk", "Other" | 
-| Nexpose.VulnerabilityException.submit.user | int | The identifier of the user that submitted the vulnerability exception. | 
+| Nexpose.VulnerabilityException.submit.user | int | The identifier of the user who submitted the vulnerability exception. | 
 
 #### Command example
 ```!nexpose-list-vulnerability-exceptions sort="submit.date,ASC" limit=3```
@@ -1841,7 +1840,7 @@ Starts a scan for the specified site.
 | --- | --- | --- |
 | site | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site`). | Optional | 
-| hosts | Hosts that should be included as a part of the scan. Can an IP Addresses or a hostname. Can be a comma-separated list. | Optional | 
+| hosts | Hosts that should be included as a part of the scan. Can be an IP addresses or a hostname. Can be a comma-separated list. | Optional | 
 | name | Scan name. | Optional | 
 
 
@@ -1851,11 +1850,11 @@ Starts a scan for the specified site.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
-| Nexpose.Scan.Assets | number | The number of assets found in the scan | 
+| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
+| Nexpose.Scan.Assets | number | The number of assets found in the scan. | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
+| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 | Nexpose.Scan.Vulnerabilities.Critical | number | The number of critical vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Moderate | number | The number of moderate vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
@@ -1884,11 +1883,11 @@ Starts a scan for specified asset IP addresses and host names.
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
-| Nexpose.Scan.Assets | number | The number of assets found in the scan | 
+| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
+| Nexpose.Scan.Assets | number | The number of assets found in the scan. | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
+| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 | Nexpose.Scan.Vulnerabilities.Critical | number | The number of critical vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Moderate | number | The number of moderate vulnerabilities. | 
 | Nexpose.Scan.Vulnerabilities.Severe | number | The number of severe vulnerabilities. | 
@@ -1951,11 +1950,11 @@ Return a list of scans. Returns only active scans by default (active=true).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| active | Whether to return only active scans or not. Possible values are: true, false. Default is true. | Optional | 
+| active | Whether to return only active scans. Possible values are: true, false. Default is true. | Optional | 
 | page_size | Number of records to retrieve in each API call when pagination is used. | Optional | 
 | page | A specific page to retrieve when pagination is used. Page indexing starts at 0. | Optional | 
 | limit | A number of records to limit the response to. Default is 10. | Optional | 
-| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ';'. For example: 'riskScore,DESC;hostName,ASC'. | Optional | 
+| sort | Criteria to sort the records by, in the format: property[,ASC\|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC". | Optional | 
 
 
 #### Context Output
@@ -1964,11 +1963,11 @@ Return a list of scans. Returns only active scans by default (active=true).
 | --- | --- | --- |
 | Nexpose.Scan.Id | number | The identifier of the scan. | 
 | Nexpose.Scan.ScanType | string | The scan type \(automated, manual, scheduled\). | 
-| Nexpose.Scan.StartedBy | date | The name of the user that started the scan. | 
+| Nexpose.Scan.StartedBy | date | The name of the user who started the scan. | 
 | Nexpose.Scan.Assets | number | The number of assets found in the scan | 
 | Nexpose.Scan.TotalTime | string | The duration of the scan in minutes. | 
 | Nexpose.Scan.Completed | date | The end time of the scan in ISO8601 format. | 
-| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating | 
+| Nexpose.Scan.Status | string | The scan status. Valid values are aborted, unknown, running, finished, stopped, error, paused, dispatched, integrating. | 
 
 #### Command example
 ```!nexpose-get-scans active=false limit=3```
@@ -2058,7 +2057,7 @@ Returns the generated report.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | ID of the report. | Required | 
-| instance_id | ID of the report instance. Supports a "latest" value. keyword. | Required | 
+| instance_id | ID of the report instance. Supports a "latest" value. | Required | 
 | name | Report name. | Optional | 
 | format | Report format (uses PDF by default). Possible values are: pdf, rtf, xml, html, text, nexpose-simple-xml. Default is pdf. | Optional | 
 
@@ -2132,7 +2131,7 @@ Returns the status of a report generation process.
 | --- | --- | --- |
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
-| Nexpose.Report.Status | string | The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown" | 
+| Nexpose.Report.Status | string | The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown". | 
 
 #### Command example
 ```!nexpose-get-report-status report_id=1 instance_id=latest```
@@ -2175,17 +2174,17 @@ Update an existing site scan schedule.
 | site_id | ID of the site. | Optional | 
 | site_name | Name of the site (can be used instead of `site_id`). | Optional | 
 | schedule_id | ID of the scan schedule to update. | Optional | 
-| enabled | A flag indicating whether the scheduled scan is enabled or not. Possible values are: True, False. Default is True. | Optional | 
+| enabled | A flag indicating whether the scheduled scan is enabled. Possible values are: True, False. Default is True. | Optional | 
 | on_scan_repeat | The desired behavior of a repeating scheduled scan when the previous scan was paused due to reaching its maximum duration. Possible values are: Restart-Scan, Resume-Scan. | Required | 
 | start | The scheduled start date and time formatted in ISO 8601 format. Repeating schedules will determine the next schedule to begin based on this date and time. | Required | 
-| excluded_asset_group_ids | A list of ids for asset groups to exclude from the scan. | Optional | 
+| excluded_asset_group_ids | A list of IDs for asset groups to exclude from the scan. | Optional | 
 | excluded_addresses | A list of addresses to exclude from the scan. | Optional | 
-| included_asset_group_ids | A list of ids for asset groups to include in the scan. | Optional | 
+| included_asset_group_ids | A list of IDs for asset groups to include in the scan. | Optional | 
 | included_addresses | A list of addresses to include in the scan. | Optional | 
 | duration_days | Maximum duration of the scan in days. | Optional | 
 | duration_hours | Maximum duration of the scan in hours. | Optional | 
 | duration_minutes | Maximum duration of the scan in minutes. | Optional | 
-| frequency | How frequent should the schedule to repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
+| frequency | How frequently should the schedule repeat (Every...). Possible values are: Hour, Day, Week, Date-of-month. | Optional | 
 | interval_time | The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used. | Optional | 
 | date_of_month | Specifies the schedule repeat day of the interval month. For example, if `date_of_month` is 17 and `interval` is set to 2, then the schedule will repeat every 2 months on the 17th day of the month. Required and used only if frequency is set to `Date of month`. | Optional | 
 | scan_name | A unique user-defined name for the scan launched by the schedule. If not explicitly set in the schedule, the scan name will be generated prior to the scan launching. | Optional | 
@@ -2200,7 +2199,7 @@ There is no context output for this command.
 > **Note:**
 > This command couldn't have been tested on our side, and therefore could have issues. Please let us know if you encounter any bugs or issues.
 
-Update an existing site scan credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials
+Update an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials.
 
 
 #### Base Command

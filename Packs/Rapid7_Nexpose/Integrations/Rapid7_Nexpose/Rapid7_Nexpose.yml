@@ -161,7 +161,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";"". For example: "riskScore,DESC;hostName,ASC"'
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";". For example: "riskScore,DESC;hostName,ASC"'
       isArray: false
       name: sort
       required: false
@@ -303,7 +303,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search all assets matching filters (which returns all assets for which you have access that match the given search criteria.
+    description: Search and return all assets matching specific filters. Returns only assets the user has access to.
     execution: false
     name: nexpose-search-assets
     outputs:
@@ -606,7 +606,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `hostRestriction` is used.
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       isArray: false
       name: port_restriction
       required: false
@@ -1319,7 +1319,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `hostRestriction` is used.
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       isArray: false
       name: port_restriction
       required: false
@@ -1724,7 +1724,7 @@ script:
       description: Integrity Impact (I) component that measures the impact to integrity of a successfully exploited vulnerability.
       type: string
     - contextPath: Nexpose.Vulnerability.cvss.v2.score
-      description: The CVSS score that ranges from 0-10.
+      description: The CVSS score (ranges from 0-10).
       type: number
     - contextPath: Nexpose.Vulnerability.cvss.v2.vector
       description: The CVSS v2 vector.
@@ -1757,7 +1757,7 @@ script:
       description: Scope (S) that measures the collection of privileges defined by a computing authority (e.g., an application, an operating system, or a sandbox environment) when granting access to computing resources (e.g., files, CPU, memory, etc.). These privileges are assigned based on some method of identification and authorization.
       type: string
     - contextPath: Nexpose.Vulnerability.cvss.v3.score
-      description: The CVSS score that ranges from 0-10.
+      description: The CVSS score (ranges from 0-10).
       type: number
     - contextPath: Nexpose.Vulnerability.cvss.v3.userInteraction
       description: User Interaction (UI) that measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component.
@@ -1843,7 +1843,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: "BetaCommand\n\n Retrieve information about scan schedules for a specific site or a specific scan schedule."
+    description: "BetaCommand\n\nRetrieve information about scan schedules for a specific site or a specific scan schedule."
     execution: false
     name: nexpose-list-scan-schedule
     outputs:
@@ -2749,7 +2749,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `hostRestriction` is used.
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       isArray: false
       name: port_restriction
       required: false
@@ -3004,7 +3004,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `hostRestriction` is used.
+      description: Further restricts the credential to attempt to authenticate on a specific port. Can be used only if `host_restriction` is used.
       isArray: false
       name: port_restriction
       required: false
