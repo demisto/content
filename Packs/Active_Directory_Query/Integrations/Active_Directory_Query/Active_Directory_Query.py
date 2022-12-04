@@ -1792,8 +1792,8 @@ def main():
             demisto.info(f"Failed connect to: {SERVER_IP}:{PORT}. {type(e)}:{err_msg}\n"
                          f"Trace:\n{traceback.format_exc()}")
             if isinstance(e, LDAPBindError):
-                message = f'Failed to bind server. Please validate that the credentials are configured correctly.\n' \
-                      f' Additional details: {err_msg}.\n'
+                message = (f'Failed to bind server. Please validate that the credentials are configured correctly.\n'
+                           f'Additional details: {err_msg}.\n')
             elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
                 message = f'Failed to access LDAP server. \n Additional details: {err_msg}.\n'
                 if not UNSECURE and SECURE_CONNECTION in ('SSL', 'Start TLS'):
@@ -1914,8 +1914,8 @@ def main():
     except Exception as e:
         message = str(e)
         if conn:
-            message += f"\nLast connection result: {json.dumps(conn.result)}\n" \
-                       f"Last error from LDAP server: {conn.last_error}"
+            message += (f"\nLast connection result: {json.dumps(conn.result)}\n"
+                       f"Last error from LDAP server: {conn.last_error}")
         return_error(message)
         return
 
