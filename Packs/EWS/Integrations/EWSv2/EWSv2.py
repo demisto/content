@@ -914,7 +914,6 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
-    demisto.debug('Query - {}'.format(qs.filter()))
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug('Exclude ID list: {}'.format(exclude_ids))
