@@ -447,7 +447,8 @@ def search_pack_and_its_dependencies(client: demisto_client,
                         SUCCESS_FLAG = False
                     else:
                         logging.info(f'Before updating the marketplace, pack {pack_id} depends on pack '
-                                     f'{dependency.get("id")} which is a deprecated pack.')
+                                     f'{dependency.get("id")} which is now a deprecated pack. '
+                                     f'Continuing without installing {dependency.get("id")}.')
                 else:
                     current_packs_to_install.extend(dependencies)
 
