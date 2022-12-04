@@ -17,7 +17,7 @@ class ContentPackInstaller:
         self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
-        self.packs_failed: Dict[str, Version] = dict()
+        self.packs_failed: Dict[str, str] = dict()
 
         self.get_installed_packs()
 
@@ -164,16 +164,16 @@ class ContentPackInstaller:
             pack_payload = json.dumps([{pack['id']:pack['version']}])
 
             status, res = execute_command(
-                    'demisto-api-install-packs',
-                    {
-                        'packs_to_install': str(pack_payload)
-                    },
-                    fail_on_error=False,
-                )
+                'demisto-api-install-packs',
+                {
+                    'packs_to_install': str(pack_payload)
+                },
+                fail_on_error=False,
+            )
 
             if not status:
                 demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack["id"]} - {str(res)}')
-                self.packs_failed[pack['id']] = parse(pack['version'])
+                self.packs_failed[pack['id']] = str(pack['version'])
                 return
 
         self.newly_installed_packs.update(packs_names_versions)  # type: ignore[arg-type]
@@ -310,7 +310,7 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
         if pack_id in content_packs_installer.packs_failed:
             packs_failed = {
                 'packid': pack_id,
-                'packversion': str(content_packs_installer.packs_failed[pack_id]),
+                'packversion': content_packs_installer.packs_failed[pack_id],
                 'installationstatus': 'Failed to install.',
             }
             context_data.append(packs_failed)

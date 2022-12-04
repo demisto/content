@@ -22,7 +22,7 @@ args:
   description: Whether to install the pack dependencies.
   isArray: false
   required: true
-  defaultValue: true
+  defaultValue: 'true'
   auto: PREDEFINED
   predefined:
   - 'true'
