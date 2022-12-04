@@ -3137,7 +3137,7 @@ def add_item_to_all_dictionaries(dictionaries: List[Dict[str, Any]], key: str, v
 
 def is_query_wrong(query: str = None) -> bool:
     """
-    Check if the query format is correct
+    Check if the query is empty or the format is one of the following options: SHA256, IPv4 or URL.
 
     Args:
         query (str, optional): Query string in some format.
