@@ -2635,7 +2635,7 @@ script:
       description: Type of host a sensor is running on.
       type: String
     - contextPath: CrowdStrike.Vulnerability.host_info.local_ip
-      description: Device's local IP address
+      description: Device's local IP address.
       type: String
     - contextPath: CrowdStrike.Vulnerability.host_info.machine_domain
       description: Active Directory domain name.
@@ -2840,7 +2840,7 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.id
       description: Unique system-assigned ID of the vulnerability.
       type: String
-    - contextPath: CrowdStrike.VulnerabilityHost.id
+    - contextPath: CrowdStrike.VulnerabilityHost.cid
       description: Unique system-generated customer identifier (CID) of the account.
       type: String
     - contextPath: CrowdStrike.VulnerabilityHost.aid

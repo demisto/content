@@ -4006,18 +4006,14 @@ def get_cve_command(args: dict) -> list[CommandResults]:
         : args: filter which include params or filter param.
         : return: a list of cve indicators according to the user.
     """
-    print('ok1')
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
     command_results_list = []
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
     url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
     #  raw_res = search_device(filter_operator='OR')
-    print('ok2')
     raw_res = http_request('GET', '/spotlight/combined/vulnerabilities/v1',
                            params={'filter': url_filter, 'facet': 'cve'})
-    print('ok3')
-
     raw_cve = [res_element.get('cve') for res_element in raw_res.get('resources', [])]
     if not raw_cve:
         raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
@@ -4040,9 +4036,6 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                          headers=['ID', 'Severity', 'Published Date', 'Base Score'])
         command_results_list.append(CommandResults(raw_response=cve,
                                                    readable_output=human_readable,
-                                                   # outputs_key_field='id',
-                                                   #  outputs=cve,
-                                                   #  outputs_prefix="cve",
                                                    relationships=relationships_list,
                                                    indicator=cve_indicator))
     return command_results_list
