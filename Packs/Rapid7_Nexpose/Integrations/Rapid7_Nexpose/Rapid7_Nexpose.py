@@ -434,7 +434,6 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-
     def create_site(self, name: str, description: str | None = None, assets: list[str] | None = None,
                     site_importance: str | None = None, template_id: str | None = None) -> dict:
         """
@@ -572,7 +571,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="POST",
-            url_suffix=f"sites/{site_id}/site_credentials",
+            url_suffix=f"/sites/{site_id}/site_credentials",
             json_data=post_data,
             resp_type="json",
         )
@@ -731,7 +730,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             method="DELETE",
-            url_suffix=f"assets/{asset_id}",
+            url_suffix=f"/assets/{asset_id}",
             resp_type="json",
         )
 
@@ -777,7 +776,7 @@ class Client(BaseClient):
         | Delete a shared credential.
         |
         | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSharedCredential
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteSharedCredential
 
         Args:
             shared_credential_id (str): ID of the shared credential to delete.
@@ -845,7 +844,7 @@ class Client(BaseClient):
             bytes: Report file in bytes.
         """
         return self._http_request(
-            url_suffix=f"reports/{report_id}/history/{instance_id}/output",
+            url_suffix=f"/reports/{report_id}/history/{instance_id}/output",
             method="GET",
             resp_type="content",
         )
@@ -865,7 +864,7 @@ class Client(BaseClient):
             dict: API response with information about vulnerability findings on the asset.
         """
         return self._http_request(
-            url_suffix=f"assets/{asset_id}/vulnerabilities/{vulnerability_id}",
+            url_suffix=f"/assets/{asset_id}/vulnerabilities/{vulnerability_id}",
             method="GET",
             resp_type="json",
         )
@@ -1219,7 +1218,7 @@ class Client(BaseClient):
             dict: A dictionary containing information about the scan schedule.
         """
         return self._http_request(
-            url_suffix=f"/https://help.rapid7.com/api/3/sites/{site_id}/scan_schedules/{schedule_id}",
+            url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
             method="GET",
             resp_type="json",
         )
@@ -1674,7 +1673,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="PUT",
-            url_suffix=f"sites/{site_id}/site_credentials",
+            url_suffix=f"/sites/{site_id}/site_credentials",
             json_data=post_data,
             resp_type="json",
         )

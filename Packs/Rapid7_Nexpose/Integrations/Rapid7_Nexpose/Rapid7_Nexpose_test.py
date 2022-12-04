@@ -234,18 +234,43 @@ def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
                              ("client_get_sites", "Test 1", "1"),
                              ("client_get_sites", "Test 2", "2"),
                          ])
-def test_client(mocker, mock_client: Client, sites_mock_file: str, site_name: str, expected_id: str):
+def test_client_paged_http_request(mocker, mock_client: Client, sites_mock_file: str, site_name: str, expected_id: str):
     sites_api_data = load_test_data("api_mock", sites_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=sites_api_data)
 
     assert Site(client=mock_client, site_name=site_name).id == expected_id
 
 
+@pytest.mark.parametrize("scope, template_id, report_name, report_format",
+                         [
+                             ({"sites": [1]}, "1", "Test", "pdf"),
+                         ])
+def test_client_create_report_config(mocker, mock_client: Client, scope: dict, template_id: str, report_name: str,
+                                     report_format: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request")
+    mock_client.create_report_config(scope=scope,
+                                     template_id=template_id,
+                                     report_name=report_name,
+                                     report_format=report_format)
+
+    http_request.assert_called_with(
+        url_suffix="/reports",
+        method="POST",
+        json_data={
+            "scope": scope,
+            "template": template_id,
+            "name": report_name,
+            "format": report_format.lower(),
+        },
+        resp_type="json",
+    )
+
+
 @pytest.mark.parametrize("api_mock_file, expected_output",
                          [
                              ("client_find_asset_site", Site(site_id="1", site_name="Test"))
                          ])
-def test_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expected_output: Site):
+def test_client_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expected_output: Site):
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -261,7 +286,7 @@ def test_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expect
                              ("Test 3", "3"),
                              ("Site-That-Doesn't-Exist", None),
                          ])
-def test_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
+def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
     mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("api_mock", "client_get_sites"))
     assert mock_client.find_site_id(test_input) == expected_output
 
@@ -331,6 +356,58 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
     assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
         expected_output_context
+
+
+@pytest.mark.parametrize("asset_id",
+                         [
+                             ("1",),
+                         ])
+def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_asset_command(client=mock_client, asset_id=asset_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/assets/{asset_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("shared_credential_id",
+                         [
+                             ("1",),
+                         ])
+def test_delete_shared_credential_command(mocker, mock_client: Client, shared_credential_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_shared_credential_command(client=mock_client, shared_credential_id=shared_credential_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/shared_credentials/{shared_credential_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("vulnerability_exception_id",
+                         [
+                             ("1",),
+                         ])
+def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vulnerability_exception_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_vulnerability_exception_command(client=mock_client,
+                                                    vulnerability_exception_id=vulnerability_exception_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
 
 
 def test_download_report_command(mocker, mock_client: Client):
@@ -573,6 +650,27 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
            sorted(expected_output_context, key=lambda d: d["AssetId"])
 
 
+@pytest.mark.parametrize("site_id, shared_credential_id, enabled",
+                         [
+                             ("1", "1", True),
+                             ("1", "1", False),
+                         ])
+def test_set_assigned_shared_credential_status_command(mocker, mock_client: Client, site_id: str,
+                                                       shared_credential_id: str, enabled: bool):
+    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    result = set_assigned_shared_credential_status_command(client=mock_client, site=Site(site_id=site_id),
+                                                           shared_credential_id=shared_credential_id, enabled=enabled)
+
+    http_request.assert_called_with(
+        method="PUT",
+        url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}/enabled",
+        data=json.dumps(enabled),
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
 @pytest.mark.parametrize("test_input_kwargs, expected_post_data",
                          [
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
@@ -589,8 +687,8 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
                          ])
 def test_update_shared_credential_command(mocker, mock_client: Client,
                                           test_input_kwargs: dict, expected_post_data: dict):
-    http_request = mocker.patch.object(BaseClient, "_http_request")
-    update_shared_credential_command(client=mock_client, **test_input_kwargs)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = update_shared_credential_command(client=mock_client, **test_input_kwargs)
 
     http_request.assert_called_with(
         method="PUT",
@@ -599,6 +697,8 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
         resp_type="json",
     )
 
+    assert result.outputs is None
+
 
 @pytest.mark.parametrize("vulnerability_exception_id, expiration_date",
                          [
@@ -606,10 +706,10 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                          ])
 def test_update_vulnerability_exception_expiration_command(mocker, mock_client: Client,
                                                            vulnerability_exception_id: str, expiration_date: str):
-    http_request = mocker.patch.object(BaseClient, "_http_request")
-    update_vulnerability_exception_expiration_command(client=mock_client,
-                                                      vulnerability_exception_id=vulnerability_exception_id,
-                                                      expiration_date=expiration_date)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = update_vulnerability_exception_expiration_command(client=mock_client,
+                                                               vulnerability_exception_id=vulnerability_exception_id,
+                                                               expiration_date=expiration_date)
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
@@ -617,6 +717,8 @@ def test_update_vulnerability_exception_expiration_command(mocker, mock_client: 
         data=json.dumps(expiration_date),
         resp_type="json",
     )
+
+    assert result.outputs is None
 
 
 @pytest.mark.parametrize("vulnerability_exception_id, status",
@@ -626,13 +728,15 @@ def test_update_vulnerability_exception_expiration_command(mocker, mock_client: 
                          ])
 def test_update_vulnerability_exception_status_command(mocker, mock_client: Client,
                                                        vulnerability_exception_id: str, status: str):
-    http_request = mocker.patch.object(BaseClient, "_http_request")
-    update_vulnerability_exception_status_command(client=mock_client,
-                                                  vulnerability_exception_id=vulnerability_exception_id,
-                                                  status=status)
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = update_vulnerability_exception_status_command(client=mock_client,
+                                                           vulnerability_exception_id=vulnerability_exception_id,
+                                                           status=status)
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/{status.lower()}",
         method="POST",
         resp_type="json",
     )
+
+    assert result.outputs is None
