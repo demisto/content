@@ -82,12 +82,13 @@ class Client(CrowdStrikeClient):
 
     def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
                  malicious_confidence=None, filter=None, generic_phrase=None, insecure=True, proxy=False,
-                 first_fetch=None, create_relationships=True):
+                 first_fetch=None, create_relationships=True, timeout='10'):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
                                ok_codes=tuple(),
-                               proxy=proxy)
+                               proxy=proxy,
+                               timeout=timeout)
         super().__init__(params)
         self.type = type
         self.malicious_confidence = malicious_confidence
@@ -430,6 +431,7 @@ def main() -> None:
     max_fetch = min(max_fetch, 10000)  # type: ignore
     feed_tags = argToList(params.get('feedTags'))
     create_relationships = params.get('create_relationships', True)
+    timeout = params.get('timeout')
 
     args = demisto.args()
 
@@ -451,7 +453,8 @@ def main() -> None:
             generic_phrase=generic_phrase,
             limit=max_fetch,
             first_fetch=first_fetch,
-            create_relationships=create_relationships
+            create_relationships=create_relationships,
+            timeout=timeout
         )
 
         if command == 'test-module':
