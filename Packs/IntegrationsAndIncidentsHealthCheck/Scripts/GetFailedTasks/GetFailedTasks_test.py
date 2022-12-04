@@ -128,3 +128,25 @@ def test_get_incident_data_using_internal_http_request(mocker):
     result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], None)
     assert mock_res.call_count == 1
     assert result[0] == []
+
+
+def test_get_incident_data_internal_http_request_fail(mocker):
+    """
+        Given:
+            - An incident and no Demisto Rest Api instance.
+
+        When:
+            - Running the get_incident_data function.
+
+        Then:
+            - Validates that get_incident_tasks_using_rest_api_instance was called after
+              get_incident_tasks_using_internal_request raised an exception.
+    """
+    internal_request_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request', side_effect=ValueError)
+    mocker.patch('GetFailedTasks.get_rest_api_instance_to_use', return_value='instance_mock')
+    api_instanc_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_rest_api_instance', return_value=[])
+
+    result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1])
+    assert internal_request_mock_res.call_count == 1
+    assert api_instanc_mock_res.call_count == 1
+    assert result[0] == []
