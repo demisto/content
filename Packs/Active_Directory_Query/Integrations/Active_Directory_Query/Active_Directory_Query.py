@@ -1912,14 +1912,12 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented')
 
     except Exception as e:
-        err_msg = str(e)
+        message = str(e)
         if conn:
-            msg = f"{err_msg}.\nLast connection result: {json.dumps(conn.result)}.\n" \
-                  f"Last error from LDAP server: {conn.last_error}"
-        else:
-            msg = err_msg
-
-        return_error(msg)
+            message += f"\nLast connection result: {json.dumps(conn.result)}\n" \
+                       f"Last error from LDAP server: {conn.last_error}"
+        return_error(message)
+        return
 
     finally:
         # disconnect and close the connection
