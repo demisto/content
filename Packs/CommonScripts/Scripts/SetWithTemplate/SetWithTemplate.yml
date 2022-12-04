@@ -12,13 +12,13 @@ args:
 - name: key
   description: The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data(val.ID == obj.ID)".
 - name: template
-  description: The template text which can include DT expressions sush as ${value}.
+  description: The template text which can include DT expressions such as ${value}.
 - name: append
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: If false then the context key will be overwritten. If set to true then the script will append to existing context key.
+  description: If false, the context key will be overwritten. If set to true, the script will be appended to the existing context key.
   defaultValue: "false"
 - name: stringify
   auto: PREDEFINED
@@ -27,27 +27,27 @@ args:
   - "all"
   - "true"
   - "false"
-  description: Whether to save the argument as a string. The default value is "noop".
+  description: Whether to save the argument as a string. 
   defaultValue: "noop"
 - name: force
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Whether to force the creation of the context. The default value is "false".
+  description: Whether to force the creation of the context. 
   defaultValue: "false"
 - name: context
-  description: The context data which overwrites the demisto context.
+  description: The context data which overwrites the Demisto context.
   type: unknown
 - name: variable_markers
-  description: The pair of start and end markers to bracket a variable name
+  description: The pair of start and end markers to bracket a variable name.
   defaultValue: ${,}
 - name: keep_symbol_to_null
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Set to true not to replace a value if the variable is null, otherwise false.
+  description: Set to true to not replace a value if the variable is null, otherwise false.
   defaultValue: "false"
 scripttarget: 0
 subtype: python3
