@@ -1,6 +1,5 @@
 import demistomock as demisto
 
-
 class TestParseWordDoc:
     @staticmethod
     def mock_results(mocker):
@@ -56,3 +55,20 @@ class TestParseWordDoc:
         main()
         result = self.get_demisto_results()
         assert result.get('File') == 'file-sample.txt'
+
+
+def test_extract_urls_xml():
+    """
+    Given:
+        - A docx file with hyperlink
+
+    When:
+        - Run the extract_urls_xml method
+
+    Then:
+        - Verify that the method extracting the url from the document
+
+    """
+    from ParseWordDoc import extract_urls_xml
+    urls = extract_urls_xml('./TestData/file-sample2.docx')
+    assert urls == ['https://typora.io']
