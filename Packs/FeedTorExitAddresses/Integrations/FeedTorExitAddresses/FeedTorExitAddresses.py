@@ -65,7 +65,10 @@ class Client(BaseClient):
                 indicator['lastseenbysource'] = self.datestring_to_server_format(date)
 
             elif line.startswith('ExitAddress'):
-                indicator['value'] = line.split()[1]
+                value = line.split()[1]
+                if FeedIndicatorType.ip_to_indicator_type(value) != FeedIndicatorType.IP:
+                    continue
+                indicator['value'] = value
                 raw_json = indicator.copy()
                 indicator['rawJSON'] = raw_json
                 indicator['fields'] = {
