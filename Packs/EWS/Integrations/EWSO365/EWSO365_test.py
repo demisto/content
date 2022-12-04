@@ -544,7 +544,7 @@ def test_invalid_params(mocker, params, expected_result):
     assert "Exception: " + expected_result in demisto.error.call_args[0][0]
 
 
-@pytest.mark.parametrize(argnames='old_credentials, new_credentials, expected', 
+@pytest.mark.parametrize(argnames='old_credentials, new_credentials, expected',
                          argvalues=[
                              ('old_client_secret', {'password': 'new_client_secret'}, 'new_client_secret'),
                              ('old_client_secret', None, 'old_client_secret')])
@@ -559,11 +559,9 @@ def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, e
     """
     mocker.patch.object(EWSClient, '_EWSClient__prepare')
     client = EWSClient(default_target_mailbox='test',
-                       credentials=new_credentials, 
+                       credentials=new_credentials,
                        client_secret=old_credentials,
                        _client_id='new_client_id',
                        _tenant_id='new_tenant_id')
-    
-    assert client.ms_client.client_secret == expected
 
-    
+    assert client.ms_client.client_secret == expected
