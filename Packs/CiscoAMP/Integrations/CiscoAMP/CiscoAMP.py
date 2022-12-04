@@ -3144,7 +3144,7 @@ def is_query_wrong(query: str = None) -> bool:
             Defaults to None.
 
     Returns:
-        bool: Whether the format is correct or not
+        bool: Whether query is correct or not.
     """
     if not query:
         return True
