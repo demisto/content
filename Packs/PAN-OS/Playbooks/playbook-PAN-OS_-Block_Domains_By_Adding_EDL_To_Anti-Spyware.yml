@@ -64,6 +64,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -312,6 +313,7 @@ tasks:
           right:
             value:
               simple: "true"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
