@@ -1648,8 +1648,9 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     page_size = arg_to_number(args.get('page_size', 0))
     limit = arg_to_number(args.get('limit', 0))
 
-    filename_regex = r'[0-9a-zA-Z_\-.]+[0-9a-zA-Z_\-. ]*'
+    filename_regex = r'[\w\-\.]+[\w\\-\. ]*'
 
+    # Check if the query is empty or of one of the following formats: SHA256, IPv4, URL or Filename.
     if is_query_wrong(query_string) \
             and not bool(re.match(filename_regex, query_string)):
         raise ValueError('query_string must be: SHA-256/IPv4/URL/Filename')
