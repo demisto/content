@@ -2073,7 +2073,7 @@ def splunk_search_command(service: client.Service) -> CommandResults:
     status_cmd_result = None
     if polling:
         status_cmd_result = splunk_job_status(service, args)
-        status = status_cmd_result.outputs['Status']
+        status = status_cmd_result.outputs['Status']  # type: ignore[index]
         if status.lower() != 'done':
             # Job is still running, schedule the next run of the command.
             scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
