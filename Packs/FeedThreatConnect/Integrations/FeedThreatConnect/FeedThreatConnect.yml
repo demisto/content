@@ -134,11 +134,13 @@ configuration:
 - display: Confidence Threshold
   required: false
   type: 0
-  additionalinfo: Minimal confidence value to fetch indicators by (an integer between 0 to 100).
+  additionalinfo: |
+    Minimal confidence value to fetch indicators by (an integer between 0 to 100). Note: this parameter is not relevant for groups.
   name: confidence
   hidden: false
   defaultvalue: 0
-- additionalinfo: Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000).
+- additionalinfo: |
+    Minimal threat assess score value to fetch indicators by (an integer between 0 to 1000). Note: this parameter is not relevant for groups.
   display: Threat Assess Score Threshold
   hidden: false
   name: threat_assess_score
@@ -263,7 +265,7 @@ script:
     description: Gets available indicators owners.
     execution: false
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.8.37233
   feed: true
   isfetch: false
   longRunning: false
