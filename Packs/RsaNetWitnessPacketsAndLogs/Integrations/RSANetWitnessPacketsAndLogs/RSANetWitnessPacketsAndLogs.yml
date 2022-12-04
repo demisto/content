@@ -24,13 +24,13 @@ configuration:
   name: username
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
   hidden: true
 - display: Password
   name: password
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
   hidden: true
 - displaypassword: Secret Key
   name: credentials
