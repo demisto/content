@@ -168,7 +168,7 @@ var installPackFromUrl = function(pack_url){
         throw 'Demisto REST APIs - Failed to download pack file from ' + pack_url;
     }
 
-    file_path = res.Path
+    let file_path = res.Path
 
     // upload the pack
     sendMultipart('contentpacks/installed/upload?skipVerify=true&skipValidation=true', file_path,'{}');
