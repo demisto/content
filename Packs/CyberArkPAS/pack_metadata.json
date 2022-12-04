@@ -10,7 +10,9 @@
     "categories": [
         "Authentication"
     ],
-    "tags": [],
+    "tags": [
+        "marketplacev2:Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
