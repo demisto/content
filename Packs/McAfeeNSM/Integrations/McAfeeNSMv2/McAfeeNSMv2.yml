@@ -181,6 +181,90 @@ script:
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectType
           description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP"	.
           type: Unknown
+    - name: nsm-create-firewall-policy
+      description: Adds a new Firewall Policy and Access Rules.
+      arguments:
+        - name: domain
+          required: true
+          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          isArray: false
+        - name: name
+          required: true
+          description: The policy name.
+          isArray: false
+        - name: visible_to_child
+          required: true
+          description: Will the policy be visible to the child domain.
+          isArray: false
+        - name: description
+          required: false
+          description: The description of the policy.
+          isArray: false
+        - name: is_editable
+          required: true
+          description: If the policy is editable or not.
+          isArray: false
+        - name: policy_type
+          auto: PREDEFINED
+          description: The type of the policy.
+          isArray: false
+          predefined:
+            - Advanced
+            - Classic
+          required: true
+        - name: rule_description
+          required: true
+          description: The rule description.
+          isArray: false
+        - name: direction
+          auto: PREDEFINED
+          description: The direction of the rule.
+          isArray: false
+          predefined:
+            - Inbound
+            - Outbound
+            - Either
+          required: true
+        - name: source_rule_object_id
+          required: false
+          description: The id of the rule that connected to the policy.
+          isArray: false
+        - name: source_rule_name
+          required: false
+          description: The name of the rule that connected to the policy.
+          isArray: false
+        - name: source_rule_object_type
+          auto: PREDEFINED
+          description: The type of the rule that connected to the policy.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+          required: true
+        - name: destination_rule_object_id
+          required: false
+          description: The id of the rule that connected to the policy.
+          isArray: false
+        - name: destination_rule_name
+          required: false
+          description: The name of the rule that connected to the policy.
+          isArray: false
+        - name: destination_rule_object_type
+          auto: PREDEFINED
+          description: The type of the rule that connected to the policy.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+          required: true
   isfetch: false
   runonce: false
   script: '-'

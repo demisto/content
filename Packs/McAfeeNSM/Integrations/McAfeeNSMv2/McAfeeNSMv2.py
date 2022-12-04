@@ -101,7 +101,7 @@ def pagination(records_list: List, limit: int, page: int) -> List:
     if page == 1:
         return records_list[:limit]
     else:
-        min_size = (limit * (page - 1))
+        min_size = (limit * (page - 1))  #TODO check if needed
         if min_size < len(records_list):
             results_list = records_list[min_size:]
             return results_list[:limit]
@@ -212,6 +212,34 @@ def get_firewall_policy_command(client: Client, args: Dict, session_str: str) ->
     )
 
 
+def create_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Adds a new Firewall Policy and Access Rules.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    domain = args.get('domain')
+    name = args.get('name')
+    visible_to_child = args.get('visible_to_child')
+    description = args.get('description')
+    is_editable = args.get('is_editable')
+    policy_type = args.get('policy_type')
+    rule_description = args.get('rule_description')
+    direction = args.get('direction')
+    source_rule_object_id = args.get('source_rule_object_id')
+    source_rule_name = args.get('source_rule_name')
+    source_rule_object_type = args.get('source_rule_object_type')
+    destination_rule_object_id = args.get('destination_rule_object_id')
+    destination_rule_name = args.get('destination_rule_name')
+    destination_rule_object_type = args.get('destination_rule_object_type')
+    source_arr = [source_rule_object_id, source_rule_name, source_rule_object_type]
+    destination_arr = [destination_rule_object_id, destination_rule_name, destination_rule_object_type]
+    source_sum = sum(map(bool, source_arr))
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -252,6 +280,9 @@ def main() -> None:  # pragma: no cover
             return_results(result)
         elif demisto.command() == 'nsm-get-firewall-policy':
             results = get_firewall_policy_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-create-firewall-policy':
+            results = create_firewall_policy_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
