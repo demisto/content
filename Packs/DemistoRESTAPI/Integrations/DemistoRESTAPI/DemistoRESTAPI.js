@@ -3,6 +3,8 @@ if (serverURL.slice(-1) === '/') {
     serverURL = serverURL.slice(0,-1);
 }
 
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
+
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
     if (uri.slice(-1) !== '/') {
@@ -183,7 +185,6 @@ var installPacks = function(packs_to_install, file_url) {
     }
     else{
         let installed_packs = []
-        let marketplace_url = params.marketplace_url
         let packs = JSON.parse(packs_to_install);
 
         for (let pack_index = 0; pack_index < packs.length; pack_index += 1) {

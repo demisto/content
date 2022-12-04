@@ -10,7 +10,7 @@ Use Demisto REST APIs
     | --- |--------------| --- |
     | Demisto Server URL |  | True         |
     | Demisto Server API Key |  | False        |
-    | Base marketplace url |  | True         |
+    | Base marketplace url |  | False           |
     | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
     | Demisto Server API Key |  | False        |
     | Use system proxy settings | Use system proxy settings. | False        |
