@@ -7,9 +7,10 @@ import requests
 import traceback
 from typing import Dict, Any
 from bs4 import BeautifulSoup
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 POST_HEADERS = {
@@ -75,7 +76,7 @@ class Client(BaseClient):
         """
         resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json')
         token = resp.get('token')
-        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
+        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())  # type: ignore[union-attr]
         integration_context = get_integration_context()
         integration_context.update({'token': token})
         # Add 10 minutes buffer for the token

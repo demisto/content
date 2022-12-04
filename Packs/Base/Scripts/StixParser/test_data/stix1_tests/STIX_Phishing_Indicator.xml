@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	STIX Phishing Indicator Example
+	
+	Copyright (c) 2014, The MITRE Corporation. All rights reserved. 
+    The contents of this file are subject to the terms of the STIX License located at http://stix.mitre.org/about/termsofuse.html.
+    
+	This example demonstrates a more complex usage of STIX to represent indicators of phishing activity along with suggested courses of action, previous sightings, and handling guidance. 
+	
+	It demonstrates the use of:
+	
+	   * STIX Indicators
+	   * Simple STIX TTPs
+	   * STIX Courses of Action
+	   * Handling (inline)
+	   * Confidence
+	   * Sightings
+	   * CybOX within STIX
+	   * The CybOX Email Object (w/ Attachment)
+	   * CybOX Patterns (condition="Contains")
+	   * Controlled vocabularies
+	
+	Created by Sean Barnum
+-->
+<stix:STIX_Package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:stix="http://stix.mitre.org/stix-1" xmlns:stixCommon="http://stix.mitre.org/common-1" xmlns:indicator="http://stix.mitre.org/Indicator-2" xmlns:TTP="http://stix.mitre.org/TTP-1" xmlns:COA="http://stix.mitre.org/CourseOfAction-1" xmlns:ciq="urn:oasis:names:tc:ciq:xpil:3" xmlns:n="urn:oasis:names:tc:ciq:xnl:3" xmlns:marking="http://data-marking.mitre.org/Marking-1" xmlns:tlpMarking="http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1" xmlns:stixVocabs="http://stix.mitre.org/default_vocabularies-1" xmlns:cybox="http://cybox.mitre.org/cybox-2" xmlns:cyboxCommon="http://cybox.mitre.org/common-2" xmlns:AddressObj="http://cybox.mitre.org/objects#AddressObject-2" xmlns:FileObj="http://cybox.mitre.org/objects#FileObject-2" xmlns:URIObj="http://cybox.mitre.org/objects#URIObject-2" xmlns:EmailMessageObj="http://cybox.mitre.org/objects#EmailMessageObject-2" xmlns:cyboxVocabs="http://cybox.mitre.org/default_vocabularies-2" xmlns:example="http://example.com/" xsi:schemaLocation="
+http://stix.mitre.org/stix-1 ../stix_core.xsd
+http://stix.mitre.org/common-1 ../stix_common.xsd
+http://stix.mitre.org/Indicator-2 ../indicator.xsd
+http://stix.mitre.org/TTP-1 ../ttp.xsd
+http://stix.mitre.org/CourseOfAction-1 ../course_of_action.xsd
+http://data-marking.mitre.org/Marking-1  ../data_marking.xsd
+http://data-marking.mitre.org/extensions/MarkingStructure#TLP-1 ../extensions/marking/tlp_marking.xsd
+http://stix.mitre.org/default_vocabularies-1 ../stix_default_vocabularies.xsd
+http://cybox.mitre.org/cybox-2 ../cybox/cybox_core.xsd
+http://cybox.mitre.org/common-2 ../cybox/cybox_common.xsd  
+http://cybox.mitre.org/objects#AddressObject-2 ../cybox/objects/Address_Object.xsd
+http://cybox.mitre.org/objects#FileObject-2 ../cybox/objects/File_Object.xsd
+http://cybox.mitre.org/objects#URIObject-2 ../cybox/objects/URI_Object.xsd
+http://cybox.mitre.org/objects#EmailMessageObject-2 ../cybox/objects/Email_Message_Object.xsd 
+http://cybox.mitre.org/default_vocabularies-2 ../cybox/cybox_default_vocabularies.xsd" id="example:Indicator-ba1d406e-937c-414f-9231-6e1dbe64fe8b" version="1.1.1" timestamp="2014-05-08T09:00:00.000000Z">
+	<stix:STIX_Header>
+		<stix:Title>STIX Phishing Indicator Example</stix:Title>
+		<stix:Package_Intent xsi:type="stixVocabs:PackageIntentVocab-1.0">Indicators - Phishing</stix:Package_Intent>
+	</stix:STIX_Header>
+	<stix:Indicators>
+		<stix:Indicator xsi:type="indicator:IndicatorType" id="example:Indicator-19e5d914-cc0e-478f-a523-b099a34383f7" timestamp="2014-05-08T09:00:00.000000Z">
+			<indicator:Title>"US-China" Phishing Indicator</indicator:Title>
+			<indicator:Type xsi:type="stixVocabs:IndicatorTypeVocab-1.1">Malicious E-mail</indicator:Type>
+			<indicator:Description>This is a cyber threat indicator for instances of "US-China" phishing attempts.</indicator:Description>
+			<indicator:Valid_Time_Position>
+				<indicator:Start_Time>2012-12-01T09:30:47Z</indicator:Start_Time>
+				<indicator:End_Time>2013-02-01T09:30:47Z</indicator:End_Time>
+			</indicator:Valid_Time_Position>
+			<!-- The CybOX observable pattern is defined inline here for completeness. It could just as easily be included by reference.to save space. -->
+			<indicator:Observable id="example:Observable-Pattern-5f1dedd3-ece3-4007-94cd-7d52784c1474">
+				<cybox:Object id="example:Object-3a7aa9db-d082-447c-a422-293b78e24238">
+					<cybox:Properties xsi:type="EmailMessageObj:EmailMessageObjectType">
+						<EmailMessageObj:Header>
+							<EmailMessageObj:From category="e-mail">
+								<AddressObj:Address_Value condition="Contains">@state.gov</AddressObj:Address_Value>
+							</EmailMessageObj:From>
+						</EmailMessageObj:Header>
+					</cybox:Properties>
+					<cybox:Related_Objects>
+						<cybox:Related_Object>
+							<cybox:Properties xsi:type="FileObj:FileObjectType">
+								<FileObj:File_Extension>pdf</FileObj:File_Extension>
+								<FileObj:Size_In_Bytes>87022</FileObj:Size_In_Bytes>
+								<FileObj:Hashes>
+									<cyboxCommon:Hash>
+										<cyboxCommon:Type xsi:type="cyboxVocabs:HashNameVocab-1.0">MD5</cyboxCommon:Type>
+										<cyboxCommon:Simple_Hash_Value>cf2b3ad32a8a4cfb05e9dfc45875bd70</cyboxCommon:Simple_Hash_Value>
+									</cyboxCommon:Hash>
+								</FileObj:Hashes>
+							</cybox:Properties>
+							<cybox:Relationship xsi:type="cyboxVocabs:ObjectRelationshipVocab-1.0">Contains</cybox:Relationship>
+						</cybox:Related_Object>
+					</cybox:Related_Objects>
+				</cybox:Object>
+			</indicator:Observable>
+			<indicator:Indicated_TTP>
+				<stixCommon:TTP xsi:type="TTP:TTPType">
+					<TTP:Behavior><TTP:Attack_Patterns><TTP:Attack_Pattern capec_id="CAPEC-98">
+								<TTP:Description>Phishing</TTP:Description>
+					</TTP:Attack_Pattern></TTP:Attack_Patterns></TTP:Behavior>
+				</stixCommon:TTP>
+			</indicator:Indicated_TTP>
+			<indicator:Kill_Chain_Phases>
+				<stixCommon:Kill_Chain_Phase phase_id="example:TTP-79a0e041-9d5f-49bb-ada4-8322622b162d" name="Delivery" ordinality="3" kill_chain_id="example:TTP-af3e707f-2fb9-49e5-8c37-14026ca0a5ff" kill_chain_name="LMCO Kill Chain"/>
+			</indicator:Kill_Chain_Phases>
+			<indicator:Suggested_COAs>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-346075c3-f3a4-48db-8e71-31b053f7838a" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Remedy</COA:Stage>
+						<COA:Type>Email Block</COA:Type>
+						<COA:Description>Redirect and quarantine new matching email</COA:Description>
+						<COA:Objective>
+							<COA:Description>Prevent future instances of similar phishing attempts from reaching targeted recipients in order to eliminate possibility of compromise from targeted recipient falling for phishing lure.</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-a157f596-e1bf-4599-9dad-748511d68c3a" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Remedy</COA:Stage>
+						<COA:Type>Web Link Block</COA:Type>
+						<COA:Description>Block malicous links on web proxies</COA:Description>
+						<COA:Objective>
+							<COA:Description>Prevent execution/navigation to known malicious web URLs.</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-0ac78ae1-661d-4845-ace1-a460c6075080" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Remedy</COA:Stage>
+						<COA:Type>Domain Traffic Block</COA:Type>
+						<COA:Description>Block traffic to/from malicous domains via firewalls and DNS servers.</COA:Description>
+						<COA:Objective>
+							<COA:Description>Prevent any traffic (potentially containing malicious logic, data exfil, C2, etc.) to or from known malicious domains.</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-a09c17a4-d05e-48f3-b629-7de9a8c42162" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Response</COA:Stage>
+						<COA:Type>Malicous Email Cleanup</COA:Type>
+						<COA:Description>Remove existing matching email from the mail servers</COA:Description>
+						<COA:Objective>
+							<COA:Description>Cleanup any known malicious emails from mail servers (potentially in Inboxes, Sent folders, Deleted folders, etc.) to prevent any future exploitation from those particular emails.</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-98cf40a2-e2be-448e-8474-c6e8c02628ef" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Response</COA:Stage>
+						<COA:Type>Phishing Target Identification</COA:Type>
+						<COA:Description>Review mail logs to identify other targeted recipients</COA:Description>
+						<COA:Objective>
+							<COA:Description>Identify all targeted victims of a particular phishing campaign in order to enable notification and to support more strategic cyber threat intelligence activities (TTP characterization, Campaign analysis, ThreatActor attribution, etc.).</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-d470b8d7-3717-4a42-a3bc-3b57f1b2c300" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Response</COA:Stage>
+						<COA:Type>Phishing Target Notification</COA:Type>
+						<COA:Description>Notify targeted recipients</COA:Description>
+						<COA:Objective>
+							<COA:Description>Notify all targeted victims of a particular phishing campaign to ensure they are aware they have been targeted and to help them understand how to avoid falling for phishing attacks.</COA:Description>
+						</COA:Objective>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+				<indicator:Suggested_COA>
+					<stixCommon:Course_Of_Action xsi:type="COA:CourseOfActionType" id="example:COA-e46d2565-754e-4ac3-9f44-2de1bfb1e71d" timestamp="2014-05-08T09:00:00.000000Z">
+						<COA:Stage xsi:type="stixVocabs:COAStageVocab-1.0">Response</COA:Stage>
+						<COA:Type>Super Secret Proprietary Response</COA:Type>
+						<COA:Description>Carry out some sensitive action that is applicable only within the environment of the affected organization.</COA:Description>
+					</stixCommon:Course_Of_Action>
+				</indicator:Suggested_COA>
+			</indicator:Suggested_COAs>
+			<indicator:Handling>
+				<marking:Marking id="example:Marking-88501eee-135a-429b-9848-9a992456bd91">
+					<marking:Controlled_Structure>ancestor-or-self::stix:Indicator//node()</marking:Controlled_Structure>
+					<marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" marking_model_name="TLP" marking_model_ref="http://www.us-cert.gov/tlp/" color="GREEN"/>
+				</marking:Marking>
+				<marking:Marking id="example:Marking-d50a3e6b-142e-4b8e-92ab-2bb61a273d61">
+					<marking:Controlled_Structure>ancestor-or-self::stix:Indicator//indicator:SuggestedCOAs/indicator:SuggestedCOA/stixCommon:Course_Of_Action[@id="example:COA-e46d2565-754e-4ac3-9f44-2de1bfb1e71d"]</marking:Controlled_Structure>
+					<marking:Marking_Structure xsi:type="tlpMarking:TLPMarkingStructureType" marking_model_name="TLP" marking_model_ref="http://www.us-cert.gov/tlp/" color="RED"/>
+				</marking:Marking>
+			</indicator:Handling>
+			<indicator:Confidence timestamp="2012-12-01T09:30:47Z">
+				<stixCommon:Value vocab_reference="someURLtoConfidenceModelDescription.foo.com">High</stixCommon:Value>
+				<stixCommon:Source>
+					<stixCommon:Identity><stixCommon:Name>MITRE</stixCommon:Name></stixCommon:Identity>
+				</stixCommon:Source>
+			</indicator:Confidence>
+			<indicator:Sightings sightings_count="1">
+				<indicator:Sighting timestamp="2012-12-01T09:30:47Z">
+					<indicator:Source>
+						<stixCommon:Identity><stixCommon:Name>MITRE</stixCommon:Name></stixCommon:Identity>
+					</indicator:Source>
+				</indicator:Sighting>
+			</indicator:Sightings>
+			<indicator:Producer>
+				<stixCommon:Identity id="example:Org-ba680284-6865-44b4-ba36-dd48d402a589">
+					<stixCommon:Name>MITRE</stixCommon:Name>
+				</stixCommon:Identity>
+				<stixCommon:Time>
+					<cyboxCommon:Produced_Time>2012-12-01T09:30:47Z</cyboxCommon:Produced_Time>
+				</stixCommon:Time>
+			</indicator:Producer>
+		</stix:Indicator>
+	</stix:Indicators>
+</stix:STIX_Package>
