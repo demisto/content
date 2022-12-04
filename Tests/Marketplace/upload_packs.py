@@ -212,7 +212,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
         pack_list: List[Pack]: The pack list that is created from `create-content-artifacts` step.
-        marketplace (str): name of current markeplace, xsoar or marketplacev2
+        marketplace (str): name of current marketplace the upload is made for. (can be xsoar, marketplacev2 or xpanse)
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -223,6 +223,8 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
+
+    logging.info("Start cleaning non existing packs in index.")
     valid_pack_names = {p.name for p in content_packs}
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
@@ -359,7 +361,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         index_folder_path (str): The index folder path.
         artifacts_dir (str): The CI artifacts directory to upload the corepacks.json to.
         storage_base_path (str): the source path of the core packs in the target bucket.
-        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
     required_core_packs = GCPConfig.get_core_packs(marketplace)
@@ -1217,7 +1219,7 @@ def main():
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
             pack.cleanup()
-            return False
+            continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
@@ -1283,7 +1285,7 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket, id_set=id_set)
 
-    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,
