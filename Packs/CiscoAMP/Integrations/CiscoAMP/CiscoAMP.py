@@ -1391,7 +1391,7 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
 
     raw_response = client.computer_trajectory_list_request(
         connector_guid=connector_guid,
-        limit=pagination.page * pagination.page_size if pagination.is_manual else limit,
+        limit=pagination.page * pagination.page_size if pagination.is_manual else (limit or None),
         query_string=query_string,
     )
 
@@ -1482,7 +1482,7 @@ def computer_user_trajectory_list_command(client: Client, args: Dict[str, Any]) 
 
     raw_response = client.computer_user_trajectory_list_request(
         connector_guid=connector_guid,
-        limit=pagination.page * pagination.page_size if pagination.is_manual else limit,
+        limit=pagination.page * pagination.page_size if pagination.is_manual else (limit or None),
         username=username,
     )
 
