@@ -4,9 +4,11 @@ if (serverURL.slice(-1) === '/') {
 }
 
 getTenantAccountName = function () {
-    var urls = demistoUrls()
+    const urls = demistoUrls()
     const server_url = urls['server'].toString()
-    var account_name = ''
+    // server_url example - https://account-testing-ysdkvou:443/acc_Test
+    var account_name = §''
+    // check if server_url contains "/acc_" string
     if (server_url.indexOf("/acc_") >= 0){
         words = server_url.split('acc_')
         tenant_name = words[words.length - 1]
@@ -14,7 +16,6 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
-    log(account_name)
     return account_name
 }
 
@@ -72,7 +73,7 @@ var sendRequest = function(method, uri, body, raw) {
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
-    if (args.use_tenant){
+    if (params.use_tenant){
         requestUrl += "/" + getTenantAccountName();
     }
     requestUrl += uri;
