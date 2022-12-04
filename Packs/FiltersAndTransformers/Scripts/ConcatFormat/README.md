@@ -19,7 +19,7 @@ Set a value built by a template in context under the key you entered.
 | append | If false, the context key will be overwritten. If set to true, the script will be appended to the existing context key. |
 | stringify | Whether to save the argument as a string. The default value is "noop". |
 | force | Whether to force the creation of the context. The default value is "false". |
-| context | The context data which overwrites the Demisto context. |
+| context | The context data that overwrites the Demisto context. |
 | variable_markers | The pair of start and end markers to bracket a variable name. |
 | keep_symbol_to_null | Set to true to not replace a value if the variable is null, otherwise false. |
 
@@ -30,7 +30,7 @@ There are no outputs for this script.
 ## Getting Started
 ---
 The script builds a text from a template text which includes variables such as:
- - This is a test message for ${user_name}.
+This is a test message for ${user_name}.
 
 The template will be formatted to `This is a test message for John Doe.` by replacing variable parameters.
 
