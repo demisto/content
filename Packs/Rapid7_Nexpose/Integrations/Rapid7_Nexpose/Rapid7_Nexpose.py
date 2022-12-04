@@ -5237,6 +5237,7 @@ def main():  # pragma: no cover
                 ),
                 repeat_behaviour=args.pop("on_scan_repeat"),
                 start_date=args.pop("start"),
+                interval=args.pop("interval_time", None),
                 **args
             )
         elif command == "nexpose-create-shared-credential":
