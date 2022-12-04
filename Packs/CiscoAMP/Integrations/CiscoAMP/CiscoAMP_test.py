@@ -410,7 +410,7 @@ def test_computer_activity_list_error_command(requests_mock, mock_client):
 
     with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_activity_list_command
-        print(computer_activity_list_command(mock_client, args))
+        computer_activity_list_command(mock_client, args)
 
         assert str(ve) == 'query_string must be: SHA-256/IPv4/URL/Filename'
 

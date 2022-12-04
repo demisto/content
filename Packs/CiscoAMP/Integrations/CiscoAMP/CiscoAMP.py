@@ -1648,7 +1648,7 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     page_size = arg_to_number(args.get('page_size', 0))
     limit = arg_to_number(args.get('limit', 0))
 
-    filename_regex = r'[\w\-\.]+[\w\\-\. ]*'
+    filename_regex = r'[\w\-\.]+[\w\-\. ]*'
 
     # Check if the query is empty or of one of the following formats: SHA256, IPv4, URL or Filename.
     if is_query_wrong(query_string) \
