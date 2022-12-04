@@ -17,8 +17,9 @@ urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 INTEGRATION_NAME = 'CrowdStrike Falcon'
-CLIENT_ID = demisto.params().get('client_id')
-SECRET = demisto.params().get('secret')
+CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
+SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
+#   falcon_access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']

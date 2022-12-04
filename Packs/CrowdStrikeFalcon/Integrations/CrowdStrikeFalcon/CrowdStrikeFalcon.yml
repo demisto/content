@@ -9,13 +9,20 @@ configuration:
   required: true
   type: 0
 - display: Client ID
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret
+- display: Client ID
   name: client_id
-  required: true
+  required: false
   type: 0
+  hidden: true
 - display: Secret
   name: secret
-  required: true
+  required: false
   type: 4
+  hidden: true
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
