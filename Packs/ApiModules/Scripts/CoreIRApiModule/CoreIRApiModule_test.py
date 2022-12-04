@@ -2760,6 +2760,34 @@ class TestGetAlertByFilter:
                "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', " \
                "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
 
+    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_action_status': 'detected (scanned)'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert response.outputs[0].get('alert_action_status', {}) == 'SCANNED'
+        assert response.outputs[0].get('alert_action_status_readable', {}) == 'detected (scanned)'
+        assert "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': " \
+               "'SCANNED'" in request_data_log.call_args[0][0]
+
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
         Given:

@@ -26,6 +26,7 @@
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
 /Tests/scripts/collect_tests/id_set.py @ilaner
+/Tests/conf.json @ostolero
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
