@@ -1,4 +1,4 @@
-Build a text from a template which can include DT expressions.
+Build text from a template that can include DT expressions.
 
 ## Script Data
 ---
@@ -19,7 +19,7 @@ Build a text from a template which can include DT expressions.
 | ctx_data | Context Data: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
 | ctx_inputs | \`inputs\` context: Input 'inputs' \(no quotation\) on \`From previous tasks\` to enable $\{inputs.\} expression in DT. |
 | ctx_inc | \`demisto\` context: Input 'incident' \(no quotation\) on \`From previous tasks\` to enable $\{incident.\} expression in DT. |
-| variable_markers | The pair of start and end markers to bracket a variable name |
+| variable_markers | The pair of start and end markers to bracket a variable name. |
 | keep_symbol_to_null | Set to true not to replace a value if the variable is null, otherwise false. |
 
 ## Outputs
@@ -30,11 +30,11 @@ There are no outputs for this script.
 ## Getting Started
 ---
 The transformer builds a text from a template text which includes variables just like:
- - This is a test message for ${user_name}.
+This is a test message for ${user_name}.
 
-The template will be formatted to `This is a test message for John Doe.` by replacing variable parameters.
+The template will be formatted to `This is a test message for John Doe.` by replacing the variable parameters.
 
-By default, a variable name starts with `${` and ends with `}` . You can change the start marker and end marker with specifying the `variable_markers` parameter.
+By default, a variable name starts with `${` and ends with `}` . You can change the start marker and end marker by specifying the `variable_markers` parameter.
 
 ## Examples
 ---
