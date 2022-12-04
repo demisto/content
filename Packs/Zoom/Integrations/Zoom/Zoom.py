@@ -2,13 +2,9 @@ import shutil
 import demistomock as demisto  # noqa: F401
 import jwt
 from CommonServerPython import *  # noqa: F401
+from datetime import timedelta
 import dateparser
 
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 BASE_URL = 'https://api.zoom.us/v2/'
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
@@ -75,7 +71,7 @@ class Client(BaseClient):
         if not ctx or not ctx.get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
-            ctx = {}
+            #ctx = {}
         else:
             generation_time = dateparser.parse(ctx.get('generation_time'))
             if generation_time:
@@ -93,127 +89,83 @@ class Client(BaseClient):
         set_integration_context(ctx)
         return oauth_token
 
-    def test(self):
-        """Tests connectivity with the application. """
-        self.zoom_list_users()
-        return 'ok'
-
-    def zoom_create_user(self):
-        ut = demisto.getArg('user_type')
+    def zoom_create_user(self, user_type: int, email: str, first_name: str, last_name: str):
+        ut = user_type
         user_type = 1  # Basic
         if ut == 'Pro':
             user_type = 2
         elif ut == 'Corporate':
             user_type = 3
-        try:
-            data = self._http_request(
-                method='POST',
-                url_suffix='users',
-                headers={'authorization': f'Bearer {self.access_token}'},
-                json={
-                    'action': 'create',
-                    'user_info': {
-                        'email': demisto.getArg('email'),
-                        'type': user_type,
-                        'first_name': demisto.getArg('first_name'),
-                        'last_name': demisto.getArg('last_name')}
-                },
-            )
-            return_results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': 'User created successfully with ID %s' % data.get('id'),
-                'EntryContext': {'Zoom.User': data}
-            })
-        except DemistoException as e:
-            return_error('User creation failed: [%d] - %s' % (e.res.status_code, e.res.text))
 
-    def zoom_list_users(self):
-        try:
-            data = self._http_request(
-                method='GET',
-                url_suffix='users',
-                headers={'authorization': f'Bearer {self.access_token}'},
-                params={
-                    'status': demisto.getArg('status'),
-                    'page_size': demisto.getArg('page-size'),
-                    'page_number': demisto.getArg('page-number')
-                }
-            )
-            md = tableToMarkdown('Users', data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
-            md += '\n' + tableToMarkdown('Metadata', [data], ['page_count', 'page_number', 'page_size', 'total_records'])
-            return_results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': md,
-                'EntryContext': {
-                    'Zoom.User': data.get('users'),
-                    'Zoom.Metadata': {
-                        'Count': data.get('page_count'),
-                        'Number': data.get('page_number'),
-                        'Size': data.get('page_size'),
-                        'Total': data.get('total_records')
-                    }
-                }
-            })
-        except DemistoException as e:
-            return_error('Failed to list users: [%d] - %s' % (e.res.status_code, e.res.text))
+        return self._http_request(
+            method='POST',
+            url_suffix='users',
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data={
+                'action': 'create',
+                'user_info': {
+                    'email': email,
+                    'type': user_type,
+                    'first_name': first_name,
+                    'last_name': last_name}},
 
-    def zoom_delete_user(self):
-        try:
-            self._http_request(
-                method='DELETE',
-                url_suffix='users/' + demisto.getArg('user'),
-                headers={'authorization': f'Bearer {self.access_token}'},
-                params={'action': demisto.getArg('action')})
-            return_results('User %s deleted successfully' % demisto.getArg('user'))
-        except DemistoException as e:
-            return_error('User deletion failed: [%d] - %s' % (e.res.status_code, e.res.text))
+        )
 
-    def zoom_create_meeting(self):
+    def zoom_list_users(self, status: str, page_size: str, page_number: str):
+        return self._http_request(
+            method='GET',
+            url_suffix='users',
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                'status': status,
+                'page_size': page_size,
+                'page_number': page_number
+            }
+        )
+
+    def zoom_delete_user(self, user: str, action: str):
+        return self._http_request(
+            method='DELETE',
+            url_suffix='users/' + user,
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data={'action': action},
+            resp_type='response',
+            return_empty_response=True
+        )
+
+    def zoom_create_meeting(self, type: str, topic: str, user: str,
+                            auto_record_meeting: str, start_time: str, timezone: str):
         auto_recording = "none"
-        if (demisto.getArg('auto_record_meeting') == 'yes'):
+        if auto_record_meeting == 'yes':
             auto_recording = "cloud"
             params = {
                 'type': 1,
-                'topic': demisto.getArg('topic'),
+                'topic': topic,
                 'settings': {
                     'join_before_host': True,
                     'auto_recording': auto_recording
                 }
             }
-        if (demisto.args()['type'] == 'Scheduled'):
+        if type == 'Scheduled':
             params.update({
                 'type': 2,
-                'start_time': demisto.getArg('start-time'),
-                'timezone': demisto.getArg('timezone'),
+                'start_time': start_time,
+                'timezone': timezone,
             })
-        try:
-            data = self._http_request(
-                method='POST',
-                url_suffix="users/%s/meetings" % demisto.getArg('user'),
-                headers={'authorization': f'Bearer {self.access_token}'},
-                json=params)
-            md = 'Meeting created successfully.\nStart it [here](%s) and join [here](%s).' % (
-                data.get('start_BASE_URL'), data.get('join_BASE_URL'))
-            return_results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': data,
-                'HumanReadable': md,
-                'EntryContext': {'Zoom.Meeting': data}
-            })
-        except DemistoException as e:
-            return_error('Meeting creation failed: [%d] - %s' % (e.res.status_code, e.res.text))
+        return self._http_request(
+            method='POST',
+            url_suffix=f"users/{user}/meetings",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            json_data=params)
 
-    def zoom_fetch_recording(self):
-        meeting = demisto.getArg('meeting_id')
+    def zoom_fetch_recording(self, meeting_id: str):
+        succeed = []
+        failed = []
+        meeting = meeting_id
         try:
             data = self._http_request(
                 method='GET',
-                url_suffix='meetings/%s/recordings' % meeting,
+                url_suffix=f'meetings/{meeting}/recordings',
                 headers={'authorization': f'Bearer {self.access_token}'},
             )
             recording_files = data['recording_files']
@@ -225,28 +177,29 @@ class Client(BaseClient):
                         full_url=download_BASE_URL,
                         stream=True
                     )
+                    filename = f'recording_{meeting}_{file["id"]}.mp4'
+                    with open(filename, 'wb') as f:
+                        r.raw.decode_content = True
+                        shutil.copyfileobj(r.raw, f)
+
+                    succeed.append(file_result_existing_file(filename))
                 except DemistoException as e:
-                    return_error(
-                        'Unable to download recording for meeting %s: [%d] - %s' % (meeting, e.res.status_code, e.res.text))
-
-                filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
-                with open(filename, 'wb') as f:
-                    r.raw.decode_content = True
-                    shutil.copyfileobj(r.raw, f)
-                return_results(file_result_existing_file(filename))
-
+                    raise DemistoException(
+                        f'Unable to download recording for meeting {meeting}: [{e.res.status_code}] - {e.res.text}')
                 try:
                     self._http_request(
                         method='DELETE',
-                        url_suffix='meetings/%s/recordings/%s' % (meeting, file['id']),
+                        url_suffix=f'meetings/{meeting}/recordings/{file["id"]}',
                         headers={'authorization': f'Bearer {self.access_token}'},
                     )
-                    return_results('File ' + filename + ' was moved to trash.')
+                    succeed.append('File ' + filename + ' was moved to trash.')
                 except DemistoException:
-                    return_error('Failed to delete file ' + filename + '.')
+                    failed.append('Failed to delete file ' + filename + '.')
+
+                return (succeed, failed)
 
         except DemistoException as e:
-            return_error('Download of recording failed: [%d] - %s' % (e.res.status_code, e.res.text))
+            raise DemistoException(f'Unable to reach the recording: [{e.res.status_code}] - {e.res.text}')
 
 
 '''HELPER FUNCTIONS'''
@@ -289,7 +242,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
-        client.test()
+        client.zoom_list_users('active', '30', '1')
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -304,9 +257,73 @@ def test_module(
     return 'ok'
 
 
+'''FORMATTING FUNCTIONS'''
+
+
+def zoom_list_users_command(client: Client, status: str, page_size: str, page_number: str) -> CommandResults:
+    raw_data = client.zoom_list_users(status, page_size, page_number)
+    # parse data to md
+    md = tableToMarkdown('Users', raw_data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
+    md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number', 'page_size', 'total_records'])
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=md,
+        outputs={'Metadata': {
+            'Count': raw_data.get('page_count'),
+            'Number': raw_data.get('page_number'),
+            'Size': raw_data.get('page_size'),
+            'Total': raw_data.get('total_records')
+        },
+            'User': raw_data.get('users')
+        },
+    )
+
+
+def zoom_create_user_command(client: Client, user_type: int, email: str, first_name: str, last_name: str) -> CommandResults:
+    raw_data = client.zoom_create_user(user_type, email, first_name, last_name)
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=f"User created successfully with ID{raw_data.get('id')}",
+        # TO DO: not sure about this line
+        outputs={'User': raw_data}
+    )
+
+
+def zoom_delete_user_command(client: Client, user: str, action: str) -> CommandResults:
+    client.zoom_delete_user(user, action)
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=f'User {user} was deleted successfully'
+    )
+
+
+def zoom_create_meeting_command(client: Client, type: str, topic: str, user: str, auto_record_meeting: str,
+                                start_time: str, timezone: str) -> CommandResults:
+    raw_data = client.zoom_create_meeting(type, topic, user,
+                                          auto_record_meeting, start_time, timezone)
+    md = f"""Meeting created successfully.
+    Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=md,
+        outputs={'Zoom.Meeting': raw_data}
+    )
+
+
+def zoom_fetch_recording_command(client: Client, meeting_id: str) -> CommandResults:
+    raw_data = client.zoom_fetch_recording(meeting_id)
+    return CommandResults(
+        outputs_prefix='Zoom',
+        readable_output=raw_data
+    )
+
+
 def main():
-    # user_profile = None
+    # TODO do i need this line?
+    results: Union[CommandResults, str, List[CommandResults]]
+
     params = demisto.params()
+    args = demisto.args()
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     account_id = params.get('account_id')
@@ -316,6 +333,8 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
 
+    # this is for BC, because the arguments given as <a-b>, i.e "page-number"
+    args = {key.replace('-', '_'): val for key, val in args.items()}
     try:
         if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
             raise DemistoException("""Too many fields were filled.
@@ -346,23 +365,26 @@ def main():
 
         demisto.debug(f'Command being called is {command}')
 
-        '''commands'''
+        '''CRUD commands'''
         if command == 'zoom-create-user':
-            client.zoom_create_user()
+            results = zoom_create_user_command(client, **args)
         elif command == 'zoom-create-meeting':
-            client.zoom_create_user()
+            results = zoom_create_meeting_command(client, **args)
         elif command == 'zoom-delete-user':
-            client.zoom_delete_user()
+            results = zoom_delete_user_command(client, **args)
         elif command == 'zoom-fetch-recording':
-            client.zoom_fetch_recording()
+            results = zoom_fetch_recording_command(client, **args)
         elif command == 'zoom-list-users':
-            client.zoom_list_users()
+            results = zoom_list_users_command(client, **args)
         else:
             return_error('Unrecognized command: ' + demisto.command())
+        return_results(results)
 
     except DemistoException as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
+        # TODO maybe refer to specific parts, like "e.res.status_code, e.res.text"
+        # and the error line shuld be modified to feet all kins of error
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
