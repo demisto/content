@@ -269,15 +269,8 @@ def fetch_incidents_command(
     """
     raw_response: Optional[List] = []
     if not last_run:
-        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
-                                                    date_format='%s')
-        raw_response, offset = client.get_events(config_ids=config_ids,
-                                                 from_epoch=datetime_new_last_run,
-                                                 limit=fetch_limit)
-    else:
-        raw_response, offset = client.get_events(config_ids=config_ids,
-                                                 offset=last_run,
-                                                 limit=fetch_limit)
+        last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
 
     incidents = []
     if raw_response:
