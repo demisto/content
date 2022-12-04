@@ -2553,7 +2553,7 @@ script:
       name: qualys-update-unix-record
       description: Update Unix records for authenticated scans of hosts running on Unix
     - arguments:
-        - description: Criteria field to search by predefined types.
+        - description: "Criteria field to search by predefined types:\nparent, provider, ruleType, name, id"
           name: criteria
           required: true
           auto: PREDEFINED
@@ -2564,15 +2564,15 @@ script:
             - name
             - id
             - criticalityScore
-        - description: Operator assign to the search criteria.
+        - description: "Operator assign to the search criteria.\nAcceptable values are:\nparent - EQUALS, NOT EQUALS, IN\nprovider - EQUALS, NOT EQUALS, IN\nruleType - EQUALS, NOT EQUALS, IN\nname - CONTAINS, EQUALS, NOT EQUALS\nid - EQUALS, NOT EQUALS, IN, GREATER, LESSER\ncriticalityScore - EQUALS, NOT EQUALS, GREATER, LESSER"
           name: operator
           required: true
-        - description: search content
+        - description: Content to search.
           name: search_data
           required: true
         - description: Automatic Pagination.
           name: limit
-      description: List asset tag based on several search criteria.
+      description: List asset tag based on a search criteria.
       name: qualys-asset-tag-list
       outputs:
         - contextPath: Qualys.AssetTags.id
@@ -2603,7 +2603,7 @@ script:
         - description: Names of the created child tags.
           name: child_name
           isArray: true
-        - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nPossible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
+        - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nAcceptable values are: \nINSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
           name: rule_type
           required: true
           auto: PREDEFINED
@@ -2649,7 +2649,7 @@ script:
         - description: Name of the created tag.
           name: name
           required: true
-        - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nPossible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
+        - description: "Type of rule to dynamically tagging host.\nThe Rule Type argument determines the type of the Rule Text argument that is acceptable.\nAcceptable values are: \nINSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC."
           name: rule_type
           required: true
           auto: PREDEFINED
@@ -2662,7 +2662,7 @@ script:
             - STATIC
         - description: "Criteria for the rule. \nOptional for STATIC rule type, required for the rest of the rule types. \nAcceptable formats for each Rule Type argument: \nNETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24\nVULN_EXIST(QID) - format: 12345(int)\nOPEN_PORTS - format: 443,888,12034(int)\nNAME_CONTAINS - format: REGEX\nINSTALLED_SOFTWARE - format: REGEX\nSTATIC - *RULE TEXT OPTIONAL*"
           name: rule_text
-        - description: Child tag to remove from the child tag list.
+        - description: Comma separated list of child tag ID's to remove.
           name: child_to_remove
         - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
           name: criticality_score
