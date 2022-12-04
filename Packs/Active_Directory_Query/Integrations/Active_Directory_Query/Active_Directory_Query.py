@@ -1776,14 +1776,33 @@ def main():
         global conn
         auto_bind = get_auto_bind_value(SECURE_CONNECTION)
 
-        if NTLM_AUTH:
-            # initialize connection to LDAP server with NTLM authentication
-            # user example: domain\user
-            domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM, auto_bind=auto_bind)
-        else:
-            # here username should be the user dn
-            conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
+        try:
+
+            if NTLM_AUTH:
+                # initialize connection to LDAP server with NTLM authentication
+                # user example: domain\user
+                domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
+                conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM, auto_bind=auto_bind)
+            else:
+                # here username should be the user dn
+                conn = Connection(server, user=USERNAME, password=PASSWORD, auto_bind=auto_bind)
+
+        except Exception as e:
+            err_msg = str(e)
+            demisto.info(f"Failed connect to: {SERVER_IP}:{PORT}. {type(e)}:{err_msg}\n"
+                         f"Trace:\n{traceback.format_exc()}")
+            if isinstance(e, LDAPBindError):
+                message = f'Failed to bind server. Please validate that the credentials are configured correctly.\n' \
+                      f' Additional details: {err_msg}.\n'
+            elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
+                message = f'Failed to access LDAP server. \n Additional details: {err_msg}.\n'
+                if not UNSECURE and SECURE_CONNECTION in ('SSL', 'Start TLS'):
+                    message += ' Try using: "Trust any certificate" option.\n'
+            else:
+                message = ("Failed to access LDAP server. Please validate the server host and port are configured "
+                           "correctly.\n")
+            return_error(message)
+            return
 
         demisto.info(f'Established connection with AD LDAP server.\nLDAP Connection Details: {conn}')
 
@@ -1792,6 +1811,7 @@ def main():
                        f"Last connection result: {json.dumps(conn.result)}\n"
                        f"Last error from LDAP server: {json.dumps(conn.last_error)}")
             return_error(message)
+            return
 
         demisto.info(f'Verified base DN "{DEFAULT_BASE_DN}"')
 
@@ -1893,14 +1913,7 @@ def main():
 
     except Exception as e:
         err_msg = str(e)
-        if isinstance(e, LDAPBindError):
-            msg = f'Failed to bind server. Please validate that the credentials are configured correctly.\n' \
-                  f' Additional details: {err_msg}.\n'
-        elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
-            msg = f'Failed to connect to LDAP server. \n Additional details: {err_msg}.\n'
-            if not UNSECURE and SECURE_CONNECTION in ('SSL', 'Start TLS'):
-                msg += ' Try using: "Trust any certificate" option.\n'
-        elif conn:
+        if conn:
             msg = f"{err_msg}.\nLast connection result: {json.dumps(conn.result)}.\n" \
                   f"Last error from LDAP server: {conn.last_error}"
         else:

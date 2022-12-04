@@ -41,7 +41,7 @@ def test_bad_host_no_ssl(mocker):
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
-    assert 'Failed to connect' in err_msg
+    assert 'Failed to access' in err_msg
     assert 'invalid server address' in err_msg
 
 
@@ -70,7 +70,7 @@ def test_bad_ssl(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert 'Failed to connect' in err_msg
+    assert 'Failed to access' in err_msg
     assert 'Try using: "Trust any certificate" option.' in err_msg
 
 
@@ -124,8 +124,9 @@ def test_faulty_server(mocker):
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
-    assert len(err_msg) < 100
+    assert len(err_msg) < 125
     assert 'Failed to access' in err_msg
+    assert 'Try using: "Trust any certificate" option.' not in err_msg
 
 
 def test_ssl_custom_cert(mocker, request):
@@ -156,7 +157,6 @@ def test_ssl_custom_cert(mocker, request):
     err_msg = return_error_mock.call_args[0][0]
     assert len(err_msg) < 100
     assert 'Failed to access' in err_msg
-    assert 'SSL error' not in err_msg
 
 
 def test_endpoint_entry():
