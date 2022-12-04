@@ -1971,7 +1971,7 @@ def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     )
 
 
-def build_search_human_readable(args: dict, parsed_search_results: list[dict | list[dict]]) -> str:
+def build_search_human_readable(args: dict, parsed_search_results) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -2070,9 +2070,8 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         job_sid = search_job["sid"]
         args['sid'] = job_sid
 
-    status_cmd_result = None
     if polling:
-        status_cmd_result = splunk_job_status(service, args)
+        status_cmd_result: CommandResults = splunk_job_status(service, args)  # type: ignore[assignment]
         status = status_cmd_result.outputs['Status']  # type: ignore[index]
         if status.lower() != 'done':
             # Job is still running, schedule the next run of the command.
@@ -2210,7 +2209,7 @@ def splunk_submit_event_hec(
     hec_token: str,
     baseurl: str,
     event: str,
-    fields: list[str],
+    fields: str,
     host: str,
     index: str,
     source_type: str,
@@ -2269,7 +2268,7 @@ def splunk_submit_event_hec_command():
         demisto.results('The event was sent successfully to Splunk.')
 
 
-def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str, args: dict) -> None:
+def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:
     session_key = token if not auth_token else None
 
     event_ids = None
@@ -2291,12 +2290,12 @@ def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str
         demisto.results({
             'ContentsFormat': formats['text'],
             'Type': entryTypes['error'],
-            'Contents': "Could not update notable events: " + args.get('eventIDs') + ' : ' + str(response_info)})
+            'Contents': "Could not update notable events: " + args.get('eventIDs', '') + ' : ' + str(response_info)})
     else:
         demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service: client.Service, args: dict) -> CommandResults:
+def splunk_job_status(service: client.Service, args: dict) -> CommandResults | None:
     sid = args.get('sid')
     try:
         job = service.job(sid)
@@ -2305,6 +2304,7 @@ def splunk_job_status(service: client.Service, args: dict) -> CommandResults:
             demisto.results("Not found job for SID: {}".format(sid))
         else:
             return_error(error.message, error)  # pylint: disable=no-member
+        return None
     else:
         status = job.state.content.get('dispatchState')
         entry_context = {
@@ -2459,7 +2459,7 @@ def kv_store_collection_delete(service: client.Service):
     return_outputs('The following KV store {} were deleted successfully'.format(kv_store_names), {}, {})
 
 
-def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict) -> str:
+def build_kv_store_query(kv_store: client.KVStoreCollection, args: dict):
     if 'key' in args and 'value' in args:
         _type = get_key_type(kv_store, args['key'])
         args['value'] = _type(args['value']) if _type else args['value']
@@ -2515,7 +2515,7 @@ def check_error(service: client.Service, args: dict) -> None:
         raise DemistoException('KV Store not found')
 
 
-def get_key_type(kv_store: client.KVStoreCollection, _key: str) -> str:
+def get_key_type(kv_store: client.KVStoreCollection, _key: str):
     keys_and_types = get_keys_and_types(kv_store)
     types = {
         'number': float,
@@ -2526,7 +2526,7 @@ def get_key_type(kv_store: client.KVStoreCollection, _key: str) -> str:
     }
     index = 'index.{}'.format(_key)
     field = 'field.{}'.format(_key)
-    val_type = keys_and_types.get(field) or keys_and_types.get(index)
+    val_type = keys_and_types.get(field) or keys_and_types.get(index) or ''
     return types.get(val_type)
 
 
@@ -2548,7 +2548,7 @@ def get_kv_store_config(kv_store: client.KVStoreCollection) -> str:
     return '\n'.join(readable)
 
 
-def get_auth_session_key(service: client.Service) -> bool:
+def get_auth_session_key(service: client.Service) -> str:
     """
     Get the session key or token for POST request based on whether the Splunk basic auth are true or not
     """
