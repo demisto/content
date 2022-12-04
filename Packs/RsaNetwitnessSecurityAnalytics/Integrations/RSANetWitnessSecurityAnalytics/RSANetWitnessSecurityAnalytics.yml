@@ -16,6 +16,18 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: true
+  hidden: true
+- display: Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+  hidden: true
 - displaypassword: Secret Key
   name: credentials
   display: Access Key
