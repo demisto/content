@@ -2603,8 +2603,9 @@ def main():
         connection_args['password'] = password
         connection_args['autologin'] = True
 
-    if proxy:
-        handle_proxy()
+    if proxy or VERIFY_CERTIFICATE:
+        if proxy:
+            handle_proxy()
         connection_args['handler'] = requests_handler
 
     service = client.connect(**connection_args)
