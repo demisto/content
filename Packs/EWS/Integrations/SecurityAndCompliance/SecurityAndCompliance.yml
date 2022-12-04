@@ -73,14 +73,14 @@ script:
         - 'true'
         - 'false'
     - default: false
-      description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all. 
+      description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
       isArray: true
       name: exchange_location
       defaultValue: 'All'
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. 
+      description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter.
       isArray: true
       name: exchange_location_exclusion
       required: false
@@ -98,7 +98,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. 
+      description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: share_point_location_exclusion
       required: false
@@ -214,11 +214,11 @@ script:
     - default: false
       description: Modify the description for the compliance search.
       isArray: false
-      name: description 
+      name: description
       required: false
       secret: false
     - default: false
-      description: Whether to include mailboxes other than regular user mailboxes in the compliance search. 
+      description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
       isArray: false
       name: allow_not_found_exchange_locations
       required: false
@@ -233,25 +233,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument. 
+      description: Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument.
       isArray: true
       name: add_exchange_location_exclusion
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of added public folders to include, or you can use the value "All" to include all. 
+      description: Comma-separated list of added public folders to include, or you can use the value "All" to include all.
       isArray: true
       name: add_public_folder_location
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites. 
+      description: Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites.
       isArray: true
       name: add_share_point_location
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. 
+      description: Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: add_share_point_location_exclusion
       required: false
@@ -263,25 +263,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument. 
+      description: Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument.
       isArray: true
       name: remove_exchange_location_exclusion
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of removed public folders to include. 
+      description: Comma-separated list of removed public folders to include.
       isArray: true
       name: remove_public_folder_location
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. 
+      description: Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. 
+      description: Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value.
       isArray: true
       name: remove_share_point_location_exclusion
       required: false
@@ -713,7 +713,7 @@ script:
     name: o365-sc-list-search-action
     outputs:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
-      description: Security and compliance search action type. Either "Purge or "Preview". 
+      description: Security and compliance search action type. Either "Purge or "Preview".
       type: String
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.AllowNotFoundExchangeLocationsEnabled
       description: Whether to include mailboxes other than regular user mailboxes in the compliance search.
