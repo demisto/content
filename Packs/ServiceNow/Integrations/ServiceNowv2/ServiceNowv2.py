@@ -489,7 +489,7 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     return dic_fields
 
 
-def split_notes(raw_notes, note_type):
+def split_notes(raw_notes, note_type, time_info=None):
     notes = []
     notes_split = raw_notes.split('\n\n')
     for note in notes_split:
@@ -497,6 +497,11 @@ def split_notes(raw_notes, note_type):
             continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
+        # todo: normalize time to be in the same timezone
+        if time_info and datetime.strptime(created_on, '%Y-%m-%d %H:%M:%S') < time_info.get('filter'):
+            # If a time_filter was passed and the note was created before this time, do not return it.
+            demisto.debug(f'Using time filter: {time_filter}. Not including note.')
+            continue
         created_by = created_by.split(' (')[0]
         note_dict = {
             "sys_created_on": created_on,
@@ -508,7 +513,7 @@ def split_notes(raw_notes, note_type):
     return notes
 
 
-def convert_to_notes_result(full_response):
+def convert_to_notes_result(full_response, time_info=None):
     """
     Converts the response of a ticket to the response format when making a query for notes only.
     """
@@ -518,13 +523,17 @@ def convert_to_notes_result(full_response):
     all_notes = []
 
     raw_comments = full_response.get('result', {}).get('comments')
+    if isinstance(raw_comments, dict):  # in case we use sysparm_display_value=all (used in mirroring)
+        raw_comments = raw_comments.get('display_values', '')
     if raw_comments:
-        comments = split_notes(raw_comments, 'comments')
+        comments = split_notes(raw_comments, 'comments', time_info=time_info)
         all_notes.extend(comments)
 
     raw_work_notes = full_response.get('result', {}).get('work_notes')
+    if isinstance(raw_work_notes, dict):
+        raw_work_notes = raw_work_notes.get('display_values', '')
     if raw_work_notes:
-        work_notes = split_notes(raw_work_notes, 'work_notes')
+        work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info)
         all_notes.extend(work_notes)
 
     return {'result': all_notes}
@@ -2261,6 +2270,35 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     return ticket
 
 
+def get_manual_timezone_offset(full_result):
+    date_format = '%Y-%m-%d %H:%M:%S'
+    local_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('display_value', ''), date_format)
+    utc_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('value', ''), date_format)
+    offset = local_time - utc_time
+    return offset
+
+
+def get_instance_timezone_offset(client: Client):
+    """
+    Get the timezone offset from the SNOW instance. First try to get the user timezone and if not available the system timezone.
+    """
+    # First, try to get the timezone from the sys_user table:
+    path = 'table/sys_user'
+    query_params = {'user_name': client._username, 'sysparm_fields': 'time_zone'}
+    result = client.send_request(path, 'GET', params=query_params)
+    user_tz = result.get('result', {}).get('time_zone', '')
+    if user_tz:
+        return user_tz
+
+    # If no timezone is defined for the user, take the timezone of the system from the sys_properties table:
+    path = 'table/sys_properties'
+    query_params = {'name': 'glide.sys.default.tz', 'sysparm_fields': 'value'}
+    result = client.send_request(path, 'GET', params=query_params)
+    system_tz = result.get('result', {}).get('value', '')
+    return system_tz
+
+
+
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -2328,11 +2366,15 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         ticket_type = client.get_table_name(client.ticket_type)
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': client.sys_param_limit, 'sysparm_offset': client.sys_param_offset,
-                        'sysparm_display_value': 'true',
-                        'sysparm_query': f'sys_created_on>{datetime.fromtimestamp(last_update)}'}
+                        'sysparm_display_value': 'all'}
 
         full_result = client.send_request(path, 'GET', params=query_params)
-        comments_result = convert_to_notes_result(full_result)
+        timezone_offset = get_instance_timezone_offset(client.username)
+        # todo: check if the ticket can be empty? maybe if closed?
+        if not timezone_offset:  # in case we are unable to find the timezone from the SNOW instance
+            timezone_offset = get_manual_timezone_offset(full_result)
+        time_info = {'filter': datetime.fromtimestamp(last_update), 'timezone_offset': timezone_offset}
+        comments_result = convert_to_notes_result(full_result, time_info=time_info)
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
