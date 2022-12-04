@@ -475,7 +475,9 @@ class Client(BaseClient):
                                exclusion_type: str = None,
                                limit: int = 10,
                                value_contains: Optional[str] = None,
-                               ok_codes=[200]):
+                               ok_codes: list = [200],
+                               includeChildren: Optional[bool] = None,
+                               includeParents: Optional[bool] = None,):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
@@ -483,15 +485,15 @@ class Client(BaseClient):
         """
         endpoint_url = 'exclusions'
 
-        params = {
-            "ids": item_ids,
-            "osTypes": os_types,
-            "type": exclusion_type,
-            "value__contains": value_contains,
-            "includeChildren": True,
-            "includeParents": True,
-            "limit": limit
-        }
+        params = assign_params(
+            ids=item_ids,
+            osTypes=os_types,
+            type=exclusion_type,
+            value__contains=value_contains,
+            includeChildren=includeChildren,
+            includeParents=includeParents,
+            limit=limit
+        )
 
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get('data', {})
@@ -2058,7 +2060,8 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
     """
     item_ids: list = []
     limit = OS_COUNT + 1
-    white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item)
+    white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item, includeChildren=True,
+                                               includeParents=True)
     demisto.debug(f'white_list: {white_list}')
 
     ret = []
