@@ -1,4 +1,7 @@
-category: Email Gateway
+category: Cloud Services
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: MicrosoftGraphMail
   version: -1
@@ -8,112 +11,150 @@ configuration:
   name: url
   required: true
   type: 0
-- displaypassword: ID or Client ID - see Detailed Instructions (?)
+  section: Connect
+- displaypassword: Application ID or Client ID
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_auth_id
   required: false
   type: 9
-- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+  section: Connect
+- displaypassword: Token or Tenant ID
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_tenant_id
   required: false
   type: 9
-- displaypassword: Key or Client Secret - see Detailed Instructions (?)
+  section: Connect
+- displaypassword: Key or Client Secret
+  additionalinfo: See the Help tab.
   name: credentials
   required: false
   type: 9
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
+  section: Connect
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   hiddenusername: true
   name: private_key
   required: false
   type: 14
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- display: Email address from which to fetch incidents (e.g. "example@demisto.com")
+  section: Collect
+- display: Email address from which to fetch incidents
+  additionalinfo: For example, "example@demisto.com"
   name: mailbox_to_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  display: Name of the folder or sub-folder from which to fetch incidents
+  additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
   name: folder_to_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 15 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp
+  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
   defaultvalue: '10'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch
   name: fetch_limit
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Use a self deployed Azure Application
+  section: Connect
+  advanced: true
+- display: Use a self deployed Azure application
   name: self_deployed
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: ID or Client ID - see Detailed Instructions (?)
   hidden: true
   name: _auth_id
   required: false
   type: 0
+  section: Connect
 - display: Token or Tenant ID - see Detailed Instructions (?)
   hidden: true
   name: _tenant_id
   required: false
   type: 0
+  section: Connect
 - display: Key or Client Secret (Deprecated)
   hidden: true
   name: enc_key
   required: false
   type: 4
+  section: Connect
+  advanced: true
 - display: ID or Client ID - see Detailed Instructions (?) (Deprecated)
   hidden: true
   name: auth_id
   required: false
   type: 4
+  section: Connect
+  advanced: true
 - display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
   hidden: true
   name: tenant_id
   required: false
   type: 4
+  section: Connect
+  advanced: true
 - additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
   defaultvalue: 'false'
   display: Display the entire email body
   name: display_full_email_body
   type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 0
   display: 'Advanced: Time in minutes to look back when fetching emails'
   name: look_back
   required: false
   type: 0
+  section: Collect
+  advanced: true
 description: Microsoft Graph lets your app get authorized access to a user's Outlook mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
 fromversion: 5.0.0
@@ -462,10 +503,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the attachment.
+      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       isArray: false
       name: attachment_id
-      required: true
+      required: false
       secret: false
     - deprecated: true
       description: flag for rate limit retry
@@ -625,7 +666,7 @@ script:
       name: ran_once_flag
       required: false
     deprecated: false
-    description: Creates a new folder under specified the specified folder (parent).
+    description: Creates a new folder under the specified folder (parent).
     execution: false
     name: msgraph-mail-create-folder
     outputs:
@@ -1308,7 +1349,7 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: true
   longRunning: false
