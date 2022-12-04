@@ -181,7 +181,7 @@ function poll_for_env() {
           echo "Environment $TEST_MACHINE in use. Trying another..."
         else
           echo "Environment $TEST_MACHINE not in use. Removing unnecessary lock files."
-          gsutil rm $GCS_LOCKS_PATH/$TEST_MACHINE-lock-*"
+          gsutil rm "$GCS_LOCKS_PATH/$TEST_MACHINE-lock-*"
           lock_machine	# create lock file, writes ChosenMachine file
           break
         fi
