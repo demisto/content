@@ -175,6 +175,7 @@ subdomain
 PDF
 auth
 endpoints
+SSDeep
 DNS
 XDR
 CommandRunner
@@ -210,3 +211,4 @@ SRX
 vCenter
 ESXi
 MT
+AWS
