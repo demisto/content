@@ -81,8 +81,10 @@ class Client(BaseClient):
         events: List = []
         if '{ "total": 0' not in raw_response:
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
-        offset_new = json.loads(raw_response.split('\n')[-2]).get('offset')
-        return events, offset_new
+            new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
+        else:
+            new_offset = from_epoch
+        return events, new_offset
 
 
 '''HELPER FUNCIONS'''
