@@ -3626,7 +3626,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
-                if self.is_preview_image(file.a_path):
+                if self.is_valid_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
                     image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
                     image_name = os.path.basename(file.a_path)
@@ -3697,19 +3697,34 @@ class Pack(object):
 
         return task_status
 
-    def is_preview_image(self, file_path: str) -> bool:
-        """ Indicates whether a file_path is a preview image or not
+    def is_valid_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a valid preview image or not:
+            - The file exists (is not removed in the latest upload)
+            - Belong to the current pack
+            - Id of type png
+            - path include the word '_image'
+            - Located in either XSIAMDashboards or XSIAMReports folder
         Args:
             file_path (str): The file path
         Returns:
             bool: True if the file is a preview image or False otherwise
         """
-        return all([
+        valid_image = all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
             file_path.endswith('.png'),
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
+        if not valid_image:
+            return False
+
+        # In cases where a preview image was deleted valid_image will be true but we don't want to upload it as it does
+        # not exist anymore
+        elif not os.path.exists(file_path):
+            logging.warning(f'Image: {file_path} was deleted and therefore will not be uploaded')
+            return False
+
+        return True
 
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:
