@@ -37,7 +37,7 @@ ACCOUNT_NOT_FOUND = 'Please check if the account supplied in the service account
 INVALID_ORG_UNIT_PATH = 'Please insert a valid organization unit path (org_unit_path)'
 EXCEEDED_MAX_PAGE_SIZE_ERROR = f'The maximum page size is {MAX_PAGE_SIZE}'
 DEPROVISION_REASON_EMPTY_ERROR = 'Deprovision reason cannot be empty'
-
+SERVICE_ACCOUNT_JSON_LOAD_ERROR = 'Please validate the structure of the service account\'s json data'
 # The following dictionary is used to map error messages returned from the API that don't
 # share enough information to meaningful error messages.
 ERROR_MESSAGES_MAPPING = {
@@ -334,9 +334,9 @@ def prepare_pagination_arguments(args: dict) -> dict:
         return {'page_size': page_size, 'page': page}
 
     limit = arg_to_number(args.get('limit', None))
+    limit = limit if limit else DEFAULT_LIMIT
     if(not limit or limit <= 0):
         raise DemistoException(message=LIMIT_ARG_INVALID_ERROR)
-    limit = limit if limit else DEFAULT_LIMIT
     return {'limit': limit}
 
 
@@ -589,7 +589,6 @@ def google_chromeos_device_action_command(client: Client, resource_id: str, acti
             error_res_to_json = e.res.json()
             # We want to print the error message to the UI
             error_message = demisto.get(obj=error_res_to_json, field='error.message', defaultParam=str(error_res_to_json))
-            # failure_reason = ERROR_MESSAGES_MAPPING.get(error_message, error_message)
             if('Delinquent account' in error_message):
                 failure_reason = INVALID_RESOURCE_ID_ERROR
             else:
@@ -613,6 +612,13 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
+def load_service_account_json(service_account_json: str):
+    try:
+        return json.loads(service_account_json, strict=False)
+    except json.decoder.JSONDecodeError:
+        raise DemistoException(SERVICE_ACCOUNT_JSON_LOAD_ERROR)
+
+
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
@@ -629,7 +635,7 @@ def main() -> None:  # pragma: no cover
     base_url = params.get('base_url', '')
     demisto.debug(f'Command being called is {command}')
     try:
-        service_account_json = json.loads(params.get('user_service_account_json'), strict=False)
+        service_account_json = load_service_account_json(params.get('user_service_account_json'))
         client: Client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy,
                                 customer_id=customer_id, service_account_json=service_account_json)
 

@@ -4,7 +4,7 @@ commonfields:
 name: GoogleWorkspaceAdmin
 display: Google Workspace Admin
 category: Utilities
-description: Google Workspace Mobile Management includes Android, Google Sync, iOS devices, and Google Chrome devices that run on ChromeOS.
+description: Google Workspace Admin is an integration to manage devices in an account, including Android, Google Sync, iOS, and Google Chrome devices that run on ChromeOS.
 configuration:
   - defaultvalue: https://admin.googleapis.com/
     display: Base URL of the service
