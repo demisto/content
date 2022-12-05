@@ -110,7 +110,7 @@ graph-prepare-testing-bucket-mpv2:
     - .generic-graph-prepare-testing-bucket
 
 compare_zips:
-  needs: ["prepare-testing-bucket-mpv2", "graph-prepare-testing-bucket-mpv2", "create-instances", "graph-prepare-testing-bucket-xsoar", "graph-prepare-testing-bucket-xpanse", "prepare-testing-bucket-xpanse"]
+  needs: ["graph-prepare-testing-bucket-mpv2", "create-instances", "graph-prepare-testing-bucket-xsoar", "graph-prepare-testing-bucket-xpanse", "prepare-testing-bucket-xpanse"]
   stage: stage-compare
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
