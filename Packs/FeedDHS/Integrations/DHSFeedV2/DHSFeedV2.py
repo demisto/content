@@ -46,13 +46,17 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
     demisto.debug(f'{limit=}, {added_after=}, {last_run_ctx=}, {fetch_from_feed_start=}')
 
-    if fetch_from_feed_start and not last_fetch_time:
-        # first run for fetch from feed start
-        demisto.debug('sending without added_after')
-        indicators = client.build_iterator(limit)
-    else:
-        demisto.debug(f'sending with {added_after=}')
-        indicators = client.build_iterator(limit, added_after=added_after)
+    try:
+        if fetch_from_feed_start and not last_fetch_time:
+            # first run for fetch from feed start
+            demisto.debug('sending without added_after')
+            indicators = client.build_iterator(limit)
+        else:
+            demisto.debug(f'sending with {added_after=}')
+            indicators = client.build_iterator(limit, added_after=added_after)
+    except InvalidJSONError:
+        # raised when the response is empty, because taxii2client parses {} into '筽'
+        indicators = []
 
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
         last_run_ctx[client.collection_to_fetch.id] = _ensure_datetime_to_string(client.last_fetched_indicator__modified
@@ -128,11 +132,15 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     added_after: datetime = get_limited_interval(get_datetime(args.get('added_after', DEFAULT_FETCH_INTERVAL)))
     raw = argToBoolean(args.get('raw', 'false'))
 
-    if client.collection_to_fetch:
-        demisto.debug(f'{added_after=}')
-        indicators = client.build_iterator(limit, added_after=added_after)
-    else:
-        indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
+    try:
+        if client.collection_to_fetch:
+            demisto.debug(f'{added_after=}')
+            indicators = client.build_iterator(limit, added_after=added_after)
+        else:
+            indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
+    except InvalidJSONError:
+        # raised when the response is empty, because taxii2client parses {} into '筽'
+        indicators = []
 
     demisto.debug(f'{indicators=}')
     if raw:
