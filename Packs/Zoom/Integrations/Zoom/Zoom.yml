@@ -70,7 +70,7 @@ script:
       deprecated: false
       description: Create a new user in zoom account
       execution: true
-      name: zoom-create-user
+      name: zoom-user-create
       outputs:
         - contextPath: Zoom.User.id
           description: The ID of the created user
@@ -146,7 +146,7 @@ script:
       deprecated: false
       description: Create a new zoom meeting (scheduled or instant)
       execution: false
-      name: zoom-create-meeting
+      name: zoom-meeting-create
       outputs:
         - contextPath: Zoom.Meeting.join_url
           description: Join url for the meeting
@@ -167,7 +167,7 @@ script:
       deprecated: false
       description: Get meeting record and save as file in the warroom
       execution: false
-      name: zoom-fetch-recording
+      name: zoom-recording-get
       outputs:
         - contextPath: File.SHA256
           description: Attachment's SHA256
@@ -229,7 +229,7 @@ script:
       deprecated: false
       description: List the existing users
       execution: false
-      name: zoom-list-users
+      name: zoom-user-list
       outputs:
         - contextPath: Zoom.Metadata.Count
           description: Total page count available
@@ -300,7 +300,7 @@ script:
       deprecated: false
       description: Delete a user from Zoom
       execution: true
-      name: zoom-delete-user
+      name: zoom-user-delete
   dockerimage: demisto/pyjwt3:1.0.0.38747
   feed: false
   isfetch: false

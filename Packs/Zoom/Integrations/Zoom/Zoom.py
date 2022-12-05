@@ -108,7 +108,7 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
 
-    def zoom_create_user(self, user_type: int, email: str, first_name: str, last_name: str):
+    def zoom_user_create(self, user_type: int, email: str, first_name: str, last_name: str):
         ut = user_type
         user_type = 1  # Basic
         if ut == 'Pro':
@@ -130,7 +130,7 @@ class Client(BaseClient):
 
         )
 
-    def zoom_list_users(self, status: str, page_size: str, page_number: str):
+    def zoom_user_list(self, status: str, page_size: str, page_number: str):
         return self._http_request(
             method='GET',
             url_suffix='users',
@@ -142,7 +142,7 @@ class Client(BaseClient):
             }
         )
 
-    def zoom_delete_user(self, user: str, action: str):
+    def zoom_user_delete(self, user: str, action: str):
         return self._http_request(
             method='DELETE',
             url_suffix='users/' + user,
@@ -152,7 +152,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def zoom_create_meeting(self, type: str, topic: str, user: str,
+    def zoom_meeting_create(self, type: str, topic: str, user: str,
                             start_time: str, timezone: str, auto_record_meeting: str = "none"):
         if auto_record_meeting == 'yes':
             auto_recording = "cloud"
@@ -176,7 +176,7 @@ class Client(BaseClient):
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data=params)
 
-    def zoom_fetch_recording(self, meeting_id: str):
+    def zoom_recording_get(self, meeting_id: str):
         succeed = []
         failed = []
         meeting = meeting_id
@@ -260,7 +260,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
-        client.zoom_list_users('active', '30', '1')
+        client.zoom_user_list('active', '30', '1')
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -278,8 +278,8 @@ def test_module(
 '''FORMATTING FUNCTIONS'''
 
 
-def zoom_list_users_command(client: Client, status: str, page_size: str, page_number: str) -> CommandResults:
-    raw_data = client.zoom_list_users(status, page_size, page_number)
+def zoom_user_list_command(client: Client, status: str, page_size: str, page_number: str) -> CommandResults:
+    raw_data = client.zoom_user_list(status, page_size, page_number)
     # parse data to md
     md = tableToMarkdown('Users', raw_data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
     md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number', 'page_size', 'total_records'])
@@ -297,8 +297,8 @@ def zoom_list_users_command(client: Client, status: str, page_size: str, page_nu
     )
 
 
-def zoom_create_user_command(client: Client, user_type: int, email: str, first_name: str, last_name: str) -> CommandResults:
-    raw_data = client.zoom_create_user(user_type, email, first_name, last_name)
+def zoom_user_create_command(client: Client, user_type: int, email: str, first_name: str, last_name: str) -> CommandResults:
+    raw_data = client.zoom_user_create(user_type, email, first_name, last_name)
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=f"User created successfully with ID{raw_data.get('id')}",
@@ -307,17 +307,17 @@ def zoom_create_user_command(client: Client, user_type: int, email: str, first_n
     )
 
 
-def zoom_delete_user_command(client: Client, user: str, action: str) -> CommandResults:
-    client.zoom_delete_user(user, action)
+def zoom_user_delete_command(client: Client, user: str, action: str) -> CommandResults:
+    client.zoom_user_delete(user, action)
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=f'User {user} was deleted successfully'
     )
 
 
-def zoom_create_meeting_command(client: Client, type: str, topic: str, user: str, auto_record_meeting: str,
+def zoom_meeting_create_command(client: Client, type: str, topic: str, user: str, auto_record_meeting: str,
                                 start_time: str, timezone: str) -> CommandResults:
-    raw_data = client.zoom_create_meeting(type, topic, user,
+    raw_data = client.zoom_meeting_create(type, topic, user,
                                           auto_record_meeting, start_time, timezone)
     md = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
@@ -328,8 +328,8 @@ def zoom_create_meeting_command(client: Client, type: str, topic: str, user: str
     )
 
 
-def zoom_fetch_recording_command(client: Client, meeting_id: str) -> CommandResults:
-    raw_data = client.zoom_fetch_recording(meeting_id)
+def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResults:
+    raw_data = client.zoom_recording_get(meeting_id)
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=raw_data
@@ -384,16 +384,16 @@ def main():
         demisto.debug(f'Command being called is {command}')
 
         '''CRUD commands'''
-        if command == 'zoom-create-user':
-            results = zoom_create_user_command(client, **args)
-        elif command == 'zoom-create-meeting':
-            results = zoom_create_meeting_command(client, **args)
-        elif command == 'zoom-delete-user':
-            results = zoom_delete_user_command(client, **args)
-        elif command == 'zoom-fetch-recording':
-            results = zoom_fetch_recording_command(client, **args)
-        elif command == 'zoom-list-users':
-            results = zoom_list_users_command(client, **args)
+        if command == 'zoom-user-create':
+            results = zoom_user_create_command(client, **args)
+        elif command == 'zoom-meeting-create':
+            results = zoom_meeting_create_command(client, **args)
+        elif command == 'zoom-user-delete':
+            results = zoom_user_delete_command(client, **args)
+        elif command == 'zoom-recording-get':
+            results = zoom_recording_get_command(client, **args)
+        elif command == 'zoom-user-list':
+            results = zoom_user_list_command(client, **args)
         else:
             return_error('Unrecognized command: ' + demisto.command())
         return_results(results)
