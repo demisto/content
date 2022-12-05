@@ -34,7 +34,7 @@ configuration:
   hidden: true
 - displaypassword: Password
   name: credentials
-  display: Access Key
+  display: Username
   required: false
   type: 9
 - display: Validate server certificate
