@@ -201,7 +201,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
 
 
 def clean_non_existing_packs(index_folder_path: str, private_packs: list, storage_bucket: Any,
-                             storage_base_path: str, pack_list: List[Pack], marketplace: str = 'xsoar') -> bool:
+                             storage_base_path: str, content_packs: List[Pack], marketplace: str = 'xsoar') -> bool:
     """ Detects packs that are not part of content repo or from private packs bucket.
 
     In case such packs were detected, problematic pack is deleted from index and from content/packs/{target_pack} path.
@@ -212,7 +212,7 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
         storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where index.zip is stored.
         storage_base_path (str): the source path of the packs in the target bucket.
         pack_list: List[Pack]: The pack list that is created from `create-content-artifacts` step.
-        marketplace (str): name of current markeplace, xsoar or marketplacev2
+        marketplace (str): name of current marketplace the upload is made for. (can be xsoar, marketplacev2 or xpanse)
 
     Returns:
         bool: whether cleanup was skipped or not.
@@ -223,7 +223,9 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
             (GCPConfig.PRODUCTION_BUCKET, GCPConfig.CI_BUILD_BUCKET)):
         logging.info("Skipping cleanup of packs in gcs.")  # skipping execution of cleanup in gcs bucket
         return True
-    valid_pack_names = {p.name for p in pack_list}
+
+    logging.info("Start cleaning non existing packs in index.")
+    valid_pack_names = {p.name for p in content_packs}
     if marketplace == 'xsoar':
         private_packs_names = {p.get('id', '') for p in private_packs}
         valid_pack_names.update(private_packs_names)
@@ -359,7 +361,7 @@ def create_corepacks_config(storage_bucket: Any, build_number: str, index_folder
         index_folder_path (str): The index folder path.
         artifacts_dir (str): The CI artifacts directory to upload the corepacks.json to.
         storage_base_path (str): the source path of the core packs in the target bucket.
-        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2
+        marketplace (str): the marketplace type of the bucket. possible options: xsoar, marketplace_v2 or xpanse
 
     """
     required_core_packs = GCPConfig.get_core_packs(marketplace)
@@ -1086,10 +1088,15 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids
+    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids to upload
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
-                  if os.path.exists(os.path.join(extract_destination_path, pack_name))]
+    # this is a list of all packs from `content_packs.zip`
+    content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
+                     for pack_name in os.listdir(extract_destination_path)]
+
+    # this is a list of packs given to this script
+    packs_list = list(filter(lambda x: x.name in pack_names, content_packs))
+
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
@@ -1105,7 +1112,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, packs_list, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, content_packs, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
@@ -1158,12 +1165,13 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
+        # This is commented out because we are not using the returned modified files and not skipping the
+        # packs in this phase (CIAC-3755). TODO - Will handle this in the refactor task - CIAC-3559.
+        # task_status, _ = pack.filter_modified_files_by_id_set(id_set, modified_rn_files_paths, marketplace)
 
-            # if not task_status:
-            #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-            #     continue
+        # if not task_status:
+        #     pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
+        #     continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
                                                                     packs_dependencies_mapping, build_number,
@@ -1182,19 +1190,18 @@ def main():
             pack.cleanup()
             continue
 
-        if is_bucket_upload_flow:
-            task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
-                                                                        modified_rn_files_paths,
-                                                                        marketplace, id_set)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
+                                                                    modified_rn_files_paths,
+                                                                    marketplace, id_set)
 
-            if not task_status:
-                pack.status = PackStatus.FAILED_RELEASE_NOTES.name
-                pack.cleanup()
-                continue
+        if not task_status:
+            pack.status = PackStatus.FAILED_RELEASE_NOTES.name
+            pack.cleanup()
+            continue
 
-            if not_updated_build:
-                pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-                continue
+        if not_updated_build:
+            pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
+            continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
@@ -1212,7 +1219,7 @@ def main():
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
             pack.cleanup()
-            return False
+            continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
@@ -1278,7 +1285,7 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket, id_set=id_set)
 
-    # marketplace v2 isn't currently supported - dependencies zip should only be used for v1
+    # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
         upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signature_key,

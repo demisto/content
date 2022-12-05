@@ -1595,10 +1595,12 @@ def messages() -> Response:
 
             channel_data: dict = request_body.get('channelData', {})
             event_type: str = channel_data.get('eventType', '')
+            demisto.debug(f"Event Type is: {event_type}")
 
             conversation: dict = request_body.get('conversation', {})
             conversation_type: str = conversation.get('conversationType', '')
             conversation_id: str = conversation.get('id', '')
+            demisto.debug(f"conversation type is: {conversation_type}")
 
             message_text: str = request_body.get('text', '')
 
@@ -1620,6 +1622,7 @@ def messages() -> Response:
                 direct_message_handler(integration_context, request_body, conversation, formatted_message)
             else:
                 demisto.info('Got message mentioning the bot')
+                demisto.debug(f"the message is from: {request_body.get('from', {})}")
                 message_handler(integration_context, request_body, channel_data, formatted_message)
         demisto.info('Finished processing Microsoft Teams activity successfully')
         demisto.updateModuleHealth('')
