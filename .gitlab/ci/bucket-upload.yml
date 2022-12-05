@@ -58,7 +58,7 @@ create-instances-upload-flow:
 
 prepare-testing-bucket-mpv2-upload-flow:
  extends:
-   - graph-prepare-testing-bucket-mpv2
+   - prepare-testing-bucket-mpv2
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
