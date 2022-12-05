@@ -12,6 +12,8 @@ from TrendMicroVisionOne import (
     collect_file,
     download_information_collected_file,
     submit_file_to_sandbox,
+    submit_file_entry_to_sandbox,
+    sandbox_submission_polling,
     get_task_status,
     get_endpoint_info,
     add_note,
@@ -632,6 +634,66 @@ def test_submit_file_to_sandbox(mocker):
     result = submit_file_to_sandbox(client, args)
     assert result.outputs["message"] == "Success"
     assert result.outputs["code"] == "Success"
+
+
+# Mock response for submit file entry to sandbox
+def mock_submit_file_entry_to_sandbox_response(*args, **kwargs):
+    return_response = {
+        "code": "Success",
+        "message": "Success",
+        "data": {
+            "taskId": "012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+            "digest": {
+                "md5": "4ac174730d4143a119037d9fda81c7a9",
+                "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+                "sha256": (
+                    "65b0f656e79ab84ca17807158e3ea"
+                    "c206bd58be6689ddeb95956a48748d138f9"
+                )
+            },
+        },
+    }
+    return return_response
+
+
+# Test Cases for Submit file entry to sandbox.
+def test_submit_file_entry_to_sandbox(mocker):
+    mocker.patch(
+        "TrendMicroVisionOne.requests.get",
+        mocked_requests_get
+    )
+    mocker.patch(
+        "TrendMicroVisionOne.requests.post",
+        mocked_requests_post
+    )
+    args = {
+        "entry_id": "12@1234",
+        "archivePassword": "6hn467c8",
+        "documentPassword": ""
+    }
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    result = submit_file_entry_to_sandbox(client, args)
+    assert result.outputs["message"] == "Success"
+    assert result.outputs["code"] == "Success"
+
+
+# Test Cases for Sandbox submission polling
+def test_sandbox_submission_polling(mocker):
+    """Test to get status of sandbox submission"""
+    mocker.patch(
+        "TrendMicroVisionOne.Client.http_request",
+        mock_file_status_response)
+    args = {"taskId": "921674d0-9735-4f79-b7de-c852e00a003d"}
+    client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
+    result = sandbox_submission_polling(client, args)
+    assert result.outputs["message"] == "Success"
+    assert result.outputs["code"] == "Success"
+    assert result.outputs["task_id"] == "012e4eac-9bd9-4e89-95db-77e02f75a6f3"
+    assert result.outputs["taskStatus"] == "finished"
+    assert result.outputs["report_id"] == (
+        "012e4eac-9bd9-4e89-95db-77e02f75a6f3")
+    assert result.outputs_prefix == "VisionOne.Sandbox_Submission_Polling"
+    assert result.outputs_key_field == "report_id"
 
 
 # Mock function for check task status
