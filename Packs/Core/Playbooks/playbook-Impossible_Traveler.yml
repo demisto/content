@@ -797,7 +797,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: true
+        completeafterv2: false
         completeaftersla: false
     form:
       questions:
@@ -1205,4 +1205,5 @@ outputs:
   type: string
 tests:
 - No tests (auto formatted)
+marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
