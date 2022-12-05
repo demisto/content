@@ -57,6 +57,8 @@ Adds a file SHA-1, IP address, domain, or URL object to the User-Defined Suspici
 | VisionOne.BlockList.actionId | string | Action ID of task adding file SHA-1, IP address, domain, or URL to the User-Defined Suspicious Objects List |
 | VisionOne.BlockList.taskStatus | string | Task status of adding file SHA-1, IP address, domain, or URL object to the User-Defined Suspicious Objects List |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter.
+
 ### trendmicro-visionone-remove-from-block-list
 
 ***
@@ -81,6 +83,8 @@ Removes a file SHA-1, IP address, domain, or URL from the User-Defined Suspiciou
 | --- | --- | --- |
 | VisionOne.BlockList.actionId | string | Action ID of task removing file SHA-1, IP address, domain, or URL object from the User-Defined Suspicious Objects List |
 | VisionOne.BlockList.taskStatus | string | Task Status of removing file SHA-1, IP address, domain, or URL object that was added to the User-Defined Suspicious Objects List from block list |
+
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter.
 
 ### trendmicro-visionone-quarantine-email-message
 
@@ -108,6 +112,8 @@ Moves a message from a mailbox to the quarantine folder
 | VisionOne.Email.actionId | string | The Action Id of moving a message from a mailbox to the quarantine folder |
 | VisionOne.Email.taskStatus | string | The status of moving a message from a mailbox to the quarantine folder |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter.
+
 ### trendmicro-visionone-delete-email-message
 
 ***
@@ -134,6 +140,8 @@ Deletes a message from a mailbox
 | VisionOne.Email.actionId | string | The action id of deleting a message from a mailbox |
 | VisionOne.Email.taskStatus | string | The task status of deleting a message from a mailbox |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter.
+
 ### trendmicro-visionone-isolate-endpoint
 
 ***
@@ -158,6 +166,8 @@ Disconnects an endpoint from the network (but allows communication with the mana
 | VisionOne.Endpoint_Connection.actionId | string | The action ID of isolate endpoint task |
 | VisionOne.Endpoint_Connection.taskStatus | string | The task status of isolate endpoint  |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter. Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be 20 minutes.
+
 ### trendmicro-visionone-restore-endpoint-connection
 
 ***
@@ -181,6 +191,8 @@ Restores network connectivity to an endpoint that applied the "isolate endpoint"
 | --- | --- | --- |
 | VisionOne.Endpoint_Connection.actionId | string | The action ID of the restore endpoint connection |
 | VisionOne.Endpoint_Connection.taskStatus | string | The task status of restore endpoint connection |
+
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter. Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be 20 minutes.
 
 ### trendmicro-visionone-add-objects-to-exception-list
 
@@ -340,6 +352,8 @@ Terminates a process that is running on an endpoint
 | VisionOne.Terminate_Process.actionId | string | Action Id of the current running task |
 | VisionOne.Terminate_Process.taskStatus | string | Status of current running task |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter. Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout is 20 minutes.
+
 ### trendmicro-visionone-get-file-analysis-status
 
 ***
@@ -427,6 +441,8 @@ Compresses a file on an endpoint in a password-protected archive and then sends 
 | VisionOne.Collect_Forensic_File.actionId | string | Action ID of the particular file. |
 | VisionOne.Collect_Forensic_File.taskStatus | string | Task status of collected file |
 
+Note: To get the complete task status run polling command trendmicro-visionone-check-task-status giving actionId as input parameter. Note: The above command should be added with execution timeout in the advanced field of playbook execution. The recommended timeout be 20 minutes.
+
 ### trendmicro-visionone-download-information-for-collected-forensic-file
 
 ***
@@ -450,6 +466,8 @@ Retrieves a URL and other information required to download a collected file via 
 | VisionOne.Download_Information_For_Collected_Forensic_File.expires | string | URL expiration date |
 | VisionOne.Download_Information_For_Collected_Forensic_File.password | string | Archive password for the protected forensic file |
 | VisionOne.Download_Information_For_Collected_Forensic_File.filename | string | Name of the collected file |
+
+Note: The URL received from the 'trendmicro-visionone-download-information-for-collected-forensic-file' will be valid for only 60 seconds
 
 ### trendmicro-visionone-submit-file-to-sandbox
 
