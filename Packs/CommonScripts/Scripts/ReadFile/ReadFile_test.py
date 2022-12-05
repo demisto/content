@@ -43,6 +43,29 @@ def test_extract_indicators_empty_file(mocker):
             assert False
 
 
+def test_read_binary_to_raw_decode_error(mocker):
+    """
+        Given:
+            A file containing binary data which cannot convert to utf-8.
+
+        When:
+            Running script on file without encoding
+
+        Then:
+            Cause an exception.
+        """
+    args = {
+        'input_encoding': 'binary',
+        'output_data_type': 'raw'
+    }
+    mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_binary.bin'})
+
+    with pytest.raises(Exception) as e:
+        read_file(args)
+        if not e:
+            assert False
+
+
 def test_read_binary_to_base64(mocker):
     """
         Given:
@@ -76,6 +99,29 @@ def test_read_binary_to_base64(mocker):
     read_file(args)
     results = demisto.results.call_args[0][0]
     assert results == expected
+
+
+def test_read_binary_to_json_decode_error(mocker):
+    """
+        Given:
+            A file containing binary data which cannot convert to utf-8 with output_data_type = json
+
+        When:
+            Running script on file without encoding
+
+        Then:
+            Cause an exception.
+        """
+    args = {
+        'input_encoding': 'binary',
+        'output_data_type': 'json'
+    }
+    mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/test_binary.bin'})
+
+    with pytest.raises(Exception) as e:
+        read_file(args)
+        if not e:
+            assert False
 
 
 def test_read_utf8_to_json(mocker):
