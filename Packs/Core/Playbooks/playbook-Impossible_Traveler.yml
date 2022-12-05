@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": -10
+          "y": 190
         }
       }
     note: false
@@ -54,8 +54,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2985
+          "x": 510,
+          "y": 2955
         }
       }
     note: false
@@ -85,7 +85,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 120
+          "y": 320
         }
       }
     note: false
@@ -117,7 +117,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 555
+          "y": 755
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 2230
+          "y": 1850
         }
       }
     note: false
@@ -187,9 +187,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "112"
+      - "32"
       "yes":
-      - "106"
+      - "70"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -198,7 +198,18 @@ tasks:
           left:
             value:
               complex:
-                root: ImpossibleTravelerIPs
+                root: ImpossibleTraveler.Events
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: ImpossibleTraveler.Events.Country
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Impossible Traveler Alert Validation.Answers.0
+                      iscontext: true
+                accessor: ip
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -213,25 +224,11 @@ tasks:
                       value:
                         simple: ','
             iscontext: true
-        - operator: IsInCidrRanges
-          left:
-            value:
-              complex:
-                root: ImpossibleTravelerIPs
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.AllowlistCIDR
-            iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 1860
+          "x": 20,
+          "y": 2780
         }
       }
     note: false
@@ -248,14 +245,14 @@ tasks:
     task:
       id: d912768b-29a7-4497-8d4b-6592fa102827
       version: -1
-      name: Are there IPs / CIDR configured on allow list?
+      name: Are there IPs configured on allow list?
       description: Checks whether the allow list IPs were configured.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "112"
+      - "32"
       "yes":
       - "67"
     separatecontext: false
@@ -267,20 +264,11 @@ tasks:
             value:
               simple: inputs.WhitelistedIPs
             iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.AllowlistCIDR
-            iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 1680
+          "x": 510,
+          "y": 2610
         }
       }
     note: false
@@ -311,8 +299,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 3290
+          "x": 910,
+          "y": 3305
         }
       }
     note: false
@@ -338,7 +326,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "68"
+      - "112"
     separatecontext: false
     view: |-
       {
@@ -368,7 +356,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+      - "68"
       "yes":
       - "113"
     separatecontext: false
@@ -379,7 +367,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.UserManagerEmail
+                root: UserManagerEmail
             iscontext: true
           right:
             value: {}
@@ -396,8 +384,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2405
+          "x": 510,
+          "y": 2040
         }
       }
     note: false
@@ -453,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 3460
+          "x": 510,
+          "y": 3480
         }
       }
     note: false
@@ -480,7 +468,7 @@ tasks:
       '#default#':
       - "110"
       "yes":
-      - "119"
+      - "117"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -505,32 +493,11 @@ tasks:
               complex:
                 root: inputs.AbuseIPDBThreshold
             iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: in
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: alert.localip
-                      iscontext: true
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "3"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -30,
-          "y": 690
+          "y": 890
         }
       }
     note: false
@@ -560,8 +527,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -280,
-          "y": 2405
+          "x": -210,
+          "y": 2325
         }
       }
     note: false
@@ -580,10 +547,9 @@ tasks:
       version: -1
       name: Impossible Traveler - Enrichment
       description: |-
-        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert, and enriches them based on the following:
+        This playbook get as an input all of the involved IP addresses and identities from the Impossible Traveler playbook alert and enriches them based on the following:
         * Geo location
-        * Active Directory
-        * IP enrichment e.g. VirusTotal, AbuseIPDB, etc.
+        * AD
       playbookName: Impossible Traveler - Enrichment
       type: playbook
       iscommand: false
@@ -592,15 +558,8 @@ tasks:
       '#none#':
       - "51"
     scriptarguments:
-      domain:
-        complex:
-          root: inputs.domain
       sourceip:
-        complex:
-          root: ImpossibleTravelerIPs
-      username:
-        complex:
-          root: inputs.username
+        simple: ${ImpossibleTravelerIPs}
     separatecontext: false
     loop:
       iscommand: false
@@ -612,7 +571,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 400
+          "y": 600
         }
       }
     note: false
@@ -637,7 +596,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "119"
+      - "117"
     scriptarguments:
       key:
         simple: BlockIndicators
@@ -647,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -310,
-          "y": 860
+          "x": -410,
+          "y": 1060
         }
       }
     note: false
@@ -691,7 +650,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 240
+          "y": 440
         }
       }
     note: false
@@ -738,7 +697,7 @@ tasks:
       {
         "position": {
           "x": -30,
-          "y": 2050
+          "y": 1680
         }
       }
     note: false
@@ -767,8 +726,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 2600
+          "x": 910,
+          "y": 2210
         }
       }
     note: false
@@ -777,7 +736,7 @@ tasks:
     message:
       to:
         complex:
-          root: inputs.UserManagerEmail
+          root: UserManagerEmail
       subject:
         simple: Impossible Traveler Alert Validation
       body:
@@ -845,7 +804,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "32"
+      - "68"
       Approved:
       - "70"
     separatecontext: false
@@ -863,8 +822,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 2800
+          "x": 910,
+          "y": 2410
         }
       }
     note: false
@@ -882,7 +841,16 @@ tasks:
       id: 7b33e5cb-8d2b-4405-84ad-d6e2180ed78a
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident by using one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -916,7 +884,28 @@ tasks:
         simple: '@demisto.com'
       IP:
         complex:
-          root: ImpossibleTravelerIPs
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
       UserContainment:
         simple: "False"
       Username:
@@ -934,8 +923,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 1220
+          "x": -30,
+          "y": 1230
         }
       }
     note: false
@@ -953,7 +942,16 @@ tasks:
       id: 53ca72da-b295-4a8f-8f97-23454bab59b6
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook enables you to contain the incident by using one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -963,12 +961,11 @@ tasks:
       - "70"
     scriptarguments:
       AutoContainment:
-        complex:
-          root: inputs.AutoContainment
+        simple: "true"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
-        simple: "true"
+        simple: "False"
       FileContainment:
         simple: "False"
       FileRemediation:
@@ -979,30 +976,33 @@ tasks:
         simple: '@demisto.com'
       IP:
         complex:
-          root: ImpossibleTravelerIPs
+          root: ImpossibleTraveler.Events
           filters:
-          - - operator: in
+          - - operator: notIn
               left:
                 value:
-                  simple: ImpossibleTravelerIPs
+                  simple: ImpossibleTraveler.Events.ip
                 iscontext: true
               right:
                 value:
                   simple: inputs.WhitelistedIPs
                 iscontext: true
-            - operator: IsInCidrRanges
+              ignorecase: true
+          - - operator: in
               left:
                 value:
-                  simple: ImpossibleTravelerIPs
+                  simple: ImpossibleTraveler.Events.Country
                 iscontext: true
               right:
                 value:
-                  simple: inputs.AllowlistCIDR
+                  simple: Impossible Traveler Alert Validation.Answers.0
                 iscontext: true
+              ignorecase: true
+          accessor: ip
           transformers:
           - operator: uniq
       UserContainment:
-        simple: "true"
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -1012,8 +1012,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 3120
+          "x": 510,
+          "y": 3090
         }
       }
     note: false
@@ -1023,72 +1023,27 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "119":
-    id: "119"
-    taskid: 0cacae9b-6463-4c71-84a5-74cbcacebdba
-    type: condition
-    task:
-      id: 0cacae9b-6463-4c71-84a5-74cbcacebdba
-      version: -1
-      name: Should execute pre investigation containment?
-      description: Checks whether to run containment plan before Investigation phase.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "97"
-      "yes":
-      - "117"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.preInvestigationContainment
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -30,
-          "y": 1030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
       "104_110_#default#": 0.56,
-      "104_119_yes": 0.51,
-      "114_32_#default#": 0.26,
+      "104_117_yes": 0.51,
+      "114_68_#default#": 0.47,
       "114_70_Approved": 0.18,
       "63_106_#default#": 0.68,
       "63_84_yes": 0.4,
-      "67_112_#default#": 0.51,
-      "68_112_#default#": 0.58,
-      "84_32_#default#": 0.31
+      "67_32_#default#": 0.45,
+      "67_70_yes": 0.1,
+      "68_32_#default#": 0.47,
+      "68_67_yes": 0.55,
+      "84_68_#default#": 0.46
     },
     "paper": {
       "dimensions": {
-        "height": 3535,
-        "width": 1490,
-        "x": -310,
-        "y": -10
+        "height": 3355,
+        "width": 1700,
+        "x": -410,
+        "y": 190
       }
     }
   }
@@ -1110,12 +1065,6 @@ inputs:
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
   playbookInputQuery:
-- key: UserManagerEmail
-  value:
-    simple: poc@demistodev.com
-  required: false
-  description: The user's manager email address.
-  playbookInputQuery:
 - key: AutoContainment
   value:
     simple: "False"
@@ -1127,32 +1076,6 @@ inputs:
     simple: "80"
   required: false
   description: The score needed from AbuseIPDB to consider IP address as malicious.
-  playbookInputQuery:
-- key: preInvestigationContainment
-  value: {}
-  required: false
-  description: Whether to execute containment prior investigation phase
-  playbookInputQuery:
-- key: AllowlistCIDR
-  value:
-    complex:
-      root: lists
-      accessor: CIDR - Allowlist
-  required: false
-  description: A comma separated list of CIDR that are allowed to be used across long distances.
-  playbookInputQuery:
-- key: username
-  value:
-    complex:
-      root: alert
-      accessor: username
-  required: false
-  description: The username to iterate over.
-  playbookInputQuery:
-- key: domain
-  value: {}
-  required: false
-  description: The organization domain.
   playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address

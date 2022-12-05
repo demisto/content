@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import urllib3
 
 # flake8: noqa: E501
 
@@ -9576,9 +9575,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     try:
-        # Disable insecure warnings
-        urllib3.disable_warnings()
-
+        requests.packages.urllib3.disable_warnings()
         client = Client(params)
 
         commands = {

@@ -1,2 +1,0 @@
-[INGEST:vendor="Github", product="github-audit", target_dataset="github_github_audit_raw", no_hit=keep]
-alter _time = timestamp_seconds(to_integer(divide(created_at, 1000)));

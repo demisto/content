@@ -5,11 +5,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from requests.auth import HTTPBasicAuth
-import urllib3
 
 
 # Disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

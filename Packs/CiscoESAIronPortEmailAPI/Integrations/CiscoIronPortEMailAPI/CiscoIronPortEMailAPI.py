@@ -1,13 +1,11 @@
 from base64 import b64encode
 from datetime import datetime, timedelta
 
-import urllib3
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
 
-
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 
 quarantineName = demisto.params()['quarantineName']

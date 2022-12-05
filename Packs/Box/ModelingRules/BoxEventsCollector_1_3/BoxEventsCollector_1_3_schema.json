@@ -1,15 +1,15 @@
 {
   "box_box_raw": {
     "source": {
-      "type": "string",
+      "type": "json",
       "is_array": false
     },
     "additional_details": {
-      "type": "string",
+      "type": "json",
       "is_array": false
     },
     "created_by": {
-      "type": "string",
+      "type": "json",
       "is_array": false
     },
     "event_id": {

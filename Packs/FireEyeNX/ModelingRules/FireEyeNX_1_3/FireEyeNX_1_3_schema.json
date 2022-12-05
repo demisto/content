@@ -1,15 +1,15 @@
 {
     "fireeye_mps_raw": {
       "rt": {
-        "type": "int",
+        "type": "number",
         "is_array": false
       },
       "dpt": {
-        "type": "int",
+        "type": "number",
         "is_array": false
       },
       "spt": {
-        "type": "int",
+        "type": "number",
         "is_array": false
       },
       "act": {

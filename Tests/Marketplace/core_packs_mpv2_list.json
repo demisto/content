@@ -27,6 +27,5 @@
   "FeedUnit42v2",
   "Palo_Alto_Networks_WildFire",
   "Core",
-  "FiltersAndTransformers",
-  "CortexAttackSurfaceManagement"
+  "FiltersAndTransformers"
 ]

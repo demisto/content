@@ -12,30 +12,32 @@ configuration:
   type: 8
   section: Collect
 - name: address
-  display: Prisma Cloud Compute Console URL and Port
+  display: |-
+    Prisma Cloud Compute Console URL and Port
+    (e.g., https://example.net:1234)
   required: true
   type: 0
-  additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
+  additionalinfo:
   section: Connect
 - name: project
   display: Prisma Cloud Compute Project Name (if applicable)
   required: false
   defaultvalue:
   type: 0
-  additionalinfo: Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field.
+  additionalinfo:
   section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
   type: 8
-  additionalinfo: Skips verification of the CA certificate (not recommended).
+  additionalinfo:
   section: Connect
   advanced: true
 - name: proxy
   display: Use system proxy settings
   required: false
   type: 8
-  additionalinfo: Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.
+  additionalinfo:
   section: Connect
   advanced: true
 - name: credentials
@@ -43,7 +45,7 @@ configuration:
   required: true
   defaultvalue:
   type: 9
-  additionalinfo: Prisma Cloud Compute login credentials.
+  additionalinfo:
   displaypassword: ""
   hiddenusername: false
   section: Connect
@@ -52,7 +54,7 @@ configuration:
   required: false
   defaultvalue:
   type: 12
-  additionalinfo: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
+  additionalinfo:
   section: Connect
 - name: incidentType
   display: Incident type
@@ -63,7 +65,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.7.33922
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -38,9 +38,7 @@
         },
         {
             "name": "List2",
-            "value": "Content of List2",
-            "type": "dynamic",
-            "_comment": "when specify the dynamic type the list won't be overwritten by the CI/CD proccess"
+            "value": "Content of List2"
         }
     ],
     "jobs": [

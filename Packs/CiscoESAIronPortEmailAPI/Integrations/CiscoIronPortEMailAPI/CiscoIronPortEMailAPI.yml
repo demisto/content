@@ -20,9 +20,8 @@ configuration:
   name: quarantineName
   required: true
   type: 0
-deprecated: true
-description: Deprecated. Use Cisco Email Security Appliance (IronPort) V2 instead.
-display: Cisco IronPort EMail API (Deprecated)
+description: Cisco ESA IronPort EMail API
+display: Cisco IronPort EMail API
 name: Cisco IronPort EMail API
 script:
   commands:

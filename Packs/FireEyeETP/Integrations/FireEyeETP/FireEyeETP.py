@@ -12,9 +12,9 @@ import os
 import re
 import copy
 import json
-import urllib3
 
-urllib3.disable_warnings()
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 '''
 GLOBAL VARS

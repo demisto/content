@@ -7,7 +7,7 @@ import tldextract
 from email.utils import parseaddr
 import pytest
 
-no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None, cache_dir=False)
+no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=None)
 
 
 def extract_domain(address):

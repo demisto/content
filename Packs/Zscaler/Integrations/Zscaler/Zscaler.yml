@@ -90,10 +90,10 @@ script:
     - contextPath: URL.Address
       description: The URL that was searched.
       type: string
-    - contextPath: Zscaler.URL.urlClassifications
+    - contextPath: URL.urlClassifications
       description: The classification of the URL. For example, MUSIC or WEB_SEARCH.
       type: string
-    - contextPath: Zscaler.URL.urlClassificationsWithSecurityAlert
+    - contextPath: URL.urlClassificationsWithSecurityAlert
       description: The classifications of the URLs that have security alerts.
       type: string
     - contextPath: URL.Malicious.Vendor
@@ -126,10 +126,10 @@ script:
     - contextPath: IP.Address
       description: The IP address that was searched.
       type: string
-    - contextPath: Zscaler.IP.ipClassifications
+    - contextPath: IP.ipClassifications
       description: The classification of the IP address. For example, MUSIC or WEB_SEARCH.
       type: string
-    - contextPath: Zscaler.IP.iplClassificationsWithSecurityAlert
+    - contextPath: IP.iplClassificationsWithSecurityAlert
       description: Classifications that have a security alert for the IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
@@ -471,7 +471,7 @@ script:
   runonce: false
   script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.7.33922
   type: python
 fromversion: 5.0.0
 tests:

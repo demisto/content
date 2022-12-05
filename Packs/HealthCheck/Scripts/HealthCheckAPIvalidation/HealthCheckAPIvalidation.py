@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -34,10 +33,7 @@ def isAdminAPIInstance():
                 "size": 500
             },
         })
-
     for module in res:
-        if module['Type'] == 4:
-            continue
         if isinstance(module['Contents'], str):
             return_error(module['Contents'])
         elif module.get('Contents', {}).get('response', {}).get('defaultAdmin', {}):
@@ -48,7 +44,7 @@ def isAdminAPIInstance():
     return isDefaultAdminExist
 
 
-errors = [""]
+errors = []
 # Check if Demisto REST API integration was defined and number of instances
 ApiIntegrations = isDemistoAPIIntegrationAvailable()
 if ApiIntegrations == 0:
@@ -59,10 +55,7 @@ if ApiIntegrations == 2:
 
 # Check if Demisto REST API integration defined with DefaultAdmin API key
 if not isAdminAPIInstance():
-    errors.append('API instance is not using Admin')
+    errors.append('API instance is not Admin')
 
-if len(errors) > 1:
-    strerror = "\n".join(errors)
-    return_error(f"Demisto REST API Validation failed due to: {strerror}")
-else:
-    return_results("Done")
+if errors:
+    return_error(f"Demisto REST API Validation failed, check: {errors}")

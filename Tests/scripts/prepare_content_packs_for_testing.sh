@@ -25,12 +25,8 @@ if [[ -z "$3" ]]; then
   MARKETPLACE_TYPE="xsoar"
 else
   MARKETPLACE_TYPE=$3
-
   if [[ "$MARKETPLACE_TYPE" == "marketplacev2" ]]; then
     GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_V2_BUCKET
-
-  elif [[ "$MARKETPLACE_TYPE" == "xpanse" ]]; then
-    GCS_PRODUCTION_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
   fi
 fi
 

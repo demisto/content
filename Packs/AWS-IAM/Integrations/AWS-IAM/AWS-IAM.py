@@ -125,18 +125,15 @@ def list_users(args, aws_client):  # pragma: no cover
     paginator = client.get_paginator('list_users')
     for response in paginator.paginate():
         for user in response['Users']:
-            user_details = {
+            data.append({
                 'UserName': user['UserName'],
                 'UserId': user['UserId'],
                 'Arn': user['Arn'],
                 'CreateDate': datetime.strftime(user['CreateDate'], '%Y-%m-%d %H:%M:%S'),
                 'Path': user['Path'],
-            }
-            if user.get('PasswordLastUsed'):
-                user_details['PasswordLastUsed'] = datetime.strftime(user['PasswordLastUsed'], '%Y-%m-%d %H:%M:%S')
-            data.append(user_details)
+            })
     ec = {'AWS.IAM.Users': data}
-    human_readable = tableToMarkdown('AWS IAM Users', data, removeNull=True)
+    human_readable = tableToMarkdown('AWS IAM Users', data)
     return_outputs(human_readable, ec)
 
 

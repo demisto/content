@@ -1,5 +1,5 @@
 {
-  "Juniper_SRX_raw": {
+  "Juniper_SRX_Log": {
     "_raw_log": {
       "type": "string",
       "is_array": false

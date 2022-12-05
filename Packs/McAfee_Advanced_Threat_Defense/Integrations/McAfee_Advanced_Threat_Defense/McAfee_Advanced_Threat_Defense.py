@@ -8,10 +8,9 @@ import re
 import base64
 import time
 import requests
-import urllib3
 
 # disable insecure warnings
-urllib3.disable_warnings()
+requests.packages.urllib3.disable_warnings()
 
 ''' PREREQUISITES '''
 
@@ -106,7 +105,7 @@ def http_request(uri, method, headers=None, body=None, params=None, files=None):
         try:
             result = json.loads(result, parse_int=str)
         except ValueError:
-            LOG('result is: %r' % result)
+            LOG('result is: %s' % result)
             return_error('Response Parsing failed')
         if 'success' in result:  # type: ignore
             if result['success'] == 'false':  # type: ignore

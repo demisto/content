@@ -158,6 +158,4 @@ script:
   runonce: false
 tests:
 - No tests
-marketplaces:
-  - marketplacev2
 fromversion: 5.0.0

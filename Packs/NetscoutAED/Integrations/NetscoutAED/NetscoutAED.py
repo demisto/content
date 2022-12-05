@@ -4,10 +4,9 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import copy
-import urllib3
 
 # Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 

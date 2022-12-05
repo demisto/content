@@ -140,7 +140,7 @@ class Configuration:
 
         # Objects Variables
         self.jobs: Dict[str, Job] = {}
-        self.lists: Dict[str, Dict[str, str]] = {}
+        self.lists: Dict[str, str] = {}
         self.custom_packs: Dict[str, Pack] = {}
         self.marketplace_packs: Dict[str, Pack] = {}
         self.integration_instances: Dict[str, IntegrationInstance] = {}
@@ -208,20 +208,8 @@ class Configuration:
             for _list in self.config['lists']:
                 list_name = _list.get('name')
                 list_value = _list.get('value')
-                list_type = _list.get('type')
 
-                self.lists[list_name] = {
-                    "value": list_value,
-                    "type": list_type
-                }
-
-
-def list_exists(list_name: str) -> bool:
-    res = demisto.executeCommand("getList", {"listName": list_name})[0]
-    if res['Type'] == entryTypes['error'] and "Item not found" in res['Contents']:
-        return False
-    else:
-        return True
+                self.lists[list_name] = list_value
 
 
 def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str, str]]]:
@@ -248,9 +236,9 @@ def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str
     lists = [
         {
             'listname': list_name,
-            'listdata': pps["value"],
+            'listdata': list_data,
         }
-        for list_name, pps in full_configuration.lists.items() if not list_exists(list_name) or pps["type"] != "dynamic"
+        for list_name, list_data in full_configuration.lists.items()
     ]
 
     return {
@@ -261,7 +249,7 @@ def create_context(full_configuration: Configuration) -> Dict[str, List[Dict[str
     }
 
 
-def get_data_from_war_room_file(entry_id) -> bytes:
+def get_data_from_war_room_file(entry_id):
     """Retrieves the content of a file from the war-room.
 
     Args:

@@ -224,9 +224,6 @@ script:
     - contextPath: AWS.IAM.Users.Path
       description: The path to the user.
       type: string
-    - contextPath: AWS.IAM.Users.PasswordLastUsed
-      description: The date and time when the password was last used.
-      type: date
   - arguments:
     - default: false
       description: Name of the user to update.
@@ -2473,7 +2470,7 @@ script:
       description: Specifies whether the user is required to set a new password on
         next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3py3:1.0.0.38419
+  dockerimage: demisto/boto3py3:1.0.0.37317
   feed: false
   isfetch: false
   longRunning: false

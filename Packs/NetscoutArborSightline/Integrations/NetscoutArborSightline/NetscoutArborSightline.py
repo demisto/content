@@ -7,10 +7,9 @@ from copy import deepcopy
 import requests
 from typing import Dict, Tuple
 from datetime import timezone
-import urllib3
 
 # Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 

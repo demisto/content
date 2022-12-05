@@ -1,10 +1,8 @@
-import urllib3
-
 from CommonServerPython import *
 import demistomock as demisto
 
 # disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 URL = ''
 VERIFY = False
@@ -215,7 +213,6 @@ def alert_to_context(alert):
     """
     Transform a single alert to context struct
     """
-    args = demisto.args()
     ec = {
         'ID': alert.get('id'),
         'Status': alert.get('status'),
@@ -238,16 +235,6 @@ def alert_to_context(alert):
             'AccountID': demisto.get(alert, 'resource.accountId')
         }
     }
-    if 'resource_keys' in args:
-        # if resource_keys argument was given, include those items from resource.data
-        extra_keys = demisto.getArg('resource_keys')
-        resource_data = {}
-        keys = extra_keys.split(',')
-        for key in keys:
-            resource_data[key] = demisto.get(alert, f'resource.data.{key}')
-
-        ec['Resource']['Data'] = resource_data
-
     if alert.get('alertRules'):
         ec['AlertRules'] = [alert_rule.get('name') for alert_rule in alert.get('alertRules')]
 

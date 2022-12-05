@@ -20,7 +20,6 @@ class CrowdStrikeClient(BaseClient):
         super().__init__(base_url=params.get('server_url', 'https://api.crowdstrike.com/'),
                          verify=not params.get('insecure', False), ok_codes=tuple(),
                          proxy=params.get('proxy', False))  # type: ignore[misc]
-        self.timeout = float(params.get('timeout', '10'))
         self._token = self._get_token()
         self._headers = {'Authorization': 'bearer ' + self._token}
 
@@ -99,13 +98,8 @@ class CrowdStrikeClient(BaseClient):
         :return: Depends on the resp_type parameter
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
-
-        req_timeout = timeout
-        if self.timeout:
-            req_timeout = self.timeout
-
         return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
-                                     json_data=json_data, params=params, data=data, files=files, timeout=req_timeout,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
                                      ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth,
                                      error_handler=self._error_handler)
 

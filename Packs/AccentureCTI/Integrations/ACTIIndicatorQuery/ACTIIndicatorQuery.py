@@ -1,7 +1,7 @@
-import urllib3
+from typing import Union
 from CommonServerPython import *
 # Disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'

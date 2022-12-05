@@ -1,11 +1,13 @@
+from typing import List, Tuple, Optional
 
 # IMPORTS
-from typing import List, Tuple, Optional
-import urllib3
+import requests
+from CommonServerUserPython import *
+
 from CommonServerPython import *
 
 # Disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
@@ -53,11 +55,10 @@ class Client(BaseClient):
         Returns:
             str: The type of the indicator.
         """
-        if ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
-            return ip_type
-        elif re.match(urlRegex, indicator):
+        if re.match(urlRegex, indicator):
             return FeedIndicatorType.URL
-
+        elif ip_type := FeedIndicatorType.ip_to_indicator_type(indicator):
+            return ip_type
         elif re.match(sha256Regex, indicator):
             return FeedIndicatorType.File
         else:

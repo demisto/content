@@ -419,44 +419,31 @@
                         "items": [
                             {
                                 "endCol": 3,
-                                "fieldId": "healthcheckautoextractionbasedincidenttype",
-                                "height": 106,
-                                "id": "eee05c90-5ff9-11ed-ab6b-81d58daf7a19",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c"
-                            },
-                            {
-                                "endCol": 3,
-                                "fieldId": "healthcheckenabledinstances",
-                                "height": 106,
-                                "id": "18d3a7e0-c6fa-11eb-a8ef-5f644da8ef19",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c"
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "healthchecktopusedplaybooks",
-                                "height": 106,
-                                "id": "b1e45c40-81cb-11ec-8609-73136863cab0",
-                                "index": 0,
-                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
-                                "sectionItemType": "field",
-                                "startCol": 3
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
                                 "fieldId": "healthcheckinstalledpacks",
                                 "height": 106,
                                 "id": "619712f0-c213-11eb-9118-13a43afba38c",
-                                "index": 1,
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "healthchecktopusedplaybooks",
+                                "height": 22,
+                                "id": "b1e45c40-81cb-11ec-8609-73136863cab0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 3,
+                                "dropEffect": "move",
+                                "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c"
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "healthcheckenabledinstances",
+                                "height": 106,
+                                "id": "18d3a7e0-c6fa-11eb-a8ef-5f644da8ef19",
+                                "index": 2,
                                 "listId": "fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-nowlmpv4ir-fwrsfiljze-42d34000-c213-11eb-9118-13a43afba38c",
                                 "sectionItemType": "field",
                                 "startCol": 3
@@ -469,8 +456,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 2,
-                        "maxH": null
+                        "y": 2
                     },
                     {
                         "h": 2,
@@ -486,8 +472,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -503,8 +488,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 1,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "h": 2,
@@ -520,8 +504,7 @@
                         "type": "dynamic",
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "maxH": null
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
@@ -548,8 +531,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5,
-                        "maxH": null
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -576,8 +558,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 12,
-                        "maxH": null
+                        "y": 12
                     },
                     {
                         "displayType": "ROW",
@@ -602,8 +583,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 8,
-                        "maxH": null
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -630,8 +610,7 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 5,
-                        "maxH": null
+                        "y": 5
                     }
                 ],
                 "type": "custom"

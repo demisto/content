@@ -5,19 +5,6 @@
     "closeForm": false,
     "columns": [
         {
-            "displayName": "Field Type",
-            "fieldCalcScript": "",
-            "isDefault": true,
-            "isReadOnly": false,
-            "key": "fieldtype",
-            "required": false,
-            "script": "",
-            "selectValues": null,
-            "type": "shortText",
-            "width": 150,
-            "orgType": "shortText"
-        },
-        {
             "displayName": "Field Name",
             "fieldCalcScript": "",
             "isDefault": true,
@@ -27,8 +14,19 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150,
-            "orgType": "shortText"
+            "width": 150
+        },
+        {
+            "displayName": "Field Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "fieldtype",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
         }
     ],
     "content": true,
