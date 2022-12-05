@@ -370,7 +370,7 @@ Retrieves the status of a sandbox analysis submission
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | task_id from the trendmicro-visionone-submit-file-to-sandbox command output. | Required |
+| task_id | task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output. | Required |
 
 #### Context Output
 
@@ -471,7 +471,7 @@ Retrieves a URL and other information required to download a collected file via 
 | VisionOne.Download_Information_For_Collected_Forensic_File.password | string | Archive password for the protected forensic file |
 | VisionOne.Download_Information_For_Collected_Forensic_File.filename | string | Name of the collected file |
 
-Note: The URL received from the 'trendmicro-visionone-download-information-for-collected-forensic-file' will be valid for only ``60 seconds``
+Note: The URL received from the `trendmicro-visionone-download-information-for-collected-forensic-file` will be valid for only ``60 seconds``
 
 ### trendmicro-visionone-submit-file-to-sandbox
 
