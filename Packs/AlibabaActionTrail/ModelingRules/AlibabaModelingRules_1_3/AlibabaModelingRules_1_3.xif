@@ -6,7 +6,7 @@ filter
     xdm.target.cloud.region = event_acsregion,
     xdm.event.id = event_eventid,
     xdm.event.operation = event_eventname,
-    xdm.target.resource.namee = event_resourcename,
+    xdm.target.resource.name = event_resourcename,
     xdm.target.resource.type = event_resourcetype,
     xdm.source.ipv4 = event_sourceipaddress,
     xdm.source.user.user_type = event_useridentity_type,
