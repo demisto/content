@@ -966,7 +966,7 @@ def advanced_search():
         markdown += tableToMarkdown('Threat Grid submission results', final_results)
         results = CommandResults(
             readable_output=markdown,
-            outputs_prefix='Threatgrid',
+            outputs_prefix='Threatgrid.SearchResult',
             outputs_key_field='Info',
             outputs=final_results
         )
