@@ -250,7 +250,8 @@ def humio_list_notifiers(client, args, headers):
         ... on VictorOpsAction{{messageType, notifyUrl, useProxy}}
         ... on PagerDutyAction{{severity, routingKey, useProxy}}
         ... on HumioRepoAction{{ingestToken}}
-        ... on UploadFileAction{{{{fileName}}}}}}}}}}
+        ... on UploadFileAction{{fileName}}
+        }}}}}}
     """.format(repoName=args.get("repository"))
 
     data = {"query": graphql_query}
