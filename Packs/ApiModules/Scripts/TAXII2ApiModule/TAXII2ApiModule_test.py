@@ -620,7 +620,7 @@ class TestFetchingStixObjects:
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
 
 
-class TestParsingSCOIndicators:
+class TestParsingIndicators:
 
     # test examples taken from here - https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_64yvzeku5a5c
 
@@ -630,6 +630,8 @@ class TestParsingSCOIndicators:
         return Taxii2FeedClient(
             url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN', objects_to_fetch=[]
         )
+
+    # Parsing SCO Indicators
 
     def test_parse_autonomous_system_indicator(self, taxii_2_client):
         """
@@ -867,3 +869,124 @@ class TestParsingSCOIndicators:
         ]
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
+
+    def test_parse_cve(self, taxii_2_client):
+        """
+        Given:
+         - vulnerability object
+
+        When:
+         - parsing the vulnerability into a format XSOAR knows to read.
+
+        Then:
+         - make sure all the fields are being parsed correctly.
+        """
+        vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
+                                'created_by_ref': 'identity--ce',
+                                'external_references': [{'external_id': 'CVE-1234-5', 'source_name': 'cve'},
+                                                        {'external_id': '1', 'source_name': 'other'}],
+                                'id': 'vulnerability--25',
+                                'modified': '2021-06-01T00:00:00.000Z',
+                                'object_marking_refs': ['marking-definition--34'],
+                                'spec_version': '2.1',
+                                'type': 'vulnerability',
+                                'labels': ['elevated']}
+
+        xsoar_expected_response = [
+            {
+                'fields': {'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                           'modified': '2021-06-01T00:00:00.000Z',
+                           'stixid': 'vulnerability--25',
+                           'tags': ['elevated', 'CVE-1234-5'],
+                           'trafficlightprotocol': 'GREEN'},
+                'rawJSON': vulnerability_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'CVE',
+                'value': 'CVE-1234-5'
+            }
+        ]
+
+        assert taxii_2_client.parse_cve(vulnerability_object) == xsoar_expected_response
+
+    # Parsing SDO Indicators
+
+    def test_parse_identity(self, taxii_2_client):
+        """
+        Given:
+         - identity object
+
+        When:
+         - parsing the identity into a format XSOAR knows to read.
+
+        Then:
+         - make sure all the fields are being parsed correctly.
+        """
+        identity_object = {'contact_information': 'test@org.com',
+                           'created': '2021-06-01T00:00:00.000Z',
+                           'created_by_ref': 'identity--b3',
+                           'description': 'Identity to represent the government entities.',
+                           'id': 'identity--f8',
+                           'identity_class': 'organization',
+                           'labels': ['consent-everyone'],
+                           'modified': '2021-06-01T00:00:00.000Z',
+                           'name': 'Government',
+                           'sectors': ['government-national'],
+                           'spec_version': '2.1',
+                           'type': 'identity'}
+
+        xsoar_expected_response = [
+            {
+                'fields': {'description': 'Identity to represent the government entities.',
+                           'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                           'identityclass': 'organization',
+                           'industrysectors': ['government-national'],
+                           'modified': '2021-06-01T00:00:00.000Z',
+                           'stixid': 'identity--f8',
+                           'tags': ['consent-everyone'],
+                           'trafficlightprotocol': 'GREEN'},
+                'rawJSON': identity_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Identity',
+                'value': 'Government'
+            }
+        ]
+
+        assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response
+
+    def test_parse_location(self, taxii_2_client):
+        """
+        Given:
+         - location object
+
+        When:
+         - parsing the location into a format XSOAR knows to read.
+
+        Then:
+         - make sure all the fields are being parsed correctly.
+        """
+        location_object = {'administrative_area': 'US-MI',
+                           'country': 'US',
+                           'created': '2022-11-19T23:27:34.000Z',
+                           'created_by_ref': 'identity--27',
+                           'id': 'location--28',
+                           'modified': '2022-11-19T23:27:34.000Z',
+                           'object_marking_refs': ['marking-definition--34'],
+                           'spec_version': '2.1',
+                           'type': 'location',
+                           'labels': ['elevated']}
+
+        xsoar_expected_response = [
+            {
+                'fields': {'countrycode': 'US',
+                           'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                           'modified': '2022-11-19T23:27:34.000Z',
+                           'stixid': 'location--28',
+                           'tags': ['elevated'],
+                           'trafficlightprotocol': 'GREEN'},
+                'rawJSON': location_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Location',
+            }
+        ]
+
+        assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
