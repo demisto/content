@@ -5,6 +5,10 @@ set -e
 
 XSIAM_SERVERS_PATH=$(cat xsiam_servers_path)
 
+echo "XSIAM_CHOSEN_MACHINE_ID is: $XSIAM_CHOSEN_MACHINE_ID."
+echo "XSIAM_SERVERS_PATH is: $XSIAM_SERVERS_PATH."
+echo "XSIAM_API_KEYS is: $XSIAM_API_KEYS."
+
 if [[ -z ${XSIAM_CHOSEN_MACHINE_ID} ]]; then
   echo "XSIAM_CHOSEN_MACHINE_ID is not defiened, exiting..."
 else
