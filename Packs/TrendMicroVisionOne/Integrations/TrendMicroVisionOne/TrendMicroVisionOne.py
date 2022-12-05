@@ -148,7 +148,7 @@ GET_FILE_ANALYSIS_REPORT = 'trendmicro-visionone-get-file-analysis-report'
 COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
 DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
-SUBMIT_FILE_ENTRY_TO_SANDBOX = 'trendmicro-visionone-submit-file-entry-to-sandbox'
+FILE_ENTRY_TO_SANDBOX = 'trendmicro-visionone-submit-file-entry-to-sandbox'
 GET_SANDBOX_SUBMISSION_STATUS = 'trendmicro-visionone-get-sandbox-submission-status'
 CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
 GET_ENDPOINT_INFO_COMMAND = 'trendmicro-visionone-get-endpoint-info'
@@ -1232,61 +1232,6 @@ def submit_file_entry_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[
     return results
 
 
-def get_sandbox_submission_status(client: Client, args: Dict[str, Any],
-                                  poll: bool = True,
-                                  poll_time_sec: int = 1500
-                                  ) -> Union[str, CommandResults]:
-    task_id = args.get(TASKID)
-    if poll:
-        start_time: float = time.time()
-        elapsed_time: float = 0
-        while (_is_submission_running(client, task_id)
-              and elapsed_time < poll_time_sec):
-            elapsed_time = (start_time - time.time())
-    result = _submission_status_request(client, task_id)
-    message = {
-        "message": result.get("message", ""),
-        "code": result.get("code", ""),
-        "task_id": result.get("data", {}).get("taskId", ""),
-        "taskStatus": result.get("data", {}).get("taskStatus", ""),
-        "digest": result.get("data", {}).get("digest", ""),
-        "analysis_completion_time": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("analysisCompletionTime", ""),
-        "risk_level": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("riskLevel", ""),
-        "description": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("description", ""),
-        "detection_name_list": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("detectionNameList", ""),
-        "threat_type_list": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("threatTypeList", ""),
-        "file_type": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("trueFileType", ""),
-        "report_id": result.get("data", {}).get("reportId", ""),
-    }
-    results = CommandResults(
-        readable_output=tableToMarkdown(TABLE_SANDBOX_SUBMISSION_STATUS, message, removeNull=True),
-        outputs_prefix="VisionOne.Get_Sandbox_Analysis_Status",
-        outputs_key_field="report_id",
-        outputs=message,
-    )
-    return results
-
-def _submission_status_request(client: Client, task_id: str) -> Dict[str, Any]:
-    response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
-    return response
-
-def _is_submission_running(client: Client, task_id: str) -> bool:
-    return (_submission_status_request(client, task_id)
-            .get(DATA).get(TASKSTATUS) in [PROCESSING, QUEUED, RUNNING])
-
-
 def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Adds a note to an existing workbench alert
@@ -1421,6 +1366,9 @@ def main():
 
         elif command == FILE_TO_SANDBOX:
             return_results(submit_file_to_sandbox(client, args))
+            
+        elif command == FILE_ENTRY_TO_SANDBOX:
+            return_results(submit_file_entry_to_sandbox(client, args))
 
         elif command == UPDATE_STATUS:
             return_results(update_status(client, args))
