@@ -1112,7 +1112,9 @@ inputs:
   playbookInputQuery:
 - key: UserManagerEmail
   value:
-    simple: poc@demistodev.com
+    complex:
+      root: ActiveDirectory.Users
+      accessor: Manager
   required: false
   description: The user's manager email address.
   playbookInputQuery:
