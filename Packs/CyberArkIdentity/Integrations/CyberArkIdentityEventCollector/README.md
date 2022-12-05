@@ -3,7 +3,7 @@ This integration was integrated and tested with version 22.4 of CyberArk Identit
 
 ## Configure CyberArk Identity Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
 2. Search for CyberArk Identity Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
