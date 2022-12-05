@@ -34,8 +34,6 @@ class GoogleSecreteManagerModule:
 
     @staticmethod
     def init_secret_manager_client(service_account: str) -> secretmanager.SecretManagerServiceClient:
-        if not service_account:
-            return secretmanager.SecretManagerServiceClient()
         try:
             service_account = service_account.replace('\r', '').replace('\n', '')
             cur_directory_path = os.getcwd()
@@ -48,4 +46,7 @@ class GoogleSecreteManagerModule:
             client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)# type: ignore # noqa
             return client
         finally:
-            os.remove(credentials_file_path)
+            try:
+                os.remove(credentials_file_path)
+            except:
+                pass
