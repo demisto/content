@@ -1319,3 +1319,45 @@ Returns sequence event types for the given asset sequence ID and time range.
 
 #### Command Example
 ```!exabeam-get-sequence-eventtypes asset_sequence_id=asset_sequence_id search_str="search_str"```
+
+
+### exabeam-list-incident
+***
+Returns incidents from exabeam
+
+#### Base Command
+
+`exabeam-list-incident`
+#### Input
+
+| **Argument Name** | **Description**                                                            | **Required** |
+|-------------------|----------------------------------------------------------------------------| --- |
+| incident_id       | The incident ID.                                                           | Optional | 
+| query             | query string which is a combination of incident type, priority and status. | Optional | 
+| incident_type     | incident type to filter by.                                                | Optional | 
+| priority          | priority to filter by.                                                     | Optional |
+| status            | status to filter by.                                                        | Optional |
+| limit             | Maximum number of rules to retrieve. Default is 50.                        | Optional | 
+| page_size         | Results page number. Default is 0.                                         | Optional | 
+| page_number       | String to search for inside display name.                                  | Optional |
+
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                  |
+|---------------------------------------| --- |----------------------------------|
+| Exabeam.incidents.incidentId          | String | The id of the incident.          | 
+| Exabeam.incidents.name                | String | The name of the incident.        | 
+| Exabeam.incidents.fields.startedDate  | Date | When did the incident start.     | 
+| Exabeam.incidents.fields.closedDate   | Date | When did the incident closed.    | 
+| Exabeam.incidents.fields.createdAt    | Date | When did the incident created    | 
+| Exabeam.incidents.fields.owner        | String | The owner of the incident.       | 
+| Exabeam.incidents.fields.status       | String | The status of the incident.      | 
+| Exabeam.incidents.fields.incidentType | String | The type of the incident.        | 
+| Exabeam.incidents.fields.source       | String | The source of the incident.      | 
+| Exabeam.incidents.fields.priority     | String | The prioirity of the incident.   | 
+| Exabeam.incidents.fields.queue        | String | The queue of the incident.       | 
+| Exabeam.incidents.fields.description  | String | The description of the incident. | 
+
+#### Command Example
+```!exabeam-list-incident priority=high```

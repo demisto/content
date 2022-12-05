@@ -744,7 +744,8 @@ def format_single_incident(incident):
                 'priority': incident_fields.get('priority'),
                 'queue': incident_fields.get('queue'),
                 'description': incident_fields.get('description')
-            }}
+            },
+            'rawJSON': json.dumps(incident)}
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work

@@ -1,0 +1,28 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "exabeam_mapping",
+    "mapping": {
+        "Exabeam Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Exabeam Id": {
+                    "simple": "incidentId"
+                },
+                "Exabeam Queue": {
+                    "simple": "fields.queue"
+                },
+                "Exabeam Source": {
+                    "simple": "fields.source"
+                },
+                "Exabeam Source Id": {
+                    "simple": "fields.sourceId"
+                }
+            }
+        }
+    },
+    "name": "exabeam_mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

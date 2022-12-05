@@ -2030,7 +2030,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The sequence event type.
       type: String
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
   feed: false
   isfetch: true
   longRunning: false
