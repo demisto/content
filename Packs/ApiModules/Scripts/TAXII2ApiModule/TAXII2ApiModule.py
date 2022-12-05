@@ -901,7 +901,7 @@ class Taxii2FeedClient:
         :param location_obj: location object
         :return: location extracted from the location object in cortex format
         """
-        country_name = COUNTRY_CODES_TO_NAMES.get(location_obj.get('country'), '')
+        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country')), '')
         location = {
             'value': location_obj.get('name') or country_name,
             'type': FeedIndicatorType.Location,
