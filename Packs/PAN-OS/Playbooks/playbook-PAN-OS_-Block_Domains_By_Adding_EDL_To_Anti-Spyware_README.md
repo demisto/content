@@ -1,13 +1,13 @@
-This playbook goal is to block domains using Panorama Anti-Spyware. it assigning External Dynamic List URL that contains domains to block to Panorama Anti-Spyware. You can create External Dynamic List(EDL) and add domains to it using XSOAR pack called "Generic Export Indicators Service". 
+This playbook blocks domains using Panorama Anti-Spyware. It assigns External Dynamic List URLs that contains domains to block to Panorama Anti-Spyware. You can create External Dynamic List(EDL) and add domains to it using the Cortex XSOAR pack called "Generic Export Indicators Service". 
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PAN-OS Commit Configuration
+PAN-OS Commit Configuration
 
 ### Integrations
-* Panorama
+Panorama
 
 ### Scripts
 This playbook does not use any scripts.
@@ -25,12 +25,12 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | EDL_URL | The URL from which to pull the EDL. |  | Optional |
-| Add_To_Existing_PAN-OS_EDL | input "true" to use existing PAN-OS EDL |  | Optional |
-| PAN-OS_EDL_Name | PAN-OS EDL Name to create/To edit if exist\(depend on inputs.Add_To_Existing_PAN-OS_EDL\) |  | Optional |
+| Add_To_Existing_PAN-OS_EDL | Set to "true" to use the existing PAN-OS EDL. |  | Optional |
+| PAN-OS_EDL_Name | PAN-OS EDL name to create/edit if it exists\(depending on inputs.Add_To_Existing_PAN-OS_EDL\). |  | Optional |
 | Device_Group | The device group for which to return addresses for the EDL \(Panorama instances\).<br/> |  | Optional |
-| Certificate_Profile | The certificate profile name for the URL that was previously uploaded. to PAN OS.<br/> |  | Optional |
-| Anti_Spyware_Profile | Name of the Anti Spyware Profile to Create OR to edit if exist\(depand on inputs,Use_Existing_AntiSpyware_Profile\). |  | Optional |
-| Use_Existing_AntiSpyware_Profile | input "true" to create new anti spyware profile |  | Optional |
+| Certificate_Profile | The certificate profile name for the URL that was previously uploaded to PAN OS.<br/> |  | Optional |
+| Anti_Spyware_Profile | Name of the anti-spyware profile to create OR edit if it exist\(depending on input.Use_Existing_AntiSpyware_Profile\). |  | Optional |
+| Use_Existing_AntiSpyware_Profile | Set to "true" to create a new anti-spyware profile. |  | Optional |
 
 ## Playbook Outputs
 ---
