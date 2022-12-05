@@ -1298,6 +1298,10 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "ip_network_id",
             "option_id",
             "end_after",
+            "target_from",
+            "tag_include_selector", "tag_exclude_selector", "tag_set_by", "tag_set_include", "tag_set_exclude",
+            "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude"
+
         ],
         "required_groups": [
             [
@@ -1361,6 +1365,8 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "ip_network_id",
             "option_id",
             "end_after",
+            "tag_include_selector", "tag_exclude_selector", "tag_set_by", "tag_set_include",
+            "tag_set_exclude", "use_ip_nt_range_tags_include", "use_ip_nt_range_tags_exclude"
         ],
         "default_added_depended_args": {
             "frequency_days": {
@@ -1835,6 +1841,10 @@ def generate_asset_tag_xml_request_body(args: Dict[str, str], command_name: str)
     match command_name:
         case "qualys-asset-tag-list":
             ServiceRequest = ET.Element("ServiceRequest")
+            if limit := args.get("limit"):
+                preferences = ET.SubElement(ServiceRequest, "preferences")
+                limit_results = ET.SubElement(preferences, "limitResults")
+                limit_results.text = limit
             filters = ET.SubElement(ServiceRequest, "filters")
             criteria = ET.SubElement(filters, "Criteria")
             criteria.set("field", args.get("criteria", ""))
@@ -2408,9 +2418,10 @@ def build_tag_asset_output(**kwargs) -> Tuple[List[Any], str]:
         readable_output = human_readable_massage
         return handled_result, readable_output
 
-    if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
-        handled_result["childTags"] = children_list
-        handled_result.pop("children")
+    if type(handled_result) == dict:
+        if children_list := handled_result.get("children", {}).get("list", {}).get("TagSimple"):
+            handled_result["childTags"] = children_list
+            handled_result.pop("children")
 
     readable_output = tableToMarkdown(
         name=command_parse_and_output_data.get("table_name"),
@@ -2458,9 +2469,6 @@ def qualys_command_flow_manager(
         DemistoException: will be raised when request to Qualys API failed
     """
 
-    # Validate input provided by the user
-    input_validation(command_name)
-
     # handle asset tag command parameters for HTTP request
     if command_name in TAG_ASSET_COMMANDS_API_DATA.keys():
 
@@ -2474,6 +2482,9 @@ def qualys_command_flow_manager(
         # Build the API and internal arguments of the command
         build_args_dict(args, COMMANDS_ARGS_DATA[command_name], False)
         build_args_dict(args, COMMANDS_ARGS_DATA[command_name], True)
+
+        # Validate input provided by the user
+        input_validation(command_name)
 
         # Make an API request
         result = client.command_http_request(COMMANDS_API_DATA[command_name])
