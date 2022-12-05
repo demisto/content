@@ -1,5 +1,5 @@
-https://url1.com
-https://url2.com
-https://url3.com
-https://url4.com
-https://url5.com
+https://url1.com/path
+https://url2.com/path
+https://url3.com/path
+https://url4.com/path
+https://url5.com/path
