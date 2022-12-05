@@ -459,7 +459,7 @@ slack-notify-nightly-build:
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 #    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
-#    CLOUD_SERVERS_PATH: $(cat xsiam_servers_path)
+#    CLOUD_SERVERS_PATH: $XSIAM_SERVERS_PATH
 #    CLOUD_API_KEYS: $XSIAM_API_KEYS
 #    GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam"
 #    GCS_SOURCE_BUCKET: $GCS_PRODUCTION_V2_BUCKET
@@ -481,7 +481,7 @@ xsiam_server_ga:
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
-    CLOUD_SERVERS_PATH: $(cat xsiam_servers_path)
+    CLOUD_SERVERS_PATH: $XSIAM_SERVERS_PATH
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     GCS_SOURCE_BUCKET: $GCS_PRODUCTION_V2_BUCKET
@@ -576,7 +576,7 @@ xsoar_ng_server_ga:
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"
-    CLOUD_SERVERS_PATH: $(cat xsiam_servers_path)
+    CLOUD_SERVERS_PATH: $XSIAM_SERVERS_PATH
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng"
     GCS_SOURCE_BUCKET: $GCS_PRODUCTION_BUCKET
