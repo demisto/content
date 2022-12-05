@@ -42,6 +42,3 @@ else:
     # get the current Incident Type, and only return that type.
     incident_type = demisto.incident().get("type")
     return_results({'hidden': False, 'options': [incident_type]})
-
-
-register_module_line('CaseMgmtIncidentTypesByRole', 'end', __line__())
