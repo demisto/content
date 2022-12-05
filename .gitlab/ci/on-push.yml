@@ -481,10 +481,10 @@ xsiam_server_ga:
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
-    CLOUD_SERVERS_PATH: $(cat xsiam_servers_path)
-    CLOUD_API_KEYS: $XSIAM_API_KEYS
+    CLOUD_SERVERS_PATH: "${(cat xsiam_servers_path)}"
+    CLOUD_API_KEYS: "${XSIAM_API_KEYS}"
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam"
-    GCS_SOURCE_BUCKET: $GCS_PRODUCTION_V2_BUCKET
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_V2_BUCKET}"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
