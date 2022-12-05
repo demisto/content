@@ -242,9 +242,16 @@ def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
                              ("PT2M16.481S", "2 minutes, 16.481 seconds"),
                              ("PT51.316S", "51.316 seconds"),
                              ("P3Y6M4DT12H30M5S", "3 years, 6 months, 4 days, 12 hours, 30 minutes, 5 seconds"),
+                             ("Invalid", None),
+
                          ])
-def test_readable_duration_time(test_input: str, expected_output: float):
-    assert readable_duration_time(test_input) == expected_output
+def test_readable_duration_time(test_input: str, expected_output: float | None):
+    if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", test_input):
+        with pytest.raises(ValueError):
+            readable_duration_time(test_input)
+
+    else:
+        assert readable_duration_time(test_input) == expected_output
 
 
 @pytest.mark.parametrize("test_input_data, test_input_key, expected_output",
@@ -429,8 +436,21 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
                          [
                              ({"name": "Test", "site_assignment": "All-Sites", "service": "FTP", "username": "Test1",
-                               "password": "Test2"},
-                              {"id": 1}, {"id": 1})
+                               "password": "Test2", "sites": "1,2,3"},
+                              {"id": 1}, {"id": 1}),
+                             ({"name": "Test", "site_assignment": "All-Sites", "service": "SNMPv3", "username": "Test1",
+                               "password": "Test2", "snmpv3_authentication_type": "SHA",
+                               "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"},
+                              {"id": 1}, {"id": 1}),
+                             ({"name": "Test", "site_assignment": "All-Sites", "service": "Oracle", "username": "Test1",
+                               "password": "Test2", "oracle_enumerate_sids": "false"},
+                              {"id": 1}, {"id": 1}),
+                             ({"name": "Test", "site_assignment": "All-Sites", "service": "SSH", "username": "Test1",
+                               "password": "Test2", "ssh_permission_elevation": "None"},
+                              {"id": 1}, {"id": 1}),
+                             ({"name": "Test", "site_assignment": "All-Sites", "service": "MS-SQL", "username": "Test1",
+                               "password": "Test2", "use_windows_authentication": "false"},
+                              {"id": 1}, {"id": 1}),
                          ])
 def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                           api_mock_data: dict, expected_output_context: dict):
@@ -441,13 +461,21 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
                          [
                              ({"vulnerability_id": "7-zip-cve-2008-6536", "scope_type": "Global", "state": "Approved",
-                               "reason": "Acceptable-Risk", "comment": "Comment"}, {"id": 1}, {"id": 1})
+                               "reason": "Acceptable-Risk", "comment": "Comment"}, {"id": 1}, {"id": 1}),
+                             ({"vulnerability_id": "7-zip-cve-2008-6536", "scope_type": "Site", "state": "Approved",
+                               "reason": "Acceptable-Risk", "comment": "Comment"}, None, None)
                          ])
 def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                                                api_mock_data: dict, expected_output_context: dict):
+                                                api_mock_data: dict | None, expected_output_context: dict | None):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
-    assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
-        expected_output_context
+
+    if test_input_kwargs["scope_type"] != "Global" and test_input_kwargs.get("scope_id") is None:
+        with pytest.raises(ValueError):
+            create_vulnerability_exception_command(client=mock_client, **test_input_kwargs)
+
+    else:
+        assert create_vulnerability_exception_command(client=mock_client, **test_input_kwargs).outputs == \
+            expected_output_context
 
 
 @pytest.mark.parametrize("asset_id",
@@ -467,6 +495,24 @@ def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
     assert result.outputs is None
 
 
+@pytest.mark.parametrize("site_id, scheduled_scan_id",
+                         [
+                             ("1", "2"),
+                         ])
+def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str, scheduled_scan_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_scan_schedule_command(client=mock_client, site=Site(site_id=site_id),
+                                          scheduled_scan_id=scheduled_scan_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}/scan_schedules/{scheduled_scan_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
 @pytest.mark.parametrize("shared_credential_id",
                          [
                              ("1",),
@@ -477,6 +523,41 @@ def test_delete_shared_credential_command(mocker, mock_client: Client, shared_cr
 
     http_request.assert_called_with(
         url_suffix=f"/shared_credentials/{shared_credential_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("site_id",
+                         [
+                             ("1",),
+                         ])
+def test_delete_site_command(mocker, mock_client: Client, site_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_site_command(client=mock_client, site=Site(site_id=site_id))
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}",
+        method="DELETE",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("site_id, site_credential_id",
+                         [
+                             ("1", "2"),
+                         ])
+def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_id: str, site_credential_id: str):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    result = delete_site_scan_credential_command(client=mock_client, site=Site(site_id=site_id),
+                                                 site_credential_id=site_credential_id)
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}/site_credentials/{site_credential_id}",
         method="DELETE",
         resp_type="json",
     )
@@ -763,19 +844,99 @@ def test_set_assigned_shared_credential_status_command(mocker, mock_client: Clie
     assert result.outputs is None
 
 
+@pytest.mark.parametrize("scan_id, scan_status",
+                         [
+                             ("1", ScanStatus.PAUSE),
+                             ("2", ScanStatus.RESUME),
+                             ("3", ScanStatus.STOP),
+                         ])
+def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_status: ScanStatus):
+    http_request = mocker.patch.object(Client, "_http_request", return_value={})
+    result = update_scan_command(mock_client, scan_id=scan_id, scan_status=scan_status)
+
+    http_request.assert_called_with(
+        method="POST",
+        url_suffix=f"/scans/{scan_id}/{scan_status.value}",
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
 @pytest.mark.parametrize("test_input_kwargs, expected_post_data",
                          [
+                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "Specific-Sites",
+                               "host_restriction": "192.0.2.0", "port_restriction": "8080", "service": "FTP",
+                               "username": "Test1", "password": "Test2", "sites": "1,2,3",
+                               },
+                              {
+                                  "hostRestriction": "192.0.2.0",
+                                  "name": "Test",
+                                  "siteAssignment": "specific-sites",
+                                  "portRestriction": "8080",
+                                  "sites": [1, 2, 3],
+                                  "account": {
+                                      "service": "ftp",
+                                      "username": "Test1",
+                                      "password": "Test2"
+                                  }
+                              }),
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
-                               "service": "FTP", "username": "Test1", "password": "Test2"},
+                               "service": "SNMPv3", "username": "Test1", "password": "Test2",
+                               "snmpv3_authentication_type": "SHA", "snmpv3_privacy_type": "AES-256",
+                               "snmpv3_privacy_password": "123"},
                               {
                                   "name": "Test",
                                   "siteAssignment": "all-sites",
                                   "account": {
-                                      "service": "ftp",
+                                      "service": "snmpv3",
+                                      "username": "Test1",
+                                      "authenticationType": "sha",
+                                      "password": "Test2",
+                                      "privacyType": "aes-256",
+                                      "privacyPassword": "123"
+                                  }
+                              }),
+                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
+                               "service": "Oracle", "username": "Test1", "password": "Test2",
+                               "oracle_enumerate_sids": "false"},
+                              {
+                                  "name": "Test",
+                                  "siteAssignment": "all-sites",
+                                  "account": {
+                                      "service": "oracle",
                                       "username": "Test1",
                                       "password": "Test2",
-                                  }},
-                              )
+                                      "enumerateSids": False,
+                                      "oracleListenerPassword": None
+                                  }
+                             }),
+                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
+                               "service": "SSH", "username": "Test1", "password": "Test2",
+                               "ssh_permission_elevation": "None"},
+                              {
+                                  "name": "Test",
+                                  "siteAssignment": "all-sites",
+                                  "account": {
+                                      "service": "ssh",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                      "permissionElevation": "none"
+                                  }
+                             }),
+                             ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
+                               "service": "MS-SQL", "username": "Test1", "password": "Test2",
+                               "use_windows_authentication": "false"},
+                              {
+                                  "name": "Test",
+                                  "siteAssignment": "all-sites",
+                                  "account": {
+                                      "service": "ms-sql",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                      "useWindowsAuthentication": False
+                                  }
+                             }),
                          ])
 def test_update_shared_credential_command(mocker, mock_client: Client,
                                           test_input_kwargs: dict, expected_post_data: dict):
@@ -785,6 +946,93 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
     http_request.assert_called_with(
         method="PUT",
         url_suffix=f"/shared_credentials/{test_input_kwargs['shared_credential_id']}",
+        json_data=expected_post_data,
+        resp_type="json",
+    )
+
+    assert result.outputs is None
+
+
+@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
+                         [
+                             ({"site_id": "1", "credential_id": "1", "name": "Test", "host_restriction": "192.0.2.0",
+                               "port_restriction": "8080", "service": "FTP", "username": "Test1", "password": "Test2"
+                               },
+                              {
+                                  "hostRestriction": "192.0.2.0",
+                                  "name": "Test",
+                                  "id": "1",
+                                  "portRestriction": "8080",
+                                  "account": {
+                                      "service": "ftp",
+                                      "username": "Test1",
+                                      "password": "Test2"
+                                  }
+                              }),
+                             ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "SNMPv3",
+                               "username": "Test1", "password": "Test2", "snmpv3_authentication_type": "SHA",
+                               "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"},
+                              {
+                                  "name": "Test",
+                                  "id": "1",
+                                  "account": {
+                                      "service": "snmpv3",
+                                      "username": "Test1",
+                                      "authenticationType": "sha",
+                                      "password": "Test2",
+                                      "privacyType": "aes-256",
+                                      "privacyPassword": "123"
+                                  }
+                              }),
+                             ({"site_id": "3", "credential_id": "1", "name": "Test", "service": "Oracle",
+                               "username": "Test1", "password": "Test2", "oracle_enumerate_sids": "false"},
+                              {
+                                  "name": "Test",
+                                  "id": "1",
+                                  "account": {
+                                      "service": "oracle",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                      "enumerateSids": False,
+                                      "oracleListenerPassword": None
+                                  }
+                              }),
+                             ({"site_id": "1", "credential_id": "1", "name": "Test", "service": "SSH",
+                               "username": "Test1", "password": "Test2", "ssh_permission_elevation": "None"},
+                              {
+                                  "name": "Test",
+                                  "id": "1",
+                                  "account": {
+                                      "service": "ssh",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                      "permissionElevation": "none"
+                                  }
+                             }),
+                             ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "MS-SQL",
+                               "username": "Test1", "password": "Test2", "use_windows_authentication": "false"},
+                              {
+                                  "name": "Test",
+                                  "id": "1",
+                                  "account": {
+                                      "service": "ms-sql",
+                                      "username": "Test1",
+                                      "password": "Test2",
+                                      "useWindowsAuthentication": False
+                                  }
+                              }),
+                         ])
+def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                                             expected_post_data: dict):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    site_id = test_input_kwargs.pop("site_id")
+    result = update_site_scan_credential_command(client=mock_client,
+                                                 site=Site(site_id=site_id),
+                                                 **test_input_kwargs)
+
+    http_request.assert_called_with(
+        method="PUT",
+        url_suffix=f"/sites/{site_id}/site_credentials",
         json_data=expected_post_data,
         resp_type="json",
     )
