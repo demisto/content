@@ -975,7 +975,7 @@ def advanced_search():
         )
         return_results(results)
     else:
-        demisto.results('No results found')
+        return_results(CommandResults(readable_output='No results found'))
 
 
 def search_samples():
