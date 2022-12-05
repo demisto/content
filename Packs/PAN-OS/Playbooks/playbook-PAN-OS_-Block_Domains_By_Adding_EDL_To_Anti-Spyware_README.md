@@ -26,10 +26,10 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | EDL_URL | The URL from which to pull the EDL. |  | Optional |
 | Add_To_Existing_PAN-OS_EDL | Set to "true" to use the existing PAN-OS EDL. |  | Optional |
-| PAN-OS_EDL_Name | PAN-OS EDL name to create/edit if it exists\(depending on inputs.Add_To_Existing_PAN-OS_EDL\). |  | Optional |
+| PAN-OS_EDL_Name | PAN-OS EDL name to create/edit if it exists\(depending on the value in Add_To_Existing_PAN-OS_EDL\). |  | Optional |
 | Device_Group | The device group for which to return addresses for the EDL \(Panorama instances\).<br/> |  | Optional |
 | Certificate_Profile | The certificate profile name for the URL that was previously uploaded to PAN OS.<br/> |  | Optional |
-| Anti_Spyware_Profile | Name of the anti-spyware profile to create OR edit if it exist\(depending on input.Use_Existing_AntiSpyware_Profile\). |  | Optional |
+| Anti_Spyware_Profile | Name of the anti-spyware profile to create OR edit if it exist\(depending on the value in Use_Existing_AntiSpyware_Profile\). |  | Optional |
 | Use_Existing_AntiSpyware_Profile | Set to "true" to create a new anti-spyware profile. |  | Optional |
 
 ## Playbook Outputs
