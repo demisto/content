@@ -27,6 +27,8 @@ class GoogleSecreteManagerModule:
                     secrets.append(secret_value)
                 except google.api_core.exceptions.NotFound:
                     pass
+            else:
+                secrets.append(secret)
 
         return secrets
 
