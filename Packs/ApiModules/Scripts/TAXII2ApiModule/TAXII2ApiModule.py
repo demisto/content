@@ -445,8 +445,18 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
-    def update_tlp(self, fields):
-        return self.tlp_color and not fields.get('trafficlightprotocol')
+    def set_default_fields(self, obj_to_parse):
+        fields = {
+            'stixid': obj_to_parse.get('id', ''),
+            'firstseenbysource': obj_to_parse.get('created', ''),
+            'modified': obj_to_parse.get('modified', ''),
+            'description': obj_to_parse.get('description', ''),
+        }
+
+        if self.tlp_color:
+            fields['trafficlightprotocol'] = self.tlp_color
+
+        return fields
 
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
@@ -506,18 +516,14 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "rawJSON": attack_pattern_obj,
         }
-        fields = {
-            'stixid': attack_pattern_obj.get('id'),
+
+        fields = self.set_default_fields(attack_pattern_obj)
+        fields.update({
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": attack_pattern_obj.get('created'),
-            "modified": attack_pattern_obj.get('modified'),
-            'description': attack_pattern_obj.get('description', ''),
             'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
             "publications": publications,
             "tags": list(self.tags),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         attack_pattern["fields"] = fields
 
         if not is_demisto_version_ge('6.2.0'):
@@ -541,16 +547,13 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
         }
-        fields = {
-            'stixid': report_obj.get('id'),
-            'firstseenbysource': report_obj.get('created'),
+
+        fields = self.set_default_fields(report_obj)
+        fields.update({
             'published': report_obj.get('published'),
-            'description': report_obj.get('description', ''),
             "report_types": report_obj.get('report_types', []),
             "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         report["fields"] = fields
 
         return [report]
@@ -568,11 +571,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.THREAT_ACTOR,
             "rawJSON": threat_actor_obj
         }
-        fields = {
-            'stixid': threat_actor_obj.get('id'),
-            "firstseenbysource": threat_actor_obj.get('created'),
-            "modified": threat_actor_obj.get('modified'),
-            'description': threat_actor_obj.get('description', ''),
+
+        fields = self.set_default_fields(threat_actor_obj)
+        fields.update({
             'aliases': threat_actor_obj.get("aliases", []),
             "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
             'roles': threat_actor_obj.get("roles", []),
@@ -582,9 +583,7 @@ class Taxii2FeedClient:
             "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         threat_actor["fields"] = fields
 
         return [threat_actor]
@@ -605,19 +604,16 @@ class Taxii2FeedClient:
             "rawJSON": infrastructure_obj
 
         }
-        fields = {
-            "stixid": infrastructure_obj.get('id'),
-            "description": infrastructure_obj.get('description', ''),
+
+        fields = self.set_default_fields(infrastructure_obj)
+        fields.update({
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
             "aliases": infrastructure_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
-            "firstseenbysource": infrastructure_obj.get('created'),
-            "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         infrastructure["fields"] = fields
+
         return [infrastructure]
 
     def parse_malware(self, malware_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -636,11 +632,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.MALWARE,
             "rawJSON": malware_obj
         }
-        fields = {
-            'stixid': malware_obj.get('id'),
-            "firstseenbysource": malware_obj.get('created'),
-            "modified": malware_obj.get('modified'),
-            "description": malware_obj.get('description', ''),
+
+        fields = self.set_default_fields(malware_obj)
+        fields.update({
             "malware_types": malware_obj.get('malware_types', []),
             "is_family": malware_obj.get('is_family', False),
             "aliases": malware_obj.get('aliases', []),
@@ -650,10 +644,9 @@ class Taxii2FeedClient:
             "capabilities": malware_obj.get('capabilities', []),
             "sample_refs": malware_obj.get('sample_refs', []),
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         malware["fields"] = fields
+
         return [malware]
 
     def parse_tool(self, tool_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -671,20 +664,17 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.TOOL,
             "rawJSON": tool_obj
         }
-        fields = {
-            'stixid': tool_obj.get('id'),
+
+        fields = self.set_default_fields(tool_obj)
+        fields.update({
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": tool_obj.get('created'),
-            "modified": tool_obj.get('modified'),
             "tool_types": tool_obj.get("tool_types", []),
-            "description": tool_obj.get('description', ''),
             "aliases": tool_obj.get('aliases', []),
             "tool_version": tool_obj.get('tool_version', ''),
             "tags": list(set(self.tags))
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         tool["fields"] = fields
+
         return [tool]
 
     def parse_course_of_action(self, coa_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -701,18 +691,15 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "rawJSON": coa_obj,
         }
-        fields = {
-            'stixid': coa_obj.get('id'),
-            "firstseenbysource": coa_obj.get('created'),
-            "modified": coa_obj.get('modified'),
-            'description': coa_obj.get('description', ''),
+
+        fields = self.set_default_fields(coa_obj)
+        fields.update({
             "action_type": coa_obj.get('action_type', ''),
             "publications": publications,
             "tags": [tag for tag in self.tags]
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         course_of_action["fields"] = fields
+
         return [course_of_action]
 
     def parse_campaign(self, campaign_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -727,18 +714,15 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
             "rawJSON": campaign_obj
         }
-        fields = {
-            'stixid': campaign_obj.get('id'),
-            "firstseenbysource": campaign_obj.get('created'),
-            "modified": campaign_obj.get('modified'),
-            'description': campaign_obj.get('description', ''),
+
+        fields = self.set_default_fields(campaign_obj)
+        fields.update({
             "aliases": campaign_obj.get('aliases', []),
             "objective": campaign_obj.get('objective', ''),
             "tags": [tag for tag in self.tags],
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         campaign["fields"] = fields
+
         return [campaign]
 
     def parse_intrusion_set(self, intrusion_set_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -755,11 +739,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
             "rawJSON": intrusion_set_obj
         }
-        fields = {
-            'stixid': intrusion_set_obj.get('id'),
-            "firstseenbysource": intrusion_set_obj.get('created'),
-            "modified": intrusion_set_obj.get('modified'),
-            'description': intrusion_set_obj.get('description', ''),
+
+        fields = self.set_default_fields(intrusion_set_obj)
+        fields.update({
             "aliases": intrusion_set_obj.get('aliases', []),
             "goals": intrusion_set_obj.get('goals', []),
             "resource_level": intrusion_set_obj.get('resource_level', ''),
@@ -767,10 +749,9 @@ class Taxii2FeedClient:
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
             "tags": list(self.tags),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         intrusion_set["fields"] = fields
+
         return [intrusion_set]
 
     def parse_general_sco_indicator(
@@ -790,13 +771,12 @@ class Taxii2FeedClient:
             'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
         }
 
-        fields = {
-            'stixid': sco_object.get('id'),
+        fields = self.set_default_fields(sco_object)
+        fields.update({
             'tags': list(set(self.tags))
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         sco_indicator['fields'] = fields
+
         return [sco_indicator]
 
     def parse_sco_autonomous_system_indicator(self, autonomous_system_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -893,18 +873,15 @@ class Taxii2FeedClient:
             'score': Common.DBotScore.NONE,
             'rawJSON': identity_obj
         }
-        fields = {
-            'stixid': identity_obj.get('id'),
-            'firstseenbysource': identity_obj.get('created'),
-            'modified': identity_obj.get('modified'),
-            'description': identity_obj.get('description', ''),
+
+        fields = self.set_default_fields(identity_obj)
+        fields.update({
             'identityclass': identity_obj.get('identity_class', ''),
             'industrysectors': identity_obj.get('sectors', []),
             'tags': list((set(identity_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         identity['fields'] = fields
+
         return [identity]
 
     def parse_location(self, location_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -920,16 +897,14 @@ class Taxii2FeedClient:
             'score': Common.DBotScore.NONE,
             'rawJSON': location_obj
         }
-        fields = {
-            'stixid': location_obj.get('id'),
-            'firstseenbysource': location_obj.get('created'),
-            'modified': location_obj.get('modified'),
+
+        fields = self.set_default_fields(location_obj)
+        fields.update({
             'countrycode': location_obj.get('country', ''),
             'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         location['fields'] = fields
+
         return [location]
 
     def parse_cve(self, cve_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -944,23 +919,19 @@ class Taxii2FeedClient:
                 name = external_reference.get('external_id')
                 break
 
+        fields = self.set_default_fields(cve_obj)
+        fields.update({
+            'tags': list((set(cve_obj.get('labels', []))).union(set(self.tags),
+                                                                {name} if name else {})),
+        })
+
         cve = {
             'value': name,
             'type': FeedIndicatorType.CVE,
             'score': Common.DBotScore.NONE,
+            'fields': fields,
             'rawJSON': cve_obj
         }
-        fields = {
-            'stixid': cve_obj.get('id'),
-            'firstseenbysource': cve_obj.get('created'),
-            'modified': cve_obj.get('modified'),
-            'tags': list((set(cve_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if name:
-            fields['tags'].append(name)
-        if self.update_tlp(fields):
-            fields['trafficlightprotocol'] = self.tlp_color
-        cve['fields'] = fields
         return [cve]
 
     def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -1281,7 +1252,7 @@ class Taxii2FeedClient:
 
         fields["tags"] = tags
 
-        if self.update_tlp(fields):
+        if self.tlp_color and not fields.get('trafficlightprotocol'):
             fields["trafficlightprotocol"] = self.tlp_color
 
         indicator["fields"] = fields

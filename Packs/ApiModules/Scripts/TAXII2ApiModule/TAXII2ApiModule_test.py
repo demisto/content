@@ -659,10 +659,13 @@ class TestParsingIndicators:
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
-                'fields': {
-                    'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
-                    'name': 'Slime Industries', 'tags': [], 'trafficlightprotocol': 'GREEN'
-                }
+                'fields': {'description': '',
+                           'firstseenbysource': '',
+                           'modified': '',
+                           'name': 'Slime Industries',
+                           'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
+                           'tags': [],
+                           'trafficlightprotocol': 'GREEN'}
             }
         ]
 
@@ -682,10 +685,12 @@ class TestParsingIndicators:
                         'value': '1.1.1.1',
                         'score': Common.DBotScore.NONE,
                         'type': 'IP',
-                        'fields': {
-                            'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
-                            'tags': [], 'trafficlightprotocol': 'GREEN'
-                        }
+                        'fields': {'description': '',
+                                   'firstseenbysource': '',
+                                   'modified': '',
+                                   'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
+                                   'tags': [],
+                                   'trafficlightprotocol': 'GREEN'}
                     }
                 ]
             ),
@@ -698,11 +703,12 @@ class TestParsingIndicators:
                 },
                 [
                     {
-                        'fields': {
-                            'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
-                            'tags': [],
-                            'trafficlightprotocol': 'GREEN'
-                        },
+                        'fields': {'description': '',
+                                   'firstseenbysource': '',
+                                   'modified': '',
+                                   'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                                   'tags': [],
+                                   'trafficlightprotocol': 'GREEN'},
                         'rawJSON': {
                             'id': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
                             'spec_version': '2.1',
@@ -756,17 +762,18 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {
-                    'associatedfilenames': 'quêry.dll',
-                    'md5': None,
-                    'path': None,
-                    'sha1': None,
-                    'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
-                    'size': None,
-                    'stixid': 'file--90bd400b-89a5-51a5-b17d-55bc7719723b',
-                    'tags': [],
-                    'trafficlightprotocol': 'GREEN'
-                },
+                'fields': {'associatedfilenames': 'quêry.dll',
+                           'description': '',
+                           'firstseenbysource': '',
+                           'md5': None,
+                           'modified': '',
+                           'path': None,
+                           'sha1': None,
+                           'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
+                           'size': None,
+                           'stixid': 'file--90bd400b-89a5-51a5-b17d-55bc7719723b',
+                           'tags': [],
+                           'trafficlightprotocol': 'GREEN'},
                 'rawJSON': file_obj,
                 'score': Common.DBotScore.NONE,
                 'type': 'File',
@@ -796,11 +803,12 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {
-                    'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
-                    'tags': [],
-                    'trafficlightprotocol': 'GREEN'
-                },
+                'fields': {'description': '',
+                           'firstseenbysource': '',
+                           'modified': '',
+                           'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
+                           'tags': [],
+                           'trafficlightprotocol': 'GREEN'},
                 'rawJSON': mutex_obj,
                 'score': Common.DBotScore.NONE,
                 'type': 'Mutex',
@@ -842,25 +850,20 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {
-                    'modified_time': None,
-                    'number_of_subkeys': None,
-                    'registryvalue': [
-                        {
-                            'data': 'qwerty',
-                            'data_type': 'REG_SZ',
-                            'name': 'Foo'
-                        },
-                        {
-                            'data': '42',
-                            'data_type': 'REG_DWORD',
-                            'name': 'Bar'
-                        }
-                    ],
-                    'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
-                    'tags': [],
-                    'trafficlightprotocol': 'GREEN'
-                },
+                'fields': {'description': '',
+                           'firstseenbysource': '',
+                           'modified': '',
+                           'modified_time': None,
+                           'number_of_subkeys': None,
+                           'registryvalue': [{'data': 'qwerty',
+                                              'data_type': 'REG_SZ',
+                                              'name': 'Foo'},
+                                             {'data': '42',
+                                              'data_type': 'REG_DWORD',
+                                              'name': 'Bar'}],
+                           'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
+                           'tags': [],
+                           'trafficlightprotocol': 'GREEN'},
                 'rawJSON': registry_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'Registry Key',
@@ -894,10 +897,10 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                'fields': {'description': '',
+                           'firstseenbysource': '2021-06-01T00:00:00.000Z',
                            'modified': '2021-06-01T00:00:00.000Z',
                            'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
-                           'tags': ['elevated', 'CVE-1234-5'],
                            'trafficlightprotocol': 'GREEN'},
                 'rawJSON': vulnerability_object,
                 'score': Common.DBotScore.NONE,
@@ -905,8 +908,13 @@ class TestParsingIndicators:
                 'value': 'CVE-1234-5'
             }
         ]
+        xsoar_expected_tags = {'CVE-1234-5', 'elevated'}
 
-        assert taxii_2_client.parse_cve(vulnerability_object) == xsoar_expected_response
+        parsed_response = taxii_2_client.parse_cve(vulnerability_object)
+        response_tags = parsed_response[0]['fields'].pop('tags')
+
+        assert parsed_response == xsoar_expected_response
+        assert set(response_tags) == xsoar_expected_tags
 
     # Parsing SDO Indicators
 
@@ -977,7 +985,8 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'countrycode': 'US',
+                'fields': {'description': '',
+                           'countrycode': 'US',
                            'firstseenbysource': '2022-11-19T23:27:34.000Z',
                            'modified': '2022-11-19T23:27:34.000Z',
                            'stixid': 'location--28222222-2a22-222b-2222-222222222222',
