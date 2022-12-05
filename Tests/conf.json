@@ -7,7 +7,7 @@
         "instance_configuration": "Allows to configure integration instance non-parameters classifier and incoming mapper.",
         "instance_names": "Specific instance names the test should run on. Can hold a list.",
         "integrations": "Integrations that the test uses. Can hold a list.",
-        "is_mockable": "Determines whether the results can be mocked in the test. A boolean.",
+        "is_mockable": "Determines whether the results can bexed in the test. A boolean.",
         "memory_threshold": "Maximum amount of memory required for this test. A number.",
         "nightly": "Determines whether the test will run only on a nightly build. Relevant only for nightly packs. A boolean.",
         "pid_threshold": "Maximum amount of processes allowed for this test. A number.",
@@ -204,6 +204,14 @@
             "fromversion": "5.5.0",
             "memory_threshold": 300,
             "timeout": 1500
+        },
+        {
+            "integrations": "SecurityAndComplianceV2",
+            "playbookID": "O365-SecurityAndComplianceV2-Test",
+            "fromversion": "5.5.0",
+            "memory_threshold": 300,
+            "pid_threshold": 40,
+            "timeout": 2500
         },
         {
             "integrations": "Azure Storage Container",
@@ -1823,10 +1831,7 @@
             "timeout": 500
         },
         {
-            "integrations": [
-                "EWS v2",
-                "EWSO365"
-            ],
+            "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false
@@ -4618,6 +4623,14 @@
             "instance_names": "LDAP Authentication (Active Directory)"
         },
         {
+            "playbookID": "LDAP Authentication - Test",
+            "fromversion": "6.8.0",
+            "integrations": [
+                "OpenLDAP"
+            ],
+            "instance_names": "LDAP Authentication (OpenLDAP)"
+        },
+        {
             "playbookID": "FireEye-Detection-on-Demand-Test",
             "fromversion": "6.0.0",
             "integrations": [
@@ -5177,6 +5190,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoSMA",
+            "playbookID": "CiscoSMA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
@@ -5337,7 +5355,9 @@
         "Process Email - Generic - Test - Incident Starter": "Issue CIAC-4161",
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
-        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407"
+        "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
+        "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
     },
     "skipped_integrations": {
         "Lastline v2": "No license",
@@ -5437,6 +5457,9 @@
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+        "CiscoESA": "No instance - developed by Qmasters",
+        "CiscoSMA": "No instance - developed by Qmasters",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -5456,9 +5479,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "CiscoESA": "No instance - developed by Qmasters",
-        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [],
     "nightly_packs": [
@@ -5533,6 +5554,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "SecurityAndCompliance": "Integration doesn't support proxy",
+        "SecurityAndComplianceV2": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked. this problem was fixed but the test is not running anymore because the integration is skipped",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
