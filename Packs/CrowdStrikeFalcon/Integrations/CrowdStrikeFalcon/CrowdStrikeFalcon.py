@@ -19,7 +19,6 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'CrowdStrike Falcon'
 CLIENT_ID = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('client_id')
 SECRET = demisto.params().get('credentials', {}).get('password') or demisto.params().get('secret')
-#   falcon_access_key_id = demisto.params().get('credentials', {}).get('identifier') or demisto.params().get('access_key')
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
     demisto.params()['url']
@@ -324,6 +323,42 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except ValueError as exception:
         raise ValueError(
             f'Failed to parse json object from response: {exception} - {res.content}')  # type: ignore[str-bytes-safe]
+
+
+def create_relationships(cve: dict) -> List:
+    """
+        creates relationships between the cve and each actor from 'actors' field
+        : args: cve contains the cve id and the actors field if it is exists.
+        : return: a list of relationships by type THREAT_ACTOR.
+    """
+    list_with_actors_field = []
+    if not cve.get('actors'):
+        return []
+    for actor in cve.get('actors', {}):
+        list_with_actors_field.append(actor)
+    relationships_list: list[EntityRelationship] = []
+    # need to create entity
+    for entity_b in list_with_actors_field:
+        relationships_list.append(EntityRelationship(entity_a=cve.get('id'),
+                                                     entity_a_type=FeedIndicatorType.CVE,
+                                                     name=EntityRelationship.Relationships.TARGETED_BY,
+                                                     entity_b=entity_b,
+                                                     entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
+                                                     brand=INTEGRATION_NAME,
+                                                     reverse_name=EntityRelationship.Relationships.TARGETS))
+
+    return relationships_list
+
+
+def create_publications(cve: dict) -> list:
+    publications = []
+    if cve.get('references'):
+        for reference in cve.get('references', {}):
+            publications.append(Common.Publications(title='references', link=reference))
+    if cve.get('vendor_advisory'):
+        for vendor_advisory in cve.get('vendor_advisory', {}):
+            publications.append(Common.Publications(title='vendor_advisory', link=vendor_advisory))
+    return publications
 
 
 ''' API FUNCTIONS '''
@@ -3871,14 +3906,7 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator='AND') -> CommandResults:
-    """
-        Get a list of vulnerability by spotlight
-        : args: filter which include params or filter param.
-        : return: a list of vulnerabilities according to the user.
-    """
-    if not args:
-        raise DemistoException('Please add a at least one filter argument')
+def cs_falcon_spotlight_search_vulnerability_request(args: dict, filter_operator='AND') -> dict:
     input_arg_dict = {'aid': argToList(args.get('aid')),
                       'cve.id': argToList(args.get('cve_id')),
                       'cve.severity': argToList(args.get('cve_severity')),
@@ -3889,9 +3917,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
                       'host_info.product_type_desc': argToList(args.get('host_type')),
                       'last_seen_within': args.get('last_seen_within'),
                       'suppression_info.is_suppressed': args.get('is_suppressed')}
-    if not args or input_arg_dict == {}:
-        raise DemistoException('Please add a at least one filter argument')
-    url_filter = '{}'.format(str(args.get('filter', '')))
+    url_filter = args.get('filter', '')
     op = ',' if filter_operator == 'OR' else '%2B'
     # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
@@ -3913,13 +3939,39 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict, filter_operator
     if argToBoolean(args.get('display_host_info')):
         url_facet += "&facet=host_info"
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + \
+    suffix_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + \
         url_filter + url_facet + "&limit=" + args.get('limit', '50')
-    vulnerability_response = http_request('GET', endpoint_url)
+    http_response = http_request('GET', suffix_url)
+    return http_response
+
+
+def cs_falcon_spotlight_list_host_by_vulnerability_request(args: dict) -> dict:
+    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
+    params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
+    http_response = http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
+    return http_response
+
+
+def cve_request(args: dict) -> dict:
+    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
+    params = {'filter': url_filter, 'facet': 'cve'}
+    http_response = http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
+    return http_response
+
+
+def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
+    """
+        Get a list of vulnerability by spotlight
+        : args: filter which include params or filter param.
+        : return: a list of vulnerabilities according to the user.
+    """
+    if not args:
+        raise DemistoException('Please add a at least one filter argument')
+    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(args)
     headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
-    for vulnerability in vulnerability_response.get('resources'):
+    for vulnerability in vulnerability_response.get('resources', {}):
         outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
                         'CVE Severity': vulnerability.get('cve', {}).get('severity'),
                         'CVE Base Score': vulnerability.get('cve', {}).get('base_score'),
@@ -3940,17 +3992,14 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    endpoint_url = '/spotlight/combined/vulnerabilities/v1'
     if not args or not args.get('cve_ids'):
         raise DemistoException('Please insert at least one cve_ids argument')
-    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
-    params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
-    vulnerability_response = http_request('GET', endpoint_url, params=params)
+    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args)
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
                'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name'
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
-    for vulnerability in vulnerability_response.get('resources'):
+    for vulnerability in vulnerability_response.get('resources', {}):
         outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
                         'Host Info hostname': vulnerability.get('host_info', {}).get('hostname'),
                         'Host Info os Version': vulnerability.get('host_info', {}).get('os_version'),
@@ -3965,42 +4014,6 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def create_relationships(cve: dict) -> List:
-    """
-        Get a list of vulnerability by spotlight
-        : args: filter which include params or filter param.
-        : return: a list of vulnerabilities according to the user.
-    """
-    list_with_actors_field = []
-    if not cve.get('actors'):
-        return []
-    for actor in cve.get('actors', {}):
-        list_with_actors_field.append(actor)
-    relationships_list: list[EntityRelationship] = []
-    # need to create entity
-    for entity_b in list_with_actors_field:
-        relationships_list.append(EntityRelationship(entity_a=cve.get('id'),
-                                                     entity_a_type=FeedIndicatorType.CVE,
-                                                     name=EntityRelationship.Relationships.TARGETED_BY,
-                                                     entity_b=entity_b,
-                                                     entity_b_type=ThreatIntel.ObjectsNames.THREAT_ACTOR,
-                                                     brand=INTEGRATION_NAME,
-                                                     reverse_name=EntityRelationship.Relationships.TARGETS))
-
-    return relationships_list
-
-
-def create_publications(cve: dict) -> list:
-    publications = []
-    if cve.get('references'):
-        for reference in cve.get('references', {}):
-            publications.append(Common.Publications(title='references', link=reference))
-    if cve.get('vendor_advisory'):
-        for vendor_advisory in cve.get('vendor_advisory', {}):
-            publications.append(Common.Publications(title='vendor_advisory', link=vendor_advisory))
-    return publications
-
-
 def get_cve_command(args: dict) -> list[CommandResults]:
     """
         Get a list of vulnerability by spotlight
@@ -4010,12 +4023,8 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
     command_results_list = []
-    # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
-    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
-    #  raw_res = search_device(filter_operator='OR')
-    raw_res = http_request('GET', '/spotlight/combined/vulnerabilities/v1',
-                           params={'filter': url_filter, 'facet': 'cve'})
-    raw_cve = [res_element.get('cve') for res_element in raw_res.get('resources', [])]
+    http_response = cve_request(args)
+    raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     if not raw_cve:
         raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
     for cve in raw_cve:
