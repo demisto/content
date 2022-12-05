@@ -110,7 +110,7 @@ def module_test_command(client: Client, args: dict):
     return 'ok', {}, {}
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     feedTags = argToList(params.get('feedTags'))
     tlp_color = params.get('tlp_color')
