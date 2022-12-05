@@ -23,6 +23,7 @@ filter
     xdm.event.id = event_eventid,
     xdm.event.operation = event_eventname,
     xdm.source.ipv4 = event_sourceipaddress,
+    xdm.source.ipv4 = event_eventid,
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
