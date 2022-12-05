@@ -90,3 +90,41 @@ def test_extract_urls_xml_without_hyperlink():
     from ParseWordDoc import extract_urls_xml
     urls = extract_urls_xml('./TestData/file-sample.docx')
     assert urls == []
+
+
+def test_extract_urls_docx_without_hyperlink():
+    """
+    Given:
+        - A docx file without hyperlink
+
+    When:
+        - Run the extract_urls_docx method
+
+    Then:
+        - Verify that the method extracting none urls from the document
+
+    """
+    from docx import Document
+    from ParseWordDoc import extract_urls_docx
+    document = Document('./TestData/file-sample2.docx')
+    urls = extract_urls_docx(document)
+    assert urls == []
+
+
+def test_extract_urls_docx_with_hyperlinks():
+    """
+    Given:
+        - A docx file with hyperlinks
+
+    When:
+        - Run the extract_urls_docx method
+
+    Then:
+        - Verify that the method extracting the urls from the document
+
+    """
+    from docx import Document
+    from ParseWordDoc import extract_urls_docx
+    document = Document('./TestData/MS-DOCX-190319.docx')
+    urls = extract_urls_docx(document)
+    assert 'https://go.microsoft.com/fwlink/?LinkId=90607' in urls
