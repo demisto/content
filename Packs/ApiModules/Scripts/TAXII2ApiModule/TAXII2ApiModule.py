@@ -110,7 +110,6 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 
 
 def reached_limit(limit: int, element_count: int):
-    demisto.debug(f'{element_count=}')
     return element_count >= limit > -1
 
 
@@ -946,14 +945,12 @@ class Taxii2FeedClient:
         for envelope in envelopes:
             stix_objects = envelope.get("objects")
             if not stix_objects:
-                demisto.info(f'breaking as no stix_objects, {envelope=}')
                 # no fetched objects
                 break
 
             # now we have a list of objects, go over each obj, save id with obj, parse the obj
             for obj in stix_objects:
                 obj_type = obj.get('type')
-                demisto.debug(f'{obj_type=}')
 
                 # we currently don't support extension object
                 if obj_type == 'extension-definition':
@@ -966,7 +963,6 @@ class Taxii2FeedClient:
                 if not parse_objects_func.get(obj_type):
                     demisto.debug(f'There is no parsing function for object type {obj_type}, '
                                   f'available parsing functions are for types: {",".join(parse_objects_func.keys())}.')
-                    demisto.debug(f'{obj=}')
                     continue
                 if result := parse_objects_func[obj_type](obj):
                     indicators.extend(result)
@@ -990,9 +986,7 @@ class Taxii2FeedClient:
             self.objects_to_fetch.append('relationship')
         kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
-            demisto.debug('in v2.0')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
-        demisto.debug('in v2.1')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:

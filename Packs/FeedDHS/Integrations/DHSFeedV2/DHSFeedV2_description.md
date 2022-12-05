@@ -6,6 +6,5 @@ When checking **Fetch From Feed Start**, the feed will fetch indicators from all
 
 To ensure that the fetch will work and will not time out, follow these steps:
 1. Make sure **Max Indicators Per Fetch** parameter is empty.
-2. Increase **Max STIX Objects Per Poll** parameter value to *100000*.
-3. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
-4. In the **Server Configuration** section, click **+ Add Server Configuration**, add the key *dhs feed v2.fetch-indicators.timeout* (with the spaces) and set the value to *20*.
+2. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+3. In the **Server Configuration** section, click **+ Add Server Configuration**, add the key *dhs feed v2.fetch-indicators.timeout* (with the spaces) and set the value to *20*.

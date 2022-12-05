@@ -209,7 +209,7 @@ script:
       - 'true'
       - 'false'
     - defaultValue: '10'
-      description: Maximum number of indicators to return. Default is 10. If you are increasing this value, make sure 'execution-timeout' argument is also increased.
+      description: Maximum number of indicators to return. Default is 10.
       name: limit
     - defaultValue: '24 hours'
       description: Fetch only indicators that were added to the server after the given
@@ -217,7 +217,7 @@ script:
         example, 1 minute, 12 hour, 24 days. Limited to 48 hours.
       name: added_after
     description: Allows you to test your feed and to make sure you can fetch indicators
-      successfully. Due to API limitations this command may take a long time, make sure 'execution-timeout' argument is increased.
+      successfully. Due to API limitations this command may take a long time to run.
     name: dhs-get-indicators
     outputs:
     - contextPath: DHS.Indicators.value

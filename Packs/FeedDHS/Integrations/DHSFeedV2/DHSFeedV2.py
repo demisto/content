@@ -33,18 +33,14 @@ def get_limited_interval(given_interval: Union[str, datetime],
     """
     given_interval: datetime = get_datetime(given_interval)
     fetch_interval: datetime = get_datetime(fetch_interval or MAX_FETCH_INTERVAL)
-    demisto.debug(f'{given_interval=}, {fetch_interval=}')
     return max(given_interval, fetch_interval)  # closer time is bigger
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
                          last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
-    demisto.debug(f'in fetch_one_collection with {client.collection_to_fetch.id=}')
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     # initial_interval gets here limited so no need to check limitation with default value
-    demisto.debug(f'{initial_interval=}, {last_fetch_time=}')
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
-    demisto.debug(f'{limit=}, {added_after=}, {last_run_ctx=}, {fetch_from_feed_start=}')
 
     try:
         if fetch_from_feed_start and not last_fetch_time:
@@ -69,7 +65,6 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
 def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
                           last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
     indicators: list = []
-    demisto.debug('in fetch_all_collections')
     for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
         fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_from_feed_start)
@@ -79,7 +74,6 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
             limit -= len(fetched_iocs)
             if limit <= 0:
                 break
-        demisto.debug(f'{limit=}')
 
     return indicators, last_run_ctx
 
@@ -134,7 +128,6 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
 
     try:
         if client.collection_to_fetch:
-            demisto.debug(f'{added_after=}')
             indicators = client.build_iterator(limit, added_after=added_after)
         else:
             indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
@@ -142,7 +135,6 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         # raised when the response is empty, because taxii2client parses {} into '筽'
         indicators = []
 
-    demisto.debug(f'{indicators=}')
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
@@ -175,7 +167,7 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 
 def main():  # pragma: no cover
-    demisto.debug('version 2.7.8')
+    demisto.debug('version 2.7.9')
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')
@@ -215,7 +207,6 @@ def main():  # pragma: no cover
         )
         client.initialise()
 
-        start_time = time.time()
         if command == 'test-module':
             return_results(command_test_module(client))
 
@@ -223,7 +214,6 @@ def main():  # pragma: no cover
             last_run_indicators = demisto.getLastRun()
             indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval,
                                                                        fetch_from_feed_start)
-            demisto.debug(f'{last_run_indicators=}, {indicators=}')
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
@@ -237,8 +227,6 @@ def main():  # pragma: no cover
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
-
-        demisto.debug(f'Running {command} took {round(time.time() - start_time)}sec')
 
     except Exception as error:
         error_msg = str(error)
