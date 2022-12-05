@@ -123,6 +123,10 @@
         "fileHash": {
             "type": "string",
             "is_array": false
-          }
+          },
+        "fileType": {
+            "type": "string",
+            "is_array": false
+    }
   }
 }
