@@ -550,6 +550,81 @@ script:
     - contextPath: VisionOne.Submit_File_to_Sandbox.digest
       description: The hash value of the file
   - arguments:
+    - description: Entry ID of the file to be submitted.
+      name: entry_id
+      required: true
+    - description: The Base64 encoded password for decrypting the submitted document. sample.
+      name: document_password
+    - description: The Base64 encoded password for decrypting the submitted archive.
+      name: archive_password
+    description: Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+    name: trendmicro-visionone-submit-file-entry-to-sandbox
+    outputs:
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.message
+      description: Status message of the file submitted to sandbox.
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.code
+      description: status code of the file submitted to sandbox
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.task_id
+      description: Task ID of the submitted file
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.digest
+      description: The hash value of the file
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.filename
+      description: The name of the file submitted
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.file_path
+      description: The path to the file associated to incident
+      type: string
+    - contextPath: VisionOne.Submit_File_Entry_to_Sandbox.entryId
+      description: The Entry ID for the file
+      type: string
+  - arguments:
+    - description: task_id from the trendmicro-visionone-submit-file-to-sandbox or trendmicro-visionone-submit-file-entry-to-sandbox command output
+      name: task_id
+      required: true
+    description: Runs a polling command to retrieve the status of a sandbox analysis submission
+    name: trendmicro-visionone-run-sandbox-submission-polling
+    outputs:
+    - contextPath: VisionOne.Sandbox_Submission_Polling.message
+      description: Status of the sandbox analysis
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.code
+      description: Response code
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.task_id
+      description: task_id of the task queried
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.taskStatus
+      description: Sandbox analysis status
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.digest
+      description: The hash values of file analyzed
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.analysis_completion_time
+      description: Sample analysis completed time.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.risk_level
+      description: Risk Level of the analyzed file.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.description
+      description: Scan result description for NotAnalyzed.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.detection_name_list
+      description: Detection name of this sample, if applicable.
+      type: unknown
+    - contextPath: VisionOne.Sandbox_Submission_Polling.threat_type_list
+      description: Threat type of this sample.
+      type: unknown
+    - contextPath: VisionOne.Sandbox_Submission_Polling.file_type
+      description: File type of this sample.
+      type: string
+    - contextPath: VisionOne.Sandbox_Submission_Polling.report_id
+      description: ID used to get the report and suspicious object. Empty means no report.
+      type: string
+  - arguments:
     - name: polling
       default: true
       description: polling the task for 30 seconds interval.
@@ -583,7 +658,7 @@ script:
       description: The response code from the command
       type: string
     - contextPath: VisionOne.Add_Note.Response_Msg
-      description: The response message from the commandß
+      description: The response message from the command
       type: string
     description: Attaches a note to a workbench alert
     name: trendmicro-visionone-add-note
@@ -608,7 +683,7 @@ script:
       description: The response code from the command
       type: string
     - contextPath: VisionOne.Update_Status.Response_Msg
-      description: The response message from the commandß
+      description: The response message from the command
       type: string
     description: Updates the status of a workbench alert
     name: trendmicro-visionone-update-status
