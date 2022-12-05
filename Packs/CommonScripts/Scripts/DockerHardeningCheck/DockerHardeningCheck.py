@@ -187,7 +187,7 @@ def check_network(network_check: str) -> str:
         LOG("Check host access")
         gateway_ip = get_default_gateway()
         try:
-            res = requests.get(f'https://{gateway_ip}/', verify=False, timeout=1)  # nosec
+            res = requests.get(f'https://{gateway_ip}/', verify=False, timeout=1)  # nosec guardrails-disable-line
             LOG(f'Host https request returned successfully: {res.status_code} {res.headers}')
             if return_res:
                 return_res += "\n"
