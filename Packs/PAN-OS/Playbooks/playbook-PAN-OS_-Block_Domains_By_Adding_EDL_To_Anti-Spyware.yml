@@ -1,7 +1,7 @@
-id: PAN-OS -Block Domains By Adding EDL To Anti-Spyware
+id: PAN-OS_-Block Domains By Adding EDL To Anti-Spyware
 version: -1
-name: PAN-OS -Block Domains By Adding EDL To Anti-Spyware
-description: 'This playbook goal is to block domains using Panorama Anti-Spyware. it assigning External Dynamic List URL that contains domains to block to Panorama Anti-Spyware. You can create External Dynamic List(EDL) and add domains to it using XSOAR pack called "Generic Export Indicators Service". '
+name: PAN-OS_-Block Domains By Adding EDL To Anti-Spyware
+description: 'This playbook blocks domains using Panorama Anti-Spyware. It assigns External Dynamic List URLs that contain domains to block to Panorama Anti-Spyware. You can create an External Dynamic List (EDL) and add domains to it using the Cortex XSOAR pack called "Generic Export Indicators Service". '
 starttaskid: "0"
 tasks:
   "0":
@@ -223,7 +223,7 @@ tasks:
       id: a82ce2bc-c12b-4fb8-8759-e2b7c794387f
       version: -1
       name: PAN-OS Commit Configuration
-      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the Policies to the specified Device Group in the instance.
+      description: Commit the PAN-OS Panorama or Firewall configuration.\nIf specified as Panorama, it also pushes the policies to the specified device group in the instance.
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -290,7 +290,7 @@ tasks:
     task:
       id: 057f52b0-fc28-4fb5-81b7-78bc1dbe074b
       version: -1
-      name: Use Existing Anti Spyware Profile?
+      name: Use Existing Anti-Spyware Profile?
       description: ''
       type: condition
       iscommand: false
@@ -450,12 +450,12 @@ inputs:
 - key: Add_To_Existing_PAN-OS_EDL
   value: {}
   required: false
-  description: input "true" to use existing PAN-OS EDL
+  description: Set to "true" to use the existing PAN-OS EDL.
   playbookInputQuery:
 - key: PAN-OS_EDL_Name
   value: {}
   required: false
-  description: PAN-OS EDL Name to create/To edit if exist(depend on inputs.Add_To_Existing_PAN-OS_EDL)
+  description: PAN-OS EDL name to create/edit if it exists (depending on the value in Add_To_Existing_PAN-OS_EDL).
   playbookInputQuery:
 - key: Device_Group
   value: {}
@@ -467,17 +467,17 @@ inputs:
   value: {}
   required: false
   description: |
-    The certificate profile name for the URL that was previously uploaded. to PAN OS.
+    The certificate profile name for the URL that was previously uploaded to PAN OS.
   playbookInputQuery:
 - key: Anti_Spyware_Profile
   value: {}
   required: false
-  description: Name of the Anti Spyware Profile to Create OR to edit if exist(depand on inputs,Use_Existing_AntiSpyware_Profile).
+  description: Name of the anti-spyware profile to create OR to edit if it exists (depending on the value in Use_Existing_AntiSpyware_Profile).
   playbookInputQuery:
 - key: Use_Existing_AntiSpyware_Profile
   value: {}
   required: false
-  description: input "true" to create new anti spyware profile
+  description: Set to "true" to create a new anti-spyware profile.
   playbookInputQuery:
 outputs: []
 tests:
