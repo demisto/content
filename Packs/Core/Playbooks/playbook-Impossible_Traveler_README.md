@@ -41,9 +41,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
+* impossibleTravelerGetDistance
 * Set
 * CreateArray
-* impossibleTravelerGetDistance
 
 ### Commands
 * closeInvestigation
@@ -60,6 +60,8 @@ This playbook does not use any integrations.
 | AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious. | 80 | Optional |
 | preInvestigationContainment | Whether to execute containment prior investigation phase |  | Optional |
 | AllowlistCIDR | A comma separated list of CIDR that are allowed to be used across long distances. | lists.CIDR - Allowlist | Optional |
+| username | The username to iterate over. | alert.username | Optional |
+| domain | The organization domain. |  | Optional |
 
 ## Playbook Outputs
 ---

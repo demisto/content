@@ -601,9 +601,15 @@ tasks:
       '#none#':
       - "51"
     scriptarguments:
+      domain:
+        complex:
+          root: inputs.domain
       sourceip:
         complex:
           root: ImpossibleTravelerIPs
+      username:
+        complex:
+          root: inputs.username
     separatecontext: false
     loop:
       iscommand: false
@@ -1142,6 +1148,19 @@ inputs:
       accessor: CIDR - Allowlist
   required: false
   description: A comma separated list of CIDR that are allowed to be used across long distances.
+  playbookInputQuery:
+- key: username
+  value:
+    complex:
+      root: alert
+      accessor: username
+  required: false
+  description: The username to iterate over.
+  playbookInputQuery:
+- key: domain
+  value: {}
+  required: false
+  description: The organization domain.
   playbookInputQuery:
 outputs:
 - contextPath: Account.Email.Address
