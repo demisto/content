@@ -175,9 +175,9 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
 
-        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
-        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
-        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
+        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
+        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
         access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
