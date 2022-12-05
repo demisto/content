@@ -198,7 +198,6 @@ def main():  # pragma: no cover
             verify=verify_certificate,
             objects_to_fetch=objects_to_fetch,
             skip_complex_mode=skip_complex_mode,
-            field_map={'firstseenbysource': 'created', 'modified': 'modified'},
             tags=feed_tags,
             limit_per_request=limit_per_request,
             tlp_color=tlp_color,
