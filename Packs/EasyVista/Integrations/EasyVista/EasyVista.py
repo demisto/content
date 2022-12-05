@@ -2,9 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import json
 import os
-
+import urllib3
 import requests
 
 if not demisto.params()['proxy']:
@@ -13,8 +12,8 @@ if not demisto.params()['proxy']:
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 ACCOUNT = demisto.params()['account']
@@ -28,7 +27,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 
 def http_request(method, url_suffix):
-    LOG('running request with url=%s' % (BASE_URL + url_suffix))
+    demisto.debug(f'running request with url={BASE_URL}{url_suffix}')
     try:
         res = requests.request(
             method,
@@ -37,9 +36,9 @@ def http_request(method, url_suffix):
             auth=requests.auth.HTTPBasicAuth(USERNAME, PASSWORD)
         )
         if res.status_code != 200:
-            raise Exception('Your request failed with the following error: ' + res.content + str(res.status_code))
-    except Exception, e:
-        LOG(e)
+            raise Exception(f'Your request failed with the following error: {str(res.content)}{str(res.status_code)}')
+    except Exception as e:
+        demisto.debug(e)
         raise
     return res.json()
 
@@ -59,9 +58,9 @@ def dict_to_str(obj):
     """
     string_result = ''
     context_result = {}
-    for key, value in obj.iteritems():
+    for key, value in obj.items():
         if key != 'HREF':
-            string_result += underscoreToCamelCase(key) + ': ' + value + '<br>'
+            string_result = f'{string_result}{underscoreToCamelCase(key)}:{value}<br>'
             context_result[underscoreToCamelCase(key)] = value
     return string_result, context_result
 
@@ -84,7 +83,7 @@ def search_command():
     records = []
     context = []
     for record in response:
-        string_record = {}
+        string_record: dict = {}
         context_record = {}
         for header in record:
             current_context = {}
@@ -118,13 +117,13 @@ def search(asset=None, attribute=None, value=None, request=None):
     if request:
         cmd_url += request
     else:
-        cmd_url += asset + '.' + attribute + ':"' + value + '"'
+        cmd_url = f'{cmd_url}{asset}.{attribute}:"{value}"'
     records = http_request('GET', cmd_url)['records']
     return records
 
 
 ''' EXECUTION CODE '''
-LOG('command is %s' % (demisto.command(), ))
+demisto.debug(f'command is {demisto.command()}')
 
 try:
     if demisto.command() == 'test-module':
@@ -134,7 +133,6 @@ try:
     elif demisto.command() == 'easy-vista-search':
         search_command()
 
-except Exception, e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+except Exception as e:
+    demisto.debug(e)
+    raise e
