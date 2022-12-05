@@ -154,6 +154,7 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
+            
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
@@ -2375,11 +2376,12 @@ def test_module(client: EWSClient, max_fetch):
 def sub_main():
     is_test_module = False
     params = demisto.params()
+    if(params.get('upn_mailbox')):
+        print('fine')
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox',
-                                                args.get('source_mailbox', params['default_target_mailbox']))
-    upn = args.get('upn_mailbox', '')
+    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    # params['upn_mailbox'] = args.get('upn_mailbox', '')
     try:
         client = EWSClient(**params)
         start_logging()
