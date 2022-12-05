@@ -1,0 +1,606 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "lfvtip6zqh",
+                "name": "Content Assessment",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-tneywsgips-b0c2b8c0-4b33-11ed-ae73-495270f96710",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fe150880-4b33-11ed-ae73-495270f96710",
+                                "index": 0,
+                                "name": "Check Content Pack Upgrade Impacts on Custom Content",
+                                "scriptId": "UpgradeCheck",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f71e24d0-5600-11ed-94cf-97931eb67777",
+                                "index": 1,
+                                "name": "Get Commit History for Local Changes",
+                                "scriptId": "ChangeHistory",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "success",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "c513b580-5b83-11ed-9ac9-23537635c344",
+                                "index": 2,
+                                "name": "List Automations Used by Playbooks",
+                                "scriptId": "ListPlaybookAutomationsCommands",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Assessment Actions",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-tneywsgips-d033bba0-4b33-11ed-ae73-495270f96710",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "contentimpacts",
+                                "height": 44,
+                                "id": "c577d1a0-4b34-11ed-ae73-495270f96710",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Potential Upgrade Impacts to Custom Content",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "v9jrekezkg",
+                "name": "Content Pack Details",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-aecff7f0-4bcc-11ed-950f-e1385040c232",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "contentdetails",
+                                "height": 44,
+                                "id": "be0ba840-4bcc-11ed-950f-e1385040c232",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Content Pack Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "yeneg4ivqt",
+                "name": "Commit History",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-c22b9be0-5600-11ed-94cf-97931eb67777",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "commithistory",
+                                "height": 44,
+                                "id": "e6b2ce20-5600-11ed-94cf-97931eb67777",
+                                "index": 0,
+                                "listId": "lfvtip6zqh-c22b9be0-5600-11ed-94cf-97931eb67777",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Commit History for Local Changes",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "hpwisorlfw",
+                "name": "Playbook Automations",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-0ff8d5d0-5b84-11ed-9ac9-23537635c344",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "contentautomations",
+                                "height": 44,
+                                "id": "19b6bb50-5b84-11ed-9ac9-23537635c344",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Automations used  by Playbooks ",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "tneywsgips",
+                "name": "Content Testing",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                        "items": [
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "07af3ff0-5c78-11ed-8201-f5ce470fdb4b",
+                                "index": 0,
+                                "name": "Load Fields from Incident",
+                                "scriptId": "UnitTestLoadFields",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b5884ef0-5c7d-11ed-8201-f5ce470fdb4b",
+                                "index": 1,
+                                "name": "Load Context from Incident",
+                                "scriptId": "UnitTestLoadContext",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "a921bfd0-5ebb-11ed-aa90-278dc8b25b17",
+                                "index": 2,
+                                "name": "Save Fields to List",
+                                "scriptId": "UnitTestSaveFieldsList",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "bf1931d0-5ebe-11ed-86c5-93661c2f1992",
+                                "index": 3,
+                                "listId": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "name": "Save Context to List",
+                                "scriptId": "UnitTestSaveContextList",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "aa7fc930-5ebb-11ed-aa90-278dc8b25b17",
+                                "index": 4,
+                                "name": "Load Fields from List",
+                                "scriptId": "UnitTestLoadFieldsList",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "c004f160-5ebe-11ed-86c5-93661c2f1992",
+                                "index": 5,
+                                "name": "Load Context from List",
+                                "scriptId": "UnitTestLoadContextList",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "dc8910b0-5ec2-11ed-86c5-93661c2f1992",
+                                "index": 6,
+                                "name": "Set Field",
+                                "scriptId": "UnitTestSetField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "e1c3fb90-5ec1-11ed-86c5-93661c2f1992",
+                                "index": 7,
+                                "name": "Set Context Key",
+                                "scriptId": "Set",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "key": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f5d8d240-5ec1-11ed-86c5-93661c2f1992",
+                                "index": 8,
+                                "name": "Delete Context Key",
+                                "scriptId": "DeleteContext",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "all": {
+                                        "simple": "yes"
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "80ba9aa0-5ec3-11ed-86c5-93661c2f1992",
+                                "index": 9,
+                                "name": "Delete All Context",
+                                "scriptId": "DeleteContext",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Configure Test",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-tneywsgips-7dece9d0-19a5-11ed-a7d3-5db049d4637a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "unittestresults",
+                                "height": 106,
+                                "id": "4e7a2570-1a7f-11ed-9a74-f764f36fb746",
+                                "index": 0,
+                                "listId": "tneywsgips-7dece9d0-19a5-11ed-a7d3-5db049d4637a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "unittestingresults",
+                                "height": 22,
+                                "id": "cdc8be00-1a7e-11ed-9a74-f764f36fb746",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Test Results",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-aa9c98a0-5ebe-11ed-86c5-93661c2f1992",
+                        "items": [
+                            {
+                                "args": {
+                                    "addAfter": {
+                                        "simple": "9"
+                                    },
+                                    "listName": {
+                                        "simple": "UnitTestingAutomations"
+                                    },
+                                    "playbook": {
+                                        "simple": " "
+                                    },
+                                    "testType": {
+                                        "simple": "Automation"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b58efb10-18e4-11ed-84f3-1f554f96c06b",
+                                "index": 0,
+                                "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "name": "Unit Test Automations",
+                                "scriptId": "UnitTest",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "addAfter": {
+                                        "simple": "8"
+                                    },
+                                    "listName": {
+                                        "simple": "UnitTestingSubplaybooks"
+                                    },
+                                    "playbook": {
+                                        "simple": " "
+                                    },
+                                    "testType": {
+                                        "simple": "Subplaybook"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "062b97e0-1a66-11ed-9a74-f764f36fb746",
+                                "index": 0,
+                                "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "name": "Unit Test Subplaybooks",
+                                "scriptId": "UnitTest",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "addAfter": {
+                                        "simple": "6"
+                                    },
+                                    "playbook": {
+                                        "simple": "MockPlaybook"
+                                    },
+                                    "testType": {
+                                        "simple": "Playbook"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "95eafdd0-1a43-11ed-a7d3-5db049d4637a",
+                                "index": 1,
+                                "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "name": "Unit Test Playbooks",
+                                "scriptId": "UnitTest",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "addAfter": {
+                                        "simple": "7"
+                                    },
+                                    "playbook": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "testType": {
+                                        "simple": "Playbook"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "0cd37050-1a51-11ed-9a74-f764f36fb746",
+                                "index": 2,
+                                "listId": "tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "name": "Ad Hoc Test",
+                                "scriptId": "UnitTest",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "unittestplaybooks",
+                                "height": 22,
+                                "id": "f04621a0-4e33-11ed-bdc6-5bc167d0bc6d",
+                                "index": 3,
+                                "listId": "lfvtip6zqh-tneywsgips-caseinfoid-ab8bcf30-18e4-11ed-84f3-1f554f96c06b",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Execute Test",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "hidden": false,
+                "id": "q8gm8qirtd",
+                "name": "Help ?",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 8,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "lfvtip6zqh-79f0c030-6447-11ed-a51f-adb5d88dd001",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "unittesthelp",
+                                "height": 106,
+                                "id": "eee3b730-6447-11ed-a51f-adb5d88dd001",
+                                "index": 0,
+                                "listId": "lfvtip6zqh-79f0c030-6447-11ed-a51f-adb5d88dd001",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Content Testing Help",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": true,
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "hidden": true,
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "UnitTestLayout",
+    "name": "UnitTestLayout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

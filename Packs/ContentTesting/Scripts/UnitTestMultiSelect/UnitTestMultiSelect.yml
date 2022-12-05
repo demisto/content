@@ -1,0 +1,25 @@
+args:
+- default: true
+  defaultValue: "10"
+  description: Playbook Task to Add This Task After
+  name: addAfter
+commonfields:
+  id: UnitTestMultiSelect
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.8.39276
+enabled: true
+name: UnitTestMultiSelect
+runas: Administrator
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
