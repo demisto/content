@@ -963,10 +963,9 @@ def advanced_search():
     body = demisto.args().get('query')
     r = req('POST', USER_API + 'search', body=body)
     markdown = ''
-    if r.json()['data']['sample']:
-        for record in r.json()['data']['sample']:
-            final_results.append(record)
-        markdown += tableToMarkdown('Threat Grid submission results', final_results)
+    for record in r.json().get('data', {}).get('sample'):
+       final_results.append(record)
+    markdown += tableToMarkdown('Threat Grid submission results', final_results)
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='Threatgrid.SearchResult',
