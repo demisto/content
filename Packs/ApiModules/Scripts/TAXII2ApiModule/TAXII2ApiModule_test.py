@@ -882,10 +882,10 @@ class TestParsingIndicators:
          - make sure all the fields are being parsed correctly.
         """
         vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
-                                'created_by_ref': 'identity--ce',
+                                'created_by_ref': 'identity--ce222222-2a22-222b-2222-222222222222',
                                 'external_references': [{'external_id': 'CVE-1234-5', 'source_name': 'cve'},
                                                         {'external_id': '1', 'source_name': 'other'}],
-                                'id': 'vulnerability--25',
+                                'id': 'vulnerability--25222222-2a22-222b-2222-222222222222',
                                 'modified': '2021-06-01T00:00:00.000Z',
                                 'object_marking_refs': ['marking-definition--34'],
                                 'spec_version': '2.1',
@@ -896,7 +896,7 @@ class TestParsingIndicators:
             {
                 'fields': {'firstseenbysource': '2021-06-01T00:00:00.000Z',
                            'modified': '2021-06-01T00:00:00.000Z',
-                           'stixid': 'vulnerability--25',
+                           'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
                            'tags': ['elevated', 'CVE-1234-5'],
                            'trafficlightprotocol': 'GREEN'},
                 'rawJSON': vulnerability_object,
@@ -923,9 +923,9 @@ class TestParsingIndicators:
         """
         identity_object = {'contact_information': 'test@org.com',
                            'created': '2021-06-01T00:00:00.000Z',
-                           'created_by_ref': 'identity--b3',
+                           'created_by_ref': 'identity--b3222222-2a22-222b-2222-222222222222',
                            'description': 'Identity to represent the government entities.',
-                           'id': 'identity--f8',
+                           'id': 'identity--f8222222-2a22-222b-2222-222222222222',
                            'identity_class': 'organization',
                            'labels': ['consent-everyone'],
                            'modified': '2021-06-01T00:00:00.000Z',
@@ -941,7 +941,7 @@ class TestParsingIndicators:
                            'identityclass': 'organization',
                            'industrysectors': ['government-national'],
                            'modified': '2021-06-01T00:00:00.000Z',
-                           'stixid': 'identity--f8',
+                           'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
                            'tags': ['consent-everyone'],
                            'trafficlightprotocol': 'GREEN'},
                 'rawJSON': identity_object,
@@ -967,8 +967,8 @@ class TestParsingIndicators:
         location_object = {'administrative_area': 'US-MI',
                            'country': 'US',
                            'created': '2022-11-19T23:27:34.000Z',
-                           'created_by_ref': 'identity--27',
-                           'id': 'location--28',
+                           'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
+                           'id': 'location--28222222-2a22-222b-2222-222222222222',
                            'modified': '2022-11-19T23:27:34.000Z',
                            'object_marking_refs': ['marking-definition--34'],
                            'spec_version': '2.1',
@@ -980,12 +980,13 @@ class TestParsingIndicators:
                 'fields': {'countrycode': 'US',
                            'firstseenbysource': '2022-11-19T23:27:34.000Z',
                            'modified': '2022-11-19T23:27:34.000Z',
-                           'stixid': 'location--28',
+                           'stixid': 'location--28222222-2a22-222b-2222-222222222222',
                            'tags': ['elevated'],
                            'trafficlightprotocol': 'GREEN'},
                 'rawJSON': location_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'Location',
+                'value': 'United States'
             }
         ]
 
