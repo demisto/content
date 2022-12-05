@@ -22,7 +22,7 @@ args:
 - name: ctx_inputs
   description: '`inputs` context: Input "inputs" (no quotation) on `From previous tasks` to enable ${inputs.} expression in DT.'
 - name: ctx_inc
-  description: '`demisto` context: Input "incident" (no quotation) on `From previous tasks` to enable ${incident.} expression in DT.'
+  description: '`XSOAR` context: Input "incident" (no quotation) on `From previous tasks` to enable ${incident.} expression in DT.'
 - name: variable_markers
   description: The pair of start and end markers to bracket a variable name.
   defaultValue: ${,}
