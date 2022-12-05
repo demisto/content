@@ -1078,7 +1078,6 @@ def parse_incident_from_item(item, is_fetch):
 
         incident['name'] = item.subject
         labels.append({'type': 'Email/subject', 'value': item.subject})
-        # todo: change to detetime_recieved
         incident['occurred'] = item.datetime_created.ewsformat()
 
         # handle recipients
