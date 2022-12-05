@@ -48,6 +48,12 @@ RISK_LEVEL = 'risk_level'
 EXPIRYDAY = 'expiry_days'
 TASKID = 'task_id'
 REPORT_ID = 'report_id'
+ENTRY_ID = 'entry_id'
+TASKSTATUS = 'taskStatus'
+PROCESSING = 'processing'
+RUNNING = 'running'
+FINISHED = 'finished'
+QUEUED = 'queued'
 OS_TYPE = 'os'
 FILE_PATH = 'file_path'
 FILE_URL = 'file_url'
@@ -87,7 +93,7 @@ RETRY_ERROR = 'The max tries exceeded [%d] - %s'
 COMMAND_CALLED = 'Command being called is {command}'
 COMMAND_EXECUTION_ERROR = 'Failed to execute {error} command. Error'
 AUTHORIZATION_ERROR = "Authorization Error: make sure URL/API Key is correctly set. Error - {error}"
-PARAMETER_ISSUE = '{param} is not a valid paramter. Kindly provide valid parameter'
+PARAMETER_ISSUE = '{param} is not a valid parameter. Kindly provide valid parameter'
 FILE_TYPE_ERROR = "Kindly provide valid file 'type'"
 FILE_NOT_FOUND = 'No such file present in {filepath}'
 # General Messages:
@@ -121,6 +127,8 @@ TABLE_GET_FILE_ANALYSIS_REPORT = 'File analysis report '
 TABLE_COLLECT_FILE = 'Collect forensic file '
 TABLE_COLLECTED_FORENSIC_FILE_DOWNLOAD_INFORMATION = 'The download information for collected forensic file '
 TABLE_SUBMIT_FILE_TO_SANDBOX = 'Submit file to sandbox '
+TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX = 'Submit file entry to sandbox '
+TABLE_SANDBOX_SUBMISSION_STATUS = 'Sandbox submission status '
 TABLE_ADD_NOTE = 'Add note to workbench alert '
 TABLE_UPDATE_STATUS = 'Update workbench alert status'
 # COMMAND NAMES
@@ -140,6 +148,8 @@ GET_FILE_ANALYSIS_REPORT = 'trendmicro-visionone-get-file-analysis-report'
 COLLECT_FILE = 'trendmicro-visionone-collect-forensic-file'
 DOWNLOAD_COLLECTED_FILE = 'trendmicro-visionone-download-information-for-collected-forensic-file'
 FILE_TO_SANDBOX = 'trendmicro-visionone-submit-file-to-sandbox'
+SUBMIT_FILE_ENTRY_TO_SANDBOX = 'trendmicro-visionone-submit-file-entry-to-sandbox'
+GET_SANDBOX_SUBMISSION_STATUS = 'trendmicro-visionone-get-sandbox-submission-status'
 CHECK_TASK_STATUS = 'trendmicro-visionone-check-task-status'
 GET_ENDPOINT_INFO_COMMAND = 'trendmicro-visionone-get-endpoint-info'
 UPDATE_STATUS = 'trendmicro-visionone-update-status'
@@ -1182,6 +1192,99 @@ def submit_file_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, C
         outputs=message
     )
     return results
+
+
+def submit_file_entry_to_sandbox(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
+    entry = args.get(ENTRY_ID)
+    file_ = demisto.getFilePath(entry)
+    file_name = file_.get('name')
+    file_path = file_.get('path')
+    archive_pass = args.get(ARCHIVE_PASSWORD)
+    document_pass = args.get(DOCUMENT_PASSWORD)
+    body = open(file_path, 'rb')
+    contents = body.read()
+    body.close()
+    query_params: Dict[Any, Any] = {}
+    headers = {AUTHORIZATION: f'{BEARER} {client.api_key}'}
+    data = {}
+    if document_pass:
+        data['documentPassword'] = base64.b64encode(document_pass.encode(ASCII)).decode(ASCII)
+    if archive_pass:
+        data['archivePassword'] = base64.b64encode(archive_pass.encode(ASCII)).decode(ASCII)
+    files = {'file': (f'{file_name}', contents, 'application/octet-stream')}
+    result = requests.post(f'{client.base_url}{SUBMIT_FILE_TO_SANDBOX}', params=query_params,
+                               headers=headers, data=data, files=files)
+    response = result.json()
+    message = {
+        "filename": file_name,
+        "entryId": entry,
+        "file_path": file_.get('path', ''),
+        "message": response.get('message'),
+        "task_id": response.get('data', {}).get('taskId',''),
+        "digest": response.get('data', {}).get('digest', {})
+        }
+    results = CommandResults(
+        readable_output=tableToMarkdown(TABLE_SUBMIT_FILE_ENTRY_TO_SANDBOX, message, removeNull=True),
+        outputs_prefix='VisionOne.Submit_File_Entry_to_Sandbox',
+        outputs_key_field='entryId',
+        outputs=message
+        )
+    return results
+
+
+def get_sandbox_submission_status(client: Client, args: Dict[str, Any],
+                                  poll: bool = True,
+                                  poll_time_sec: int = 1500
+                                  ) -> Union[str, CommandResults]:
+    task_id = args.get(TASKID)
+    if poll:
+        start_time: float = time.time()
+        elapsed_time: float = 0
+        while (_is_submission_running(client, task_id)
+              and elapsed_time < poll_time_sec):
+            elapsed_time = (start_time - time.time())
+    result = _submission_status_request(client, task_id)
+    message = {
+        "message": result.get("message", ""),
+        "code": result.get("code", ""),
+        "task_id": result.get("data", {}).get("taskId", ""),
+        "taskStatus": result.get("data", {}).get("taskStatus", ""),
+        "digest": result.get("data", {}).get("digest", ""),
+        "analysis_completion_time": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("analysisCompletionTime", ""),
+        "risk_level": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("riskLevel", ""),
+        "description": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("description", ""),
+        "detection_name_list": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("detectionNameList", ""),
+        "threat_type_list": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("threatTypeList", ""),
+        "file_type": result.get("data", {})
+        .get("analysisSummary", "")
+        .get("trueFileType", ""),
+        "report_id": result.get("data", {}).get("reportId", ""),
+    }
+    results = CommandResults(
+        readable_output=tableToMarkdown(TABLE_SANDBOX_SUBMISSION_STATUS, message, removeNull=True),
+        outputs_prefix="VisionOne.Get_Sandbox_Analysis_Status",
+        outputs_key_field="report_id",
+        outputs=message,
+    )
+    return results
+
+def _submission_status_request(client: Client, task_id: str) -> Dict[str, Any]:
+    response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+    return response
+
+def _is_submission_running(client: Client, task_id: str) -> bool:
+    return (_submission_status_request(client, task_id)
+            .get(DATA).get(TASKSTATUS) in [PROCESSING, QUEUED, RUNNING])
 
 
 def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
