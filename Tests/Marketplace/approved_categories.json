@@ -1,5 +1,5 @@
 {
-    "description": "Approved categories for use in pack_metadata.json and integration yml. To modify this file you will need a CODEOWNER to approve.",
+    "description": "Approved categories for use in pack_metadata.json and integration yml. To modify this file you will need a CODEOWNER to approve. Please make sure to trigger the sdk build in case you edit this list.",
 	"approved_list": [
 	"Analytics & SIEM",
 	"Authentication",
