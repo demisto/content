@@ -1,0 +1,25 @@
+{
+    "name": "OpenAI",
+    "description": "The OpenAI API can be applied to virtually any task that involves understanding or generating natural language or code. We offer a spectrum of models with different levels of power suitable for different tasks, as well as the ability to fine-tune your own custom models. These models can be used for everything from content generation to semantic search and classification.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "NVISO",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Artificial Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "soar-engineering@nviso.eu"
+    ],
+    "githubUser": [
+        "wstinkens"
+    ]
+}
