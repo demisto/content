@@ -1,0 +1,2053 @@
+id: Cloud Response - GCP
+version: -1
+name: Cloud Response - GCP
+description: |-
+  This playbook provides response actions to GCP. The following are available for execution automatically/manually:
+  - Resource remediation:
+     - Delete the instance
+     - Stop the instance
+  - Identity remediation:
+     - Disable the user
+     - Delete the user
+  - Access key remediation:
+     - Disable the access key
+     - Delete the access key
+  - Block indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf64eba4-df4f-44d1-84c4-65c9ef85b786
+    type: start
+    task:
+      id: cf64eba4-df4f-44d1-84c4-65c9ef85b786
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "9"
+      - "1"
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4e285d3b-924b-48ab-8bb3-b1092e74a8a5
+    type: title
+    task:
+      id: 4e285d3b-924b-48ab-8bb3-b1092e74a8a5
+      version: -1
+      name: Resource
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: daead8d0-6cad-4acb-811a-c5eeb75fda74
+    type: title
+    task:
+      id: daead8d0-6cad-4acb-811a-c5eeb75fda74
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1830,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3e349c03-2c6a-4283-8a64-50a326832bc6
+    type: title
+    task:
+      id: 3e349c03-2c6a-4283-8a64-50a326832bc6
+      version: -1
+      name: Identity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d0710c00-62c5-4984-83af-85c319fc9699
+    type: title
+    task:
+      id: d0710c00-62c5-4984-83af-85c319fc9699
+      version: -1
+      name: Privileges
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 35a2a97e-51fc-41a7-88d6-24c7aa59c52c
+    type: condition
+    task:
+      id: 35a2a97e-51fc-41a7-88d6-24c7aa59c52c
+      version: -1
+      name: Is there an access key to remediate?
+      description: Checks if there is an access key available for remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.accessKeyName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0102ae72-ebe0-44ac-844f-5844d224320a
+    type: condition
+    task:
+      id: 0102ae72-ebe0-44ac-844f-5844d224320a
+      version: -1
+      name: Should remediate automatically?
+      description: Checks if the user chose automatic remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoAccessKeyRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: df4a0a5a-9ef2-4e1f-88eb-3859bc2f932b
+    type: regular
+    task:
+      id: df4a0a5a-9ef2-4e1f-88eb-3859bc2f932b
+      version: -1
+      name: Disable the access key
+      description: Disables a service account key.
+      script: '|||gcp-iam-service-account-key-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key_name:
+        complex:
+          root: inputs.accessKeyName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6ea41880-e0bd-4635-8243-a5449efbcff5
+    type: condition
+    task:
+      id: 6ea41880-e0bd-4635-8243-a5449efbcff5
+      version: -1
+      name: Continue by remediation type
+      description: Checks for the user's chosen remediation type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Delete:
+      - "14"
+      Disable:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: Delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.accessKeyRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Rotate
+          ignorecase: true
+    - label: Disable
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.accessKeyRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Disable
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6ad0514c-34c6-45d4-888a-6336734940aa
+    type: regular
+    task:
+      id: 6ad0514c-34c6-45d4-888a-6336734940aa
+      version: -1
+      name: Delete the access key
+      description: Deletes a service account key.
+      script: '|||gcp-iam-service-account-key-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key_name:
+        complex:
+          root: inputs.accessKeyName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 250543fb-7b16-48fb-8de6-0bdd0681c273
+    type: title
+    task:
+      id: 250543fb-7b16-48fb-8de6-0bdd0681c273
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ef7d1d56-2219-4e84-8363-9847b74d54df
+    type: condition
+    task:
+      id: ef7d1d56-2219-4e84-8363-9847b74d54df
+      version: -1
+      name: Is there a user to remediate?
+      description: Checks if there is a user available for remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 0c7568e0-ca17-44f2-80fc-1944b2f51b40
+    type: condition
+    task:
+      id: 0c7568e0-ca17-44f2-80fc-1944b2f51b40
+      version: -1
+      name: Should remediate automatically?
+      description: Checks if the user chose automatic remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoUserRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2ee9ba9a-9171-4cf5-8ab6-5eeee52bbb45
+    type: condition
+    task:
+      id: 2ee9ba9a-9171-4cf5-8ab6-5eeee52bbb45
+      version: -1
+      name: Continue by remediation type
+      description: Checks for the user's chosen remediation type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Delete:
+      - "20"
+      Disable:
+      - "33"
+      User:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: User
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.username
+            iscontext: true
+          right:
+            value:
+              simple: gserviceaccount
+          ignorecase: true
+    - label: Disable
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.userRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Revoke
+          ignorecase: true
+    - label: Delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.userRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Delete
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 558e417d-373a-4ea6-825f-c70a2f85bad8
+    type: regular
+    task:
+      id: 558e417d-373a-4ea6-825f-c70a2f85bad8
+      version: -1
+      name: Delete the user
+      description: Deletes a service account.
+      script: '|||gcp-iam-service-account-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      service_account_name:
+        complex:
+          root: Manual user remediation.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.username
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 710a1688-0775-418f-8cf2-3ff25fce9336
+    type: title
+    task:
+      id: 710a1688-0775-418f-8cf2-3ff25fce9336
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ac88602d-417d-4649-8f84-64cfc1f0a244
+    type: condition
+    task:
+      id: ac88602d-417d-4649-8f84-64cfc1f0a244
+      version: -1
+      name: Is there a resource to remediate?
+      description: Checks if there is a resource available for remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.resourceName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 050459fa-9edc-4342-8f51-ec4b535e1090
+    type: condition
+    task:
+      id: 050459fa-9edc-4342-8f51-ec4b535e1090
+      version: -1
+      name: Should remediate automatically?
+      description: Checks if the user chose automatic remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoResourceRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: dcd2adf0-93e1-4672-8cd6-29469a65105b
+    type: condition
+    task:
+      id: dcd2adf0-93e1-4672-8cd6-29469a65105b
+      version: -1
+      name: Continue by remediation type
+      description: Checks for the user's chosen remediation type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Delete:
+      - "27"
+      Stop:
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: Delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.resourceRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Terminate
+          ignorecase: true
+    - label: Stop
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.resourceRemediationType
+            iscontext: true
+          right:
+            value:
+              simple: Stop
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 1605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b7c92358-4c34-42ab-844a-87cc9cbac517
+    type: regular
+    task:
+      id: b7c92358-4c34-42ab-844a-87cc9cbac517
+      version: -1
+      name: Delete the instance
+      description: Deletes the specified instance resource. For more information, see Stopping or Deleting an Instance.
+      script: '|||gcp-compute-delete-instance'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      instance:
+        complex:
+          root: remediateResourceList
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.resourceName
+                iscontext: true
+      zone:
+        complex:
+          root: alertJson._all_events
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alertJson._all_events.referenced_resource_name
+                iscontext: true
+              right:
+                value:
+                  simple: Manual resource remediation.Answers.0
+                iscontext: true
+              ignorecase: true
+          accessor: zone
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.resourceZone
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 434c2cb3-871e-4e21-8035-bd26a4287da4
+    type: regular
+    task:
+      id: 434c2cb3-871e-4e21-8035-bd26a4287da4
+      version: -1
+      name: Stop the instance
+      description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+      script: '|||gcp-compute-stop-instance'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      instance:
+        complex:
+          root: remediateResourceList
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.resourceName
+                iscontext: true
+      zone:
+        complex:
+          root: alertJson._all_events
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alertJson._all_events.referenced_resource_name
+                iscontext: true
+              right:
+                value:
+                  simple: Manual resource remediation.Answers.0
+                iscontext: true
+              ignorecase: true
+          accessor: zone
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.resourceZone
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 4103b833-432f-4188-81e4-624e0ce96ab6
+    type: title
+    task:
+      id: 4103b833-432f-4188-81e4-624e0ce96ab6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 01a85d52-812b-4dee-8595-80918e4ee424
+    type: regular
+    task:
+      id: 01a85d52-812b-4dee-8595-80918e4ee424
+      version: -1
+      name: Disable the user
+      description: Disables a project service account.
+      script: '|||gcp-iam-service-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      service_account_name:
+        complex:
+          root: Manual user remediation.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.username
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 5eab1ac6-48c4-4e94-8ca2-fdfe599db7ce
+    type: collection
+    task:
+      id: 5eab1ac6-48c4-4e94-8ca2-fdfe599db7ce
+      version: -1
+      name: Choose resources to remediate
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst,Read-Only
+      subject:
+        simple: XCLOUD Cryptominig Alert - Resource Remediation
+      body:
+        simple: Analyst interaction is needed for the resource remediation.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose resources to remediate
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.resourceName
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual resource remediation
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: acc1466a-abd3-474a-877d-cba5d4ce452b
+    type: condition
+    task:
+      id: acc1466a-abd3-474a-877d-cba5d4ce452b
+      version: -1
+      name: Check user answer
+      description: Checks the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Manual resource remediation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: f4cc0f82-e042-4d02-8776-ddc8f91bf93a
+    type: regular
+    task:
+      id: f4cc0f82-e042-4d02-8776-ddc8f91bf93a
+      version: -1
+      name: Set selected resources to remediate
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: remediateResourceList
+      value:
+        complex:
+          root: Manual resource remediation.Answers.0
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Manual resource remediation.Answers.0
+                iscontext: true
+              right:
+                value:
+                  simple: ALL
+              ignorecase: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.resourceName
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1600,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: ea6a9362-bbad-48dd-80b9-ff9f5dd1ab44
+    type: collection
+    task:
+      id: ea6a9362-bbad-48dd-80b9-ff9f5dd1ab44
+      version: -1
+      name: Choose user to remediate
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst,Read-Only
+      subject:
+        simple: XCLOUD Cryptominig Alert - User Remediation
+      body:
+        simple: Analyst interaction is needed for the user remediation.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose user to remediate
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.username
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual user remediation
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c7ec6a0c-fe6b-4a31-8841-142794939002
+    type: condition
+    task:
+      id: c7ec6a0c-fe6b-4a31-8841-142794939002
+      version: -1
+      name: Check user answer
+      description: Checks the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Manual user remediation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: ebcacf97-2eff-4832-8738-499bfa6f6eea
+    type: collection
+    task:
+      id: ebcacf97-2eff-4832-8738-499bfa6f6eea
+      version: -1
+      name: Choose a user for access key remediation
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst,Read-Only
+      subject:
+        simple: XCLOUD Cryptominig Alert - Access Key Remediation
+      body:
+        simple: Analyst interaction is needed for the user's access key remediation.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose the user for access key remediation
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.username
+            transformers:
+            - operator: uniq
+        - simple: None
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual access key remediation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: abea9bd3-ea7d-42a7-8a90-af2faaafd301
+    type: condition
+    task:
+      id: abea9bd3-ea7d-42a7-8a90-af2faaafd301
+      version: -1
+      name: Check user answer
+      description: Checks the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Manual access key remediation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 4f647538-9413-4e60-889d-15ccc0bda9d6
+    type: playbook
+    task:
+      id: 4f647538-9413-4e60-889d-15ccc0bda9d6
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the Cortex XSOAR user (and set by default to outgoing).\nNote the following:\n-  Some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: blockIndicatorsList
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.sourceIP
+                iscontext: true
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: inbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1830,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 70e627c4-1366-4679-8ebc-174bf130f7e1
+    type: title
+    task:
+      id: 70e627c4-1366-4679-8ebc-174bf130f7e1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2410,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 34d1f3f4-55cf-43d8-8859-76aa49ee3def
+    type: condition
+    task:
+      id: 34d1f3f4-55cf-43d8-8859-76aa49ee3def
+      version: -1
+      name: Should block indicators automatically?
+      description: Checks whether the user chose automatic remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.autoBlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1830,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 1c979519-3966-4131-8ccb-8fa5a22aee70
+    type: collection
+    task:
+      id: 1c979519-3966-4131-8ccb-8fa5a22aee70
+      version: -1
+      name: Choose indicators to block
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst,Read-Only
+      subject:
+        simple: XCLOUD Cryptominig Alert - Block Indicators
+      body:
+        simple: Analyst interaction is needed for the indicators remediation.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose indicators to block
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.sourceIP
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Block Indicators
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 2b930c09-2a7a-473a-8606-b8e2cd2f0618
+    type: condition
+    task:
+      id: 2b930c09-2a7a-473a-8606-b8e2cd2f0618
+      version: -1
+      name: Check user answer
+      description: Checks the user's answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Block Indicators.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: f4e8b070-914f-47c4-8720-6746d9de54bb
+    type: regular
+    task:
+      id: f4e8b070-914f-47c4-8720-6746d9de54bb
+      version: -1
+      name: Set selected indicators to remediate
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: blockIndicatorsList
+      value:
+        complex:
+          root: Block Indicators.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: b2145ba5-f7bd-4cb8-84d3-2f18fcb9e5e2
+    type: regular
+    task:
+      id: b2145ba5-f7bd-4cb8-84d3-2f18fcb9e5e2
+      version: -1
+      name: Delete regular user
+      description: Deletes a user.
+      script: '|||gsuite-user-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      user_key:
+        complex:
+          root: Manual user remediation.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.username
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f0d5235c-42a6-494b-84cd-dfd057f01729
+    type: condition
+    task:
+      id: f0d5235c-42a6-494b-84cd-dfd057f01729
+      version: -1
+      name: Check if the user is a service account
+      description: Check if the user is a service account.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: identity_invoked_by_type
+            iscontext: true
+          right:
+            value:
+              simple: service_account
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c48218de-5d85-42d3-82d3-b87162484d24
+    type: regular
+    task:
+      id: c48218de-5d85-42d3-82d3-b87162484d24
+      version: -1
+      name: Extract project name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: projectName
+      value:
+        complex:
+          root: alertJson._all_events
+          accessor: identity_name
+          transformers:
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: projects\/([a-zA-Z0-9]+)
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b735ecde-e743-450e-8ffb-edbc3bac25a1
+    type: regular
+    task:
+      id: b735ecde-e743-450e-8ffb-edbc3bac25a1
+      version: -1
+      name: Set regular user pattern
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: username
+      value:
+        complex:
+          root: inputs.username
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: d6226a94-5889-4e2a-87ff-2c90164471b8
+    type: regular
+    task:
+      id: d6226a94-5889-4e2a-87ff-2c90164471b8
+      version: -1
+      name: Set service account user pattern
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: username
+      value:
+        simple: projects/${projectName}/serviceAccount/${inputs.username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_yes": 0.42,
+      "10_16_#default#": 0.44,
+      "11_13_yes": 0.27,
+      "11_39_#default#": 0.57,
+      "17_23_#default#": 0.43,
+      "18_19_yes": 0.47,
+      "18_37_#default#": 0.57,
+      "24_25_yes": 0.41,
+      "24_30_#default#": 0.37,
+      "25_26_yes": 0.41,
+      "25_34_#default#": 0.56,
+      "26_27_Delete": 0.68,
+      "35_30_#default#": 0.32,
+      "35_36_yes": 0.51,
+      "38_23_#default#": 0.28,
+      "40_13_yes": 0.44,
+      "40_16_#default#": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2045,
+        "width": 5190,
+        "x": -2410,
+        "y": 370
+      }
+    }
+  }
+inputs:
+- key: accessKeyRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user's access key.
+    Disable - For disabling the user's access key.
+    Delete - For deleting user's access key.
+  playbookInputQuery:
+- key: userRemediationType
+  value:
+    simple: Disable
+  required: false
+  description: |-
+    Choose the remediation type for the user involved.
+    Delete - For deleting the user.
+    Disable - For disabling the user.
+  playbookInputQuery:
+- key: resourceRemediationType
+  value:
+    simple: Stop
+  required: false
+  description: |-
+    Choose the remediation type for the instances created.
+    Stop - For stopping the instances.
+    Delete - For deleting the instances.
+  playbookInputQuery:
+- key: autoResourceRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the resource remediation flow automatically.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: autoAccessKeyRemediation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to execute the access key remediation flow automatically.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: resourceName
+  value: {}
+  required: false
+  description: The resource name to take action on.
+  playbookInputQuery:
+- key: resourceZone
+  value: {}
+  required: false
+  description: The resource's zone.
+  playbookInputQuery:
+- key: username
+  value: {}
+  required: false
+  description: The username to take action on.
+  playbookInputQuery:
+- key: accessKeyName
+  value: {}
+  required: false
+  description: |-
+    The access key name in the following format:
+    projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}
+  playbookInputQuery:
+- key: sourceIP
+  value: {}
+  required: false
+  description: The source IP address of the attacker.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
