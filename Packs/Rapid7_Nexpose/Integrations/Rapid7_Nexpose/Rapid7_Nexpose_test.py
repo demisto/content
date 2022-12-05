@@ -317,7 +317,7 @@ def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_clien
             Site(client=client, site_id=site_id, site_name=site_name)
 
     else:
-        Site(client=client, site_id=site_id, site_name=site_name).id == expected_output_id
+        assert Site(client=client, site_id=site_id, site_name=site_name).id == expected_output_id
 
 
 # --- Command & Client Functions Tests ---
@@ -867,6 +867,95 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
 
 @pytest.mark.parametrize("test_input_kwargs, expected_post_data",
                          [
+                             ({
+                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
+                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "interval": "2",
+                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
+                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
+                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
+                                 "excluded_asset_groups": "3,4",
+                             },
+                                 {
+                                 "assets": {
+                                     "excludedAssetGroups": {
+                                         "assetGroupIDs": [3, 4]
+                                     },
+                                     "excludedTargets": {
+                                         "addresses": [
+                                             "192.0.2.2",
+                                             "192.0.2.3"
+                                         ]
+                                     },
+                                     "includedAssetGroups": {
+                                         "assetGroupIDs": [1, 2]
+                                     },
+                                     "includedTargets": {
+                                         "addresses": [
+                                             "192.0.2.0",
+                                             "192.0.2.1"
+                                         ]
+                                     }
+                                 },
+                                 "duration": "P1DT1H1M",
+                                 "enabled": True,
+                                 "onScanRepeat": "restart-scan",
+                                 "repeat": {
+                                     "every": "week",
+                                     "interval": 2
+                                 },
+                                 "scanName": "Test",
+                                 "start": "2050-01-01T10:00:00Z"
+                             }),
+                             ({
+                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
+                                 "start_date": "2050-01-01T10:00:00Z",
+                             },
+                                 {
+                                 "enabled": False,
+                                 "onScanRepeat": "restart-scan",
+                                 "start": "2050-01-01T10:00:00Z"
+                             }),
+                             ({
+                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
+                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
+                             },
+                                 None),
+                             ({
+                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
+                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval": "2",
+                                 "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
+                                 "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
+                                 "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
+                                 "excluded_asset_groups": "3,4",
+                             },
+                                 None),
+                         ])
+def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                                      expected_post_data: dict | None):
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    site_id = test_input_kwargs.pop("site_id")
+
+    if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval") is None
+                                                           or (test_input_kwargs["frequency"] == "Date-of-month"
+                                                               and test_input_kwargs.get("date_of_month") is None)):
+        with pytest.raises(ValueError):
+            update_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs)
+
+    else:
+        result = update_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs)
+
+        http_request.assert_called_with(
+            method="PUT",
+            url_suffix=f"/sites/{site_id}/scan_schedules/{test_input_kwargs['scan_schedule_id']}",
+            json_data=expected_post_data,
+            resp_type="json",
+        )
+
+        assert result.outputs is None
+
+
+@pytest.mark.parametrize("test_input_kwargs, expected_post_data",
+                         [
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "Specific-Sites",
                                "host_restriction": "192.0.2.0", "port_restriction": "8080", "service": "FTP",
                                "username": "Test1", "password": "Test2", "sites": "1,2,3",
@@ -882,7 +971,7 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                                       "username": "Test1",
                                       "password": "Test2"
                                   }
-                              }),
+                             }),
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
                                "service": "SNMPv3", "username": "Test1", "password": "Test2",
                                "snmpv3_authentication_type": "SHA", "snmpv3_privacy_type": "AES-256",
@@ -898,7 +987,7 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                                       "privacyType": "aes-256",
                                       "privacyPassword": "123"
                                   }
-                              }),
+                             }),
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
                                "service": "Oracle", "username": "Test1", "password": "Test2",
                                "oracle_enumerate_sids": "false"},
@@ -970,7 +1059,7 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                                       "username": "Test1",
                                       "password": "Test2"
                                   }
-                              }),
+                             }),
                              ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "SNMPv3",
                                "username": "Test1", "password": "Test2", "snmpv3_authentication_type": "SHA",
                                "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"},
@@ -985,7 +1074,7 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                                       "privacyType": "aes-256",
                                       "privacyPassword": "123"
                                   }
-                              }),
+                             }),
                              ({"site_id": "3", "credential_id": "1", "name": "Test", "service": "Oracle",
                                "username": "Test1", "password": "Test2", "oracle_enumerate_sids": "false"},
                               {
@@ -998,7 +1087,7 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                                       "enumerateSids": False,
                                       "oracleListenerPassword": None
                                   }
-                              }),
+                             }),
                              ({"site_id": "1", "credential_id": "1", "name": "Test", "service": "SSH",
                                "username": "Test1", "password": "Test2", "ssh_permission_elevation": "None"},
                               {
@@ -1022,7 +1111,7 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                                       "password": "Test2",
                                       "useWindowsAuthentication": False
                                   }
-                              }),
+                             }),
                          ])
 def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                              expected_post_data: dict):
