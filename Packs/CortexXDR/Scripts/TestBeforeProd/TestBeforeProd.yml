@@ -1,0 +1,19 @@
+commonfields:
+  id: test-before-prod
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.8.39276
+enabled: true
+name: test-before-prod
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
