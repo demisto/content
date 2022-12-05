@@ -25,7 +25,7 @@ This integration was integrated and tested with version 1.0.0 of GoogleWorkspace
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
-    | --- | --- |
+    | --- | --- | --- |
     | Customer ID | True |
     | User's Service Account JSON | True |
     | Use system proxy | False |

@@ -15,10 +15,12 @@ configuration:
     name: customer_id
     required: true
     type: 4
+    additionalinfo: A unique ID assigned to your Google Workspace account.
   - display: User's Service Account JSON
     name: user_service_account_json
     required: true
     type: 4
+    additionalinfo: The Service Account's key in JSON format.
   - name: proxy
     display: Use system proxy settings
     defaultvalue: "false"

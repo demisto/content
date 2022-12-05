@@ -37,6 +37,7 @@ ACCOUNT_NOT_FOUND = 'Please check if the account supplied in the service account
 INVALID_ORG_UNIT_PATH = 'Please insert a valid organization unit path (org_unit_path)'
 EXCEEDED_MAX_PAGE_SIZE_ERROR = f'The maximum page size is {MAX_PAGE_SIZE}'
 DEPROVISION_REASON_EMPTY_ERROR = 'Deprovision reason cannot be empty'
+
 # The following dictionary is used to map error messages returned from the API that don't
 # share enough information to meaningful error messages.
 ERROR_MESSAGES_MAPPING = {
@@ -159,6 +160,7 @@ class Client(BaseClient):
             except google.auth.exceptions.RefreshError as e:
                 if 'account not found' in str(e):
                     raise DemistoException(ACCOUNT_NOT_FOUND)
+                raise DemistoException(str(e))
 
         if(not self._credentials.valid):
             raise DemistoException(REFRESH_TOKEN_ERROR)
