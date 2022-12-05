@@ -983,7 +983,95 @@ class TestParsingIndicators:
 
         assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response
 
-    def test_parse_location(self, taxii_2_client):
+    upper_case_country_object = {'administrative_area': 'US-MI',
+                                 'country': 'US',
+                                 'created': '2022-11-19T23:27:34.000Z',
+                                 'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
+                                 'id': 'location--28222222-2a22-222b-2222-222222222222',
+                                 'modified': '2022-11-19T23:27:34.000Z',
+                                 'object_marking_refs': ['marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
+                                 'spec_version': '2.1',
+                                 'type': 'location',
+                                 'labels': ['elevated']}
+    upper_case_country_response = [
+        {
+            'fields': {
+                'description': '',
+                'countrycode': 'US',
+                'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                'modified': '2022-11-19T23:27:34.000Z',
+                'stixid': 'location--28222222-2a22-222b-2222-222222222222',
+                'tags': ['elevated'],
+                'trafficlightprotocol': 'AMBER'
+            },
+            'rawJSON': upper_case_country_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'United States'
+        }
+    ]
+    lower_case_country_object = {'type': 'location',
+                                 'spec_version': '2.1',
+                                 'id': 'location--a6e9345f-5a15-4c29-8bb3-7dcc5d168d64',
+                                 'created_by_ref': 'identity--f431f809-377b-45e0-aa1c-6a4751cae5ff',
+                                 'created': '2016-04-06T20:03:00.000Z',
+                                 'modified': '2016-04-06T20:03:00.000Z',
+                                 'region': 'south-eastern-asia',
+                                 'country': 'th',
+                                 'administrative_area': 'Tak',
+                                 'postal_code': '63170'}
+    lower_case_country_response = [
+        {
+            'fields': {
+                'countrycode': 'th',
+                'description': '',
+                'firstseenbysource': '2016-04-06T20:03:00.000Z',
+                'modified': '2016-04-06T20:03:00.000Z',
+                'stixid': 'location--a6e9345f-5a15-4c29-8bb3-7dcc5d168d64',
+                'tags': [],
+                'trafficlightprotocol': 'GREEN'
+            },
+            'rawJSON': lower_case_country_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'Thailand'
+        }
+    ]
+    location_with_name_object = {'administrative_area': 'US-MI',
+                                 'country': 'US',
+                                 'name': 'United States of America',
+                                 'created': '2022-11-19T23:27:34.000Z',
+                                 'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
+                                 'id': 'location--28222222-2a22-222b-2222-222222222222',
+                                 'modified': '2022-11-19T23:27:34.000Z',
+                                 'object_marking_refs': ['marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
+                                 'spec_version': '2.1',
+                                 'type': 'location',
+                                 'labels': ['elevated']}
+    location_with_name_response = [
+        {
+            'fields': {
+                'description': '',
+                'countrycode': 'US',
+                'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                'modified': '2022-11-19T23:27:34.000Z',
+                'stixid': 'location--28222222-2a22-222b-2222-222222222222',
+                'tags': ['elevated'],
+                'trafficlightprotocol': 'AMBER'
+            },
+            'rawJSON': location_with_name_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'United States of America'
+        }
+    ]
+
+    @pytest.mark.parametrize('location_object, xsoar_expected_response',
+                             [(upper_case_country_object, upper_case_country_response),
+                              (lower_case_country_object, lower_case_country_response),
+                              (location_with_name_object, location_with_name_response),
+                              ])
+    def test_parse_location(self, taxii_2_client, location_object, xsoar_expected_response):
         """
         Given:
          - Location object.
@@ -994,32 +1082,4 @@ class TestParsingIndicators:
         Then:
          - Make sure all the fields are being parsed correctly.
         """
-        location_object = {'administrative_area': 'US-MI',
-                           'country': 'US',
-                           'created': '2022-11-19T23:27:34.000Z',
-                           'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
-                           'id': 'location--28222222-2a22-222b-2222-222222222222',
-                           'modified': '2022-11-19T23:27:34.000Z',
-                           'object_marking_refs': ['marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
-                           'spec_version': '2.1',
-                           'type': 'location',
-                           'labels': ['elevated']}
-
-        xsoar_expected_response = [
-            {
-                'fields': {
-                    'description': '',
-                    'countrycode': 'US',
-                    'firstseenbysource': '2022-11-19T23:27:34.000Z',
-                    'modified': '2022-11-19T23:27:34.000Z',
-                    'stixid': 'location--28222222-2a22-222b-2222-222222222222',
-                    'tags': ['elevated'],
-                    'trafficlightprotocol': 'AMBER'},
-                'rawJSON': location_object,
-                'score': Common.DBotScore.NONE,
-                'type': 'Location',
-                'value': 'United States'
-            }
-        ]
-
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response

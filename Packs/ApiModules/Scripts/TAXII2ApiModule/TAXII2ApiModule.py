@@ -906,8 +906,9 @@ class Taxii2FeedClient:
             'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
         })
 
+        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country', '')).upper(), '')
         location = {
-            'value': location_obj.get('name') or COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country')), ''),
+            'value': location_obj.get('name') or country_name,
             'type': FeedIndicatorType.Location,
             'fields': fields,
             'score': Common.DBotScore.NONE,
