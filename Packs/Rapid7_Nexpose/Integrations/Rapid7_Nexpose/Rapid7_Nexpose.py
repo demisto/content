@@ -2169,7 +2169,7 @@ def create_credential_creation_body(service: CredentialService, database_name: s
         else:
             account_data["pemKey"] = ssh_key_pem
 
-        if ssh_private_key_password is None:
+        if ssh_private_key_password is not None:
             account_data["privateKeyPassword"] = ssh_private_key_password
 
     error_message: str = ""

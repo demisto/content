@@ -162,7 +162,7 @@ def test_convert_datetime_str(test_input: str, expected_output: struct_time):
                                  {
                                  "service": "ssh-key", "username": "Test3", "permissionElevation": "sudo",
                                  "permissionElevationUsername": "Test4", "permissionElevationPassword": "Test5",
-                                 "pemKey": "Test1"
+                                 "privateKeyPassword": "Test2", "pemKey": "Test1"
                              }),
                          ])
 def test_create_credential_creation_body(test_input_kwargs: dict, expected_output: dict):
