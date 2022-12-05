@@ -16,7 +16,7 @@ class Client(BaseClient):
     """Client class to interact with the OpenAI API
     """
 
-    def __init__(self, base_url: str, api_key:str, proxy: bool, verify: bool):
+    def __init__(self, base_url: str, api_key: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
         self.headers = {'Authorization': f'Bearer {self.api_key}',
@@ -48,13 +48,13 @@ class Client(BaseClient):
         """
 
         data = {
-          "model": model,
-          "prompt": prompt,
-          "temperature": temperature,
-          "max_tokens": max_tokens,
-          "top_p": top_p,
-          "frequency_penalty": frequency_penalty,
-          "presence_penalty": presence_penalty
+            "model": model,
+            "prompt": prompt,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "top_p": top_p,
+            "frequency_penalty": frequency_penalty,
+            "presence_penalty": presence_penalty
         }
 
         return self._http_request(method='POST', url_suffix='v1/completions', json_data=data, headers=self.headers,
@@ -73,7 +73,7 @@ def test_module_command(client):
         return 'ok'
 
 
-def reputations_command(client: Client, args: dict) -> dict:
+def reputations_command(client: Client, args: dict) -> CommandResults:
     """Enter an instruction and watch the OpenAI API respond with a completion that attempts to match the context
     or pattern you provided.
 
@@ -91,7 +91,7 @@ def reputations_command(client: Client, args: dict) -> dict:
     if not prompt:
         raise ValueError('No prompt argument was provided')
 
-    model = args.get('model')
+    model = args.get('model', 'text-davinci-003')
     temperature = args.get('temperature') or 0.7
     max_tokens = args.get('max_tokens') or 256
     top_p = args.get('top_p') or 1
@@ -108,7 +108,7 @@ def reputations_command(client: Client, args: dict) -> dict:
     if response and isinstance(response, dict):
         model = response.get('model')
         id = response.get('id')
-        choices = response.get('choices')
+        choices = response.get('choices', [])
         meta = f"Model {response.get('model')} generated {len(choices)} possible text completion(s)."
         context = [{'id': id, 'model': model, 'text': choice.get('text')} for choice in choices]
 
