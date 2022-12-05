@@ -118,6 +118,24 @@ script:
       description: 'The pack zip file url.'
       required: false
       isArray: false
+    - name: skip_verify
+      description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - name: skip_validation
+      description: 'If true will skip all pack validations, Available from 6.6.0 server version.'
+      required: false
+      isArray: false
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
     description: Upload packs to Demisto server from url or the marketplace.
   runonce: false
 tests:

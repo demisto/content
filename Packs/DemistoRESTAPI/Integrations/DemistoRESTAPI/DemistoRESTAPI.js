@@ -154,7 +154,7 @@ var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     };
 };
 
-var installPackFromUrl = function(pack_url){
+var installPackFromUrl = function(pack_url, skip_verify, skip_validation){
     // download pack zip file
     var res = http(
     pack_url,
@@ -170,16 +170,36 @@ var installPackFromUrl = function(pack_url){
 
     let file_path = res.Path
 
+    let upload_url = 'contentpacks/installed/upload?'
+
+    // set the skipVerify parameter
+    if(isDemistoVersionGE('6.5.0')){
+        if (skip_verify && skip_verify === 'false') {
+            upload_url+='skipVerify=false'
+        }else{
+            upload_url+='skipVerify=true'
+        }
+    }
+
+    // set the skipValidation parameter
+    if(isDemistoVersionGE('6.6.0')){
+        if (skip_validation && skip_validation === 'false') {
+            upload_url+='&skipValidation=false'
+        }else{
+            upload_url+='&skipValidation=true'
+        }
+    }
+
     // upload the pack
-    sendMultipart('contentpacks/installed/upload?skipVerify=true&skipValidation=true', file_path,'{}');
+    sendMultipart(upload_url, file_path,'{}');
 };
 
-var installPacks = function(packs_to_install, file_url) {
+var installPacks = function(packs_to_install, file_url, skip_verify, skip_validation) {
     if ((!packs_to_install) && (!file_url)) {
         throw 'Either packs_to_install or file_url argument must be provided.';
     }
     else if (!packs_to_install) {
-        installPackFromUrl(file_url)
+        installPackFromUrl(file_url, skip_verify, skip_validation)
         logDebug('Pack installed successfully from ' + file_url)
         return 'The pack installed successfully from the file ' + file_url
     }
@@ -194,7 +214,7 @@ var installPacks = function(packs_to_install, file_url) {
 
             let pack_url = '{0}{1}/{2}/{3}.zip'.format(marketplace_url,pack_id,pack_version,pack_id)
 
-            installPackFromUrl(pack_url)
+            installPackFromUrl(pack_url, skip_verify, skip_validation)
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
@@ -241,7 +261,7 @@ switch (command) {
         var fields = argToList(args.fields);
         return deleteIncidents(ids, fields);
     case 'demisto-api-install-packs':
-        return installPacks(args.packs_to_install, args.file_url);
+        return installPacks(args.packs_to_install, args.file_url, args.skip_verify, args.skip_validation);
     default:
         throw 'Demisto REST APIs - unknown command';
 }
