@@ -16,7 +16,14 @@ from ldap3.utils.conv import escape_filter_chars
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
                  'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
-
+SSL_VERSIONS = {
+    'None': None,
+    'TLS': ssl.PROTOCOL_TLS,
+    'TLSv1': ssl.PROTOCOL_TLSv1,  # guardrails-disable-line
+    'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
+    'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
+    'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
+}
 # global connection
 conn: Optional[Connection] = None
 
@@ -69,24 +76,39 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
 ''' HELPER FUNCTIONS '''
 
 
-def get_tls_object(unsecure):
+def get_ssl_version(ssl_version):
+    """
+        Returns the ssl version object according to the user's selection.
+    """
+    version = SSL_VERSIONS.get(ssl_version)
+    if version:
+        demisto.info(f"SSL/TLS protocol version is {ssl_version} ({version}).")
+    else:  # version is None
+        demisto.info("SSL/TLS protocol version is None (the default value of the ldap3 Tls object).")
+
+    return version
+
+
+def get_tls_object(unsecure, ssl_version):
     """
         Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
     """
     if unsecure:  # Trust any certificate is checked
         # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
         # and allow the use of all possible ciphers.
-        tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, ciphers=CIPHERS_STRING)
+        tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, ciphers=CIPHERS_STRING,
+                  version=get_ssl_version(ssl_version))
 
     else:  # Trust any certificate is unchecked
         # Trust any certificate = False means that the LDAP server's certificate must be valid -
         # i.e if the server's certificate is not valid the connection will fail.
-        tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
+        tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
+                  version=get_ssl_version(ssl_version))
 
     return tls
 
 
-def initialize_server(host, port, secure_connection, unsecure):
+def initialize_server(host, port, secure_connection, unsecure, ssl_version):
     """
     Uses the instance configuration to initialize the LDAP server.
     Supports both encrypted and non encrypted connection.
@@ -99,6 +121,8 @@ def initialize_server(host, port, secure_connection, unsecure):
     :type secure_connection: string
     :param unsecure: trust any certificate
     :type unsecure: boolean
+    :param ssl_version: ssl version
+    :type unsecure: string
     :return: ldap3 Server
     :rtype: Server
     """
@@ -109,9 +133,9 @@ def initialize_server(host, port, secure_connection, unsecure):
         demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
         if unsecure:
             # Add support for all CIPHERS_STRING
-            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
+            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING, version=get_ssl_version(ssl_version))
         else:
-            tls = Tls(validate=ssl.CERT_NONE)
+            tls = Tls(validate=ssl.CERT_NONE, version=get_ssl_version(ssl_version))
         if port:
             return Server(host, port=port, use_ssl=unsecure, tls=tls)
         return Server(host, use_ssl=unsecure, tls=tls)
@@ -1771,6 +1795,7 @@ def main():
     PASSWORD = params.get('credentials')['password']
     DEFAULT_BASE_DN = params.get('base_dn')
     SECURE_CONNECTION = params.get('secure_connection')
+    SSL_VERSION = params.get('ssl_version', 'None')
     DEFAULT_PAGE_SIZE = int(params.get('page_size'))
     NTLM_AUTH = params.get('ntlm')
     UNSECURE = params.get('unsecure', False)
@@ -1792,7 +1817,7 @@ def main():
             last_log_detail_level = get_library_log_detail_level()
             set_library_log_detail_level(EXTENDED)
 
-        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
+        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE, SSL_VERSION)
 
         global conn
         auto_bind = get_auto_bind_value(SECURE_CONNECTION, UNSECURE)
