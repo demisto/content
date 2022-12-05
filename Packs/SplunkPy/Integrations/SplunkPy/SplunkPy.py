@@ -2070,10 +2070,10 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         search_job = service.jobs.create(query, **search_kwargs)
         job_sid = search_job["sid"]
         args['sid'] = job_sid
-
+    status_cmd_result: CommandResults | None = None
     if polling:
-        status_cmd_result: CommandResults = splunk_job_status(service, args)  # type: ignore[assignment]
-        status = status_cmd_result.outputs['Status']  # type: ignore[index]
+        status_cmd_result = splunk_job_status(service, args)  # type: ignore[assignment]
+        status = status_cmd_result.outputs['Status']  # type: ignore[index, union-attr]
         if status.lower() != 'done':
             # Job is still running, schedule the next run of the command.
             scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
@@ -2597,7 +2597,7 @@ def get_connection_args() -> dict:
     return connection_args
 
 
-def main():
+def main():  # pragma: no-cover
     command = demisto.command()
     params = demisto.params()
 
