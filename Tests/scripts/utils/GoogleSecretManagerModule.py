@@ -3,6 +3,7 @@ from google.cloud import secretmanager
 import json
 from datetime import datetime
 import os
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 class GoogleSecreteManagerModule:
@@ -26,7 +27,7 @@ class GoogleSecreteManagerModule:
                     secret_value = self.get_secret(project_id, secret.name)
                     secrets.append(secret_value)
                 except google.api_core.exceptions.NotFound:
-                    pass
+                    logging.error(f'Could not find the secret: {secret.name}')
             else:
                 secrets.append(secret)
 
