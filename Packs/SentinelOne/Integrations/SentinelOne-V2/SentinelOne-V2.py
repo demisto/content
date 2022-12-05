@@ -477,7 +477,7 @@ class Client(BaseClient):
                                value_contains: Optional[str] = None,
                                ok_codes: list = [200],
                                includeChildren: Optional[bool] = None,
-                               includeParents: Optional[bool] = None,):
+                               includeParents: Optional[bool] = None):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
