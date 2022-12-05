@@ -43,6 +43,7 @@ configuration:
   options:
   - None
   - SSL
+  - TLS
   - Start TLS
 - display: Trust any certificate (not secure)
   name: unsecure

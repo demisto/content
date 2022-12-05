@@ -14,7 +14,7 @@ from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detai
 from ldap3.utils.conv import escape_filter_chars
 
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
-                 'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'
+                 'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
 
 # global connection
@@ -95,13 +95,27 @@ def initialize_server(host, port, secure_connection, unsecure):
     :type host: string
     :param port: port or None
     :type port: number
-    :param secure_connection: SSL, Start TLS or None
+    :param secure_connection: SSL, TLS, Start TLS or None
     :type secure_connection: string
     :param unsecure: trust any certificate
     :type unsecure: boolean
     :return: ldap3 Server
     :rtype: Server
     """
+    if secure_connection == "TLS":
+        # Kept the TLS option for backwards compatibility only.
+        # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
+        # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
+        demisto.debug(f"initializing sever with TLS (unsecure: {unsecure}). port: {port or 'default(636)'}")
+        if unsecure:
+            # Add support for all CIPHERS_STRING
+            tls = Tls(validate=ssl.CERT_NONE, ciphers=CIPHERS_STRING)
+        else:
+            tls = Tls(validate=ssl.CERT_NONE)
+        if port:
+            return Server(host, port=port, use_ssl=unsecure, tls=tls)
+        return Server(host, use_ssl=unsecure, tls=tls)
+
     if secure_connection == 'SSL':  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure})."
                      f" port: {port or 'default(636)'}")
@@ -1716,7 +1730,7 @@ def set_password_not_expire(default_base_dn):
         raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
-def get_auto_bind_value(secure_connection) -> str:
+def get_auto_bind_value(secure_connection, unsecure) -> str:
     """
         Returns the proper auto bind value according to the desirable connection type.
         The 'TLS' in the auto_bind parameter refers to the STARTTLS LDAP operation, that can be performed only on a
@@ -1724,6 +1738,9 @@ def get_auto_bind_value(secure_connection) -> str:
 
         If the Client's connection type is Start TLS - the secure level will be upgraded to TLS during the
         connection bind itself and thus we use the AUTO_BIND_TLS_BEFORE_BIND constant.
+
+        If the Client's connection type is Start TLS and the 'Trust any certificate' is unchecked -
+        For backwards compatibility - we use the AUTO_BIND_TLS_BEFORE_BIND constant as well.
 
         If the Client's connection type is SSL - the connection is already secured (server was initialized with
         use_ssl=True and port 636) and therefore we use the AUTO_BIND_NO_TLS constant.
@@ -1733,6 +1750,10 @@ def get_auto_bind_value(secure_connection) -> str:
     """
     if secure_connection == 'Start TLS':
         auto_bind = AUTO_BIND_TLS_BEFORE_BIND
+
+    elif secure_connection == 'TLS' and not unsecure:  # BC
+        auto_bind = AUTO_BIND_TLS_BEFORE_BIND
+
     else:
         auto_bind = AUTO_BIND_NO_TLS
 
@@ -1774,7 +1795,7 @@ def main():
         server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
 
         global conn
-        auto_bind = get_auto_bind_value(SECURE_CONNECTION)
+        auto_bind = get_auto_bind_value(SECURE_CONNECTION, UNSECURE)
 
         try:
 
@@ -1915,7 +1936,7 @@ def main():
         message = str(e)
         if conn:
             message += (f"\nLast connection result: {json.dumps(conn.result)}\n"
-                       f"Last error from LDAP server: {conn.last_error}")
+                        f"Last error from LDAP server: {conn.last_error}")
         return_error(message)
         return
 
