@@ -16,6 +16,20 @@ FILE_INDICATOR = \
             }
     }
 
+MALWARE_INDICATOR = \
+    {
+        'indicators':
+            {
+                '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:26:05Z',
+                      'indicator_type': 'Malware',
+                      'lastSeen': '2022-07-31T13:26:05Z', 'score': 'bad',
+                      'timestamp': '2022-07-31T13:26:05Z',
+                      'value': 'Bad Malware',
+                      'is_malware_family': 'True',
+                      }
+            }
+    }
+
 DOMAIN_INDICATORS = \
     {
         'indicators':
