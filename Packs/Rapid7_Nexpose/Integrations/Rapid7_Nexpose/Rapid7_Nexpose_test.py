@@ -221,6 +221,8 @@ def test_create_credential_creation_body_validations(test_input_kwargs: dict):
                          [
                              ({"a": "test", "b": 1, "c": None, "d": 6.1}, {"a": "test", "b": 1, "d": 6.1}),
                              ({"a": None, "b": {}, "c": (1, "test")}, {"b": {}, "c": (1, "test")}),
+                             ({"strict_mode": True, "a": False, "b": {}, "c": (1, "test"), "d": 1},
+                              {"c": (1, "test"), "d": 1}),
                          ])
 def test_find_valid_params(test_input_kwargs: dict, expected_output: dict):
     assert find_valid_params(**test_input_kwargs) == expected_output

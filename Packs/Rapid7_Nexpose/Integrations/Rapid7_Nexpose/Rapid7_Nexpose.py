@@ -650,15 +650,19 @@ class Client(BaseClient):
             )
 
         post_data = find_valid_params(
-            assets=assets,
             duration=duration,
             enabled=enabled,
             onScanRepeat=repeat_behaviour.lower() if repeat_behaviour is not None else None,
-            repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
             start=start_date,
         )
+
+        post_data.update(find_valid_params(
+            strict_mode=True,
+            assets=assets,
+            repeat=repeat,
+        ))
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules",
@@ -1756,15 +1760,19 @@ class Client(BaseClient):
         ))
 
         post_data = find_valid_params(
-            assets=assets,
             duration=duration,
             enabled=enabled,
             onScanRepeat=repeat_behaviour.lower(),
-            repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
             start=start_date,
         )
+
+        post_data.update(find_valid_params(
+            strict_mode=True,
+            assets=assets,
+            repeat=repeat,
+        ))
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
@@ -2295,11 +2303,13 @@ def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
     return scan_date, scan_id
 
 
-def find_valid_params(**kwargs):
+def find_valid_params(strict_mode: bool = False, **kwargs) -> dict:
     """
     A function for filtering dictionaries (passed as kwargs) to remove keys that have a None value.
 
     Args:
+        strict_mode (bool, optional): If set to true, keys with a False value (e.g. [], {}, '', False)
+        will be removed as well.
         kwargs: A collection of keyword args to filter.
 
     Returns:
@@ -2308,7 +2318,7 @@ def find_valid_params(**kwargs):
     new_kwargs = {}
 
     for key, value in kwargs.items():
-        if value is not None:
+        if (strict_mode and value) or (not strict_mode and value is not None):
             new_kwargs[key] = value
 
     return new_kwargs
