@@ -41,8 +41,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* CreateArray
 * Set
+* CreateArray
 * impossibleTravelerGetDistance
 
 ### Commands
@@ -56,13 +56,10 @@ This playbook does not use any integrations.
 | MaxMilesPerHourAllowed | The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 400 | Optional |
 | WhitelistedIPs | A comma separated list of IP addresses that are allowed to be used across long distances. |  | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | True | Optional |
-| UserManagerEmail | The user's manager email address. | ActiveDirectory.Users.Manager | Optional |
 | AutoContainment | Whether to execute auto containment. | False | Optional |
 | AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious. | 80 | Optional |
 | preInvestigationContainment | Whether to execute containment prior investigation phase |  | Optional |
 | AllowlistCIDR | A comma separated list of CIDR that are allowed to be used across long distances. | lists.CIDR - Allowlist | Optional |
-| username | The username to iterate over. | alert.username | Optional |
-| domain | The organization domain. |  | Optional |
 
 ## Playbook Outputs
 ---
