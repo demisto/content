@@ -96,6 +96,25 @@ class Client(BaseClient):
         set_integration_context(ctx)
         return oauth_token
 
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None, **kwargs):
+        """ This is a rewrite of the classic _http_request, 
+            all future functions should call this function instead of the original _http_request.
+            This is needed because the OAuth token may not behave consistently,
+            First the func will make an http request with a token,
+            and if it turns out to be invalid, the func will retry again with a new token."""
+        try:
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
+                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
+                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
+                                         empty_valid_codes, **kwargs)
+        except DemistoException as e:
+            if 'Invalid access token' in e.message:
+                self.access_token = self.generate_oauth_token()
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
+                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
+                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
+                                         empty_valid_codes, **kwargs)
+
     def test(self):
         """ Tests connectivity with the application. """
 
