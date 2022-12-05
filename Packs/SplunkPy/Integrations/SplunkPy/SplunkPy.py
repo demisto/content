@@ -317,7 +317,7 @@ def build_fetch_query(dem_params):
 
     if 'sort 0 _time' not in fetch_query:
         fetch_query = fetch_query + ' | sort 0 _time'
-        demisto.debug('adding the " | sort 0 _time" to sort results by time')
+        demisto.debug('sort not found. adding the " | sort 0 _time" to sort results by time')
     return fetch_query
 
 
@@ -325,7 +325,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
     last_run_data = demisto.getLastRun()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
-    
+
     last_run_earliest_time = last_run_data and last_run_data.get('time')
     last_run_latest_time = last_run_data and last_run_data.get('latest_time')
     extensive_log('[SplunkPy] SplunkPy last run is:\n {}'.format(last_run_data))
@@ -338,7 +338,8 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
 
     occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_earliest_time, occurred_look_behind)
 
-    latest_time = last_run_latest_time or now  # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
+    # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
+    latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(dem_params)
 
