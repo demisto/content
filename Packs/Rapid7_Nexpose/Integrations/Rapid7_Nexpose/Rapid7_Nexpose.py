@@ -1680,12 +1680,11 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_site_scan_schedule(self, site_id: str, scan_schedule_id: int, start_date: str, enabled: bool,
-                                  excluded_asset_groups: list[int] | None = None,
+    def update_site_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str,
+                                  start_date: str, enabled: bool, excluded_asset_groups: list[int] | None = None,
                                   excluded_targets: list[str] | None = None,
                                   included_asset_groups: list[int] | None = None,
                                   included_targets: list[str] | None = None, duration: str | None = None,
-                                  repeat_behaviour: str | None = None,
                                   frequency: RepeatFrequencyType | None = None,
                                   interval: int | None = None, date_of_month: int | None = None,
                                   scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
@@ -1698,6 +1697,8 @@ class Client(BaseClient):
         Args:
             site_id (str): ID of the site to create a new scheduled scan for.
             scan_schedule_id (int): ID of the scan schedule to update.
+            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
+                when the previous scan was paused due to reaching its maximum duration.
             start_date (str): The scheduled start date and time formatted in ISO 8601 format.
             enabled (bool): A flag indicating whether the scan schedule is enabled.
             excluded_asset_groups (list[int] | None, optional): Asset groups to exclude from the scan.
@@ -1710,8 +1711,6 @@ class Client(BaseClient):
                 ipv6 address, or CIDR notation.
             duration (str | None, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
                 the scheduled scan is allowed to run.
-            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
-                when the previous scan was paused due to reaching its maximum duration.
             frequency (RepeatFrequencyType | None, optional): Frequency for the schedule to repeat.
                 Required if using other repeat settings.
             interval (int | None, optional): The interval time the schedule should repeat.
@@ -1760,7 +1759,7 @@ class Client(BaseClient):
             assets=assets,
             duration=duration,
             enabled=enabled,
-            onScanRepeat=repeat_behaviour.lower() if repeat_behaviour is not None else None,
+            onScanRepeat=repeat_behaviour.lower(),
             repeat=repeat,
             scanName=scan_name,
             scanTemplateId=scan_template_id,
