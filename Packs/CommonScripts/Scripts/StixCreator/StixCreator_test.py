@@ -29,7 +29,7 @@ MALWARE_INDICATOR = \
                       }
             }
     }
-    
+
 ATTACK_PATTERN_INDICATOR = \
     {
         'indicators':
@@ -64,8 +64,10 @@ DOMAIN_INDICATORS = \
     }
 
 
-@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle'), (FILE_INDICATOR, 'indicator'), 
-                                                   (MALWARE_INDICATOR, 'malware'), (ATTACK_PATTERN_INDICATOR, 'attack-pattern')])
+@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle'),
+                                                   (FILE_INDICATOR, 'indicator'),
+                                                   (MALWARE_INDICATOR, 'malware'),
+                                                   (ATTACK_PATTERN_INDICATOR, 'attack-pattern')])
 def test_stixCreator_with_indicators(mocker, indicators, stix_type):
     mocker.patch.object(demisto, 'args', return_value=indicators)
     mocker.patch.object(demisto, 'results')
