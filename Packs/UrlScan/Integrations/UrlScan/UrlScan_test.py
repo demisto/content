@@ -14,12 +14,12 @@ RESULT_URL = 'https://urlscan.io/api/v1/result/'
 
 @pytest.mark.parametrize('continue_on_blacklisted_urls', [(True), (False)])
 def test_continue_on_blacklisted_error_arg(mocker, requests_mock, continue_on_blacklisted_urls):
-    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGE, Client
+    from UrlScan import http_request, BLACKLISTED_URL_ERROR_MESSAGES, Client
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     response_json = {
         'status': 400,
         'message': 'Scan prevented ...',
-        'description': BLACKLISTED_URL_ERROR_MESSAGE,
+        'description': BLACKLISTED_URL_ERROR_MESSAGES[0],
     }
     args = {
         'continue_on_blacklisted_urls': continue_on_blacklisted_urls
