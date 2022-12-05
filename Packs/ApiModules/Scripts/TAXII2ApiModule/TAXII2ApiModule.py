@@ -878,21 +878,20 @@ class Taxii2FeedClient:
         :param identity_obj: identity object
         :return: identity extracted from the identity object in cortex format
         """
-        identity = {
-            'value': identity_obj.get('name'),
-            'type': FeedIndicatorType.Identity,
-            'score': Common.DBotScore.NONE,
-            'rawJSON': identity_obj
-        }
-
         fields = self.set_default_fields(identity_obj)
         fields.update({
             'identityclass': identity_obj.get('identity_class', ''),
             'industrysectors': identity_obj.get('sectors', []),
             'tags': list((set(identity_obj.get('labels', []))).union(set(self.tags))),
         })
-        identity['fields'] = fields
 
+        identity = {
+            'value': identity_obj.get('name'),
+            'type': FeedIndicatorType.Identity,
+            'fields': fields,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': identity_obj
+        }
         return [identity]
 
     def parse_location(self, location_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -901,39 +900,37 @@ class Taxii2FeedClient:
         :param location_obj: location object
         :return: location extracted from the location object in cortex format
         """
-        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country')), '')
-        location = {
-            'value': location_obj.get('name') or country_name,
-            'type': FeedIndicatorType.Location,
-            'score': Common.DBotScore.NONE,
-            'rawJSON': location_obj
-        }
-
         fields = self.set_default_fields(location_obj)
         fields.update({
             'countrycode': location_obj.get('country', ''),
             'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
         })
-        location['fields'] = fields
 
+        location = {
+            'value': location_obj.get('name') or COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country')), ''),
+            'type': FeedIndicatorType.Location,
+            'fields': fields,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': location_obj
+        }
         return [location]
 
-    def parse_cve(self, cve_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def parse_vulnerability(self, vulnerability_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
-        Parses a single cve object
-        :param cve_obj: cve object
-        :return: cve extracted from the cve object in cortex format
+        Parses a single vulnerability object
+        :param vulnerability_obj: vulnerability object
+        :return: vulnerability extracted from the vulnerability object in cortex format
         """
         name = ''
-        for external_reference in cve_obj.get('external_references', []):
+        for external_reference in vulnerability_obj.get('external_references', []):
             if external_reference.get('source_name') == 'cve':
                 name = external_reference.get('external_id')
                 break
 
-        fields = self.set_default_fields(cve_obj)
+        fields = self.set_default_fields(vulnerability_obj)
         fields.update({
-            'tags': list((set(cve_obj.get('labels', []))).union(set(self.tags),
-                                                                {name} if name else {})),
+            'tags': list((set(vulnerability_obj.get('labels', []))).union(set(self.tags),
+                                                                          {name} if name else {})),
         })
 
         cve = {
@@ -941,7 +938,7 @@ class Taxii2FeedClient:
             'type': FeedIndicatorType.CVE,
             'score': Common.DBotScore.NONE,
             'fields': fields,
-            'rawJSON': cve_obj
+            'rawJSON': vulnerability_obj
         }
         return [cve]
 
@@ -1045,7 +1042,7 @@ class Taxii2FeedClient:
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,
             "location": self.parse_location,
-            "vulnerability": self.parse_cve
+            "vulnerability": self.parse_vulnerability
         }
         indicators = []
 

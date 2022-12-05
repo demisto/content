@@ -659,13 +659,15 @@ class TestParsingIndicators:
                 'score': Common.DBotScore.NONE,
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
-                'fields': {'description': '',
-                           'firstseenbysource': '',
-                           'modified': '',
-                           'name': 'Slime Industries',
-                           'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
-                           'tags': [],
-                           'trafficlightprotocol': 'GREEN'}
+                'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'name': 'Slime Industries',
+                    'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
+                    'tags': [],
+                    'trafficlightprotocol': 'GREEN'
+                }
             }
         ]
 
@@ -685,12 +687,14 @@ class TestParsingIndicators:
                         'value': '1.1.1.1',
                         'score': Common.DBotScore.NONE,
                         'type': 'IP',
-                        'fields': {'description': '',
-                                   'firstseenbysource': '',
-                                   'modified': '',
-                                   'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
-                                   'tags': [],
-                                   'trafficlightprotocol': 'GREEN'}
+                        'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
+                            'tags': [],
+                            'trafficlightprotocol': 'GREEN'
+                        }
                     }
                 ]
             ),
@@ -703,12 +707,14 @@ class TestParsingIndicators:
                 },
                 [
                     {
-                        'fields': {'description': '',
-                                   'firstseenbysource': '',
-                                   'modified': '',
-                                   'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
-                                   'tags': [],
-                                   'trafficlightprotocol': 'GREEN'},
+                        'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                            'tags': [],
+                            'trafficlightprotocol': 'GREEN'
+                        },
                         'rawJSON': {
                             'id': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
                             'spec_version': '2.1',
@@ -762,18 +768,20 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'associatedfilenames': 'quêry.dll',
-                           'description': '',
-                           'firstseenbysource': '',
-                           'md5': None,
-                           'modified': '',
-                           'path': None,
-                           'sha1': None,
-                           'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
-                           'size': None,
-                           'stixid': 'file--90bd400b-89a5-51a5-b17d-55bc7719723b',
-                           'tags': [],
-                           'trafficlightprotocol': 'GREEN'},
+                'fields': {
+                    'associatedfilenames': 'quêry.dll',
+                    'description': '',
+                    'firstseenbysource': '',
+                    'md5': None,
+                    'modified': '',
+                    'path': None,
+                    'sha1': None,
+                    'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
+                    'size': None,
+                    'stixid': 'file--90bd400b-89a5-51a5-b17d-55bc7719723b',
+                    'tags': [],
+                    'trafficlightprotocol': 'GREEN'
+                },
                 'rawJSON': file_obj,
                 'score': Common.DBotScore.NONE,
                 'type': 'File',
@@ -803,12 +811,14 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'description': '',
-                           'firstseenbysource': '',
-                           'modified': '',
-                           'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
-                           'tags': [],
-                           'trafficlightprotocol': 'GREEN'},
+                'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
+                    'tags': [],
+                    'trafficlightprotocol': 'GREEN'
+                },
                 'rawJSON': mutex_obj,
                 'score': Common.DBotScore.NONE,
                 'type': 'Mutex',
@@ -850,20 +860,22 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'description': '',
-                           'firstseenbysource': '',
-                           'modified': '',
-                           'modified_time': None,
-                           'number_of_subkeys': None,
-                           'registryvalue': [{'data': 'qwerty',
-                                              'data_type': 'REG_SZ',
-                                              'name': 'Foo'},
-                                             {'data': '42',
-                                              'data_type': 'REG_DWORD',
-                                              'name': 'Bar'}],
-                           'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
-                           'tags': [],
-                           'trafficlightprotocol': 'GREEN'},
+                'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'modified_time': None,
+                    'number_of_subkeys': None,
+                    'registryvalue': [{'data': 'qwerty',
+                                       'data_type': 'REG_SZ',
+                                       'name': 'Foo'},
+                                      {'data': '42',
+                                       'data_type': 'REG_DWORD',
+                                       'name': 'Bar'}],
+                    'stixid': 'windows-registry-key--2ba37ae7-2745-5082-9dfd-9486dad41016',
+                    'tags': [],
+                    'trafficlightprotocol': 'GREEN'
+                },
                 'rawJSON': registry_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'Registry Key',
@@ -873,16 +885,16 @@ class TestParsingIndicators:
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
 
-    def test_parse_cve(self, taxii_2_client):
+    def test_parse_vulnerability(self, taxii_2_client):
         """
         Given:
-         - vulnerability object
+         - Vulnerability object.
 
         When:
-         - parsing the vulnerability into a format XSOAR knows to read.
+         - Parsing the vulnerability into a format XSOAR knows to read.
 
         Then:
-         - make sure all the fields are being parsed correctly.
+         - Make sure all the fields are being parsed correctly.
         """
         vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
                                 'created_by_ref': 'identity--ce222222-2a22-222b-2222-222222222222',
@@ -898,11 +910,12 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'description': '',
-                           'firstseenbysource': '2021-06-01T00:00:00.000Z',
-                           'modified': '2021-06-01T00:00:00.000Z',
-                           'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
-                           'trafficlightprotocol': 'WHITE'},
+                'fields': {
+                    'description': '',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
+                    'trafficlightprotocol': 'WHITE'},
                 'rawJSON': vulnerability_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'CVE',
@@ -911,7 +924,7 @@ class TestParsingIndicators:
         ]
         xsoar_expected_tags = {'CVE-1234-5', 'elevated'}
 
-        parsed_response = taxii_2_client.parse_cve(vulnerability_object)
+        parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
         response_tags = parsed_response[0]['fields'].pop('tags')
 
         assert parsed_response == xsoar_expected_response
@@ -922,13 +935,13 @@ class TestParsingIndicators:
     def test_parse_identity(self, taxii_2_client):
         """
         Given:
-         - identity object
+         - Identity object.
 
         When:
-         - parsing the identity into a format XSOAR knows to read.
+         - Parsing the identity into a format XSOAR knows to read.
 
         Then:
-         - make sure all the fields are being parsed correctly.
+         - Make sure all the fields are being parsed correctly.
         """
         identity_object = {'contact_information': 'test@org.com',
                            'created': '2021-06-01T00:00:00.000Z',
@@ -945,14 +958,16 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'description': 'Identity to represent the government entities.',
-                           'firstseenbysource': '2021-06-01T00:00:00.000Z',
-                           'identityclass': 'organization',
-                           'industrysectors': ['government-national'],
-                           'modified': '2021-06-01T00:00:00.000Z',
-                           'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
-                           'tags': ['consent-everyone'],
-                           'trafficlightprotocol': 'GREEN'},
+                'fields': {
+                    'description': 'Identity to represent the government entities.',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'identityclass': 'organization',
+                    'industrysectors': ['government-national'],
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
+                    'tags': ['consent-everyone'],
+                    'trafficlightprotocol': 'GREEN'
+                },
                 'rawJSON': identity_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'Identity',
@@ -965,13 +980,13 @@ class TestParsingIndicators:
     def test_parse_location(self, taxii_2_client):
         """
         Given:
-         - location object
+         - Location object.
 
         When:
-         - parsing the location into a format XSOAR knows to read.
+         - Parsing the location into a format XSOAR knows to read.
 
         Then:
-         - make sure all the fields are being parsed correctly.
+         - Make sure all the fields are being parsed correctly.
         """
         location_object = {'administrative_area': 'US-MI',
                            'country': 'US',
@@ -986,13 +1001,14 @@ class TestParsingIndicators:
 
         xsoar_expected_response = [
             {
-                'fields': {'description': '',
-                           'countrycode': 'US',
-                           'firstseenbysource': '2022-11-19T23:27:34.000Z',
-                           'modified': '2022-11-19T23:27:34.000Z',
-                           'stixid': 'location--28222222-2a22-222b-2222-222222222222',
-                           'tags': ['elevated'],
-                           'trafficlightprotocol': 'AMBER'},
+                'fields': {
+                    'description': '',
+                    'countrycode': 'US',
+                    'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                    'modified': '2022-11-19T23:27:34.000Z',
+                    'stixid': 'location--28222222-2a22-222b-2222-222222222222',
+                    'tags': ['elevated'],
+                    'trafficlightprotocol': 'AMBER'},
                 'rawJSON': location_object,
                 'score': Common.DBotScore.NONE,
                 'type': 'Location',
