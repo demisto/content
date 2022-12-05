@@ -1,4 +1,5 @@
 import json
+import urllib3
 from datetime import datetime
 from typing import Dict
 
@@ -12,7 +13,7 @@ from CommonServerPython import *
 
 # Disable insecure warnings from urllib3
 # - this does not disable SSL checking, just the warnings logged from urllib3
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """ CLASS for Humio"""
 
