@@ -21,9 +21,9 @@ urllib3.disable_warnings()  # Disable insecure warnings
 
 class ScanStatus(Enum):
     """An Enum of possible scan status values."""
-    PAUSE = 1
-    RESUME = 2
-    STOP = 3
+    PAUSE = "pause"
+    RESUME = "resume"
+    STOP = "stop"
 
 
 class FlexibleEnum(EnumMeta):
@@ -752,6 +752,7 @@ class Client(BaseClient):
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scan_schedules/{scheduled_scan_id}",
             method="DELETE",
+            resp_type="json",
         )
 
     def delete_site(self, site_id: str) -> dict:
@@ -3217,7 +3218,7 @@ def delete_asset_command(client: Client, asset_id: str) -> CommandResults:
     )
 
 
-def delete_scheduled_scan_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
+def delete_scan_schedule_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
     """
     Delete a scheduled scan.
 
@@ -5290,7 +5291,7 @@ def main():  # pragma: no cover
                 asset_id=args.pop("id"),
             )
         elif command == "nexpose-delete-scan-schedule":
-            results = delete_scheduled_scan_command(
+            results = delete_scan_schedule_command(
                 client=client,
                 site=Site(
                     site_id=args.pop("site_id", None),
