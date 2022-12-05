@@ -1,8 +1,6 @@
-from_xdr_version: 3.4.0
 fromversion: 3.3.0
 id: CyberArkIdentityEventCollector
 name: CyberArkIdentityEventCollector
 rules: ''
 schema: ''
-to_xdr_version: 3.4.9
 toversion: 6.9.9

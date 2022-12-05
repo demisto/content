@@ -1912,7 +1912,7 @@ def get_comments_command(client: Client, args: dict) -> CommandResults:
         raw_response = client.get_ip_comments(resource, limit)
     elif resource_type == 'url':
         raw_response = client.get_url_comments(resource, limit)
-    elif resource_type == 'hash':
+    elif resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.get_hash_comments(resource, limit)
     elif resource_type == 'domain':

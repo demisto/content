@@ -19,7 +19,7 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "",
+    "formatScript": "VerifyCIDR",
     "contextPath": "CIDR(val.Address \u0026\u0026 val.Range === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],

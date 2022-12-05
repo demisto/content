@@ -10,9 +10,9 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [],
+    "tags": ["Use Case"],
     "useCases": [
-        "Ransomware"
+        "Malware"
     ],
     "keywords": [],
     "dependencies": {

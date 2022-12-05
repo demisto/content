@@ -1,6 +1,7 @@
 id: get_original_email_-_gmail_-_test
 version: -1
 name: Get Original Email - Gmail - Test
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

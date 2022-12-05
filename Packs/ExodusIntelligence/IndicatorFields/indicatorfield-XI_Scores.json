@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Exodus Intelligence"
+    ],
+    "caseInsensitive": true,
+    "cliName": "xiscores",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_xiscores",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "XI Scores",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

@@ -300,7 +300,7 @@ def args_to_filter(arguments: dict):
 
 
 def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional[Any], arguments: dict,
-                                        specific_id_to_search: Any = ''):
+                                        specific_id_to_search: Any = '', is_scan: bool = False):
     """
         This function build the filters dict or url to filter with.
 
@@ -322,6 +322,8 @@ def build_filter_and_url_to_search_with(url_suffix: str, custom_filter: Optional
         request_data = args_to_filter(arguments)
 
     request_data = {'filters': request_data} if 'filters' not in request_data.keys() else request_data
+    if is_scan:
+        request_data['isScan'] = True
     return request_data, url_suffix
 
 
@@ -557,12 +559,22 @@ def list_activities_command(client: Client, args: dict):
     url_suffix = '/activities/'
     activity_id = args.get('activity_id')
     custom_filter = args.get('custom_filter')
+    is_scan = argToBoolean(args.get('is_scan', 'false'))
     arguments = assign_params(**args)
     timeout = arg_to_number(arguments.get('timeout', 60)) or 60
-    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id)
-    activities_response_data = client.list_activities(url_suffix, request_data, timeout)
-    list_activities = activities_response_data.get('data') if activities_response_data.get('data') \
-        else [activities_response_data]
+    request_data, url_suffix = build_filter_and_url_to_search_with(url_suffix, custom_filter, arguments, activity_id, is_scan)
+    has_next = True
+    list_activities = []
+    while has_next:
+        activities_response_data = client.list_activities(url_suffix, request_data, timeout)
+        list_activities.extend(
+            activities_response_data.get('data') if activities_response_data.get('data') else [activities_response_data]
+        )
+        has_next = activities_response_data.get('hasNext', False)
+        request_data['filters'] = activities_response_data.get('nextQueryFilters')
+        if is_scan is False:
+            # This is to prevent run-away iterations
+            break
     activities = arrange_entities_data(list_activities)
     return create_ip_command_results(activities)
 

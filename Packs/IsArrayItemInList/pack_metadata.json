@@ -7,7 +7,9 @@
     "url": "",
     "email": "",
     "created": "2021-12-08T09:48:45Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

@@ -35,7 +35,7 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: JSON styled AutoFocus query, an example can be found in the description (?) section. Only necessary in case a Samples Feed is fetched.
+- additionalinfo: Relevant only for sample feeds. JSON styled AutoFocus query, an example can be found in the description (?) section. mandatory for Samples Feed.
   display: Samples Feed Query
   name: sample_query
   required: false
@@ -139,7 +139,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.39276
   feed: true
   isfetch: false
   longRunning: false

@@ -1,4 +1,4 @@
-This playbook searches for a specific hash in the supported sandboxes. If the hash is known the playbook provides a detailed analysis of the sandbox report. Currently supported sandboxes are Falcon X and Wildfire. 
+This playbook searches for a specific hash in the supported sandboxes. If the hash is known the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon X, Wildfire and Joe Sandbox.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

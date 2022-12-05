@@ -121,3 +121,22 @@ not_running_this!panorama-get-ssl-decryption-rules
 !pan-os-push-to-device-group description=test polling=true interval_in_seconds=5 timeout=60
 !pan-os-push-status job_id=31377
 !pan-os-list-templates limit=20
+!pan-os-list-nat-rules pre_post=pre-rulebase show_uncommitted=true
+!pan-os-create-nat-rule rulename=test pre_post="pre-rulebase" source_translated_address_type="interface-address" source_translated_interface=a2 source_translation_type="dynamic-ip-and-port" destination_translation_type=dynamic_ip destination_translated_address=1.1.1.1
+!pan-os-delete-nat-rule rulename=test pre_post="pre-rulebase"
+!pan-os-edit-nat-rule rulename=test element_to_change=source_translation_static_ip behavior=replace pre_post="pre-rulebase" element_value=3.3.3.3
+!pan-os-list-virtual-routers show_uncommitted=true virtual_router=test
+!pan-os-list-redistribution-profiles virtual_router=test
+!pan-os-create-redistribution-profile name=test virtual_router=virtual-router-1 priority=12 action=redist filter_bgp_extended_community=0x4164ACFCE33404EA filter_source_type=bgp,ospf filter_bgp_community=13,89 filter_ospf_path_type="ext-1" interface=loopback filter_ospf_tag=1.1.1.1,2.2.2.2 filter_ospf_area=1.1.1.1,2.2.2.2 nexthop=1.1.1.1
+!pan-os-edit-redistribution-profile virtual_router=virtual-router-name name=test element_to_change=filter_type element_value=bgp,ospf
+!pan-os-delete-redistribution-profile virtual_router=test1 name=test
+!pan-os-list-pbf-rules pre_post="pre-rulebase" show_uncommitted=true rulename=test
+!pan-os-create-pbf-rule rulename=test4 pre_post="pre-rulebase" enforce_symmetric_return=yes nexthop_address_list=1.1.1.1,2.2.2.2 action=forward description="this is just a description" egress_interface=a2 nexthop="ip-address" nexthop_value=1.1.1.1 negate_source=yes source_zone=1.1.1.1,2.2.2.2 destination_address=1.1.1.1,2.2.2.2 service=dns,service-https
+!pan-os-edit-pbf-rule rulename=test4 element_to_change=nexthop_address_list element_value="1.1.1.1,2.2.2.2" pre_post="pre-rulebase"
+!pan-os-delete-pbf-rule rulename=test4 pre_post="pre-rulebase"
+!pan-os-edit-address name=test4 element_to_change=ip_range element_value="10.0.0.1-10.0.0.4"
+!pan-os-list-application-groups show_uncommitted=true
+!pan-os-create-application-group name=test-3 applications=1c-enterprise,4shared
+!pan-os-edit-application-group name=test-3 action=remove applications=4shared
+!pan-os-delete-application-group name=test-3
+!pan-os-query-logs log-type=traffic number_of_logs=1 polling=true

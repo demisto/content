@@ -175,6 +175,7 @@ subdomain
 PDF
 auth
 endpoints
+SSDeep
 DNS
 XDR
 CommandRunner
@@ -205,4 +206,9 @@ args
 Skyhigh
 refactored
 TheHive
-NX
+NPS
+SRX
+vCenter
+ESXi
+MT
+AWS

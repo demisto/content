@@ -7,8 +7,13 @@
     "url": "",
     "email": "",
     "created": "2022-06-15T11:57:43Z",
-    "categories": ["Data Enrichment & Threat Intelligence"],
-    "tags": [],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management",
+        "Getting Started"
+    ],
     "useCases": [],
     "keywords": [],
     "githubUser": [
