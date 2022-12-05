@@ -113,6 +113,12 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
 }
 
+# marking definitions of TLPs are constant (marking definitions of statements can vary)
+MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',
+                             'marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da': 'GREEN',
+                             'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82': 'AMBER',
+                             'marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed': 'RED'}
+
 # country codes are in ISO-2 format
 COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': 'Afghanistan', 'AG': 'Antigua and Barbuda',
                           'AI': 'Anguilla', 'AL': 'Albania', 'AM': 'Armenia', 'AO': 'Angola', 'AQ': 'Antarctica',
@@ -453,8 +459,13 @@ class Taxii2FeedClient:
             'description': obj_to_parse.get('description', ''),
         }
 
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        tlp_color = self.tlp_color
+        for object_marking in obj_to_parse.get('object_marking_refs', []):
+            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking):
+                tlp_color = tlp
+                break
+        if tlp_color:
+            fields['trafficlightprotocol'] = tlp_color
 
         return fields
 
