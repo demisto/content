@@ -472,7 +472,7 @@ def fetch_incidents(client):
                 })
         demisto.setLastRun(datetime.now())
         ctx = demisto.getIntegrationContext()
-        incidents_to_update = incidents if incidents else ctx.get('fetched_incidents_list')
+        incidents_to_update = incidents or ctx.get('fetched_incidents_list')
         ctx.update({'fetched_incidents_list': incidents_to_update})
         demisto.setIntegrationContext(ctx)
         return incidents
