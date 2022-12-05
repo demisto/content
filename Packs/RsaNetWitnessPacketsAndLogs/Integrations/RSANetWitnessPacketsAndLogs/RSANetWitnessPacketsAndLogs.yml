@@ -32,7 +32,7 @@ configuration:
   type: 4
   required: false
   hidden: true
-- displaypassword: Secret Key
+- displaypassword: Password
   name: credentials
   display: Access Key
   required: false
