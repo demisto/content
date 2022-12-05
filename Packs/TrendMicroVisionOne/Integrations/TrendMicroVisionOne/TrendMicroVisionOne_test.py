@@ -667,7 +667,7 @@ def test_submit_file_entry_to_sandbox(mocker):
         mocked_requests_post
     )
     args = {
-        "entry_id": "12@1234",
+        "entry_id": "696@1881",
         "archivePassword": "6hn467c8",
         "documentPassword": ""
     }
@@ -683,7 +683,7 @@ def test_sandbox_submission_polling(mocker):
     mocker.patch(
         "TrendMicroVisionOne.Client.http_request",
         mock_file_status_response)
-    args = {"taskId": "921674d0-9735-4f79-b7de-c852e00a003d"}
+    args = {"task_id": "921674d0-9735-4f79-b7de-c852e00a003d"}
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
     result = sandbox_submission_polling(client, args)
     assert result.outputs["message"] == "Success"
