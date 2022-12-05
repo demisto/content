@@ -150,10 +150,7 @@ def main():
 
                 elif indicator_type == 'malware':
 
-                    if all_args[indicator_fields].get('ismalwarefamily', '').lower() == 'true':
-                        kwargs['is_family'] = True
-                    else:
-                        kwargs['is_family'] = False
+                    kwargs['is_family'] = argToBoolean(all_args[indicator_fields].get('ismalwarefamily', '').lower())
 
                 indicator = SDOs[indicator_type](
                     name=value,
