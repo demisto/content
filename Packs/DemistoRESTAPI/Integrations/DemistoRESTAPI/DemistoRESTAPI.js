@@ -10,8 +10,8 @@ getTenantAccountName = function () {
     var account_name = ''
     // check if server_url contains "/acc_" string
     if (server_url.indexOf("/acc_") >= 0){
-        words = server_url.split('acc_')
-        tenant_name = words[words.length - 1]
+        const words = server_url.split('acc_')
+        const tenant_name = words[words.length - 1]
         if (tenant_name !== "") {
             account_name = 'acc_' + tenant_name
         }
