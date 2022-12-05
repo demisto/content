@@ -231,6 +231,7 @@ def test_humio_get_notifier_by_id(requests_mock):
     _, outputs, _ = humio_get_notifier_by_id(client, args, headers)
     assert outputs["Humio.Notifier(val.id == obj.id)"] == mock_response.get("data").get("searchDomain").get("action")
 
+
 def test_fetch_incidents(requests_mock, mocker):
     from Humio import Client, fetch_incidents
 
