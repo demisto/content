@@ -701,12 +701,12 @@ class Client(BaseClient):
     def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None,
                            last_run=None):
         params = self.build_incident_response_query_params(incident_type, priority,query, status, limit, page_number,
-                                                           page_size)
+                                                           page_size, last_run)
         return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
                                   params=params)
 
     def build_incident_response_query_params(self, incident_type, priority, query,
-                                             status, limit=None, page_number=None, page_size=None):
+                                             status, limit=None, page_number=None, page_size=None, last_run=None):
         params = {'incidentType': incident_type, 'priority': priority, 'status': status}
         if query:
             for key, val in params:
@@ -1957,18 +1957,17 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
 
     last_run = demisto.getLastRun()
 
-    raw_response = client.get_list_incidents(query, incident_type, priority, status, last_run=last_run)
-
     for incident in raw_response['incidents']:
         incidents.append(format_single_incident(incident))
 
     if last_run and 'start_time' in last_run:
-        start_time = last_run.get('start_time')
+        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
     else:
-        pass
+        start_time = datetime.now() - timedelta(days=int(DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS))
 
-    next_run = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
-    demisto.setLastRun({'time': next_run})
+    raw_response = client.get_list_incidents(query, incident_type, priority, status, last_run=last_run)
+
+    demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
 
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
