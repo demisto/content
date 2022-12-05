@@ -1,7 +1,9 @@
-id: PAN-OS_-Block Domains By Adding EDL To Anti-Spyware
+id: PAN-OS - Add Domains EDL To Anti-Spyware
 version: -1
-name: PAN-OS_-Block Domains By Adding EDL To Anti-Spyware
-description: 'This playbook blocks domains using Panorama Anti-Spyware. It assigns External Dynamic List URLs that contain domains to block to Panorama Anti-Spyware. You can create an External Dynamic List (EDL) and add domains to it using the Cortex XSOAR pack called "Generic Export Indicators Service". '
+name: PAN-OS - Add Domains EDL To Anti-Spyware
+description: |-
+  This playbook add domains EDL to Panorama Anti-Spyware. It assigns External Dynamic List URLs that contain domains to block to Panorama Anti-Spyware. You can create an External Dynamic List (EDL) and add domains to it using the Cortex XSOAR pack called "Generic Export Indicators Service".
+  We recommend using this playbook as a one-time job. ones EDL was created and assign to Anti-Spyware, domains can be block by adding them to the EDL.
 starttaskid: "0"
 tasks:
   "0":
@@ -444,7 +446,7 @@ view: |-
 inputs:
 - key: EDL_URL
   value: {}
-  required: false
+  required: true
   description: The URL from which to pull the EDL.
   playbookInputQuery:
 - key: Add_To_Existing_PAN-OS_EDL
@@ -454,7 +456,7 @@ inputs:
   playbookInputQuery:
 - key: PAN-OS_EDL_Name
   value: {}
-  required: false
+  required: true
   description: PAN-OS EDL name to create/edit if it exists (depending on the value in Add_To_Existing_PAN-OS_EDL).
   playbookInputQuery:
 - key: Device_Group
@@ -471,7 +473,7 @@ inputs:
   playbookInputQuery:
 - key: Anti_Spyware_Profile
   value: {}
-  required: false
+  required: true
   description: Name of the anti-spyware profile to create OR to edit if it exists (depending on the value in Use_Existing_AntiSpyware_Profile).
   playbookInputQuery:
 - key: Use_Existing_AntiSpyware_Profile
