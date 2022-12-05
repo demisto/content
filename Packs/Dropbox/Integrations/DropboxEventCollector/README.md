@@ -3,7 +3,7 @@ This integration was integrated and tested with version 2 of Dropbox API
 
 ## Configure Dropbox Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
 2. Search for Dropbox Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
