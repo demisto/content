@@ -1,4 +1,4 @@
-
+from requests import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -9,7 +9,6 @@ import base64
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -39,7 +38,7 @@ class Client(BaseClient):
     def list_domain_firewall_policy_request(self, encoded_str: str, domain_id: int) -> Dict:
         """ Gets the list of Firewall Policies defined in a particular domain.
             Args:
-                encoded_str: str - The string that contains username:password in base64.
+                encoded_str: str - The session id.
                 domain_id: int - The id of the domain.
             Returns:
                 A dictionary with the firewall policy list.
@@ -48,17 +47,42 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_firewall_policy_request(self, encoded_str: str, policy_id) -> Dict:
+    def get_firewall_policy_request(self, encoded_str: str, policy_id: str) -> Dict:
         """ Gets the Firewall Policy details.
             Args:
-                encoded_str: str - The string that contains username:password in base64.
-                policy_id: int - The id of the policy.
+                encoded_str: str - The session id.
+                policy_id: str - The id of the policy.
             Returns:
                 A dictionary with the policy details.
         """
         url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def create_firewall_policy_request(self, encoded_str: str, body: Dict) -> Dict:
+        """ Adds a new Firewall Policy and Access Rules.
+            Args:
+                encoded_str: str - The session id.
+                body: Dict - The params to the API call.
+            Returns:
+                A response object.
+        """
+        url_suffix = '/sdkapi/firewallpolicy'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
+    def update_firewall_policy_request(self, encoded_str: str, body: Dict, policy_id: str) -> Dict:
+        """ Updates an existing Firewall Policy and Access Rules.
+            Args:
+                encoded_str: str - The session id.
+                body: Dict - The params to the API call.
+                policy_id: str - The id of the updated policy.
+            Returns:
+                A response object.
+        """
+        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -101,12 +125,106 @@ def pagination(records_list: List, limit: int, page: int) -> List:
     if page == 1:
         return records_list[:limit]
     else:
-        min_size = (limit * (page - 1))  #TODO check if needed
-        if min_size < len(records_list):
-            results_list = records_list[min_size:]
-            return results_list[:limit]
-        else:
-            return []
+        num_rec_2_remove = (limit * (page - 1))
+        results_list = records_list[num_rec_2_remove:]
+        return results_list[:limit]
+
+
+def response_cases(response_str: str) -> None | str:
+    """ Checks the response param and returns the correct response string.
+    Args:
+        response_str: str - The response string.
+    Returns:
+        The correct response string.
+    """
+    split_str = response_str.upper().split()
+    if len(split_str) == 1:
+        return split_str[0]
+    else:
+        return '_'.join(split_str)
+
+
+def rule_object_type_cases(s: str) -> str:
+    """ Checks the rule_object_type params and returns the correct format of them.
+    Args:
+        s: str - The response string.
+    Returns:
+        The correct rule_object_type string.
+    """
+    s_split = s.upper().replace('.', ' ').split()
+    return f'{s_split[0]}_{s_split[1]}{s_split[2]}_{s_split[3]}'
+
+
+def check_source_and_destination(source_rule_object_id: int, source_rule_object_type: str,
+                                 destination_rule_object_id: int, destination_rule_object_type: str,
+                                 create_or_update: str):
+    """ Checks the source and destination objects.
+    Args:
+        source_rule_object_id: int - Unique Rule Object ID.
+        source_rule_object_type: str - Source / Destination Mode.
+        destination_rule_object_id: int - Unique Rule Object ID.
+        destination_rule_object_type: str - Source / Destination Mode.
+        create_or_update: str - From what function it was called.
+    Returns:
+        Throws exception .
+    """
+    if (source_rule_object_id and not source_rule_object_type) or (
+            not source_rule_object_id and source_rule_object_type):
+        raise Exception('If you provide at least one of the source fields, you must provide all of them.')
+    if (destination_rule_object_id and not destination_rule_object_type) or \
+            (not destination_rule_object_id and destination_rule_object_type):
+        raise Exception('If you provide at least one of the destination fields, you must provide all of them.')
+    if create_or_update == 'create':
+        if (not source_rule_object_id) and (not destination_rule_object_id):
+            raise Exception('You must provide the source fields or destination fields or both.')
+
+
+def create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
+                                rule_description, response_param, rule_enabled, direction, source_object,
+                                destination_object) -> Dict:
+    return {
+        'Name': name,
+        'DomainId': domain,
+        'VisibleToChild': visible_to_child,
+        'Description': description,
+        'IsEditable': is_editable,
+        'PolicyType': policy_type,
+        'MemberDetails': {
+            'MemberRuleList': [
+                {
+                    'Description': rule_description,
+                    'Enabled': rule_enabled,
+                    'Response': response_param,
+                    'Direction': direction,
+                    'SourceAddressObjectList': source_object,
+                    'DestinationAddressObjectList': destination_object,
+                    "SourceUserObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": "USER"
+                        }
+                    ],
+                    "ServiceObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": None,
+                            "ApplicationType": None
+                        }
+                    ],
+                    "ApplicationObjectList": [],
+                    "TimeObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Always",
+                            "RuleObjectType": None
+                        }
+                    ]
+                }
+            ]
+        }
+    }
 
 
 ''' COMMAND FUNCTIONS '''
@@ -221,6 +339,57 @@ def create_firewall_policy_command(client: Client, args: Dict, session_str: str)
         Returns:
             A CommandResult object with a success message.
     """
+    domain = arg_to_number(args.get('domain', '0'))
+    name = args.get('name')
+    visible_to_child = argToBoolean(args.get('visible_to_child', True))
+    description = args.get('description')
+    is_editable = argToBoolean(args.get('is_editable'))
+    policy_type = args.get('policy_type', '').upper()
+    rule_description = args.get('rule_description')
+    rule_enabled = argToBoolean(args.get('rule_enabled', True))
+    response_param = response_cases(args.get('response'))
+    direction = args.get('direction', '').upper()
+    source_rule_object_id = args.get('source_rule_object_id')
+    source_rule_object_type = args.get('source_rule_object_type')
+    destination_rule_object_id = args.get('destination_rule_object_id')
+    destination_rule_object_type = args.get('destination_rule_object_type')
+
+    check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
+                                 destination_rule_object_type, 'create')
+
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', -1))
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', -1))
+    source_rule_object_type = rule_object_type_cases(source_rule_object_type) if source_rule_object_type else None
+    destination_rule_object_type = rule_object_type_cases(destination_rule_object_type) if \
+        destination_rule_object_type else None
+    source_object = [{
+        'RuleObjectId': source_rule_object_id,
+        'RuleObjectType': source_rule_object_type
+    }]
+    destination_object = [{
+        'RuleObjectId': destination_rule_object_id,
+        'RuleObjectType': destination_rule_object_type
+    }]
+
+    body = create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
+                                       rule_description, response_param, rule_enabled, direction, source_object,
+                                       destination_object)
+
+    response = client.create_firewall_policy_request(session_str, body)
+    new_firewall_policy_id = response.get('createdResourceId')
+    return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully')
+
+
+def update_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Updates the Firewall Policy details.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    policy_id = args.get('policy_id')
     domain = args.get('domain')
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
@@ -228,16 +397,75 @@ def create_firewall_policy_command(client: Client, args: Dict, session_str: str)
     is_editable = args.get('is_editable')
     policy_type = args.get('policy_type')
     rule_description = args.get('rule_description')
+    response_param = args.get('response')
+    rule_enabled = args.get('rule_enabled')
     direction = args.get('direction')
     source_rule_object_id = args.get('source_rule_object_id')
-    source_rule_name = args.get('source_rule_name')
     source_rule_object_type = args.get('source_rule_object_type')
     destination_rule_object_id = args.get('destination_rule_object_id')
-    destination_rule_name = args.get('destination_rule_name')
     destination_rule_object_type = args.get('destination_rule_object_type')
-    source_arr = [source_rule_object_id, source_rule_name, source_rule_object_type]
-    destination_arr = [destination_rule_object_id, destination_rule_name, destination_rule_object_type]
-    source_sum = sum(map(bool, source_arr))
+    is_overwrite = argToBoolean(args.get('is_overwrite', False))
+
+    check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
+                                 destination_rule_object_type, 'update')
+
+    policy_get_details = client.get_firewall_policy_request(session_str, policy_id)
+
+    if not policy_get_details.get('IsEditable'):
+        raise Exception(f"The policy no.{policy_id} can't be edited")
+
+    member_rule_list = policy_get_details.get('MemberDetails', {}).get('MemberRuleList', [Dict])[0]
+    domain = policy_get_details.get('DomainId') if not domain else domain
+    name = policy_get_details.get('Name') if not name else name
+    visible_to_child = policy_get_details.get('VisibleToChild') if not visible_to_child \
+        else argToBoolean(visible_to_child)
+    description = policy_get_details.get('Description') if not description else description
+    is_editable = policy_get_details.get('IsEditable') if not is_editable else argToBoolean(is_editable)
+    policy_type = policy_get_details.get('PolicyType') if not policy_type else policy_type.upper()
+    rule_description = member_rule_list.get('Description') if not rule_description else argToBoolean(rule_description)
+    response_param = member_rule_list.get('Response') if not response_param else response_cases(response_param)
+    rule_enabled = member_rule_list.get('Enabled') if not rule_enabled else rule_enabled
+    direction = member_rule_list.get('Direction') if not direction else direction.upper()
+
+    if is_overwrite:
+        source_rule_object_id = member_rule_list.get('SourceAddressObjectList', [Dict])[0].get('RuleObjectId') if not \
+            source_rule_object_id else source_rule_object_id
+        source_rule_object_type = member_rule_list.get('SourceAddressObjectList', [Dict])[0].get('RuleObjectId') if \
+            not source_rule_object_type else rule_object_type_cases(source_rule_object_type)
+        source_object = [{
+            'RuleObjectId': source_rule_object_id,
+            'RuleObjectType': source_rule_object_type
+        }]
+        destination_rule_object_id = member_rule_list.get('DestinationAddressObjectList', [Dict])[0]. \
+            get('RuleObjectId') if not destination_rule_object_id else destination_rule_object_id
+        destination_rule_object_type = member_rule_list.get('DestinationAddressObjectList', [Dict])[0]. \
+            get('RuleObjectId') if not destination_rule_object_type else \
+            rule_object_type_cases(destination_rule_object_type)
+        destination_object = [{
+            'RuleObjectId': destination_rule_object_id,
+            'RuleObjectType': destination_rule_object_type
+        }]
+    else:
+        source_object = member_rule_list.get('SourceAddressObjectList', [])
+        if source_rule_object_id:
+            new_source_object = {
+                'RuleObjectId': source_rule_object_id,
+                'RuleObjectType': source_rule_object_type
+            }
+            source_object.append(new_source_object)
+        destination_object = member_rule_list.get('DestinationAddressObjectList', [])
+        if destination_rule_object_id:
+            new_destination_object = {
+                'RuleObjectId': destination_rule_object_id,
+                'RuleObjectType': destination_rule_object_type
+            }
+            destination_object.append(new_destination_object)
+    body = create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
+                                       rule_description, response_param, rule_enabled, direction, source_object,
+                                       destination_object)
+
+    client.update_firewall_policy_request(session_str, body, policy_id)
+    return CommandResults(readable_output=f'The firewall policy no.{policy_id} was updated successfully')
 
 
 ''' MAIN FUNCTION '''
@@ -284,6 +512,9 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'nsm-create-firewall-policy':
             results = create_firewall_policy_command(client, demisto.args(), session_str)
             return_results(results)
+        elif demisto.command() == 'nsm-update-firewall-policy':
+            results = update_firewall_policy_command(client, demisto.args(), session_str)
+            return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
 
@@ -293,7 +524,6 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

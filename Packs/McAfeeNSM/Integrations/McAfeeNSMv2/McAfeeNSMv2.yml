@@ -98,7 +98,7 @@ script:
           description: Policy is editable or not.
           type: Boolean
         - contextPath: NSM.Policy.PolicyType
-          description: Policy Type, can be "ADVANCED" / "CLASSIC".
+          description: Policy Type, can be "Advanced" / "Classic".
           type: String
         - contextPath: NSM.Policy.PolicyVersion
           description: Policy Version.
@@ -113,13 +113,13 @@ script:
           description: Is Rule Enabled or not
           type: Boolean
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Response
-          description: Action to be performed if the traffic matches this rule. Can be "SCAN" / "DROP" / "DENY" / "IGNORE" / "STATELESS_IGNORE" / "STATELESS_DROP" / "REQUIRE_AUTHENTICATION".
+          description: Action to be performed if the traffic matches this rule. Can be "Scan" / "Drop" / "Deny" / "Ignore" / "Stateless Ignore" / "Stateless Drop" / "Require Authentication".
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.IsLogging
           description: Is Logging enabled for this rule.
           type: Boolean
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.Direction
-          description: Rule Direction, can be "INBOUND" / "OUTBOUND" / "EITHER".
+          description: Rule Direction, can be "Inbound" / "Outbound" / "Either".
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectId
           description: Unique Rule Object ID.
@@ -128,7 +128,7 @@ script:
           description: Rule Object Name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType
-          description: 	Source / Destination Mode. Can be "COUNTRY" / "HOST_DNS_NAME" / "HOST_IPV_4" / "HOST_IPV_6" / "IPV_4_ADDRESS_RANGE" / "IPV_6_ADDRESS_RANGE" / "NETWORK_IPV_4" / "NETWORK_IPV_6" / "NETWORK_GROUP".
+          description: Source or Destination Mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectId
           description: Unique Rule Object ID.
@@ -137,10 +137,10 @@ script:
           description: Rule Object Name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType
-          description: Source / Destination Mode. Can be "COUNTRY" / "HOST_DNS_NAME" / "HOST_IPV_4" / "HOST_IPV_6" / "IPV_4_ADDRESS_RANGE" / "IPV_6_ADDRESS_RANGE" / "NETWORK_IPV_4" / "NETWORK_IPV_6" / "NETWORK_GROUP".
+          description: Source or Destination Mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectId
-          description: 	Unique Rule Object ID.
+          description: Unique Rule Object ID.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.Name
           description: Rule Object Name.
@@ -155,7 +155,7 @@ script:
           description: Rule Object Name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.RuleObjectType
-          description: 	Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
+          description: Service/ Application Mode. Can be "APPLICATION" / "APPLICATION_GROUP" / "APPLICATION_ON_CUSTOM_PORT" / "SERVICE" / "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.ServiceObjectList.ApplicationType
           description: Application Type. Can be "DEFAULT" / "CUSTOM".
@@ -179,7 +179,7 @@ script:
           description: Rule Object Name.
           type: String
         - contextPath: NSM.Policy.MemberDetails.MemberRuleList.TimeObjectList.RuleObjectType
-          description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP"	.
+          description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
     - name: nsm-create-firewall-policy
       description: Adds a new Firewall Policy and Access Rules.
@@ -196,14 +196,22 @@ script:
           required: true
           description: Will the policy be visible to the child domain.
           isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
         - name: description
-          required: false
+          required: true
           description: The description of the policy.
           isArray: false
         - name: is_editable
           required: true
           description: If the policy is editable or not.
           isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
         - name: policy_type
           auto: PREDEFINED
           description: The type of the policy.
@@ -216,6 +224,28 @@ script:
           required: true
           description: The rule description.
           isArray: false
+        - name: response
+          auto: PREDEFINED
+          description: Action to be performed if the traffic matches this rule.
+          isArray: false
+          predefined:
+            - Scan
+            - Drop
+            - Deny
+            - Ignore
+            - Stateless Ignore
+            - Stateless Drop
+            - Require Authentication
+          required: true
+        - name: rule_enabled
+          required: false
+          description: Is Rule Enabled or not.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
+          defaultValue: true
         - name: direction
           auto: PREDEFINED
           description: The direction of the rule.
@@ -229,10 +259,6 @@ script:
           required: false
           description: The id of the rule that connected to the policy.
           isArray: false
-        - name: source_rule_name
-          required: false
-          description: The name of the rule that connected to the policy.
-          isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
           description: The type of the rule that connected to the policy.
@@ -244,14 +270,10 @@ script:
             - Endpoint IP V.6
             - Range IP V.6
             - Network IP V.6
-          required: true
+          required: false
         - name: destination_rule_object_id
           required: false
           description: The id of the rule that connected to the policy.
-          isArray: false
-        - name: destination_rule_name
-          required: false
-          description: The name of the rule that connected to the policy.
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
@@ -264,7 +286,125 @@ script:
             - Endpoint IP V.6
             - Range IP V.6
             - Network IP V.6
+          required: false
+    - name: nsm-update-firewall-policy
+      description: Updates the Firewall Policy details.
+      arguments:
+        - name: policy_id
           required: true
+          description: The id of the policy. To get the policy id, use the !nsm-list-domain-firewall-policy.
+          isArray: false
+        - name: domain
+          required: false
+          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          isArray: false
+        - name: name
+          required: false
+          description: The policy name.
+          isArray: false
+        - name: visible_to_child
+          required: false
+          description: Will the policy be visible to the child domain.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
+        - name: description
+          required: false
+          description: The description of the policy.
+          isArray: false
+        - name: is_editable
+          required: false
+          description: If the policy is editable or not.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
+        - name: policy_type
+          auto: PREDEFINED
+          description: The type of the policy.
+          isArray: false
+          predefined:
+            - Advanced
+            - Classic
+          required: false
+        - name: rule_description
+          required: false
+          description: The rule description.
+          isArray: false
+        - name: response
+          auto: PREDEFINED
+          description: Action to be performed if the traffic matches this rule.
+          isArray: false
+          predefined:
+            - Scan
+            - Drop
+            - Deny
+            - Ignore
+            - Stateless Ignore
+            - Stateless Drop
+            - Require Authentication
+          required: false
+        - name: rule_enabled
+          required: false
+          description: Is Rule Enabled or not.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
+        - name: direction
+          auto: PREDEFINED
+          description: The direction of the rule.
+          isArray: false
+          predefined:
+            - Inbound
+            - Outbound
+            - Either
+          required: false
+        - name: source_rule_object_id
+          required: false
+          description: The id of the rule that connected to the policy.
+          isArray: false
+        - name: source_rule_object_type
+          auto: PREDEFINED
+          description: The type of the rule that connected to the policy.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+          required: false
+        - name: destination_rule_object_id
+          required: false
+          description: The id of the rule that connected to the policy.
+          isArray: false
+        - name: destination_rule_object_type
+          auto: PREDEFINED
+          description: The type of the rule that connected to the policy.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+          required: false
+        - name: is_overwrite
+          required: false
+          description: Will the new addresses that was provided in the .
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
+          defaultvalue: false
   isfetch: false
   runonce: false
   script: '-'
