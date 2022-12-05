@@ -405,6 +405,13 @@ script:
             - true
             - false
           defaultvalue: false
+    - name: nsm-delete-firewall-policy
+      description: Deletes the specified Firewall Policy.
+      arguments:
+        - name: policy_id
+          required: true
+          description: The id of the policy to delete. To get the policy id, use the !nsm-list-domain-firewall-policy.
+          isArray: false
   isfetch: false
   runonce: false
   script: '-'

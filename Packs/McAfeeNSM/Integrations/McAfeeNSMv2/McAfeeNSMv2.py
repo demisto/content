@@ -65,7 +65,7 @@ class Client(BaseClient):
                 encoded_str: str - The session id.
                 body: Dict - The params to the API call.
             Returns:
-                A response object.
+                A dictionary with the id of the newly created policy.
         """
         url_suffix = '/sdkapi/firewallpolicy'
         self.headers['NSM-SDK-API'] = encoded_str
@@ -78,11 +78,23 @@ class Client(BaseClient):
                 body: Dict - The params to the API call.
                 policy_id: str - The id of the updated policy.
             Returns:
-                A response object.
+                A dictionary with the request status, if it succeeded or not.
         """
         url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+
+    def delete_firewall_policy_request(self, encoded_str: str, policy_id: str) -> Dict:
+        """ Updates an existing Firewall Policy and Access Rules.
+            Args:
+                encoded_str: str - The session id.
+                policy_id: str - The id of the updated policy.
+            Returns:
+                A dictionary with the request status, if it succeeded or not.
+        """
+        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='DELETE', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -179,9 +191,26 @@ def check_source_and_destination(source_rule_object_id: int, source_rule_object_
             raise Exception('You must provide the source fields or destination fields or both.')
 
 
-def create_body_firewall_policy(domain, name, visible_to_child, description, is_editable, policy_type,
-                                rule_description, response_param, rule_enabled, direction, source_object,
-                                destination_object) -> Dict:
+def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, description: str, is_editable: bool,
+                                policy_type: str, rule_description: str, response_param: str, rule_enabled: bool,
+                                direction: str, source_object: Dict, destination_object: Dict) -> Dict:
+    """
+    Args:
+        domain: int - The id of the domain.
+        name: str - The name of the policy.
+        visible_to_child: bool - Will the policy be visible to the child domain.
+        description: str - the policy description.
+        is_editable: bool - Is the policy editable.
+        policy_type: str - The type of the policy.
+        rule_description: str - The description of the rule.
+        response_param: str - Action to be performed if the traffic matches this rule.
+        rule_enabled: bool - Is Rule Enabled or not.
+        direction: str - The rule direction.
+        source_object: Dict - Information about the source addresses.
+        destination_object: Dict - Information about the destination addresses.
+    Returns:
+        Returns the body for the request.
+    """
     return {
         'Name': name,
         'DomainId': domain,
@@ -468,6 +497,20 @@ def update_firewall_policy_command(client: Client, args: Dict, session_str: str)
     return CommandResults(readable_output=f'The firewall policy no.{policy_id} was updated successfully')
 
 
+def delete_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Deletes the specified Firewall Policy.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    policy_id = args.get('policy_id')
+    client.delete_firewall_policy_request(session_str, policy_id)
+    return CommandResults(readable_output=f'The firewall policy no.{policy_id} was deleted successfully')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -514,6 +557,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-update-firewall-policy':
             results = update_firewall_policy_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-delete-firewall-policy':
+            results = delete_firewall_policy_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
