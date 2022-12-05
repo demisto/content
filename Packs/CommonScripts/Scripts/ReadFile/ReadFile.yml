@@ -15,7 +15,7 @@ args:
   default: false
   description: The character encoding of the file
   isArray: false
-  name: input_encoding
+  name: encoding
   predefined:
   - binary
   - utf-8
@@ -75,6 +75,6 @@ subtype: python3
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.8.37753
+dockerimage: demisto/python3:3.10.8.39276
 tests:
 - No tests (auto formatted)

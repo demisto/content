@@ -36,14 +36,20 @@ def read_file(args):
 
     if output_data_type == 'raw':
         if isinstance(data, bytes):
-            data = data.decode()
+            try:
+                data = data.decode()
+            except UnicodeDecodeError as e:
+                raise DemistoException(f'Failed to decode binary data to utf-8 - {e}')
     elif output_data_type == 'base64':
         if isinstance(data, str):
             data = data.encode(input_encoding or 'utf-8')
         data = base64.b64encode(data).decode()
     elif output_data_type == 'json':
         if isinstance(data, bytes):
-            data = data.decode()
+            try:
+                data = data.decode()
+            except UnicodeDecodeError as e:
+                raise DemistoException(f'Failed to decode binary data to utf-8 - {e}')
         data = json.loads(data)
     else:
         raise DemistoException(f'Invalid data encoding name: {output_data_type}')
