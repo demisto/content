@@ -3,17 +3,14 @@
 # exit on errors
 set -e
 
-echo "CLOUD_SERVERS_FILE before cat is $CLOUD_API_KEYS"
-
-
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
 echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
-echo "CLOUD_SERVERS_PATH is $CLOUD_SERVERS_PATH"
-echo "CLOUD_API_KEYS_FILE is $CLOUD_API_KEYS_FILE"
-echo "XSIAM_API_KEYS is $XSIAM_API_KEYS"
-echo "cloud_api_keys.json > cat file: "
-cat cloud_api_keys.json
+#echo "CLOUD_SERVERS_PATH is $CLOUD_SERVERS_PATH"
+#echo "CLOUD_API_KEYS_FILE is $CLOUD_API_KEYS_FILE"
+#echo "XSIAM_API_KEYS is $XSIAM_API_KEYS"
+#echo "cloud_api_keys.json > cat file: "
+#cat cloud_api_keys.json
 
 if [[ -z ${XSIAM_CHOSEN_MACHINE_ID} ]]; then
   echo "XSIAM_CHOSEN_MACHINE_ID is not defiened, exiting..."
