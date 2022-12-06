@@ -39,13 +39,20 @@ configuration:
   required: false
   type: 0
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -575,7 +582,7 @@ script:
     - contextPath: AWS.CloudTrail.Events.CloudTrailEvent
       description: A JSON string that contains a representation of the event returned.
       type: string
-  dockerimage: demisto/boto3:2.0.0.24033
+  dockerimage: demisto/boto3:2.0.0.38883
   feed: false
   isfetch: false
   longRunning: false
