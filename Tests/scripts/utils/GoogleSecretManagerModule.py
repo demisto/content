@@ -7,8 +7,8 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 
 class GoogleSecreteManagerModule:
-    def __init__(self, service_account_file: str = None):
-        self.client = self.init_secret_manager_client(service_account_file)  # type: ignore
+    def __init__(self, service_account_file: str):
+        self.client = self.init_secret_manager_client(service_account_file)
 
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
@@ -41,9 +41,8 @@ class GoogleSecreteManagerModule:
             credentials_file_name = f'{datetime.now().strftime("%m-%d-%Y,%H:%M:%S:%f")}.json'
             credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
             json_object = json.loads(service_account)
-            f = open(credentials_file_path, "w")
-            f.write(json.dumps(json_object))
-            f.close()
+            with open(credentials_file_path, 'w') as f:
+                f.write(json.dumps(json_object))
             client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)# type: ignore # noqa
             return client
         finally:
