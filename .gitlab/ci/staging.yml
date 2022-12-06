@@ -14,8 +14,8 @@
   stage: create-instances
   allow_failure: true
   script:
-    # - pip3 uninstall -y demisto-sdk
-    # - pip3 install git+https://github.com/demisto/demisto-sdk@master
+    - pip3 uninstall -y demisto-sdk
+    - pip3 install git+https://github.com/demisto/demisto-sdk@0cb12081c7a7e0929696f6ce22fcd803e3c3d5ea
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
