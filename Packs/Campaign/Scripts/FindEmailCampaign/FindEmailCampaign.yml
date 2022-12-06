@@ -218,7 +218,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.38621
+dockerimage: devdemisto/py3-native:8.1.0.40263
 tests:
 - No tests (auto formatted)
 runonce: true

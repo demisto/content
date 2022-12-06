@@ -2669,7 +2669,10 @@ def generic_api_call_command(client: Client, args: Dict) -> Union[str, CommandRe
     method = str(args.get("method"))
     path = str(args.get("path"))
     headers = json.loads(str(args.get("headers", {})))
-    body: Dict = json.loads(str(args.get("body", {})))
+    try:
+        body: Dict = json.loads(str(args.get("body", {})))
+    except ValueError:
+        body = args.get("body", "")
     sc_api: bool = argToBoolean(args.get("sc_api", False))
     cr_api: bool = argToBoolean(args.get("cr_api", False))
 
