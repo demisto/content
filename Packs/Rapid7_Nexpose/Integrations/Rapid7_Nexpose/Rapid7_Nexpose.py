@@ -5110,7 +5110,7 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         enabled_bool = argToBoolean(enabled)
 
     else:
-        enabled_bool = False
+        enabled_bool = True
 
     duration = generate_duration_time(
         days=duration_days_int,

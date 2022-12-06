@@ -911,7 +911,7 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                                  "start_date": "2050-01-01T10:00:00Z",
                              },
                                  {
-                                 "enabled": False,
+                                 "enabled": True,
                                  "onScanRepeat": "restart-scan",
                                  "start": "2050-01-01T10:00:00Z"
                              }),
