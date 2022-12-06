@@ -20,7 +20,7 @@ ACCOUNT = demisto.params()['account']
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
-BASE_URL = SERVER + '/api/v1/' + ACCOUNT + '/'
+BASE_URL = f'{SERVER}/api/v1/{ACCOUNT}/'
 USE_SSL = not demisto.params().get('insecure', False)
 
 ''' HELPER FUNCTIONS '''
