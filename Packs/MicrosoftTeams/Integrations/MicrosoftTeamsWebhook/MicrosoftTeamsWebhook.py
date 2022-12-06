@@ -3,7 +3,7 @@ import requests
 from CommonServerPython import *  # noqa: F401
 
 
-def create_teams_message(message, serverurls):
+def create_teams_message(message, title, serverurls):
     """
     Creates the Teams message using the messageCard format, and returns the card
     """
@@ -19,8 +19,8 @@ def create_teams_message(message, serverurls):
         }],
         "potentialAction": [{
             "@type": "OpenUri",
-            "name": "Cortex XSOAR URL",
-            "targets": [{"os": "default", "uri": serverurls['investigation']}]
+            "name": title,
+            "targets": [{"os": "default", "uri": serverurls}]
         }]
     }
 
@@ -50,12 +50,12 @@ def test_module(webhook):
         return_error(e)
 
 
-def send_teams_message_command(webhook, message, serverurls):
+def send_teams_message_command(webhook, message, title, serverurls):
     """
     Sends the Teams Message to the provided webhook.
     """
     try:
-        message = create_teams_message(message, serverurls)
+        message = create_teams_message(message, title, serverurls)
         res = requests.post(webhook, json=message)
         res.raise_for_status()
         return 'message sent successfully'
@@ -68,8 +68,15 @@ def main():  # pragma: no cover
     Grab the params and the server urls, and send the message, or test message.
     """
     webhook = demisto.params().get('webhookurl')
-    serverurls = demisto.demistoUrls()
     args = demisto.args()
+    title = demisto.args().get('url_title')
+    serverurls = demisto.demistoUrls()
+
+    if args.get('alternative_url'):
+        serverurls = args.get('alternative_url')
+    else:
+        serverurls = serverurls["investigation"]
+
     command = demisto.command()
     try:
         if command == 'test-module':
@@ -77,9 +84,9 @@ def main():  # pragma: no cover
         elif command == 'ms-teams-message':
             message = args.get("message", "")
             if args.get('team_webhook', False):
-                return_results(send_teams_message_command(args.get('team_webhook'), message, serverurls))
+                return_results(send_teams_message_command(args.get('team_webhook'), message, title, serverurls))
             else:
-                return_results(send_teams_message_command(webhook, message, serverurls))
+                return_results(send_teams_message_command(webhook, message, title, serverurls))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
