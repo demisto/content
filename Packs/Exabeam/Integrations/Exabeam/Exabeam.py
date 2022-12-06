@@ -4,9 +4,12 @@ from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
+import urllib3
+
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
+
 
 TOKEN_INPUT_IDENTIFIER = '__token'
 
@@ -1800,8 +1803,8 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
     contents: list = []
     users: list = []
     executive_user_flags: list = []
-
-    for session in session_details_raw_data.get('sessions', {}):
+    sessions = session_details_raw_data.get('sessions', {})
+    for session in sessions:
         contents.append(contents_append_notable_session_details(session))
 
     users_response = session_details_raw_data.get('users', {})
@@ -1816,10 +1819,11 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
         })
 
     contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
-
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
-
-    human_readable = tableToMarkdown('Notable Session details:', session, removeNull=True)
+    if sessions:
+        human_readable = tableToMarkdown('Notable Sessions details:', sessions, removeNull=True)
+    else:
+        human_readable = 'No results found.'
 
     return human_readable, entry_context, session_details_raw_data
 
