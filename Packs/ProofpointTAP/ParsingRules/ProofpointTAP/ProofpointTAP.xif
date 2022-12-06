@@ -1,0 +1,2 @@
+[INGEST:vendor="Proofpoint", product="Tap", target_dataset="proofpoint_tap_raw"]
+alter _time = messageTime;
