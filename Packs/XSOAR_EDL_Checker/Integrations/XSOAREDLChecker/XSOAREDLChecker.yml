@@ -13,7 +13,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-description: Checks an XSOAR EDL to make sure it's returning a valid response.
+description: Checks an XSOAR hosted EDL to make sure it's returning a valid response.   Supports PAN-OS (text), CSV, or JSON EDLs.
 display: XSOAR EDL Checker
 name: XSOAR EDL Checker
 script:

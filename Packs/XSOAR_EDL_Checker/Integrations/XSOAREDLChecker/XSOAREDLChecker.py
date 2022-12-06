@@ -88,7 +88,7 @@ def get_edl_command(base_url, edl_name, creds=None):
     readable = tableToMarkdown(f"EDL Response for {edl_name}", output, headers=['Name', 'Status', 'Response', 'ItemsOnList'])
     result = CommandResults(readable_output=readable, outputs_prefix='EDLChecker', outputs=output, ignore_auto_extract=True)
 
-    return result
+    return result, output
 
 
 def main():
@@ -102,10 +102,15 @@ def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            return_results("ok")
+            result, output = get_edl_command(base_url, edl_name, credentials)
+            if output.get("Status") == 200:
+                return_results("ok")
+            else:
+                return_error(output.get("Response"))
 
         elif demisto.command() == 'xsoaredlchecker-get-edl':
-            return_results(get_edl_command(base_url, edl_name, credentials))
+            result, output = get_edl_command(base_url, edl_name, credentials)
+            return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:

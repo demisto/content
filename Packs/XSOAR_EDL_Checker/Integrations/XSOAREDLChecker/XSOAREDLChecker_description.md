@@ -4,7 +4,7 @@ This integration checks an external dynamic list provided by the [XSOAR Generic 
 
 Only supports lists hosted off the XSOAR server, and requires the following server configuration be set from Settings -> About -> Troubleshooting
 
-instance.execute.external = true [Reference](https://xsoar.pan.dev/docs/reference/integrations/edl)
+instance.execute.external = true 
 
 ## Setup
 
