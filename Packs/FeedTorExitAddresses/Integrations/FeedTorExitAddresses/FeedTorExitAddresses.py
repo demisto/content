@@ -4,9 +4,9 @@ from CommonServerUserPython import *
 
 import requests
 from typing import Dict, List, Optional
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 SOURCE_NAME = "Tor Exit Addresses"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
