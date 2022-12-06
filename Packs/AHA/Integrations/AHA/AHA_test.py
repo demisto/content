@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from AHA import Client, get_features, edit_feature
+from AHA import Client, get, edit
+from AHA import AHA_TYPE
 import io
 
 
@@ -47,7 +48,7 @@ def test_main(mocker):
             'api_key': {'password': 'test_api'},
         }
     )
-    mocker.patch('AHA.Client.get_features', return_value={'name': 'test'})
+    mocker.patch('AHA.Client.get', return_value={'name': 'test'})
     mocker.patch.object(
         demisto, 'command',
         return_value='test-module'
@@ -81,8 +82,22 @@ def test_getFeatures(mocker):
             - Asserts get a list of expected length with all features.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get_features(client=client, from_date='2022-01-01')
+    results = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
     assert len(results.outputs) == 3
+    assert len(results.outputs[0].get('ideas')) == 1
+    assert results.outputs[0].get('ideas')[0] == 'DEMO-I-299'
+
+
+def test_getIdeas(mocker):
+    """
+        When:
+            - Requesting all ideas
+        Then:
+            - Asserts get a list of expected length with all ideas.
+    """
+    client = mock_client(mocker, util_load_json('test_data/get_all_ideas.json'))
+    results = get(client=client, get_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
+    assert len(results.outputs) == 4
 
 
 def test_getFeaturesFromDate(mocker):
@@ -93,7 +108,7 @@ def test_getFeaturesFromDate(mocker):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
-    results = get_features(client=client, from_date='3000-01-01')
+    results = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='3000-01-01')
     assert len(results.outputs) == 0
 
 
@@ -105,26 +120,55 @@ def test_getSpecificFeature(mocker):
             - Returns the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get_features(client=client, from_date='2020-01-01', feature_name='DEMO-10')
+    result = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-10'
+
+
+def test_getSpecificIdea(mocker):
+    """
+        When:
+            - Requesting a specific idea
+        Then:
+            - Returns the requested idea
+    """
+    client = mock_client(mocker, util_load_json('test_data/get_specific_idea.json'))
+    result = get(client=client, get_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
+    assert len(result.outputs) == 1
+    assert result.outputs[0]['reference_num'] == 'DEMO-I-2895'
 
 
 def test_editFeatureField(mocker):
     """
         When:
-            - Requesting to update fields in a feautre.
+            - Requesting to update fields in a feature.
         Then:
             - Return the feature with updated fields.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
-    result = edit_feature(client=client, feature_name='DEMO-10', fields={'name': 'DEMO-10', 'description': 'new description',
-                          'status': 'Closed'})
+    result = edit(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
+                  fields={'name': 'DEMO-10', 'description': 'new description', 'status': 'Closed'})
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == 'Demo-10'
     assert output.get('description') == 'test desc'
     assert output.get('workflow_status') == 'Closed'
+
+
+def test_editIdeaStatus(mocker):
+    """
+        When:
+            - Requesting to update status in an idea.
+        Then:
+            - Return the idea with an updated field.
+    """
+    client = mock_client(mocker, util_load_json('test_data/update_idea_status.json'))
+    result = edit(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895', fields={})
+    assert len(result.outputs) == 1
+    output = result.outputs[0]
+    assert output.get('name') == '[Test] Mirroring'
+    assert output.get('description') == 'Aha Jira Mirroring'
+    assert output.get('workflow_status') == 'Shipped'
 
 
 def test_editSpecificFeatureField(mocker):
@@ -136,7 +180,7 @@ def test_editSpecificFeatureField(mocker):
     """
     new_description = 'change just description'
     client = mock_client(mocker, util_load_json('test_data/update_feature_field.json'))
-    result = edit_feature(client=client, feature_name='DEMO-10', fields={'description': new_description})
+    result = edit(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10', fields={'description': new_description})
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == 'Demo-10'
