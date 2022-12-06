@@ -140,4 +140,6 @@ script:
   runonce: false
 tests:
 - DemistoUploadFileV2 Test
+marketplaces:
+  - xsoar
 fromversion: 5.0.0
