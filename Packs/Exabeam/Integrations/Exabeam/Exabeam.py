@@ -1820,8 +1820,8 @@ def get_notable_session_details(client: Client, args: Dict[str, str]) -> Tuple[A
 
     contents_entry = {'sessions': contents, 'users': users, 'executiveUserFlags': executive_user_flags}
     entry_context = {'Exabeam.NotableSession(val.SessionID && val.SessionID === obj.SessionID)': contents_entry}
-    if sessions and sessions[-1]:
-        human_readable = tableToMarkdown('Notable Session details:', sessions[-1], removeNull=True)
+    if sessions:
+        human_readable = tableToMarkdown('Notable Sessions details:', sessions, removeNull=True)
     else:
         human_readable = 'No results found.'
 
