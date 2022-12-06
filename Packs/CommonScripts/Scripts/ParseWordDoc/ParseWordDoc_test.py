@@ -52,7 +52,7 @@ class TestParseWordDoc:
 
         """
         from ParseWordDoc import main
-        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/file-sample.docx"))
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./test_data/file-sample.docx"))
         main()
         result = self.get_demisto_results()
         assert result.get('File') == 'file-sample.txt'
@@ -71,7 +71,7 @@ def test_extract_urls_xml_with_hyperlink():
 
     """
     from ParseWordDoc import extract_urls_xml
-    urls = extract_urls_xml('./TestData/file-sample2.docx')
+    urls = extract_urls_xml('./test_data/file-sample2.docx')
     assert urls == ['https://typora.io']
 
 
@@ -88,7 +88,7 @@ def test_extract_urls_xml_without_hyperlink():
 
     """
     from ParseWordDoc import extract_urls_xml
-    urls = extract_urls_xml('./TestData/file-sample.docx')
+    urls = extract_urls_xml('./test_data/file-sample.docx')
     assert urls == []
 
 
@@ -106,7 +106,7 @@ def test_extract_urls_docx_without_hyperlink():
     """
     from docx import Document
     from ParseWordDoc import extract_urls_docx
-    document = Document('./TestData/file-sample2.docx')
+    document = Document('./test_data/file-sample2.docx')
     urls = extract_urls_docx(document)
     assert urls == []
 
@@ -125,6 +125,6 @@ def test_extract_urls_docx_with_hyperlinks():
     """
     from docx import Document
     from ParseWordDoc import extract_urls_docx
-    document = Document('./TestData/MS-DOCX-190319.docx')
+    document = Document('./test_data/MS-DOCX-190319.docx')
     urls = extract_urls_docx(document)
     assert 'https://go.microsoft.com/fwlink/?LinkId=90607' in urls
