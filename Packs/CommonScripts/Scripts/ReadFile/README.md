@@ -20,9 +20,9 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| entryID | War room entryID of the file to read. |
+| entryID | War Room entryID of the file to read. |
 | maxFileSize | Maximal file size to load, in bytes. Default is 1MB. |
-| input_encoding | The character encoding of the file |
+| input_encoding | The character encoding of the file. |
 | output_data_type | The data type to which the output data is converted. |
 | output_metadata | Set true in order to output additional metadata on the file, to context |
 
@@ -31,8 +31,8 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FileData | Data read from war room file | Unknown |
-| ReadFile.Data | Data read from war room file | Unknown |
-| ReadFile.EntryID | File Entry ID | string |
-| ReadFile.FileSize | File Size | number |
+| FileData | Data read from War Room file. | Unknown |
+| ReadFile.Data | Data read from War Room file. | Unknown |
+| ReadFile.EntryID | File entry ID. | string |
+| ReadFile.FileSize | File size. | number |
 | ReadFile.EOF | Whether the file has reached end-of-file. | boolean |
