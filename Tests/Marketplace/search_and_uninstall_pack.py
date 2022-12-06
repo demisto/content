@@ -172,8 +172,8 @@ def options_handler():
     """
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
-    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
+    parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
 
     options = parser.parse_args()
 
@@ -181,17 +181,18 @@ def options_handler():
 
 
 def main():
-    install_logging('cleanup_xsiam_instance.log', logger=logging)
+    install_logging('cleanup_cloud_instance.log', logger=logging)
 
-    # in xsiam we dont use demisto username
+    # in cloud we dont use demisto username
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
     host = options.xsiam_machine
+    logging.info(f'Starting cleanup for CLOUD server {host}')
+
     api_key, _, base_url, xdr_auth_id = XSIAMBuild.get_xsiam_configuration(options.xsiam_machine,
-                                                                           options.xsiam_servers_path,
-                                                                           options.xsiam_servers_api_keys)
-    logging.info(f'Starting cleanup for XSIAM server {host}')
+                                                                           options.cloud_servers_path,
+                                                                           options.cloud_servers_api_keys)
 
     client = demisto_client.configure(base_url=base_url,
                                       verify_ssl=False,
