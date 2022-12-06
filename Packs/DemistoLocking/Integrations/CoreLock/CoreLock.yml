@@ -80,6 +80,8 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
+marketplaces:
+  - marketplacev2
 fromversion: 5.0.0
 tests:
 - No tests
