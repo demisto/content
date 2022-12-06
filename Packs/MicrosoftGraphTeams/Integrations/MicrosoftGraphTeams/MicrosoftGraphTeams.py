@@ -8,7 +8,7 @@ import base64
 import binascii
 import traceback
 from urllib.parse import quote
-
+from MicrosoftApiModule import *
 import urllib3
 from bs4 import BeautifulSoup
 
