@@ -805,7 +805,10 @@ class Client(BaseClient):
             Response from API.
         """
         body = generate_body(fields, custom_fields)
+        demisto.info(f"body - update = {body}")
         query_params = {'sysparm_input_display_value': input_display_value}
+        demisto.info(f"query_params = {query_params}")
+
         return self.send_request(f'table/{table_name}/{record_id}', 'PATCH', params=query_params, body=body)
 
     def create(self, table_name: str, fields: dict = {}, custom_fields: dict = {},
@@ -2352,11 +2355,18 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     closure_case = get_closure_case(params)
+    sir_custom_state = get_sir_closure_case(params)
+    demisto.info(f'sir_custom_state = {sir_custom_state}')
+
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
             if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
+            demisto.info(f'closure_case = {closure_case}')
+
+            if closure_case and sir_custom_state and ticket_type == SIR_INCIDENT:
+                parsed_args.data['state'] = sir_custom_state  # Closing by custom state
             # These ticket types are closed by changing their state.
             if closure_case == 'closed' and ticket_type == INCIDENT:
                 parsed_args.data['state'] = '7'  # Closing incident ticket.
@@ -2401,6 +2411,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
+
+
+def get_sir_closure_case(params: Dict[str, Any]) -> Optional[str]:
+    """
+    return the right SIR incident closing states.
+    Args:
+        params: the integration params dict.
+
+    Returns: None if no closure method is specified.
+    otherwise returns an integer representing the state code within ServiceNow.
+    """
+    if params.get('close_sir_custom_state'):
+        # TODO check if the custom state exists in ServiceNow
+        close_sir_custom_state = params.get('close_sir_custom_state')
+        return close_sir_custom_state
+    else:
+        return None
 
 
 def get_closure_case(params: Dict[str, Any]):
