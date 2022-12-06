@@ -1,0 +1,14 @@
+{
+    "code": "Success",
+    "message": "Success",
+    "data": [
+      {
+        "type": "ip",
+        "value": "6.6.6.6",
+        "riskLevel": "high",
+        "analysisCompletionTime": "2021-05-07T03:08:40Z",
+        "expiredTime": "2021-06-07T03:08:40Z",
+        "rootFileSha1": "fb5608fa03de204a12fe1e9e5275e4a682107471"
+      }
+    ]
+}

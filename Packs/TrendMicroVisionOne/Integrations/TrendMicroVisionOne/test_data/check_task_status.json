@@ -1,0 +1,12 @@
+{
+    "data": {
+      "createdTime": 1589525651,
+      "executedTime": 1589525725,
+      "finishedTime": 1589525725,
+      "taskStatus": "timeout",
+      "error": {
+        "code": "InternalError",
+        "message": "DB error."
+      }
+    }
+}

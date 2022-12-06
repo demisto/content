@@ -1,0 +1,29 @@
+{
+    "status": "string",
+    "errorCode": 0,
+    "message": "string",
+    "result": {
+      "logonAccount": {
+        "value": [
+          "string"
+        ],
+        "updateAt": 0
+      },
+      "hostname": {
+        "value": "string",
+        "updateAt": 0
+      },
+      "macAddr": {
+        "value": "string",
+        "updateAt": 0
+      },
+      "ip": {
+        "value": "string",
+        "updateAt": 0
+      },
+      "osName": "string",
+      "osVersion": "string",
+      "osDescription": "string",
+      "productCode": "string"
+    }
+}
