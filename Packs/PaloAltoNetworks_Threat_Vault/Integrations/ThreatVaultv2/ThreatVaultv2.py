@@ -1,6 +1,5 @@
 from typing import Tuple
 from CommonServerPython import *
-from bs4 import BeautifulSoup as bs
 
 BASE_URL = 'https://api.threatvault.paloaltonetworks.com/service/v1/'
 SCORE_TABLE_FILE = {
@@ -278,22 +277,6 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
     return command_results_list
 
 
-def extract_rn_from_html_to_json(raw_incident):
-    '''
-    Extracts the release notes from the incident and converts them to JSON.
-    '''
-
-    values: list = []
-    html_values = bs(raw_incident, 'html.parser')
-    rns = html_values.find_all('li')
-    for value in rns:
-        value_text = value.get_text()
-        value_link = '\n'.join([link.get('href') for link in value.find_all('a')])
-        values.append({'Release Note': f'{value_text} [More information]({value_link})'.replace('\xa0', ' ')})
-
-    return values
-
-
 def parse_incident(incident: dict):
     '''
     1. Parse the release notes information received
@@ -302,21 +285,19 @@ def parse_incident(incident: dict):
     4. Deletes keys from the incident when no values were found in them
     '''
 
-    table_for_md = extract_rn_from_html_to_json(
-        incident['data'][0]['release_notes']['notes'][0]
-    )
-
-    incident['data'][0]['release_notes_md'] = tableToMarkdown(
-        name=f"Release version {incident['data'][0]['release_version']}:",
-        t=table_for_md,
-        removeNull=True
-    )
+    incident['data'][0]['release_notes_md'] = incident['data'][0]['release_notes']['notes'][0]
 
     incident['data'][0]['Source name'] = 'THREAT VAULT - RELEASE NOTES'
 
     for key in incident['data'][0]['release_notes'].copy():
-        if key in LIST_OF_RN_KEYS and not incident['data'][0]['release_notes'][key]['new']:
-            del incident['data'][0]['release_notes'][key]
+        if key in LIST_OF_RN_KEYS:
+            if not incident['data'][0]['release_notes'][key]['new']:
+                del incident['data'][0]['release_notes'][key]
+            else:
+                incident['data'][0]['release_notes'][key]['new'] = tableToMarkdown(
+                    name=key,
+                    t=incident['data'][0]['release_notes'][key]['new'],
+                )
 
     return incident
 
@@ -461,13 +442,12 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
 
 def release_note_get_command(client: Client, args: Dict) -> CommandResults:
 
-    if 'type' not in args or 'version' not in args:
-        raise ValueError('The following arguments are required -> [type, version]')
+    if 'version' not in args:
+        raise ValueError('The version argument is required')  # UT
 
-    type_ = args['type']
     version = args['version']
     try:
-        response = client.release_notes_get_request(type_, version)
+        response = client.release_notes_get_request('content', version)
         data = response.get('data', [])[0] if response.get('data') else []
     except Exception as err:
         if 'Error in API call [404] - Not Found' in str(err):
@@ -503,43 +483,65 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
 
     if ids or names:
         type_ = 'id' if ids else 'name'
-        response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
-        command_results_list.extend(parse_resp_by_type(response, True))
+        try:
+            response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
+            command_results_list.extend(parse_resp_by_type(response, True))
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                readable_output = f'There is no information about the {str(ids) if ids else str(names)}'
+                command_results_list.append(
+                    CommandResults(
+                        readable_output=readable_output
+                    )
+                )
+            else:
+                raise ValueError(err)
 
     elif md5 or sha256:
         dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
+        try:
+            type_ = 'md5' if md5 else 'sha256'
+            response = client.threat_batch_search_request(arg=type_, value=md5 if md5 else sha256, type_=threat_type)
+            files_info: List[dict] = response.get('data', {}).get('fileinfo', [])
+            for file_info in files_info:
 
-        type_ = 'md5' if md5 else 'sha256'
-        response = client.threat_batch_search_request(arg=type_, value=md5 if md5 else sha256, type_=threat_type)
-        files_info: List[dict] = response.get('data', {}).get('fileinfo', [])
-        for file_info in files_info:
-
-            dbot_score = Common.DBotScore(
-                indicator=file_info.get('sha256'),
-                indicator_type=DBotScoreType.FILE,
-                integration_name=client.name,
-                score=SCORE_TABLE_FILE[file_info.get('wildfire_verdict', 'unknown')],
-                reliability=dbot_reliability
-            )
-            file = Common.File(
-                sha256=file_info.get('sha256', None),
-                md5=file_info.get('md5', None),
-                sha1=file_info.get('sha1', None),
-                dbot_score=dbot_score
-            )
-
-            table_for_md = resp_to_hr(response=file_info, type_='file', expanded=True)
-            readable_output = tableToMarkdown(name=f"File {file_info.get('sha256')}:", t=table_for_md,
-                                              removeNull=True)
-            command_results_list.append(
-                CommandResults(
-                    outputs_prefix='ThreatVault.FileInfo',
-                    readable_output=readable_output,
-                    outputs_key_field='sha256',
-                    outputs=file_info,
-                    indicator=file,
+                dbot_score = Common.DBotScore(
+                    indicator=file_info.get('sha256'),
+                    indicator_type=DBotScoreType.FILE,
+                    integration_name=client.name,
+                    score=SCORE_TABLE_FILE[file_info.get('wildfire_verdict', 'unknown')],
+                    reliability=dbot_reliability
                 )
-            )
+                file = Common.File(
+                    sha256=file_info.get('sha256', None),
+                    md5=file_info.get('md5', None),
+                    sha1=file_info.get('sha1', None),
+                    dbot_score=dbot_score
+                )
+
+                table_for_md = resp_to_hr(response=file_info, type_='file', expanded=True)
+                readable_output = tableToMarkdown(name=f"File {file_info.get('sha256')}:", t=table_for_md,
+                                                  removeNull=True)
+                command_results_list.append(
+                    CommandResults(
+                        outputs_prefix='ThreatVault.FileInfo',
+                        readable_output=readable_output,
+                        outputs_key_field='sha256',
+                        outputs=file_info,
+                        indicator=file,
+                    )
+                )
+
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                readable_output = f'There is no information about the {str(md5) if md5 else str(sha256)}'
+                command_results_list.append(
+                    CommandResults(
+                        readable_output=readable_output
+                    )
+                )
+            else:
+                raise ValueError(err)
 
     return command_results_list
 
@@ -673,7 +675,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
 
             # Incident organization and arrangement
             incidents.append({
-                'name': 'THREAT VAULT - RELEASE NOTES',
+                'name': f"ThreatVault Release {release['data'][0]['release_version']}",
                 'occurred': release['data'][0]['release_time'],
                 'rawJSON': json.dumps(parse_incident(release))
             })

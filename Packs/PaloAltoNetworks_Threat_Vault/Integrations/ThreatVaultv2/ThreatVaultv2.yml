@@ -367,19 +367,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The type of the release notes (ex. Content).
-      isArray: false
-      name: type
-      required: true
-      secret: false
-    - default: false
       description: The release version (ex. 8446) or content version (ex. 8446-6886) of the release notes.
       isArray: false
       name: version
       required: true
       secret: false
     deprecated: false
-    description: Retrieve the release notes information by type and version.
+    description: Retrieve the release notes information by version.
     execution: false
     name: threatvault-release-note-get
     outputs:
@@ -784,7 +778,7 @@ script:
     - contextPath: ThreatVault.Fileformat.latest_release_time
       description: The latest release time of the signature.
       type: String
-  dockerimage: demisto/crypto:1.0.0.38400
+  dockerimage: demisto/crypto:1.0.0.39526
   isfetch: true
   longRunning: false
   longRunningPort: false

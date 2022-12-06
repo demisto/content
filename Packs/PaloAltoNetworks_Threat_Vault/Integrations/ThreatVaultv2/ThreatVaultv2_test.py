@@ -3,8 +3,7 @@ import pytest
 import json
 
 from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
-    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, extract_rn_from_html_to_json, \
-    parse_incident
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_incident
 
 
 @pytest.mark.parametrize(
@@ -22,8 +21,8 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
         ),
         (
             release_note_get_command,
-            {'version': '20.7'},
-            'The following arguments are required -> [type, version]'
+            {},
+            'The version argument is required'
         ),
         (
             threat_signature_get_command,
@@ -109,6 +108,18 @@ def test_commands_failure(command, demisto_args, expected_results):
             {'cve': '123'},
             '123 reputation is unknown to Threat Vault.',
             None
+        ),
+        (
+            threat_batch_search_command,
+            {'id': '3333333333'},
+            "There is no information about the ['3333333333']",
+            None
+        ),
+        (
+            threat_batch_search_command,
+            {'md5': '123,7564'},
+            "There is no information about the ['123', '7564']",
+            None
         )
     ]
 )
@@ -124,6 +135,7 @@ def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_ou
     mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
     mocker.patch.object(client, 'release_notes_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
     mocker.patch.object(client, 'threat_search_request', side_effect=Exception('Error in API call [404] - Not Found'))
+    mocker.patch.object(client, 'threat_batch_search_request', side_effect=Exception('Error in API call [404] - Not Found'))
 
     results = cmd(client, demisto_args)
 
@@ -844,30 +856,6 @@ def test_threat_search_command(mocker, args, expected_results):
     threat_search_command(client, args)
 
     assert call_request.call_args_list[0][1]['args'] == expected_results
-
-
-@pytest.mark.parametrize(
-    'html_input, expected_results',
-    [
-        (
-            'test_data/html_test_data.txt',
-            ('(10/13/22) We intend to release new placeholder App-IDs for several new OT/ICS App-IDs'
-             ' as part of the update scheduled for October 18, 2022. We then plan to activate these new App-IDs'
-             ' (Rockwell-ThinManager, SEL acSELerator RTAC, BACnet, ToolsNet Open Protocol, Ethernet Powerlink,'
-             ' sick-sopas-webserver, and IEEE 61850 R-SV) with the new App-IDs content update scheduled for January 17,'
-             ' 2023. Be sure to review this article for details. ')
-        )
-    ]
-)
-def test_extract_rn_from_html_to_json(html_input, expected_results):
-
-    with open(html_input, 'r') as f:
-        html_rns = f.read()
-
-        json_rns = extract_rn_from_html_to_json(html_rns)
-
-    assert json_rns
-    assert expected_results in json_rns[0]['Release Note']
 
 
 @pytest.mark.parametrize(

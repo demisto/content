@@ -1,11 +1,11 @@
 {
     "id": "incident_threatvaultbypaloaltonetworksapplicationsnew",
     "version": -1,
-    "modified": "2022-11-06T14:20:12.49696057Z",
+    "modified": "2022-12-05T15:13:14.118498542Z",
     "name": "Threat Vault by Palo Alto Networks Applications (new)",
     "ownerOnly": false,
     "cliName": "threatvaultbypaloaltonetworksapplicationsnew",
-    "type": "longText",
+    "type": "markdown",
     "closeForm": false,
     "editForm": true,
     "required": false,

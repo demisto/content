@@ -290,7 +290,7 @@ Gets the antivirus or anti-spyware or files signature.
 
 ### threatvault-release-note-get
 ***
-Retrieves the release notes information by type and version.
+Retrieves the release notes information by version.
 
 
 #### Base Command
@@ -300,7 +300,6 @@ Retrieves the release notes information by type and version.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The type of the release notes (ex. Content). | Required | 
 | version | The release version (ex. 8446) or content version (ex. 8446-6886) of the release notes. | Required | 
 
 
@@ -324,7 +323,7 @@ Retrieves the release notes information by type and version.
 | ThreatVault.ReleaseNote.applications.obsoleted | Array | List of obsolete entries. | 
 
 #### Command example
-```!threatvault-release-note-get  type=content version=8615```
+```!threatvault-release-note-get version=8615```
 #### Context Example
 ```json
 {
