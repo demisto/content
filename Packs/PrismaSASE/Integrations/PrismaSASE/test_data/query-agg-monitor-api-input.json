@@ -1,0 +1,36 @@
+{
+"filter": {
+"operator": "AND",
+"rules": [
+{
+"operator": "in",
+"property": "domain",
+"values": [
+"External",
+"external"
+]
+},
+{
+"operator": "last_n_days",
+"property": "event_time",
+"values": [
+7
+]
+}
+]
+},
+"properties": [
+{
+"property": "total_count"
+},
+{
+"property": "mu_count"
+},
+{
+"property": "rn_count"
+},
+{
+"property": "sc_count"
+}
+]
+}
