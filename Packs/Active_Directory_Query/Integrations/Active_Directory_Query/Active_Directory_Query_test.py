@@ -10,9 +10,6 @@ import json
 from IAMApiModule import *
 from unittest.mock import patch
 
-from Packs.Active_Directory_Query.Integrations.Active_Directory_Query.Active_Directory_Query import get_ssl_version, \
-    get_auto_bind_value
-
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
     'secure_connection': 'None',
@@ -715,6 +712,7 @@ def test_get_auto_bind_value(connection_type, unsecure, expected_auto_bind_value
 
                 4. 'NO_TLS' - Connection is insecure (cleartext) and shouldn't be upgraded to TLS.
     """
+    from Active_Directory_Query import get_auto_bind_value
     auto_bind_value = get_auto_bind_value(connection_type, unsecure)
     assert auto_bind_value == expected_auto_bind_value
 
@@ -745,6 +743,6 @@ def test_get_ssl_version(ssl_version, expected_ssl_version):
                 6. None - None
                 7. 'None' - None
     """
-
+    from Active_Directory_Query import get_ssl_version
     ssl_version_value = get_ssl_version(ssl_version)
     assert ssl_version_value == expected_ssl_version
