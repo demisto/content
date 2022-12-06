@@ -4234,17 +4234,6 @@
             ]
         },
         {
-            "playbookID": "Microsoft Graph Security Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft Graph"
-            ],
-            "instance_names": [
-                "ms_graph_security_prod",
-                "ms_graph_security_dev"
-            ]
-        },
-        {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
