@@ -3,7 +3,7 @@
 # exit on errors
 set -e
 
-echo "CLOUD_SERVERS_PATH  before  cat is $CLOUD_SERVERS_PATH"
+echo "CLOUD_SERVERS_PATH before cat is $CLOUD_SERVERS_PATH"
 
 
 CLOUD_SERVERS_PATH=$(cat CLOUD_SERVERS_PATH)
