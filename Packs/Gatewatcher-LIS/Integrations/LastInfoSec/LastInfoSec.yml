@@ -99,7 +99,7 @@ script:
       Retrieve the data from Gatewatcher CTI feed by minute.
       Max 1440 minutes.
     execution: false
-    name: lis-get-by-minute
+    name: gw-lis-get-by-minute
     outputs:
     - contextPath: LIS.GetByMinute.Value
       description: Value
@@ -116,7 +116,7 @@ script:
       in the Gatewatcher CTI database. If the data is known, only the IOC corresponding
       to the value will be returned.
     execution: false
-    name: lis-get-by-value
+    name: gw-lis-get-by-value
     outputs:
     - contextPath: LIS.GetByValue.Categories
       description: Categories

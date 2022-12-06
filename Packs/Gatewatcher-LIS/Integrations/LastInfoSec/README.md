@@ -18,7 +18,7 @@ This integration was integrated and tested with version 2 of LastInfoSec
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### lis-get-by-minute
+### gw-lis-get-by-minute
 ***
 Retrieve the data from Gatewatcher CTI feed by minute.
 Max 1440 minutes.
@@ -26,7 +26,7 @@ Max 1440 minutes.
 
 #### Base Command
 
-`lis-get-by-minute`
+`gw-lis-get-by-minute`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -47,7 +47,7 @@ Max 1440 minutes.
 
 ##### Command Example
 
-```!lis-get-by-minute Minute="5"```
+```!gw-lis-get-by-minute Minute="5"```
 
 #### Context Example
 
@@ -71,14 +71,14 @@ Max 1440 minutes.
 |17159ee4eecfd627b3e9ce3ddabd09be32d7b79f                        |
 
 
-### lis-get-by-value
+### gw-lis-get-by-value
 ***
 Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gatewatcher CTI database. If the data is known, only the IOC corresponding to the value will be returned.
 
 
 #### Base Command
 
-`lis-get-by-value`
+`gw-lis-get-by-value`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -100,7 +100,7 @@ Allows you to search for an IOC (url, hash, host) or a vulnerability in the Gate
 
 ##### Command Example
 
-```!lis-get-by-value Value="b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5"```
+```!gw-lis-get-by-value Value="b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5"```
 
 #### Context Example
 

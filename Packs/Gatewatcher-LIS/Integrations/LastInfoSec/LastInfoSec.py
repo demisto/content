@@ -342,11 +342,11 @@ def main() -> None:
             return_results(
                 test_module(client=client)
             )
-        elif command == "lis-get-by-minute":
+        elif command == "gw-lis-get-by-minute":
             return_results(
                 lis_get_by_minute(client=client, args=args)
             )
-        elif command == "lis-get-by-value":
+        elif command == "gw-lis-get-by-value":
             return_results(
                 lis_get_by_value(client=client, args=args)
             )
