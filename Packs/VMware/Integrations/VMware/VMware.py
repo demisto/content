@@ -12,6 +12,15 @@ from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
 
 
+SSL_VERSIONS = {
+    'TLS': ssl.PROTOCOL_TLS,
+    'TLSv1': ssl.PROTOCOL_TLSv1,  # guardrails-disable-line
+    'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
+    'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
+    'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
+}
+
+
 def parse_params(params):
     full_url = params['url']
     url_arr = full_url.rsplit(':', 1)
@@ -19,7 +28,8 @@ def parse_params(params):
     port = str(url_arr[1])
     user_name = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    return full_url, url, port, user_name, password
+    ssl_version = params.get('ssl_version')
+    return full_url, url, port, user_name, password, ssl_version
 
 
 def get_limit(args):
@@ -49,10 +59,11 @@ def get_limit(args):
 
 
 def login(params):  # pragma: no cover
-    full_url, url, port, user_name, password = parse_params(params)
+    full_url, url, port, user_name, password, ssl_version = parse_params(params)
 
     # Preparations for SDKs connections
-    s = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    tls_protocol = SSL_VERSIONS.get('ssl_version')
+    s = ssl.SSLContext(tls_protocol)
     s.verify_mode = ssl.CERT_NONE
     session = requests.session()
     session.verify = False
