@@ -23,8 +23,8 @@
             "attachments": []
         },
         "visibility": "Visible to all ideas portal users",
-        "url": "https://test.aha.io/ideas/ideas/DEMO-I-2895",
-        "resource": "https://test.aha.io/api/v1/ideas/DEMO-I-2895",
+        "url": "test/ideas/ideas/DEMO-I-2895",
+        "resource": "test/api/v1/ideas/DEMO-I-2895",
         "product": {
             "id": "6836114877834670881",
             "reference_prefix": "DEMO",
@@ -58,8 +58,8 @@
             "reference_num": "DEMO-1019",
             "name": "[Test] Mirroring",
             "created_at": "2022-09-18T09:16:45.939Z",
-            "url": "https://test.aha.io/features/DEMO-1019",
-            "resource": "https://test.aha.io/api/v1/features/DEMO-1019",
+            "url": "test/features/DEMO-1019",
+            "resource": "test/api/v1/features/DEMO-1019",
             "product_id": "6836114877834670881"
         },
         "endorsements_count": 2,
