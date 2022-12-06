@@ -31,8 +31,8 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| FileData | Data read from War Room file. | Unknown |
-| ReadFile.Data | Data read from War Room file. | Unknown |
+| FileData | Data read from the War Room file. | Unknown |
+| ReadFile.Data | Data read from the War Room file. | Unknown |
 | ReadFile.EntryID | File entry ID. | string |
 | ReadFile.FileSize | File size. | number |
 | ReadFile.EOF | Whether the file has reached end-of-file. | boolean |
