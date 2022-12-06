@@ -270,7 +270,7 @@
         "query_tables": [],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     },
     {
       "widget_key": "xql_1668002137913",
@@ -321,7 +321,7 @@
         "query_tables": [],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     },
     {
       "widget_key": "xql_1668004335717",
@@ -365,7 +365,7 @@
         "query_tables": [],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     },
     {
       "widget_key": "xql_1668007118551",
@@ -393,7 +393,7 @@
         "query_tables": [],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     },
     {
       "widget_key": "xql_1668077646616",
@@ -453,7 +453,7 @@
         ],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     },
     {
       "widget_key": "xql_1668355243914",
@@ -499,7 +499,7 @@
         ],
         "query_uses_library": false
       },
-      "creator_mail": "yasta@paloaltonetworks.com"
+      "creator_mail": ""
     }
   ]
 }
