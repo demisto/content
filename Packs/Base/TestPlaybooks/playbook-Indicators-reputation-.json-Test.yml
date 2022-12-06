@@ -1,6 +1,5 @@
 id: Indicators reputation-.json Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -45,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -54,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10320
+          "y": 9960
         }
       }
     note: false
@@ -79,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "34"
     scriptarguments:
       all:
         simple: "yes"
@@ -119,15 +120,14 @@ tasks:
       key:
         simple: valid_emails
       value:
-        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
+        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com", "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 7365
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 7540
         }
       }
     note: false
@@ -252,7 +252,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 7715
         }
       }
     note: false
@@ -282,17 +282,14 @@ tasks:
       key:
         simple: invalid_emails
       value:
-        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith
-          <email@example.com>", "email.example.com", "email@example@example.com",
-          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com",
-          "email[@]test[@]example.com"'
+        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com", "email[@]test[@]example.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 7890
         }
       }
     note: false
@@ -328,7 +325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 8065
         }
       }
     note: false
@@ -351,7 +348,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "76"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -449,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 8240
         }
       }
     note: false
@@ -470,6 +467,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -479,42 +477,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 8d5d4a86-059e-43d4-8dd1-c88cc3923321
-    type: regular
-    task:
-      id: 8d5d4a86-059e-43d4-8dd1-c88cc3923321
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1565
+          "y": 7220
         }
       }
     note: false
@@ -535,6 +498,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -544,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1740
+          "y": 8590
         }
       }
     note: false
@@ -574,17 +538,14 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com",
-          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
-          "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com",
-          "testing[.]com",  "見.香港"'
+        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com", "testing[.]com",  "見.香港"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 8735
         }
       }
     note: false
@@ -622,7 +583,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 8910
         }
       }
     note: false
@@ -751,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 9085
         }
       }
     note: false
@@ -788,7 +749,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 9260
         }
       }
     note: false
@@ -824,7 +785,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 9435
         }
       }
     note: false
@@ -847,7 +808,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "26"
+      - "77"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -897,42 +858,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "26":
-    id: "26"
-    taskid: e9f9f3c8-4480-4fd4-80e8-b78f2066b157
-    type: regular
-    task:
-      id: e9f9f3c8-4480-4fd4-80e8-b78f2066b157
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2935
+          "y": 9610
         }
       }
     note: false
@@ -953,6 +879,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -962,7 +889,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 5850
         }
       }
     note: false
@@ -974,10 +901,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 67fb6fdf-d7dc-4093-8de0-a66756b49159
+    taskid: e0dc6761-fad4-4739-80a6-4bed189cec59
     type: regular
     task:
-      id: 67fb6fdf-d7dc-4093-8de0-a66756b49159
+      id: e0dc6761-fad4-4739-80a6-4bed189cec59
       version: -1
       name: Set valid URLs
       description: Sets a value into the context with the given context key
@@ -992,22 +919,14 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I",
-          "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that"
-          "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())",
-          "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3",
-          "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000","http://öevil.tld/anypath",
-          "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath",
-          "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html",
-          "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path",
-          "ftp://foo.bar/resource","ftp://foo.bar/"'
+        simple: '"www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "http://www.mock.com?e=P6wGLG", "https://Test.com/this-that" "http://_23_11.redacted.com./#redactedredactedredacted", "http://www.mock.com?gbdfs","http://test.com#fragment3","http://test.com#fragment3/","(http://www.foo.bar/taz?())", "http://test.com#fragment3","http://test.com#fragment3/","http://test.com#fragment3#fragment3", "(http://www.foo.bar/taz?())","http://öevil.tld/","http://öevil.tld:5000","http://öevil.tld/anypath", "www.evilö.tld/evil.aspx","https://www.evöl.tld/","https://www.evöl.tld/anypath", "hxxps://www.xn--e1v2i3l4.tld","www.evil.tld:443/path/to/resource.html", "https://www.evil.tld:443/path/to/resource.html","1.2.3.4/path", "google.com/path","2001:db8:3333:4444:5555:6666:7777:8888/path/path", "ftp://foo.bar/resource","ftp://foo.bar/"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3255
+          "y": 5995
         }
       }
     note: false
@@ -1043,7 +962,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3430
+          "y": 6170
         }
       }
     note: false
@@ -1055,10 +974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: c4692c8f-1662-4617-80ad-9b45dce578fb
+    taskid: 982f15c6-c126-4f91-82b2-7694b5952670
     type: condition
     task:
-      id: c4692c8f-1662-4617-80ad-9b45dce578fb
+      id: 982f15c6-c126-4f91-82b2-7694b5952670
       version: -1
       name: Check auto-extract
       type: condition
@@ -1174,7 +1093,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.ru.wikipedia.org/wiki/елизавета_i
+              simple: www.ru.wikipedia.org/wiki/Елизавета_I
       - - operator: containsGeneral
           left:
             value:
@@ -1198,7 +1117,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://www.mock.com?e=p6wglg
+              simple: http://www.mock.com?e=P6wGLG
       - - operator: containsGeneral
           left:
             value:
@@ -1230,13 +1149,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://test.com/this-that
+              simple: https://Test.com/this-that
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3605
+          "y": 6345
         }
       }
     note: false
@@ -1248,10 +1167,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1b0ccc32-0131-4555-8c11-f943d40845bc
+    taskid: f36a70cb-96f8-4c5c-829e-b3aad4af86cd
     type: regular
     task:
-      id: 1b0ccc32-0131-4555-8c11-f943d40845bc
+      id: f36a70cb-96f8-4c5c-829e-b3aad4af86cd
       version: -1
       name: Set invalid URLs
       description: Sets a value into the context with the given context key
@@ -1266,15 +1185,14 @@ tasks:
       key:
         simple: invalid_urls
       value:
-        simple: '"http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com",
-          "http://foo.bar/foo(bar)baz quux","http://www.foo.bar/baz?x=3())"'
+        simple: '"http://3628126748", "http://.www.foo.bar/",, "http:// shouldfail.com", "http://foo.b/foo(bar)baz","http://www.fo[o.bar/baz?x=3())"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3780
+          "y": 6520
         }
       }
     note: false
@@ -1310,7 +1228,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3955
+          "y": 6695
         }
       }
     note: false
@@ -1333,7 +1251,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "41"
+      - "75"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1375,7 +1293,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4130
+          "y": 6870
         }
       }
     note: false
@@ -1406,7 +1324,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4480
+          "y": 370
         }
       }
     note: false
@@ -1443,7 +1361,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4625
+          "y": 515
         }
       }
     note: false
@@ -1479,7 +1397,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4800
+          "y": 690
         }
       }
     note: false
@@ -1544,7 +1462,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4975
+          "y": 865
         }
       }
     note: false
@@ -1574,15 +1492,14 @@ tasks:
       key:
         simple: invalid_ips
       value:
-        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256",
-          "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
+        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256", "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5150
+          "y": 1040
         }
       }
     note: false
@@ -1618,7 +1535,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5325
+          "y": 1215
         }
       }
     note: false
@@ -1715,42 +1632,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5500
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "41":
-    id: "41"
-    taskid: f84d33fb-e1fe-4721-89d0-8868f89e5d10
-    type: regular
-    task:
-      id: f84d33fb-e1fe-4721-89d0-8868f89e5d10
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4305
+          "y": 1390
         }
       }
     note: false
@@ -1771,6 +1653,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1780,7 +1663,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5850
+          "y": 1740
         }
       }
     note: false
@@ -1817,7 +1700,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5995
+          "y": 1885
         }
       }
     note: false
@@ -1853,7 +1736,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6170
+          "y": 2060
         }
       }
     note: false
@@ -1918,7 +1801,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6345
+          "y": 2235
         }
       }
     note: false
@@ -1955,7 +1838,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6520
+          "y": 2410
         }
       }
     note: false
@@ -1991,7 +1874,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6695
+          "y": 2585
         }
       }
     note: false
@@ -2014,7 +1897,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "64"
+      - "79"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2048,7 +1931,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6870
+          "y": 2760
         }
       }
     note: false
@@ -2069,6 +1952,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -2078,7 +1962,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7220
+          "y": 3110
         }
       }
     note: false
@@ -2114,7 +1998,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7540
+          "y": 3430
         }
       }
     note: false
@@ -2179,7 +2063,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7715
+          "y": 3605
         }
       }
     note: false
@@ -2209,15 +2093,14 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::",
-          "tag::event"'
+        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "tag::event"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7890
+          "y": 3780
         }
       }
     note: false
@@ -2253,7 +2136,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8065
+          "y": 3955
         }
       }
     note: false
@@ -2276,7 +2159,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "63"
+      - "80"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2310,7 +2193,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8240
+          "y": 4130
         }
       }
     note: false
@@ -2331,6 +2214,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -2340,7 +2224,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8690
+          "y": 4480
         }
       }
     note: false
@@ -2377,7 +2261,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8875
+          "y": 4625
         }
       }
     note: false
@@ -2413,7 +2297,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9070
+          "y": 4800
         }
       }
     note: false
@@ -2454,7 +2338,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9285
+          "y": 4975
         }
       }
     note: false
@@ -2491,7 +2375,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9520
+          "y": 5150
         }
       }
     note: false
@@ -2527,7 +2411,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9720
+          "y": 5325
         }
       }
     note: false
@@ -2550,7 +2434,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "66"
+      - "81"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2568,77 +2452,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: b28681ae-19fc-42d3-80c5-1daaf1743564
-    type: regular
-    task:
-      id: b28681ae-19fc-42d3-80c5-1daaf1743564
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "56"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 8470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: 8282d465-8240-4dc4-8fb8-e7d30b71ba57
-    type: regular
-    task:
-      id: 8282d465-8240-4dc4-8fb8-e7d30b71ba57
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "49"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 7045
+          "y": 5500
         }
       }
     note: false
@@ -2673,42 +2487,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5675
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 8b34db9e-f9c0-4794-8905-cfdb7ddc2adc
-    type: regular
-    task:
-      id: 8b34db9e-f9c0-4794-8905-cfdb7ddc2adc
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 10120
+          "y": 1565
         }
       }
     note: false
@@ -2745,7 +2524,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10460
+          "y": 10105
         }
       }
     note: false
@@ -2781,7 +2560,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10640
+          "y": 10280
         }
       }
     note: false
@@ -2822,7 +2601,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10825
+          "y": 10455
         }
       }
     note: false
@@ -2857,7 +2636,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10990
+          "y": 10630
         }
       }
     note: false
@@ -2892,7 +2671,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 11155
+          "y": 10805
         }
       }
     note: false
@@ -2913,13 +2692,14 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 11320
+          "y": 10980
         }
       }
     note: false
@@ -2949,15 +2729,224 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329",
-          "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329", "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7360
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 26fb628c-1ab2-4f15-8a05-b5942f8c615b
+    type: regular
+    task:
+      id: 26fb628c-1ab2-4f15-8a05-b5942f8c615b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 6245bdd9-1b49-4b99-893a-64f3baf495c8
+    type: regular
+    task:
+      id: 6245bdd9-1b49-4b99-893a-64f3baf495c8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: d3d9ef1b-8501-4d7c-899d-36430d76f099
+    type: regular
+    task:
+      id: d3d9ef1b-8501-4d7c-899d-36430d76f099
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 44d51e3f-7d6b-4952-817c-ce44ea869eb8
+    type: regular
+    task:
+      id: 44d51e3f-7d6b-4952-817c-ce44ea869eb8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: df15f257-62d2-46ee-83b6-816799036588
+    type: regular
+    task:
+      id: df15f257-62d2-46ee-83b6-816799036588
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 5a096a33-5dff-4bde-85c8-ca15b599531a
+    type: regular
+    task:
+      id: 5a096a33-5dff-4bde-85c8-ca15b599531a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5675
         }
       }
     note: false
@@ -2969,13 +2958,10 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "15_18_yes": 0.9,
-      "30_31_yes": 0.84
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11335,
+        "height": 10995,
         "width": 380,
         "x": 50,
         "y": 50
@@ -2985,3 +2971,6 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
