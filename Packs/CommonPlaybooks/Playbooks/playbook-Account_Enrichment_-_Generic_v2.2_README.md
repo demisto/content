@@ -19,18 +19,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
+* Set
 * IsIntegrationAvailable
 
 ### Commands
-* iam-get-user
-* msgraph-user-get
-* pingone-get-user
+* identitynow-get-accounts
+* ad-get-user
 * aws-iam-get-user
-* okta-get-user
+* iam-get-user
 * identityiq-search-identities
 * msgraph-user-get-manager
-* ad-get-user
-* identitynow-get-accounts
+* pingone-get-user
+* okta-get-user
+* msgraph-user-get
 
 ## Playbook Inputs
 ---
@@ -161,4 +162,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.2.png)
+![Account Enrichment - Generic v2.1](../doc_files/Account_Enrichment_-_Generic_v2.1.png)
