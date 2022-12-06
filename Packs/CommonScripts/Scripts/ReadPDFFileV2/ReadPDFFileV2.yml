@@ -127,7 +127,7 @@ tags:
   - ingestion
 timeout: "0"
 type: python
-dockerimage: devdemisto/py3-native:8.1.0.40263
+dockerimage: devdemisto/py3-native:8.1.0.40312
 runonce: false
 runas: DBotRole
 tests:
