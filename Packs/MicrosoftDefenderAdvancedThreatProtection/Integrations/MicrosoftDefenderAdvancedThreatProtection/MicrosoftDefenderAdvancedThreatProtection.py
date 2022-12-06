@@ -1984,7 +1984,7 @@ class MsClient:
             raise Exception(f"Machine {machine_id} not found")
         return response
 
-    def get_list_machines_by_software(self, software_id):
+    def get_list_machines_by_software(self, software_id: str) -> dict:
         """Retrieve a list of device references that has this software installed.
             Args:
                 software_id (str): Software ID
@@ -1994,7 +1994,7 @@ class MsClient:
         cmd_url = f'/Software/{software_id}/machineReferences'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_list_software_version_distribution(self, software_id):
+    def get_list_software_version_distribution(self, software_id: str) -> dict:
         """Retrieves a list of your organization's software version distribution.
             Args:
                 software_id (str): Software ID.
@@ -2004,7 +2004,7 @@ class MsClient:
         cmd_url = f'/Software/{software_id}/distributions'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_list_missing_kb_by_software(self, software_id):
+    def get_list_missing_kb_by_software(self, software_id: str) -> dict:
         """Retrieves missing KBs (security updates) by software ID.
             Args:
                 software_id (str): Software ID.
@@ -2014,7 +2014,7 @@ class MsClient:
         cmd_url = f'/Software/{software_id}/getmissingkbs'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_list_vulnerabilities_by_software(self, software_id):
+    def get_list_vulnerabilities_by_software(self, software_id: str) -> dict:
         """Retrieve a list of vulnerabilities in the installed software.
             Args:
                 software_id (str): Software ID.
@@ -2024,39 +2024,39 @@ class MsClient:
         cmd_url = f'/Software/{software_id}/vulnerabilities'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
-    def get_list_software(self, filter_req, limit, page, page_size):
+    def get_list_software(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves the organization software inventory.
 
         Returns:
             dict. software inventory.
         """
         cmd_url = '/Software'
-        params = {'$top': limit, '$skip': page * page_size}
+        params = {'$top': limit, '$skip': offset}
         if filter_req:
             params['$filter'] = filter_req
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_list_vulnerabilities_by_machine(self, filter_req, limit, page, page_size):
+    def get_list_vulnerabilities_by_machine(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all the vulnerabilities affecting the organization per machine.
 
         Returns:
             dict. list of all the vulnerabilities affecting the organization per machine.
         """
         cmd_url = '/vulnerabilities/machinesVulnerabilities'
-        params = {'$top': limit, '$skip': page * page_size}
+        params = {'$top': limit, '$skip': offset}
         if filter_req:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
-    def get_list_vulnerabilities(self, filter_req, limit, page, page_size):
+    def get_list_vulnerabilities(self, filter_req: str, limit: str, offset: str) -> dict:
         """Retrieves a list of all vulnerabilities.
 
         Returns:
             dict. list of all the vulnerabilities.
         """
         cmd_url = '/vulnerabilities'
-        params = {'$top': limit, '$skip': page * page_size}
+        params = {'$top': limit, '$skip': offset}
         if filter_req:
             params['$filter'] = filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
@@ -4466,22 +4466,6 @@ def get_indicator_dbot_object(indicator):
         return None
 
 
-def get_correct_page_size_and_limit(page_size: Optional[int], limit: Optional[int]) -> tuple[Optional[int], Optional[int]]:
-    """ Gets correct page size and limit according to their values.
-        Args:
-            page_size: int - Specifies the page size of the result set. Default is 25.
-            limit: int - Maximum number of results to retrieve. Default is 50.
-        Returns:
-            A tuple object with the correct values.
-    """
-    if limit and page_size:
-        if page_size <= limit:
-            page_size = limit
-    if page_size:
-        limit = page_size
-    return page_size, limit
-
-
 def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
     """ Retrieve a list of device references that has the given software installed.
         Args:
@@ -4490,15 +4474,16 @@ def list_machines_by_software_command(client: MsClient, args: dict) -> CommandRe
         Returns:
             A CommandResults object with a list of machines by software.
     """
-    software_id = args.get('id')
+    software_id = str(args.get('id'))
     headers = ['id', 'computerDnsName', 'osPlatform', 'rbacGroupName', 'rbacGroupId']
     machines_response = client.get_list_machines_by_software(software_id)
+    machines_response_value =  machines_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list machines by software: {software_id}',
-                                     machines_response.get('value'), headers=headers, removeNull=True)
+                                     machines_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareMachine',
         outputs_key_field='id',
-        outputs=machines_response.get('value'),
+        outputs=machines_response_value,
         readable_output=human_readable,
         raw_response=machines_response)
 
@@ -4511,14 +4496,15 @@ def list_software_version_distribution_command(client: MsClient, args: dict) -> 
         Returns:
             A CommandResults object with a list of software version distribution.
     """
-    software_id = args.get('id')
+    software_id = str(args.get('id'))
     headers = ['version', 'installations', 'vulnerabilities']
     software_version_distribution_response = client.get_list_software_version_distribution(software_id)
+    software_version_distribution_response_value = software_version_distribution_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} software version distribution:',
-                                     software_version_distribution_response.get('value'), headers=headers, removeNull=True)
+                                     software_version_distribution_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareVersion',
-        outputs=software_version_distribution_response.get('value'),
+        outputs=software_version_distribution_response_value,
         outputs_key_field=['version', 'installations', 'vulnerabilities'],
         readable_output=human_readable,
         raw_response=software_version_distribution_response)
@@ -4532,15 +4518,16 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
         Returns:
             A CommandResults object with a list of missing kb by software.
     """
-    software_id = args.get('id')
+    software_id = str(args.get('id'))
     headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
     missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
+    missing_kb_by_software_response_value =  missing_kb_by_software_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
-                                     missing_kb_by_software_response.get('value'), headers=headers, removeNull=True)
+                                     missing_kb_by_software_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareKB',
         outputs_key_field='id',
-        outputs=missing_kb_by_software_response.get('value'),
+        outputs=missing_kb_by_software_response_value,
         readable_output=human_readable,
         raw_response=missing_kb_by_software_response)
 
@@ -4553,16 +4540,17 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> Co
         Returns:
             A CommandResults object with a list of vulnerabilities by software.
     """
-    software_id = args.get('id')
+    software_id = str(args.get('id'))
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines', 'exploitVerified',
                'publicExploit']
     vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
+    vulnerabilities_response_value = vulnerabilities_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
-                                     vulnerabilities_response.get('value'), headers=headers, removeNull=True)
+                                     vulnerabilities_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareCVE',
         outputs_key_field='id',
-        outputs=vulnerabilities_response.get('value'),
+        outputs=vulnerabilities_response_value,
         readable_output=human_readable,
         raw_response=vulnerabilities_response)
 
@@ -4635,14 +4623,11 @@ def list_software_command(client: MsClient, args: dict) -> CommandResults:
     software_id = argToList(args.get('id', ''))
     names = argToList(args.get('name', ''))
     vendors = argToList(args.get('vendor', ''))
-    limit = arg_to_number(args.get('limit', 50))
-    page_size = arg_to_number(args.get('page_size', 25))
-    page = arg_to_number(args.get('page'))
-    page = page - 1 if page else 0
-    page_size, limit = get_correct_page_size_and_limit(page_size, limit)
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
     filter_req = create_filter([(software_id, 'id'), (names, 'name'), (vendors, 'vendor')])
     headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
-    list_software_response = client.get_list_software(filter_req, limit, page, page_size)
+    list_software_response = client.get_list_software(filter_req, limit, offset)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
                                      list_software_response.get('value'), headers=headers, removeNull=True)
     return CommandResults(
@@ -4669,16 +4654,13 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
     product_version = argToList(args.get('product_version', ''))
     severity = argToList(args.get('severity', ''))
     product_vendor = argToList(args.get('product_vendor', ''))
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page'))
-    page = page - 1 if page else 0
-    page_size = arg_to_number(args.get('page_size', 25))
-    page_size, limit = get_correct_page_size_and_limit(page_size, limit)
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
     filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'), (fixing_kb_id, 'fixingKbId'),
                                 (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
                                 (product_vendor, 'productVendor')])
     headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
-    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, page, page_size)
+    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                      list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
     return CommandResults(
@@ -4696,7 +4678,7 @@ def create_filter_list_vulnerabilities(id_and_severity: str, name: str, descript
             id_and_severity: str - Id and severity of the vulnerability.
             name: str - Name of the vulnerability.
             description: str - Description of the vulnerability.
-            published_on: str - Date when vulnerability was published..
+            published_on: str - Date when vulnerability was published.
             cvss: str - CVSS v3 score.
             updated_on: str - Date when vulnerability was updated.
         Returns:
@@ -4717,6 +4699,18 @@ def create_filter_list_vulnerabilities(id_and_severity: str, name: str, descript
     return create_filters_disjunctions(filter_query_list)
 
 
+def date_to_iso_format(date: str) -> str:
+    """ Retrieves date string or relational expression to iso format date.
+        Args:
+            date: str - date or relational expression.
+        Returns:
+            A str in ISO format.
+    """
+    date = dateparser.parse(date)
+    date = date.strftime("%Y-%m-%dT%H:%M:%SZ") if date else ''
+    return date
+
+
 def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
     """ Retrieves a list of all vulnerabilities.
         Args:
@@ -4729,23 +4723,16 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
     severity = argToList(args.get('severity', ''))
     name = args.get('name', '')
     description = args.get('description', '')
-    published_on = args.get('published_on', '')
-    published_on = dateparser.parse(published_on)
-    published_on = published_on.strftime("%Y-%m-%dT%H:%M:%SZ") if published_on else ''
-    updated_on = args.get('updated_on', '')
-    updated_on = dateparser.parse(updated_on)
-    updated_on = updated_on.strftime("%Y-%m-%dT%H:%M:%SZ") if updated_on else ''
+    published_on = date_to_iso_format(args.get('published_on', ''))
+    updated_on = date_to_iso_format(args.get('updated_on', ''))
     cvss = args.get('cvss', '')
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page'))
-    page = page - 1 if page else 0
-    page_size = arg_to_number(args.get('page_size', 25))
-    page_size, limit = get_correct_page_size_and_limit(page_size, limit)
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
     filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
     filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name, description, published_on, cvss, updated_on)
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
                'exploitVerified', 'publicExploit', 'cvssV3']
-    list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, page, page_size)
+    list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                      list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
 

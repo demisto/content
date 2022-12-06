@@ -4505,7 +4505,7 @@ script:
     polling: true
   - arguments:
     - default: false
-      description: Software ID.
+      description: Software ID, use the !microsoft-atp-list-software command, in order to get the ID.
       isArray: false
       name: id
       secret: false
@@ -4530,7 +4530,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Software ID.
+      description: Software ID, use the !microsoft-atp-list-software command, in order to get the ID.
       isArray: false
       name: id
       secret: false
@@ -4561,7 +4561,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Software ID.
+      description: Software ID, use the !microsoft-atp-list-software command, in order to get the ID.
       isArray: false
       name: id
       secret: false
@@ -4610,7 +4610,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Software ID.'
+      description: Software ID.
       isArray: true
       name: id
     - description: Software name.
@@ -4626,13 +4626,9 @@ script:
       isArray: false
       name: limit
     - default: false
-      description: The page number from which to start a search.
+      description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
-      name: page
-    - default: false
-      description: Specifies the page size of the result set. Default is 25.
-      isArray: false
-      name: page_size
+      name: offset
     deprecated: false
     description: Retrieves the organization software inventory.
     name: microsoft-atp-list-software
@@ -4726,14 +4722,9 @@ script:
       name: limit
       secret: false
     - default: false
-      description: The page number from which to start a search.
+      description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
-      name: page
-      secret: false
-    - default: false
-      description: Specifies the page size of the result set. Default is 25.
-      isArray: false
-      name: page_size
+      name: offset
       secret: false
     deprecated: false
     description: Retrieves a list of all the vulnerabilities affecting the organization per machine.
@@ -4811,17 +4802,12 @@ script:
       name: limit
       secret: false
     - default: false
-      description: The page number from which to start a search.
+      description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
-      name: page
-      secret: false
-    - default: false
-      description: Specifies the page size of the result set. Default is 25.
-      isArray: false
-      name: page_size
+      name: offset
       secret: false
     deprecated: false
-    description: 'Retrieves a list of all vulnerabilities.'
+    description: Retrieves a list of all vulnerabilities.
     name: microsoft-atp-list-vulnerabilities
     outputs:
     - contextPath: MicrosoftATP.Vulnerability.id
@@ -4865,7 +4851,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Software ID.
+      description: Software ID, use the !microsoft-atp-list-software command, in order to get the ID.
       isArray: false
       name: id
       secret: false
