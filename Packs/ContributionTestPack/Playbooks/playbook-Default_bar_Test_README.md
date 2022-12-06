@@ -14,8 +14,8 @@ This playbook does not use any integrations.
 * AssignAnalystToIncident
 
 ### Commands
-* closeInvestigation
 * extractIndicators
+* closeInvestigation
 
 ## Playbook Inputs
 ---
