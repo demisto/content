@@ -2605,7 +2605,7 @@ script:
           name: rule_text
         - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
           name: criticality_score
-      description: Create a new asset tag.
+      description: "Create a new asset tag. \nThe changes caused by this procedure do not take effect immediately. The procedure could take several hours, depending (among other things) on the the amount of assets in the system."
       name: qualys-asset-tag-create
       outputs:
         - contextPath: Qualys.AssetTags.id
@@ -2653,7 +2653,7 @@ script:
           name: child_to_remove
         - description: Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest).
           name: criticality_score
-      description: Update an existing asset tag.
+      description: "Update an existing asset tag. \nThe changes caused by this procedure do not take effect immediately. The procedure could take several hours, depending (among other things) on the the amount of assets in the system."
       name: qualys-asset-tag-update
     - arguments:
         - description: ID of the tag you wish to delete.
