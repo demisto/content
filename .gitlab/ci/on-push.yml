@@ -475,5 +475,5 @@ xsiam_server_ga:
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
-    CLOUD_SERVERS_PATH: $CLOUD_SERVERS_PATH
+    CLOUD_SERVERS_PATH: $XSIAM_SERVERS_PATH
     CLOUD_API_KEYS: $XSIAM_API_KEYS
