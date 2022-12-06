@@ -1140,7 +1140,7 @@ def test_module(client: Client, args: Dict[str, str], params):
     """
     if params.get('isFetch'):
         incident = client.get_list_incidents(None, None, None, status='new', limit=1)
-        demisto.results(incident)
+        demisto.results('ok')
         return '', None, None
     else:
         client.test_module_request()
