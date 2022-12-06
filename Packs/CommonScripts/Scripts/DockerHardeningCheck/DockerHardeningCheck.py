@@ -195,7 +195,7 @@ def check_network(network_check: str) -> str:
                            f"you haven't blocked access to the host server. Response status code: [{res.status_code}]."
                            f"Response headers: {res.headers}")
         except Exception as ex:
-            LOG(f'host gateway server returned exception (this is good. means there is no access to the host server.): {ex}')
+            LOG(f'The host gateway server returned an exception (this is good. It means that there is no access to the host server.): {ex}')
     return return_res
 
 
