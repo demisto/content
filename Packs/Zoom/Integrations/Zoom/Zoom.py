@@ -89,8 +89,11 @@ class Client(BaseClient):
         set_integration_context(ctx)
         return oauth_token
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None, **kwargs):
-        """ This is a rewrite of the classic _http_request, 
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None, data=None,
+                      files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0,
+                      status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+                      error_handler=None, empty_valid_codes=None, **kwargs):
+        """ This is a rewrite of the classic _http_request,
             all future functions should call this function instead of the original _http_request.
             This is needed because the OAuth token may not behave consistently,
             First the func will make an http request with a token,
@@ -130,17 +133,23 @@ class Client(BaseClient):
 
         )
 
-    def zoom_user_list(self, status: str, page_size: str, page_number: str):
+    def zoom_user_list(self, status: str = "active", page_size: str = "30", page: str = "1",
+                       role_id: str = None, limit: str = None, user_id: str = None):
+        if not user_id:
+            url_suffix = 'users'
+        else:
+            url_suffix = f'users/{user_id}'
+        # finel_page_token = None
         return self._http_request(
             method='GET',
-            url_suffix='users',
+            url_suffix=url_suffix,
             headers={'authorization': f'Bearer {self.access_token}'},
             params={
                 'status': status,
                 'page_size': page_size,
-                'page_number': page_number
-            }
-        )
+                'page_number': page,
+                # 'next_page_token': finel_page_token
+            })
 
     def zoom_user_delete(self, user: str, action: str):
         return self._http_request(
@@ -175,6 +184,28 @@ class Client(BaseClient):
             url_suffix=f"users/{user}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data=params)
+
+    def zoom_meeting_get(self, meeting_id: str, occurrence_id: str = None,
+                         show_previous_occurrences: bool = True):
+        return self._http_request(
+            method='GET',
+            url_suffix=f"/meetings/{meeting_id}",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                "occurrence_id": occurrence_id,
+                "show_previous_occurrences": show_previous_occurrences
+            })
+
+    def zoom_meeting_list(self, user: str, next_page_token: str, page_size: str):
+        return self._http_request(
+            method='GET',
+            url_suffix=f"users/{user}/meetings",
+            headers={'authorization': f'Bearer {self.access_token}'},
+            params={
+                'next_page_token': next_page_token,
+                'page_size': page_size
+
+            })
 
     def zoom_recording_get(self, meeting_id: str):
         succeed = []
@@ -260,7 +291,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
-        client.zoom_user_list('active', '30', '1')
+        client.zoom_user_list('active', '30', '1', None, None, None)
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -278,10 +309,12 @@ def test_module(
 '''FORMATTING FUNCTIONS'''
 
 
-def zoom_user_list_command(client: Client, status: str, page_size: str, page_number: str) -> CommandResults:
-    raw_data = client.zoom_user_list(status, page_size, page_number)
+def zoom_user_list_command(client: Client, status: str, page_size: str = "30", page: str = "1",
+                           role_id: str = None, limit: str = None, user_id: str = None) -> CommandResults:
+    raw_data = client.zoom_user_list(status, page_size, page, role_id, limit, user_id)
     # parse data to md
-    md = tableToMarkdown('Users', raw_data.get('users'), ['id', 'first_name', 'last_name', 'email', 'type'])
+    md = tableToMarkdown('Users', raw_data.get('users'), ['id', 'email',
+                         'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
     md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number', 'page_size', 'total_records'])
     return CommandResults(
         outputs_prefix='Zoom',
@@ -292,8 +325,10 @@ def zoom_user_list_command(client: Client, status: str, page_size: str, page_num
             'Size': raw_data.get('page_size'),
             'Total': raw_data.get('total_records')
         },
+            # TODO do i need this line?
             'User': raw_data.get('users')
         },
+        raw_response=raw_data
     )
 
 
@@ -303,7 +338,8 @@ def zoom_user_create_command(client: Client, user_type: int, email: str, first_n
         outputs_prefix='Zoom',
         readable_output=f"User created successfully with ID{raw_data.get('id')}",
         # TO DO: not sure about this line
-        outputs={'User': raw_data}
+        outputs={'User': raw_data},
+        raw_response=raw_data
     )
 
 
@@ -311,7 +347,7 @@ def zoom_user_delete_command(client: Client, user: str, action: str) -> CommandR
     client.zoom_user_delete(user, action)
     return CommandResults(
         outputs_prefix='Zoom',
-        readable_output=f'User {user} was deleted successfully'
+        readable_output=f'User {user} was deleted successfully',
     )
 
 
@@ -322,9 +358,10 @@ def zoom_meeting_create_command(client: Client, type: str, topic: str, user: str
     md = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
     return CommandResults(
-        outputs_prefix='Zoom',
+        outputs_prefix='Zoom.meetings',
         readable_output=md,
-        outputs={'Zoom.Meeting': raw_data}
+        outputs={'Zoom.Meeting': raw_data},
+        raw_response=raw_data
     )
 
 
@@ -332,7 +369,40 @@ def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResult
     raw_data = client.zoom_recording_get(meeting_id)
     return CommandResults(
         outputs_prefix='Zoom',
-        readable_output=raw_data
+        readable_output=raw_data,
+        raw_response=raw_data
+    )
+
+
+def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
+                             show_previous_occurrences: bool = True) -> CommandResults:
+    raw_data = client.zoom_meeting_get(meeting_id, occurrence_id, show_previous_occurrences)
+    md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                         'type', 'status', 'start_time', 'duration',
+                                                         'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
+                                                         ])
+    return CommandResults(
+        outputs_prefix='Zoom.meetings',
+        readable_output=md,
+        # TODO do i need this line?
+        outputs={'Zoom.Meeting': raw_data},
+        raw_response=raw_data
+    )
+
+
+def zoom_meeting_list_command(client: Client, user: str,
+                              next_page_token: str, page_size: str) -> CommandResults:
+    raw_data = client.zoom_meeting_list(user, next_page_token, page_size)
+    md = tableToMarkdown('Meeting list', [raw_data], ['page_size', 'total_records', 'uuid', 'id',
+                                                      'host id', 'topic', 'type', 'start time', 'duration',
+                                                      'timezone', 'created_at', 'join_url'
+                                                      ])
+    return CommandResults(
+        outputs_prefix='Zoom.meetings',
+        readable_output=md,
+        # TODO do i need this line?
+        outputs={'Zoom.Meeting': raw_data},
+        raw_response=raw_data
     )
 
 
@@ -388,6 +458,10 @@ def main():
             results = zoom_user_create_command(client, **args)
         elif command == 'zoom-meeting-create':
             results = zoom_meeting_create_command(client, **args)
+        elif command == 'zoom-meeting-get':
+            results = zoom_meeting_get_command(client, **args)
+        elif command == 'zoom-meeting-list':
+            results = zoom_meeting_list_command(client, **args)
         elif command == 'zoom-user-delete':
             results = zoom_user_delete_command(client, **args)
         elif command == 'zoom-recording-get':
