@@ -1,4 +1,5 @@
 import demistomock as demisto  # noqa: F401
+import pytest
 from CommonServerPython import *  # noqa: F401
 from AHA import Client, get, edit
 from AHA import AHA_TYPE
@@ -100,15 +101,18 @@ def test_getIdeas(mocker):
     assert len(results.outputs) == 4
 
 
-def test_getFeaturesFromDate(mocker):
+@pytest.mark.parametrize('file_path, get_type, from_date',
+                         [('test_data/empty_feature_result.json', AHA_TYPE.FEATURES, '3000-01-01'),
+                          ('test_data/empty_idea_result.json', AHA_TYPE.IDEAS, '3000-01-01')])
+def test_getFeaturesFromDate(mocker, file_path, get_type, from_date):
     """
         When:
             - Requesting all features with created date of the future
         Then:
             - Return en empty list
     """
-    client = mock_client(mocker, util_load_json('test_data/empty_feature_result.json'))
-    results = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='3000-01-01')
+    client = mock_client(mocker, util_load_json(file_path))
+    results = get(client=client, get_type=get_type, from_date=from_date)
     assert len(results.outputs) == 0
 
 
