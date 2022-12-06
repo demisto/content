@@ -60,6 +60,36 @@ def test_main(mocker):
     assert demisto.results.call_args[0][0] == 'ok'
 
 
+def test_notImplementedCommand(mocker):
+    """
+    Given:
+        - All return values from helper functions are valid
+    When:
+        - Calling main function with invalid command
+    Then:
+        - Return sys.exit(0)
+    """
+    from AHA import main
+
+    mocker.patch.object(
+        demisto, 'params', return_value={
+            'url': 'example.com',
+            'project_name': 'DEMO',
+            'api_key': {'password': 'test_api'},
+        }
+    )
+    mocker.patch('AHA.Client.get', return_value={'name': 'test'})
+    mocker.patch.object(
+        demisto, 'command',
+        return_value='tests-module'
+    )
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        main()
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == 0
+
+
 def test_Module(mocker):
     """
     Given:
@@ -116,7 +146,7 @@ def test_getFeaturesFromDate(mocker, file_path, get_type, from_date):
     assert len(results.outputs) == 0
 
 
-def test_getSpecificFeature(mocker):
+def test_getAFeature(mocker):
     """
         When:
             - Requesting a specific feature
@@ -129,7 +159,7 @@ def test_getSpecificFeature(mocker):
     assert result.outputs[0]['reference_num'] == 'DEMO-10'
 
 
-def test_getSpecificIdea(mocker):
+def test_getAnIdea(mocker):
     """
         When:
             - Requesting a specific idea
