@@ -397,7 +397,8 @@ slack-notify-nightly-build:
     - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
     - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
     - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"    - section_start "Are there tests to run?" --collapsed
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
         # The files are empty.
