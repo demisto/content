@@ -461,79 +461,165 @@ script:
           description: Is Rule visible to child domains.
           type: Boolean
         - contextPath: NSM.Rule.hostCriticality
-          description: ''
+          description: The critical level of the host.
           type: String
         - contextPath: NSM.Rule.ApplicationGroup
-          description: ''
+          description: Application Group object, should be defined if ruleobjType is "APPLICATION_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ApplicationOnCustomPort
-          description: ''
+          description: Application defined on Custom Port object, should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
           type: Unknown
         - contextPath: NSM.Rule.FiniteTimePeriod
-          description: ''
+          description: Finite Time Period object, should be defined if ruleobjType is "FINITE_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv4
-          description: ''
+          description: Host IPv4 Address object, should be defined if ruleobjType is "HOST_IPV_4".
           type: Unknown
         - contextPath: NSM.Rule.HostIPv6
-          description: ''
+          description: Host IPv6 Address object, should be defined if ruleobjType is "HOST_IPV_6".
           type: Unknown
         - contextPath: NSM.Rule.HostDNSName
-          description: ''
+          description: Host DNS Name object, should be defined if ruleobjType is "HOST_DNS_NAME".
           type: Unknown
         - contextPath: NSM.Rule.IPv4AddressRange
-          description: ''
+          description: IPv4 Address Range object, should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.IPv6AddressRange
-          description: ''
+          description: IPv6 Address Range object, should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
           type: Unknown
         - contextPath: NSM.Rule.Network_IPV_4
-          description: ''
+          description: IPv4 Network object, should be defined if ruleobjType is "NETWORK_IPV_4.
           type: Unknown
-        - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
-          description: ''
+        - contextPath: NSM.Rule.Network_IPV_6
+          description: IPv6 Network object, should be defined if ruleobjType is "NETWORK_IPV_6".
           type: String
         - contextPath: NSM.Rule.NetworkGroup
-          description: ''
+          description: Network Group object, should be defined if ruleobjType is "NETWORK_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriod
-          description: ''
+          description: Recurring Time Period object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
           type: Unknown
         - contextPath: NSM.Rule.RecurringTimePeriodGroup
-          description: ''
+          description: Recurring Time Period Group object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.Service
-          description: ''
+          description: Service object, should be defined if ruleobjType is "CUSTOM_SERVICE".
           type: Unknown
         - contextPath: NSM.Rule.ServiceGroup
-          description: ''
+          description: Service Group object, should be defined if ruleobjType is "SERVICE_GROUP".
           type: Unknown
         - contextPath: NSM.Rule.ServiceRange
-          description: ''
+          description: Service Range object, should be defined if ruleobjType is "SERVICE_RANGE".
           type: Unknown
-        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList.FromAddress
-          description: ''
+        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList
+          description: List of IPv6 Address Range.
           type: String
-        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList.ToAddress
-          description: ''
-          type: String
-        - contextPath: NSM.Rule.Network_IPV_6
-          description: ''
-          type: Unknown
         - contextPath: NSM.Rule.HostIPv6.hostIPv6AddressList
-          description: ''
+          description: HostIPv6 address list.
           type: String
         - contextPath: NSM.Rule.Network_IPV_4.networkIPV4List
-          description: ''
+          description: NetworkIPV4 list.
           type: String
-        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList.FromAddress
-          description: ''
-          type: String
-        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList.ToAddress
-          description: ''
+        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList
+          description: List of IPv4 Address Range.
           type: String
         - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
-          description: ''
+          description: HostIPv4 address list.
+          type: String
+        - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
+          description: NetworkIPV6 list.
+          type: String
+    - name: nsm-get-rule-object
+      description: Gets the details of a Rule Object.
+      arguments:
+        - name: rule_id
+          required: true
+          description: The id of the rule object. To get the rule object id, use the !nsm-list-domain-rule-object.
+          isArray: false
+      outputs:
+        - contextPath: NSM.Rule.ruleobjId
+          description: The id of the rule object.
+          type: String
+        - contextPath: NSM.Rule.ruleobjType
+          description: The type of the rule object.
+          type: String
+        - contextPath: NSM.Rule.name
+          description: The name of the rule object.
+          type: String
+        - contextPath: NSM.Rule.description
+          description: The description of the rule object.
+          type: String
+        - contextPath: NSM.Rule.domain
+          description: The name of the rule object.
+          type: Number
+        - contextPath: NSM.Rule.visibleToChild
+          description: Is Rule visible to child domains.
+          type: Boolean
+        - contextPath: NSM.Rule.ApplicationGroup
+          description: Application Group object, should be defined if ruleobjType is "APPLICATION_GROUP".
+          type: Unknown
+        - contextPath: NSM.Rule.ApplicationOnCustomPort
+          description: Application defined on Custom Port object, should be defined if ruleobjType is "APPLICATION_ON_CUSTOM_PORT".
+          type: Unknown
+        - contextPath: NSM.Rule.FiniteTimePeriod
+          description: Finite Time Period object, should be defined if ruleobjType is "FINITE_TIME_PERIOD".
+          type: Unknown
+        - contextPath: NSM.Rule.HostIPv4
+          description: Host IPv4 Address object, should be defined if ruleobjType is "HOST_IPV_4".
+          type: Unknown
+        - contextPath: NSM.Rule.HostIPv6
+          description: Host IPv6 Address object, should be defined if ruleobjType is "HOST_IPV_6".
+          type: Unknown
+        - contextPath: NSM.Rule.HostDNSName
+          description: Host DNS Name object, should be defined if ruleobjType is "HOST_DNS_NAME".
+          type: Unknown
+        - contextPath: NSM.Rule.IPv4AddressRange
+          description: IPv4 Address Range object, should be defined if ruleobjType is "IPV_4_ADDRESS_RANGE".
+          type: Unknown
+        - contextPath: NSM.Rule.IPv6AddressRange
+          description: IPv6 Address Range object, should be defined if ruleobjType is "IPV_6_ADDRESS_RANGE".
+          type: Unknown
+        - contextPath: NSM.Rule.Network_IPV_4
+          description: IPv4 Network object, should be defined if ruleobjType is "NETWORK_IPV_4.
+          type: Unknown
+        - contextPath: NSM.Rule.Network_IPV_6
+          description: IPv6 Network object, should be defined if ruleobjType is "NETWORK_IPV_6".
+          type: String
+        - contextPath: NSM.Rule.NetworkGroup
+          description: Network Group object, should be defined if ruleobjType is "NETWORK_GROUP".
+          type: Unknown
+        - contextPath: NSM.Rule.RecurringTimePeriod
+          description: Recurring Time Period object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD".
+          type: Unknown
+        - contextPath: NSM.Rule.RecurringTimePeriodGroup
+          description: Recurring Time Period Group object, should be defined if ruleobjType is "RECURRING_TIME_PERIOD_GROUP".
+          type: Unknown
+        - contextPath: NSM.Rule.Service
+          description: Service object, should be defined if ruleobjType is "CUSTOM_SERVICE".
+          type: Unknown
+        - contextPath: NSM.Rule.ServiceGroup
+          description: Service Group object, should be defined if ruleobjType is "SERVICE_GROUP".
+          type: Unknown
+        - contextPath: NSM.Rule.ServiceRange
+          description: Service Range object, should be defined if ruleobjType is "SERVICE_RANGE".
+          type: Unknown
+        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList
+          description: List of IPv6 Address Range.
+          type: String
+        - contextPath: NSM.Rule.HostIPv6.hostIPv6AddressList
+          description: HostIPv6 address list.
+          type: String
+        - contextPath: NSM.Rule.Network_IPV_4.networkIPV4List
+          description: NetworkIPV4 list.
+          type: String
+        - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
+          description: NetworkIPV6 list.
+          type: String
+        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList
+          description: List of IPv4 Address Range.
+          type: String
+        - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
+          description: HostIPv4 address list.
           type: String
   isfetch: false
   runonce: false

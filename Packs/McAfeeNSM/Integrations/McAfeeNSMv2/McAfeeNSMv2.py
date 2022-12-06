@@ -109,6 +109,18 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def get_rule_object_request(self, session_str: str, rule_id: str) -> Dict:
+        """ Gets the list of rule objects defined in a particular domain.
+            Args:
+                session_str: str - The session id.
+                rule_id: int - The id of the rule.
+            Returns:
+                A dictionary with the rule object information.
+        """
+        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -575,6 +587,37 @@ def list_domain_rule_objects_command(client: Client, args: Dict, session_str: st
                           outputs_key_field='ruleobjId')
 
 
+def get_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Gets the details of a Rule Object.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with information about the rule object.
+    """
+    rule_id = args.get('rule_id')
+    response = client.get_rule_object_request(session_str, rule_id)
+    response = response.get('RuleObjDef', {})
+    human_readable = {
+        'RuleId': response.get('ruleobjId'),
+        'Name': response.get('name'),
+        'Description': response.get('description'),
+        'VisibleToChild': response.get('visibleToChild'),
+        'RuleType': response.get('ruleobjType')
+    }
+    headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType']
+    readable_output = tableToMarkdown(name=f'Rule Objects {rule_id}',
+                                      t=human_readable,
+                                      removeNull=True,
+                                      headers=headers)
+    return CommandResults(readable_output=readable_output,
+                          outputs_prefix='NSM.Rule',
+                          outputs=response,
+                          raw_response=response,
+                          outputs_key_field='ruleobjId')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -627,6 +670,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-list-domain-rule-object':
             results = list_domain_rule_objects_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-rule-object':
+            results = get_rule_object_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
