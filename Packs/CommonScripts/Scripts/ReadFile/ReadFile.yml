@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: War room entryID of the file to read.
+  description: War Room entryID of the file to read.
   isArray: false
   name: entryID
   required: true
@@ -13,7 +13,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: The character encoding of the file
+  description: The character encoding of the file.
   isArray: false
   name: input_encoding
   predefined:
@@ -30,7 +30,7 @@ args:
   - base64
   - json
   isArray: false
-  description: The data type to which the output data is converted
+  description: The data type to which the output data is converted.
   defaultValue: raw
   secret: false
 - name: output_metadata
@@ -39,7 +39,7 @@ args:
   - "true"
   - "false"
   isArray: false
-  description: Set true in order to output additional metadata on the file, to context
+  description: Set true in order to output additional metadata on the file, to context.
   defaultValue: "false"
   secret: false
 comment: Load the contents of a file into context.
@@ -50,16 +50,16 @@ enabled: true
 name: ReadFile
 outputs:
 - contextPath: FileData
-  description: Data read from war room file
+  description: Data read from the War Room file.
   type: Unknown
 - contextPath: ReadFile.Data
-  description: Data read from war room file
+  description: Data read from the War Room file.
   type: Unknown
 - contextPath: ReadFile.EntryID
-  description: File Entry ID
+  description: File entry ID.
   type: string
 - contextPath: ReadFile.FileSize
-  description: File Size
+  description: File size.
   type: number
 - contextPath: ReadFile.EOF
   description: Whether the file has reached end-of-file.
