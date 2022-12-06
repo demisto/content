@@ -526,8 +526,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "43c5824a7f92092aeb3ffd1014c5e53cef7b3896"
-resolved_reference = "43c5824a7f92092aeb3ffd1014c5e53cef7b3896"
+reference = "b2ea23b0b0445cddaee34e4d357f7c2d8c179f57"
+resolved_reference = "b2ea23b0b0445cddaee34e4d357f7c2d8c179f57"
 
 [[package]]
 name = "deprecated"
@@ -928,7 +928,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "importlib-resources"
-version = "5.10.0"
+version = "5.10.1"
 description = "Read resources from Python packages"
 category = "dev"
 optional = false
@@ -2412,7 +2412,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "1309fd80bcc41102a3d16b7948ec720c431fbb322ace8d8694918bd22c8bff5d"
+content-hash = "dab2963f8e163edb42317a15494bab98da07c8bd23ffcd9f03aa78cc9c72a1fa"
 
 [metadata.files]
 aiohttp = [
@@ -3097,8 +3097,8 @@ imagesize = [
     {file = "imagesize-1.4.1.tar.gz", hash = "sha256:69150444affb9cb0d5cc5a92b3676f0b2fb7cd9ae39e947a5e11a36b4497cd4a"},
 ]
 importlib-resources = [
-    {file = "importlib_resources-5.10.0-py3-none-any.whl", hash = "sha256:ee17ec648f85480d523596ce49eae8ead87d5631ae1551f913c0100b5edd3437"},
-    {file = "importlib_resources-5.10.0.tar.gz", hash = "sha256:c01b1b94210d9849f286b86bb51bcea7cd56dde0600d8db721d7b81330711668"},
+    {file = "importlib_resources-5.10.1-py3-none-any.whl", hash = "sha256:c09b067d82e72c66f4f8eb12332f5efbebc9b007c0b6c40818108c9870adc363"},
+    {file = "importlib_resources-5.10.1.tar.gz", hash = "sha256:32bb095bda29741f6ef0e5278c42df98d135391bee5f932841efc0041f748dc3"},
 ]
 inflection = [
     {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
