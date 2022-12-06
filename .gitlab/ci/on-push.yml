@@ -450,7 +450,6 @@ slack-notify-nightly-build:
     - section_end "After script"
     - exit $EXIT_CODE
 
-
 #xsiam_server_dev:
 #  extends:
 #    - .test_content_on_xsiam_server_instances_base
