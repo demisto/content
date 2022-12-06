@@ -11,10 +11,11 @@ from zipfile import ZipFile
 import difflib
 from contextlib import redirect_stdout
 import dictdiffer
+import io
 
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
-
+from typing import Tuple
 yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
@@ -54,18 +55,18 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
     return False
 
 
-def compare_dirs(dir1: str, dir2: str, output_path: Path) -> list[str]:
+def compare_dirs(dir1: str, dir2: str, output_path: Path) -> Tuple[list[str], str]:
     dir_compare = filecmp.dircmp(dir1, dir2)
-    full_report_path = output_path / "full_report.log"
-    with open(full_report_path, "w") as f:
-        with redirect_stdout(f):
-            dir_compare.report_full_closure()
+    capture = io.StringIO()
+    with redirect_stdout(capture):
+        dir_compare.report_full_closure()
+
     diff_files: list[str] = []
     compare_files(dir_compare, dir1, dir2, output_path, diff_files)
-    return diff_files
+    return diff_files, capture.getvalue()
 
 
-def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
+def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> Tuple[list[str], str]:
     """Compare two zip files content"""
     # extract zip files
     output_path.mkdir(parents=True, exist_ok=True)
@@ -160,10 +161,15 @@ def compare(
     output_path.mkdir(exist_ok=True, parents=True)
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
-    dir_cmp.report_full_closure()
+    # capture stdout
+    capture_stdout = io.StringIO()
+    with redirect_stdout(capture_stdout):
+        dir_cmp.report_full_closure()
     for file in dir_cmp.common_files:
         pack = file.removesuffix(".zip")
-        if diff_files := compare_zips(zip_id_set / file, zip_graph / file, output_path / pack):
+        diff_files, summary = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
+        message.extend((f"### {pack} ###", summary))
+        if diff_files:
             diff_found = True
             message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
     if compare_indexes(index_id_set_path, index_graph_path, output_path):
@@ -176,7 +182,6 @@ def compare(
         shutil.copy(collected_packs_graph, output_path / "collected_packs-graph.txt")
 
     shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
-
     if not diff_found:
         message.append("No difference were found!")
     return message
@@ -226,7 +231,7 @@ def main():
             output_path,
         )
     print("\n".join(message))
-    if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip"):
+    if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip").exists():
         slack_client = WebClient(token=slack_token)
         slack_client.files_upload(
             file=str(diff_output),
