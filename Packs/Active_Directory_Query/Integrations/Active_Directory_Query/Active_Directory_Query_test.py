@@ -10,6 +10,9 @@ import json
 from IAMApiModule import *
 from unittest.mock import patch
 
+from Packs.Active_Directory_Query.Integrations.Active_Directory_Query.Active_Directory_Query import get_ssl_version, \
+    get_auto_bind_value
+
 BASE_TEST_PARAMS = {
     'server_ip': '127.0.0.1',
     'secure_connection': 'None',
@@ -678,3 +681,70 @@ def test_password_not_expire_missing_username(mocker):
     with pytest.raises(Exception) as err:
         set_password_not_expire(default_base_dn)
     assert err.value.args[0] == 'Missing argument - You must specify a username (sAMAccountName).'
+
+
+@pytest.mark.parametrize('connection_type, unsecure, expected_auto_bind_value', [
+    ('Start TLS', True, 'TLS_BEFORE_BIND'),
+    ('Start TLS', False, 'TLS_BEFORE_BIND'),
+    ('TLS', False, 'TLS_BEFORE_BIND'),
+    ('TLS', True, 'NO_TLS'),
+    ('SSL', True, 'NO_TLS'),
+    ('SSL', False, 'NO_TLS'),
+    ('None', True, 'NO_TLS'),
+    ('None', False, 'NO_TLS')
+])
+def test_get_auto_bind_value(connection_type, unsecure, expected_auto_bind_value):
+    """
+        Given:
+            - A connection type:
+                1. Start TLS
+                2. TLS
+                3. SSL
+                4. None
+        When:
+            - Running the 'get_auto_bind_value()' function.
+        Then:
+            - Verify that the returned auto_bind value is as expected:
+                1. 'TLS_BEFORE_BIND' - which means that connection should upgrade it's secure level to TLS before
+                                       the bind itself (STARTTLS command is executed).
+
+                2. 'TLS_BEFORE_BIND' - for unsecure=False and 'NO_TLS' for unsecure=True
+
+                3. 'NO_TLS' - The connection is secured from the beginning,
+                              thus STARTTLS command shouldn't be executed.
+
+                4. 'NO_TLS' - Connection is insecure (cleartext) and shouldn't be upgraded to TLS.
+    """
+    auto_bind_value = get_auto_bind_value(connection_type, unsecure)
+    assert auto_bind_value == expected_auto_bind_value
+
+
+@pytest.mark.parametrize('ssl_version, expected_ssl_version', [
+    ('TLS', 2), ('TLSv1', 3), ('TLSv1_1', 4), ('TLSv1_2', 5), ('TLS_CLIENT', 16), (None, None), ('None', None)
+])
+def test_get_ssl_version(ssl_version, expected_ssl_version):
+    """
+        Given:
+            - An ssl protocol version:
+                1. TLS
+                2. TLSv1
+                3. TLSv1_1
+                4. TLSv1_2
+                5. TLS_CLIENT
+                6. None
+                7. 'None'
+        When:
+            - Running the 'get_ssl_version()' function.
+        Then:
+            - Verify that the returned ssl version value is as expected:
+                1. TLS - 2
+                2. TLSv1 - 3
+                3. TLSv1_1 - 4
+                4. TLSv1_2 - 5
+                5. TLS_CLIENT - 16
+                6. None - None
+                7. 'None' - None
+    """
+
+    ssl_version_value = get_ssl_version(ssl_version)
+    assert ssl_version_value == expected_ssl_version
