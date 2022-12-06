@@ -6,7 +6,8 @@ display: EasyVista
 category: IT Services
 description: EasyVista Service Manager manages the entire process of designing, managing and delivering IT services.
 configuration:
-- display: Server URL (e.g. https://your_company.easyvista.com)
+- display: Server URL
+  additionalinfo: e.g. https://your_company.easyvista.com
   name: server
   defaultvalue: ""
   type: 0
