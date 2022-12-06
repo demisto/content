@@ -835,7 +835,7 @@ script:
       for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: devdemisto/py3-native:8.1.0.40263
   feed: false
   isfetch: true
   ismappable: true

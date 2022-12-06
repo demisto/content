@@ -3936,7 +3936,7 @@ script:
     description: Deletes a comment.
     execution: false
     name: GitHub-delete-comment
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: devdemisto/py3-native:8.1.0.40263
   feed: false
   isfetch: true
   longRunning: false
