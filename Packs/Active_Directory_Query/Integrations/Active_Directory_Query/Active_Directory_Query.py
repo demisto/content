@@ -16,6 +16,9 @@ from ldap3.utils.conv import escape_filter_chars
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
                  'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
+START_TLS = 'Start TLS'
+TLS = 'TLS'
+SSL = 'SSL'
 SSL_VERSIONS = {
     'None': None,
     'TLS': ssl.PROTOCOL_TLS,
@@ -126,7 +129,7 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
     :return: ldap3 Server
     :rtype: Server
     """
-    if secure_connection == "TLS":
+    if secure_connection == TLS:
         # Kept the TLS option for backwards compatibility only.
         # For establishing a secure connection via SSL/TLS protocol - use the 'SSL' option.
         # For establishing a secure connection via Start TLS - use the 'Start TLS' option.
@@ -140,13 +143,13 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
             return Server(host, port=port, use_ssl=unsecure, tls=tls)
         return Server(host, use_ssl=unsecure, tls=tls)
 
-    if secure_connection == 'SSL':  # Secure connection (SSL\TLS)
+    if secure_connection == SSL:  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure})."
                      f" port: {port or 'default(636)'}")
         tls = get_tls_object(unsecure, ssl_version)
         return Server(host=host, port=port, use_ssl=True, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
-    elif secure_connection == 'Start TLS':  # Secure connection (STARTTLS)
+    elif secure_connection == START_TLS:  # Secure connection (STARTTLS)
         demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
                      f" during bind. (unsecure: {unsecure}). port: {port or 'default(389)'}")
         tls = get_tls_object(unsecure, ssl_version)
@@ -1772,10 +1775,10 @@ def get_auto_bind_value(secure_connection, unsecure) -> str:
         Otherwise, the Client's connection type is None - the connection is unsecured and should stay unsecured,
         thus we use the AUTO_BIND_NO_TLS constant here as well.
     """
-    if secure_connection == 'Start TLS':
+    if secure_connection == START_TLS:
         auto_bind = AUTO_BIND_TLS_BEFORE_BIND
 
-    elif secure_connection == 'TLS' and not unsecure:  # BC
+    elif secure_connection == TLS and not unsecure:  # BC
         auto_bind = AUTO_BIND_TLS_BEFORE_BIND
 
     else:
@@ -1842,7 +1845,7 @@ def main():
                            f'Additional details: {err_msg}.\n')
             elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
                 message = f'Failed to access LDAP server. \n Additional details: {err_msg}.\n'
-                if not UNSECURE and SECURE_CONNECTION in ('SSL', 'Start TLS'):
+                if not UNSECURE and SECURE_CONNECTION in (SSL, START_TLS):
                     message += ' Try using: "Trust any certificate" option.\n'
             else:
                 message = ("Failed to access LDAP server. Please validate the server host and port are configured "
