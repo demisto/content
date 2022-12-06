@@ -143,13 +143,13 @@ def initialize_server(host, port, secure_connection, unsecure, ssl_version):
     if secure_connection == 'SSL':  # Secure connection (SSL\TLS)
         demisto.info(f"Initializing LDAP sever with SSL/TLS (unsecure: {unsecure})."
                      f" port: {port or 'default(636)'}")
-        tls = get_tls_object(unsecure)
+        tls = get_tls_object(unsecure, ssl_version)
         return Server(host=host, port=port, use_ssl=True, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
     elif secure_connection == 'Start TLS':  # Secure connection (STARTTLS)
         demisto.info(f"Initializing LDAP sever without a secure connection - Start TLS operation will be executed"
                      f" during bind. (unsecure: {unsecure}). port: {port or 'default(389)'}")
-        tls = get_tls_object(unsecure)
+        tls = get_tls_object(unsecure, ssl_version)
         return Server(host=host, port=port, use_ssl=False, tls=tls, connect_timeout=DEFAULT_TIMEOUT)
 
     else:  # Unsecure (non encrypted connection initialized) - connection type is None
