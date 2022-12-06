@@ -3,11 +3,13 @@
 # exit on errors
 set -e
 
-XSIAM_SERVERS_PATH=$(cat xsiam_servers_path)
+echo "CLOUD_SERVERS_PATH before cat is: $CLOUD_SERVERS_PATH."
+
+CLOUD_SERVERS_PATH=$(cat CLOUD_SERVERS_PATH)
 
 echo "XSIAM_CHOSEN_MACHINE_ID is: $XSIAM_CHOSEN_MACHINE_ID."
-echo "XSIAM_SERVERS_PATH is: $XSIAM_SERVERS_PATH."
-echo "XSIAM_API_KEYS is: $XSIAM_API_KEYS."
+echo "CLOUD_SERVERS_PATH is: $CLOUD_SERVERS_PATH."
+echo "CLOUD_API_KEYS is: $CLOUD_API_KEYS."
 
 if [[ -z ${XSIAM_CHOSEN_MACHINE_ID} ]]; then
   echo "XSIAM_CHOSEN_MACHINE_ID is not defiened, exiting..."
