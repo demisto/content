@@ -2427,21 +2427,21 @@ def test_get_advanced_hunting_command_exception(mocker, query, query_batch, exce
 @pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
     ({'id': 'some_id'},
      {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetDto)',  # noqa: E501
-     'value': [{'id': '1111111111111111111111111111111111111111', 'computerDnsName': 'desktop-11111',
+     'value': [{'id': '1111', 'computerDnsName': 'desktop-11111',
                 'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
-               {'id': '2222222222222222222222222222222222222222',
+               {'id': '2222',
                 'computerDnsName': 'some_computer_name_1',
                 'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
-               {'id': '3333333333333333333333333333333333333333',
+               {'id': '3333',
                 'computerDnsName': 'some_computer_name_2',
                 'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}]},
-     '### Microsoft Defender ATP list machines by software: some_id\n|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|\n|---|---|---|---|---|\n| 1111111111111111111111111111111111111111 | desktop-11111 | Windows10 | UnassignedGroup | 1111 |\n| 2222222222222222222222222222222222222222 | some_computer_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |\n| 3333333333333333333333333333333333333333 | some_computer_name_2 | WindowsServer2016 | UnassignedGroup | 1111 |\n',  # noqa: E501
-     [{'id': '1111111111111111111111111111111111111111', 'computerDnsName': 'desktop-11111',
+     '### Microsoft Defender ATP list machines by software: some_id\n|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|\n|---|---|---|---|---|\n| 1111 | desktop-11111 | Windows10 | UnassignedGroup | 1111 |\n| 2222 | some_computer_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |\n| 3333 | some_computer_name_2 | WindowsServer2016 | UnassignedGroup | 1111 |\n',  # noqa: E501
+     [{'id': '1111', 'computerDnsName': 'desktop-11111',
        'osPlatform': 'Windows10', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
-      {'id': '2222222222222222222222222222222222222222',
+      {'id': '2222',
        'computerDnsName': 'some_computer_name_1',
        'osPlatform': 'WindowsServer2016', 'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111},
-      {'id': '3333333333333333333333333333333333333333', 'computerDnsName':
+      {'id': '3333', 'computerDnsName':
        'some_computer_name_2', 'osPlatform': 'WindowsServer2016',
        'rbacGroupName': 'UnassignedGroup', 'rbacGroupId': 1111}])
 ])

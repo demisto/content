@@ -1986,7 +1986,6 @@ class MsClient:
 
     def get_list_machines_by_software(self, software_id):
         """Retrieve a list of device references that has this software installed.
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machines-by-software?view=o365-worldwide
             Args:
                 software_id (str): Software ID
             Returns:
@@ -1996,8 +1995,7 @@ class MsClient:
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
 
     def get_list_software_version_distribution(self, software_id):
-        """Retrieve a list of device references that has this software installed.
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-software-ver-distribution?view=o365-worldwide
+        """Retrieves a list of your organization's software version distribution.
             Args:
                 software_id (str): Software ID.
             Returns:
@@ -2008,7 +2006,6 @@ class MsClient:
 
     def get_list_missing_kb_by_software(self, software_id):
         """Retrieves missing KBs (security updates) by software ID.
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-missing-kbs-software?view=o365-worldwide
             Args:
                 software_id (str): Software ID.
             Returns:
@@ -2019,7 +2016,6 @@ class MsClient:
 
     def get_list_vulnerabilities_by_software(self, software_id):
         """Retrieve a list of vulnerabilities in the installed software.
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-vuln-by-software?view=o365-worldwide
             Args:
                 software_id (str): Software ID.
             Returns:
@@ -2030,9 +2026,6 @@ class MsClient:
 
     def get_list_software(self, filter_req, limit, page, page_size):
         """Retrieves the organization software inventory.
-
-        Notes:
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-software?view=o365-worldwide
 
         Returns:
             dict. software inventory.
@@ -2047,8 +2040,6 @@ class MsClient:
     def get_list_vulnerabilities_by_machine(self, filter_req, limit, page, page_size):
         """Retrieves a list of all the vulnerabilities affecting the organization per machine.
 
-        Notes:
-            https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-all-vulnerabilities-by-machines?view=o365-worldwide
         Returns:
             dict. list of all the vulnerabilities affecting the organization per machine.
         """
@@ -2061,8 +2052,6 @@ class MsClient:
     def get_list_vulnerabilities(self, filter_req, limit, page, page_size):
         """Retrieves a list of all vulnerabilities.
 
-        Notes:
-           https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-all-vulnerabilities?view=o365-worldwide
         Returns:
             dict. list of all the vulnerabilities.
         """
@@ -4487,8 +4476,6 @@ def get_correct_page_size_and_limit(page_size: Optional[int], limit: Optional[in
     """
     if limit and page_size:
         if page_size <= limit:
-            limit = page_size
-        else:
             page_size = limit
     if page_size:
         limit = page_size
@@ -4598,6 +4585,7 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
                 query = f"{query}{name} eq '{list_item}'"
             else:
                 query = f"{query}{name} eq '{list_item}' or "
+        demisto.debug(query)
     return query
 
 
@@ -4618,6 +4606,7 @@ def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
                 query = f'{query}{list_item}'
             else:
                 query = f'{query}{list_item} and '
+            demisto.debug(query)
     return query
 
 
@@ -4680,10 +4669,10 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
     product_version = argToList(args.get('product_version', ''))
     severity = argToList(args.get('severity', ''))
     product_vendor = argToList(args.get('product_vendor', ''))
-    limit = int(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page'))
     page = page - 1 if page else 0
-    page_size = int(args.get('page_size', 25))
+    page_size = arg_to_number(args.get('page_size', 25))
     page_size, limit = get_correct_page_size_and_limit(page_size, limit)
     filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'), (fixing_kb_id, 'fixingKbId'),
                                 (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
@@ -4747,10 +4736,10 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
     updated_on = dateparser.parse(updated_on)
     updated_on = updated_on.strftime("%Y-%m-%dT%H:%M:%SZ") if updated_on else ''
     cvss = args.get('cvss', '')
-    limit = int(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page'))
     page = page - 1 if page else 0
-    page_size = int(args.get('page_size', 25))
+    page_size = arg_to_number(args.get('page_size', 25))
     page_size, limit = get_correct_page_size_and_limit(page_size, limit)
     filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
     filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name, description, published_on, cvss, updated_on)
