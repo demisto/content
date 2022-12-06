@@ -1,0 +1,341 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Fake Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9938eee0-badf-11ea-a717-9924bd8fe803",
+            "id": "9938eee0-badf-11ea-a717-9924bd8fe803",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "active-incidents-by-type",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:07.440728405Z",
+                "name": "Active Incidents - Line chart",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ]
+                },
+                "prevName": "Active Incidents - Line chart",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "99c4db30-badf-11ea-a717-9924bd8fe803",
+            "id": "99c4db30-badf-11ea-a717-9924bd8fe803",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "active-incidents-by-severity",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:06.9427497Z",
+                "name": "Active Incidents - Pie chart",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "severity"
+                    ]
+                },
+                "prevName": "Active Incidents - Pie chart",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 2,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "9a0c6b80-badf-11ea-a717-9924bd8fe803",
+            "id": "9a0c6b80-badf-11ea-a717-9924bd8fe803",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "incidents-assigned-by-user",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:06.885538177Z",
+                "name": "Active Incidents Assigned by User",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ]
+                },
+                "prevName": "Active Incidents Assigned by User",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "bar"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "9a7406f0-badf-11ea-a717-9924bd8fe803",
+            "id": "9a7406f0-badf-11ea-a717-9924bd8fe803",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "closed-incidents-by-role",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:07.280117615Z",
+                "name": "Closed Incidents by Role",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "roles"
+                    ]
+                },
+                "prevName": "Closed Incidents by Role",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "status:closed",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "bar"
+            },
+            "x": 6,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "9c0cf670-badf-11ea-a717-9924bd8fe803",
+            "id": "9c0cf670-badf-11ea-a717-9924bd8fe803",
+            "w": 4,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "incidents-by-close-reason",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:07.20202873Z",
+                "name": "Incidents By Close Reason",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "closeReason"
+                    ]
+                },
+                "prevName": "Incidents By Close Reason",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and status:closed",
+                "shouldCommit": false,
+                "size": 0,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "line"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "9c6d8d00-badf-11ea-a717-9924bd8fe803",
+            "id": "9c6d8d00-badf-11ea-a717-9924bd8fe803",
+            "w": 2,
+            "widget": {
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "fromServerVersion": "",
+                "id": "incidents-by-phase",
+                "isPredefined": true,
+                "itemVersion": "",
+                "modified": "2020-03-31T13:02:08.116309867Z",
+                "name": "Incidents by Phase",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "phase"
+                    ]
+                },
+                "prevName": "Incidents by Phase",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": null,
+                "sortValues": null,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "pie"
+            },
+            "x": 10,
+            "y": 3
+        }
+    ],
+    "name": "Fake Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}
