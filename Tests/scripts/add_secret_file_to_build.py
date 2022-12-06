@@ -5,11 +5,15 @@ from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerMo
 
 
 def run(options):
-    print(f'******************conf file location: {options.json_path_file}')
-    print(options.service_account)
-    print(options.user)
-    print(options.password)
-    print(options.password)
+    try:
+        print(f'******************conf file location: {options.json_path_file}')
+        print(str(options.service_account)[0:5])
+        print(str(options.user)[0:5])
+        print(str(options.password)[0:5])
+        print(str(options.gsm_project_id)[0:5])
+    except Exception as e:
+        print(e)
+        raise e
     secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config(options.service_account))
     project_id = options.gsm_project_id
     secrets = secret_conf.list_secrets(project_id, with_secret=True)
@@ -31,7 +35,7 @@ def options_handler(args=None):
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
     parser.add_argument('-u', '--user', help='the user for Demisto.')
     parser.add_argument('-p', '--password', help='The password for Demisto.')
-    parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
+    parser.add_argument('-s', '--json_path_file', help='Path to the secret json file.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
