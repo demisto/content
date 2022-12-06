@@ -1168,7 +1168,7 @@ tasks:
     task:
       id: 83d6879d-694b-4091-84cd-6445167b9c75
       version: -1
-      name: Save manager's email address for later
+      name: Set manager email address to context
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
