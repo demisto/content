@@ -72,10 +72,14 @@ alter
     source_port7 = arrayindex(regextract(_raw_log,"src\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     dest_ip7 = arrayindex(regextract(_raw_log,"dst\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     dest_port7 = arrayindex(regextract(_raw_log,"dst\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0)
+// option 8
+// from 00.00.00.00 to 99.99.99.99
+| alter source_ip8 = arrayindex(regextract(xdm.event.description ,"\sfrom\s(\d+\.\d+\.\d+\.\d+)\sto\s\d+\.\d+\.\d+\.\d+\s"),0)
+    ,dest_ip8 = arrayindex(regextract(xdm.event.description ,"\sfrom\s\d+\.\d+\.\d+\.\d+\sto\s(\d+\.\d+\.\d+\.\d+)\s"),0)
 // merge the fields
 | alter
-    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7),
-    source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7),
+    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8),
+    source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7, dest_ip8),
     source_interface = coalesce(source_interface2, source_interface3),
     dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7),
     dest_port = coalesce(dest_port1, dest_port2, dest_port3, dest_port5, dest_port7),
