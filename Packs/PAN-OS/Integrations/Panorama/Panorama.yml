@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- defaultvalue: '442'
+- defaultvalue: '443'
   display: Port (e.g 443)
   name: port
   required: false
@@ -87,6 +87,46 @@ configuration:
   display: ''
   required: false
   type: 1
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 24 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: firstFetch
+  required: false
+  type: 0
+- defaultvalue: '10'
+  display: Max incidents per fetch
+  name: maxFetch
+  required: false
+  type: 0
+- display: Query
+  additionalinfo: "Should be pre-populated for all log types.\nUser can alter if needed.\nInput format should be: {log_type1}:{query1},{log_type2}:{query2}..."
+  name: additional_suspicious
+  required: false
+  type: 12  
+- display: Log Type
+  name: log_type
+  required: false
+  defaultvalue: All
+  type: 16
+  additionalinfo: Select which logs to retrieve.
+  options:
+    - Traffic
+    - Threat
+    - URL
+    - Data
+    - Correlation
+    - System
+    - Wildfire Submissions
+    - Decryption (Exists from PanOS version 10.0++)
+    - All
+- defaultvalue: 100
+  display: limit
+  name: limit
+  required: false
+  type: 0
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -9259,7 +9299,7 @@ script:
     outputs: []
   dockerimage: demisto/pan-os-python:1.0.0.39679
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
