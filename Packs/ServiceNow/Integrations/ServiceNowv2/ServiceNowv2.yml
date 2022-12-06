@@ -133,19 +133,18 @@ configuration:
   - resolved
   required: false
   type: 15
-- additionalinfo: Define how to close the mirrored SIR tickets,  
-    If you want to override the SIR default closing method, choose an integer representing the state code within ServiceNow.
-  defaultvalue: None
+- additionalinfo: Define how to close the mirrored SIR tickets, If you want to override the SIR default closing method, choose an integer representing the state code within ServiceNow.
+  defaultvalue: 'None'
   display: Mirrored ServiceNow SIR Ticket closure method
   name: close_sir_custom_state
   required: false
   type: 0
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
@@ -158,7 +157,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: Incidents Fetch Interval
+  display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
@@ -2110,7 +2109,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
   isfetch: true
   ismappable: true
   isremotesyncin: true
