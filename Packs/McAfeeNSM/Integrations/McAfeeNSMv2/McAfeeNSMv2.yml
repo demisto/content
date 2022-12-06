@@ -621,6 +621,65 @@ script:
         - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
           description: HostIPv4 address list.
           type: String
+    - name: nsm-create-rule-object
+      description: Adds a new Rule Object.
+      arguments:
+        - name: domain
+          required: true
+          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          isArray: false
+        - name: rule_object_type
+          auto: PREDEFINED
+          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+          required: true
+        - name: name
+          required: true
+          description: The rule object name.
+          isArray: false
+        - name: visible_to_child
+          required: true
+          description: Will the rule object be visible to the child domain.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
+        - name: description
+          required: false
+          description: The description of the rule object.
+          isArray: false
+        - name: address_ip_v.4
+          required: false
+          description: List of IPv4 host Address, separated by comma.
+          isArray: false
+        - name: from_address_ip_v.4
+          required: false
+          description: Start IPv4 Range.
+          isArray: false
+        - name: to_address_ip_v.4
+          required: false
+          description: End IPv4 Range.
+          isArray: false
+        - name: address_ip_v.6
+          required: false
+          description: List of IPv6 host Address, separated by comma.
+          isArray: false
+        - name: from_address_ip_v.6
+          required: false
+          description: Start IPv6 Range.
+          isArray: false
+        - name: to_address_ip_v.6
+          required: false
+          description: End IPv6 Range.
+          isArray: false
   isfetch: false
   runonce: false
   script: '-'

@@ -121,6 +121,18 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def create_rule_object_request(self, session_str: str, body: Dict) -> Dict:
+        """ Gets the list of rule objects defined in a particular domain.
+            Args:
+                session_str: str - The session id.
+                body: Dict - The params to the API call.
+            Returns:
+                A dictionary with the id of the new rule object.
+        """
+        url_suffix = '/sdkapi/ruleobject'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -287,6 +299,53 @@ def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, 
             ]
         }
     }
+
+
+def create_body_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int) -> tuple:
+    """ create part of the body for the command create_rule_object
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            from_address: str - The from address, if relevant.
+            to_address: str - The to address, if relevant.
+            number: int - The number of the IPV.
+        Returns:
+            Returns the body for the request.
+        """
+    if 'HOST' in rule_type:
+        return f'HostIPv{number}', {
+            f'hostIPv{number}AddressList': address
+        }
+    elif 'ADDRESS_RANGE' in rule_type:
+        return f'IPv{number}AddressRange', {
+            f'IPV{number}RangeList': [
+                    {
+                        'FromAddress': from_address,
+                        'ToAddress': to_address
+                    }
+                ]
+        }
+    else:
+        return f'NETWORK_IPV_{number}', {
+            f'networkIPV{number}List': address
+        }
+
+
+def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
+    """ Validate the arguments of the function
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            from_address: str - The from address, if relevant.
+            to_address: str - The to address, if relevant.
+            number: int - The number of the IPV.
+        """
+    if ('HOST' in rule_type or 'NETWORK' in rule_type) and not address:
+        raise Exception(f'If the type is “Endpoint IP V.{number}” or “Network IP V.{number}” than the argument '
+                        f'“address_ip_v.{number}” must contain a value.')
+    elif 'ADDRESS_RANGE' in rule_type and not to_address and not from_address:
+        raise Exception(f'If the type is “Range IP V.{number}” than the arguments “from_address_ip_v.{number}” and '
+                        f'“to_address_ip_v.{number}” must contain a value.')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -618,6 +677,52 @@ def get_rule_object_command(client: Client, args: Dict, session_str: str) -> Com
                           outputs_key_field='ruleobjId')
 
 
+def create_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Adds a new Rule Object.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with information about the rule object.
+    """
+    domain = arg_to_number(args.get('domain', 0))
+    rule_type = rule_object_type_cases(args.get('rule_object_type'), 'up')
+    name = args.get('name')
+    visible_to_child = argToBoolean(args.get('visible_to_child', True))
+    description = args.get('description')
+    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    from_address_ip_v_4 = args.get('from_address_ip_v.4')
+    to_address_ip_v_4 = args.get('to_address_ip_v.4')
+    address_ip_v_6 = argToList(args.get('address_ip_v.6'))
+    from_address_ip_v_6 = args.get('from_address_ip_v.6')
+    to_address_ip_v_6 = args.get('to_address_ip_v.6')
+
+    address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
+    number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
+    from_address = from_address_ip_v_4 if from_address_ip_v_4 else from_address_ip_v_6
+    to_address = to_address_ip_v_4 if to_address_ip_v_4 else to_address_ip_v_6
+
+    check_args_create_rule(rule_type, address, from_address, to_address, number)
+
+    body = {
+        'RuleObjDef': {
+            "domain": domain,
+            "ruleobjType": rule_type,
+            "visibleToChild": visible_to_child,
+            "description": description,
+            "name": name
+        }
+    }
+
+    d_name, extra_body = create_body_create_rule(rule_type, address, from_address, to_address, number)
+    body.get('RuleObjDef')[d_name] = extra_body
+    response = client.create_rule_object_request(session_str, body)
+
+    return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
+                                          f'was created successfully')
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -673,6 +778,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-rule-object':
             results = get_rule_object_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-create-rule-object':
+            results = create_rule_object_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
