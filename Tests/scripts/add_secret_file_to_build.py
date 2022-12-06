@@ -7,7 +7,10 @@ from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerMo
 def run(options):
     json_path_file = options.service_account
     print(f'******************conf file location: {json_path_file}')
-    secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config(json_path_file))
+    print(options.service_account)
+    print(options.user)
+    print(options.password)
+    secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config(options.service_account))
     project_id = options.gsm_project_id
     secrets = secret_conf.list_secrets(project_id, with_secret=True)
     secret_file = {
@@ -16,7 +19,7 @@ def run(options):
         "integrations": secrets
     }
 
-    print(f'secrets from API: {secret_file}')
+    print(f'secrets from API: {secret_file[0:10]}')
     print(f'json_path_file: {json_path_file}')
     with open(json_path_file, 'w') as secrets_out_file:
         secrets_out_file.write(json.dumps(secret_file))
