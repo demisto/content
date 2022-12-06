@@ -178,7 +178,7 @@ class ContentPackInstaller:
                 self.packs_failed[pack_id] = str(pack['version'])
             else:
                 self.installed_packs[pack_id] = packs_names_versions[pack_id]
-                self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]
+                self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:
         """Retrieves the packs' dependencies from the marketplace data.
@@ -326,7 +326,7 @@ def main():
 
         args = demisto.args()
         packs_to_install = format_packs_data_for_installation(args)
-        install_dependencies = argToBoolean(args.get('install_dependencies'))
+        install_dependencies = argToBoolean(args.get('install_dependencies', 'true'))
 
         for pack in packs_to_install:
             installer.install_pack_and_its_dependencies(pack, install_dependencies)

@@ -21,7 +21,7 @@ args:
 - name: install_dependencies
   description: Whether to install the pack dependencies.
   isArray: false
-  required: true
+  required: false
   defaultValue: 'true'
   auto: PREDEFINED
   predefined:
