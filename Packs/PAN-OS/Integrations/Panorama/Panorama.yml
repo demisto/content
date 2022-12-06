@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
-- defaultvalue: '443'
+- defaultvalue: '442'
   display: Port (e.g 443)
   name: port
   required: false
