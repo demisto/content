@@ -1987,9 +1987,9 @@ class MsClient:
     def get_list_machines_by_software(self, software_id: str) -> dict:
         """Retrieve a list of device references that has this software installed.
             Args:
-                software_id (str): Software ID
+                software_id (str): Software ID.
             Returns:
-                dict. Machines list
+                dict: Machines list.
         """
         cmd_url = f'/Software/{software_id}/machineReferences'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
@@ -1999,7 +1999,7 @@ class MsClient:
             Args:
                 software_id (str): Software ID.
             Returns:
-                dict. Version distribution list.
+                dict: Version distribution list.
         """
         cmd_url = f'/Software/{software_id}/distributions'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
@@ -2009,7 +2009,7 @@ class MsClient:
             Args:
                 software_id (str): Software ID.
             Returns:
-                dict. Missing kb by software list.
+                dict:  Missing kb by software list.
         """
         cmd_url = f'/Software/{software_id}/getmissingkbs'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
@@ -2019,7 +2019,7 @@ class MsClient:
             Args:
                 software_id (str): Software ID.
             Returns:
-                dict.list vulnerabilities by software.
+                dict: list vulnerabilities by software.
         """
         cmd_url = f'/Software/{software_id}/vulnerabilities'
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
@@ -2041,7 +2041,7 @@ class MsClient:
         """Retrieves a list of all the vulnerabilities affecting the organization per machine.
 
         Returns:
-            dict. list of all the vulnerabilities affecting the organization per machine.
+            dict: list of all the vulnerabilities affecting the organization per machine.
         """
         cmd_url = '/vulnerabilities/machinesVulnerabilities'
         params = {'$top': limit, '$skip': offset}
@@ -2053,7 +2053,7 @@ class MsClient:
         """Retrieves a list of all vulnerabilities.
 
         Returns:
-            dict. list of all the vulnerabilities.
+            dict: list of all the vulnerabilities.
         """
         cmd_url = '/vulnerabilities'
         params = {'$top': limit, '$skip': offset}
@@ -4477,7 +4477,7 @@ def list_machines_by_software_command(client: MsClient, args: dict) -> CommandRe
     software_id = str(args.get('id'))
     headers = ['id', 'computerDnsName', 'osPlatform', 'rbacGroupName', 'rbacGroupId']
     machines_response = client.get_list_machines_by_software(software_id)
-    machines_response_value =  machines_response.get('value')
+    machines_response_value = machines_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list machines by software: {software_id}',
                                      machines_response_value, headers=headers, removeNull=True)
     return CommandResults(
@@ -4521,7 +4521,7 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
     software_id = str(args.get('id'))
     headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
     missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
-    missing_kb_by_software_response_value =  missing_kb_by_software_response.get('value')
+    missing_kb_by_software_response_value = missing_kb_by_software_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
                                      missing_kb_by_software_response_value, headers=headers, removeNull=True)
     return CommandResults(
@@ -4533,7 +4533,7 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
 
 
 def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> CommandResults:
-    """ Retrieves missing KBs (security updates) by software ID
+    """ Retrieves list of vulnerabilities by software.
         Args:
             client: MsClient.
             args: dict - arguments from CortexSOAR.
@@ -4733,13 +4733,14 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
                'exploitVerified', 'publicExploit', 'cvssV3']
     list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                     list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
+                                     list_vulnerabilities_response_value, headers=headers, removeNull=True)
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.Vulnerability',
         outputs_key_field='id',
-        outputs=list_vulnerabilities_response.get('value'),
+        outputs=list_vulnerabilities_response_value,
         readable_output=human_readable,
         raw_response=list_vulnerabilities_response)
 
