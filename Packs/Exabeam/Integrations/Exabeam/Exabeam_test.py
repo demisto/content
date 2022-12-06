@@ -164,3 +164,22 @@ def test_parse_context_table_records_list_bad_input(records_input, fmt, is_delet
         assert False
     except ValueError:
         assert True
+
+
+def test_get_notable_session_details_command_empty_sessions(mocker):
+    """
+    Given:
+        An empty session response.
+    When:
+        When calling "get_notable_session_details" method.
+    Then:
+        Verify the human-readable section have the proper message.
+    """
+    mocked_res = {'totalCount': 0, 'sessions': [], 'users': {}, 'executiveUserFlags': {}}
+    mocker.patch.object(Client, '_login', return_value=None)
+    mocker.patch.object(Client, 'get_notable_session_details_request', return_value=mocked_res)
+
+    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
+                    headers={})
+    human_readable, entry_context, session_details_raw_data = get_notable_session_details(client, {'limit': '1'})
+    assert human_readable == 'No results found.'

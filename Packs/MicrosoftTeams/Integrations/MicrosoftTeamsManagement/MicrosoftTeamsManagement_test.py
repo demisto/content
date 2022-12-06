@@ -15,7 +15,7 @@ from MicrosoftTeamsManagement import (Client, add_member, archive_team,
 @pytest.fixture()
 def client(mocker):
     mocker.patch('MicrosoftTeamsManagement.MicrosoftClient.get_access_token', return_value='token')
-    return Client('app_id', False, False)
+    return Client('app_id', False, False, 'Device Code', '', '')
 
 
 def load_test_data(path):
