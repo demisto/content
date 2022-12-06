@@ -182,7 +182,7 @@ def check_network(network_check: str) -> str:
                            f"access to the cloud metadata server. Response status code: [{res.status_code}]. "
                            f"Response headers: {res.headers}")
         except Exception as ex:
-            LOG(f'cloud metadata server returned exception (this is good. means there is no access to the server.): {ex}')
+            LOG(f'Cloud metadata server returned an exception (this is good. It means there is no access to the server.): {ex}')
     if network_check in ("all", "host_machine"):
         LOG("Check host access")
         gateway_ip = get_default_gateway()
