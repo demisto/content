@@ -8,7 +8,7 @@ filter
     xdm.event.operation = event_eventname,
     xdm.target.resource.name = event_resourcename,
     xdm.target.resource.type = event_resourcetype,
-    xdm.source.ipv4 = event_sourceipaddress,
+    xdm.source.ipv44 = event_sourceipaddress,
     xdm.source.user.user_type = event_useridentity_type,
     xdm.source.user.identifier = event_useridentity_principalid,
     xdm.source.user.username = event_useridentity_username,
