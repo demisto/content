@@ -701,6 +701,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
 
 
 def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False, extra_fields=None):
+    demisto.debug(f'issue id is: {issue_id}')
     j_res = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
     if expand_links == "true":
         expand_urls(j_res)
@@ -760,6 +761,7 @@ def create_issue_command():
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
+    demisto.debug(f"issue in edit after get: {issue}")
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
@@ -1267,9 +1269,11 @@ def update_remote_system_command(args):
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
+            demisto.debug(f'The entire delta: {remote_args.delta}')
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data[k] for k in remote_args.delta.keys()}
-            edit_issue_command(remote_id, mirroring=True, **delta)
+            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            demisto.debug(f'delta sent to edit after changing to get: {delta}')
+            edit_issue_command(remote_id, mirroring=True, **remote_args.data)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
@@ -1523,3 +1527,4 @@ def main():
 
 if __name__ in ["__builtin__", "builtins", '__main__']:
     main()
+
