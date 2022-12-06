@@ -636,18 +636,19 @@ class Client(BaseClient):
         if included_targets:
             assets["includedTargets"] = {"addresses": included_targets}
 
+        if frequency is not None:
             if interval is None:
-                raise ValueError("'interval' parameter must be set if frequency is used.")
+                raise ValueError("'interval' parameter must be set when frequency is used.")
 
-            if frequency is not None:
-                if frequency == RepeatFrequencyType.DATE_OF_MONTH and not date_of_month:
-                    raise ValueError("'date_of_month' parameter must be set if frequency is set to 'Date of month'.")
+            if frequency == RepeatFrequencyType.DATE_OF_MONTH and date_of_month is None:
+                raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
 
-            repeat = find_valid_params(
-                every=frequency.value if frequency is not None else None,
-                interval=interval,
-                dateOfMonth=date_of_month,
-            )
+            repeat["every"] = frequency.value
+
+        repeat.update(find_valid_params(
+            interval=interval,
+            dateOfMonth=date_of_month,
+        ))
 
         post_data = find_valid_params(
             duration=duration,
@@ -1729,6 +1730,7 @@ class Client(BaseClient):
             str: ID of the newly created scan schedule.
         """
         assets: dict = {}
+        repeat: dict = {}
 
         if excluded_asset_groups:
             assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
@@ -1749,9 +1751,6 @@ class Client(BaseClient):
             if frequency == RepeatFrequencyType.DATE_OF_MONTH and date_of_month is None:
                 raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
 
-        repeat = {}
-
-        if frequency is not None:
             repeat["every"] = frequency.value
 
         repeat.update(find_valid_params(
