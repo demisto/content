@@ -96,6 +96,19 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
+    def list_domain_rule_objects_request(self, encoded_str: str, domain_id: int, rule_type: str) -> Dict:
+        """ Gets the list of rule objects defined in a particular domain.
+            Args:
+                encoded_str: str - The session id.
+                domain_id: int - The id of the domain.
+                rule_type: str - The type of the rules to be returned.
+            Returns:
+                A dictionary with the rule objects list.
+        """
+        url_suffix = f'/sdkapi/domain/{domain_id}/ruleobject?type={rule_type}'
+        self.headers['NSM-SDK-API'] = encoded_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -156,7 +169,7 @@ def response_cases(response_str: str) -> None | str:
         return '_'.join(split_str)
 
 
-def rule_object_type_cases(s: str) -> str:
+def rule_object_type_cases(s: str, case: str) -> str:
     """ Checks the rule_object_type params and returns the correct format of them.
     Args:
         s: str - The response string.
@@ -164,7 +177,15 @@ def rule_object_type_cases(s: str) -> str:
         The correct rule_object_type string.
     """
     s_split = s.upper().replace('.', ' ').split()
-    return f'{s_split[0]}_{s_split[1]}{s_split[2]}_{s_split[3]}'
+    if 'ENDPOINT' in s_split[0]:
+        r_type = f'HOST_IPV_{s_split[-1]}'
+    elif 'RANGE' in s_split[0]:
+        r_type = f'IPV_{s_split[-1]}_ADDRESS_RANGE'
+    else:
+        r_type = f'NETWORK_IPV_{s_split[-1]}'
+    if case == 'low':
+        return r_type.lower().replace('_','')
+    return r_type
 
 
 def check_source_and_destination(source_rule_object_id: int, source_rule_object_type: str,
@@ -388,8 +409,8 @@ def create_firewall_policy_command(client: Client, args: Dict, session_str: str)
 
     source_rule_object_id = arg_to_number(args.get('source_rule_object_id', -1))
     destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', -1))
-    source_rule_object_type = rule_object_type_cases(source_rule_object_type) if source_rule_object_type else None
-    destination_rule_object_type = rule_object_type_cases(destination_rule_object_type) if \
+    source_rule_object_type = rule_object_type_cases(source_rule_object_type, 'up') if source_rule_object_type else None
+    destination_rule_object_type = rule_object_type_cases(destination_rule_object_type, 'up') if \
         destination_rule_object_type else None
     source_object = [{
         'RuleObjectId': source_rule_object_id,
@@ -460,7 +481,7 @@ def update_firewall_policy_command(client: Client, args: Dict, session_str: str)
         source_rule_object_id = member_rule_list.get('SourceAddressObjectList', [Dict])[0].get('RuleObjectId') if not \
             source_rule_object_id else source_rule_object_id
         source_rule_object_type = member_rule_list.get('SourceAddressObjectList', [Dict])[0].get('RuleObjectId') if \
-            not source_rule_object_type else rule_object_type_cases(source_rule_object_type)
+            not source_rule_object_type else rule_object_type_cases(source_rule_object_type, 'up')
         source_object = [{
             'RuleObjectId': source_rule_object_id,
             'RuleObjectType': source_rule_object_type
@@ -469,7 +490,7 @@ def update_firewall_policy_command(client: Client, args: Dict, session_str: str)
             get('RuleObjectId') if not destination_rule_object_id else destination_rule_object_id
         destination_rule_object_type = member_rule_list.get('DestinationAddressObjectList', [Dict])[0]. \
             get('RuleObjectId') if not destination_rule_object_type else \
-            rule_object_type_cases(destination_rule_object_type)
+            rule_object_type_cases(destination_rule_object_type, 'up')
         destination_object = [{
             'RuleObjectId': destination_rule_object_id,
             'RuleObjectType': destination_rule_object_type
@@ -509,6 +530,49 @@ def delete_firewall_policy_command(client: Client, args: Dict, session_str: str)
     policy_id = args.get('policy_id')
     client.delete_firewall_policy_request(session_str, policy_id)
     return CommandResults(readable_output=f'The firewall policy no.{policy_id} was deleted successfully')
+
+
+def list_domain_rule_objects_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Gets the list of rule objects defined in a particular domain.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with the list.
+    """
+    domain_id = args.get('domain_id')
+    rule_type = args.get('type', 'All')
+    limit = arg_to_number(args.get('limit', 50))
+    page = arg_to_number(args.get('page', 1))
+    if rule_type == 'All':
+        rule_type = 'hostipv4,hostipv6,ipv4addressrange,ipv6addressrange,networkipv4,networkipv6'
+    else:
+        rule_type = rule_object_type_cases(rule_type, 'low')
+    response = client.list_domain_rule_objects_request(session_str, domain_id, rule_type)
+    results = pagination(response.get('RuleObjDef', []), limit, page)
+
+    human_readable = []
+    for record in results:
+        d = {
+            'RuleId': record.get('ruleobjId'),
+            'Name': record.get('name'),
+            'Description': record.get('description'),
+            'VisibleToChild': record.get('visibleToChild'),
+            'RuleType': record.get('ruleobjType')
+        }
+        human_readable.append(d)
+    headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType']
+    readable_output = tableToMarkdown(name='List of Rule Objects',
+                                      t=human_readable,
+                                      removeNull=True,
+                                      headers=headers)
+
+    return CommandResults(readable_output=readable_output,
+                          outputs_prefix='NSM.Rule',
+                          outputs=results,
+                          raw_response=results,
+                          outputs_key_field='ruleobjId')
 
 
 ''' MAIN FUNCTION '''
@@ -560,6 +624,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-delete-firewall-policy':
             results = delete_firewall_policy_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-list-domain-rule-object':
+            results = list_domain_rule_objects_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')

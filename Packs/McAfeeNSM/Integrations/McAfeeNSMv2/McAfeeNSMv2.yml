@@ -39,33 +39,33 @@ script:
         - name: page
           required: false
           isArray: false
-          description: The specific result page to display.
+          description: The specific result page to display. The default is 1.
       outputs:
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyId
+        - contextPath: NSM.Policy.policyId
           description: The id of the policy.
           type: Number
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyName
+        - contextPath: NSM.Policy.policyName
           description: Name of the Firewall Policy.
           type: String
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.domainId
+        - contextPath: NSM.Policy.domainId
           description: The id of the domain.
           type: Number
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.visibleToChild
+        - contextPath: NSM.Policy.visibleToChild
           description: Is Policy visible to child domains.
           type: Boolean
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.description
+        - contextPath: NSM.Policy.description
           description: Policy Description.
           type: String
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.isEditable
+        - contextPath: NSM.Policy.isEditable
           description: Is Policy editable or not.
           type: Boolean
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyType
+        - contextPath: NSM.Policy.policyType
           description: Policy Type, can be "ADVANCED" or "CLASSIC".
           type: String
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.policyVersion
+        - contextPath: NSM.Policy.policyVersion
           description: Policy version.
           type: Number
-        - contextPath: NSM.Policy.FirewallPoliciesForDomainResponseList.lastModUser
+        - contextPath: NSM.Policy.lastModUser
           description: Last User that modified the policy.
           type: String
     - name: nsm-get-firewall-policy
@@ -412,6 +412,129 @@ script:
           required: true
           description: The id of the policy to delete. To get the policy id, use the !nsm-list-domain-firewall-policy.
           isArray: false
+    - name: nsm-list-domain-rule-object
+      description: Updates the Firewall Policy details.
+      arguments:
+        - name: domain_id
+          required: true
+          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          isArray: false
+        - name: type
+          auto: PREDEFINED
+          description: The type of the rule.
+          isArray: false
+          predefined:
+            - Endpoint IP V.4
+            - Range IP V.4
+            - Network IP V.4
+            - Endpoint IP V.6
+            - Range IP V.6
+            - Network IP V.6
+            - All
+          required: false
+          defaultvalue: All
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
+      outputs:
+        - contextPath: NSM.Rule.ruleobjId
+          description: The id of the rule object.
+          type: String
+        - contextPath: NSM.Rule.ruleobjType
+          description: The type of the rule object.
+          type: String
+        - contextPath: NSM.Rule.name
+          description: The name of the rule object.
+          type: String
+        - contextPath: NSM.Rule.description
+          description: The description of the rule object.
+          type: String
+        - contextPath: NSM.Rule.domain
+          description: The name of the rule object.
+          type: Number
+        - contextPath: NSM.Rule.visibleToChild
+          description: Is Rule visible to child domains.
+          type: Boolean
+        - contextPath: NSM.Rule.hostCriticality
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.ApplicationGroup
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.ApplicationOnCustomPort
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.FiniteTimePeriod
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.HostIPv4
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.HostIPv6
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.HostDNSName
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.IPv4AddressRange
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.IPv6AddressRange
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.Network_IPV_4
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.Network_IPV_6.networkIPV6List
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.NetworkGroup
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.RecurringTimePeriod
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.RecurringTimePeriodGroup
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.Service
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.ServiceGroup
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.ServiceRange
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList.FromAddress
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.IPv6AddressRange.IPV6RangeList.ToAddress
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.Network_IPV_6
+          description: ''
+          type: Unknown
+        - contextPath: NSM.Rule.HostIPv6.hostIPv6AddressList
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.Network_IPV_4.networkIPV4List
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList.FromAddress
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.IPv4AddressRange.IPV4RangeList.ToAddress
+          description: ''
+          type: String
+        - contextPath: NSM.Rule.HostIPv4.hostIPv4AddressList
+          description: ''
+          type: String
   isfetch: false
   runonce: false
   script: '-'
