@@ -1,7 +1,7 @@
 Allows you to push and pull your external data to and from the KnowBe4 console.
 
-## Configure KnowBe4 KMSAT Event Collector on Cortex XSOAR
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+## Configure KnowBe4 KMSAT Event Collector on Cortex XSIAM
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Data Sources**.
 2. Search for KnowBe4KMSATEventCollector.
 3. Click **Add instance** to create and configure a new integration instance.
 
