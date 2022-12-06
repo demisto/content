@@ -3951,7 +3951,24 @@ Gets the detections for a specific incident.
 >| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 >| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
 
-### 57. cs-falcon-spotlight-search-vulnerability`
+# Spotlight
+
+### Using Spotlight APIs
+The Spotlight API features 7 endpoints. Use these endpoints to find and get detailed info about vulnerabilities in your environment and integrate Spotlight into your organization's other ticketing or risk management tools. Vulnerabilities are known security risks in an operating system, application, hardware, firmware, or other part of a computing stack. Spotlight tracks vulnerabilities by industry-standard frameworks like Common Vulnerabilities and Exposures (CVE). Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
+For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
+
+### Required API client scope
+To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope. For more info, see API clients.
+Validating API data
+The Falcon sensor continuously monitors hosts for any changes and reports them as they occur. Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
+There are other factors that can cause differences between API responses and other data sources.
+
+### API query syntax
+If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
+
+### The following commands uses the Spotlight API:
+
+### cs-falcon-spotlight-search-vulnerability
 
 ***
  Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
@@ -4090,7 +4107,7 @@ Gets the detections for a specific incident.
 | CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector | 
 | --- | --- | --- | --- | --- | --- |  --- |
 | CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
-### 58. cs-falcon-spotlight-list-host-by-vulnerability
+### cs-falcon-spotlight-list-host-by-vulnerability
 ***
  Retrieve vulnerability details according to the selected filter with detailed information about host.
 
@@ -4193,7 +4210,7 @@ Gets the detections for a specific incident.
 | CVE ID | Host Info hostname | Host Info os Version | Host Info Product Type Desc | Host Info Local IP | Host Info ou | Host Info Machine Domain | Host Info Site Name | CVE Exploitability Score | CVE Vector |
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
-### 59. cve
+### cve
 *** Returns indicator according to the cve_id that was entered.
 
 #### Base Command
@@ -4214,24 +4231,4 @@ Gets the detections for a specific incident.
 | --- | --- | --- | --- |
 | CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
 
-
-# Spotlight
-### About CrowdStrike APIs
-This guide provides use cases and example requests and responses for interacting with a specific set of our OAuth2-based APIs. For general info about CrowdStrike APIs, see CrowdStrike OAuth2-Based APIs, which includes:
-* Details on getting started, such as authentication
-* Links to our API specification (Swagger) by cloud
-* Domains used in base URLs by cloud
-
-### Using Spotlight APIs
-The Spotlight API features 7 endpoints. Use these endpoints to find and get detailed info about vulnerabilities in your environment and integrate Spotlight into your organization's other ticketing or risk management tools. Vulnerabilities are known security risks in an operating system, application, hardware, firmware, or other part of a computing stack. Spotlight tracks vulnerabilities by industry-standard frameworks like Common Vulnerabilities and Exposures (CVE). Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
-For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
-
-### Required API client scope
-To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope. For more info, see API clients.
-Validating API data
-The Falcon sensor continuously monitors hosts for any changes and reports them as they occur. Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
-There are other factors that can cause differences between API responses and other data sources.
-
-### API query syntax
-If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
 

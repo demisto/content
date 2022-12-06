@@ -4159,7 +4159,10 @@ def test_error_in_get_detections_by_behaviors(mocker):
 
 ARGS_vulnerability = [
     (
-        None, False,
+        {'display_remediation_info': 'True',
+         'display_evaluation_logic_info': 'True',
+         'display_host_info': 'False',
+         'limit': '1'}, False,
         None, 'Please add a at least one filter argument'
     ),
     (

@@ -3906,57 +3906,66 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def cs_falcon_spotlight_search_vulnerability_request(args: dict, filter_operator='AND') -> dict:
-    input_arg_dict = {'aid': argToList(args.get('aid')),
-                      'cve.id': argToList(args.get('cve_id')),
-                      'cve.severity': argToList(args.get('cve_severity')),
-                      'host_info.tags': argToList(args.get('tags')),
-                      'status': argToList(args.get('status')),
-                      'host_info.platform_name': args.get('platform_name'),
-                      'host_info.groups': argToList(args.get('host_group')),
-                      'host_info.product_type_desc': argToList(args.get('host_type')),
-                      'last_seen_within': args.get('last_seen_within'),
-                      'suppression_info.is_suppressed': args.get('is_suppressed')}
-    url_filter = args.get('filter', '')
+def build_url_filter(values: list[str] | str | None):
+    return 'cve.id:[\'' + "','".join(argToList(values)) + '\']'
+
+
+def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_id: list[str] | None,
+                                                     cve_severity: list[str] | None, tags: list[str] | None,
+                                                     status: list[str] | None, platform_name: list[str] | None,
+                                                     host_group: list[str] | None, host_type: list[str] | None,
+                                                     last_seen_within: str | None, is_suppressed: str | None, filter: str,
+                                                     remediation: bool | None, evaluation_logic: bool | None,
+                                                     host_info: bool | None, limit: str | None,
+                                                     filter_operator='AND') -> dict:
+    input_arg_dict = {'aid': aid,
+                      'cve.id': cve_id,
+                      'cve.severity': cve_severity,
+                      'host_info.tags': tags,
+                      'status': status,
+                      'host_info.platform_name': platform_name,
+                      'host_info.groups': host_group,
+                      'host_info.product_type_desc': host_type,
+                      'last_seen_within': last_seen_within,
+                      'suppression_info.is_suppressed': is_suppressed}
+    remove_nulls_from_dictionary(input_arg_dict)
+    url_filter = filter
+    if not any((input_arg_dict, url_filter)):
+        raise DemistoException('Please add a at least one filter argument')
     op = ',' if filter_operator == 'OR' else '%2B'
     # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
     for key, arg in input_arg_dict.items():
-        if arg:
-            if url_filter:
-                url_filter += '%2B'
-            if type(arg) is list:
-                url_filter += f'{key}:[\'' + "','".join(arg) + '\']'
-            else:
-                # All args should be a list. this is a fallback
-                url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
-                                                                                  inp_arg=key, arg_val=arg)
+        if url_filter:
+            url_filter += '%2B'
+        elif isinstance(arg, list):
+            url_filter += f"{key}:['" + "','".join(arg) + "']"
+        else:
+            url_filter = f"{url_filter}{op}{key}:'{arg}'"  # All args should be a list. this is a fallback
     url_facet = '&facet=cve'
-    if argToBoolean(args.get('display_remediation_info')):
-        url_facet += "&facet=remediation"
-    if argToBoolean(args.get('display_evaluation_logic_info')):
-        url_facet += "&facet=evaluation_logic"
-    if argToBoolean(args.get('display_host_info')):
-        url_facet += "&facet=host_info"
+    for argument, url_value in (
+        ('remediation', remediation),
+        ('evaluation_logic', evaluation_logic),
+        ('host_info', host_info),
+    ):
+        if argToBoolean(url_value):
+            url_facet += f"&facet={argument}"
+
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
-    suffix_url = '/spotlight/combined/vulnerabilities/v1?' + 'filter=' + \
-        url_filter + url_facet + "&limit=" + args.get('limit', '50')
-    http_response = http_request('GET', suffix_url)
-    return http_response
+    suffix_url = f'/spotlight/combined/vulnerabilities/v1?filter={url_filter}+{url_facet}+&limit={limit}'
+    return http_request('GET', suffix_url)
 
 
-def cs_falcon_spotlight_list_host_by_vulnerability_request(args: dict) -> dict:
-    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_ids'))) + '\']'
-    params = {'filter': url_filter, 'facet': 'host_info', 'limit': args.get('limit')}
-    http_response = http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
-    return http_response
+def cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids: list[str] | None, limit: str) -> dict:
+    url_filter = build_url_filter(cve_ids)
+    params = {'filter': url_filter, 'facet': 'host_info', 'limit': limit}
+    return http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
 
 
-def cve_request(args: dict) -> dict:
-    url_filter = 'cve.id:[\'' + "','".join(argToList(args.get('cve_id'))) + '\']'
-    params = {'filter': url_filter, 'facet': 'cve'}
-    http_response = http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
-    return http_response
+def cve_request(cve_id: list[str] | None) -> dict:
+    url_filter = build_url_filter(cve_id)
+    return http_request('GET', '/spotlight/combined/vulnerabilities/v1',
+                        params={'filter': url_filter, 'facet': 'cve'})
 
 
 def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResults:
@@ -3965,9 +3974,21 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    if not args:
-        raise DemistoException('Please add a at least one filter argument')
-    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(args)
+    vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(argToList(args.get('aid')),
+                                                                              argToList(args.get('cve_id')),
+                                                                              argToList(args.get('cve_severity')),
+                                                                              argToList(args.get('tags')),
+                                                                              argToList(args.get('status')),
+                                                                              args.get('platform_name'),
+                                                                              argToList(args.get('host_group')),
+                                                                              argToList(args.get('host_type')),
+                                                                              args.get('last_seen_within'),
+                                                                              args.get('is_suppressed'),
+                                                                              args.get('filter', ''),
+                                                                              args.get('display_remediation_info'),
+                                                                              args.get('display_evaluation_logic_info'),
+                                                                              args.get('display_host_info'),
+                                                                              args.get('limit'))
     headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
@@ -3994,7 +4015,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
     """
     if not args or not args.get('cve_ids'):
         raise DemistoException('Please insert at least one cve_ids argument')
-    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args)
+    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args.get('cve_id'), args.get('limit', '50'))
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
                'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name'
                'CVE Exploitability Score', 'CVE Vector']
@@ -4023,7 +4044,7 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     if not args.get('cve_id'):
         raise DemistoException('Please add a filter argument "cve_id".')
     command_results_list = []
-    http_response = cve_request(args)
+    http_response = cve_request(args.get('cve_id'))
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     if not raw_cve:
         raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
@@ -4043,7 +4064,7 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                               'Published Date': cve.get('published_date'),
                               'Base Score': cve.get('base_score')}
         human_readable = tableToMarkdown('CrowdStrike Falcon CVE', cve_human_readable,
-                                         headers=['ID', 'Severity', 'Published Date', 'Base Score'])
+                                         headers=['ID', 'Description', 'Published Date', 'Base Score'])
         command_results_list.append(CommandResults(raw_response=cve,
                                                    readable_output=human_readable,
                                                    relationships=relationships_list,
