@@ -39,7 +39,7 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: devdemisto/py3-native:8.1.0.40263
+  dockerimage: devdemisto/py3-native:8.1.0.40312
   isfetch: false
   runonce: false
   script: '-'
