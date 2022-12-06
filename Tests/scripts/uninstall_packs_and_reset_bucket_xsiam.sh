@@ -7,6 +7,8 @@ echo "CLOUD_SERVERS_FILE before cat is $CLOUD_SERVERS_FILE"
 
 
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
+CLOUD_API_KEYS_FILE=$(cat $CLOUD_API_KEYS)
+
 
 echo "CLOUD_SERVERS_PATH is $CLOUD_SERVERS_PATH"
 
@@ -17,6 +19,6 @@ else
   gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
   echo "Copying prod bucket to $XSIAM_CHOSEN_MACHINE_ID bucket."
   gsutil -m cp -r "gs://$GCS_PRODUCTION_V2_BUCKET/content" "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine_cleanup.log" 2>&1
-  python3 ./Tests/Marketplace/search_and_uninstall_pack.py --xsiam_machine $XSIAM_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys $CLOUD_API_KEYS
+  python3 ./Tests/Marketplace/search_and_uninstall_pack.py --xsiam_machine $XSIAM_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys $CLOUD_API_KEYS_FILE
 fi
 
