@@ -43,32 +43,48 @@ alter event_id = to_integer(arrayindex(regextract(_raw_log , "ASA\-\d\-(\d+)\:")
     dest_mapped_ip = arrayindex( regextract(_raw_log ,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/") ,0),
     dest_mapped_port = arrayindex( regextract(_raw_log ,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\/]+\/(\d+)\)") ,0)
 //option 4
-//from 172.16.0.120/21751 to management:172.16.1.5/https
-//from 172.16.1.20/53 to management:172.16.1.5/63275
+//from 00.00.00.00/00 to interface:99.99.99.99/99
+//from 00.00.00.00/00 to interface:99.99.99.99/99
 | alter source_ip4 = arrayindex( regextract(_raw_log ,"from\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*to") ,0),
     source_port4 = arrayindex( regextract(_raw_log ,"from\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*to") ,0)
 // option 5
-// TAP-Interface/172.16.18.40(41926) -> TAP-Interface2/13.226.4.210(443)
+// TAP-Interface/00.00.00.00(000) -> interface/99.99.99.99(99)
 | alter source_ip5 = arrayindex( regextract(_raw_log ,"[a-zA-Z0-9-_]+\/(\d+\.\d+\.\d+\.\d+)\(\d+\)\s*\-\>") ,0),
     source_port5 = arrayindex( regextract(_raw_log ,"[a-zA-Z0-9-_]+\/\d+\.\d+\.\d+\.\d+\((\d+)\)\s*\-\>") ,0),
     dest_interface5 = arrayindex( regextract(_raw_log ,"([a-zA-Z0-9-_]+)\/\d+\.\d+\.\d+\.\d+\(\d+\)\s*\-\>") ,0),
     dest_ip5 = arrayindex( regextract(_raw_log ,"\s*\-\>\s[a-zA-Z0-9-_]+\/(\d+\.\d+\.\d+\.\d+)\(\d+\)") ,0),
     dest_port5 = arrayindex( regextract(_raw_log ,"\s*\-\>\s[a-zA-Z0-9-_]+\/\d+\.\d+\.\d+\.\d+\((\d+)\)") ,0)
 // option 6
-// src = 172.16.3.139, dest = 172.16.3.56
+// src = 00.00.00.00, dest = 99.99.99.99
 | alter source_ip6 = arrayindex( regextract(_raw_log ,"src\s*\=\s*(\d+\.\d+\.\d+\.\d+)") ,0),
     dest_ip6 = arrayindex( regextract(_raw_log ,"dest\s*\=\s*(\d+\.\d+\.\d+\.\d+)") ,0)
 // option 7
-// src 172.16.16.21/53 dst 172.16.16.43/39523
+// src 00.00.00.00/00 dst 99.99.99.99/99
 | alter source_ip7 = arrayindex( regextract(_raw_log ,"src\s*(\d+\.\d+\.\d+\.\d+)\/\d+") ,0),
     source_port7 = arrayindex( regextract(_raw_log ,"src\s*\d+\.\d+\.\d+\.\d+\/(\d+)") ,0),
     dest_ip7 = arrayindex( regextract(_raw_log ,"dst\s*(\d+\.\d+\.\d+\.\d+)\/\d+") ,0),
     dest_port7 = arrayindex( regextract(_raw_log ,"dst\s*\d+\.\d+\.\d+\.\d+\/(\d+)") ,0)
+// option 8
+// from 00.00.00.00 to 99.99.99.99
+| alter source_ip8 = arrayindex(regextract(xdm.event.description ,"\sfrom\s(\d+\.\d+\.\d+\.\d+)\sto\s\d+\.\d+\.\d+\.\d+\s"),0)
+    ,dest_ip8 = arrayindex(regextract(xdm.event.description ,"\sfrom\s\d+\.\d+\.\d+\.\d+\sto\s(\d+\.\d+\.\d+\.\d+)\s"),0)
+// option 9
+//, dest_addr=00.00.00.00, src_addr=99.99.99.99
+| alter source_ip9 = arrayindex(regextract(xdm.event.description ,"\,\ssrc_addr\=(\d+\.\d+\.\d+\.\d+)\,"),0)
+    ,dest_ip9 = arrayindex(regextract(xdm.event.description ,"\,\sdest_addr\=(\d+\.\d+\.\d+\.\d+)\,"),0)
+// option 10
+//src direction:00.00.00.00 dst direction:2.250.107.56 (type 8, code 0)
+| alter source_ip10 = arrayindex(regextract(xdm.event.description ,"\ssrc\s[a-zA-Z]+\:(\d+\.\d+\.\d+\.\d+)\sdst\s"),0)
+    ,dest_ip10 = arrayindex(regextract(xdm.event.description ,"\ssrc\s[a-zA-Z]+\:\d+\.\d+\.\d+\.\d+\sdst\s[a-zA-Z]+\:(\d+\.\d+\.\d+\.\d+)"),0)
+// option 11
+// from 00.00.00.00 to 99.99.99.99
+| alter source_ip11 = arrayindex(regextract(xdm.event.description ,"\sfrom\s(\d+\.\d+\.\d+\.\d+) to \d+\.\d+\.\d+\.\d+"),0)
+    ,dest_ip11 = arrayindex(regextract(xdm.event.description ,"\sfrom\s\d+\.\d+\.\d+\.\d+ to (\d+\.\d+\.\d+\.\d+)"),0)
 // merge the fields
-| alter source_ip = coalesce(source_ip1 , source_ip2 , source_ip3 , source_ip4 , source_ip5 , source_ip6 , source_ip7 ),
+| alter source_ip = coalesce(source_ip1 , source_ip2 , source_ip3 , source_ip4 , source_ip5 , source_ip6 , source_ip7, source_ip8, source_ip9, source_ip10, source_ip11),
     source_port = coalesce(source_port1 , source_port2 , source_port3 , source_port4 , source_port5 , source_port7 ),
     source_interface = coalesce(source_interface2 , source_interface3 ),
-    dest_ip = coalesce(dest_ip1 , dest_ip2 , dest_ip3 , dest_ip5 , dest_ip6 , dest_ip7 ),
+    dest_ip = coalesce(dest_ip1 , dest_ip2 , dest_ip3 , dest_ip5 , dest_ip6 , dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11),
     dest_port = coalesce(dest_port1 , dest_port2, dest_port3 , dest_port5 , dest_port7 ),
     dest_interface = coalesce(dest_interface2 , dest_interface3 , dest_interface5 )
 // ------------------------------ end source/dest ip/port/interface part ---------------------------------
