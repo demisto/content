@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
+from dateutil import parser
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -693,20 +694,14 @@ class Client(BaseClient):
                                       params=params)
         return response
 
-    def get_incident_response_list(self, query, incident_type, priority, status):
-        params = self.build_incident_response_query_params(incident_type, priority, query, status)
-        return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
-                                  params=params)
-
-    def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None,
-                           last_run=None):
-        params = self.build_incident_response_query_params(incident_type, priority,query, status, limit, page_number,
-                                                           page_size, last_run)
+    def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None):
+        params = self.build_incident_response_query_params(incident_type, priority, query, status, limit, page_number,
+                                                           page_size)
         return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
                                   params=params)
 
     def build_incident_response_query_params(self, incident_type, priority, query,
-                                             status, limit=None, page_number=None, page_size=None, last_run=None):
+                                             status, limit=None, page_number=None, page_size=None):
         params = {'incidentType': incident_type, 'priority': priority, 'status': status}
         if query:
             for key, val in params:
@@ -729,9 +724,9 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
-def format_single_incident(incident):
+def format_single_incident(incident, is_fetch=False):
     incident_fields = incident.get('fields')
-    return {'incidentId': incident.get('incidentId'),
+    formatted_incident =  {'incidentId': incident.get('incidentId'),
             'name': incident.get('name'),
             'fields': {
                 'startedDate': convert_unix_to_date(incident_fields.get('startedDate', None)),
@@ -744,8 +739,12 @@ def format_single_incident(incident):
                 'priority': incident_fields.get('priority'),
                 'queue': incident_fields.get('queue'),
                 'description': incident_fields.get('description')
-            },
-            'rawJSON': json.dumps(incident)}
+            }}
+
+    if is_fetch:
+        formatted_incident['rawJSON'] = json.dumps(incident)
+
+    return formatted_incident
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work
@@ -1130,7 +1129,7 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, args: Dict[str, str], params):
     """test function
 
     Args:
@@ -1139,9 +1138,14 @@ def test_module(client: Client, *_):
     Returns:
         ok if successful
     """
-    client.test_module_request()
-    demisto.results('ok')
-    return '', None, None
+    if params.get('isFetch'):
+        incident = client.get_list_incidents(None, None, None, status='new', limit=1)
+        demisto.results(incident)
+        return '', None, None
+    else:
+        client.test_module_request()
+        demisto.results('ok')
+        return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1957,17 +1961,24 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
 
     last_run = demisto.getLastRun()
 
-    for incident in raw_response['incidents']:
-        incidents.append(format_single_incident(incident))
-
     if last_run and 'start_time' in last_run:
-        start_time = datetime.strptime(last_run.get('start_time'), '%Y-%m-%dT%H:%M:%SZ')
+        start_time = parser.parse(last_run.get('start_time'))
     else:
         start_time = datetime.now() - timedelta(days=int(DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS))
 
-    raw_response = client.get_list_incidents(query, incident_type, priority, status, last_run=last_run)
+    raw_response = client.get_list_incidents(query, incident_type, priority, status)
 
-    demisto.setLastRun({'start_time': datetime.strftime(last_time, '%Y-%m-%dT%H:%M:%SZ')})
+    max_start_time = start_time
+    for incident in raw_response['incidents']:
+        incident_start_time = parser.parse(convert_unix_to_date(incident["fields"]["startedDate"]))
+        if not start_time or incident_start_time > start_time:
+            incidents.append(format_single_incident(incident, True))
+
+        if incident_start_time > start_time:
+            max_start_time = incident_start_time
+
+    if incidents:
+        demisto.setLastRun({'start_time': max_start_time.isoformat()})
 
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
@@ -2069,6 +2080,8 @@ def main():
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
             commands[command](client, demisto.args())
+        elif command == 'test-module':
+            return_outputs(*commands[command](client, demisto.args(), demisto.params()))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
