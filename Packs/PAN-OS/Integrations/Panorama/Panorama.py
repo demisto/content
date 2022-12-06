@@ -185,7 +185,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'ransomware'
 }
 
-
 class PAN_OS_Not_Found(Exception):
     """ PAN-OS Error. """
 
@@ -508,7 +507,6 @@ def dict_to_xml(_dictionary, contains_xml_chars=False):
     if contains_xml_chars:
         return xml.replace('&gt;', '>').replace('&lt;', '<')
     return xml
-
 
 def add_argument_list(arg: Any, field_name: str, member: Optional[bool], any_: Optional[bool] = False) -> str:
     member_stringify_list = ''
@@ -894,11 +892,11 @@ def panorama_commit_command(args: dict):
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
-                outputs_prefix='Panorama.Commit',
-                outputs_key_field='JobID',
-                outputs=commit_output,
-                readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
-            ),
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
+                ),
             continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
         )
     else:  # either no polling is required or this is the first run
@@ -1156,11 +1154,11 @@ def panorama_push_to_device_group_command(args: dict):
             continue_to_poll = False
 
         args_for_next_run = {
-            'push_job_id': job_id,
-            'polling': argToBoolean(args.get('polling', False)),
-            'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
-            'description': description
-        }
+                'push_job_id': job_id,
+                'polling': argToBoolean(args.get('polling', False)),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'description': description
+            }
 
         return PollResult(
             response=push_output,
@@ -1539,11 +1537,11 @@ def pan_os_edit_address(name, element_value, element_to_change, is_listable):
     params = {
         'xpath': f'{XPATH_OBJECTS}address/entry[@name="{name}"]/{element_to_change}',
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior='replace',
-            object_name=element_to_change,
-            element_value=element_value,
-            is_listable=is_listable,
-        ),
+                behavior='replace',
+                object_name=element_to_change,
+                element_value=element_value,
+                is_listable=is_listable,
+            ),
         ),
         'action': 'edit',
         'type': 'config',
@@ -5061,7 +5059,7 @@ def panorama_query_logs_command(args: dict):
 
     if not job_id:
         if query and (address_src or address_dst or zone_src or zone_dst
-                      or time_generated or action or port_dst or rule or url or filedigest):
+                    or time_generated or action or port_dst or rule or url or filedigest):
             raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
         result: PanosResponse = PanosResponse(
@@ -5112,7 +5110,7 @@ def panorama_query_logs_command(args: dict):
 
     else:
         # Only used in subsequent polling executions
-
+        
         parsed: PanosResponse = PanosResponse(
             panorama_get_traffic_logs(job_id),
             illegal_chars=illegal_chars,
@@ -5127,10 +5125,10 @@ def panorama_query_logs_command(args: dict):
                 raise Exception(
                     f'Query logs failed.'
                 )
-
+        
         if not parsed.ns.response.result.job.id:
             raise Exception('Missing JobID status in response.')
-
+        
         query_logs_output = {
             'JobID': job_id,
             'LogType': log_type
@@ -5163,7 +5161,6 @@ def panorama_query_logs_command(args: dict):
         )
 
     return poll_result
-
 
 def panorama_check_logs_status_command(job_id: str):
     """
@@ -6159,13 +6156,12 @@ def panorama_check_latest_panos_software_command(target: Optional[str] = None):
     versions = to_context.get('sw-updates', {}).get('versions').get('entry', [])
     if len(versions) > 5:
         versions = versions[:5]
-    human_readable = tableToMarkdown('5 latest pan-os software releases', versions,
-                                     ['version', 'filename', 'size', 'released-on', 'downloaded', 'current', 'latest', 'uploaded'], removeNull=True)
+    human_readable = tableToMarkdown('5 latest pan-os software releases', versions, ['version', 'filename', 'size', 'released-on', 'downloaded' , 'current' , 'latest', 'uploaded'], removeNull=True)
     return CommandResults(readable_output=human_readable,
-                          outputs=to_context,
-                          raw_response=result,
-                          outputs_prefix='Panorama.LatestVersions'
-                          )
+                                  outputs=to_context,
+                                  raw_response=result,
+                                  outputs_prefix='Panorama.LatestVersions'
+                                  )
 
 
 @logger
@@ -8543,10 +8539,10 @@ class Topology:
         """
         all_devices = {**self.firewall_objects, **self.panorama_objects}
         if device := all_devices.get(filter_string):
-            return device
+           return device
 
-        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; "
-                               + f"use a more specific filter string.")
+        raise DemistoException(f"filter_str {filter_string} is not the exact ID of a host in this topology; " +
+                               f"use a more specific filter string.")
 
     def get_by_filter_str(self, filter_string: Optional[str] = None) -> dict:
         """
@@ -9393,7 +9389,7 @@ def flatten_xml_to_dict(element, object_dict: dict, class_type: Callable):
     return object_dict
 
 
-def dataclass_from_element(device: Union[Panorama, Firewall], class_type: Callable, element):
+def dataclass_from_element(device: Union[Panorama, Firewall],class_type: Callable, element):
     """
     Turns an XML `Element` Object into an instance of the provided dataclass. Dataclass parameters must match
     element: Optional[Element]
@@ -9443,6 +9439,7 @@ def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Tem
         return "shared"
 
     return container.name
+
 
 
 @dataclass
@@ -10504,6 +10501,7 @@ class UniversalCommand:
         device_filter_str: Optional[str] = None,
         target: Optional[str] = None
     ) -> InstallSoftwareCommandResult:
+
         """
         Start the installation process for the given software version.
         :param version The software version to install
@@ -10575,6 +10573,7 @@ class UniversalCommand:
         id: Optional[int] = None,
         target: Optional[str] = None
     ) -> List[ShowJobsAllResultData]:
+
         """
         Returns all jobs running on the system.
         :param topology: `Topology` instance.
@@ -10862,8 +10861,8 @@ def get_route_summaries(
 
 
 def get_routes(topology: Topology,
-               device_filter_string: Optional[str] = None, target: Optional[str] = None
-               ) -> ShowRoutingRouteCommandResult:
+    device_filter_string: Optional[str] = None, target: Optional[str] = None
+) -> ShowRoutingRouteCommandResult:
     """
     Pulls all route summary information from the topology
     :param topology: `Topology` instance !no-auto-argument
@@ -11048,7 +11047,7 @@ def reboot(topology: Topology, target: str) -> RestartSystemCommandResult:
     return UniversalCommand.reboot(topology, hostid=target)
 
 
-def system_status(topology: Topology, target: str) -> CheckSystemStatus:
+def system_status(topology: Topology,  target: str) -> CheckSystemStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
 
@@ -11887,14 +11886,14 @@ def pan_os_edit_nat_rule(
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            should_contain_entries=True,
-            is_commit_required=False
-        )
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=True,
+                is_commit_required=False
+            )
         ),
         'action': 'edit',
         'type': 'config',
@@ -11968,8 +11967,7 @@ def pan_os_edit_nat_rule_command(args):
         'destination_translation_ip': ('destination-translation/translated-address', 'translated-address', False)
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,
@@ -12269,20 +12267,20 @@ def pan_os_edit_redistribution_profile(
 ):
 
     xpath = build_redistribution_profile_xpath(
-        virtual_router_name, redistribution_profile_name, element=element_to_change
-    )
+            virtual_router_name, redistribution_profile_name, element=element_to_change
+        )
 
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            should_contain_entries=False,
-            is_commit_required=False
-        )
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                should_contain_entries=False,
+                is_commit_required=False
+            )
         ),
         'action': 'edit',
         'type': 'config',
@@ -12316,8 +12314,7 @@ def pan_os_edit_redistribution_profile_command(args):
         'filter_bgp_extended_community': ('filter/bgp/community', 'extended-community', True)
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_redistribution_profile(
         virtual_router_name=virtual_router_name,
@@ -12557,20 +12554,20 @@ def pan_os_edit_pbf_rule(
     rule_name, element_value, pre_post, element_to_change, object_name, is_listable, behavior
 ):
     xpath = build_pbf_xpath(
-        name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
-    )
+            name=rule_name, pre_post='rulebase' if VSYS else pre_post, element_to_change=element_to_change
+        )
 
     params = {
         'xpath': xpath,
         'element': dict_to_xml(build_body_request_to_edit_pan_os_object(
-            behavior=behavior,
-            object_name=object_name,
-            element_value=element_value,
-            is_listable=is_listable,
-            xpath=xpath,
-            is_entry=True if object_name == 'nexthop-address-list' else False,
-            is_empty_tag=True if object_name == 'action' else False
-        ),
+                behavior=behavior,
+                object_name=object_name,
+                element_value=element_value,
+                is_listable=is_listable,
+                xpath=xpath,
+                is_entry=True if object_name == 'nexthop-address-list' else False,
+                is_empty_tag=True if object_name == 'action' else False
+            ),
             contains_xml_chars=True
         ),
         'action': 'edit',
@@ -12623,8 +12620,7 @@ def pan_os_edit_pbf_rule_command(args):
     if element_to_change == 'action_forward_discard':
         element_value = 'discard'
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
-        element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_pbf_rule(
         rule_name=rule_name,
