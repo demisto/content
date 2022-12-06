@@ -10690,11 +10690,15 @@ class YMLMetadataCollector:
 def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" ", end_of_event_sign="}"):
     """
     Add general fields to all the events
-
-    :type events: ``Union[str, list]``
-    :param events: The events to add the fields to:
-        1. List of strings or dicts where each string or dict represents an event.
-        2. String containing raw events separated by a new line.
+    If the event is a dictionary, the fields will be added to the existing dict.
+    Otherwise, if the event is a string and no particular dictionary panctuation signs are given - 
+    The function will treat it as a string in a form of a dictionary.
+    In that case, the 'str_to_add' will look like this:
+    ', _final_reporting_device_name: {url}, _instance_name: {integration_instance}}'
+    and will be added to the prefix of the event without the closing curly bracket (}).
+    
+    :type events: ``List[Union[dict, str]]``
+    :param events: The events to add the fields to.
 
     :type separator: ``str``
     :param separator: The separator to seperate the event's fields by (relevant in case of string events).
