@@ -391,7 +391,7 @@ slack-notify-nightly-build:
   needs: []
   stage: run-instances
   script:
-    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
+#    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
