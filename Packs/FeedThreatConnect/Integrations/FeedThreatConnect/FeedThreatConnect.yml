@@ -24,6 +24,12 @@ configuration:
   name: api_secret_key
   type: 4
   hidden: true
+- defaultvalue: '2000'
+  additionalinfo: The number of indicatort to get per fetch
+  display: Indicatort to get per fetch
+  name: fetch_limit
+  required: false
+  type: 0
 - additionalinfo: A comma-separated list of tags to filter by.
   display: Tags to filter results by
   name: tags

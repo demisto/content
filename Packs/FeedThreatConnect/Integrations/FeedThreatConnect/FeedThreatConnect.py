@@ -166,6 +166,7 @@ INDICATOR_GROUPS = ['Attack Pattern',
                     'Vulnerability'
                     ]
 
+
 #########
 # Utils #
 #########
@@ -299,7 +300,8 @@ def create_indicator_relationships(indicator, indicator_type, indicator_value):
         for entity_b in b_entities:
             entity_b_value = entity_b.get('summary') or entity_b.get('name')
             entity_b_type = entity_b.get('type')
-            relationships_list.extend(create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
+            relationships_list.extend(
+                create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
 
     return relationships_list
 
@@ -429,36 +431,43 @@ def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dic
     groups = []
     indicators_next_link = ''
     groups_next_link = ''
-    while True:
-        if indicators_next_link or groups_next_link:
-            if indicators_next_link:
-                demisto.debug('Indicators Next Link: ' + indicators_next_link)
-                response, _, indicators_next_link = client.make_request(Method.GET,
+    try:
+        while True:
+            if indicators_next_link or groups_next_link:
+                if indicators_next_link:
+                    demisto.debug('Indicators Next Link: ' + indicators_next_link)
+                    response, _, indicators_next_link = client.make_request(Method.GET,
+                                                                            url_suffix='',
+                                                                            get_next=True,
+                                                                            full_url=indicators_next_link)
+                    indicators.extend(response)
+                if groups_next_link:
+                    demisto.debug('Groups Next Link: ' + groups_next_link)
+                    response, _, groups_next_link = client.make_request(Method.GET,
                                                                         url_suffix='',
                                                                         get_next=True,
-                                                                        full_url=indicators_next_link)
-                indicators.extend(response)
-            if groups_next_link:
-                demisto.debug('Groups Next Link: ' + groups_next_link)
-                response, _, groups_next_link = client.make_request(Method.GET,
-                                                                    url_suffix='',
-                                                                    get_next=True,
-                                                                    full_url=groups_next_link)
-                groups.extend(response)
-        elif indicators_url or groups_url:
-            demisto.debug('Indicators URL: ' + indicators_url)
-            indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
-            indicators.extend(indicators_response)
-            indicators_url = ''
+                                                                        full_url=groups_next_link)
+                    groups.extend(response)
+            elif indicators_url or groups_url:
+                demisto.debug('Indicators URL: ' + indicators_url)
+                indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url,
+                                                                                   get_next=True)
+                indicators.extend(indicators_response)
+                indicators_url = ''
 
-            demisto.debug('Groups URL: ' + groups_url)
-            groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
-            groups.extend(groups_response)
-            groups_url = ''
+                demisto.debug('Groups URL: ' + groups_url)
+                groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
+                groups.extend(groups_response)
+                groups_url = ''
 
-        # Limit the number of results to not get an error from the API
-        if ((len(indicators) + len(groups)) > 15000) or (not indicators_next_link and not groups_next_link):
-            break
+            # Limit the number of results to not get an error from the API
+            if ((len(indicators) + len(groups)) > int(demisto.params().get('fetch_limit', '2000'))) or (
+                    not indicators_next_link and not groups_next_link):
+                break
+    except Exception as e:
+        demisto.debug(f'Got an error in the fetch loop: {str(e)}')
+        if e.res.status_code == 400:
+            raise e
 
     return indicators, groups
 
@@ -517,7 +526,7 @@ def set_tql_query(from_date, params, endpoint):
         active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
         confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
         threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
-                       if int(params.get("threat_assess_score")) != 0 else ''
+            if int(params.get("threat_assess_score")) != 0 else ''
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
@@ -564,9 +573,10 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
     if not tql:
         owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
         active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' \
-                      if argToBoolean(args.get("active_indicators")) else ''
+            if argToBoolean(args.get("active_indicators")) else ''
         confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
-        threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
+        threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get(
+            "threat_assess_score") else ''
 
         types = argToList(args.get("indicator_type"))
         query = ''
