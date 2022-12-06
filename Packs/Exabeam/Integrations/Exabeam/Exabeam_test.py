@@ -169,3 +169,7 @@ def test_parse_context_table_records_list_bad_input(records_input, fmt, is_delet
 
 def test_exabeam_list_incidents():
     assert True
+
+
+def test_exabeam_fetch_incidents():
+    pass
