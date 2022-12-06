@@ -28,10 +28,10 @@ args:
   - 'true'
   - 'false'
 commonfields:
-  id: ContentPackInstaller
+  id: ContentPackInstaller22
   version: -1
 enabled: false
-name: ContentPackInstaller
+name: ContentPackInstaller22
 comment: Content packs installer from marketplace.
 outputs:
 - contextPath: ContentPackInstaller.packname

@@ -37,6 +37,7 @@ class ContentPackInstaller:
             demisto.debug(error_message)
             return
 
+        # in some cases the command result returns as array with one response entry
         if type(res) is list:
             res = res[0]
 
@@ -161,7 +162,8 @@ class ContentPackInstaller:
         demisto.debug(f'{SCRIPT_NAME} - Sending installation request for: {packs_names_versions}')
 
         for pack in packs_to_install:
-            pack_payload = json.dumps([{pack['id']:pack['version']}])
+            pack_id = pack['id']
+            pack_payload = json.dumps([{pack_id: pack['version']}])
 
             status, res = execute_command(
                 'demisto-api-install-packs',
@@ -172,11 +174,11 @@ class ContentPackInstaller:
             )
 
             if not status:
-                demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack["id"]} - {str(res)}')
-                self.packs_failed[pack['id']] = str(pack['version'])
-                return
-
-        self.newly_installed_packs.update(packs_names_versions)  # type: ignore[arg-type]
+                demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
+                self.packs_failed[pack_id] = str(pack['version'])
+            else:
+                self.installed_packs[pack_id] = packs_names_versions[pack_id]
+                self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:
         """Retrieves the packs' dependencies from the marketplace data.
