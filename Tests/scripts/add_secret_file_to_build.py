@@ -25,9 +25,9 @@ def run(options):
 
 def options_handler(args=None):
     parser = argparse.ArgumentParser(description='Utility for Importing secrets from Google Secret Manager.')
-    parser.add_argument('pid', '--gsm_project_id', help='The project id for the GSM.')
-    parser.add_argument('u', '--user', help='Path to secret xsiam server metadata file.')
-    parser.add_argument('p', '--password', help='Path to file with XSIAM Servers api keys.')
+    parser.add_argument('-pid', '--gsm_project_id', help='The project id for the GSM.')
+    parser.add_argument('-u', '--user', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('-p', '--password', help='Path to file with XSIAM Servers api keys.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
