@@ -27,23 +27,15 @@ def create_teams_message(message, title, serverurls):
     return messageCard
 
 
-def test_module(webhook):
+def test_module(webhook, serverurls):
     """
     Test command, will send a notification with a static message, and check we got a 200 OK back
     """
     try:
-        message = {
-            "@type": "MessageCard",
-            "@context": "http://schema.org/extensions",
-            "themeColor": "0076D7",
-            "summary": "Cortex XSOAR Notification",
-            "sections": [{
-                "activityTitle": "Cortex XSOAR Notification",
-                "activitySubtitle": "Successful test message from Cortex XSOAR",
-                "markdown": True
-            }]
-        }
-        res = requests.post(webhook, json=message)
+        message = "Successful test message from Cortex XSOAR"
+        title = "Cortex XSOAR Notification"
+        test_message = create_teams_message(message, title, serverurls)
+        res = requests.post(webhook, json=test_message)
         res.raise_for_status()
         return 'ok'
     except Exception as e:
@@ -75,12 +67,12 @@ def main():  # pragma: no cover
     if args.get('alternative_url'):
         serverurls = args.get('alternative_url')
     else:
-        serverurls = serverurls["investigation"]
+        serverurls = serverurls.get("investigation", serverurls["server"])
 
     command = demisto.command()
     try:
         if command == 'test-module':
-            return_results(test_module(webhook))
+            return_results(test_module(webhook, serverurls))
         elif command == 'ms-teams-message':
             message = args.get("message", "")
             if args.get('team_webhook', False):

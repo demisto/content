@@ -9,7 +9,7 @@ configuration:
   required: true
   type: 0
 description: Integration for sending notifications to a Microsoft Teams channel via Incoming Webhook.
-display: Microsoft Teams Webhook
+display: Microsoft Teams via Webhook
 name: Microsoft Teams via Webhook
 script:
   commands:
