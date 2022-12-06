@@ -71,6 +71,8 @@ def test_module_command(client):
     result = client.completions(prompt="Can I connect to the OpenAI api?")
     if result:
         return 'ok'
+    else:
+        return 'Did not receive a response from OpenAI API'
 
 
 def reputations_command(client: Client, args: dict) -> CommandResults:
