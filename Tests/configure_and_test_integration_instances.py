@@ -828,7 +828,7 @@ class XSIAMBuild(Build):
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
         output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
-            to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
+            to_bucket = f'{$GCS_MACHINES_BUCKET}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
