@@ -4,4 +4,4 @@
 
 ## Getting started
 
-This repository contains the resources which can be used for integration Zerohack XDR with other products.
+This repository contains the resources which are used for integration Zerohack XDR with other products.
