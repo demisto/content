@@ -26,6 +26,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Copy changed files to codeQL folder (to save runtime)
+      run: |
+        mkdir OnlyChangedFiles
+
+        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          mkdir -p "OnlyChangedFiles/$file"
+          cp "$file" "OnlyChangedFiles/$file"
+        done
+  
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
