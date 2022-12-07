@@ -1967,7 +1967,6 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
         start_time = datetime.now() - timedelta(days=int(DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS))
 
     raw_response = client.get_list_incidents(query, incident_type, priority, status)
-    raw_response = raw_response.json()
     raw_incidents = raw_response['incidents']
 
     page_size = raw_response['count']
@@ -1977,7 +1976,6 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
         raw_response = client.get_list_incidents(query, incident_type, priority, status,
                                                  limit=raw_response['totalCount'], page_size=page_size,
                                                  page_number=query_run)
-        raw_response = raw_response.json()
         raw_incidents += raw_response['incidents']
         query_run += 1
 
