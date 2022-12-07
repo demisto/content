@@ -636,26 +636,6 @@ def test_submit_file_to_sandbox(mocker):
     assert result.outputs["code"] == "Success"
 
 
-# Mock response for submit file entry to sandbox
-def mock_submit_file_entry_to_sandbox_response(*args, **kwargs):
-    return_response = {
-        "code": "Success",
-        "message": "Success",
-        "data": {
-            "taskId": "012e4eac-9bd9-4e89-95db-77e02f75a6f3",
-            "digest": {
-                "md5": "4ac174730d4143a119037d9fda81c7a9",
-                "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
-                "sha256": (
-                    "65b0f656e79ab84ca17807158e3ea"
-                    "c206bd58be6689ddeb95956a48748d138f9"
-                )
-            },
-        },
-    }
-    return return_response
-
-
 # Test Cases for Submit file entry to sandbox.
 def test_submit_file_entry_to_sandbox(mocker):
     mocker.patch(
