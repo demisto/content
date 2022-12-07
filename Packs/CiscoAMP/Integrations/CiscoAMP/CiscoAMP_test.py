@@ -88,6 +88,7 @@ def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
     from CiscoAMP import computer_list_command
     responses = computer_list_command(mock_client, args)
 
+    # Last CommandResults has only a readableOutput, therefore it won't be checked.
     for response in responses[:-1]:
         assert response.outputs_prefix == 'CiscoAMP.Computer'
         assert 'links' not in response.outputs
