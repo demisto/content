@@ -47,7 +47,7 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
-        checkout_path: tmp/codeqlfiles
+        paths: "tmp/codeqlfiles"
         category: "/language:${{matrix.language}}"
         queries:
           # exclude polluting-import as this is how we import from demistomock and CommonServerPython
