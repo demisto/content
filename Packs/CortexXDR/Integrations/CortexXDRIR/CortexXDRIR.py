@@ -1466,6 +1466,8 @@ def main():  # pragma: no cover
             return_results(add_tag_to_endpoints_command(client, args))
         elif command == 'xdr-endpoint-tag-remove':
             return_results(remove_tag_from_endpoints_command(client, args))
+        elif command == 'some-new-command':
+            return_results(remove_tag_from_endpoints_command(client, args))
 
     except Exception as err:
         return_error(str(err))

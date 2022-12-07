@@ -107,6 +107,11 @@ configuration:
   - resolved_auto
   required: false
   type: 16
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -2534,6 +2539,11 @@ script:
     - description: The endpoint host name.
       isArray: true
       name: hostname
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
       secret: false
     description: Returns information about an endpoint.
     name: endpoint
@@ -2829,15 +2839,9 @@ script:
     - description: Remote IP address for the connection.
       isArray: true
       name: action_remote_ip
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Alert action status
-      isArray: false
       name: alert_action_status
-      required: false
-      secret: false
       predefined:
       - detected
       - detected (allowed the session)
@@ -2876,8 +2880,7 @@ script:
       - prevented (terminated the session and sent a tcp reset to the client)
       - prevented (terminated the session and sent a tcp reset to the server)
       - prevented (on write)
-    - default: false
-      description: The local IP address for the connection.
+    - description: The local IP address for the connection.
       isArray: true
       name: action_local_port
     - description: The remote port for the connection.
@@ -3108,7 +3111,7 @@ script:
       required: true
     description: Removes a tag from specified endpoint_ids.
     name: xdr-endpoint-tag-remove
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.8.39276
   isfetch: true
   runonce: false
   script: ''
@@ -3119,7 +3122,4 @@ script:
   type: python
 tests:
 - Test XDR Playbook
-defaultmapperin: Cortex XDR - IR-mapper
-defaultclassifier: Cortex XDR Incident Handler - Classifier
-defaultmapperout: Cortex XDR - IR-out-mapper
 fromversion: 5.0.0
