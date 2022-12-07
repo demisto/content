@@ -674,7 +674,7 @@ script:
       description: Custom Predefined Global Whitelist ID
       type: Number
     - contextPath: FortiwebVM.CustomPredefinedGlobalWhitelist.type
-      description: Type.
+      description: The Type of predifined global whitelist member.
       type: String
     - contextPath: FortiwebVM.CustomPredefinedGlobalWhitelist.details._id
       description: ID.
