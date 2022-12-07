@@ -174,15 +174,16 @@ def encode_to_base64(str_to_convert: str) -> str:
     return base64_str
 
 
-def get_session(client: Client, user_name_n_password_encoded: str) -> str:
+def get_session(client: Client, user_name_n_password: str) -> str:
     """ Gets the session string.
     Args:
         client: Client - A McAfeeNSM client.
-        user_name_n_password_encoded: str - The username and password that needs to be converted to base64
+        user_name_n_password: str - The username and password that needs to be encoded to base64
             in order to get the session information.
     Returns:
         The converted string.
     """
+    user_name_n_password_encoded = encode_to_base64(user_name_n_password)
     session = client.get_session_request(user_name_n_password_encoded)
     return encode_to_base64(f'{session.get("session")}:{session.get("userId")}')
 
@@ -377,16 +378,16 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, encoded_str: str) -> str:
+def test_module(client: Client, username_n_password: str) -> str:
     """ Test the connection to McAfee NSM.
     Args:
         client: Client - A McAfeeNSM client.
-        encoded_str: str - The string that contains username:password in base64
+        username_n_password: str - The string that contains username:password to be encoded.
     Returns:
         'ok' if the connection was successful, else throws exception.
     """
     try:
-        client.get_session_request(encoded_str)
+        get_session(username_n_password)
         return 'ok'
     except DemistoException as e:
         raise Exception(e.message)
@@ -838,14 +839,13 @@ def main() -> None:  # pragma: no cover
         }
 
         client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
-        user_name_n_password_encoded = encode_to_base64(f'{user_name}:{password}')
         session_str = ''
         if demisto.command() != 'test-module':
-            session_str = get_session(client, user_name_n_password_encoded)
+            session_str = get_session(client, f'{user_name}:{password}')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, user_name_n_password_encoded)
+            result = test_module(client, f'{user_name}:{password}')
             return_results(result)
         elif demisto.command() == 'nsm-list-domain-firewall-policy':
             result = list_domain_firewall_policy_command(client, demisto.args(), session_str)

@@ -12,6 +12,13 @@ you are implementing with your integration
 
 import json
 import io
+import pytest
+from McAfeeNSMv2 import Client
+
+
+@pytest.fixture
+def mcafeensmv2_client():
+    return Client(url='url', auth=(), headers={}, proxy=False, verify=False)
 
 
 def util_load_json(path):
@@ -19,24 +26,38 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+def test_encode_to_base64():
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+        Given:
+            - A string to encode.
+        When:
+            - Before every command, to be used in the get_session_command.
+        Then:
+            - An encoded string in base64 is returned.
+    """
+    from McAfeeNSMv2 import encode_to_base64
+    str_to_encode = 'username:password'
+    expected = 'dXNlcm5hbWU6cGFzc3dvcmQ='
+    result = encode_to_base64(str_to_encode)
+    assert expected == result
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
+
+def test_get_session(mocker, mcafeensmv2_client):
+    """
+        Given:
+            - A string to encode.
+        When:
+            - Before every command, to be used in the get_session_command.
+        Then:
+            - An encoded session string in base64 is returned.
+    """
+    from McAfeeNSMv2 import get_session
+    str_to_encode = 'username:password'
+    mock_session_result = {
+        "session": "ABC3AC9AB39EE322C261B733272FC49F",
+        "userId": "1"
     }
-    response = baseintegration_dummy_command(client, args)
-
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    expected_session_id = 'QUJDM0FDOUFCMzlFRTMyMkMyNjFCNzMzMjcyRkM0OUY6MQ=='
+    mocker.patch.object(mcafeensmv2_client, 'get_session_request', return_value=mock_session_result)
+    result = get_session(mcafeensmv2_client, str_to_encode)
+    assert expected_session_id == result
