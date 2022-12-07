@@ -1210,7 +1210,7 @@ def fetch_incidents(
             ),
             'occurred': timestamp_to_datestring(incident_timestamp),
             'rawJSON': json.dumps(item),
-            'severity': XSOAR_SEVERITY_BY_AMP_SEVERITY.get(severity),
+            'severity': XSOAR_SEVERITY_BY_AMP_SEVERITY.get(severity, IncidentSeverity.UNKNOWN),
             'details': str(item.get('event_type')),
             'dbotMirrorId': incident_id,
         })

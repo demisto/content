@@ -353,11 +353,12 @@ def test_computer_delete_error_command(requests_mock, mock_client):
         json=mock_response
     )
 
-    with pytest.raises(ValueError) as ve:
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as de:
         from CiscoAMP import computer_delete_command
         computer_delete_command(mock_client, args)
 
-        assert str(ve).startswith('Failed to delete Connector GUID:')
+        assert de.message.startswith('Failed to delete Connector GUID:')
 
 
 def test_computer_activity_list_command(requests_mock, mock_client):
