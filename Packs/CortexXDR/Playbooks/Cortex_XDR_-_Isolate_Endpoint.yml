@@ -439,10 +439,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 48224e00-d708-4aa0-8e96-b0082cb89cc0
+    taskid: 84f4c199-6e4d-421c-8e64-2824dd30215d
     type: condition
     task:
-      id: 48224e00-d708-4aa0-8e96-b0082cb89cc0
+      id: 84f4c199-6e4d-421c-8e64-2824dd30215d
       version: -1
       name: Is the endpoint ready for isolation?
       type: condition
@@ -461,7 +461,9 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.is_isolated
+              complex:
+                root: PaloAltoNetworksXDR.Endpoint
+                accessor: is_isolated
             iscontext: true
           right:
             value:
@@ -469,7 +471,9 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+              complex:
+                root: PaloAltoNetworksXDR.Endpoint
+                accessor: is_isolated
             iscontext: true
           right:
             value:
