@@ -214,6 +214,6 @@ def test_create_relationship_with_unknown_relationship_name():
     ("T1098", {"external_references": [{"external_id": 'T1111'}]}, False)
 ])
 def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj, expected_result):
-        from FeedMitreAttackv2 import filter_attack_pattern_object_by_attack_id
-        output = filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj)
-        assert output == expected_result
+    from FeedMitreAttackv2 import filter_attack_pattern_object_by_attack_id
+    output = filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj)
+    assert output == expected_result
