@@ -37,21 +37,17 @@ def get_limited_interval(given_interval: Union[str, datetime],
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
-                         last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
+                         last_run_ctx: Optional[dict] = None):
+    demisto.debug(f'Fetching collection {client.collection_to_fetch.id=}')
     last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if last_run_ctx else None
     # initial_interval gets here limited so no need to check limitation with default value
     added_after: datetime = get_limited_interval(initial_interval, last_fetch_time)
 
     try:
-        if fetch_from_feed_start and not last_fetch_time:
-            # first run for fetch from feed start
-            demisto.debug('sending without added_after')
-            indicators = client.build_iterator(limit)
-        else:
-            demisto.debug(f'sending with {added_after=}')
-            indicators = client.build_iterator(limit, added_after=added_after)
+        indicators = client.build_iterator(limit, added_after=added_after)
     except InvalidJSONError:
-        # raised when the response is empty, because taxii2client parses {} into '筽'
+        demisto.debug('Excepted InvalidJSONError, continuing with empty result')
+        # raised when the response is empty, because {} is parsed into '筽'
         indicators = []
 
     if last_run_ctx is not None:  # in case we got {}, we want to set it because we are in fetch incident run
@@ -63,11 +59,11 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
 
 
 def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
-                          last_run_ctx: Optional[dict] = None, fetch_from_feed_start: bool = False):
+                          last_run_ctx: Optional[dict] = None):
     indicators: list = []
     for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
-        fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx, fetch_from_feed_start)
+        fetched_iocs, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)
         indicators.extend(fetched_iocs)
 
         if limit >= 0:
@@ -88,7 +84,7 @@ def command_test_module(client: Taxii2FeedClient):
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
-                             initial_interval: str = DEFAULT_FETCH_INTERVAL, fetch_from_feed_start: bool = False) \
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL) \
         -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
@@ -96,17 +92,14 @@ def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx:
     :param limit: upper limit of indicators to fetch
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
     :param initial_interval: initial interval in human readable format
-    :param fetch_from_feed_start: determines whether to run the request without "added_after" and fetch all feed information
     :return: indicators in cortex TIM format, updated last_run_ctx
     """
     initial_interval: datetime = get_limited_interval(get_datetime(initial_interval or DEFAULT_FETCH_INTERVAL))
 
     if client.collection_to_fetch:
-        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx,
-                                                        fetch_from_feed_start)  # type: ignore[arg-type]
+        indicators, last_run_ctx = fetch_one_collection(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
     else:
-        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx,
-                                                         fetch_from_feed_start)  # type: ignore[arg-type]
+        indicators, last_run_ctx = fetch_all_collections(client, limit, initial_interval, last_run_ctx)  # type: ignore[arg-type]
 
     return indicators, last_run_ctx
 
@@ -132,15 +125,16 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         else:
             indicators, _ = fetch_all_collections(client, limit, added_after)  # type: ignore[arg-type]
     except InvalidJSONError:
-        # raised when the response is empty, because taxii2client parses {} into '筽'
+        demisto.debug('Excepted InvalidJSONError, continuing with empty result')
+        # raised when the response is empty, because {} is parsed into '筽'
         indicators = []
 
     if raw:
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
     return CommandResults(
-        readable_output=f'Found {len(indicators)} results:\n' + tableToMarkdown(name='DHS Indicators', t=indicators,
-                                                                                headers=['value', 'type'], removeNull=True),
+        readable_output=f'Found {len(indicators)} results added after {_ensure_datetime_to_string(added_after)}:\n' +
+                        tableToMarkdown(name='DHS Indicators', t=indicators, headers=['value', 'type'], removeNull=True),
         outputs_prefix='DHS.Indicators',
         outputs_key_field='value',
         outputs=indicators,
@@ -167,7 +161,6 @@ def get_collections_command(client: Taxii2FeedClient) -> CommandResults:
 
 
 def main():  # pragma: no cover
-    demisto.debug('version 2.7.9')
     params = demisto.params()
     url = params.get('url', 'https://ais2.cisa.dhs.gov/taxii2/')
     key = params.get('key', {}).get('password')
@@ -182,7 +175,6 @@ def main():  # pragma: no cover
     objects_to_fetch = params.get('objects_to_fetch', [])
 
     initial_interval = params.get('initial_interval', DEFAULT_FETCH_INTERVAL)
-    fetch_from_feed_start = params.get('fetch_from_feed_start', False)
     limit = arg_to_number(params.get('limit')) or -1
     limit_per_request = arg_to_number(params.get('limit_per_request')) or DEFAULT_LIMIT_PER_REQUEST
     default_api_root = params.get('default_api_root', 'public')
@@ -207,13 +199,13 @@ def main():  # pragma: no cover
         )
         client.initialise()
 
+        start_time = time.time()
         if command == 'test-module':
             return_results(command_test_module(client))
 
         elif command == 'fetch-indicators':
             last_run_indicators = demisto.getLastRun()
-            indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval,
-                                                                       fetch_from_feed_start)
+            indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
@@ -227,6 +219,8 @@ def main():  # pragma: no cover
 
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
+
+        demisto.debug(f'Running {command} took {round(time.time() - start_time)}sec')
 
     except Exception as error:
         error_msg = str(error)

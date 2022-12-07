@@ -100,13 +100,6 @@ configuration:
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: 'Determines whether the feed will fetch indicators from all time. It is discouraged to use this method. See "help" for more information.'
-  defaultvalue: 'false'
-  display: Fetch From Feed Start
-  hidden: false
-  name: fetch_from_feed_start
-  required: false
-  type: 8
 - additionalinfo: 'The objects to fetch, most likely indicators. Might slow down fetch time.'
   display: STIX Objects To Fetch
   name: objects_to_fetch
