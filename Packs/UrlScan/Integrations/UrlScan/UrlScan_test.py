@@ -108,7 +108,7 @@ def test_format_results_check_lists(mocker):
     with open('./test_data/capitalne.json', 'r') as f:
         response_data = json.loads(f.read())
 
-    mocker.patch('UrlScan.urlscan_submit_request', return_value=(response_data,'',''))
+    mocker.patch('UrlScan.urlscan_submit_request', return_value=(response_data, '', ''))
     mocker.patch.object(demisto, 'results', return_value='')
     command_results_inputs = mocker.patch('UrlScan.CommandResults')
 
