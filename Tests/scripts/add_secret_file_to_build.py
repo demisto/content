@@ -7,14 +7,14 @@ from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerMo
 def run(options):
     try:
         print(f'******************conf file location: {options.json_path_file}')
-        print(str(options.service_account)[0:5])
+        print(str(options.service_account))
         print(str(options.user)[0:5])
         print(str(options.password)[0:5])
         print(str(options.gsm_project_id)[0:5])
     except Exception as e:
         print(e)
         raise e
-    secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config(options.service_account))
+    secret_conf = GoogleSecreteManagerModule(options.service_account)
     print('created GSM client')
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True)
     print('got the secrets from GSM')
@@ -50,16 +50,6 @@ def options_handler(args=None):
     options = parser.parse_args(args)
 
     return options
-
-
-def get_secret_service_account_config(json_path_file: str) -> str:
-    print('##################################')
-    print('##################################')
-    print('##################################')
-    print(f'GSM_SERVICE_ACCOUNT: {json_path_file[0:5]}')
-    with open(json_path_file) as f:
-        creds = json.load(f)
-        return json.dumps(creds)
 
 
 if __name__ == '__main__':

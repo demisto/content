@@ -42,18 +42,9 @@ class GoogleSecreteManagerModule:
     @staticmethod
     def init_secret_manager_client(service_account: str) -> secretmanager.SecretManagerServiceClient:
         try:
-            service_account = service_account.replace('\r', '').replace('\n', '')
-            cur_directory_path = os.getcwd()
-            credentials_file_name = f'{datetime.now().strftime("%m-%d-%Y,%H:%M:%S:%f")}.json'
-            credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
-            json_object = json.loads(service_account)
-            with open(credentials_file_path, 'w') as f:
-                f.write(json.dumps(json_object))
             client = secretmanager.SecretManagerServiceClient.from_service_account_json(
-                credentials_file_path)  # type: ignore # noqa
+                service_account)  # type: ignore # noqa
             return client
-        finally:
-            try:
-                os.remove(credentials_file_path)
-            except:
-                pass
+        except Exception as e:
+            print('EEEEEERRRRRRRRRRRROOOOOOORRRRR')
+            print(e)
