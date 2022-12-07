@@ -1910,7 +1910,7 @@ def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> Comma
     if client.version == ClientV1.API_VER and member_type == 'Allow Only Ip':
         return_error('Allow only ip not supported by version 1.')
     if not re.match(ipv4Regex, ip_address):
-        return_error('Please insert correct IP address.')
+        return_error(f'{ipv4Regex} is not a valid IPv4 address.')
     response = client.ip_list_member_create_request(group_name=group_name,
                                                     member_type=member_type,
                                                     ip_address=ip_address,
