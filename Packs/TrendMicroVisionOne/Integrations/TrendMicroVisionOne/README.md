@@ -476,7 +476,7 @@ Note: The URL received from the `trendmicro-visionone-download-information-for-c
 ### trendmicro-visionone-submit-file-to-sandbox
 
 ***
-Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits a file to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 
@@ -503,7 +503,7 @@ Submits a file to the sandbox for analysis (Note. For more information about the
 ### trendmicro-visionone-submit-file-entry-to-sandbox
 
 ***
-Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see the Trend Micro Vision One Online Help. Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
+Submits the file corresponding to EntryID to the sandbox for analysis (Note. For more information about the supported file types, see [the Trend Micro Vision One Online Help](https://docs.trendmicro.com/en-us/enterprise/trend-micro-vision-one/threat-intelligence-/sandbox-analysis/sandbox-supported-fi.aspx). Submissions require credits. Does not require credits in regions where Sandbox Analysis has not been officially released.)
 
 #### Base Command
 
