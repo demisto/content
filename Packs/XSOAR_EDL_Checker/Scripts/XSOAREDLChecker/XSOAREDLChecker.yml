@@ -24,7 +24,6 @@ scripttarget: 0
 subtype: python3
 tags:
 - Utilities
-- training
 type: python
 fromversion: 6.5.0
 tests:
