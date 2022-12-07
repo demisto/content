@@ -279,9 +279,9 @@ def prepare_traffic_analysis_output(response: List) -> str:
             "State": traffic.get("state"),
             "Flow Direction": traffic.get("flow_direction"),
             "First Detected": arg_to_datetime(traffic["timestamp_range"]["first_detected"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if traffic.get("timestamp_range").get("first_detected") else None,
+                HR_DATE_FORMAT) if traffic.get("timestamp_range", {}).get("first_detected") else None,
             "Last Detected": arg_to_datetime(traffic["timestamp_range"]["last_detected"]).strftime(  # type: ignore
-                HR_DATE_FORMAT) if traffic.get("timestamp_range").get("last_detected") else None
+                HR_DATE_FORMAT) if traffic.get("timestamp_range", {}).get("last_detected") else None
         })
 
     headers = list(hr_output[0].keys()) if hr_output else []
@@ -697,7 +697,7 @@ def virtual_service_create_command(client: PolicyComputeEngine, args: Dict[str, 
         if EXISTING_VIRTUAL_SERVICE in str(e):
             try:
                 virtual_services = client.virtual_services.get(params={"name": name})
-                demisto.info("Virtual service already exists.")
+                demisto.debug("Virtual service already exists.")
                 for virtual_service in virtual_services:
                     if virtual_service.name == name:
                         virtual_service_json = virtual_service.to_json()
@@ -929,7 +929,7 @@ def enforcement_boundary_create_command(
         if EXISTING_ENFORCEMENT_BOUNDARY in str(e):
             try:
                 enforcement_boundaries = client.enforcement_boundaries.get(params={"name": name})
-                demisto.info("Enforcement boundary already exists.")
+                demisto.debug("Enforcement boundary already exists.")
                 for enforcement_boundary in enforcement_boundaries:
                     if enforcement_boundary.name == name:
                         enforcement_boundary_json = enforcement_boundary.to_json()
@@ -1077,7 +1077,7 @@ def ruleset_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) ->
         if EXISTING_RULESET in str(e):
             try:
                 rule_sets = client.rule_sets.get(params={"name": name})
-                demisto.info("Ruleset already exists.")
+                demisto.debug("Ruleset already exists.")
                 for rule_set in rule_sets:
                     if rule_set.name == name:
                         json_response = rule_set.to_json()
@@ -1134,11 +1134,11 @@ def rule_create_command(client: PolicyComputeEngine, args: Dict[str, Any]) -> Co
         existing_rule = {"ingress_services": sorted([href.get('href') for href in rules.get("ingress_services", {})]),
                          "providers": sorted(extract_values_from_dictionary(rules.get("providers"))),
                          "consumers": sorted(extract_values_from_dictionary(rules.get("consumers"))),
-                         "resolve_providers_as": sorted(rules.get("resolve_labels_as").get("providers")),
-                         "resolve_consumers_as": sorted(rules.get("resolve_labels_as").get("consumers"))
+                         "resolve_providers_as": sorted(rules.get("resolve_labels_as", {}).get("providers")),
+                         "resolve_consumers_as": sorted(rules.get("resolve_labels_as", {}).get("consumers"))
                          }
         if params == existing_rule:
-            demisto.info("Found existing Rule bounded to the Ruleset: {}.".format(ruleset_href))
+            demisto.debug("Found existing Rule bounded to the Ruleset: {}.".format(ruleset_href))
             rule_href = rules.get("href")
             response = client.rules.get_by_reference(rule_href)
             break
@@ -1221,7 +1221,6 @@ def main():
             else:
                 raise NotImplementedError("Command {} is not implemented".format(command))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error("Failed to execute {} command.\nError:\n{}".format(command, str(e)))
 
 
