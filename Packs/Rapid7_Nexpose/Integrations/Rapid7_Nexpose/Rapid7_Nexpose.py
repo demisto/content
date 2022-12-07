@@ -104,13 +104,11 @@ class SSHElevationType(Enum, metaclass=FlexibleEnum):
 
 
 class VulnerabilityExceptionScopeType(Enum, metaclass=FlexibleEnum):
-    """An Enum of possible vulnerability exception scope type values.
-       Note: The API has another option, "Instance", which we had issues with, so it's not currently supported."""
+    """An Enum of possible vulnerability exception scope type values."""
     GLOBAL = "Global"
     SITE = "Site"
     ASSET = "Asset"
     ASSET_GROUP = "Asset Group"
-    # INSTANCE = "Instance"
 
 
 class Client(BaseClient):
@@ -2212,7 +2210,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
         if not templates_data.get("resources"):
             return CommandResults(
-                readable_output="Error: No available templates were found.",
+                readable_output="No available templates were found.",
                 raw_response=templates_data,
             )
 
@@ -2538,6 +2536,21 @@ def readable_duration_time(duration: str) -> str:
             result += [f"{duration_values[item]} {item}"]
 
     return ", ".join(result)
+
+
+@overload
+def remove_dict_key(data: dict, key: Any) -> dict:  # pragma: no cover
+    pass
+
+
+@overload
+def remove_dict_key(data: list, key: Any) -> list:  # pragma: no cover
+    pass
+
+
+@overload
+def remove_dict_key(data: tuple, key: Any) -> tuple:  # pragma: no cover
+    pass
 
 
 def remove_dict_key(data: dict | list | tuple, key: Any) -> dict | list | tuple:
@@ -3787,7 +3800,7 @@ def get_asset_vulnerability_command(client: Client, asset_id: str,
                 client.get_vulnerability(vulnerability_id)
 
             except DemistoException as e2:
-                if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:
+                if e2.res is not None and e2.res.status_code is not None and e2.res.status_code == 404:  # type: ignore
                     raise ValueError("Vulnerability not found.")
 
             return CommandResults(readable_output=f"Asset {asset_id} is not vulnerable to \"{vulnerability_id}\".")
@@ -5404,7 +5417,7 @@ def main():  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
-        if isinstance(results, (list, tuple)) and len(results) == 1:
+        if isinstance(results, list) and len(results) == 1:
             return_results(results[0])
 
         else:

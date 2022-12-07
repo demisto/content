@@ -556,7 +556,7 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
                                           }
                                       }
                                   }
-                              }, {"Id": 1}),
+                             }, {"Id": 1}),
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
