@@ -436,7 +436,7 @@ script:
       description: Policy member ID.
       type: String
     - contextPath: FortiwebVM.IpListPolicyMember.type
-      description: Type.
+      description: The type of the IP List Policy member.
       type: Number
     - contextPath: FortiwebVM.IpListPolicyMember.severity
       description: Severity (V1 only).
