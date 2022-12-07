@@ -101,7 +101,7 @@ script:
     - contextPath: Keyfactor.CertInfo.Lists.formated_chain
       description: Formatted Certificate's Trust Chain
       type: string
-  dockerimage: demisto/akamai:1.0.0.34769
+  dockerimage: demisto/akamai:1.0.0.39599
   runonce: false
   script: ''
   subtype: python3

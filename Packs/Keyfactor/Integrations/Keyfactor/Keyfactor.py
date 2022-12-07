@@ -118,7 +118,7 @@ class Client(BaseClient):
                 "Timestamp": time_stamp,
                 "Template": template,
                 "SANs": ip4,
-                "Metadata": metadata
+                "Metadata2": metadata
             }
 
         headers = {
