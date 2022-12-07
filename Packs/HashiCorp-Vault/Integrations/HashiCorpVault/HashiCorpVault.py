@@ -620,6 +620,9 @@ def fetch_credentials():
         elif engine['type'] == 'Cubbyhole':
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
+        elif engine['type'] == 'AWS':
+            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
+
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
 
@@ -701,6 +704,43 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 
     res = send_request(path, 'get', params=params)
 
+    secrets = []
+
+    if not res or 'data' not in res:
+        return []
+
+    for secret in res['data'].get('keys', []):
+        secret_data = get_ch_secret(engine_path, secret)
+        for k, v in secret_data.get('data', {}).iteritems():
+            if concat_username_to_cred_name:
+                name = '{0}_{1}'.format(secret, k)
+            else:
+                name = secret
+            secrets.append({
+                'user': k,
+                'password': v,
+                'name': name
+            })
+
+    return secrets
+
+
+def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
+    params = {
+        'list': 'true'
+    }
+    roles_list_url = f'{engine_path}/v1/aws/roles'
+    res = send_request(roles_list_url, 'get', params=params)
+    for role in res.data.keys:
+        role_url = f'{engine_path}/v1/aws/roles/{role}'
+        role_data = send_request(role_url, 'get')
+        credential_type = demisto.params().get('credentials_type', 'creds')
+        method = 'GET'
+        if credential_type == 'sts':
+            method = 'POST'
+        generate_credentials_url = f'{engine_path}/v1/aws/{credential_type}/{role}'
+        body = {}
+        send_request(generate_credentials_url, method, body=)
     secrets = []
 
     if not res or 'data' not in res:
