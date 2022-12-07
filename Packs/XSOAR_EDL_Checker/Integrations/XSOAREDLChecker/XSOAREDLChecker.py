@@ -12,18 +12,22 @@ urllib3.disable_warnings()
 ''' HELPER FUNCTIONS '''
 
 
-def edl_http_request(base_url, edl_name, creds):
+def edl_http_request(base_url, edl_name, verify, creds):
     """
     HTTP Request to check EDL, using basic auth if creds are provided
     Returns the full response.
     """
-
-    if creds:
-        username = creds.get('username')
-        password = creds.get('password')
-        response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', auth=(username, password), verify=False)
-    else:
-        response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', verify=False)
+    try:
+        if creds:
+            username = creds.get('username')
+            password = creds.get('password')
+            response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', auth=(username, password), verify=verify)
+        else:
+            response = requests.get(url=f'{base_url}/instance/execute/{edl_name}', verify=verify)
+    except requests.exceptions.RequestException as e:  # This is the correct syntax
+        response = {
+            "error": str(e)
+        }
     return response
 
 
@@ -54,27 +58,35 @@ def check_indicators_on_list(response, content_type):
 ''' COMMAND FUNCTIONS '''
 
 
-def get_edl_command(base_url, edl_name, creds=None):
+def get_edl_command(base_url, edl_name, verify, creds=None):
     """
     Get the EDL, and check whether it returned a 200, 401 unauthorized if the creds are wrong, or the error if it's something else
     """
 
     # make the request
-    response = edl_http_request(base_url, edl_name, creds)
+    response = edl_http_request(base_url, edl_name, verify, creds)
 
-    # check the status code on the request and build response
-    status = response.status_code
-
-    if status == 200:
-        edl_response = f'{edl_name} returned a {status} response, all should be well'
-        edl_items_on_list = check_indicators_on_list(response, response.headers.get('Content-Type'))
-    elif status == 401:
-        edl_response = 'Basic authentication failed. Make sure you are using the right credentials.'
+    # check the response
+    if type(response) == dict:
+        status = 400
+        edl_response = response["error"]
         edl_items_on_list = 0
     else:
-        error = response.json().get('error', 'error not found')
-        edl_response = error
-        edl_items_on_list = 0
+        # check the status code so we can build a response
+        status = response.status_code
+
+        if status == 200:
+            edl_response = f'{edl_name} returned a {status} response, all should be well'
+            edl_items_on_list = check_indicators_on_list(response, response.headers.get('Content-Type'))
+        elif status == 401:
+            edl_response = 'Basic authentication failed. Make sure you are using the right credentials.'
+            edl_items_on_list = 0
+        elif status == 400 and type(response) != dict:
+            if response.json().get('error'):
+                edl_response = response.json().get('error')
+            else:
+                edl_response = "Bad request."
+            edl_items_on_list = 0
 
     # outputs for war room and context
     output = {
@@ -94,6 +106,7 @@ def get_edl_command(base_url, edl_name, creds=None):
 def main():
     base_url = demisto.demistoUrls().get('server')
     edl_name = demisto.params().get('edl_name')
+    verify = not demisto.params().get('insecure', False)
     credentials = demisto.params().get('credentials', None)
 
     if credentials:
@@ -102,14 +115,14 @@ def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         if demisto.command() == 'test-module':
-            result, output = get_edl_command(base_url, edl_name, credentials)
+            result, output = get_edl_command(base_url, edl_name, verify, credentials)
             if output.get("Status") == 200:
                 return_results("ok")
             else:
                 return_error(output.get("Response"))
 
         elif demisto.command() == 'xsoaredlchecker-get-edl':
-            result, output = get_edl_command(base_url, edl_name, credentials)
+            result, output = get_edl_command(base_url, edl_name, verify, credentials)
             return_results(result)
 
     # Log exceptions and return errors
