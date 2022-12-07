@@ -479,6 +479,8 @@ xsiam_server_ga:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
+    GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
 #  needs: ["prepare-testing-bucket-mpv2"]
 
@@ -494,10 +496,12 @@ xsoar_ng_server_ga:
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"
-    CLOUD_SERVERS_FILE: "xsiam_servers_path"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-    GCS_MARKET_BUCKET: "${GCS_MARKET_BUCKET}"
+    GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
+    GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
 #  needs: ["create-instances"]
