@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Dict, Any
 from urllib.parse import urljoin
 from FortinetFortiwebVM import ClientV1, ClientV2, Client
 from CommonServerPython import *
@@ -51,8 +52,9 @@ def mock_client(version: str) -> Client:
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_protected_hostname_create_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                           expected_value, status_code, assert_flag):
+def test_protected_hostname_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
+                                           status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create a protected hostname group.
     Given:
@@ -91,8 +93,9 @@ def test_protected_hostname_create_command(requests_mock, mock_client, version, 
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_protected_hostname_update_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                           expected_value, status_code, assert_flag):
+def test_protected_hostname_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
+                                           status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Update a protected hostname group.
     Given:
@@ -131,8 +134,9 @@ def test_protected_hostname_update_command(requests_mock, mock_client, version, 
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_protected_hostname_delete_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                           expected_value, status_code, assert_flag):
+def test_protected_hostname_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
+                                           status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Delete a protected hostname group.
     Given:
@@ -168,7 +172,8 @@ def test_protected_hostname_delete_command(requests_mock, mock_client, version, 
         }, 'protected_hostname/v2_get_list_success.json', 3),
     ),
 )
-def test_protected_hostname_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected):
+def test_protected_hostname_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                         args: Dict[str, Any], jsonpath: str, expected: int):
     """
     Scenario: List a protected hostname groups.
     Given:
@@ -214,8 +219,9 @@ def test_protected_hostname_list_command(requests_mock, mock_client, version, en
     }, 'protected_hostname_member/v2_failed_exist.json', "{'results': {'errcode': -5}",
      HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
-def test_protected_hostname_member_create_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
-                                                  expected_value, status_code, assert_flag):
+def test_protected_hostname_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  args: Dict[str, Any], jsonpath: str, expected_value,
+                                                  status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create a protected hostname member.
     Given:
@@ -274,8 +280,9 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client, ve
     }, 'protected_hostname_member/v2_failed_not_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True,
      "'results': {'errcode': -3}"),
 ))
-def test_protected_hostname_member_update_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
-                                                  status_code, assert_flag, expected_value):
+def test_protected_hostname_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus,
+                                                  assert_flag: bool, expected_value: str):
     """
     Scenario: Update a protected hostname member.
     Given:
@@ -318,8 +325,9 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client, ve
         'member_id': '1',
     }, 'protected_hostname_member/v2_delete_failed.json', HTTPStatus.INTERNAL_SERVER_ERROR, True, "'errcode': -1"),
 ))
-def test_protected_hostname_member_delete_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
-                                                  status_code, assert_flag, expected_value):
+def test_protected_hostname_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus,
+                                                  assert_flag: bool, expected_value: str):
     """
     Scenario: Update a protected hostname member.
     Given:
@@ -358,8 +366,8 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client, ve
         }, 'protected_hostname_member/v2_get_list_success.json', 3),
     ),
 )
-def test_protected_hostname_member_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
-                                                expected):
+def test_protected_hostname_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                args: Dict[str, Any], jsonpath: str, expected: int):
     """
     Scenario: List a protected hostname groups.
     Given:
@@ -397,8 +405,9 @@ def test_protected_hostname_member_list_command(requests_mock, mock_client, vers
             'action': 'deny and no log',
         }, 'ip_list_group/v2_create_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_ip_list_group_create_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                      expected_value, status_code, assert_flag):
+def test_ip_list_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                      args: Dict[str, Any], jsonpath, expected_key: str, expected_value: str,
+                                      status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create an IP list group.
     Given:
@@ -432,8 +441,9 @@ def test_ip_list_group_create_command(requests_mock, mock_client, version, endpo
             'action': 'block period',
         }, 'ip_list_group/v2_not_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_ip_list_group_upadte_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                      expected_value, status_code, assert_flag):
+def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                      args: Dict[str, Any], jsonpath, expected_key: str, expected_value: str,
+                                      status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Update an IP list group.
     Given:
@@ -470,8 +480,8 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client, version, endpo
         'name': 'Example'
     }, 'protected_hostname/v2_failed_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
-def test_ip_list_group_delete_command(requests_mock, mock_client, version, endpoint, args, jsonpath, status_code,
-                                      assert_flag):
+def test_ip_list_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                      args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Delete an IP list group.
     Given:
@@ -506,7 +516,8 @@ def test_ip_list_group_delete_command(requests_mock, mock_client, version, endpo
         }, 'ip_list_group/v2_list_success.json', 3),
     ),
 )
-def test_ip_list_group_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected):
+def test_ip_list_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                    args: Dict[str, Any], jsonpath: str, expected: int):
     """
     Scenario: List an IP list groups.
     Given:
@@ -550,8 +561,9 @@ def test_ip_list_group_list_command(requests_mock, mock_client, version, endpoin
         }, 'ip_list_member/v2_exist.json', 'id', "'results': {'errcode': -6014}", HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
     ))
-def test_ip_list_member_create_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                       expected_value, status_code, assert_flag):
+def test_ip_list_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                       args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value: str,
+                                       status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create an IP list member.
     Given:
@@ -606,8 +618,9 @@ def test_ip_list_member_create_command(requests_mock, mock_client, version, endp
         }, 'ip_list_member/v2_not_exist.json', 'id', "'results': {'errcode': -3}", HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
     ))
-def test_ip_list_member_update_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_key,
-                                       expected_value, status_code, assert_flag):
+def test_ip_list_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                       args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value: str,
+                                       status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Update an IP list member.
     Given:
@@ -649,8 +662,9 @@ def test_ip_list_member_update_command(requests_mock, mock_client, version, endp
         'member_id': '1',
     }, 'ip_list_member/v2_not_exist.json', "'results': {'errcode': -3}", HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
-def test_ip_list_member_delete_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected_value,
-                                       status_code, assert_flag):
+def test_ip_list_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: Dict[str,
+                                                                                                                   Any],
+                                       jsonpath: str, expected_value, status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Delete an IP list member.
     Given:
@@ -689,7 +703,8 @@ def test_ip_list_member_delete_command(requests_mock, mock_client, version, endp
         }, 'ip_list_member/v2_list_success.json', 3),
     ),
 )
-def test_ip_list_member_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected):
+def test_ip_list_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                     args: Dict[str, Any], jsonpath: str, expected: int):
     """
     Scenario: List an IP list members.
     Given:
@@ -724,8 +739,8 @@ def test_ip_list_member_list_command(requests_mock, mock_client, version, endpoi
      'http_content_routing_member/v2_wrong_content_routing.json', "There is a problem with one or more arguments.",
      HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
-def test_http_content_routing_member_add_command(requests_mock, mock_client, version, endpoint, jsonpath,
-                                                 expected_value, status_code):
+def test_http_content_routing_member_add_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                 jsonpath: str, expected_value: str, status_code: HTTPStatus):
     """
     Scenario: Create an HTTP content routing member.
     Given:
@@ -770,8 +785,8 @@ def test_http_content_routing_member_add_command(requests_mock, mock_client, ver
      'http_content_routing_member/v2_wrong_content_routing.json', "There is a problem with one or more arguments.",
      HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
-def test_http_content_routing_member_update_command(requests_mock, mock_client, version, endpoint, jsonpath,
-                                                    expected_value, status_code):
+def test_http_content_routing_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                    jsonpath: str, expected_value: str, status_code: HTTPStatus):
     """
     Scenario: Update an HTTP content routing member.
     Given:
@@ -805,8 +820,8 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client, 
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_not_exist.json', "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
-def test_http_content_routing_member_delete_command(requests_mock, mock_client, version, endpoint, jsonpath,
-                                                    expected_value, status_code):
+def test_http_content_routing_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                    jsonpath: str, expected_value: str, status_code: HTTPStatus):
     """
     Scenario: Delete an HTTP content routing member.
     Given:
@@ -854,8 +869,8 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client, 
         }, 'http_content_routing_member/v2_list_success.json', 1),
     ),
 )
-def test_http_content_routing_member_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
-                                                  expected):
+def test_http_content_routing_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  args: Dict[str, Any], jsonpath: str, expected: int):
     """
     Scenario: List HTTP content routing members.
     Given:
