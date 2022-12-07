@@ -55,7 +55,7 @@ Parameters used:
         "content-encoding": "gzip",
         "collector-name": "test_brand",
         "instance-name": "test_integration_instance",
-        "final-reporting-device": www.test_url.com
+        "final-reporting-device": "www.test_url.com"
 }}
 
 Response status code: {status_code}
