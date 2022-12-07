@@ -1,5 +1,5 @@
 { 
-  "fromversion": "6.10.0", 
+  "fromVersion": "6.10.0", 
   "dashboards_data": [
     {
       "name": "DropBox Dashboard",
