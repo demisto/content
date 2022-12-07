@@ -4594,7 +4594,7 @@ def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
                 query = f'{query}{list_item}'
             else:
                 query = f'{query}{list_item} and '
-            demisto.debug(query)
+        demisto.debug(query)
     return query
 
 
@@ -4628,12 +4628,13 @@ def list_software_command(client: MsClient, args: dict) -> CommandResults:
     filter_req = create_filter([(software_id, 'id'), (names, 'name'), (vendors, 'vendor')])
     headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
     list_software_response = client.get_list_software(filter_req, limit, offset)
+    list_software_response_value = list_software_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
-                                     list_software_response.get('value'), headers=headers, removeNull=True)
+                                     list_software_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.Software',
         outputs_key_field='id',
-        outputs=list_software_response.get('value'),
+        outputs=list_software_response_value,
         readable_output=human_readable,
         raw_response=list_software_response)
 
@@ -4661,12 +4662,13 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
                                 (product_vendor, 'productVendor')])
     headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                     list_vulnerabilities_response.get('value'), headers=headers, removeNull=True)
+                                     list_vulnerabilities_response_value, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineCVE',
         outputs_key_field='id',
-        outputs=list_vulnerabilities_response.get('value'),
+        outputs=list_vulnerabilities_response_value,
         readable_output=human_readable,
         raw_response=list_vulnerabilities_response)
 

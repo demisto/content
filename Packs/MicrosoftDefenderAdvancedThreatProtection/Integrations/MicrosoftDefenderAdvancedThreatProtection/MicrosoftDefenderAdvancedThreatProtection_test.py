@@ -2626,7 +2626,8 @@ def test_create_filters_disjunctions(filters_arg_list, expected_result):
 @pytest.mark.parametrize('args_and_name_list, expected_result', [
     ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "id eq 'id1' and vendor eq 'vendor1' or vendor eq 'vendor2'"),
     ([(['id1', 'id2'], 'id'), (['vendor1', 'vendor2'], 'vendor')],
-     "id eq 'id1' or id eq 'id2' and vendor eq 'vendor1' or vendor eq 'vendor2'")
+     "id eq 'id1' or id eq 'id2' and vendor eq 'vendor1' or vendor eq 'vendor2'"),
+    ([(['id1'], 'id')], "id eq 'id1'")
 ])
 def test_create_filter(args_and_name_list, expected_result):
     """
