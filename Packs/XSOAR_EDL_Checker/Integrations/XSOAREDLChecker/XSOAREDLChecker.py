@@ -1,5 +1,3 @@
-import json
-
 import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
