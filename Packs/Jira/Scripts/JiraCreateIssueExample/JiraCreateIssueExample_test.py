@@ -2,11 +2,24 @@ from JiraCreateIssueExample import DATE_FORMAT, validate_date_field, parse_custo
     rm_custom_field_from_args
 import pytest
 
+
 @pytest.mark.parametrize("due_date", [
     ("2022-01-01"),
     ("2022-12-12T13:00:00")
 ])
 def test_validate_date_field_data_remains(due_date):
+    """
+    Given:
+        - A date.
+
+    When:
+        - Case A: The date is in valid format.
+        - Case B: The date has a time included
+
+    Then:
+        - Case A: No exception is thrown.
+        - Case B: A `ValueError` exception is thrown.
+    """
 
     try:
         validate_date_field(due_date)
@@ -15,10 +28,23 @@ def test_validate_date_field_data_remains(due_date):
 
 
 @pytest.mark.parametrize("due_date", [
-    ("2022-01-01"),
+    ("2022-1-1"),
     ("2022-31-31")
 ])
 def test_validate_date_field_format(due_date):
+
+    """
+    Given:
+        - A date.
+
+    When:
+        - Case A: The date is in valid format.
+        - Case B: The date has an invalid month.
+
+    Then:
+        - Case A: No exception is thrown.
+        - Case B: A `ValueError` exception is thrown.
+    """
 
     try:
         validate_date_field(due_date)
@@ -95,9 +121,14 @@ def test_add_custom_fields(args, custom_fields, expected):
 
 
 @pytest.mark.parametrize("args, expected", [
-    ({"arg1:": "val1", "arg2": "val2", "customFields": "customfield_10040=100"}, {"arg1:": "val1", "arg2": "val2"})
+    ({"arg1:": "val1", "arg2": "val2", "customFields": "customfield_10040=100"}, {"arg1:": "val1", "arg2": "val2"}),
+    ({"arg1:": "val1", "arg2": "val2"}, {"arg1:": "val1", "arg2": "val2"})
 ])
 def test_rm_custom_field_from_args(args, expected):
-    actual = rm_custom_field_from_args(args)
 
-    assert actual == expected
+    try:
+        actual = rm_custom_field_from_args(args)
+
+        assert actual == expected
+    except KeyError as ke:
+        assert "customFields" in str(ke)
