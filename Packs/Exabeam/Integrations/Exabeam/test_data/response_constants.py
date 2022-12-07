@@ -233,3 +233,7 @@ DELETE_RECORD_RESPONSE = {'sessionId': '56a5b19a-4193-4616-9978-0bbabb1e2d60',
                               'record': {'key': '', 'id': 'test_key'}
                           }],
                           'metadata': {'createdSize': 0, 'updatedSize': 0, 'removedSize': 1, 'duplicates': []}}
+
+
+RESPONSE_INCIDENT_LIST = {}
+EXPECTED_INCIDENT_LIST = {}
