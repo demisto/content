@@ -2577,7 +2577,7 @@ def list_response_parser(client: Client,
     if sub_object_id and client.version == ClientV1.API_VER:
         group_dict = find_dict_in_array(response, '_id', sub_object_id)
         response = [group_dict] if group_dict else []
-        if len(response) == 0:
+        if not response:
             return_error('The object does not exist.')
 
     parsed_data = []
