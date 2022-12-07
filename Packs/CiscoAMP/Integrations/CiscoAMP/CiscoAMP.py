@@ -1171,7 +1171,7 @@ def fetch_incidents(
             incidents: List of incidents that will be created in XSOAR.
     """
     last_fetch = last_run.get('last_fetch')
-    previous_ids = last_run.get('previous_ids', [])
+    previous_ids = set(last_run.get('previous_ids', []))
 
     # If a last fetch run doesn't exist, use the first fetch time.
     if last_fetch is None:
@@ -1201,7 +1201,7 @@ def fetch_incidents(
         if (incident_id := str(item.get('id'))) in previous_ids:
             continue
 
-        previous_ids.append(incident_id)
+        previous_ids.add(incident_id)
 
         incident_timestamp = item['timestamp'] * 1000
         incident = remove_empty_elements({
@@ -1223,7 +1223,7 @@ def fetch_incidents(
 
     next_run = {
         'last_fetch': timestamp_to_datestring(last_fetch_timestamp),
-        'previous_ids': previous_ids
+        'previous_ids': list(previous_ids)
     }
 
     return next_run, incidents
@@ -1617,7 +1617,10 @@ def computer_delete_command(client: Client, args: Dict[str, Any]) -> CommandResu
     is_deleted = dict_safe_get(raw_response, ['data', 'deleted'])
 
     if not is_deleted:
-        raise ValueError(f'Failed to delete Connector GUID: "{connector_guid}".')
+        raise DemistoException(
+            message=f'Failed to delete Connector GUID: "{connector_guid}".',
+            res=raw_response
+        )
 
     readable_output = f'Connector GUID: "{connector_guid}"\nSuccessfully deleted.'
 
