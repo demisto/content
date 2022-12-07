@@ -88,10 +88,18 @@ def test_computer_list_command(requests_mock, mock_client, args, suffix, file):
     from CiscoAMP import computer_list_command
     responses = computer_list_command(mock_client, args)
 
+    counter = 0
+
     # Last CommandResults has only a readableOutput, therefore it won't be checked.
     for response in responses[:-1]:
         assert response.outputs_prefix == 'CiscoAMP.Computer'
         assert 'links' not in response.outputs
+        assert response.indicator.id == response.outputs['connector_guid']
+        assert response.indicator.mac_address == response.outputs['network_addresses'][0]['mac']
+        assert response.indicator.status == 'Online' if response.outputs['active'] else 'Offline'
+        assert response.indicator.vendor == 'CiscoAMP Response'
+
+        counter += 1
 
 
 def test_computer_list_error_command(requests_mock, mock_client):
@@ -212,6 +220,11 @@ def test_computer_user_activity_list_command(requests_mock, mock_client):
     assert response.outputs_prefix == 'CiscoAMP.ComputerUserActivity'
     assert_output_has_no_links(response.outputs)
 
+    for output in response.outputs:
+        assert output['connector_guid'] in response.readable_output
+        assert output['hostname'] in response.readable_output
+        assert output['active'] in response.readable_output
+
 
 @pytest.mark.parametrize(
     'args',
@@ -242,6 +255,11 @@ def test_computer_user_trajectory_list_command(requests_mock, mock_client, args)
     assert response.outputs_prefix == 'CiscoAMP.ComputerUserTrajectory'
     assert len(response.outputs) == 1
     assert 'connector_guid' in response.outputs[0]
+
+    for output in response.outputs:
+        assert output['id'] in response.readable_output
+        assert output['date'] in response.readable_output
+        assert output['event_type'] in response.readable_output
 
 
 def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
@@ -275,6 +293,10 @@ def test_computer_vulnerabilities_list_command(requests_mock, mock_client):
     assert 'connector_guid' in response.outputs[0]
     assert_output_has_no_links(response.outputs)
 
+    for output in response.outputs:
+        assert output['connector_guid'] in response.readable_output
+        assert output['file']['identity']['sha256'] in response.readable_output
+
 
 def test_computer_move_command(requests_mock, mock_client):
     """
@@ -304,6 +326,9 @@ def test_computer_move_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.Computer'
     assert 'links' not in response.outputs
+
+    for output in response.outputs:
+        assert output['connector_guid'] in response.readable_output
 
 
 def test_computer_delete_command(requests_mock, mock_client):
@@ -389,6 +414,11 @@ def test_computer_activity_list_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerActivity'
     assert_output_has_no_links(response.outputs)
+
+    for output in response.outputs:
+        assert output['connector_guid'] in response.readable_output
+        assert output['hostname'] in response.readable_output
+        assert output['active'] in response.readable_output
 
 
 def test_computer_activity_list_error_command(requests_mock, mock_client):
@@ -496,6 +526,9 @@ def test_computer_isolation_create_command(requests_mock, mock_client):
     response = computer_isolation_create_command(mock_client, args)
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerIsolation'
+    assert response.outputs['available'] in response.readable_output
+    assert response.outputs['status'] in response.readable_output
+    assert response.outputs['unlock_code'] in response.readable_output
 
 
 def test_computer_isolation_delete_command(requests_mock, mock_client):
@@ -524,6 +557,11 @@ def test_computer_isolation_delete_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.ComputerIsolation'
 
+    for output in response.outputs:
+        assert output['available'] in response.readable_output
+        assert output['status'] in response.readable_output
+        assert output['unlock_code'] in response.readable_output
+
 
 def test_event_list_command(requests_mock, mock_client):
     """
@@ -548,8 +586,14 @@ def test_event_list_command(requests_mock, mock_client):
     from CiscoAMP import event_list_command
     responses = event_list_command(mock_client, args)
 
+    # Not including last element as it is only a readable output.
     for response in responses[:-1]:
         assert response.outputs_prefix == 'CiscoAMP.Event'
+
+        if 'file' in response.outputs:
+            assert response.indicator.sha256 == response.outputs['file']['identity']['sha256']
+            assert response.indicator.path == response.outputs['file']['file_path']
+            assert response.indicator.name == response.outputs['file']['file_name']
 
         if computer := response.outputs.get('computer'):
             assert 'links' not in computer
@@ -642,6 +686,9 @@ def test_file_list_list_command(requests_mock, mock_client, file, suffix, args, 
     for output in response.outputs:
         assert 'links' not in output
         assert output['type'] == expected_file_list_type
+        assert output['guid'] in response.readable_output
+        assert output['name'] in response.readable_output
+        assert output['type'] in response.readable_output
 
 
 @pytest.mark.parametrize(
@@ -685,8 +732,16 @@ def test_file_list_item_list_command(requests_mock, mock_client, file, suffix, a
     if policies := response.outputs[0].get('policies'):
         assert_output_has_no_links(policies)
 
+        for policy in policies:
+            assert policy['guid'] in response.readable_output
+            assert policy['name'] in response.readable_output
+
     if items := response.outputs[0].get('items'):
         assert_output_has_no_links(items)
+
+        for item in items:
+            assert item['sha256'] in response.readable_output
+            assert item['source'] in response.readable_output
 
 
 def test_file_list_item_create_command(requests_mock, mock_client):
@@ -717,6 +772,8 @@ def test_file_list_item_create_command(requests_mock, mock_client):
 
     assert response.outputs_prefix == 'CiscoAMP.FileListItem'
     assert 'links' not in response.outputs
+    assert response.outputs[0]['sha256'] in response.readable_output
+    assert response.outputs[0]['description'] in response.readable_output
 
 
 def test_file_list_item_delete_command(requests_mock, mock_client):
@@ -813,6 +870,10 @@ def test_group_list_command(requests_mock, mock_client, file, args, suffix):
     if policies := response.outputs[0].get('policies'):
         assert_output_has_no_links(policies)
 
+    for output in response.outputs:
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
+
 
 def test_group_policy_update_command(requests_mock, mock_client):
     """
@@ -845,6 +906,10 @@ def test_group_policy_update_command(requests_mock, mock_client):
 
     if policies := response.outputs[0].get('policies'):
         assert_output_has_no_links(policies)
+
+    for output in response.outputs:
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
 
 
 def test_group_policy_update_error_command(requests_mock, mock_client):
@@ -908,6 +973,10 @@ def test_group_parent_update_command(requests_mock, mock_client, file):
     if policies := response.outputs[0].get('policies'):
         assert_output_has_no_links(policies)
 
+    for output in response.outputs:
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
+
 
 def test_group_create_command(requests_mock, mock_client):
     """
@@ -939,6 +1008,10 @@ def test_group_create_command(requests_mock, mock_client):
 
     if policies := response.outputs[0].get('policies'):
         assert_output_has_no_links(policies)
+
+    for output in response.outputs:
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
 
 
 def test_group_delete_command(requests_mock, mock_client):
@@ -1022,10 +1095,18 @@ def test_indicator_list_command(requests_mock, mock_client, file, args, suffix):
     )
 
     from CiscoAMP import indicator_list_command
+    from CommonServerPython import dict_safe_get
     response = indicator_list_command(mock_client, args)
 
     assert response.outputs_prefix == 'CiscoAMP.Indicator'
     assert_output_has_no_links(response.outputs)
+
+    for output in response.outputs:
+        assert output['guid'] in response.readable_output
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
+        assert dict_safe_get(output, ['data', 'mitre', 'tactics']) or '' in response.readable_output
+        assert dict_safe_get(output, ['data', 'mitre', 'techniques']) or '' in response.readable_output
 
 
 @pytest.mark.parametrize(
@@ -1058,6 +1139,11 @@ def test_policy_list_command(requests_mock, mock_client, file, args, suffix):
 
     assert response.outputs_prefix == 'CiscoAMP.Policy'
     assert_output_has_no_links(response.outputs)
+
+    for output in response.outputs:
+        assert output['guid'] in response.readable_output
+        assert output['name'] in response.readable_output
+        assert output['description'] in response.readable_output
 
 
 @pytest.mark.parametrize(
@@ -1124,11 +1210,11 @@ def test_version_get_command(requests_mock, mock_client):
 
 
 @pytest.mark.parametrize(
-    'file, args, suffix',
-    [('vulnerability_list_response.json', {}, ''),
-     ('vulnerability_get_response.json', {'sha256': '1'}, '/1/computers')]
+    'file, args, suffix, is_list',
+    [('vulnerability_list_response.json', {}, '', True),
+     ('vulnerability_get_response.json', {'sha256': '1'}, '/1/computers', False)]
 )
-def test_vulnerability_list_command(requests_mock, mock_client, file, args, suffix):
+def test_vulnerability_list_command(requests_mock, mock_client, file, args, suffix, is_list):
     """
     Scenario:
     -   Get a vulnerability list.
@@ -1153,3 +1239,12 @@ def test_vulnerability_list_command(requests_mock, mock_client, file, args, suff
 
     assert response.outputs_prefix == 'CiscoAMP.Vulnerability'
     assert_output_has_no_links(response.outputs)
+
+    for output in response.outputs:
+        if is_list:
+            assert output['application'] in response.readable_output
+            assert output['version'] in response.readable_output
+
+        else:
+            assert output['connector_guid'] in response.readable_output
+            assert output['hostname'] in response.readable_output

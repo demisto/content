@@ -2213,9 +2213,9 @@ def file_list_item_list_command(client: Client, args: Dict[str, Any]) -> Command
     if dict_safe_get(raw_response, ['data', 'policies']):
         readable_output += get_readable_output(
             response=raw_response,
-            header_by_keys=FILE_LIST_ITEM_HEADERS_BY_KEYS,
+            header_by_keys=POLICY_HEADERS_BY_KEYS,
             keys_to_items_option_1=['data', 'policies'],
-            title=FILE_LIST_ITEM_TITLE,
+            title=POLICY_TITLE,
         )
 
     context_output = get_context_output(raw_response, ['links'])
@@ -2261,9 +2261,9 @@ def file_list_item_create_command(client: Client, args: Dict[str, Any]) -> Comma
     if dict_safe_get(raw_response, ['data', 'policies']):
         readable_output += get_readable_output(
             response=raw_response,
-            header_by_keys=FILE_LIST_ITEM_HEADERS_BY_KEYS,
+            header_by_keys=POLICY_HEADERS_BY_KEYS,
             keys_to_items_option_1=['data', 'policies'],
-            title=FILE_LIST_ITEM_TITLE,
+            title=POLICY_TITLE,
         )
 
     context_output = get_context_output(raw_response, ['links'])
@@ -2594,7 +2594,7 @@ def indicator_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
             title=MITRE_TACTIC_TITLE,
         )
 
-    if dict_safe_get(raw_response, ['data', 'mitre', 'tactics']):
+    if dict_safe_get(raw_response, ['data', 'mitre', 'techniques']):
         readable_output += get_readable_output(
             response=raw_response,
             header_by_keys=MITRE_HEADERS_BY_KEYS,
@@ -2812,9 +2812,9 @@ def vulnerability_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     else:
         readable_output += get_readable_output(
             response=raw_response,
-            header_by_keys=VULNERABLE_COMPUTER_HEADERS_BY_KEYS,
+            header_by_keys=VULNERABILITY_HEADERS_BY_KEYS,
             keys_to_items_option_1=['data'],
-            title=VULNERABLE_COMPUTER_TITLE,
+            title=VULNERABILITY_TITLE,
         )
 
     context_output = get_context_output(raw_response, ['links'])
