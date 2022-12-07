@@ -1,6 +1,6 @@
-register_module_line("CTIX v3", "start", __line__())
-# Uncomment while development
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import urllib3
 import requests
@@ -539,12 +539,13 @@ class Client(BaseClient):
         return self.get_http_request(client_url, **params)
 
     def get_lookup_threat_data(
-        self, object_type: str, ioc_type: str, object_names: list, params: dict
+        self, object_type: str, ioc_type: list, object_names: list, params: dict
     ):
         """
         Get Lookup Threat Data
 
-        :param str object_type: Object type of the IOCs
+        :param str object_type: (SDO) Object type of the IOCs
+        :param list ioc_type: the IOC type of the Indicator (eg. URL, MD5, IPv4)
         :param list object_names: Indicator/IOCs names
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
@@ -552,7 +553,9 @@ class Client(BaseClient):
         url_suffix = "ingestion/threat-data/list/"
         query = f"type={object_type}"
 
-        if len(ioc_type) > 0:
+        if len(ioc_type) == 1:
+            query += f" AND ioc_type IN ('{ioc_type[0]}')"
+        elif len(ioc_type) > 1:
             query += f" AND ioc_type IN {tuple(ioc_type)}"
 
         if len(object_names) == 1:
@@ -606,6 +609,7 @@ def iter_dbot_score(
     table_name: str,
     output_prefix: str,
     outputs_key_field: str,
+    reliability: str = None
 ):
     final_data = []
     for value in data:
@@ -618,6 +622,7 @@ def iter_dbot_score(
                     indicator_type=DBotScoreType.IP,
                     integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 ip_standard_context = Common.IP(
                     ip=value.get("name"), asn=value.get("asn"), dbot_score=dbot_score
@@ -640,6 +645,7 @@ def iter_dbot_score(
                     indicator_type=DBotScoreType.FILE,
                     integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 file_standard_context = Common.File(
                     name=value.get("name"), dbot_score=dbot_score
@@ -673,6 +679,7 @@ def iter_dbot_score(
                     indicator_type=DBotScoreType.DOMAIN,
                     integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 domain_standard_context = Common.Domain(
                     domain=value.get("name"), dbot_score=dbot_score
@@ -695,6 +702,7 @@ def iter_dbot_score(
                     indicator_type=DBotScoreType.EMAIL,
                     integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 email_standard_context = Common.Domain(
                     domain=value.get("name"), dbot_score=dbot_score
@@ -717,6 +725,7 @@ def iter_dbot_score(
                     indicator_type=DBotScoreType.URL,
                     integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 url_standard_context = Common.URL(
                     url=value.get("name"), dbot_score=dbot_score
@@ -951,6 +960,8 @@ def get_threat_data_command(
     threat_data_list = response.get("data", {}).get("results", [])
     results = [data for data in threat_data_list]
     results = no_result_found(results)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return [results]
     else:
@@ -961,6 +972,7 @@ def get_threat_data_command(
             "Threat Data",
             "CTIX.ThreatData",
             "id",
+            reliability
         )
         return result
 
@@ -1214,6 +1226,8 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
     response = client.saved_result_set(page, page_size, label_name, query)
     data_list = response.get("data", {}).get("results", [])
     results = no_result_found(data_list)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return results
     else:
@@ -1224,6 +1238,7 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
             "Saved Result Set",
             "CTIX.SavedResultSet",
             "id",
+            reliability
         )
         return results
 
@@ -1484,7 +1499,7 @@ def get_lookup_threat_data_command(
     :return CommandResults: XSOAR based result
     """
     object_type = args.get("object_type", "indicator")
-    ioc_type = args.get("ioc_type", [])
+    ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
     page_size = args.get("page_size", 10)
     params = {"page_size": page_size}
@@ -1493,6 +1508,8 @@ def get_lookup_threat_data_command(
     )
     data_set = response.get("data").get("results")
     results = no_result_found(data_set)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return [results]
     else:
@@ -1503,6 +1520,7 @@ def get_lookup_threat_data_command(
             "Lookup Data",
             "CTIX.ThreatDataLookup",
             "id",
+            reliability
         )
         return results
 
@@ -1540,16 +1558,23 @@ def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 
 
 def main() -> None:
+    params = demisto.params()
+    base_url = params.get("base_url")
+    access_id = params.get("access_id")
+    secret_key = params.get("secret_key")
+    verify = not params.get("insecure", False)
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
 
-    base_url = demisto.params().get("base_url")
-    access_id = demisto.params().get("access_id")
-    secret_key = demisto.params().get("secret_key")
-    verify = not demisto.params().get("insecure", False)
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    demisto.args()['reliability'] = reliability
     proxies = handle_proxy(proxy_param_name="proxy")
-
     demisto.debug(f"Command being called is {demisto.command()}")
-    try:
 
+    try:
         client = Client(
             base_url=base_url,
             access_id=access_id,
@@ -1640,4 +1665,4 @@ def main() -> None:
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
 
-register_module_line("CTIX v3", "end", __line__())
+# register_module_line("CTIX v3", "end", __line__())

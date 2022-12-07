@@ -794,12 +794,12 @@ script:
       description: comma-separated list of attack_patterns.
       isArray: true
     outputs:
-      - contextPath: CTIX.Intel.response
-        description: The response of the api.
-        type: String
-      - contextPath: CTIX.Intel.status
-        description: Status code returned from the api.
-        type: String
+    - contextPath: CTIX.Intel.response
+      description: The response of the api.
+      type: String
+    - contextPath: CTIX.Intel.status
+      description: Status code returned from the api.
+      type: String
   dockerimage: demisto/python3:3.10.8.39276
   runonce: false
   subtype: python3
