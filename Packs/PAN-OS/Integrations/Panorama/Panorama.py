@@ -45,6 +45,7 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -12823,6 +12824,39 @@ def pan_os_delete_application_group_command(args):
         readable_output=f'application-group {application_group_name} was deleted successfully.'
     )
 
+# EDITING: fetch commands 
+
+
+def get_last_fetch(last_run: dict[str,str], first_fetch: str) -> str:
+    last_fetch = last_run.get('latest_detection_found')
+    if not last_fetch:
+        # handle first time fetch
+        demisto.debug('[PAN-OS] First fetch run')
+        first_fetch_parsed = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        assert first_fetch_parsed is not None, f'failed parsing {first_fetch}'
+        last_fetch = str(first_fetch_parsed.isoformat(timespec='milliseconds')) + 'Z'
+    demisto.debug(f'[PAN-OS] last_fetch: {last_fetch}')
+    return last_fetch
+
+def build_query(queries, log_type):
+    pas
+        
+
+def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_type: str, fetch_result_limit: int, max_results: int):
+    demisto.debug(f'[PAN-OS] last run: {last_run}')
+
+    # get last fetch time
+    last_fetch = get_last_fetch(last_run, first_fetch)
+    query = build_query(queries, log_type)
+    
+
+
+    return next_run, incidents
+
+
+
+
+
 
 def main():
     try:
@@ -12840,6 +12874,22 @@ def main():
 
         if command == 'test-module':
             panorama_test()
+                    
+        # EDITING: Fatch incidents
+        elif command == 'fetch-incidents':
+            # Set and define the fetch incidents command to run after activated via integration settings.
+            # NOTE: no need for client.some_http_request. use existing http_request function.
+            next_run, incidents = fetch_incidents(
+                last_run=demisto.getLastRun(),
+                first_fetch=params.get('firstFetch', '24 hours').strip(),
+                queries = params.get("queries"),
+                log_type = params.get("log_type"),
+                fetch_result_limit=int(params.get('fetch_result_limit')),
+                max_results=int(params.get('max_fetch'))
+            )
+
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
         elif command == 'panorama' or command == 'pan-os':
             panorama_command(args)

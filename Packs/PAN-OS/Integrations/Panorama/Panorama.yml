@@ -103,7 +103,7 @@ configuration:
   type: 0
 - display: Query
   additionalinfo: "Should be pre-populated for all log types.\nUser can alter if needed.\nInput format should be: {log_type1}:{query1},{log_type2}:{query2}..."
-  name: additional_suspicious
+  name: queries 
   required: false
   type: 12  
 - display: Log Type
