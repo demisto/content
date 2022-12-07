@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - jira
 - example
-comment: | 
+comment: |
   This script is used to simplify the process of creating a new Issue in Jira. 
   You can specify custom fields using the `customFields` argument.
 enabled: true
@@ -55,6 +55,6 @@ dependson:
   - jira-create-issue
 runonce: false
 tests:
-- No tests (deprecated)
+- No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+dockerimage: demisto/python3:3.10.8.39276
