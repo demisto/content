@@ -3912,6 +3912,9 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If file has a score then create and set a DBotScore object
+
         :return: None
         :rtype: ``None``
         """
@@ -3919,7 +3922,7 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None):
+                     tags=None, traffic_light_protocol=None, dbot_score=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3941,12 +3944,10 @@ class Common(object):
 
             # XSOAR Fields
             self.relationships = relationships
-            self.dbot_score = Common.DBotScore(
-                indicator=id,
-                indicator_type=DBotScoreType.CVE,
-                integration_name=None,
-                score=Common.DBotScore.NONE
-            )
+            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
+                                                                             indicator_type=DBotScoreType.CVE,
+                                                                             integration_name=None,
+                                                                             score=Common.DBotScore.NONE)
 
         def to_context(self):
             cve_context = {
