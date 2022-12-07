@@ -1374,7 +1374,7 @@ def get_minimum_id_to_fetch(highest_offense_id: int, user_query: Optional[str], 
         (int): The Minimum ID to fetch offenses by.
     """
     if not highest_offense_id:
-        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client) - 1
+        highest_offense_id = get_min_id_from_first_fetch(first_fetch, client)
     if user_query:
         id_query = ID_QUERY_REGEX.search(user_query)
         if id_query:
@@ -1401,7 +1401,7 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
     """
     filter_fetch_query = f'start_time>{str(convert_start_fetch_to_milliseconds(first_fetch))}'
     raw_offenses = client.offenses_list(filter_=filter_fetch_query, sort=ASCENDING_ID_ORDER, range_="items=0-0", fields="id")
-    return int(raw_offenses[0].get('id')) if raw_offenses else 0
+    return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
 
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):
