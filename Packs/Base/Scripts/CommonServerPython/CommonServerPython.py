@@ -10687,63 +10687,7 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def add_system_fields_to_events(events, separator=",", value_sign=":", spaces=" ", end_of_event_sign="}"):
-    """
-    Add general fields to all the events
-    If the event is a dictionary, the fields will be added to the existing dict.
-    Otherwise, if the event is a string and no particular dictionary panctuation signs are given - 
-    The function will treat it as a string in a form of a dictionary.
-    In that case, the 'str_to_add' will look like this:
-    ', _final_reporting_device_name: {url}, _instance_name: {integration_instance}}'
-    and will be added to the prefix of the event without the closing curly bracket (}).
-    
-    :type events: ``List[Union[dict, str]]``
-    :param events: The events to add the fields to.
-
-    :type separator: ``str``
-    :param separator: The separator to seperate the event's fields by (relevant in case of string events).
-
-    :type value_sign: ``str``
-    :param value_sign: The sign that seperates between keys and values (relevant in case of string events).
-
-    :type spaces: ``str``
-    :param spaces: The spaces that should seprate between each field (relevant in case of string events).
-
-    :type end_of_event_sign: ``str``
-    :param end_of_event_sign: The sign that should be at the end of the an event (relevant in case of string events).
-
-    :return: the list of the updated events.
-    :rtype: List
-    """
-    params = demisto.params()
-    calling_context = demisto.callingContext.get('context', {})
-    url = params.get('url')
-    integration_instance = calling_context.get('IntegrationInstance', '')
-    if not events:
-        return []
-    if isinstance(events[0], str):
-        temp_ls = []
-        str_to_add = '{}{}_final_reporting_device_name{}{}{}{}{}_instance_name{}{}{}{}'.format(separator, spaces, value_sign,
-                                                                                               spaces, url, separator, spaces,
-                                                                                               value_sign, spaces,
-                                                                                               integration_instance,
-                                                                                               end_of_event_sign)
-        for event in events:
-            if len(end_of_event_sign) == 0:
-                event = '{}{}'.format(event, str_to_add)
-            elif event[-len(end_of_event_sign):] == end_of_event_sign:
-                event = '{}{}'.format(event[:-len(end_of_event_sign)], str_to_add)
-            temp_ls.append(event)
-        events = temp_ls
-    else:
-        for event in events:
-            event['_final_reporting_device_name'] = url
-            event['_instance_name'] = integration_instance
-    return events
-
-
-def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",", value_sign=":",
-                         spaces=" ", end_of_event_sign="}"):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10762,23 +10706,19 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
-    :type separator: ``str``
-    :param separator: The separator to seperate the event's fields by (relevant in case of string events).
-
-    :type value_sign: ``str``
-    :param value_sign: The sign that seperates between keys and values (relevant in case of string events).
-
-    :type spaces: ``str``
-    :param spaces: The spaces that should seprate between each field (relevant in case of string events).
-
-    :type end_of_event_sign: ``str``
-    :param end_of_event_sign: The sign that should be at the end of the an event (relevant in case of string events).
+    :type data_format: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'
 
     :return: None
     :rtype: ``None``
     """
     data = events
     amount_of_events = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
 
     if not events:
         demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
@@ -10788,8 +10728,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
     # only in case we have events data to send to XSIAM we continue with this flow.
     # Correspond to case 1: List of strings or dicts where each string or dict represents an event.
     if isinstance(events, list):
-        events = add_system_fields_to_events(events, separator=separator, value_sign=value_sign, spaces=spaces,
-                                             end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
         # In case we have list of dicts we set the data_format to json and parse each dict to a stringify each dict.
         if isinstance(events[0], dict):
@@ -10799,8 +10737,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
         data = '\n'.join(events)
 
     elif isinstance(events, str):
-        events = add_system_fields_to_events(events.split('\n'), separator=separator, value_sign=value_sign, spaces=spaces,
-                                             end_of_event_sign=end_of_event_sign)
         amount_of_events = len(events)
         data = '\n'.join(events)
 
@@ -10818,7 +10754,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, separator=",
         'format': data_format,
         'product': product,
         'vendor': vendor,
-        'content-encoding': 'gzip'
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url
     }
 
     header_msg = 'Error sending new events into XSIAM.\n'

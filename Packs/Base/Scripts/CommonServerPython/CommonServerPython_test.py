@@ -25,7 +25,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, add_system_fields_to_events, ExecutionMetrics
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics
 
 try:
     from StringIO import StringIO
@@ -8156,26 +8156,20 @@ class TestSendEventsToXSIAMTest:
         from CommonServerPython import BaseClient
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         mocker.patch.object(demisto, 'updateModuleHealth')
-        mocker.patch.object(demisto, 'params', return_value={"url": "www.example_url.com"})
-        mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': "test_integration_instance"}})
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value={'error': 'false'})
 
         events = self.test_data[events_use_case]['events']
         number_of_events = self.test_data[events_use_case]['number_of_events']
         data_format = self.test_data[events_use_case].get('format')
-        
-        if events_use_case == "cef_events":
-            send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format,
-                                 separator=" ", value_sign="=", spaces="", end_of_event_sign="")
-        
-        else:
-            send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
+
+        send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:
             expected_format = self.test_data[events_use_case]['expected_format']
             expected_data = self.test_data[events_use_case]['expected_data']
             arguments_called = _http_request_mock.call_args[1]
             decompressed_data = gzip.decompress(arguments_called['data']).decode("utf-8")
+
             assert arguments_called['headers']['format'] == expected_format
             assert decompressed_data == expected_data
         else:
@@ -8237,62 +8231,6 @@ class TestSendEventsToXSIAMTest:
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
 
-    @pytest.mark.parametrize('test_case', ["test_add_system_fields_to_events_case_1", "test_add_system_fields_to_events_case_2",
-                                           "test_add_system_fields_to_events_case_3", "test_add_system_fields_to_events_case_4",
-                                           "test_add_system_fields_to_events_case_5"])
-    def test_add_system_fields_to_events(self, mocker, test_case):
-        """
-        Test for the add_system_fields_to_events function
-        Given:
-            Case a: a list containing dicts representing events.
-            Case b: a list containing dicts representing events.
-            Case c: a list containing strings where each string is representing an event dict.
-            Case d: a list containing strings where each string is representing an event in CEF format.
-            Case e: an empty list of events.
-
-        When:
-            Case a: Calling the add_system_fields_to_events function with the default punctuation signs.
-            Case b: Calling the add_system_fields_to_events function with edited punctuation signs.
-            Case c: Calling the add_system_fields_to_events function with the default punctuation signs.
-            Case d: Calling the add_system_fields_to_events function with edited punctuation signs.
-            Case e: Calling the add_system_fields_to_events function with the default punctuation signs.
-
-        Then ensure that:
-            Case a:
-                - The relevant data for the fields were parsed correctly from the integration params and context.
-                - The events data was edited correctly.
-            Case b:
-                - The relevant data for the fields were parsed correctly from the integration params and context.
-                - The events data was edited correctly.
-                - The given punctuation signs were ignore as this was a dict input and not string.
-            Case c:
-                - The relevant data for the fields were parsed correctly from the integration params and context.
-                - The events data was edited correctly.
-                - The default punctuation signs were used to parse the events.
-            Case d:
-                - The relevant data for the fields were parsed correctly from the integration params and context.
-                - The events data was edited correctly.
-                - The given punctuation signs were used correctly to parse the events.
-            Case e:
-                - The function can handle empty lists.
-                - An empty list was returned.
-        """
-        if not IS_PY3:
-            return
-        mocker.patch.object(demisto, 'params', return_value={"url": "www.example_url.com"})
-        mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationInstance': "test_integration_instance"}})
-        events = self.test_data[test_case]['events']
-        separator = self.test_data[test_case]['separator']
-        value_sign = self.test_data[test_case]['value_sign']
-        spaces = self.test_data[test_case]['spaces']
-        end_of_event_sign = self.test_data[test_case]['end_of_event_sign']
-        run_parameterless = self.test_data[test_case]['run_parameterless']
-        expected_results = self.test_data[test_case]['expected_results']
-        if run_parameterless:
-            res = add_system_fields_to_events(events)
-        else:
-            res = add_system_fields_to_events(events, separator, value_sign, spaces, end_of_event_sign)
-        assert res == expected_results
 
 class TestIsMetricsSupportedByServer:
     @classmethod
