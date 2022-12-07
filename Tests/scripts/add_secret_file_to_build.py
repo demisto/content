@@ -36,7 +36,7 @@ def options_handler(args=None):
     parser.add_argument('-gpid', '--gsm_project_id', help='The project id for the GSM.')
     parser.add_argument('-u', '--user', help='the user for Demisto.')
     parser.add_argument('-p', '--password', help='The password for Demisto.')
-    parser.add_argument('-s', '--json_path_file', help='Path to the secret json file.')
+    parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
