@@ -505,4 +505,3 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
 #  needs: ["create-instances"]
-
