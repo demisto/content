@@ -11,7 +11,7 @@ from Tests.scripts.utils.log_util import install_logging
 
 # temp handling of unifier import
 try:
-    from demisto_sdk.commands.unify.yml_unifier import YmlUnifier
+    from demisto_sdk.commands.unify.integration_script_unifier import YmlUnifier
 except:  # noqa
     from demisto_sdk.commands.prepare_content.integration_script_unifier import IntegrationScriptUnifier as YmlUnifier
 
