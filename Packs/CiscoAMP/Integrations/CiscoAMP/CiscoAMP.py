@@ -1715,14 +1715,9 @@ def computers_isolation_feature_availability_get_command(client: Client, args: D
 
     except DemistoException as exc:
         if exc.res and exc.res.status_code == HTTPStatus.METHOD_NOT_ALLOWED:
-            readable_output = 'Isolation is not allowed on policy.'
-
-        else:
-            readable_output = exc.message
-
-    return CommandResults(
-        readable_output=readable_output,
-    )
+            # this is an expected behavior, when isolation is not allowed.
+            return CommandResults(readble_output='Isolation is not allowed on policy.')
+        raise # if there's a different http status code, it's not an expected behavior
 
 
 def computer_isolation_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
