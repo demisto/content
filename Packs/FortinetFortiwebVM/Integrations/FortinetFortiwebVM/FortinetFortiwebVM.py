@@ -3018,8 +3018,8 @@ def test_module(client: Client) -> str:
         if error.res.status_code == HTTPStatus.UNAUTHORIZED:
             return 'Authorization Error: make sure API key is correctly set'
         raise error
-    except Exception:
-        return 'Error in connection to the server.'
+    except Exception as error:
+        return f'Connection error : {error}'
     return 'ok'
 
 
