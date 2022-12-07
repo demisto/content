@@ -1,0 +1,35 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Copy Layout"
+    ],
+    "caseInsensitive": true,
+    "cliName": "destinationlayout",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "SelectDestinationLayout",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_destinationlayout",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Destination Layout",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "ClearDestTab",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

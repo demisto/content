@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Copy Layout"
+    ],
+    "caseInsensitive": true,
+    "cliName": "selectdestinationtab",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "SelectDestinationTab",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_selectdestinationtab",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Select Destination Tab",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "ClearDestSection",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

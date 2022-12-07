@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Copy Layout"
+    ],
+    "caseInsensitive": true,
+    "cliName": "sourcename",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "SelectSourceLayout",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_sourcename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Source Name",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "SelectSourceTab",
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

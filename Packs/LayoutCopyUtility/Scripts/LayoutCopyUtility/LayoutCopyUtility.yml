@@ -1,0 +1,44 @@
+args:
+- auto: PREDEFINED
+  description: Type of layout to copy
+  name: layout_type
+  predefined:
+  - incident
+  - indicator
+  required: true
+  type: textArea
+- description: Name of the Source Layout to Copy From
+  name: source_layout_name
+  required: true
+  type: textArea
+- description: Name of the source tab to copy from
+  name: source_tab_name
+  required: true
+  type: textArea
+- description: Name of the destination layout
+  isArray: true
+  name: destination_layout_name
+  type: textArea
+- description: Destination Tab Name (Leave blank to use source tab name)
+  name: destination_tab_name
+comment: Script used to Copy/Propagate Layout Tabs from one layout to others. It will create a tab if it doesn't exist, or over-write the tab if it does.
+commonfields:
+  id: LayoutCopyUtility
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.8.39276
+enabled: true
+name: LayoutCopyUtility
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

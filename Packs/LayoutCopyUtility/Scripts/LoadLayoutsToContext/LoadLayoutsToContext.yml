@@ -1,0 +1,47 @@
+comment: Loads certain layout details to the context
+commonfields:
+  id: LoadLayoutsToContext
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.8.39276
+enabled: true
+name: LoadLayoutsToContext
+outputs:
+- contextPath: XSOAR.Layouts
+  description: Layout Objects
+  type: unknown
+- contextPath: XSOAR.Layouts.id
+  description: Id of the layout
+  type: string
+- contextPath: XSOAR.Layouts.name
+  description: Name of the layout
+  type: string
+- contextPath: XSOAR.Layouts.type
+  description: Type of the layout (In the API it is called 'Group')
+  type: string
+- contextPath: XSOAR.Layouts.tabs
+  description: Tabs of the layout
+  type: string
+- contextPath: XSOAR.Layouts.tabs.id
+  description: Tab id
+  type: string
+- contextPath: XSOAR.Layouts.tabs.name
+  description: Tab name
+  type: string
+- contextPath: XSOAR.Layouts.tabs.sections
+  description: Tab Sections
+- contextPath: XSOAR.Layouts.tabs.sections.name
+  description: Section Name
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
