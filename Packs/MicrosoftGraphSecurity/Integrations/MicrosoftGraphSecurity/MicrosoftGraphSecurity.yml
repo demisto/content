@@ -384,5 +384,6 @@ script:
   subtype: python3
   type: python
 tests:
-- Microsoft Graph Security Test
+- Microsoft Graph Security Test dev
+- Microsoft Graph Security Test prod
 fromversion: 5.0.0
