@@ -7,7 +7,7 @@ from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import get_content_path
-
+from timeit import default_timer
 import json
 
 logging_setup(3)
@@ -52,7 +52,11 @@ def main():
     args = parser.parse_args()
 
     with Neo4jContentGraphInterface() as interface:
+        # use default timer to measure time
+        logger.info("Marshalling content graph")
+        start_time = default_timer()
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
+        logger.infp(f'Finished marshalling content graph. Total time took: {default_timer() - start_time} seconds')
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
