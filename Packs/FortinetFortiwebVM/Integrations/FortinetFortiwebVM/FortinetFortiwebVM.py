@@ -328,14 +328,8 @@ class ClientV1(Client):
                 raise DemistoException(f'The object already exist. {error}', res=res)
             elif error_msg in self.WRONG_PARAMETER_ERROR_MSGS:
                 raise DemistoException(f'There is a problem with one or more arguments. {error}', res=res)
-
-            else:
-                raise DemistoException(
-                    f'One or more of the specified fields are invalid. Please validate them. {error}', res=res)
-
-        else:
-            raise DemistoException(f'One or more of the specified fields are invalid. Please validate them. {error}',
-                                   res=res)
+        raise DemistoException(f'One or more of the specified fields are invalid. Please validate them. {error}',
+                               res=res)
 
     def protected_hostname_create_request(self, name: str, default_action: str) -> Dict[str, Any]:
         """Create a new protected hostname.
@@ -981,12 +975,8 @@ class ClientV2(Client):
                 raise DemistoException(f'The object already exist. {error_msg}', res=res)
             elif sub_error_code in self.WRONG_PARAMETER_ERROR_CODES:
                 raise DemistoException(f'There is a problem with one or more arguments. {error_msg}', res=res)
-            else:
-                raise DemistoException(
-                    f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
-        else:
-            raise DemistoException(
-                f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
+        raise DemistoException(f'One or more of the specified fields are invalid. Please validate them. {error_msg}',
+                               res=res)
 
     def protected_hostname_create_request(self, name: str, default_action: str) -> Dict[str, Any]:
         """Create a new protected hostname.
