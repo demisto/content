@@ -44,10 +44,10 @@ def mock_client(version: str) -> Client:
         (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
             'name': 'check'
         }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'server-policy/allow-hosts', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
             'name': 'check'
         }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'server-policy/allow-hosts', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
@@ -84,10 +84,10 @@ def test_protected_hostname_create_command(requests_mock, mock_client, version, 
         (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
             'name': 'check'
         }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'server-policy/allow-hosts?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
             'name': 'check'
         }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'server-policy/allow-hosts?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
@@ -124,10 +124,10 @@ def test_protected_hostname_update_command(requests_mock, mock_client, version, 
         (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
             'name': 'check'
         }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'server-policy/allow-hosts?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
             'name': 'check'
         }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'server-policy/allow-hosts?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
@@ -162,7 +162,7 @@ def test_protected_hostname_delete_command(requests_mock, mock_client, version, 
             'page': '1',
             'page_size': 3
         }, 'protected_hostname/v1_get_list_success.json', 3),
-        (ClientV2.API_VER, 'server-policy/allow-hosts', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
             'page': '1',
             'page_size': 3
         }, 'protected_hostname/v2_get_list_success.json', 3),
@@ -198,14 +198,14 @@ def test_protected_hostname_list_command(requests_mock, mock_client, version, en
         'action': 'Allow',
         'host': '1.2.3.4'
     }, 'protected_hostname_member/v1_failed_exist.json', 'A duplicate entry already exists.', 500, True),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
     }, 'protected_hostname_member/v2_success.json', '5', HTTPStatus.OK, False),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4',
@@ -256,7 +256,7 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client, ve
         'host': '1.2.3.4'
     }, 'protected_hostname_member/v1_failed_not_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True,
      'Invalid length of value.'),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
         'action': 'Allow',
@@ -264,7 +264,7 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client, ve
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
     }, 'protected_hostname_member/v2_success.json', HTTPStatus.OK, False, '1'),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
         'action': 'Allow',
@@ -309,11 +309,11 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client, ve
         'member_id': '1',
     }, 'protected_hostname_member/v1_delete_failed.json', HTTPStatus.INTERNAL_SERVER_ERROR, True,
      'Invalid length of value.'),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
     }, 'protected_hostname_member/v2_delete_success.json', HTTPStatus.OK, False, ''),
-    (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
     }, 'protected_hostname_member/v2_delete_failed.json', HTTPStatus.INTERNAL_SERVER_ERROR, True, "'errcode': -1"),
@@ -351,7 +351,7 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client, ve
             'page': '1',
             'page_size': 3
         }, 'protected_hostname_member/v1_get_list_success.json', 3),
-        (ClientV2.API_VER, 'server-policy/allow-hosts/host-list?mkey=1234', {
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
             'group_name': '1234',
             'page': '1',
             'page_size': 3
@@ -388,11 +388,11 @@ def test_protected_hostname_member_list_command(requests_mock, mock_client, vers
             'name': 'check',
             'action': 'deny and no log',
         }, 'ip_list_group/v1_create_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'waf/ip-list', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list', {
             'name': 'check',
             'action': 'deny and no log',
         }, 'ip_list_group/v2_create_success.json', 'id', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'waf/ip-list', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list', {
             'name': 'check',
             'action': 'deny and no log',
         }, 'ip_list_group/v2_create_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
@@ -423,11 +423,11 @@ def test_ip_list_group_create_command(requests_mock, mock_client, version, endpo
 
 @pytest.mark.parametrize(
     ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
-        (ClientV2.API_VER, 'waf/ip-list?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
             'name': 'check',
             'action': 'block period',
         }, 'ip_list_group/v2_update_success.json', 'id', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'waf/ip-list?mkey=check', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
             'name': 'check',
             'action': 'block period',
         }, 'ip_list_group/v2_not_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
@@ -463,10 +463,10 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client, version, endpo
     (ClientV1.API_VER, 'WebProtection/Access/IPList/Example', {
         'name': 'Example'
     }, 'protected_hostname/v1_failed_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    (ClientV2.API_VER, 'waf/ip-list?mkey=Example', {
+    (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=Example', {
         'name': 'Example'
     }, 'protected_hostname/v2_success.json', HTTPStatus.OK, False),
-    (ClientV2.API_VER, 'waf/ip-list?mkey=Example', {
+    (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=Example', {
         'name': 'Example'
     }, 'protected_hostname/v2_failed_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
@@ -500,7 +500,7 @@ def test_ip_list_group_delete_command(requests_mock, mock_client, version, endpo
             'page': '1',
             'page_size': 3
         }, 'ip_list_group/v1_list_success.json', 3),
-        (ClientV2.API_VER, 'waf/ip-list', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list', {
             'page': '1',
             'page_size': 3
         }, 'ip_list_group/v2_list_success.json', 3),
@@ -538,12 +538,12 @@ def test_ip_list_group_list_command(requests_mock, mock_client, version, endpoin
             'type': 'black ip'
         }, 'ip_list_member/v1_exist.json', 'id', 'The IP has already existed in the table.',
          HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234', {
             'group_name': '1234',
             'ip_address': '1.1.1.1',
             'type': 'black ip'
         }, 'ip_list_member/v2_create_success.json', 'id', '5', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234', {
             'group_name': '1234',
             'ip_address': '1.1.1.1',
             'type': 'black ip'
@@ -592,13 +592,13 @@ def test_ip_list_member_create_command(requests_mock, mock_client, version, endp
             'type': 'black ip'
         }, 'ip_list_member/v1_not_exist.json', 'id', 'Invalid length of value.', HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
-        (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234&sub_mkey=1', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
             'type': 'black ip'
         }, 'ip_list_member/v2_create_success.json', 'id', '1', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234&sub_mkey=1', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
@@ -640,11 +640,11 @@ def test_ip_list_member_update_command(requests_mock, mock_client, version, endp
         'group_name': '1234',
         'member_id': '1',
     }, 'ip_list_member/v1_not_exist.json', 'Invalid length of value.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
     }, 'ip_list_member/v2_delete_success.json', '1', HTTPStatus.OK, False),
-    (ClientV2.API_VER, 'waf/ip-list/members?mkey=1234&sub_mkey=1', {
+    (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
     }, 'ip_list_member/v2_not_exist.json', "'results': {'errcode': -3}", HTTPStatus.INTERNAL_SERVER_ERROR, True),
@@ -682,7 +682,7 @@ def test_ip_list_member_delete_command(requests_mock, mock_client, version, endp
             'page': '1',
             'page_size': 3
         }, 'ip_list_member/v1_list_success.json', 3),
-        (ClientV2.API_VER, 'waf/ip-list/members?mkey=ronhadad', {
+        (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=ronhadad', {
             'group_name': 'ronhadad',
             'page': '1',
             'page_size': 3
@@ -716,11 +716,11 @@ def test_ip_list_member_list_command(requests_mock, mock_client, version, endpoi
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
      'http_content_routing_member/v1_wrong_content_routing.json', 'There is a problem with one or more arguments.',
      HTTPStatus.INTERNAL_SERVER_ERROR),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy',
      'http_content_routing_member/v2_create_success.json', '2', HTTPStatus.OK),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy',
      'http_content_routing_member/v2_exist.json', "The object already exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy',
      'http_content_routing_member/v2_wrong_content_routing.json', "There is a problem with one or more arguments.",
      HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
@@ -762,11 +762,11 @@ def test_http_content_routing_member_add_command(requests_mock, mock_client, ver
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting/1',
      'http_content_routing_member/v1_wrong_content_routing.json', 'There is a problem with one or more arguments.',
      HTTPStatus.INTERNAL_SERVER_ERROR),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_update_success.json', '1', HTTPStatus.OK),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_not_exist.json', "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_wrong_content_routing.json', "There is a problem with one or more arguments.",
      HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
@@ -800,9 +800,9 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client, 
      'http_content_routing_member/v1_delete_success.json', '1', HTTPStatus.OK),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting/1',
      'http_content_routing_member/v1_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_delete_success.json', '1', HTTPStatus.OK),
-    (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
+    (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
      'http_content_routing_member/v2_not_exist.json', "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
 ))
 def test_http_content_routing_member_delete_command(requests_mock, mock_client, version, endpoint, jsonpath,
@@ -842,19 +842,20 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client, 
             'page': '1',
             'page_size': '1'
         }, 'http_content_routing_member/v1_list_success.json', 1),
-        (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=Example', {
+        (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=Example', {
             'policy_name': 'Example',
             'page': '1',
             'page_size': '2'
         }, 'http_content_routing_member/v2_list_success.json', 2),
-        (ClientV2.API_VER, 'server-policy/policy/http-content-routing-list?mkey=Example', {
+        (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=Example', {
             'policy_name': 'Example',
             'page': '1',
             'page_size': '1'
         }, 'http_content_routing_member/v2_list_success.json', 1),
     ),
 )
-def test_http_content_routing_member_command(requests_mock, mock_client, version, endpoint, args, jsonpath, expected):
+def test_http_content_routing_member_list_command(requests_mock, mock_client, version, endpoint, args, jsonpath,
+                                                  expected):
     """
     Scenario: List HTTP content routing members.
     Given:
