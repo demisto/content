@@ -3,11 +3,11 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import json
-
+import urllib3
 import requests
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 ''' GLOBALS '''
@@ -84,7 +84,7 @@ def create_entry_context(context_id, data):
                 context.append(vaccine_context)
             ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
         else:
-            context = {
+            context = [{
                 'Id': data['id'],
                 'Name': data['name'],
                 'Type': data['type'],
@@ -92,7 +92,7 @@ def create_entry_context(context_id, data):
                 "IsMonitorOnly": data['isMonitorOnly'],
                 'Last modified by': data['lastModifiedBy'],
                 'Last modified on': data['lastModifiedOn']
-            }
+            }]
             ec['Minerva.Vaccine(val.Id === obj.Id)'] = context
     elif context_id.endswith('exclusions'):
         context = []
@@ -110,7 +110,7 @@ def create_entry_context(context_id, data):
                 context.append(exclusion_context)
             ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
         else:
-            context = {
+            context = [{
                 'Id': data['id'],
                 'Type': data['type'],
                 'Exclusion data': data['data'],
@@ -118,7 +118,7 @@ def create_entry_context(context_id, data):
                 'Last modified by': data['lastModifiedBy'],
                 'Last modified on': data['lastModifiedOn'],
                 'Applied groups': data['appliedGroupsIds']
-            }
+            }]
             ec['Minerva.Exclusion(val.Id === obj.Id)'] = context
     else:
         demisto.debug(f'Failed to create entry context for {context_id}')
@@ -132,7 +132,7 @@ def create_entry_context(context_id, data):
 def get_from_url(url):
     url_text = url.split('/')[-1]
     response = session.get(url)
-    if response.status_code is not 200:
+    if response.status_code != 200:
         return_error(f'Error while fetching {url_text}. More information: {response.status_code}, {response.reason}')
 
     if not response.json():
@@ -146,7 +146,8 @@ def get_from_url(url):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': response.json(),
-        'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(), headerTransform=pascalToSpace, removeNull=True),
+        'HumanReadable': tableToMarkdown(pascalToSpace(url_text), response.json(),
+                                         headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': create_entry_context(url_text, response.json())
     }
 
@@ -167,7 +168,7 @@ def fetch_incidents():
     try:
         r_events = session.post(f'{BASE_URL}/api/events',
                                 json={"archive": False})
-        if r_events.status_code is not 200:
+        if r_events.status_code != 200:
             raise Exception(f'Error in API call. More information: {r_events.status_code}, {r_events.reason}')
 
         incidents = []
@@ -181,14 +182,14 @@ def fetch_incidents():
                         json={'events': event['id']})
         demisto.incidents(incidents)
     except Exception as e:
-        return_error(f'Error while fetching incidents. More information: {e.message}')
+        return_error(f'Error while fetching incidents. More information: {e}')
 
 
 @logger
 def get_groups():
     get_groups_url = f'{BASE_URL}/api/groups'
     response = session.get(get_groups_url, params={'_limit': '1000'})
-    if response.status_code is not 200 or not response.json():
+    if response.status_code != 200 or not response.json():
         return_error(f'Error while fetching groups. More information: {response.status_code}, {response.reason}')
 
     results = {
@@ -215,14 +216,15 @@ def add_exclusion(exclusion_type, exclusion_data, exclusion_description, groups_
     if response.status_code == 409 and response.reason == 'Conflict':
         demisto.results('Exclusion already exists')
         return
-    if response.status_code is not 200:
+    if response.status_code != 200:
         return_error(f'Error while adding exclusion. More information: {response.status_code}, {response.reason}')
 
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': response.json(),
-        'HumanReadable': tableToMarkdown(f'Exclusion \'{exclusion_description}\' was added', response.json(), headerTransform=pascalToSpace, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Exclusion \'{exclusion_description}\' was added', response.json(),
+                                         headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': create_entry_context(exclusions_url, response.json())
     }
 
@@ -242,7 +244,7 @@ def delete_exclusion(exclusion_id, exclusion_type):
         'type': exclusion_type
     }
     response = session.post(f'{BASE_URL}/api/exclusions/delete', json=[json_params])
-    if response.status_code is not 200:
+    if response.status_code != 200:
         return_error(f'Error while deleting exclusions. More information: {response.status_code}, {response.reason}')
     demisto.results(f'Exclusion {exclusion_id} was deleted')
 
@@ -258,14 +260,15 @@ def add_vaccine(vaccine_name, vaccine_desc, monitor_only):
     if response.status_code == 409 and response.reason == 'Conflict':
         demisto.results('Vaccination already exists')
         return
-    if response.status_code is not 200:
+    if response.status_code != 200:
         return_error(f'Error while adding a vaccine. More information: {response.status_code}, {response.reason}')
 
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': response.json(),
-        'HumanReadable': tableToMarkdown(f'Vaccination \'{vaccine_desc}\' was added', response.json(), headerTransform=pascalToSpace, removeNull=True)
+        'HumanReadable': tableToMarkdown(f'Vaccination \'{vaccine_desc}\' was added', response.json(),
+                                         headerTransform=pascalToSpace, removeNull=True)
     }
 
     if response.json():
@@ -286,8 +289,9 @@ def delete_vaccines(vaccine_id):
     if response.status_code == 404:
         demisto.results(f'Vaccination with id {vaccine_id} was not found')
         return
-    if response.status_code is not 200:
-        return_error(f'Error while deleting vaccination id: {vaccine_id}. More information: {response.status_code}, {response.reason}')
+    if response.status_code != 200:
+        return_error(f'Error while deleting vaccination id: {vaccine_id}. More information: {response.status_code},\
+                     {response.reason}')
     demisto.results(f'Vaccine \'{vaccine_id}\' was deleted')
 
 
@@ -298,14 +302,16 @@ def search(search_url, search_param, search_condition, search_value):
                                 'value': search_value}]}
     response = session.post(search_url,
                             json=json_params)
-    if response.status_code is not 200:
-        return_error(f'Error while perfroming search for {search_url.rsplit("/")[1]}. More information: {response.status_code}, {response.reason}')
+    if response.status_code != 200:
+        return_error(f'Error while perfroming search for\
+                     {search_url.rsplit("/")[1]}. More information: {response.status_code}, {response.reason}')
 
     results = {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],
         'Contents': response.json(),
-        'HumanReadable': tableToMarkdown(f'Search results for \'{search_url.split("/")[-1]}\'', response.json(), headerTransform=pascalToSpace, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Search results for \'{search_url.split("/")[-1]}\'', response.json(),
+                                         headerTransform=pascalToSpace, removeNull=True),
         'EntryContext': create_entry_context(search_url, response.json())
     }
 
@@ -315,7 +321,7 @@ def search(search_url, search_param, search_condition, search_value):
 @logger
 def unarchive_events():
     response = session.put(f'{BASE_URL}/api/events/archive', json={'shouldArchive': False})
-    if response.status_code is not 200:
+    if response.status_code != 200:
         return_error(f'Error while un-archiving events. More information: {response.status_code}, {response.reason}')
     demisto.results('Events were un-archived')
 
@@ -399,7 +405,7 @@ try:
     elif demisto.command() == 'minerva-unarchive-events':
         unarchive_events()
 except Exception as e:
-    demisto.debug(f'Cannot perform the command: {demisto.command()}. Error: {e.message}')
-    return_error(e.message)
+    demisto.debug(f'Cannot perform the command: {demisto.command()}. Error: {e}')
+    return_error(e)
 finally:
     logout()
