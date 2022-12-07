@@ -4015,9 +4015,9 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
     """
     if not args or not args.get('cve_ids'):
         raise DemistoException('Please insert at least one cve_ids argument')
-    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args.get('cve_id'), args.get('limit', '50'))
+    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args.get('cve_ids'), args.get('limit', '50'))
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
-               'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name'
+               'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name',
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources', {}):
