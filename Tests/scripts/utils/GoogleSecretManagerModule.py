@@ -18,6 +18,16 @@ class GoogleSecreteManagerModule:
     def list_secrets(self, project_id: str, name_filter: str = '', with_secret=False) -> list:
         secrets = []
         parent = f"projects/{project_id}"
+        print(f'parent: {parent}')
+        logging.info(f'parent: {parent}')
+        try:
+            a = self.client.list_secrets(request={"parent": parent})
+            print(a)
+            logging.info(f'secrets: {a}')
+        except Exception as e:
+            print(e)
+            logging.info(f'error: {e}')
+
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
             if name_filter and name_filter not in secret.name:

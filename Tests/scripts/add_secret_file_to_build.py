@@ -15,8 +15,9 @@ def run(options):
         print(e)
         raise e
     secret_conf = GoogleSecreteManagerModule(get_secret_service_account_config(options.service_account))
-    project_id = options.gsm_project_id
-    secrets = secret_conf.list_secrets(project_id, with_secret=True)
+    print('created GSM client')
+    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True)
+    print('got the secrets from GSM')
     secret_file = {
         "username": options.user,
         "userPassword": options.password,
@@ -27,7 +28,7 @@ def run(options):
     print(f'json_path_file: {options.json_path_file}')
     with open(options.json_path_file, 'w') as secrets_out_file:
         secrets_out_file.write(json.dumps(secret_file))
-    print(options.json_path_file)
+    print(f'saved the json file to: {options.json_path_file}')
 
 
 def options_handler(args=None):
