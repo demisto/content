@@ -1185,7 +1185,7 @@ tasks:
       key:
         simple: invalid_urls
       value:
-        simple: '"http://3628126748", "http://.www.test.com/",, "http:// shouldfail.com", "http://test.t/foo(bar)baz","http://www.te[st.com/test?x=3())"'
+        simple: '"http://3628126748", "http://.www.test.com/",, "http:// shouldfail.com", "http://test.t/foo(bar)baz","http://www.te[st.com/test?x=3())"'  # disable-secrets-detection
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1271,7 +1271,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://.www.test.test/
+              simple: http://.www.test.test/  # disable-secrets-detection
       - - operator: notContainsGeneral
           left:
             value:
@@ -1287,7 +1287,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: http://test.t/foo(bar)baz quux
+              simple: http://test.t/foo(bar)baz quux  # disable-secrets-detection
     continueonerrortype: ""
     view: |-
       {
