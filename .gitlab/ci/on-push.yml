@@ -388,7 +388,7 @@ slack-notify-nightly-build:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     SERVER_TYPE: "XSIAM"
 #  needs: ["prepare-testing-bucket-mpv2"]
-  needs: [$NEEDS]
+  needs: []
   stage: run-instances
   script:
 #    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
@@ -448,7 +448,7 @@ slack-notify-nightly-build:
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+        gsutil rm "$GCS_LOCKS_PATH/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi
     - section_end "After script"
@@ -481,4 +481,4 @@ xsiam_server_ga:
     GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
-    NEEDS: "prepare-testing-bucket-mpv2"
+  needs: ["prepare-testing-bucket-mpv2"]
