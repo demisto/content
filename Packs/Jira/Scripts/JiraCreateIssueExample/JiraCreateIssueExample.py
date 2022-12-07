@@ -57,14 +57,14 @@ def add_custom_fields(args: Dict[str, Any], custom_fields: List[Dict[str, Any]])
     Method to generate the payload representing the Jira issue custom fields and add it to the script arguments.
 
     Args:
-
         - `custom_fields` (`List[Dict[str, Any]]`): A list of custom fields
     Returns:
         - A dictionary of custom fields
     """
 
-    args["issueJson"] = {}
-    args["issueJson"]["fields"] = {k: v for custom_field in custom_fields for k, v in custom_field.items()}
+    if custom_fields:
+        args["issueJson"] = {}
+        args["issueJson"]["fields"] = {k: v for custom_field in custom_fields for k, v in custom_field.items()}
 
     return args
 

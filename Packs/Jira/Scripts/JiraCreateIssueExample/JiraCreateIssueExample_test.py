@@ -64,10 +64,31 @@ def test_parse_custom_fields(custom_fields, expected):
 
 
 @pytest.mark.parametrize("args, custom_fields, expected", [
-    ({"arg1": "val1", "arg2": 1}, [{"customfield_10096": "test"}, {"customfield_10040": 100}], {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}})
+    ({"arg1": "val1", "arg2": 1}, [{"customfield_10096": "test"}, {"customfield_10040": 100}],
+        {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}),
+    ({"arg1": "val1", "arg2": 1}, [],
+        {"arg1": "val1", "arg2": 1}),
+    ({}, [{"customfield_10096": "test"}, {"customfield_10040": 100}],
+        {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}})
 ])
 def test_add_custom_fields(args, custom_fields, expected):
+    """
+    Given:
+        - A dictionary of arguments.
+        - A list of dictionaries representing custom fields.
+
+    When:
+        - The argument dictionary has 2 attributes and the custom fields list has 2 custom field dictionaries.
+        - The argument dictionary has 2 attributes and the custom fields list is empty.
+        - The argument dictionary is empty and the list has 2 custom field dictionaries.
+    Then:
+        - The resulting dictionary will have 4 attributes.
+        - The resulting dictionary will have 2 attributes.
+        - The resulting dictionary will have 2 attributes.
+    """
 
     actual = add_custom_fields(args, custom_fields)
 
+    assert len(actual) == len(expected)
     assert actual == expected
+
