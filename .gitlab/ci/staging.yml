@@ -9,7 +9,7 @@
   cache:
     policy: pull
   variables:
-    KUBERNETES_CPU_REQUEST: 1000m
+    KUBERNETES_CPU_REQUEST: 2000m
   needs: []
   stage: create-instances
   allow_failure: true
