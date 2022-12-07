@@ -1,6 +1,5 @@
-id: a9a91d46-5f78-44e4-8c58-65556108b610
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+id: test
+version: -1
 name: test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -41,8 +41,7 @@ tasks:
       id: b28a1910-3a57-48d7-8968-27a7d63732b2
       version: -1
       name: first task
-      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
-        or ATP URL, extracts its redirect URL.
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
       scriptName: FormatURL
       type: regular
       iscommand: false
@@ -80,6 +79,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -110,3 +110,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
+description: ''
