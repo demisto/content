@@ -2253,7 +2253,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
                 client=client,
                 report_id=report_data["id"],
                 instance_id=instance_data["id"],
-                report_name=report_name,
+                name=report_name,
                 report_format=report_format,
             )
 
@@ -2652,25 +2652,33 @@ def find_dict_item(data: dict | list | tuple, key_path: str) -> Any:
 
 
 # --- Command Functions --- #
-def create_asset_command(client: Client, site: Site, date: str, ip_address: str | None = None,
-                         hostname: str | None = None, hostname_source: str | None = None) -> CommandResults:
+def create_asset_command(client: Client, date: str, site_id: str | None = None, site_name: str | None = None,
+                         ip: str | None = None, host_name: str | None = None,
+                         host_name_source: str | None = None) -> CommandResults:
     """
     Create a new asset.
 
     Args:
         client (Client): The client to use.
         date (str): The date the data was collected on the asset.
-        site (Site): The site to create the asset in.
-        ip_address (str | None, optional): The IP address of the asset.
-        hostname (str | None, optional): The hostname of the asset.
-        hostname_source (str | None, optional): The source of the hostname.
+        site_id (str | None, optional): Name of the site to create the asset in.
+        site_name (str | None, optional): Name of the site to create the asset in. Can be used instead of "site_id".
+        ip (str | None, optional): The IP address of the asset.
+        host_name (str | None, optional): The hostname of the asset.
+        host_name_source (str | None, optional): The source of the hostname.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     response_data = client.create_asset(
         site_id=site.id,
         date=date,
-        ip_address=ip_address,
-        hostname=hostname,
-        hostname_source=hostname_source,
+        ip_address=ip,
+        hostname=host_name,
+        hostname_source=host_name_source,
     )
 
     return CommandResults(
@@ -2682,25 +2690,25 @@ def create_asset_command(client: Client, site: Site, date: str, ip_address: str 
     )
 
 
-def create_assets_report_command(client: Client, asset_ids: str, template_id: str | None = None,
-                                 report_name: str | None = None, report_format: str | None = None,
+def create_assets_report_command(client: Client, assets: str, template: str | None = None, name: str | None = None,
+                                 report_format: str | None = None,
                                  download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific assets.
 
     Args:
         client (Client): Client to use for API requests.
-        asset_ids (str): List of assets to include in the report.
-        template_id (str | None, optional): ID of report template to use.
+        assets (str): List of assets to include in the report.
+        template (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
-        report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
         report_format (str | None, optional): Format of the report that will be generated. Defaults to PDF.
         download_immediately: (str | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
     download_immediately_bool = None
 
-    asset_ids_list: list[str] = argToList(asset_ids)
+    asset_ids_list: list[str] = argToList(assets)
 
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
@@ -2710,25 +2718,25 @@ def create_assets_report_command(client: Client, asset_ids: str, template_id: st
     return create_report(
         client=client,
         scope=scope,
-        template_id=template_id,
-        report_name=report_name,
+        template_id=template,
+        report_name=name,
         report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
 
-def create_scan_report_command(client: Client, scan_id: str, template_id: str | None = None,
-                               report_name: str | None = None, report_format: str | None = None,
+def create_scan_report_command(client: Client, scan: str, template: str | None = None, name: str | None = None,
+                               report_format: str | None = None,
                                download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
     Args:
         client (Client): Client to use for API requests.
-        scan_id (str): ID of the scan to create a report on.
-        template_id (str | None, optional): ID of report template to use.
+        scan (str): ID of the scan to create a report on.
+        template (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
-        report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
         report_format (str | None, optional): Format of the report that will be generated. Defaults to PDF.
         download_immediately: (str | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
@@ -2738,36 +2746,38 @@ def create_scan_report_command(client: Client, scan_id: str, template_id: str | 
     if download_immediately is not None:
         download_immediately_bool = argToBoolean(download_immediately)
 
-    scope = {"scan": arg_to_number(scan_id, required=True)}
+    scope = {"scan": arg_to_number(scan, required=True)}
 
     return create_report(
         client=client,
         scope=scope,
-        template_id=template_id,
-        report_name=report_name,
+        template_id=template,
+        report_name=name,
         report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
 
-def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: str, start_date: str,
-                                 excluded_asset_groups: str | None = None, excluded_targets: str | None = None,
-                                 included_asset_groups: str | None = None, included_targets: str | None = None,
-                                 duration_days: str | None = None, duration_hours: str | None = None,
-                                 duration_minutes: str | None = None, enabled: str | None = None,
-                                 frequency: str | None = None, interval: str | None = None,
-                                 scan_name: str | None = None, date_of_month: int | None = None,
+def create_scan_schedule_command(client: Client, on_scan_repeat: str, start: str, site_id: str | None = None,
+                                 site_name: str | None = None, excluded_asset_groups: str | None = None,
+                                 excluded_targets: str | None = None, included_asset_groups: str | None = None,
+                                 included_targets: str | None = None, duration_days: str | None = None,
+                                 duration_hours: str | None = None, duration_minutes: str | None = None,
+                                 enabled: str | None = None, frequency: str | None = None,
+                                 interval_time: str | None = None, scan_name: str | None = None,
+                                 date_of_month: int | None = None,
                                  scan_template_id: str | None = None) -> CommandResults:
     """
     Create a new site scan schedule.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to create a scheduled scan for.
-
-        repeat_behaviour (str): The desired behavior of a repeating scheduled scan
+        on_scan_repeat (str): The desired behavior of a repeating scheduled scan
             when the previous scan was paused due to reaching its maximum duration.
-        start_date (str): The scheduled start date and time formatted in ISO 8601 format.
+        start (str): The scheduled start date and time formatted in ISO 8601 format.
+        site_id (str | None, optional): ID of the site to create a scheduled scan for.
+        site_name (str | None, optional): Name of the site to create a scheduled scan for.
+            Can be used instead of "site_id".
         excluded_asset_groups (str | None, optional): Asset groups to exclude from the scan.
         excluded_targets (str | None, optional): Addresses to exclude from the scan. Each address is a string that
             can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
@@ -2784,7 +2794,7 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
            Defaults to None, which results in using True.
         frequency (str | None, optional): Frequency for the schedule to repeat.
             Required if using other repeat settings.
-        interval (str | None, optional): The interval time the schedule should repeat.
+        interval_time (str | None, optional): The interval time the schedule should repeat.
             Required if using other repeat settings.
         date_of_month(str | None, optional): Specifies the schedule repeat day of the interval month.
             Required and used only if frequency is set to `DATE_OF_MONTH`.
@@ -2792,6 +2802,12 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str | None, optional): ID of the scan template to use.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     excluded_asset_groups_list = None
     excluded_targets_list = None
     frequency_enum = None
@@ -2816,7 +2832,7 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
     duration_days_int = arg_to_number(duration_days, required=False)
     duration_hours_int = arg_to_number(duration_hours, required=False)
     duration_minutes_int = arg_to_number(duration_minutes, required=False)
-    interval_int = arg_to_number(interval, required=False)
+    interval_int = arg_to_number(interval_time, required=False)
     date_of_month_int = arg_to_number(date_of_month, required=False)
 
     if enabled is not None:
@@ -2834,8 +2850,8 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
     response_data = client.create_site_scan_schedule(
         site_id=site.id,
         enabled=enabled_bool,
-        repeat_behaviour=repeat_behaviour,
-        start_date=start_date,
+        repeat_behaviour=on_scan_repeat,
+        start_date=start,
         excluded_asset_groups=excluded_asset_groups_list,
         excluded_targets=excluded_targets_list,
         included_asset_groups=included_asset_groups_list,
@@ -2858,16 +2874,15 @@ def create_scan_schedule_command(client: Client, site: Site, repeat_behaviour: s
 
 
 def create_shared_credential_command(client: Client, name: str, site_assignment: str, service: str,
-                                     database_name: str | None = None, description: str | None = None,
+                                     database: str | None = None, description: str | None = None,
                                      domain: str | None = None, host_restriction: str | None = None,
                                      http_realm: str | None = None, notes_id_password: str | None = None,
                                      ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
                                      oracle_listener_password: str | None = None, oracle_sid: str | None = None,
                                      password: str | None = None, port_restriction: str | None = None,
-                                     sites: str | None = None, snmp_community_name: str | None = None,
-                                     snmpv3_authentication_type: str | None = None,
-                                     snmpv3_privacy_password: str | None = None,
-                                     snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                     sites: str | None = None, authentication_type: str | None = None,
+                                     community_name: str | None = None, privacy_password: str | None = None,
+                                     privacy_type: str | None = None, ssh_key_pem: str | None = None,
                                      ssh_permission_elevation: str | None = None,
                                      ssh_permission_elevation_password: str | None = None,
                                      ssh_permission_elevation_username: str | None = None,
@@ -2882,7 +2897,7 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
         name (str): Name of the credential.
         site_assignment (str): Site assignment configuration for the credential.
         service (str): Credential service type.
-        database_name (str | None, optional): Database name.
+        database (str | None, optional): Database name.
         description (str | None, optional): Description for the credential.
         domain (str | None, optional): Domain address.
         host_restriction (str | None, optional): Hostname or IP address to restrict the credentials to.
@@ -2899,10 +2914,10 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
             on a specific port. Can be used only if `host_restriction` is used.
         sites (str | None, optional): List of site IDs for the shared credential that are explicitly assigned
             access to the shared scan credential, allowing it to use the credential during a scan.
-        snmp_community_name (str | None, optional): SNMP community for authentication.
-        snmpv3_authentication_type (str | None, optional): SNMPv3 authentication type for the credential.
-        snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
-        snmpv3_privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
+        authentication_type (str | None, optional): SNMPv3 authentication type for the credential.
+        community_name (str | None, optional): SNMP community for authentication.
+        privacy_password (str | None, optional): SNMPv3 privacy password to use.
+        privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
         ssh_key_pem (str | None, optional): PEM formatted private key.
         ssh_permission_elevation (str | None, optional): Elevation type to use for scans.
         ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
@@ -2924,11 +2939,11 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
     if sites is not None:
         sites_list = [int(item) for item in argToList(sites)]
 
-    if snmpv3_authentication_type is not None:
-        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[snmpv3_authentication_type]
+    if authentication_type is not None:
+        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[authentication_type]
 
-    if snmpv3_privacy_type is not None:
-        snmpv3_privacy_type_enum = SNMPv3PrivacyType[snmpv3_privacy_type]
+    if privacy_type is not None:
+        snmpv3_privacy_type_enum = SNMPv3PrivacyType[privacy_type]
 
     if ssh_permission_elevation is not None:
         ssh_permission_elevation_enum = SSHElevationType[ssh_permission_elevation]
@@ -2940,7 +2955,7 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
         name=name,
         site_assignment=SharedCredentialSiteAssignment[site_assignment],
         service=CredentialService[service],
-        database_name=database_name,
+        database_name=database,
         description=description,
         domain=domain,
         host_restriction=host_restriction,
@@ -2953,9 +2968,9 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
         password=password,
         port_restriction=port_restriction,
         sites=sites_list,
-        snmp_community_name=snmp_community_name,
+        snmp_community_name=community_name,
         snmpv3_authentication_type=snmpv3_authentication_type_enum,
-        snmpv3_privacy_password=snmpv3_privacy_password,
+        snmpv3_privacy_password=privacy_password,
         snmpv3_privacy_type=snmpv3_privacy_type_enum,
         ssh_key_pem=ssh_key_pem,
         ssh_permission_elevation=ssh_permission_elevation_enum,
@@ -2976,7 +2991,7 @@ def create_shared_credential_command(client: Client, name: str, site_assignment:
 
 
 def create_site_command(client: Client, name: str, description: str | None = None, assets: str | None = None,
-                        site_importance: str | None = None, template_id: str | None = None) -> CommandResults:
+                        importance: str | None = None, template_id: str | None = None) -> CommandResults:
     """
     Create a new site.
 
@@ -2985,7 +3000,7 @@ def create_site_command(client: Client, name: str, description: str | None = Non
         name (str): Name of the site. Must be unique.
         description (str | None, optional): Description of the site. Defaults to None.
         assets (str | None, optional): List of asset IDs to be included in site scans. Defaults to None.
-        site_importance (str | None, optional): Importance of the site.
+        importance (str | None, optional): Importance of the site.
             Defaults to None (results in using API's default - "normal").
         template_id (str | None, optional): The identifier of a scan template.
             Defaults to None (results in using default scan template).
@@ -2999,7 +3014,7 @@ def create_site_command(client: Client, name: str, description: str | None = Non
         name=name,
         description=description,
         assets=assets_list,
-        site_importance=site_importance,
+        site_importance=importance,
         template_id=template_id
     )
 
@@ -3012,25 +3027,24 @@ def create_site_command(client: Client, name: str, description: str | None = Non
     )
 
 
-def create_sites_report_command(client: Client, site_ids: str | None = None, site_names: str | None = None,
-                                template_id: str | None = None, report_name: str | None = None,
-                                report_format: str | None = None,
+def create_sites_report_command(client: Client, sites: str | None = None, site_names: str | None = None,
+                                template: str | None = None, name: str | None = None, report_format: str | None = None,
                                 download_immediately: str | None = None) -> dict | CommandResults:
     """
     Create a report about specific sites.
 
     Args:
         client (Client): Client to use for API requests.
-        site_ids (str | None, optional): List of site IDs to create the report about.
+        sites (str | None, optional): List of site IDs to create the report about.
         site_names (str | None, optional): List of site names to create the report about.
-        template_id (str | None, optional): ID of report template to use.
+        template (str | None, optional): ID of report template to use.
             Defaults to None (will result in using the first available template)
-        report_name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
+        name (str | None, optional): Name for the report that will be generated. Uses "report {date}" by default.
         report_format (str | None, optional): Format of the report that will be generated. Defaults to PDF.
         download_immediately: (str | None, optional) = Whether to download the report automatically after creation.
             Defaults to True.
     """
-    sites_list = [Site(site_id=site_id, client=client) for site_id in argToList(site_ids)]
+    sites_list = [Site(site_id=site_id, client=client) for site_id in argToList(sites)]
     sites_list.extend(
         [Site(site_name=site_name, client=client) for site_name in argToList(site_names)]
     )
@@ -3048,26 +3062,24 @@ def create_sites_report_command(client: Client, site_ids: str | None = None, sit
     return create_report(
         client=client,
         scope=scope,
-        template_id=template_id,
-        report_name=report_name,
+        template_id=template,
+        report_name=name,
         report_format=report_format,
         download_immediately=download_immediately_bool,
     )
 
 
-def create_site_scan_credential_command(client: Client, site: Site, name: str,
-                                        service: str, database_name: str | None = None,
+def create_site_scan_credential_command(client: Client, name: str, service: str, site_id: str | None = None,
+                                        site_name: str | None = None, authentication_type: str | None = None,
+                                        community_name: str | None = None, database: str | None = None,
                                         description: str | None = None, domain: str | None = None,
                                         host_restriction: str | None = None, http_realm: str | None = None,
                                         notes_id_password: str | None = None, ntlm_hash: str | None = None,
                                         oracle_enumerate_sids: str | None = None,
-                                        oracle_listener_password: str | None = None,
-                                        oracle_sid: str | None = None, password: str | None = None,
-                                        port_restriction: str | None = None, snmp_community_name: str | None = None,
-                                        snmpv3_authentication_type: str | None = None,
-                                        snmpv3_privacy_password: str | None = None,
-                                        snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
-                                        ssh_permission_elevation: str | None = None,
+                                        oracle_listener_password: str | None = None, oracle_sid: str | None = None,
+                                        password: str | None = None, port_restriction: str | None = None,
+                                        privacy_password: str | None = None, privacy_type: str | None = None,
+                                        ssh_key_pem: str | None = None, ssh_permission_elevation: str | None = None,
                                         ssh_permission_elevation_password: str | None = None,
                                         ssh_permission_elevation_username: str | None = None,
                                         ssh_private_key_password: str | None = None,
@@ -3078,10 +3090,13 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to create the credential for.
         name (str): Name of the credential.
         service (str): Credential service type.
-        database_name (str | None, optional): Database name.
+        site_id (str | None, optional): ID of a site to create the credential for.
+        site_name (str | None, optional): Name of a site to create the credential for. Can be used instead of "site_id".
+        authentication_type (str): SNMPv3 authentication type for the credential.
+        community_name (str | None, optional): SNMP community for authentication.
+        database (str | None, optional): Database name.
         description (str | None, optional): Description for the credential.
         domain (str | None, optional): Domain address.
         host_restriction (str | None, optional): Hostname or IP address to restrict the credentials to.
@@ -3096,10 +3111,8 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
         password (str | None, optional): Password for the credential.
         port_restriction (str | None, optional): Further restricts the credential to attempt to authenticate
             on a specific port. Can be used only if `host_restriction` is used.
-        snmp_community_name (str | None, optional): SNMP community for authentication.
-        snmpv3_authentication_type (str): SNMPv3 authentication type for the credential.
-        snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
-        snmpv3_privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
+        privacy_password (str | None, optional): SNMPv3 privacy password to use.
+        privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
         ssh_key_pem (str | None, optional): PEM formatted private key.
         ssh_permission_elevation (str | None, optional): Elevation type to use for scans.
         ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
@@ -3108,6 +3121,12 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
         use_windows_authentication (str | None, optional): Whether to use Windows authentication.
         username (str | None, optional): Username for the credential.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     oracle_enumerate_sids_bool = None
     snmpv3_authentication_type_enum = None
     snmpv3_privacy_type_enum = None
@@ -3117,11 +3136,11 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
     if oracle_enumerate_sids is not None:
         oracle_enumerate_sids_bool = argToBoolean(oracle_enumerate_sids)
 
-    if snmpv3_authentication_type is not None:
-        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[snmpv3_authentication_type]
+    if authentication_type is not None:
+        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[authentication_type]
 
-    if snmpv3_privacy_type is not None:
-        snmpv3_privacy_type_enum = SNMPv3PrivacyType[snmpv3_privacy_type]
+    if privacy_type is not None:
+        snmpv3_privacy_type_enum = SNMPv3PrivacyType[privacy_type]
 
     if ssh_permission_elevation is not None:
         ssh_permission_elevation_enum = SSHElevationType[ssh_permission_elevation]
@@ -3133,7 +3152,7 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
         site_id=site.id,
         name=name,
         service=CredentialService[service],
-        database_name=database_name,
+        database_name=database,
         description=description,
         domain=domain,
         host_restriction=host_restriction,
@@ -3145,9 +3164,9 @@ def create_site_scan_credential_command(client: Client, site: Site, name: str,
         oracle_sid=oracle_sid,
         password=password,
         port_restriction=port_restriction,
-        snmp_community_name=snmp_community_name,
+        snmp_community_name=community_name,
         snmpv3_authentication_type=snmpv3_authentication_type_enum,
-        snmpv3_privacy_password=snmpv3_privacy_password,
+        snmpv3_privacy_password=privacy_password,
         snmpv3_privacy_type=snmpv3_privacy_type_enum,
         ssh_key_pem=ssh_key_pem,
         ssh_permission_elevation=ssh_permission_elevation_enum,
@@ -3225,37 +3244,49 @@ def delete_asset_command(client: Client, asset_id: str) -> CommandResults:
     )
 
 
-def delete_scan_schedule_command(client: Client, site: Site, scheduled_scan_id: str) -> CommandResults:
+def delete_scan_schedule_command(client: Client, schedule_id: str, site_id: str | None = None,
+                                 site_name: str | None = None) -> CommandResults:
     """
     Delete a scheduled scan.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to delete the scheduled scan from.
-        scheduled_scan_id (str): ID of the scheduled scan to delete.
-
-    Returns:
-        dict: API response.
+        schedule_id (str): ID of the scheduled scan to delete.
+        site_id (str | None, optional): ID of the site to delete the scheduled scan from.
+        site_name (str | None, optional): Name of the site to delete the scheduled scan from.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     response_data = client.delete_scan_schedule(
         site_id=site.id,
-        scheduled_scan_id=scheduled_scan_id,
+        scheduled_scan_id=schedule_id,
     )
 
     return CommandResults(
-        readable_output=f"Scheduled scan with ID {scheduled_scan_id} has been deleted.",
+        readable_output=f"Scheduled scan with ID {schedule_id} has been deleted.",
         raw_response=response_data,
     )
 
 
-def delete_site_command(client: Client, site: Site) -> CommandResults:
+def delete_site_command(client: Client, site_id: str | None = None, site_name: str | None = None) -> CommandResults:
     """
     Delete a site.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to delete.
+        site_id (str | None, optional): ID of a site to delete.
+        site_name (str | None, optional): Name of a site to delete. Can be used instead of "site_id".
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     response_data = client.delete_site(site.id)
 
     return CommandResults(
@@ -3282,22 +3313,31 @@ def delete_shared_credential_command(client: Client, shared_credential_id: str) 
     )
 
 
-def delete_site_scan_credential_command(client: Client, site: Site, site_credential_id: str) -> CommandResults:
+def delete_site_scan_credential_command(client: Client, credential_id: str, site_id: str | None = None,
+                                        site_name: str | None = None) -> CommandResults:
     """
     Delete a site scan credential.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to delete the site scan credential from.
-        site_credential_id (str): ID of the site scan credential to delete.
+        credential_id (str): ID of the site scan credential to delete.
+        site_id (str | None, optional): ID of the site to delete the site scan credential from.
+        site_name (str | None, optional): Name of the site to delete the site scan credential from.
+            Can be used instead of "site_id".
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     response_data = client.delete_site_scan_credential(
         site_id=site.id,
-        site_credential_id=site_credential_id,
+        site_credential_id=credential_id,
     )
 
     return CommandResults(
-        readable_output=f"Site scan credential with ID {site_credential_id} has been deleted.",
+        readable_output=f"Site scan credential with ID {credential_id} has been deleted.",
         raw_response=response_data,
     )
 
@@ -3318,8 +3358,8 @@ def delete_vulnerability_exception_command(client: Client, vulnerability_excepti
     )
 
 
-def download_report_command(client: Client, report_id: str, instance_id: str, report_format: str | None = None,
-                            report_name: str | None = None) -> dict:
+def download_report_command(client: Client, report_id: str, instance_id: str, name: str | None = None,
+                            report_format: str | None = None) -> dict:
     """
     Download a report file.
 
@@ -3333,16 +3373,16 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
         client (Client): Client to use for API requests.
         report_id (str): ID of the report to download.
         instance_id (str): ID of the report instance.
+        name (str | None, optional): Name to give the generated report file.
+            Defaults to None (results in using a "report <date>" format as a name).
         report_format (str | None, optional): File format to use for the generated report.
             Defaults to None (results in using PDF).
-        report_name (str | None, optional): Name to give the generated report file.
-            Defaults to None (results in using a "report <date>" format as a name).
 
     Returns:
         dict: A dict generated by `CommonServerPython.fileResult` representing a War Room entry.
     """
-    if report_name is None:
-        report_name = f"report {str(datetime.now())}"
+    if name is None:
+        name = f"report {str(datetime.now())}"
 
     if not report_format:
         report_format = "pdf"
@@ -3353,7 +3393,7 @@ def download_report_command(client: Client, report_id: str, instance_id: str, re
     )
 
     return fileResult(
-        filename=f"{report_name}.{report_format.lower()}",
+        filename=f"{name}.{report_format.lower()}",
         data=report_data,
         file_type=entryTypes["entryInfoFile"],
     )
@@ -4100,19 +4140,27 @@ def get_sites_command(client: Client, page_size: str | None = None, page: str | 
     )
 
 
-def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | None = None,
-                               limit: str | None = None) -> CommandResults:
+def list_scan_schedule_command(client: Client, site_id: str | None = None, site_name: str | None = None,
+                               schedule_id: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve information about scan schedules for a specific site or a specific scan schedule.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to retrieve scan schedules from.
+        site_id (str | None, optional): ID of a site to retrieve scan schedules from.
+        site_name (str | None, optional): Name of a site to retrieve scan schedules from.
+            Can be used instead of "site_id".
         schedule_id (str): ID of a specific scan schedule to retrieve.
             Defaults to None (Results in getting all scan schedules for the site).
         limit (str | None, optional): Limit the number of scans to return. None means to not use a limit.
             Defaults to None.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     hr_headers = [
         "Enable",
         "StartDate",
@@ -4233,15 +4281,24 @@ def list_shared_credential_command(client: Client, credential_id: str | None = N
     )
 
 
-def list_assigned_shared_credential_command(client: Client, site: Site, limit: str | None = None) -> CommandResults:
+def list_assigned_shared_credential_command(client: Client, site_id: str | None = None, site_name: str | None = None,
+                                            limit: str | None = None) -> CommandResults:
     """
     Retrieve information about shared credentials for a specific site.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to retrieve shared credentials from.
+        site_id (str | None, optional): ID of a site to retrieve shared credentials from.
+        site_name (str | None, optional): Name of a site to retrieve shared credentials from.
+            Can be used instead of "site_id".
         limit (str | None, optional): Limit the number of credentials to return. None means to not use a limit.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     hr_headers = [
         "Id",
         "Name",
@@ -4284,18 +4341,26 @@ def list_assigned_shared_credential_command(client: Client, site: Site, limit: s
     )
 
 
-def list_site_scan_credential_command(client: Client, site: Site, credential_id: str | None = None,
-                                      limit: str | None = None) -> CommandResults:
+def list_site_scan_credential_command(client: Client, site_id: str | None = None, site_name: str | None = None,
+                                      credential_id: str | None = None, limit: str | None = None) -> CommandResults:
     """
     Retrieve information about all or a specific scan credential.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to retrieve scan credentials from.
+        site_id (str | None, optional): ID of a site to retrieve scan credentials from.
+        site_name (str | None, optional): Name of a site to retrieve scan credentials from.
+            Can be used instead of "site_id".
         credential_id (str | None, optional): ID of a specific scan credential to retrieve.
         limit (str | None, optional): Limit the number of credentials to return. None means to not use a limit.
             Defaults to None.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     hr_headers = [
         "Id",
         "Enabled",
@@ -4656,32 +4721,40 @@ def search_assets_command(client: Client, filter_query: str | None = None, ip_ad
     return results
 
 
-def set_assigned_shared_credential_status_command(client: Client, site: Site,
-                                                  shared_credential_id: str, enabled: bool) -> CommandResults:
+def set_assigned_shared_credential_status_command(client: Client, credential_id: str, enabled: bool,
+                                                  site_id: str | None = None,
+                                                  site_name: str | None = None) -> CommandResults:
     """
     Enable or disable a shared credential.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to use for API requests.
-        shared_credential_id (str): ID of the shared credential to enable or disable.
+        credential_id (str): ID of the shared credential to enable or disable.
         enabled (bool): Whether to enable or disable the shared credential.
+        site_id (Site): ID of a site to use for API requests.
+        site_name (Site): Name of a site to use for API requests. Can be used instead of "site_id".
+
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     response_data = client.set_assigned_shared_credential_status(
         site_id=site.id,
-        shared_credential_id=shared_credential_id,
+        shared_credential_id=credential_id,
         enabled=enabled,
     )
 
     return CommandResults(
-        readable_output=f"Shared credential \"{shared_credential_id}\" enablement \
-                          has been set to \"{str(enabled).lower()}\".",
+        readable_output=f"Shared credential \"{credential_id}\" enablement has been set to \"{str(enabled).lower()}\".",
         raw_response=response_data,
     )
 
 
 def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
-                              hostnames: str | None = None, scan_name: str | None = None) -> CommandResults:
+                              hostnames: str | None = None, name: str | None = None) -> CommandResults:
     """
     Start a scan on the provided assets.
 
@@ -4692,7 +4765,7 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
         client (Client): Client to use for API requests.
         ip_addresses (str | None, optional): IP(s) of assets to scan. Defaults to None
         hostnames (str | None, optional): Hostname(s) of assets to scan. Defaults to None
-        scan_name (str | None): Name to set for the new scan.
+        name (str | None): Name to set for the new scan.
             Defaults to None (Results in using a "scan <date>" format).
     """
     if ip_addresses is None and hostnames is None:
@@ -4710,8 +4783,8 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
         hostnames_list = argToList(hostnames)
         asset_filter = "host-name is " + hostnames_list[0]
 
-    if not scan_name:
-        scan_name = f"scan {datetime.now()}"
+    if not name:
+        name = f"scan {datetime.now()}"
 
     asset_data = client.search_assets(filters=convert_asset_search_filters(asset_filter), match="all")
 
@@ -4739,7 +4812,7 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
 
     scan_response = client.start_site_scan(
         site_id=site.id,
-        scan_name=scan_name,
+        scan_name=name,
         hosts=hosts
     )
 
@@ -4752,20 +4825,27 @@ def start_assets_scan_command(client: Client, ip_addresses: str | None = None,
     return get_scan_entry(client.get_scan(scan_response["id"]))
 
 
-def start_site_scan_command(client: Client, site: Site, scan_name: str | None = None,
-                            hosts: str | None = None) -> CommandResults:
+def start_site_scan_command(client: Client, site_id: str | None = None, site_name: str | None = None,
+                            hosts: str | None = None, name: str | None = None) -> CommandResults:
     """
     Start a scan for a specific site.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to start a scan on.
-        scan_name (str | None): Name to set for the new scan.
-            Defaults to None (Results in using a "scan <date>" format).
+        site_id (str | None, optional): ID of a site to start a scan on.
+        site_name (str | None, optional): Name of a site to start a scan on. Can be used instead of "site_id".
         hosts (str | None): Hosts to scan. Defaults to None (Results in scanning all hosts).
+        name (str | None): Name to set for the new scan.
+            Defaults to None (Results in using a "scan <date>" format).
     """
-    if not scan_name:
-        scan_name = f"scan {datetime.now()}"
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
+    if not name:
+        name = f"scan {datetime.now()}"
 
     if hosts:
         hosts_list = argToList(hosts)
@@ -4776,7 +4856,7 @@ def start_site_scan_command(client: Client, site: Site, scan_name: str | None = 
 
     scan_response = client.start_site_scan(
         site_id=site.id,
-        scan_name=scan_name,
+        scan_name=name,
         hosts=hosts_list,
     )
 
@@ -4808,7 +4888,8 @@ def update_scan_command(client: Client, scan_id: str, scan_status: ScanStatus) -
 
 
 def update_shared_credential_command(client: Client, shared_credential_id: str, name: str, site_assignment: str,
-                                     service: str, database_name: str | None = None,
+                                     service: str, authentication_type: str | None = None,
+                                     community_name: str | None = None, database: str | None = None,
                                      description: str | None = None, domain: str | None = None,
                                      host_restriction: str | None = None, http_realm: str | None = None,
                                      notes_id_password: str | None = None, ntlm_hash: str | None = None,
@@ -4816,11 +4897,8 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
                                      oracle_listener_password: str | None = None,
                                      oracle_sid: str | None = None, password: str | None = None,
                                      port_restriction: str | None = None, sites: str | None = None,
-                                     snmp_community_name: str | None = None,
-                                     snmpv3_authentication_type: str | None = None,
-                                     snmpv3_privacy_password: str | None = None,
-                                     snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
-                                     ssh_permission_elevation: str | None = None,
+                                     privacy_password: str | None = None, privacy_type: str | None = None,
+                                     ssh_key_pem: str | None = None, ssh_permission_elevation: str | None = None,
                                      ssh_permission_elevation_password: str | None = None,
                                      ssh_permission_elevation_username: str | None = None,
                                      ssh_private_key_password: str | None = None,
@@ -4835,7 +4913,9 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
         name (str): Name of the credential.
         site_assignment (str): Site assignment configuration for the credential.
         service (str): Credential service type.
-        database_name (str | None, optional): Database name.
+        authentication_type (str): SNMPv3 authentication type for the credential.
+        community_name (str | None, optional): SNMP community for authentication.
+        database (str | None, optional): Database name.
         description (str | None, optional): Description for the credential.
         domain (str | None, optional): Domain address.
         host_restriction (str | None, optional): Hostname or IP address to restrict the credentials to.
@@ -4852,10 +4932,8 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
             on a specific port. Can be used only if `host_restriction` is used.
         sites (str | None, optional): List of site IDs for the shared credential that are explicitly assigned
             access to the shared scan credential, allowing it to use the credential during a scan.
-        snmp_community_name (str | None, optional): SNMP community for authentication.
-        snmpv3_authentication_type (str): SNMPv3 authentication type for the credential.
-        snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
-        snmpv3_privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
+        privacy_password (str | None, optional): SNMPv3 privacy password to use.
+        privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
         ssh_key_pem (str | None, optional): PEM formatted private key.
         ssh_permission_elevation (str | None, optional): Elevation type to use for scans.
         ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
@@ -4877,11 +4955,11 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
     if sites is not None:
         sites_list = [int(item) for item in argToList(sites)]
 
-    if snmpv3_authentication_type is not None:
-        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[snmpv3_authentication_type]
+    if authentication_type is not None:
+        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[authentication_type]
 
-    if snmpv3_privacy_type is not None:
-        snmpv3_privacy_type_enum = SNMPv3PrivacyType[snmpv3_privacy_type]
+    if privacy_type is not None:
+        snmpv3_privacy_type_enum = SNMPv3PrivacyType[privacy_type]
 
     if ssh_permission_elevation is not None:
         ssh_permission_elevation_enum = SSHElevationType[ssh_permission_elevation]
@@ -4894,7 +4972,7 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
         name=name,
         site_assignment=SharedCredentialSiteAssignment[site_assignment],
         service=CredentialService[service],
-        database_name=database_name,
+        database_name=database,
         description=description,
         domain=domain,
         host_restriction=host_restriction,
@@ -4907,9 +4985,9 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
         password=password,
         port_restriction=port_restriction,
         sites=sites_list,
-        snmp_community_name=snmp_community_name,
+        snmp_community_name=community_name,
         snmpv3_authentication_type=snmpv3_authentication_type_enum,
-        snmpv3_privacy_password=snmpv3_privacy_password,
+        snmpv3_privacy_password=privacy_password,
         snmpv3_privacy_type=snmpv3_privacy_type_enum,
         ssh_key_pem=ssh_key_pem,
         ssh_permission_elevation=ssh_permission_elevation_enum,
@@ -4926,17 +5004,17 @@ def update_shared_credential_command(client: Client, shared_credential_id: str, 
     )
 
 
-def update_site_scan_credential_command(client: Client, site: Site, credential_id: str, name: str, service: str,
-                                        database_name: str | None = None, description: str | None = None,
+def update_site_scan_credential_command(client: Client, credential_id: str, name: str, service: str,
+                                        site_id: str | None = None, site_name: str | None = None,
+                                        authentication_type: str | None = None, community_name: str | None = None,
+                                        database: str | None = None, description: str | None = None,
                                         domain: str | None = None, host_restriction: str | None = None,
                                         http_realm: str | None = None, notes_id_password: str | None = None,
                                         ntlm_hash: str | None = None, oracle_enumerate_sids: str | None = None,
                                         oracle_listener_password: str | None = None,
                                         oracle_sid: str | None = None, password: str | None = None,
-                                        port_restriction: str | None = None, snmp_community_name: str | None = None,
-                                        snmpv3_authentication_type: str | None = None,
-                                        snmpv3_privacy_password: str | None = None,
-                                        snmpv3_privacy_type: str | None = None, ssh_key_pem: str | None = None,
+                                        port_restriction: str | None = None, privacy_password: str | None = None,
+                                        privacy_type: str | None = None, ssh_key_pem: str | None = None,
                                         ssh_permission_elevation: str | None = None,
                                         ssh_permission_elevation_password: str | None = None,
                                         ssh_permission_elevation_username: str | None = None,
@@ -4948,11 +5026,15 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to update the site scan credential for.
         credential_id (str): ID of the site scan credential to update.
         name (str): Name of the credential.
         service (str): Credential service type.
-        database_name (str | None, optional): Database name.
+        site_id (str | None, optional): ID of a site to update the site scan credential for.
+        site_name (str | None, optional): Name of a site to update the site scan credential for.
+            Can be used instead of "site_id".
+        authentication_type (str | None, optional): SNMPv3 authentication type for the credential.
+        community_name (str | None, optional): SNMP community for authentication.
+        database (str | None, optional): Database name.
         description (str | None, optional): Description for the credential.
         domain (str | None, optional): Domain address.
         host_restriction (str | None, optional): Hostname or IP address to restrict the credentials to.
@@ -4967,10 +5049,8 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
         password (str | None, optional): Password for the credential.
         port_restriction (str | None, optional): Further restricts the credential to attempt to authenticate
             on a specific port. Can be used only if `host_restriction` is used.
-        snmp_community_name (str | None, optional): SNMP community for authentication.
-        snmpv3_authentication_type (str | None, optional): SNMPv3 authentication type for the credential.
-        snmpv3_privacy_password (str | None, optional): SNMPv3 privacy password to use.
-        snmpv3_privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
+        privacy_password (str | None, optional): SNMPv3 privacy password to use.
+        privacy_type (str | None, optional): SNMPv3 Privacy protocol to use.
         ssh_key_pem (str | None, optional): PEM formatted private key.
         ssh_permission_elevation (str | None, optional): Elevation type to use for scans.
         ssh_permission_elevation_password (str | None, optional): Password to use for elevation.
@@ -4979,6 +5059,12 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
         use_windows_authentication (str | None, optional): Whether to use Windows authentication.
         username (str | None, optional): Username for the credential.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     oracle_enumerate_sids_bool = None
     snmpv3_authentication_type_enum = None
     snmpv3_privacy_type_enum = None
@@ -4988,11 +5074,11 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
     if oracle_enumerate_sids is not None:
         oracle_enumerate_sids_bool = argToBoolean(oracle_enumerate_sids)
 
-    if snmpv3_authentication_type is not None:
-        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[snmpv3_authentication_type]
+    if authentication_type is not None:
+        snmpv3_authentication_type_enum = SNMPv3AuthenticationType[authentication_type]
 
-    if snmpv3_privacy_type is not None:
-        snmpv3_privacy_type_enum = SNMPv3PrivacyType[snmpv3_privacy_type]
+    if privacy_type is not None:
+        snmpv3_privacy_type_enum = SNMPv3PrivacyType[privacy_type]
 
     if ssh_permission_elevation is not None:
         ssh_permission_elevation_enum = SSHElevationType[ssh_permission_elevation]
@@ -5005,7 +5091,7 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
         credential_id=credential_id,
         name=name,
         service=CredentialService[service],
-        database_name=database_name,
+        database_name=database,
         description=description,
         domain=domain,
         host_restriction=host_restriction,
@@ -5017,9 +5103,9 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
         oracle_sid=oracle_sid,
         password=password,
         port_restriction=port_restriction,
-        snmp_community_name=snmp_community_name,
+        snmp_community_name=community_name,
         snmpv3_authentication_type=snmpv3_authentication_type_enum,
-        snmpv3_privacy_password=snmpv3_privacy_password,
+        snmpv3_privacy_password=privacy_password,
         snmpv3_privacy_type=snmpv3_privacy_type_enum,
         ssh_key_pem=ssh_key_pem,
         ssh_permission_elevation=ssh_permission_elevation_enum,
@@ -5036,25 +5122,27 @@ def update_site_scan_credential_command(client: Client, site: Site, credential_i
     )
 
 
-def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: int, repeat_behaviour: str,
-                                 start_date: str, excluded_asset_groups: str | None = None,
-                                 excluded_targets: str | None = None, included_asset_groups: str | None = None,
-                                 included_targets: str | None = None, duration_days: str | None = None,
-                                 duration_hours: str | None = None, duration_minutes: str | None = None,
-                                 enabled: str | None = None, frequency: str | None = None,
-                                 interval: str | None = None, scan_name: str | None = None,
-                                 date_of_month: str | None = None,
+def update_scan_schedule_command(client: Client, schedule_id: int, on_scan_repeat: str, start: str,
+                                 site_id: str | None = None, site_name: str | None = None,
+                                 excluded_asset_groups: str | None = None, excluded_targets: str | None = None,
+                                 included_asset_groups: str | None = None, included_targets: str | None = None,
+                                 duration_days: str | None = None, duration_hours: str | None = None,
+                                 duration_minutes: str | None = None, enabled: str | None = None,
+                                 frequency: str | None = None, interval: str | None = None,
+                                 scan_name: str | None = None, date_of_month: str | None = None,
                                  scan_template_id: str | None = None) -> CommandResults:
     """
     Update a site scan schedule.
 
     Args:
         client (Client): Client to use for API requests.
-        site (Site): Site to create a scheduled scan for.
-        scan_schedule_id (str): ID of the scan schedule to update.
-        repeat_behaviour (str): The desired behavior of a repeating scheduled scan
+        schedule_id (str): ID of the scan schedule to update.
+        on_scan_repeat (str): The desired behavior of a repeating scheduled scan
             when the previous scan was paused due to reaching its maximum duration.
-        start_date (str): The scheduled start date and time formatted in ISO 8601 format.
+        start (str): The scheduled start date and time formatted in ISO 8601 format.
+        site_id (str | None, optional): ID of a site to create a scheduled scan for.
+        site_name (str | None, optional): Name of a site to create a scheduled scan for.
+            Can be used instead of "site_id".
         excluded_asset_groups (str | None, optional): Asset groups to exclude from the scan.
         excluded_targets (str | None, optional): Addresses to exclude from the scan. Each address is a string that
             can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
@@ -5078,6 +5166,12 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
             If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
         scan_template_id (str | None, optional): ID of the scan template to use.
     """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
     excluded_asset_groups_list = None
     excluded_targets_list = None
     frequency_enum = None
@@ -5119,10 +5213,10 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
 
     response_data = client.update_scan_schedule(
         site_id=site.id,
-        scan_schedule_id=scan_schedule_id,
+        scan_schedule_id=schedule_id,
         enabled=enabled_bool,
-        repeat_behaviour=repeat_behaviour,
-        start_date=start_date,
+        repeat_behaviour=on_scan_repeat,
+        start_date=start,
         excluded_asset_groups=excluded_asset_groups_list,
         excluded_targets=excluded_targets_list,
         included_asset_groups=included_asset_groups_list,
@@ -5136,25 +5230,25 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
     )
 
     return CommandResults(
-        readable_output=f"Scan schedule {scan_schedule_id} has been updated.",
+        readable_output=f"Scan schedule {schedule_id} has been updated.",
         raw_response=response_data,
     )
 
 
 def update_vulnerability_exception_expiration_command(client: Client, vulnerability_exception_id: str,
-                                                      expiration_date: str) -> CommandResults:
+                                                      expiration: str) -> CommandResults:
     """
     Update the expiration date of a vulnerability exception.
 
     Args:
         client (Client): Client to use for API requests.
         vulnerability_exception_id (str): ID of the vulnerability exception to update.
-        expiration_date (str): Expiration date to set for the vulnerability exception,
+        expiration (str): Expiration date to set for the vulnerability exception,
             formatted in ISO 8601 format.
     """
     response = client.update_vulnerability_exception_expiration(
         vulnerability_exception_id=vulnerability_exception_id,
-        expiration_date=expiration_date,
+        expiration_date=expiration,
     )
 
     return CommandResults(
@@ -5206,176 +5300,46 @@ def main():  # pragma: no cover
             client.get_assets(page_size=1, limit=1)
             results = "ok"
         elif command == "nexpose-create-asset":
-            results = create_asset_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                date=args.pop("date", None),
-                ip_address=args.pop("ip", None),
-                hostname=args.pop("host_name", None),
-                hostname_source=args.pop("host_name_source", None),
-            )
+            results = create_asset_command(client=client, **args)
         elif command == "nexpose-create-assets-report":
-            results = create_assets_report_command(
-                client=client,
-                asset_ids=args.pop("assets"),
-                template_id=args.pop("template", None),
-                report_name=args.pop("name", None),
-                report_format=args.pop("format", None),
-                download_immediately=args.pop("download_immediately", None),
-            )
+            results = create_assets_report_command(client=client, report_format=args.pop("format", None), **args)
         elif command == "nexpose-create-scan-report":
-            results = create_scan_report_command(
-                client=client,
-                scan_id=args.pop("scan"),
-                template_id=args.pop("template", None),
-                report_name=args.pop("name", None),
-                report_format=args.pop("format", None),
-                download_immediately=args.pop("download_immediately", None),
-            )
+            results = create_scan_report_command(client=client, report_format=args.pop("format", None), **args)
         elif command == "nexpose-create-scan-schedule":
-            results = create_scan_schedule_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                repeat_behaviour=args.pop("on_scan_repeat"),
-                start_date=args.pop("start"),
-                interval=args.pop("interval_time", None),
-                **args
-            )
+            results = create_scan_schedule_command(client=client, **args)
         elif command == "nexpose-create-shared-credential":
-            results = create_shared_credential_command(
-                client=client,
-                database_name=args.pop("database", None),
-                snmp_community_name=args.pop("community_name", None),
-                snmpv3_authentication_type=args.pop("authentication_type", None),
-                snmpv3_privacy_password=args.pop("privacy_password", None),
-                snmpv3_privacy_type=args.pop("privacy_type", None),
-                **args
-            )
+            results = create_shared_credential_command(client=client, **args)
         elif command == "nexpose-create-site":
-            results = create_site_command(
-                client=client,
-                site_importance=args.pop("importance", None),
-                template_id=args.pop("scanTemplateId", None),
-                **args
-            )
+            results = create_site_command(client=client, template_id=args.pop("scanTemplateId", None), **args)
         elif command == "nexpose-create-sites-report":
-            results = create_sites_report_command(
-                client=client,
-                site_ids=args.pop("sites", None),
-                template_id=args.pop("template", None),
-                report_name=args.pop("name", None),
-                report_format=args.pop("format", None),
-                **args
-            )
+            results = create_sites_report_command(client=client, report_format=args.pop("format", None), **args)
         elif command == "nexpose-create-site-scan-credential":
-            results = create_site_scan_credential_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                database_name=args.pop("database", None),
-                snmp_community_name=args.pop("community_name", None),
-                snmpv3_authentication_type=args.pop("authentication_type", None),
-                snmpv3_privacy_password=args.pop("privacy_password", None),
-                snmpv3_privacy_type=args.pop("privacy_type", None),
-                **args
-            )
+            results = create_site_scan_credential_command(client=client, **args)
         elif command == "nexpose-create-vulnerability-exception":
             results = create_vulnerability_exception_command(client=client, **args)
         elif command == "nexpose-delete-asset":
-            results = delete_asset_command(
-                client=client,
-                asset_id=args.pop("id"),
-            )
+            results = delete_asset_command(client=client, asset_id=args.pop("id"))
         elif command == "nexpose-delete-scan-schedule":
-            results = delete_scan_schedule_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                scheduled_scan_id=args.pop("schedule_id"),
-            )
+            results = delete_scan_schedule_command(client=client, **args)
         elif command == "nexpose-delete-shared-credential":
-            results = delete_shared_credential_command(
-                client=client,
-                shared_credential_id=args.pop("id"),
-            )
+            results = delete_shared_credential_command(client=client, shared_credential_id=args.pop("id"))
         elif command == "nexpose-delete-site-scan-credential":
-            results = delete_site_scan_credential_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                site_credential_id=args.pop("credential_id"),
-            )
+            results = delete_site_scan_credential_command(client=client, **args)
         elif command == "nexpose-delete-vulnerability-exception":
-            results = delete_vulnerability_exception_command(
-                client=client,
-                vulnerability_exception_id=args.pop("id"),
-            )
+            results = delete_vulnerability_exception_command(client=client, vulnerability_exception_id=args.pop("id"))
         elif command == "nexpose-delete-site":
-            results = delete_site_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-            )
+            results = delete_site_command(client=client, **args)
         elif command == "nexpose-disable-shared-credential":
-            results = set_assigned_shared_credential_status_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                shared_credential_id=args.pop("credential_id"),
-                enabled=False,
-            )
+            results = set_assigned_shared_credential_status_command(client=client, enabled=False, **args)
         elif command == "nexpose-download-report":
-            results = download_report_command(
-                client=client,
-                report_name=args.pop("name", None),
-                report_format=args.pop("format"),
-                **args
-            )
+            results = download_report_command(client=client, report_format=args.pop("format"), **args)
         elif command == "nexpose-enable-shared-credential":
-            results = set_assigned_shared_credential_status_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                shared_credential_id=args.pop("credential_id"),
-                enabled=True,
-            )
+            results = set_assigned_shared_credential_status_command(client=client, enabled=True, **args)
         elif command == "nexpose-get-asset":
-            results = get_asset_command(
-                client=client,
-                asset_id=args.pop("id")
-            )
+            results = get_asset_command(client=client, asset_id=args.pop("id"))
         elif command == "nexpose-get-asset-vulnerability":
-            results = get_asset_vulnerability_command(
-                client=client,
-                asset_id=args.pop("id"),
-                vulnerability_id=args.pop("vulnerabilityId"),
-            )
+            results = get_asset_vulnerability_command(client=client, asset_id=args.pop("id"),
+                                                      vulnerability_id=args.pop("vulnerabilityId"))
         elif command == "nexpose-get-assets":
             results = get_assets_command(client=client, **args)
         elif command == "nexpose-get-report-templates":
@@ -5383,123 +5347,41 @@ def main():  # pragma: no cover
         elif command == "nexpose-get-report-status":
             results = get_generated_report_status_command(client=client, **args)
         elif command == "nexpose-get-scan":
-            results = get_scan_command(
-                client=client,
-                scan_ids=args.pop("id")
-            )
+            results = get_scan_command(client=client, scan_ids=args.pop("id"))
         elif command == "nexpose-get-scans":
             results = get_scans_command(client=client, **args)
         elif command == "nexpose-get-sites":
             results = get_sites_command(client=client, **args)
         elif command == "nexpose-list-assigned-shared-credential":
-            results = list_assigned_shared_credential_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                limit=args.pop("limit", None),
-            )
+            results = list_assigned_shared_credential_command(client=client, **args)
         elif command == "nexpose-list-site-scan-credential":
-            results = list_site_scan_credential_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                **args
-            )
+            results = list_site_scan_credential_command(client=client, **args)
         elif command == "nexpose-list-vulnerability":
-            results = list_vulnerability_command(
-                client=client,
-                vulnerability_id=args.pop("id", None),
-                **args
-            )
+            results = list_vulnerability_command(client=client, vulnerability_id=args.pop("id", None), **args)
         elif command == "nexpose-list-vulnerability-exceptions":
-            results = list_vulnerability_exceptions_command(
-                client=client,
-                vulnerability_exception_id=args.pop("id", None),
-                **args
-            )
+            results = list_vulnerability_exceptions_command(client=client,
+                                                            vulnerability_exception_id=args.pop("id", None), **args)
         elif command == "nexpose-list-scan-schedule":
-            results = list_scan_schedule_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                **args
-            )
+            results = list_scan_schedule_command(client=client, **args)
         elif command == "nexpose-list-shared-credential":
-            results = list_shared_credential_command(
-                client=client,
-                credential_id=args.pop("id", None),
-                limit=args.pop("limit", None),
-            )
+            results = list_shared_credential_command(client=client, credential_id=args.pop("id", None), **args)
         elif command == "nexpose-pause-scan":
-            results = update_scan_command(
-                client=client,
-                scan_id=args.pop("id"),
-                scan_status=ScanStatus.PAUSE,
-            )
+            results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.PAUSE)
         elif command == "nexpose-resume-scan":
-            results = update_scan_command(
-                client=client,
-                scan_id=args.pop("id"),
-                scan_status=ScanStatus.RESUME,
-            )
+            results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.RESUME)
         elif command == "nexpose-update-shared-credential":
-            results = update_shared_credential_command(
-                client=client,
-                shared_credential_id=args.pop("id"),
-                snmp_community_name=args.pop("community_name", None),
-                snmpv3_authentication_type=args.pop("authentication_type", None),
-                snmpv3_privacy_password=args.pop("privacy_password", None),
-                snmpv3_privacy_type=args.pop("privacy_type", None),
-                **args
-            )
+            results = update_shared_credential_command(client=client, shared_credential_id=args.pop("id"), **args)
         elif command == "nexpose-update-site-scan-credential":
-            results = update_site_scan_credential_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                snmp_community_name=args.pop("community_name", None),
-                snmpv3_authentication_type=args.pop("authentication_type", None),
-                snmpv3_privacy_password=args.pop("privacy_password", None),
-                snmpv3_privacy_type=args.pop("privacy_type", None),
-                **args
-            )
+            results = update_site_scan_credential_command(client=client, **args)
         elif command == "nexpose-update-scan-schedule":
-            results = update_scan_schedule_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                scan_schedule_id=args.pop("schedule_id"),
-                repeat_behaviour=args.pop("on_scan_repeat"),
-                start_date=args.pop("start"),
-                **args
-            )
+            results = update_scan_schedule_command(client=client, **args)
         elif command == "nexpose-update-vulnerability-exception-expiration":
-            results = update_vulnerability_exception_expiration_command(
-                client=client,
-                vulnerability_exception_id=args.pop("id"),
-                expiration_date=args.pop("expiration"),
-            )
+            results = update_vulnerability_exception_expiration_command(client=client,
+                                                                        vulnerability_exception_id=args.pop("id"),
+                                                                        **args)
         elif command == "nexpose-update-vulnerability-exception-status":
-            results = update_vulnerability_exception_status_command(
-                client=client,
-                vulnerability_exception_id=args.pop("id"),
-                status=args.pop("status"),
-            )
+            results = update_vulnerability_exception_status_command(client=client,
+                                                                    vulnerability_exception_id=args.pop("id"), **args)
         elif command == "nexpose-search-assets":
             results = search_assets_command(
                 client=client,
@@ -5513,29 +5395,12 @@ def main():  # pragma: no cover
                 **args
             )
         elif command == "nexpose-start-assets-scan":
-            results = start_assets_scan_command(
-                client=client,
-                ip_addresses=args.pop("IPs", None),
-                hostnames=args.pop("hostNames", None),
-                scan_name=args.pop("name", None),
-            )
+            results = start_assets_scan_command(client=client, ip_addresses=args.pop("IPs", None),
+                                                hostnames=args.pop("hostNames", None), **args)
         elif command == "nexpose-start-site-scan":
-            results = start_site_scan_command(
-                client=client,
-                site=Site(
-                    site_id=args.pop("site_id", None),
-                    site_name=args.pop("site_name", None),
-                    client=client
-                ),
-                scan_name=args.pop("name", None),
-                hosts=args.pop("hosts", None),
-            )
+            results = start_site_scan_command(client=client, **args)
         elif command == "nexpose-stop-scan":
-            results = update_scan_command(
-                client=client,
-                scan_id=args.pop("id"),
-                scan_status=ScanStatus.STOP,
-            )
+            results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

@@ -375,22 +375,22 @@ def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expec
 
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_output_context",
                          [
-                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z", "ip_address": "192.0.2.0"},
+                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z", "ip": "192.0.2.0"},
                               {"id": 1}, {"id": 1}),
-                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z", "hostname": "localhost",
-                               "hostname_source": "LDAP"}, {"id": 1}, {"id": 1}),
-                             ({"site": Site(site_id="1"), "date": "2022-01-01T10:00:00Z"}, None, None),
+                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z", "host_name": "localhost",
+                               "host_name_source": "LDAP"}, {"id": 1}, {"id": 1}),
+                             ({"site_id": "1", "date": "2022-01-01T10:00:00Z"}, None, None),
                          ])
 def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict,
                               api_mock_data: dict | None, expected_output_context: dict | None):
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
-    if test_input_kwargs.get("ip_address") is not None or test_input_kwargs.get("hostname") is not None:
+    if test_input_kwargs.get("ip") is not None or test_input_kwargs.get("host_name") is not None:
         assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
     else:
         # Assure an error is raised if neither of ip_address or hostname are provided
         with pytest.raises(ValueError):
-            create_asset_command(client=mock_client, site=Site(site_id="1"), date="2022-01-01T10:00:00Z")
+            create_asset_command(client=mock_client, **test_input_kwargs)
 
 
 @pytest.mark.parametrize("report_templates_mock_file, report_config_mock_data, report_mock_data, "
@@ -410,26 +410,26 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
 
     assert create_assets_report_command(
         client=mock_client,
-        asset_ids="1",
-        report_name="Test Report",
+        assets="1",
+        name="Test Report",
         download_immediately="false").outputs == expected_output_context
     assert create_scan_report_command(
         client=mock_client,
-        scan_id="1",
-        report_name="Test Report",
+        scan="1",
+        name="Test Report",
         download_immediately="false").outputs == expected_output_context
     assert create_sites_report_command(
         client=mock_client,
-        site_ids="1,2,3",
-        report_name="Test Report",
+        sites="1,2,3",
+        name="Test Report",
         download_immediately="false").outputs == expected_output_context
 
 
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
                          [
                              ({
-                                 "site_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "interval": "2",
+                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "interval_time": "2",
                                  "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
                                  "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
                                  "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
@@ -467,8 +467,8 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
                                  "start": "2050-01-01T10:00:00Z"
                              }, {"id": 1}),
                              ({
-                                 "site_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z",
+                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z",
                              }, {"id": 1},
                                  {
                                  "enabled": True,
@@ -476,12 +476,12 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
                                  "start": "2050-01-01T10:00:00Z"
                              }, {"id": 1}),
                              ({
-                                 "site_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
+                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
                              }, {"id": 1}, None, None),
                              ({
-                                 "site_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval": "2",
+                                 "site_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval_time": "2",
                                  "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
                                  "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
                                  "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
@@ -492,21 +492,20 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
 def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
                                       expected_post_data: dict | None, expected_output_context: dict):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
-    site_id = test_input_kwargs.pop("site_id")
 
-    if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval") is None
+    if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval_time") is None
                                                            or (test_input_kwargs["frequency"] == "Date-of-month"
                                                                and test_input_kwargs.get("date_of_month") is None)):
         with pytest.raises(ValueError):
-            create_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs)
+            create_scan_schedule_command(mock_client, **test_input_kwargs)
 
     else:
-        assert create_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs).outputs == \
+        assert create_scan_schedule_command(mock_client, **test_input_kwargs).outputs == \
                expected_output_context
 
         http_request.assert_called_with(
             method="POST",
-            url_suffix=f"/sites/{site_id}/scan_schedules",
+            url_suffix=f"/sites/{test_input_kwargs['site_id']}/scan_schedules",
             json_data=expected_post_data,
             resp_type="json",
         )
@@ -519,8 +518,8 @@ def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kw
                                "sites": "1,2,3"},
                               {"id": 1}, {"id": 1}),
                              ({"name": "Test", "site_assignment": "All-Sites", "service": "SNMPv3", "username": "Test1",
-                               "password": "Test2", "snmpv3_authentication_type": "SHA",
-                               "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"},
+                               "password": "Test2", "authentication_type": "SHA", "privacy_type": "AES-256",
+                               "privacy_password": "123"},
                               {"id": 1}, {"id": 1}),
                              ({"name": "Test", "site_assignment": "All-Sites", "service": "Oracle", "username": "Test1",
                                "password": "Test2", "oracle_enumerate_sids": "false"},
@@ -540,18 +539,24 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
 
 @pytest.mark.parametrize("test_input_kwargs, api_mock_data, expected_post_data, expected_output_context",
                          [
-                             ({"name": "Test 1", "description": "Test 2", "assets": "1,2,3"}, {"id": 1},
+                             ({"name": "Test 1", "description": "Test 2", "assets": "1,2,3", "importance": "very_high"},
+                              {"id": 1},
                               {
                                   "name": "Test 1",
                                   "description": "Test 2",
+                                  "importance": "very_high",
                                   "scan": {
                                       "assets": {
                                           "includedTargets": {
-                                              "addresses": ["1", "2", "3"]
+                                              "addresses": [
+                                                  "1",
+                                                  "2",
+                                                  "3"
+                                              ]
                                           }
                                       }
                                   }
-                             }, {"Id": 1}),
+                              }, {"Id": 1}),
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
@@ -584,8 +589,8 @@ def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_m
                               }
                               }, {"id": 1}),
                              ({"site_id": "2", "name": "Test", "service": "SNMPv3",
-                                 "username": "Test1", "password": "Test2", "snmpv3_authentication_type": "SHA",
-                                 "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"}, {"id": 1},
+                                 "username": "Test1", "password": "Test2", "authentication_type": "SHA",
+                                 "privacy_type": "AES-256", "privacy_password": "123"}, {"id": 1},
                               {
                               "name": "Test",
                               "account": {
@@ -642,8 +647,7 @@ def test_create_site_scan_credential_command(mocker, mock_client: Client, test_i
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     assert create_site_scan_credential_command(client=mock_client,
-                                               site=Site(site_id=site_id),
-                                               **test_input_kwargs).outputs == expected_output_context
+                                               site_id=site_id, **test_input_kwargs).outputs == expected_output_context
 
     http_request.assert_called_with(
         url_suffix=f"/sites/{site_id}/site_credentials",
@@ -690,18 +694,17 @@ def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id, scheduled_scan_id",
+@pytest.mark.parametrize("site_id, schedule_id",
                          [
                              ("1", "2"),
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str, scheduled_scan_id: str):
+def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str, schedule_id: str):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = delete_scan_schedule_command(client=mock_client, site=Site(site_id=site_id),
-                                          scheduled_scan_id=scheduled_scan_id)
+    result = delete_scan_schedule_command(client=mock_client, site_id=site_id, schedule_id=schedule_id)
 
     http_request.assert_called_with(
-        url_suffix=f"/sites/{site_id}/scan_schedules/{scheduled_scan_id}",
+        url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
         method="DELETE",
         resp_type="json",
     )
@@ -733,7 +736,7 @@ def test_delete_shared_credential_command(mocker, mock_client: Client, shared_cr
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_site_command(mocker, mock_client: Client, site_id: str):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = delete_site_command(client=mock_client, site=Site(site_id=site_id))
+    result = delete_site_command(client=mock_client, site_id=site_id)
 
     http_request.assert_called_with(
         url_suffix=f"/sites/{site_id}",
@@ -744,18 +747,17 @@ def test_delete_site_command(mocker, mock_client: Client, site_id: str):
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("site_id, site_credential_id",
+@pytest.mark.parametrize("site_id, credential_id",
                          [
                              ("1", "2"),
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
-def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_id: str, site_credential_id: str):
+def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_id: str, credential_id: str):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    result = delete_site_scan_credential_command(client=mock_client, site=Site(site_id=site_id),
-                                                 site_credential_id=site_credential_id)
+    result = delete_site_scan_credential_command(client=mock_client, site_id=site_id, credential_id=credential_id)
 
     http_request.assert_called_with(
-        url_suffix=f"/sites/{site_id}/site_credentials/{site_credential_id}",
+        url_suffix=f"/sites/{site_id}/site_credentials/{credential_id}",
         method="DELETE",
         resp_type="json",
     )
@@ -786,7 +788,7 @@ def test_download_report_command(mocker, mock_client: Client):
     mocker.patch("builtins.open", mocker.mock_open())
     mocker.patch("uuid.uuid4", return_value="RandomUUID4")
 
-    result = download_report_command(client=mock_client, report_id="1", instance_id="latest", report_name="Test")
+    result = download_report_command(client=mock_client, report_id="1", instance_id="latest", name="Test")
 
     assert result == {
         "Contents": "",
@@ -967,7 +969,7 @@ def test_list_assigned_shared_credential_command(mocker, mock_client: Client, ap
 
     expected_output_context = load_test_data("expected_context", expected_output_context_file)
 
-    result = list_assigned_shared_credential_command(client=mock_client, site=Site(site_id="1"), limit="3")
+    result = list_assigned_shared_credential_command(client=mock_client, site_id="1", limit="3")
     assert result.outputs == expected_output_context
 
 
@@ -1021,20 +1023,22 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
            sorted(expected_output_context, key=lambda d: d["AssetId"])
 
 
-@pytest.mark.parametrize("site_id, shared_credential_id, enabled",
+@pytest.mark.parametrize("site_id, credential_id, enabled",
                          [
                              ("1", "1", True),
                              ("1", "1", False),
                          ])
-def test_set_assigned_shared_credential_status_command(mocker, mock_client: Client, site_id: str,
-                                                       shared_credential_id: str, enabled: bool):
+def test_set_assigned_shared_credential_status_command(mocker, mock_client: Client, site_id: str, credential_id: str,
+                                                       enabled: bool):
     http_request = mocker.patch.object(Client, "_http_request", return_value={})
-    result = set_assigned_shared_credential_status_command(client=mock_client, site=Site(site_id=site_id),
-                                                           shared_credential_id=shared_credential_id, enabled=enabled)
+    result = set_assigned_shared_credential_status_command(client=mock_client,
+                                                           credential_id=credential_id,
+                                                           enabled=enabled,
+                                                           site_id=site_id)
 
     http_request.assert_called_with(
         method="PUT",
-        url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}/enabled",
+        url_suffix=f"/sites/{site_id}/shared_credentials/{credential_id}/enabled",
         data=json.dumps(enabled),
         resp_type="json",
     )
@@ -1065,8 +1069,8 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
 @pytest.mark.parametrize("test_input_kwargs, expected_post_data",
                          [
                              ({
-                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "interval": "2",
+                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "interval": "2",
                                  "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
                                  "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
                                  "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
@@ -1104,8 +1108,8 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                                  "start": "2050-01-01T10:00:00Z"
                              }),
                              ({
-                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z",
+                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z",
                              },
                                  {
                                  "enabled": True,
@@ -1113,13 +1117,13 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                                  "start": "2050-01-01T10:00:00Z"
                              }),
                              ({
-                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
+                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "week", "enabled": "true",
                              },
                                  None),
                              ({
-                                 "site_id": "1", "scan_schedule_id": "1", "repeat_behaviour": "Restart-Scan",
-                                 "start_date": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval": "2",
+                                 "site_id": "1", "schedule_id": "1", "on_scan_repeat": "Restart-Scan",
+                                 "start": "2050-01-01T10:00:00Z", "frequency": "Date-of-month", "interval": "2",
                                  "duration_days": "1", "duration_hours": "1", "duration_minutes": "1",
                                  "scan_name": "Test", "enabled": "true", "included_targets": "192.0.2.0,192.0.2.1",
                                  "included_asset_groups": "1,2", "excluded_targets": "192.0.2.2,192.0.2.3",
@@ -1130,20 +1134,19 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
 def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                       expected_post_data: dict | None):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    site_id = test_input_kwargs.pop("site_id")
 
     if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval") is None
                                                            or (test_input_kwargs["frequency"] == "Date-of-month"
                                                                and test_input_kwargs.get("date_of_month") is None)):
         with pytest.raises(ValueError):
-            update_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs)
+            update_scan_schedule_command(mock_client, **test_input_kwargs)
 
     else:
-        result = update_scan_schedule_command(mock_client, site=Site(site_id=site_id), **test_input_kwargs)
+        result = update_scan_schedule_command(mock_client, **test_input_kwargs)
 
         http_request.assert_called_with(
             method="PUT",
-            url_suffix=f"/sites/{site_id}/scan_schedules/{test_input_kwargs['scan_schedule_id']}",
+            url_suffix=f"/sites/{test_input_kwargs['site_id']}/scan_schedules/{test_input_kwargs['schedule_id']}",
             json_data=expected_post_data,
             resp_type="json",
         )
@@ -1171,8 +1174,8 @@ def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kw
                              }),
                              ({"shared_credential_id": "1", "name": "Test", "site_assignment": "All-Sites",
                                "service": "SNMPv3", "username": "Test1", "password": "Test2",
-                               "snmpv3_authentication_type": "SHA", "snmpv3_privacy_type": "AES-256",
-                               "snmpv3_privacy_password": "123"},
+                               "authentication_type": "SHA", "privacy_type": "AES-256",
+                               "privacy_password": "123"},
                               {
                                   "name": "Test",
                                   "siteAssignment": "all-sites",
@@ -1258,8 +1261,8 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
                                   }
                              }),
                              ({"site_id": "2", "credential_id": "1", "name": "Test", "service": "SNMPv3",
-                               "username": "Test1", "password": "Test2", "snmpv3_authentication_type": "SHA",
-                               "snmpv3_privacy_type": "AES-256", "snmpv3_privacy_password": "123"},
+                               "username": "Test1", "password": "Test2", "authentication_type": "SHA",
+                               "privacy_type": "AES-256", "privacy_password": "123"},
                               {
                                   "name": "Test",
                                   "id": "1",
@@ -1314,14 +1317,11 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
 def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                              expected_post_data: dict):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
-    site_id = test_input_kwargs.pop("site_id")
-    result = update_site_scan_credential_command(client=mock_client,
-                                                 site=Site(site_id=site_id),
-                                                 **test_input_kwargs)
+    result = update_site_scan_credential_command(client=mock_client, **test_input_kwargs)
 
     http_request.assert_called_with(
         method="PUT",
-        url_suffix=f"/sites/{site_id}/site_credentials",
+        url_suffix=f"/sites/{test_input_kwargs['site_id']}/site_credentials",
         json_data=expected_post_data,
         resp_type="json",
     )
@@ -1329,21 +1329,21 @@ def test_update_site_scan_credential_command(mocker, mock_client: Client, test_i
     assert result.outputs is None
 
 
-@pytest.mark.parametrize("vulnerability_exception_id, expiration_date",
+@pytest.mark.parametrize("vulnerability_exception_id, expiration",
                          [
                              ("1", "2050-01-01T10:00:00Z"),
                          ])
 def test_update_vulnerability_exception_expiration_command(mocker, mock_client: Client,
-                                                           vulnerability_exception_id: str, expiration_date: str):
+                                                           vulnerability_exception_id: str, expiration: str):
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_vulnerability_exception_expiration_command(client=mock_client,
                                                                vulnerability_exception_id=vulnerability_exception_id,
-                                                               expiration_date=expiration_date)
+                                                               expiration=expiration)
 
     http_request.assert_called_with(
         url_suffix=f"/vulnerability_exceptions/{vulnerability_exception_id}/expires",
         method="PUT",
-        data=json.dumps(expiration_date),
+        data=json.dumps(expiration),
         resp_type="json",
     )
 
