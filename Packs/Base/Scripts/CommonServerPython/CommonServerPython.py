@@ -10706,7 +10706,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
-    :type data_format: ``str``
+    :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
 
     :return: None
