@@ -73,7 +73,6 @@ def test_protected_hostname_create_command(requests_mock, mock_client: Client, v
     try:
         result = protected_hostname_create_command(mock_client, args)
         assert expected_value in result.readable_output
-        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
     except DemistoException:
         assert assert_flag
 
