@@ -2498,7 +2498,7 @@ def virtual_server_list_command(client: Client, args: Dict[str, Any]) -> Command
     formatted_response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = list_response_parser(client, formatted_response, simple_id_parser)
     headers = ['id']
-    readable_output = tableToMarkdown(name='Virtual Server:',
+    readable_output = tableToMarkdown(name='Virtual Servers:',
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=headers,
