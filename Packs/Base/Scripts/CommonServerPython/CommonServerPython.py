@@ -10707,7 +10707,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
     :type data_format: ``str``
-    :param url_key: The param dict key where the integration url is located at. the default is 'url'
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
 
     :return: None
     :rtype: ``None``
@@ -10737,8 +10737,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data = '\n'.join(events)
 
     elif isinstance(events, str):
-        amount_of_events = len(events)
-        data = '\n'.join(events)
+        amount_of_events = len(events.split('\n'))
 
     else:
         raise DemistoException(('Unsupported type: {type_events} for the "events" parameter. Should be a string or '
