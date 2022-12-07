@@ -58,8 +58,7 @@ def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval:
     return indicators, last_run_ctx
 
 
-def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
-                          last_run_ctx: Optional[dict] = None):
+def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval: datetime, last_run_ctx: Optional[dict] = None):
     indicators: list = []
     for collection in client.collections:  # type: ignore[attr-defined]
         client.collection_to_fetch = collection
@@ -84,8 +83,7 @@ def command_test_module(client: Taxii2FeedClient):
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
-                             initial_interval: str = DEFAULT_FETCH_INTERVAL) \
-        -> Tuple[list, dict]:
+                             initial_interval: str = DEFAULT_FETCH_INTERVAL) -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -133,8 +131,8 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
     return CommandResults(
-        readable_output=f'Found {len(indicators)} results added after {_ensure_datetime_to_string(added_after)}:\n' +
-                        tableToMarkdown(name='DHS Indicators', t=indicators, headers=['value', 'type'], removeNull=True),
+        readable_output=f'Found {len(indicators)} results added after {_ensure_datetime_to_string(added_after)}:\n'
+                        + tableToMarkdown(name='DHS Indicators', t=indicators, headers=['value', 'type'], removeNull=True),
         outputs_prefix='DHS.Indicators',
         outputs_key_field='value',
         outputs=indicators,

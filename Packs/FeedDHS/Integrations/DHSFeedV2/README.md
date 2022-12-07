@@ -23,7 +23,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Feed Fetch Interval |  | False |
     | First Fetch Time | The time interval for the first fetch \(retroactive\) in the following format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt; of type minute/hour/day. For example, 1 minute, 12 hour. Limited to 48 hours. | False |
-    | Fetch From Feed Start | Determines whether the feed will fetch indicators from all time. It is discouraged to use this method. See "help" for more information. | False |
     | STIX Objects To Fetch | The objects to fetch, most likely indicators. Might slow down fetch time. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -42,7 +41,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### dhs-get-indicators
 
 ***
-Allows you to test your feed and to make sure you can fetch indicators successfully.
+Allows you to test your feed and to make sure you can fetch indicators successfully. Due to API limitations this command may take a long time to run.
+
 
 #### Base Command
 
@@ -172,7 +172,7 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 
 #### Human Readable Output
 
-> Found 3 results:
+> Found 3 results added after 2022-12-07T10:29:13.079493Z:
 >### DHS Indicators
 >|value|type|
 >|---|---|
