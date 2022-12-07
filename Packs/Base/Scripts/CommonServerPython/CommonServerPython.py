@@ -3941,7 +3941,7 @@ class Common(object):
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
             self.publications = publications
-            
+           
             # XSOAR Fields
             self.relationships = relationships
             self.dbot_score = Common.DBotScore(

@@ -2737,6 +2737,18 @@ script:
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
     name: cve
     outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator value
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - arguments:
     - description: Maximum number of items to return (1-5000).
       defaultValue: '50'
