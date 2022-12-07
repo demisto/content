@@ -25,3 +25,5 @@ FROM UNIFIED_AUDIT_TRAIL
 WHERE to_char(EVENT_TIMESTAMP,'YYYY/MM/DD HH:MM:SS.mi') > ?
 ORDER BY  DB_TIMESTAMP DESC;
 ```
+
+- Make sure to put the correct value for "Retrival Value", to match the Rising Column type of value.
