@@ -1,0 +1,38 @@
+{
+    "name": "Zerohack XDR",
+    "description": "Zerohack XDR detects threats operating inside a network by scanning the network and gives insights into a network by using Machine Learning and Deep Learning.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Lakshy Sharma",
+    "url": "https://xdr.zerohack.com",
+    "email": "support@whizhack.com",
+    "devEmail": "lakshy.sharma@whizhack.com",
+    "categories": [
+        "Deception"
+    ],
+    "tags": [
+        "Zerohack XDR"
+    ],
+    "created": "2022-11-01T15:00:00Z",
+    "useCases": [
+        "Fetching Incidents",
+        "Fetch Sample Incident"
+    ],
+    "keywords": [
+        "Zerohack",
+        "Zerohack XDR"
+    ],
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "name": "Base"
+        },
+        "ZerohackXDR": {
+            "mandatory": false,
+            "name": "Whizhack Technologies Pvt. Ltd. - Zerohack XDR"
+        }
+    },
+    "githubUser": [
+        "lakshysharma"
+    ]    
+}
