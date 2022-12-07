@@ -535,7 +535,12 @@ def attack_pattern_reputation_command(client, args):
     return command_results
 
 
-def filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_object):
+def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_object):
+    """Filter attach pattern objects by the attack id
+
+    Returns:
+        True if the external_id matches the attack_id, else False
+    """
     external_references_list = attack_pattern_object.get('external_references', [])
     for external_reference in external_references_list:
         if external_reference.get('external_id', '') == attack_id:
@@ -567,8 +572,9 @@ def get_mitre_value_from_id(client, args):
             parent_objects = tc_source.query([
                 Filter("type", "=", "attack-pattern")
             ])
+            sub_technique_attack_id = attack_id[:5]
             parent_object = list(filter(lambda attack_pattern_obj:
-                                 filter_attack_pattern_object_by_attack_id(attack_id[:5],
+                                 filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
                                                                            attack_pattern_obj), parent_objects))
             parent_name = parent_object[0]['name']
 
