@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": -1080,
-          "y": 940
+          "y": 1230
         }
       }
     note: false
@@ -1139,7 +1139,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "60"
     scriptarguments:
       user:
         complex:
@@ -1150,14 +1150,53 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1880,
-          "y": 770
+          "x": 2130,
+          "y": 890
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 83d6879d-694b-4091-84cd-6445167b9c75
+    type: regular
+    task:
+      id: 83d6879d-694b-4091-84cd-6445167b9c75
+      version: -1
+      name: Set manager email address to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: UserManagerEmail
+      value:
+        complex:
+          root: MSGraphUserManager.Manager
+          accessor: Mail
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1176,7 +1215,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1205,
+        "height": 1495,
         "width": 3590,
         "x": -1080,
         "y": -200
@@ -1439,6 +1478,13 @@ outputs:
 - contextPath: MSGraphUserManager.Manager.UserPrincipalName
   description: User's principal name.
 tests:
+- Calculate Severity - Generic v2 - Test
+- Detonate URL - Generic Test
 - Account Enrichment - Generic v2.1 - Test
+- URL Enrichment - Generic v2 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Wait Until Datetime - Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- File Enrichment - Generic v2 - Test
 fromversion: 6.5.0
-system: true
