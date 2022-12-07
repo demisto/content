@@ -72,7 +72,7 @@ def test_protected_hostname_create_command(requests_mock, mock_client: Client, v
     requests_mock.post(url=url, json=json_response, status_code=status_code)
     try:
         result = protected_hostname_create_command(mock_client, args)
-        assert expected_value in result.readable_output
+        # assert result.raw_response['id'] == 'asd'
     except DemistoException:
         assert assert_flag
 

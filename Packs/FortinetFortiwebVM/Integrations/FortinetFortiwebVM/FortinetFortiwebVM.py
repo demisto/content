@@ -25,15 +25,118 @@ class Client(BaseClient):
     def _http_request(self, *args, **kwargs):
         return super()._http_request(*args, error_handler=self.error_handler, **kwargs)
 
+    # @property
+    # @abstractmethod
+    # def user_to_api_mapper(self) -> Dict[str, Any]:
+    #     pass
+
+    # @property
+    # @abstractmethod
+    # def api_to_user_mapper(self) -> Dict[Any, Any]:
+    #     pass
+    @abstractmethod
+    def protected_hostname_group_parser(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def protected_hostname_member_parser(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def ip_list_group_parser(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def ip_list_member_parser(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def http_content_routing_member_parser(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def geo_ip_group_parser(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def geo_ip_member_parser(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def policy_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def system_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    @abstractmethod
+    def simple_id_parser(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        pass
+
+    def http_service_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        return {'id': policy['name']}
+
+    def operation_status_parser(self, operation_network: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for operation status.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': operation_network['id'],
+            'name': operation_network['name'],
+            'label': operation_network['label'],
+            'alias': operation_network['alias'],
+            'ip_netmask': operation_network['ip_netmask'],
+            'speed_duplex': operation_network['speedDuplex'],
+            'tx': operation_network['tx'],
+            'rx': operation_network['rx'],
+            'link': operation_network['link'],
+        }
+        return parsed_data
+
     @property
     @abstractmethod
-    def user_to_api_mapper(self) -> Dict[str, Any]:
+    def action_user_to_api_mapper(self) -> Dict[str, Any]:
         pass
 
     @property
     @abstractmethod
-    def api_to_user_mapper(self) -> Dict[Any, Any]:
+    def action_api_to_user_mapper(self) -> Dict[Any, Any]:
         pass
+
+    @property
+    @abstractmethod
+    def type_user_to_api_mapper(self) -> Dict[str, Any]:
+        pass
+
+    @property
+    @abstractmethod
+    def type_api_to_user_mapper(self) -> Dict[Any, Any]:
+        pass
+
+    @property
+    @abstractmethod
+    def severity_user_to_api_mapper(self) -> Dict[str, Any]:
+        pass
+
+    @property
+    @abstractmethod
+    def severity_api_to_user_mapper(self) -> Dict[Any, Any]:
+        pass
+
+    @property
+    def boolean_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {'enable': True, 'disable': False, 'yes': True, 'no': False}
+
+    # @property
+    # def boolean_api_to_user_mapper(self) -> Dict[str, Any]:
+    #     return {True: 'enable', False: 'disable', True: 'yes', False: 'no'}
 
     @abstractmethod
     def error_handler(self, res):
@@ -207,102 +310,257 @@ class ClientV1(Client):
                          verify=verify,
                          proxy=proxy)
 
-    @property
-    def user_to_api_mapper(self) -> Dict[str, Any]:
-        """Mapping the user input to the API input
+    def protected_hostname_group_parser(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            protected_hostname_group (Dict[str, Any]): A dictionary output from API.
 
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            Dict[str, Any]: Parsed dictionary.
         """
-        return {
-            'protected_hostname': {
-                'Allow': 1,
-                'Deny': 6,
-                'Deny (no log)': 4
-            },
-            'get_protected_group_id': '_id',
-            'get_protected_member_id': '_id',
-            'get_protected_index': 'id',
-            'get_protected_group_action': 'defaultAction',
-            'get_protected_group_members_count': 'protectedHostnameCount',
-            'get_ip_list_member_ip': 'iPv4IPv6',
-            'ip_list': {
-                'type': {
-                    'Trust IP': 1,
-                    'Black IP': 2
-                },
-                'severity': {
-                    'High': 1,
-                    'Medium': 2,
-                    'Low': 3,
-                    'Informative': 4
-                }
-            },
-            'http_content_routing_member': {
-                'inherit_webprotection_profile': {
-                    'enable': 'true',
-                    'disable': 'false'
-                },
-                'is_default': {
-                    'no': '0',
-                    'yes': '1'
-                }
-            },
-            'geo_ip': {
-                'severity': {
-                    'High': 1,
-                    'Medium': 2,
-                    'Low': 3,
-                    'Info': 4
-                }
-            }
+        action_val = self.action_api_to_user_mapper[protected_hostname_group['defaultAction']]
+        group = {
+            'id': protected_hostname_group['_id'],
+            'can_delete': protected_hostname_group['can_delete'],
+            'default_action': action_val,
+            'protected_hostname_count': protected_hostname_group['protectedHostnameCount']
         }
+        return group
 
-    @property
-    def api_to_user_mapper(self) -> Dict[Any, Any]:
-        """Mapping the API output to the user output
+    def protected_hostname_member_parser(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            protected_hostname_member (Dict[str, Any]): A dictionary output from API.
 
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            Dict[str, Any]: Parsed dictionary.
         """
-
-        return {
-            'protected_hostname': {
-                1: 'Allow',
-                6: 'Deny',
-                4: 'Deny (no log)'
-            },
-            'ip_list': {
-                'severity': {
-                    1: 'High',
-                    2: 'Medium',
-                    3: 'Low',
-                    4: 'Informative'
-                },
-                'type': {
-                    1: 'Trust IP',
-                    2: 'Black IP'
-                }
-            },
-            'http_content_routing_member': {
-                'is_default': {
-                    'Yes': 'yes',
-                    'No': 'no'
-                },
-                'inherit_webprotection_profile': {
-                    True: 'enable',
-                    False: 'disable'
-                },
-            },
-            'geo_ip': {
-                'severity': {
-                    1: 'High',
-                    2: 'Medium',
-                    3: 'Low',
-                    4: 'Info',
-                }
-            }
+        group = {
+            'id': protected_hostname_member['_id'],
+            'action': dict_safe_get(self.action_api_to_user_mapper, [protected_hostname_member['action']]),
+            'host': protected_hostname_member['host'],
         }
+        return group
+
+    def ip_list_group_parser(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        group = {
+            'id': ip_list_group['_id'],
+            'ip_list_count': ip_list_group['ipListCount'],
+            'can_delete': ip_list_group['can_delete']
+        }
+        return group
+
+    def ip_list_member_parser(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for IP list member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': ip_list_member['_id'],
+            'type': dict_safe_get(self.type_api_to_user_mapper, [ip_list_member['type']]),
+            'severity': dict_safe_get(self.severity_api_to_user_mapper, [ip_list_member['severity']]),
+            'trigger_policy': ip_list_member['triggerPolicy'],
+            'ip': ip_list_member['iPv4IPv6'],
+        }
+        return parsed_data
+
+    def http_content_routing_member_parser(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for HTTP content routing member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            http_content_routing_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        id_default = http_content_routing_member['default']
+        inherit_web_protection_profile = http_content_routing_member['inheritWebProtectionProfile']
+        parsed_data = {
+            'id': http_content_routing_member['_id'],
+            'default': id_default,
+            'http_content_routing_policy': http_content_routing_member['http_content_routing_policy'],
+            'inherit_web_protection_profile': inherit_web_protection_profile,
+            'profile': http_content_routing_member['profile'],
+        }
+        return parsed_data
+
+    def geo_ip_group_parser(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for Geo IP Group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            geo_ip_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        severity = dict_safe_get(self.severity_api_to_user_mapper, [geo_ip_group['severity']])
+        parsed_data = {
+            'id': geo_ip_group['_id'],
+            'count': geo_ip_group['count'],
+            'trigger_policy': geo_ip_group['triggerPolicy'],
+            'severity': severity,
+            'except': geo_ip_group['except'],
+            'can_delete': geo_ip_group['can_delete'],
+        }
+
+        return parsed_data
+
+    def geo_ip_member_parser(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for Geo IP member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            geo_ip_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': geo_ip_member['_id'],
+            'country': geo_ip_member['value'],
+        }
+        return parsed_data
+
+    def policy_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for operation status.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': policy['_id'],
+            'name': policy['name'],
+            'status': policy['status'],
+            'vserver': policy['vserver'],
+            'http_port': policy['httpPort'],
+            'https_port': policy['httpsPort'],
+            'mode': policy['mode'],
+            'session_count': policy['sessionCount'],
+            'connction_per_second': policy['connCntPerSec'],
+        }
+        return parsed_data
+
+    def system_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for operation status.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'high_ability_status': policy['haStatus'],
+            'host_name': policy['hostName'],
+            'serial_number': policy['serialNumber'],
+            'operation_mode': policy['operationMode'],
+            'system_time': policy['systemTime'],
+            'firmware_version': policy['firmwareVersion'],
+            'system_uptime': policy['systemUptime'],
+            'administrative_domain': policy['administrativeDomain'],
+            'fips_and_cc_mode': policy['fipcc'],
+            'log_disk': policy['logDisk'],
+        }
+        return parsed_data
+
+    def simple_id_parser(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        return {'id': data_dict['_id']}
+
+    @property
+    def action_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {'Allow': 1, 'Deny': 6, 'Deny (no log)': 4}
+
+    @property
+    def action_api_to_user_mapper(self) -> Dict[Any, Any]:
+        return {1: 'Allow', 6: 'Deny', 4: 'Deny (no log)'}
+
+    @property
+    def type_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {'Trust IP': 1, 'Black IP': 2}
+
+    @property
+    def type_api_to_user_mapper(self) -> Dict[Any, Any]:
+        return {1: 'Trust IP', 2: 'Black IP'}
+
+    @property
+    def severity_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {'High': 1, 'Medium': 2, 'Low': 3, 'Informative': 4}
+
+    @property
+    def severity_api_to_user_mapper(self) -> Dict[Any, Any]:
+        return {1: 'High', 2: 'Medium', 3: 'Low', 4: 'Informative'}
+
+    # @property
+    # def user_to_api_mapper(self) -> Dict[str, Any]:
+    #     """Mapping the user input to the API input
+
+    #     Returns:
+    #         Dict[str, Any]: Mapped dictionary.
+    #     """
+    #     return {
+    #         'get_protected_group_id': '_id',
+    #         'get_protected_member_id': '_id',
+    #         'get_protected_index': 'id',
+    #         'get_protected_group_action': 'defaultAction',
+    #         'get_protected_group_members_count': 'protectedHostnameCount',
+    #         'get_ip_list_member_ip': 'iPv4IPv6',
+    #         'http_content_routing_member': {
+    #             'inherit_webprotection_profile': {
+    #                 'enable': 'true',
+    #                 'disable': 'false'
+    #             },
+    #             'is_default': {
+    #                 'no': '0',
+    #                 'yes': '1'
+    #             }
+    #         },
+    #     }
+
+    # @property
+    # def api_to_user_mapper(self) -> Dict[Any, Any]:
+    #     """Mapping the API output to the user output
+
+    #     Returns:
+    #         Dict[str, Any]: Mapped dictionary.
+    #     """
+
+    #     return {
+    #         'http_content_routing_member': {
+    #             'is_default': {
+    #                 'Yes': 'yes',
+    #                 'No': 'no'
+    #             },
+    #             'inherit_webprotection_profile': {
+    #                 True: 'enable',
+    #                 False: 'disable'
+    #             },
+    #         },
+    #     }
 
     def error_handler(self, res):
         """Error handler for Fortiweb v1 response.
@@ -341,10 +599,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        data = {
-            'name': name,
-            'defaultAction': dict_safe_get(self.user_to_api_mapper, ['protected_hostname', default_action])
-        }
+        data = {'name': name, 'defaultAction': self.action_user_to_api_mapper[default_action]}
         response = self._http_request(method='POST',
                                       url_suffix='ServerObjects/ProtectedHostnames/ProtectedHostnames',
                                       json_data=data)
@@ -360,10 +615,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        data = {
-            'name': name,
-            'defaultAction': dict_safe_get(self.user_to_api_mapper, ['protected_hostname', default_action])
-        }
+        data = {'name': name, 'defaultAction': self.action_user_to_api_mapper[default_action]}
         response = self._http_request(method='PUT',
                                       url_suffix=f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}',
                                       json_data=data)
@@ -403,8 +655,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{protected_hostname_group}/ProtectedHostnamesNewHost'
-        action_val = dict_safe_get(self.user_to_api_mapper, ['protected_hostname', action])
-        data = {'action': action_val, 'host': host}
+        data = {'action': self.action_user_to_api_mapper[action], 'host': host}
         response = self._http_request(method='POST', url_suffix=endpoint, json_data=data)
         return response
 
@@ -422,10 +673,8 @@ class ClientV1(Client):
         """
         endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{protected_hostname_group}/ProtectedHostnamesNewHost/{member_id}'
         data = remove_empty_elements({
-            'host':
-            host,
-            'action':
-            dict_safe_get(self.user_to_api_mapper, ['protected_hostname', kwargs.get('action')])
+            'host': host,
+            'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')])
         })
         response = self._http_request(method='PUT', url_suffix=endpoint, json_data=data)
         return response
@@ -510,14 +759,12 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        type_val = dict_safe_get(self.user_to_api_mapper, ['ip_list', 'type', member_type])
-        data = {'type': type_val, 'iPv4IPv6': ip_address}
+        data = {'type': dict_safe_get(self.type_user_to_api_mapper, [member_type]), 'iPv4IPv6': ip_address}
         if member_type == 'Black IP':
             data.update(
                 remove_empty_elements({
                     'severity':
-                    dict_safe_get(self.user_to_api_mapper,
-                                  ['ip_list', 'severity', kwargs.get('severity')]),
+                    dict_safe_get(self.severity_user_to_api_mapper, [kwargs.get('severity')]),
                     'triggerPolicy':
                     kwargs.get('trigger_policy')
                 }))
@@ -544,14 +791,13 @@ class ClientV1(Client):
         """
         data = remove_empty_elements({
             'iPv4IPv6': ip_address,
-            'type': dict_safe_get(self.user_to_api_mapper, ['ip_list', 'type', member_type])
+            'type': dict_safe_get(self.type_user_to_api_mapper, [member_type])
         })
         if member_type := 'Black IP':
             data.update(
                 remove_empty_elements({
                     'severity':
-                    dict_safe_get(self.user_to_api_mapper,
-                                  ['ip_list', 'severity', kwargs.get('severity')]),
+                    dict_safe_get(self.severity_user_to_api_mapper, [kwargs.get('severity')]),
                     'triggerPolicy':
                     kwargs.get('trigger_policy')
                 }))
@@ -604,16 +850,15 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        is_default_val = dict_safe_get(self.user_to_api_mapper,
-                                       ['http_content_routing_member', 'is_default', is_default])
-        inherit_profile_val = dict_safe_get(
-            self.user_to_api_mapper,
-            ['http_content_routing_member', 'inherit_webprotection_profile', inherit_webprotection_profile])
         data = remove_empty_elements({
-            'http_content_routing_policy': http_content_routing_policy,
-            'defaultpage': is_default_val,
-            'inheritWebProtectionProfile': inherit_profile_val,
-            'profile': kwargs.get('profile')
+            'http_content_routing_policy':
+            http_content_routing_policy,
+            'defaultpage':
+            dict_safe_get(self.boolean_user_to_api_mapper, [is_default]),
+            'inheritWebProtectionProfile':
+            dict_safe_get(self.boolean_user_to_api_mapper, [inherit_webprotection_profile]),
+            'profile':
+            kwargs.get('profile')
         })
         response = self._http_request(method='POST',
                                       url_suffix=f'Policy/ServerPolicy/ServerPolicy/{policy_name}/EditContentRouting',
@@ -642,10 +887,9 @@ class ClientV1(Client):
             'http_content_routing_policy':
             http_content_routing_policy,
             'defaultpage':
-            dict_safe_get(self.user_to_api_mapper, ['http_content_routing_member', 'is_default', is_default]),
+            dict_safe_get(self.boolean_user_to_api_mapper, [is_default]),
             'inheritWebProtectionProfile':
-            dict_safe_get(self.user_to_api_mapper, ['http_content_routing_member', 'inherit_webprotection_profile'],
-                          inherit_webprotection_profile),
+            dict_safe_get(self.boolean_user_to_api_mapper, [inherit_webprotection_profile]),
             'profile':
             kwargs.get('profile')
         })
@@ -698,7 +942,7 @@ class ClientV1(Client):
         """
         data = remove_empty_elements({
             'name': name,
-            'severity': self.user_to_api_mapper['geo_ip']['severity'][severity],
+            'severity': dict_safe_get(self.severity_user_to_api_mapper, [severity]),
             'triggerPolicy': trigger_policy,
             'except': exception
         })
@@ -719,12 +963,9 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         data = remove_empty_elements({
-            'severity':
-            dict_safe_get(self.user_to_api_mapper, ['geo_ip', 'severity', severity]),
-            'triggerPolicy':
-            trigger_policy,
-            'except':
-            exception
+            'severity': dict_safe_get(self.severity_user_to_api_mapper, [severity]),
+            'triggerPolicy': trigger_policy,
+            'except': exception
         })
         response = self._http_request(method='PUT', url_suffix=f'WebProtection/Access/GeoIP/{name}', json_data=data)
         return response
@@ -879,74 +1120,267 @@ class ClientV2(Client):
                          verify=verify,
                          proxy=proxy)
 
-    @property
-    def user_to_api_mapper(self) -> Dict[str, Any]:
-        """Mapping the user input to the API input
+    def protected_hostname_group_parser(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            protected_hostname_group (Dict[str, Any]): A dictionary output from API.
 
         Returns:
-            Dict[str, Any]: Mapped dictionary.
+            Dict[str, Any]: Parsed dictionary.
         """
+        action_val = self.action_api_to_user_mapper[protected_hostname_group['default-action']]
+        group = {
+            'id': protected_hostname_group['name'],
+            'default_action': action_val,
+            'protected_hostname_count': protected_hostname_group['sz_host-list']
+        }
+        return group
+
+    def protected_hostname_member_parser(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            protected_hostname_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed disctionary.
+        """
+        group = {
+            'id': protected_hostname_member['id'],
+            'action': dict_safe_get(self.action_api_to_user_mapper, [protected_hostname_member['action']]),
+            'host': protected_hostname_member['host'],
+            'ignore_port': protected_hostname_member['ignore-port'],
+            'include_subdomains': protected_hostname_member['include-subdomains']
+        }
+        return group
+
+    def ip_list_group_parser(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for protected hostname group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        group = {
+            'id': ip_list_group['name'],
+            'ip_list_count': ip_list_group['sz_members'],
+            'can_view': ip_list_group['can_view'],
+            'q_ref': ip_list_group['q_ref'],
+            'can_clone': ip_list_group['can_clone'],
+            'q_type': ip_list_group['q_type'],
+            'action': ip_list_group['action'],
+            'block_period': ip_list_group['block-period'],
+            'severity': ip_list_group['severity'],
+            'trigger_policy': ip_list_group['trigger-policy']
+        }
+        return group
+
+    def ip_list_member_parser(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for IP list member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': ip_list_member['id'],
+            'type': dict_safe_get(self.type_api_to_user_mapper, [ip_list_member['type']]),
+            'ip': ip_list_member['ip'],
+        }
+        return parsed_data
+
+    def http_content_routing_member_parser(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for HTTP content routing member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            http_content_routing_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': http_content_routing_member['id'],
+            'default': http_content_routing_member['is-default'],
+            'http_content_routing_policy': http_content_routing_member['content-routing-policy-name'],
+            'inherit_web_protection_profile': http_content_routing_member['profile-inherit'],
+            'profile': http_content_routing_member['web-protection-profile'],
+            'status': http_content_routing_member['status']
+        }
+        return parsed_data
+
+    def geo_ip_group_parser(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for Geo IP Group.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            geo_ip_group (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        action = dict_safe_get(self.action_api_to_user_mapper, [geo_ip_group['action']])
+        parsed_data = {
+            'id': geo_ip_group['name'],
+            'count': geo_ip_group['sz_country-list'],
+            'trigger_policy': geo_ip_group['trigger'],
+            'severity': geo_ip_group['severity'],
+            'except': geo_ip_group['exception-rule'],
+            'action': action,
+            'block_period': geo_ip_group['block-period'],
+            'ignore_x_forwarded_for': geo_ip_group['ignore-x-forwarded-for'],
+        }
+        return parsed_data
+
+    def geo_ip_member_parser(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for Geo IP member.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            geo_ip_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': geo_ip_member['id'],
+            'country': geo_ip_member['country-name'],
+        }
+        return parsed_data
+
+    def policy_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for operation status.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'id': policy['_id'],
+            'policy': policy['policy'],
+            'name': policy['name'],
+            'status': policy['status'],
+            'protocol': policy['protocol'],
+            'vserver': policy['vserver'],
+            'http_port': policy['httpPort'],
+            'https_port': policy['httpsPort'],
+            'mode': policy['mode'],
+            'session_count': policy['sessionCount'],
+            'connction_per_second': policy['connCntPerSec'],
+            'client_rtt': policy['client_rtt'],
+            'server_rtt': policy['server_rtt'],
+            'app_response_time': policy['app_response_time'],
+        }
+        return parsed_data
+
+    def system_status_parser(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+        """Parser for operation status.
+
+        Args:
+            client (Client): Fortiweb VM client.
+            ip_list_member (Dict[str, Any]): A dictionary output from API.
+
+        Returns:
+            Dict[str, Any]: Parsed dictionary.
+        """
+        parsed_data = {
+            'high_ability_status': policy['haStatus'],
+            'host_name': policy['hostName'],
+            'manager_status': policy['managerMode'],
+            'serial_number': policy['serialNumber'],
+            'operation_mode': policy['operationMode'],
+            'system_time': policy['systemTime'],
+            'firmware_version': policy['firmwareVersion'],
+            'sysyem_up_days': policy['up_days'],
+            'sysyem_up_hrs': policy['up_hrs'],
+            'sysyem_up_mins': policy['up_mins'],
+            'administrative_domain': policy['administrativeDomain'],
+        }
+        return parsed_data
+
+    def simple_id_parser(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+        return {'id': data_dict['name']}
+
+    @property
+    def action_user_to_api_mapper(self) -> Dict[str, Any]:
         return {
-            'protected_hostname': {
-                'Allow': 'allow',
-                'Deny': 'deny',
-                'Deny (no log)': 'deny_no_log'
-            },
-            'ip_list': {
-                'action': {
-                    'Alert deny': 'alert_deny',
-                    'Block period': 'block-period',
-                    'Deny (no log)': 'deny_no_log',
-                },
-                'type': {
-                    'Trust IP': 'trust-ip',
-                    'Black IP': 'black-ip',
-                    'Allow Only Ip': 'allow-only-ip',
-                }
-            },
-            'geo_ip': {
-                'action': {
-                    'Alert deny': 'alert_deny',
-                    'Block period': 'block-period',
-                    'Deny (no log)': 'deny_no_log'
-                }
-            },
-            'get_protected_group_id': 'name',
-            'get_protected_member_id': 'id',
-            'get_protected_index': '_id',
-            'get_protected_group_action': 'default-action',
-            'get_protected_group_members_count': 'sz_host-list',
-            'get_ip_list_member_ip': 'ip',
+            'Allow': 'allow',
+            'Deny': 'deny',
+            'Deny (no log)': 'deny_no_log',
+            'Alert deny': 'alert_deny',
+            'Block period': 'block-period',
         }
 
     @property
-    def api_to_user_mapper(self) -> Dict[Any, Any]:
-        """Mapping the API output to the user output
-
-        Returns:
-            Dict[str, Any]: Mapped dictionary.
-        """
+    def action_api_to_user_mapper(self) -> Dict[Any, Any]:
         return {
-            'protected_hostname': {
-                'allow': 'Allow',
-                'deny': 'Deny',
-                'deny_no_log': 'Deny (no log)'
-            },
-            'ip_list': {
-                'type': {
-                    'black-ip': 'Black IP',
-                    'trust-ip': 'Trust IP',
-                    'allow-only-ip': 'Allow Only IP',
-                }
-            },
-            'geo_ip': {
-                'action': {
-                    'alert_deny': 'Alert deny',
-                    'block-period': 'Block period',
-                    'deny_no_log': 'Deny (no log)',
-                }
-            }
+            'allow': 'Allow',
+            'deny': 'Deny',
+            'deny_no_log': 'Deny (no log)',
+            'alert_deny': 'Alert deny',
+            'block-period': 'Block period',
+            'deny_no_log': 'Deny (no log)',
         }
+
+    @property
+    def type_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {
+            'Trust IP': 'trust-ip',
+            'Black IP': 'black-ip',
+            'Allow Only Ip': 'allow-only-ip',
+        }
+
+    @property
+    def type_api_to_user_mapper(self) -> Dict[Any, Any]:
+        return {
+            'black-ip': 'Black IP',
+            'trust-ip': 'Trust IP',
+            'allow-only-ip': 'Allow Only IP',
+        }
+
+    @property
+    def severity_user_to_api_mapper(self) -> Dict[str, Any]:
+        return {'High': 1, 'Medium': 2, 'Low': 3, 'Informative': 4}
+
+    @property
+    def severity_api_to_user_mapper(self) -> Dict[Any, Any]:
+        return {1: 'High', 2: 'Medium', 3: 'Low', 4: 'Informative'}
+
+    # @property
+    # def user_to_api_mapper(self) -> Dict[str, Any]:
+    #     """Mapping the user input to the API input
+
+    #     Returns:
+    #         Dict[str, Any]: Mapped dictionary.
+    #     """
+    #     return {
+    #         'protected_hostname': {
+    #             'Allow': 'allow',
+    #             'Deny': 'deny',
+    #             'Deny (no log)': 'deny_no_log'
+    #         },
+    #         'ip_list': {
+    #             'action': {},
+    #         },
+    #         'get_protected_group_id': 'name',
+    #         'get_protected_member_id': 'id',
+    #         'get_protected_index': '_id',
+    #         'get_protected_group_action': 'default-action',
+    #         'get_protected_group_members_count': 'sz_host-list',
+    #         'get_ip_list_member_ip': 'ip',
+    #     }
 
     def error_handler(self, res):
         """Error handler for Fortiweb v2 response.
@@ -989,8 +1423,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
 
-        action_val = dict_safe_get(self.user_to_api_mapper, ['protected_hostname', default_action])
-        data = {'data': {'name': name, 'default-action': action_val}}
+        data = {'data': {'name': name, 'default-action': self.action_user_to_api_mapper[default_action]}}
         response = self._http_request(method='POST', url_suffix='cmdb/server-policy/allow-hosts', json_data=data)
         return response
 
@@ -1006,12 +1439,9 @@ class ClientV2(Client):
         """
         params = {'mkey': name}
         data = {
-            'data':
-            remove_empty_elements({
-                'name':
-                name,
-                'default-action':
-                dict_safe_get(self.user_to_api_mapper, ['protected_hostname', default_action])
+            'data': remove_empty_elements({
+                'name': name,
+                'default-action': self.action_user_to_api_mapper[default_action]
             })
         }
         response = self._http_request(method='PUT',
@@ -1060,10 +1490,9 @@ class ClientV2(Client):
         """
         endpoint = 'cmdb/server-policy/allow-hosts/host-list'
         params = {'mkey': protected_hostname_group}
-        action_val = dict_safe_get(self.user_to_api_mapper, ['protected_hostname', action])
         data = {
             "data": {
-                "action": action_val,
+                "action": self.action_user_to_api_mapper[action],
                 "ignore-port": kwargs['ignore_port'],
                 "include-subdomains": kwargs['include_subdomains'],
                 "host": host
@@ -1091,15 +1520,10 @@ class ClientV2(Client):
         data = {
             "data":
             remove_empty_elements({
-                'host':
-                host,
-                'action':
-                dict_safe_get(self.user_to_api_mapper,
-                              ['protected_hostname', kwargs.get('action')]),
-                'ignore-port':
-                kwargs.get('ignore_port'),
-                'include-subdomains':
-                kwargs.get('include_subdomains')
+                'host': host,
+                'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')]),
+                'ignore-port': kwargs.get('ignore_port'),
+                'include-subdomains': kwargs.get('include_subdomains')
             })
         }
         response = self._http_request(method='PUT', url_suffix=endpoint, json_data=data, params=params)
@@ -1151,11 +1575,10 @@ class ClientV2(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        action_val = dict_safe_get(self.user_to_api_mapper, ['ip_list', 'action', kwargs['action']])
         data = {
             'data': {
                 'name': group_name,
-                'action': action_val,
+                'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')]),
                 'block-period': kwargs['block_period'],
                 'severity': kwargs['severity'],
                 'ignore-x-forwarded-for': kwargs['ignore_x_forwarded_for'],
@@ -1183,18 +1606,12 @@ class ClientV2(Client):
         data = {
             'data':
             remove_empty_elements({
-                'name':
-                group_name,
-                'action':
-                dict_safe_get(self.user_to_api_mapper, ['ip_list', 'action', kwargs.get('action')]),
-                'block-period':
-                kwargs.get('block_period'),
-                'severity':
-                kwargs.get('severity'),
-                'ignore-x-forwarded-for':
-                kwargs.get('ignore_x_forwarded_for'),
-                'trigger-policy':
-                kwargs.get('trigger_policy')
+                'name': group_name,
+                'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')]),
+                'block-period': kwargs.get('block_period'),
+                'severity': kwargs.get('severity'),
+                'ignore-x-forwarded-for': kwargs.get('ignore_x_forwarded_for'),
+                'trigger-policy': kwargs.get('trigger_policy')
             })
         }
         response = self._http_request(method='PUT', url_suffix='cmdb/waf/ip-list', json_data=data, params=params)
@@ -1240,8 +1657,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
-        type_val = dict_safe_get(self.user_to_api_mapper, ['ip_list', 'type', member_type])
-        data = {'data': {'type': type_val, 'ip': ip_address}}
+        data = {'data': {'type': dict_safe_get(self.type_user_to_api_mapper, [member_type]), 'ip': ip_address}}
         response = self._http_request(method='POST',
                                       url_suffix='cmdb/waf/ip-list/members',
                                       json_data=data,
@@ -1265,7 +1681,7 @@ class ClientV2(Client):
         data: Dict[str, Any] = {
             'data':
             remove_empty_elements({
-                'type': dict_safe_get(self.user_to_api_mapper, ['ip_list', 'type', member_type]),
+                'type': dict_safe_get(self.type_user_to_api_mapper, [member_type]),
                 'ip': ip_address
             })
         }
@@ -1422,7 +1838,7 @@ class ClientV2(Client):
         data = {
             'data': {
                 'name': name,
-                'action': self.user_to_api_mapper['geo_ip']['action'][kwargs['action']],
+                'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')]),
                 'block-period': kwargs['block_period'],
                 'severity': severity,
                 'trigger': trigger_policy,
@@ -1453,8 +1869,7 @@ class ClientV2(Client):
         params = {'mkey': name}
         data = remove_empty_elements({
             'data': {
-                'action': dict_safe_get(self.user_to_api_mapper,
-                                        ['geo_ip', 'action', kwargs.get('action')]),
+                'action': dict_safe_get(self.action_user_to_api_mapper, [kwargs.get('action')]),
                 'block-period': kwargs.get('block_period'),
                 'ignore-x-forwarded-for': kwargs.get('ignore_x_forwarded_for'),
                 'severity': severity,
@@ -1665,7 +2080,8 @@ def protected_hostname_list_command(client: Client, args: Dict[str, Any]) -> Com
     protected_hostname = args.get('name')
     response = client.protected_hostname_list_request(name=protected_hostname)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, protected_hostname_group_parser, protected_hostname)
+    parsed_data = list_response_parser(client, formatted_response, client.protected_hostname_group_parser,
+                                       protected_hostname)
     headers = create_headers(client.version, ['id', 'default_action', 'protected_hostname_count'], ['can_delete'], [])
     readable_output = tableToMarkdown(name='Protected Hostnames Groups:',
                                       metadata=pagination_message,
@@ -1779,7 +2195,7 @@ def protected_hostname_member_list_command(client: Client, args: Dict[str, Any])
     member_id = args.get('member_id')
     response = client.protected_hostname_member_list_request(group_name=group_name, member_id=member_id)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, protected_hostname_member_parser, member_id)
+    parsed_data = list_response_parser(client, formatted_response, client.protected_hostname_member_parser, member_id)
     headers = create_headers(client.version, ['id', 'action', 'host'], [], ['ignore_port', 'include_subdomains'])
     readable_output = tableToMarkdown(name='Protected Hostnames Members:',
                                       metadata=pagination_message,
@@ -1876,7 +2292,7 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     group_name = args.get('name')
     response = client.ip_list_group_list_request(group_name=group_name)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, ip_list_group_parser, group_name)
+    parsed_data = list_response_parser(client, formatted_response, client.ip_list_group_parser, group_name)
     headers = create_headers(client.version, ['id', 'ip_list_count'], [],
                              ['action', 'block_period', 'severity', 'trigger_policy'])
     readable_output = tableToMarkdown(name='Protected Hostnames Groups:',
@@ -1995,7 +2411,7 @@ def ip_list_member_list_command(client: Client, args: Dict[str, Any]) -> Command
     member_id = args.get('member_id')
     response = client.ip_list_member_list_request(group_name=group_name, member_id=member_id)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, ip_list_member_parser, member_id)
+    parsed_data = list_response_parser(client, formatted_response, client.ip_list_member_parser, member_id)
     headers = create_headers(client.version, ['id', 'type', 'ip'], ['severity', 'trigger_policy'], [])
     readable_output = tableToMarkdown(name='Protected Hostnames Members:',
                                       metadata=pagination_message,
@@ -2102,7 +2518,7 @@ def http_content_routing_member_list_command(client: Client, args: Dict[str, Any
     member_id = args.get('id')
     response = client.http_content_routing_member_list_request(policy_name, member_id=member_id)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, http_content_routing_member_parser, member_id)
+    parsed_data = list_response_parser(client, formatted_response, client.http_content_routing_member_parser, member_id)
     headers = create_headers(
         client.version, ['id', 'default', 'http_content_routing_policy', 'inherit_web_protection_profile', 'profile'],
         [], ['status'])
@@ -2212,7 +2628,7 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     name = args.get('name')
     response = client.geo_ip_group_list_request(name=name)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, geo_ip_group_parser, name)
+    parsed_data = list_response_parser(client, formatted_response, client.geo_ip_group_parser, name)
     headers = create_headers(client.version, ['id', 'count', 'trigger_policy', 'severity', 'except'], [],
                              ['action', 'block_period', 'ignore_x_forwarded_for'])
     readable_output = tableToMarkdown(name='Protected Hostnames Groups:',
@@ -2251,7 +2667,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
     # Get the new IDs
     get_response = client.geo_ip_member_list_request(group_name=group_name)
     results = get_response['results'] if client.version == ClientV2.API_VER else get_response
-    parsed_data = list_response_parser(client, results, geo_ip_member_parser)
+    parsed_data = list_response_parser(client, results, client.geo_ip_member_parser)
     countries_data = find_dict_in_array(parsed_data, 'country', countries)
 
     readable_output = tableToMarkdown(name='Geo IP members:',
@@ -2300,7 +2716,7 @@ def geo_ip_member_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     group_name = args['group_name']
     response = client.geo_ip_member_list_request(group_name=group_name)
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, geo_ip_member_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.geo_ip_member_parser)
     headers = ['id', 'country']
     readable_output = tableToMarkdown(name='Protected Hostnames Groups:',
                                       metadata=pagination_message,
@@ -2328,7 +2744,7 @@ def operation_status_get_command(client: Client, args: Dict[str, Any]) -> Comman
 
     response = client.operation_status_get_request()
     results = response['results']['network'] if client.version == ClientV2.API_VER else response['network']
-    parsed_data = list_response_parser(client, results, operation_status_parser)
+    parsed_data = list_response_parser(client, results, client.operation_status_parser)
     headers = ['id', 'name', 'label', 'alias', 'ip_netmask', 'speed_duplex', 'tx', 'rx', 'link']
     readable_output = tableToMarkdown(name='Operation networks:',
                                       t=parsed_data,
@@ -2355,7 +2771,7 @@ def policy_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.policy_status_get_request()
     results = response['results'] if client.version == ClientV2.API_VER else response
-    parsed_data = list_response_parser(client, results, policy_status_parser)
+    parsed_data = list_response_parser(client, results, client.policy_status_parser)
     headers = create_headers(
         client.version,
         ['id', 'name', 'status', 'vserver', 'http_port', 'https_port', 'mode', 'session_count', 'connction_per_second'],
@@ -2385,7 +2801,7 @@ def system_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.system_status_get_request()
     results = response['results'] if client.version == ClientV2.API_VER else response
-    parsed_data = system_status_parser(client, results)
+    parsed_data = client.system_status_parser(results)
     headers = create_headers(client.version, [
         'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time', 'firmware_version',
         'administrative_domain'
@@ -2415,7 +2831,7 @@ def server_pool_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     response = client.server_pool_list_request()
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, simple_id_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.simple_id_parser)
     headers = ['id']
     readable_output = tableToMarkdown(name='Server pool:',
                                       metadata=pagination_message,
@@ -2442,7 +2858,7 @@ def http_service_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """
     response = client.http_service_list_request()
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, http_service_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.http_service_parser)
     headers = ['id']
     readable_output = tableToMarkdown(name='HTTP services:',
                                       metadata=pagination_message,
@@ -2469,7 +2885,7 @@ def inline_protection_profile_list_command(client: Client, args: Dict[str, Any])
     """
     response = client.inline_protction_profile_list_request()
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, simple_id_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.simple_id_parser)
     headers = ['id']
     readable_output = tableToMarkdown(name='Inline Protection Profile:',
                                       metadata=pagination_message,
@@ -2496,7 +2912,7 @@ def virtual_server_list_command(client: Client, args: Dict[str, Any]) -> Command
     """
     response = client.virtual_server_list_request()
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, simple_id_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.simple_id_parser)
     headers = ['id']
     readable_output = tableToMarkdown(name='Virtual Servers:',
                                       metadata=pagination_message,
@@ -2523,7 +2939,7 @@ def http_content_routing_policy_list_command(client: Client, args: Dict[str, Any
     """
     response = client.http_content_routing_poicy_list_request()
     formatted_response, pagination_message = paginate_results(client.version, response, args)
-    parsed_data = list_response_parser(client, formatted_response, simple_id_parser)
+    parsed_data = list_response_parser(client, formatted_response, client.simple_id_parser)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -2582,342 +2998,10 @@ def list_response_parser(client: Client,
 
     parsed_data = []
     for protected_hostname_group in response:
-        group = data_parser(client, protected_hostname_group)
+        group = data_parser(protected_hostname_group)
         parsed_data.append(group)
 
     return parsed_data
-
-
-def protected_hostname_group_parser(client: Client, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for protected hostname group.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        protected_hostname_group (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    action_dict = dict_safe_get(client.api_to_user_mapper, ['protected_hostname'])
-    if client.version == ClientV1.API_VER:
-        action_val = action_dict[protected_hostname_group['defaultAction']]
-        group = {
-            'id': protected_hostname_group['_id'],
-            'can_delete': protected_hostname_group['can_delete'],
-            'default_action': action_val,
-            'protected_hostname_count': protected_hostname_group['protectedHostnameCount']
-        }
-    else:
-        action_val = action_dict[protected_hostname_group['default-action']]
-        group = {
-            'id': protected_hostname_group['name'],
-            'default_action': action_val,
-            'protected_hostname_count': protected_hostname_group['sz_host-list']
-        }
-
-    return group
-
-
-def protected_hostname_member_parser(client: Client, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for protected hostname member.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        protected_hostname_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-
-    action_api_val = protected_hostname_member['action']
-    if client.version == ClientV1.API_VER:
-        action_val = dict_safe_get(client.api_to_user_mapper, ['protected_hostname', action_api_val])
-        group = {
-            'id': protected_hostname_member['_id'],
-            'action': action_val,
-            'host': protected_hostname_member['host'],
-        }
-    else:
-        action_val = dict_safe_get(client.api_to_user_mapper, ['protected_hostname', action_api_val])
-        group = {
-            'id': protected_hostname_member['id'],
-            'action': action_val,
-            'host': protected_hostname_member['host'],
-            'ignore_port': protected_hostname_member['ignore-port'],
-            'include_subdomains': protected_hostname_member['include-subdomains']
-        }
-    return group
-
-
-def ip_list_group_parser(client: Client, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for protected hostname group.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        ip_list_group (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    group = {}
-    if client.version == ClientV1.API_VER:
-        group = {
-            'id': ip_list_group['_id'],
-            'ip_list_count': ip_list_group['ipListCount'],
-            'can_delete': ip_list_group['can_delete']
-        }
-    else:
-        group = {
-            'id': ip_list_group['name'],
-            'ip_list_count': ip_list_group['sz_members'],
-            'can_view': ip_list_group['can_view'],
-            'q_ref': ip_list_group['q_ref'],
-            'can_clone': ip_list_group['can_clone'],
-            'q_type': ip_list_group['q_type'],
-            'action': ip_list_group['action'],
-            'block_period': ip_list_group['block-period'],
-            'severity': ip_list_group['severity'],
-            'trigger_policy': ip_list_group['trigger-policy']
-        }
-    return group
-
-
-def ip_list_member_parser(client: Client, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for IP list member.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        ip_list_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    type_val = dict_safe_get(client.api_to_user_mapper, ['ip_list', 'type', ip_list_member['type']])
-    if client.version == ClientV1.API_VER:
-        severity_val = dict_safe_get(client.api_to_user_mapper, ['ip_list', 'severity', ip_list_member['severity']])
-        parsed_data = {
-            'id': ip_list_member['_id'],
-            'type': type_val,
-            'severity': severity_val,
-            'trigger_policy': ip_list_member['triggerPolicy'],
-            'ip': ip_list_member['iPv4IPv6'],
-        }
-    else:
-        parsed_data = {
-            'id': ip_list_member['id'],
-            'type': type_val,
-            'ip': ip_list_member['ip'],
-        }
-    return parsed_data
-
-
-def http_content_routing_member_parser(client: Client, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for HTTP content routing member.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        http_content_routing_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    if client.version == ClientV1.API_VER:
-        id_default = dict_safe_get(
-            client.api_to_user_mapper,
-            ['http_content_routing_member', 'is_default', http_content_routing_member['default']])
-        inherit_web_protection_profile = dict_safe_get(client.api_to_user_mapper, [
-            'http_content_routing_member', 'inherit_webprotection_profile',
-            http_content_routing_member['inheritWebProtectionProfile']
-        ])
-        parsed_data = {
-            'id': http_content_routing_member['_id'],
-            'default': id_default,
-            'http_content_routing_policy': http_content_routing_member['http_content_routing_policy'],
-            'inherit_web_protection_profile': inherit_web_protection_profile,
-            'profile': http_content_routing_member['profile'],
-        }
-    else:
-        parsed_data = {
-            'id': http_content_routing_member['id'],
-            'default': http_content_routing_member['is-default'],
-            'http_content_routing_policy': http_content_routing_member['content-routing-policy-name'],
-            'inherit_web_protection_profile': http_content_routing_member['profile-inherit'],
-            'profile': http_content_routing_member['web-protection-profile'],
-            'status': http_content_routing_member['status']
-        }
-    return parsed_data
-
-
-def geo_ip_group_parser(client: Client, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for Geo IP Group.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        geo_ip_group (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    if client.version == ClientV1.API_VER:
-        severity = dict_safe_get(client.api_to_user_mapper, ['geo_ip', 'severity', geo_ip_group['severity']])
-        parsed_data = {
-            'id': geo_ip_group['_id'],
-            'count': geo_ip_group['count'],
-            'trigger_policy': geo_ip_group['triggerPolicy'],
-            'severity': severity,
-            'except': geo_ip_group['except'],
-            'can_delete': geo_ip_group['can_delete'],
-        }
-    else:
-        action = dict_safe_get(client.api_to_user_mapper, ['geo_ip', 'action', geo_ip_group['action']])
-        parsed_data = {
-            'id': geo_ip_group['name'],
-            'count': geo_ip_group['sz_country-list'],
-            'trigger_policy': geo_ip_group['trigger'],
-            'severity': geo_ip_group['severity'],
-            'except': geo_ip_group['exception-rule'],
-            'action': action,
-            'block_period': geo_ip_group['block-period'],
-            'ignore_x_forwarded_for': geo_ip_group['ignore-x-forwarded-for'],
-        }
-    return parsed_data
-
-
-def geo_ip_member_parser(client: Client, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for Geo IP member.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        geo_ip_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    if client.version == ClientV1.API_VER:
-        parsed_data = {
-            'id': geo_ip_member['_id'],
-            'country': geo_ip_member['value'],
-        }
-    else:
-        parsed_data = {
-            'id': geo_ip_member['id'],
-            'country': geo_ip_member['country-name'],
-        }
-    return parsed_data
-
-
-def operation_status_parser(client: Client, operation_network: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for operation status.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        ip_list_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    parsed_data = {
-        'id': operation_network['id'],
-        'name': operation_network['name'],
-        'label': operation_network['label'],
-        'alias': operation_network['alias'],
-        'ip_netmask': operation_network['ip_netmask'],
-        'speed_duplex': operation_network['speedDuplex'],
-        'tx': operation_network['tx'],
-        'rx': operation_network['rx'],
-        'link': operation_network['link'],
-    }
-    return parsed_data
-
-
-def policy_status_parser(client: Client, policy: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for operation status.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        ip_list_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    if client.version == ClientV1.API_VER:
-        parsed_data = {
-            'id': policy['_id'],
-            'name': policy['name'],
-            'status': policy['status'],
-            'vserver': policy['vserver'],
-            'http_port': policy['httpPort'],
-            'https_port': policy['httpsPort'],
-            'mode': policy['mode'],
-            'session_count': policy['sessionCount'],
-            'connction_per_second': policy['connCntPerSec'],
-        }
-    else:
-        parsed_data = {
-            'id': policy['_id'],
-            'policy': policy['policy'],
-            'name': policy['name'],
-            'status': policy['status'],
-            'protocol': policy['protocol'],
-            'vserver': policy['vserver'],
-            'http_port': policy['httpPort'],
-            'https_port': policy['httpsPort'],
-            'mode': policy['mode'],
-            'session_count': policy['sessionCount'],
-            'connction_per_second': policy['connCntPerSec'],
-            'client_rtt': policy['client_rtt'],
-            'server_rtt': policy['server_rtt'],
-            'app_response_time': policy['app_response_time'],
-        }
-    return parsed_data
-
-
-def system_status_parser(client: Client, policy: Dict[str, Any]) -> Dict[str, Any]:
-    """Parser for operation status.
-
-    Args:
-        client (Client): Fortiweb VM client.
-        ip_list_member (Dict[str, Any]): A dictionary output from API.
-
-    Returns:
-        Dict[str, Any]: Parsed dictionary.
-    """
-    if client.version == ClientV1.API_VER:
-        parsed_data = {
-            'high_ability_status': policy['haStatus'],
-            'host_name': policy['hostName'],
-            'serial_number': policy['serialNumber'],
-            'operation_mode': policy['operationMode'],
-            'system_time': policy['systemTime'],
-            'firmware_version': policy['firmwareVersion'],
-            'system_uptime': policy['systemUptime'],
-            'administrative_domain': policy['administrativeDomain'],
-            'fips_and_cc_mode': policy['fipcc'],
-            'log_disk': policy['logDisk'],
-        }
-    else:
-        parsed_data = {
-            'high_ability_status': policy['haStatus'],
-            'host_name': policy['hostName'],
-            'manager_status': policy['managerMode'],
-            'serial_number': policy['serialNumber'],
-            'operation_mode': policy['operationMode'],
-            'system_time': policy['systemTime'],
-            'firmware_version': policy['firmwareVersion'],
-            'sysyem_up_days': policy['up_days'],
-            'sysyem_up_hrs': policy['up_hrs'],
-            'sysyem_up_mins': policy['up_mins'],
-            'administrative_domain': policy['administrativeDomain'],
-        }
-    return parsed_data
-
-
-def http_service_parser(client: Client, policy: Dict[str, Any]) -> Dict[str, Any]:
-    return {'id': policy['name']}
-
-
-def simple_id_parser(client: Client, data_dict: Dict[str, Any]) -> Dict[str, Any]:
-    return {'id': data_dict['_id'] if client.version == ClientV1.API_VER else data_dict['name']}
 
 
 def paginate_results(version: str, response: Union[List, Dict[str, Any]], args: Dict[str, Any]) -> Tuple[list, str]:
