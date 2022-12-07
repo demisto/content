@@ -1,11 +1,7 @@
-from JiraCreateIssueExample import \
-    DATE_FORMAT \
-    , validate_date_field \
-    # , parse_custom_fields \
+from JiraCreateIssueExample import DATE_FORMAT, validate_date_field, parse_custom_fields
     # , add_custom_fields \
     # , rm_custom_field_from_args
 import pytest
-
 
 @pytest.mark.parametrize("due_date", [
     ("2022-01-01"),
@@ -29,3 +25,41 @@ def test_validate_date_field_format(due_date):
         validate_date_field(due_date)
     except ValueError as ve:
         assert f"time data '{due_date}' does not match format '{DATE_FORMAT}'" in str(ve)
+
+
+@pytest.mark.parametrize("custom_fields, expected", [
+    (["customfield_10096=test"], [{"customfield_10096": "test"}]),
+    (["customfield_10096=test", "customfield_10040=100"], [{"customfield_10096": "test"}, {"customfield_10040": 100}]),
+    (["customfield_10096=test", "customfield_10040=0100"], [{"customfield_10096": "test"}, {"customfield_10040": 100}]),
+    (["customfield_10096=test", "customfield_10040=A100"], [{"customfield_10096": "test"}, {"customfield_10040": "A100"}]),
+    (["customfield_10096:test", "customfield_10040=A100"], [{"customfield_10040": "A100"}]),
+    ([], []),
+])
+def test_parse_custom_fields(custom_fields, expected):
+
+    """
+    Given:
+        - A list of strings of custom fields.
+        - An expected list of dicts of custom fields.
+
+    When:
+        - Case A: 1 text custom field.
+        - Case B: 1 text custom field, 1 integer custom field.
+        - Case C: 1 text custom field, 1 integer custom field with 0 padding.
+        - Case D: 2 text custom fields.
+        - Case E: 1 text custom field, 1 custom field with unexpected delimiter (:).
+        - Case F: Empty custom field list.
+
+    Then:
+        - Case A: 1 text custom field returned.
+        - Case B: 1 text custom field, 1 integer custom field returned.
+        - Case C: 1 text custom field, 1 integer custom field returned.
+        - Case D: 2 text custom fields returned.
+        - Case E: 1 text custom field returned.
+        - Case F: Empty custom field list returned.
+    """
+
+    actual = parse_custom_fields(custom_fields)
+
+    assert len(actual) == len(expected)
+    assert actual == expected

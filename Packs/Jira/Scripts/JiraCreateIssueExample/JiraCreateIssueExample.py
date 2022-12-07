@@ -21,9 +21,7 @@ def validate_date_field(date_str: str):
         - `date_str` (`str`): The date field to validate
     """
 
-    # This raises an exception when the parsing fails
-    # dueDate=1234-12-31T13:00:00 => unconverted data remains: T13:00:00
-    # dueDate=1234-12--21         => time data '1234-12--21' does not match format '%Y-%m-%d'
+    # This raises a ValueError when the parsing fails
     datetime.strptime(date_str, DATE_FORMAT)
 
 
@@ -34,7 +32,7 @@ def parse_custom_fields(custom_fields: List[str]) -> List[Dict[str, Any]]:
         customfield_10101=foo,customfield_10102=bar
 
     Args:
-        - `custom_fields` (`List[str]`): List of custom fields
+        - `custom_fields` (`List[str]`): List of custom fields.
 
     Returns:
         - `List[Dict[str, Any]]` representing the key/values of the custom fields.
@@ -43,12 +41,13 @@ def parse_custom_fields(custom_fields: List[str]) -> List[Dict[str, Any]]:
     result: List[Dict[str, Any]] = []
 
     for custom_field in custom_fields:
-        field_key, field_value = custom_field.split("=")
+        if "=" in custom_field:
+            field_key, field_value = custom_field.split("=")
 
-        if field_value.isnumeric():
-            field_value = int(field_value)
+            if field_value.isnumeric():
+                field_value = int(field_value)
 
-        result.append({field_key: field_value})
+            result.append({field_key: field_value})
 
     return result
 
