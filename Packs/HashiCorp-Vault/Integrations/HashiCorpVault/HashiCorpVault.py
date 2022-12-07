@@ -138,7 +138,8 @@ def list_secrets_engines_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets Engines', mapped_engines, headers=headers, removeNull=True),
+        'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets Engines', mapped_engines, headers=headers,
+                                         removeNull=True),
         'EntryContext': {
             'HashiCorp.Engine(val.Path===obj.Path)': createContext(mapped_engines, removeNull=True)
         }
@@ -169,7 +170,8 @@ def list_secrets_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets in engine path: ' + engine, mapped_secrets, removeNull=True),
+        'HumanReadable': tableToMarkdown('HashiCorp Vault Secrets in engine path: ' + engine, mapped_secrets,
+                                         removeNull=True),
         'EntryContext': {
             'HashiCorp.Secret(val.Path===obj.Path)': createContext(mapped_secrets)
         }
@@ -395,14 +397,18 @@ def enable_engine_command():
     local = demisto.args().get('local')
     seal_wrap = demisto.args().get('seal_wrap')
 
-    enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache, audit_non_hmac_request_keys,
-                  audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local, seal_wrap)
+    enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache,
+                  audit_non_hmac_request_keys,
+                  audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local,
+                  seal_wrap)
 
     demisto.results('Engine enabled successfully')
 
 
-def enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache, audit_non_hmac_request_keys,
-                  audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local, seal_wrap):
+def enable_engine(path, engine_type, description, default_lease_ttl, max_lease_ttl, force_no_cache,
+                  audit_non_hmac_request_keys,
+                  audit_non_hmac_response_keys, listing_visibility, passthrough_request_headers, kv_version, local,
+                  seal_wrap):
     path = 'sys/mounts/' + path
 
     body = {
@@ -603,7 +609,8 @@ def fetch_credentials():
         return_error('No secrets engines specified')
 
     for engine_type in ENGINES:
-        engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
+        engines_to_fetch = list(
+            filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
         engines_to_fetch_from += engines_to_fetch
 
     if len(engines_to_fetch_from) == 0:
@@ -729,9 +736,12 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     params = {
         'list': 'true'
     }
+    secrets = []
     roles_list_url = f'{engine_path}/v1/aws/roles'
     res = send_request(roles_list_url, 'get', params=params)
-    for role in res.data.keys:
+    if not res or 'data' not in res:
+        return []
+    for role in res['data'].get('keys', []):
         role_url = f'{engine_path}/v1/aws/roles/{role}'
         role_data = send_request(role_url, 'get')
         credential_type = demisto.params().get('credentials_type', 'creds')
@@ -740,24 +750,9 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
             method = 'POST'
         generate_credentials_url = f'{engine_path}/v1/aws/{credential_type}/{role}'
         body = {}
-        send_request(generate_credentials_url, method, body=)
-    secrets = []
-
-    if not res or 'data' not in res:
-        return []
-
-    for secret in res['data'].get('keys', []):
-        secret_data = get_ch_secret(engine_path, secret)
-        for k, v in secret_data.get('data', {}).iteritems():
-            if concat_username_to_cred_name:
-                name = '{0}_{1}'.format(secret, k)
-            else:
-                name = secret
-            secrets.append({
-                'user': k,
-                'password': v,
-                'name': name
-            })
+        if 'credential_types' in role_data['data'].get('credential_types', []):
+            body['role_arns'] = role_data['data'].get('role_arns', [])
+        send_request(generate_credentials_url, method, body=body)
 
     return secrets
 
