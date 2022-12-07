@@ -1,8 +1,6 @@
 import google
 from google.cloud import secretmanager
 import json
-from datetime import datetime
-import os
 from Tests.scripts.utils import logging_wrapper as logging
 
 
