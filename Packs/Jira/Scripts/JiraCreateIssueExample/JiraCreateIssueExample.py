@@ -45,7 +45,7 @@ def parse_custom_fields(custom_fields: List[str]) -> List[Dict[str, Any]]:
             field_key, field_value = custom_field.split("=")
 
             if field_value.isnumeric():
-                field_value = int(field_value)
+                field_value: int = int(field_value)
 
             result.append({field_key: field_value})
 
