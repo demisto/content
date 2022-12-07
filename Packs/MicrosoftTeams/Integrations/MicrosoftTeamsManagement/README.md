@@ -35,10 +35,13 @@ Required Permissions
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | app_id | Application ID | True |
-    | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | Application ID |  | True |
+    | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Authentication Type | Type of authentication - could be Client Credentials Authorization Flow \(recommended\) or Device Flow | False |
+    | Tenant ID (for Client Credentials mode) |  | False |
+    | Client Secret (for Client Credentials mode) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
