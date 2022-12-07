@@ -108,6 +108,8 @@ def reset_base_pack_version(client: demisto_client):
                                                                             method='GET',
                                                                             accept='application/json',
                                                                             _request_timeout=None)
+        logging.debug(f'response_data: {response_data}, status_code: {status_code}')
+
         if 200 <= status_code < 300:
             result_object = ast.literal_eval(response_data)
 
