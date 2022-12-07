@@ -56,7 +56,7 @@ def main():
         logger.info("Marshalling content graph")
         start_time = default_timer()
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
-        logger.infp(f'Finished marshalling content graph. Total time took: {default_timer() - start_time} seconds')
+        logger.info(f'Finished marshalling content graph. Total time took: {default_timer() - start_time} seconds')
         logger.info("Creating content artifacts zips")
         create_zips(content_dto, Path(args.artifacts_output), args.marketplace, args.zip)
 
