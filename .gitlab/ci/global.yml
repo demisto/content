@@ -55,7 +55,7 @@
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
-  - python3 ./Tests/scripts/add_secret_file_to_build.py -sa $GSM_SERVICE_ACCOUNT -sf $SECRET_CONF_PATH -u $DEMISTO_USERNAME -p $DEMISTO_PASSWORD -gpid $GSM_PROJECT_ID  >> $ARTIFACTS_FOLDER/logs/get_secrets_from_gsm.log
+  - python3 ./Tests/scripts/add_secret_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID"  >> $ARTIFACTS_FOLDER/logs/get_secrets_from_gsm.log
   - section_end "Download content-test-conf"
 
 .open-ssh-tunnel:
