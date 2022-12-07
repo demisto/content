@@ -605,7 +605,7 @@ script:
       description: IP list name.
       type: String
     - contextPath: FortiwebVM.IpListGroup.ip_list_count
-      description: IP list members number.
+      description: Number of items in the IP list Group.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.results.can_delete
       description: Can delete flag.Supports API version 1 only.
