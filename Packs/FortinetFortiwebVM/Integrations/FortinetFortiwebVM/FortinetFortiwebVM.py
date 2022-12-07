@@ -2971,7 +2971,7 @@ def find_dict_in_array(container: List[Dict[str, Any]], key: str,
         for obj in container:
             if obj[key] == value:
                 return obj
-    if isinstance(value, List):
+    if isinstance(value, list):
         return [obj for obj in container if obj[key] in value] or None
     return None
 
