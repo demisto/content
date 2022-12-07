@@ -1,28 +1,83 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "exabeam_mapping",
-    "mapping": {
-        "Exabeam Incident": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Exabeam Id": {
-                    "simple": "incidentId"
-                },
-                "Exabeam Queue": {
-                    "simple": "fields.queue"
-                },
-                "Exabeam Source": {
-                    "simple": "fields.source"
-                },
-                "Exabeam Source Id": {
-                    "simple": "fields.sourceId"
-                }
-            }
-        }
-    },
-    "name": "exabeam_mapping",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.5.0"
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "exabeam_mapping",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": {
+		"Exabeam Incident": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Close Time": {
+					"simple": "fields.closedAt"
+				},
+				"Description": {
+					"simple": "fields.desc"
+				},
+				"Exabeam Id": {
+					"simple": "incidentId"
+				},
+				"Exabeam Queue": {
+					"simple": "fields.queue"
+				},
+				"Exabeam Source": {
+					"simple": "fields.source"
+				},
+				"Exabeam Source Id": {
+					"simple": "fields.sourceId"
+				},
+				"Item Owner": {
+					"simple": "fields.owner"
+				},
+				"Last Update Time": {
+					"simple": "fields.updatedAt"
+				},
+				"Source Category": {
+					"simple": "fields.incidentType"
+				},
+				"Source Create time": {
+					"simple": "fields.createdAt"
+				},
+				"Source Created By": {
+					"simple": "fields.createdBy"
+				},
+				"Source Priority": {
+					"simple": "fields.priority"
+				},
+				"Source Status": {
+					"simple": "fields.status"
+				},
+				"Source Updated by": {
+					"simple": "fields.updatedBy"
+				},
+				"Start Time": {
+					"simple": "fields.startedDate"
+				},
+				"Title": {
+					"simple": "name"
+				}
+			}
+		}
+	},
+	"name": "exabeam_mapping",
+	"nameRaw": "exabeam_mapping",
+	"packID": "",
+	"packName": "",
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
 }
