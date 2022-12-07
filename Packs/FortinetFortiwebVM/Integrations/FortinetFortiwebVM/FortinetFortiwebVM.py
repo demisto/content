@@ -3094,7 +3094,7 @@ def main() -> None:
         'fortiwebvm-content-routing-policy-list': http_content_routing_policy_list_command,
     }
     try:
-        client_class = ClientV1 if version == 'V1' else ClientV2
+        client_class = {'V1': ClientV1, 'V2': ClientV2}[version]
         client: Client = client_class(base_url=base_url,
                                       api_key=api_key,
                                       version=version,
