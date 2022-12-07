@@ -33,9 +33,9 @@ jobs:
     - name: Copy changed files to codeQL folder (to save runtime)
       run: |
         for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
-          mkdir -p "${{ github.workspace }}/PRChangedFiles/$file"
-          cp "$file" "${{ github.workspace }}/PRChangedFiles/$file"
-          echo "copied $file to ${{ github.workspace }}/PRChangedFiles/$file"
+          mkdir -p "tmp/codeqlfiles/$file"
+          cp "$file" "tmp/codeqlfiles/$file"
+          echo "copied $file to tmp/codeqlfiles/$file"
         done
   
     # Initializes the CodeQL tools for scanning.
@@ -47,7 +47,7 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
       with:
-        checkout_path: ${{ github.workspace }}/PRChangedFiles
+        checkout_path: tmp/codeqlfiles
         category: "/language:${{matrix.language}}"
         queries:
           # exclude polluting-import as this is how we import from demistomock and CommonServerPython
