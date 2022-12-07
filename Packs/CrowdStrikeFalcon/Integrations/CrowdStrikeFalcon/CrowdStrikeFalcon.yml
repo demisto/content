@@ -33,7 +33,7 @@ configuration:
     - D - Not usually reliable
     - E - Unreliable
     - F - Reliability cannot be judged
-  required: true
+  required: false
   type: 15
 - defaultvalue: '3 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
