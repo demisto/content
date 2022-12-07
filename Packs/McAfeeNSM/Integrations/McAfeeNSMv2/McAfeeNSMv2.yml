@@ -680,6 +680,13 @@ script:
           required: false
           description: End IPv6 Range.
           isArray: false
+    - name: nsm-delete-rule-object
+      description: Deletes a Rule Object.
+      arguments:
+        - name: rule_id
+          required: true
+          description: The id of the rule object. To get the rule object id, use the !nsm-list-domain-rule-object.
+          isArray: false
   isfetch: false
   runonce: false
   script: '-'

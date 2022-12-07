@@ -133,6 +133,31 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
+    def update_rule_object_request(self, session_str: str, body: Dict, rule_id: str) -> Dict:
+        """ Updates a Rule Object.
+            Args:
+                session_str: str - The session id.
+                body: Dict - The params to the API call.
+                rule_id: str - The rule id.
+            Returns:
+                A dictionary with the status of the request.
+        """
+        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+
+    def delete_rule_object(self, session_str: str, rule_id: str) -> Dict:
+        """ Updates a Rule Object.
+            Args:
+                session_str: str - The session id.
+                rule_id: str - The rule id.
+            Returns:
+                A dictionary with the status of the request.
+        """
+        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='DELETE', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -193,20 +218,21 @@ def response_cases(response_str: str) -> None | str:
         return '_'.join(split_str)
 
 
-def rule_object_type_cases(s: str, case: str) -> str:
+def rule_object_type_cases(str_type: str, case: str) -> str | None:
     """ Checks the rule_object_type params and returns the correct format of them.
     Args:
-        s: str - The response string.
+        str_type: str - The type string.
+        case: str - In what case should the letters be, upper or lower case.
     Returns:
         The correct rule_object_type string.
     """
-    s_split = s.upper().replace('.', ' ').split()
-    if 'ENDPOINT' in s_split[0]:
-        r_type = f'HOST_IPV_{s_split[-1]}'
-    elif 'RANGE' in s_split[0]:
-        r_type = f'IPV_{s_split[-1]}_ADDRESS_RANGE'
+    type_split = str_type.upper().replace('.', ' ').split()
+    if 'ENDPOINT' in type_split[0]:
+        r_type = f'HOST_IPV_{type_split[-1]}'
+    elif 'RANGE' in type_split[0]:
+        r_type = f'IPV_{type_split[-1]}_ADDRESS_RANGE'
     else:
-        r_type = f'NETWORK_IPV_{s_split[-1]}'
+        r_type = f'NETWORK_IPV_{type_split[-1]}'
     if case == 'low':
         return r_type.lower().replace('_','')
     return r_type
@@ -684,7 +710,7 @@ def create_rule_object_command(client: Client, args: Dict, session_str: str) -> 
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with information about the rule object.
+            A CommandResult object with a success message.
     """
     domain = arg_to_number(args.get('domain', 0))
     rule_type = rule_object_type_cases(args.get('rule_object_type'), 'up')
@@ -721,6 +747,69 @@ def create_rule_object_command(client: Client, args: Dict, session_str: str) -> 
 
     return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
                                           f'was created successfully')
+
+
+def update_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Updates a Rule Object.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    domain = arg_to_number(args.get('domain', 0))
+    rule_id = args.get('rule_id')
+    name = args.get('name')
+    visible_to_child = argToBoolean(args.get('visible_to_child', True))
+    description = args.get('description')
+    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    from_address_ip_v_4 = args.get('from_address_ip_v.4')
+    to_address_ip_v_4 = args.get('to_address_ip_v.4')
+    address_ip_v_6 = argToList(args.get('address_ip_v.6'))
+    from_address_ip_v_6 = args.get('from_address_ip_v.6')
+    to_address_ip_v_6 = args.get('to_address_ip_v.6')
+    is_overwrite = argToBoolean(args.get('is_overwrite', False))
+
+    address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
+    number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
+    from_address = from_address_ip_v_4 if from_address_ip_v_4 else from_address_ip_v_6
+    to_address = to_address_ip_v_4 if to_address_ip_v_4 else to_address_ip_v_6
+
+    # check_args_create_rule(rule_type, address, from_address, to_address, number)
+
+    response_get = client.get_rule_object_request(session_str, rule_id)
+    response_get = response_get.get('RuleObjDef', {})
+    name = name if name else response_get.get('name')
+    visible_to_child = argToBoolean(visible_to_child) if visible_to_child else response_get.get('visible_to_child')
+    description = description if description else response_get.get('description')
+
+    #body = {
+     #   'RuleObjDef': {
+      #      "domain": domain,
+       #     "ruleobjType": rule_type,
+        #    "visibleToChild": visible_to_child,
+         #   "description": description,
+          #  "name": name
+        #}
+    #}
+
+    #d_name, extra_body = create_body_create_rule(rule_type, address, from_address, to_address, number)
+    #body.get('RuleObjDef')[d_name] = extra_body
+
+
+def delete_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Deletes a Rule Object.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    rule_id = args.get('rule_id')
+    client.delete_rule_object(session_str, rule_id)
+    return CommandResults(readable_output=f'The rule object no.{rule_id} was deleted successfully')
 
 
 ''' MAIN FUNCTION '''
@@ -781,6 +870,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-create-rule-object':
             results = create_rule_object_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-delete-rule-object':
+            results = delete_rule_object_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
