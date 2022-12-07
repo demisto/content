@@ -1080,6 +1080,44 @@ class Client(BaseClient):
             resp_type="json",
         )
 
+    def get_scan_schedule(self, site_id: str, schedule_id: str) -> dict:
+        """
+        | Retrieve information about a specific scan schedule.
+        |
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to retrieve scan schedule from.
+            schedule_id (str): ID of the scan schedule to retrieve.
+
+        Returns:
+            dict: A dictionary containing information about the scan schedule.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
+            method="GET",
+            resp_type="json",
+        )
+
+    def get_scan_schedules(self, site_id: str) -> list[dict]:
+        """
+        | Retrieve information about scan schedules for a specific site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedules
+
+        Args:
+            site_id (str): ID of the site to retrieve scan schedules from.
+
+        Returns:
+            list[dict]: A list of scan schedules for the site.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules",
+            method="GET",
+            resp_type="json",
+        ).get("resources")
+
     def get_shared_credential(self, credential_id: str) -> dict:
         """
         | Retrieve information about a specific shared credential.
@@ -1210,44 +1248,6 @@ class Client(BaseClient):
             limit=limit,
             resp_type="json",
         )
-
-    def get_site_scan_schedule(self, site_id: str, schedule_id: str) -> dict:
-        """
-        | Retrieve information about a specific scan schedule.
-        |
-        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedule
-
-        Args:
-            site_id (str): ID of the site to retrieve scan schedule from.
-            schedule_id (str): ID of the scan schedule to retrieve.
-
-        Returns:
-            dict: A dictionary containing information about the scan schedule.
-        """
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/scan_schedules/{schedule_id}",
-            method="GET",
-            resp_type="json",
-        )
-
-    def get_site_scan_schedules(self, site_id: str) -> list[dict]:
-        """
-        | Retrieve information about scan schedules for a specific site.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getSiteScanSchedules
-
-        Args:
-            site_id (str): ID of the site to retrieve scan schedules from.
-
-        Returns:
-            list[dict]: A list of scan schedules for the site.
-        """
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/scan_schedules",
-            method="GET",
-            resp_type="json",
-        ).get("resources")
 
     def get_sites(self, page_size: int | None = DEFAULT_PAGE_SIZE, page: int | None = None, sort: str | None = None,
                   limit: int | None = None) -> list[dict]:
@@ -1428,6 +1428,100 @@ class Client(BaseClient):
             url_suffix=f"/sites/{site_id}/shared_credentials/{shared_credential_id}/enabled",
             method="PUT",
             data=json.dumps(enabled),  # type: ignore
+            resp_type="json",
+        )
+
+    def update_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str,
+                             start_date: str, enabled: bool, excluded_asset_groups: list[int] | None = None,
+                             excluded_targets: list[str] | None = None, included_asset_groups: list[int] | None = None,
+                             included_targets: list[str] | None = None, duration: str | None = None,
+                             frequency: RepeatFrequencyType | None = None,
+                             interval: int | None = None, date_of_month: int | None = None,
+                             scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
+        """
+        | Update a site scan schedule.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSiteScanSchedule
+
+        Args:
+            site_id (str): ID of the site to create a new scheduled scan for.
+            scan_schedule_id (int): ID of the scan schedule to update.
+            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
+                when the previous scan was paused due to reaching its maximum duration.
+            start_date (str): The scheduled start date and time formatted in ISO 8601 format.
+            enabled (bool): A flag indicating whether the scan schedule is enabled.
+            excluded_asset_groups (list[int] | None, optional): Asset groups to exclude from the scan.
+            excluded_targets (list[str] | None, optional): Addresses to exclude from the scan.
+                Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range,
+                ipv6 address, or CIDR notation.
+            included_asset_groups (list[int] | None, optional): Asset groups to include in the scan.
+            included_targets (list[str] | None, optional): Addresses to include in the scan.
+                Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range,
+                ipv6 address, or CIDR notation.
+            duration (str | None, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
+                the scheduled scan is allowed to run.
+            frequency (RepeatFrequencyType | None, optional): Frequency for the schedule to repeat.
+                Required if using other repeat settings.
+            interval (int | None, optional): The interval time the schedule should repeat.
+                Required if using other repeat settings.
+            date_of_month(int | None, optional): Specifies the schedule repeat day of the interval month.
+                Required and used only if frequency is set to `DATE_OF_MONTH`.
+            scan_name (str | None, optional): A unique user-defined name for the scan launched by the schedule.
+                If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
+            scan_template_id (str | None, optional): ID of the scan template to use.
+
+        Returns:
+            str: ID of the newly created scan schedule.
+        """
+        assets: dict = {}
+        repeat: dict = {}
+
+        if excluded_asset_groups:
+            assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
+
+        if excluded_targets:
+            assets["excludedTargets"] = {"addresses": excluded_targets}
+
+        if included_asset_groups:
+            assets["includedAssetGroups"] = {"assetGroupIDs": included_asset_groups}
+
+        if included_targets:
+            assets["includedTargets"] = {"addresses": included_targets}
+
+        if frequency is not None:
+            if interval is None:
+                raise ValueError("'interval' parameter must be set when frequency is used.")
+
+            if frequency == RepeatFrequencyType.DATE_OF_MONTH and date_of_month is None:
+                raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
+
+            repeat["every"] = frequency.value
+
+        repeat.update(find_valid_params(
+            interval=interval,
+            dateOfMonth=date_of_month,
+        ))
+
+        post_data = find_valid_params(
+            duration=duration,
+            enabled=enabled,
+            onScanRepeat=repeat_behaviour.lower(),
+            scanName=scan_name,
+            scanTemplateId=scan_template_id,
+            start=start_date,
+        )
+
+        post_data.update(find_valid_params(
+            strict_mode=True,
+            assets=assets,
+            repeat=repeat,
+        ))
+
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
+            method="PUT",
+            json_data=post_data,
             resp_type="json",
         )
 
@@ -1681,101 +1775,6 @@ class Client(BaseClient):
         return self._http_request(
             method="PUT",
             url_suffix=f"/sites/{site_id}/site_credentials",
-            json_data=post_data,
-            resp_type="json",
-        )
-
-    def update_site_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str,
-                                  start_date: str, enabled: bool, excluded_asset_groups: list[int] | None = None,
-                                  excluded_targets: list[str] | None = None,
-                                  included_asset_groups: list[int] | None = None,
-                                  included_targets: list[str] | None = None, duration: str | None = None,
-                                  frequency: RepeatFrequencyType | None = None,
-                                  interval: int | None = None, date_of_month: int | None = None,
-                                  scan_name: str | None = None, scan_template_id: str | None = None) -> dict:
-        """
-        | Update a site scan schedule.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSiteScanSchedule
-
-        Args:
-            site_id (str): ID of the site to create a new scheduled scan for.
-            scan_schedule_id (int): ID of the scan schedule to update.
-            repeat_behaviour (str | None, optional): The desired behavior of a repeating scheduled scan
-                when the previous scan was paused due to reaching its maximum duration.
-            start_date (str): The scheduled start date and time formatted in ISO 8601 format.
-            enabled (bool): A flag indicating whether the scan schedule is enabled.
-            excluded_asset_groups (list[int] | None, optional): Asset groups to exclude from the scan.
-            excluded_targets (list[str] | None, optional): Addresses to exclude from the scan.
-                Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range,
-                ipv6 address, or CIDR notation.
-            included_asset_groups (list[int] | None, optional): Asset groups to include in the scan.
-            included_targets (list[str] | None, optional): Addresses to include in the scan.
-                Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range,
-                ipv6 address, or CIDR notation.
-            duration (str | None, optional): An ISO 8601 formatted duration string that Specifies the maximum duration
-                the scheduled scan is allowed to run.
-            frequency (RepeatFrequencyType | None, optional): Frequency for the schedule to repeat.
-                Required if using other repeat settings.
-            interval (int | None, optional): The interval time the schedule should repeat.
-                Required if using other repeat settings.
-            date_of_month(int | None, optional): Specifies the schedule repeat day of the interval month.
-                Required and used only if frequency is set to `DATE_OF_MONTH`.
-            scan_name (str | None, optional): A unique user-defined name for the scan launched by the schedule.
-                If not explicitly set in the schedule, the scan name will be generated prior to the scan launching.
-            scan_template_id (str | None, optional): ID of the scan template to use.
-
-        Returns:
-            str: ID of the newly created scan schedule.
-        """
-        assets: dict = {}
-        repeat: dict = {}
-
-        if excluded_asset_groups:
-            assets["excludedAssetGroups"] = {"assetGroupIDs": excluded_asset_groups}
-
-        if excluded_targets:
-            assets["excludedTargets"] = {"addresses": excluded_targets}
-
-        if included_asset_groups:
-            assets["includedAssetGroups"] = {"assetGroupIDs": included_asset_groups}
-
-        if included_targets:
-            assets["includedTargets"] = {"addresses": included_targets}
-
-        if frequency is not None:
-            if interval is None:
-                raise ValueError("'interval' parameter must be set when frequency is used.")
-
-            if frequency == RepeatFrequencyType.DATE_OF_MONTH and date_of_month is None:
-                raise ValueError("'date-of-month' parameter must be set if frequency is set to 'Date of month'.")
-
-            repeat["every"] = frequency.value
-
-        repeat.update(find_valid_params(
-            interval=interval,
-            dateOfMonth=date_of_month,
-        ))
-
-        post_data = find_valid_params(
-            duration=duration,
-            enabled=enabled,
-            onScanRepeat=repeat_behaviour.lower(),
-            scanName=scan_name,
-            scanTemplateId=scan_template_id,
-            start=start_date,
-        )
-
-        post_data.update(find_valid_params(
-            strict_mode=True,
-            assets=assets,
-            repeat=repeat,
-        ))
-
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/scan_schedules/{scan_schedule_id}",
-            method="PUT",
             json_data=post_data,
             resp_type="json",
         )
@@ -4126,13 +4125,13 @@ def list_scan_schedule_command(client: Client, site: Site, schedule_id: str | No
     limit_int = arg_to_number(limit, required=False)
 
     if not schedule_id:
-        scan_schedules_data = client.get_site_scan_schedules(site_id=site.id)
+        scan_schedules_data = client.get_scan_schedules(site_id=site.id)
 
         if limit_int is not None and limit_int < len(scan_schedules_data):
             scan_schedules_data = scan_schedules_data[:limit_int]
 
     else:
-        scan_schedules_data = [client.get_site_scan_schedule(
+        scan_schedules_data = [client.get_scan_schedule(
             site_id=site.id,
             schedule_id=schedule_id,
         )]
@@ -5118,7 +5117,7 @@ def update_scan_schedule_command(client: Client, site: Site, scan_schedule_id: i
         minutes=duration_minutes_int,
     )
 
-    response_data = client.update_site_scan_schedule(
+    response_data = client.update_scan_schedule(
         site_id=site.id,
         scan_schedule_id=scan_schedule_id,
         enabled=enabled_bool,
