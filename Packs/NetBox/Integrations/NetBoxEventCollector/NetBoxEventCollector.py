@@ -13,7 +13,7 @@ VENDOR = 'NetBox'
 PRODUCT = 'IRM'
 
 LOG_TYPES = ['journal-entries', 'object-changes']
-
+DEFAULT_LIMIT = 1000
 
 ''' CLIENT CLASS '''
 
@@ -22,11 +22,6 @@ class Client(BaseClient):
     """
     Client class to interact with the service API
     """
-
-    def __init__(self, base_url: str, headers: dict, verify: bool, proxy: bool, limit: int):
-        self.limit = limit
-        super().__init__(base_url=base_url, headers=headers, verify=verify, proxy=proxy)
-
     def http_request(self, url_suffix=None, full_url=None, params=None):
         return self._http_request(
             method='GET',
@@ -35,17 +30,19 @@ class Client(BaseClient):
             params=params
         )
 
-    def search_events(self, prev_ids={}, ordering=''):
+    def search_events(self, limit, prev_ids={}, ordering=''):
         """
         Searches for NetBox alerts using the '/<log_type>' API endpoint for log_type in LOG_TYPES.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
         Args:
+            limit: int, the limit of the results to return per log_type.
             prev_id: dict of previous ids that was fetched fot each log_type.
             ordering: boll, if is True this will return the data starting with the oldest, otherwise, the opposite.
         Returns:
-            dict: the next event
+            dict: A dict containing the next_run
+            list: A list containing the events
         """
-        next_ids = {}
+        next_ids = prev_ids.copy()
         results: List[Dict] = []
 
         for log_type in LOG_TYPES:
@@ -53,19 +50,19 @@ class Client(BaseClient):
             next_page = True
 
             params = {
-                'limit': self.limit,
+                'limit': limit,
                 'ordering': ordering,
                 'id__gt': prev_ids.get(log_type, 0)
             }
 
-            while next_page and len(result) < self.limit:
+            while next_page and len(result) < limit:
                 full_url = next_page if type(next_page) == str else ''
                 response = self.http_request(url_suffix=f'/{log_type}', full_url=full_url, params=params)
 
                 result += response.get('results', [])
 
                 next_page = response.get('next')
-                params['limit'] = self.limit - len(result)
+                params['limit'] = limit - len(result)
 
             results += result
 
@@ -78,7 +75,7 @@ class Client(BaseClient):
         """
         Sets the first fetch ids for each log type.
         Args:
-            first_fetch_time: int, the first fetch time.
+            first_fetch_time: int, the first fetch time in timestamp.
         """
         next_run: Dict[str, int] = {}
 
@@ -119,14 +116,13 @@ def test_module(client: Client) -> str:
     successful.
     Raises exceptions if something goes wrong.
     Args:
-        client (Client): HelloWorld client to use.
+        client (Client): NetBox client to use.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
     try:
-        client.limit = 1
-        client.search_events()
+        client.search_events(limit=1)
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -137,8 +133,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client):
-    _, events = client.search_events()
+def get_events(client: Client, limit: int):
+    _, events = client.search_events(limit=limit)
     if events:
         hr = tableToMarkdown(name='Journal-entries and Object-changes Events',
                              t=events, headers=(events[0] | events[-1]).keys())
@@ -148,7 +144,7 @@ def get_events(client: Client):
     return events, hr
 
 
-def fetch_events(client: Client, last_run: Dict[str, int],
+def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
                  first_fetch_time: Optional[int]
                  ):
     """
@@ -167,6 +163,7 @@ def fetch_events(client: Client, last_run: Dict[str, int],
             return {}, []
 
     next_run, events = client.search_events(
+        limit=max_fetch,
         ordering='id',
         prev_ids=last_run,
     )
@@ -192,8 +189,8 @@ def main() -> None:
     base_url = urljoin(params.get('url'), '/api/extras')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch', 1000))
-    limit = arg_to_number(args.get('limit'))
+    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_LIMIT))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -213,8 +210,7 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy,
-            limit=limit or max_fetch)  # type: ignore
+            proxy=proxy)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -224,7 +220,7 @@ def main() -> None:
         elif command in ('netbox-get-events', 'fetch-events'):
             if command == 'netbox-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events'))
-                events, results = get_events(client)
+                events, results = get_events(client, limit=limit)  # type: ignore
                 return_results(results)
 
             else:  # command == 'fetch-events':
@@ -232,6 +228,7 @@ def main() -> None:
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events(
                     client=client,
+                    max_fetch=max_fetch,  # type: ignore
                     last_run=last_run,
                     first_fetch_time=first_fetch_timestamp
                 )
