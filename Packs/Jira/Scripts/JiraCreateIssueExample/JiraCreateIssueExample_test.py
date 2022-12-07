@@ -29,4 +29,3 @@ def test_validate_date_field_format(due_date):
         validate_date_field(due_date)
     except ValueError as ve:
         assert f"time data '{due_date}' does not match format '{DATE_FORMAT}'" in str(ve)
-
