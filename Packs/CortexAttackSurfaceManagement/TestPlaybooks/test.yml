@@ -1,0 +1,112 @@
+id: a9a91d46-5f78-44e4-8c58-65556108b610
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 617cf217-b333-4d6a-81a5-e45854711362
+    type: start
+    task:
+      id: 617cf217-b333-4d6a-81a5-e45854711362
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b28a1910-3a57-48d7-8968-27a7d63732b2
+    type: regular
+    task:
+      id: b28a1910-3a57-48d7-8968-27a7d63732b2
+      version: -1
+      name: first task
+      description: Strips, unquotes and unescapes URLs. If the URL is a Proofpoint
+        or ATP URL, extracts its redirect URL.
+      scriptName: FormatURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        simple: https://www.google.com/pictures
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9c0ceebf-d254-4863-85e5-9d785fccefc8
+    type: title
+    task:
+      id: 9c0ceebf-d254-4863-85e5-9d785fccefc8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 465,
+        "width": 380,
+        "x": 700,
+        "y": 90
+      }
+    }
+  }
+inputs: []
+outputs: []
