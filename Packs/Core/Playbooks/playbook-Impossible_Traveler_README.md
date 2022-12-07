@@ -34,15 +34,15 @@ When the playbook continues, after validating the activity with the user’s man
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Impossible Traveler - Enrichment
 * Containment Plan
+* Impossible Traveler - Enrichment
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* Set
 * impossibleTravelerGetDistance
+* Set
 * CreateArray
 
 ### Commands
@@ -56,7 +56,6 @@ This playbook does not use any integrations.
 | MaxMilesPerHourAllowed | The maximum miles per hour that is considered reasonable. If the geographical distance and difference in time between logins is greater than this value, the user will be considered an impossible traveler. | 400 | Optional |
 | WhitelistedIPs | A comma separated list of IP addresses that are allowed to be used across long distances. |  | Optional |
 | ContactUserManager | Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler. | True | Optional |
-| UserManagerEmail | The user's manager email address. | poc@demistodev.com | Optional |
 | AutoContainment | Whether to execute auto containment. | False | Optional |
 | AbuseIPDBThreshold | The score needed from AbuseIPDB to consider IP address as malicious. | 80 | Optional |
 | preInvestigationContainment | Whether to execute containment prior investigation phase |  | Optional |
