@@ -19,28 +19,24 @@ class GoogleSecreteManagerModule:
         secrets = []
         parent = f"projects/{project_id}"
         print(f'parent: {parent}')
-        logging.info(f'parent: {parent}')
+
         try:
-            a = self.client.list_secrets(request={"parent": parent})
-            print(a)
-            logging.info(f'secrets: {a}')
+            for secret in self.client.list_secrets(request={"parent": parent}):
+                secret.name = str(secret.name).split('/')[-1]
+                print(f'_____________________{secret.name}_____________________')
+                if name_filter and name_filter not in secret.name:
+                    continue
+                if with_secret:
+                    try:
+                        secret_value = self.get_secret(project_id, secret.name)
+                        secrets.append(secret_value)
+                    except google.api_core.exceptions.NotFound:
+                        logging.error(f'Could not find the secret: {secret.name}')
+                else:
+                    secrets.append(secret)
+
         except Exception as e:
             print(e)
-            logging.info(f'error: {e}')
-
-        for secret in self.client.list_secrets(request={"parent": parent}):
-            secret.name = str(secret.name).split('/')[-1]
-            if name_filter and name_filter not in secret.name:
-                continue
-            if with_secret:
-                try:
-                    secret_value = self.get_secret(project_id, secret.name)
-                    secrets.append(secret_value)
-                except google.api_core.exceptions.NotFound:
-                    logging.error(f'Could not find the secret: {secret.name}')
-            else:
-                secrets.append(secret)
-
         return secrets
 
     @staticmethod
@@ -53,7 +49,8 @@ class GoogleSecreteManagerModule:
             json_object = json.loads(service_account)
             with open(credentials_file_path, 'w') as f:
                 f.write(json.dumps(json_object))
-            client = secretmanager.SecretManagerServiceClient.from_service_account_json(credentials_file_path)# type: ignore # noqa
+            client = secretmanager.SecretManagerServiceClient.from_service_account_json(
+                credentials_file_path)  # type: ignore # noqa
             return client
         finally:
             try:
