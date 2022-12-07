@@ -40,6 +40,11 @@ def load_test_data(folder: str, file_name: str) -> dict:
                          ])
 def test_client_paged_http_request(mocker, mock_client: Client, mock_files_prefix: str, pages: int,
                                    test_input_kwargs: dict, expected_output_context_file: str):
+    """
+    Given: Valid pagination parameters.
+    When: Calling the client_paged_http_request function.
+    Then: Ensure the function returns the expected output, considering the pagination parameters.
+    """
     mock_data = [load_test_data("paged_http_request", mock_files_prefix + f"_{i}") for i in range(pages)]
 
     def pagination_side_effect(**kwargs):
@@ -70,6 +75,11 @@ def test_client_paged_http_request(mocker, mock_client: Client, mock_files_prefi
                              ])
                          ])
 def test_convert_asset_search_filters(test_input: list[str], expected_output: list[dict]):
+    """
+    Given: A list of filters in a string format.
+    When: Calling the convert_asset_search_filters function.
+    Then: Ensure the function returns a list of valid dictionaries, where each dictionary represents a filter.
+    """
     assert convert_asset_search_filters(test_input) == expected_output
 
 
@@ -85,6 +95,11 @@ def test_convert_asset_search_filters(test_input: list[str], expected_output: li
                              ),
                          ])
 def test_convert_datetime_str(test_input: str, expected_output: struct_time):
+    """
+    Given: An ISO 8601 formatted date string.
+    When: Calling the convert_datetime_str function.
+    Then: Ensure the function returns a struct_time object matching the given date string.
+    """
     assert convert_datetime_str(test_input) == expected_output
 
 
@@ -168,6 +183,11 @@ def test_convert_datetime_str(test_input: str, expected_output: struct_time):
                              }),
                          ])
 def test_create_credential_creation_body(test_input_kwargs: dict, expected_output: dict):
+    """
+    Given: A dictionary of valid keyword arguments for the create_credential_creation_body function.
+    When: Calling the create_credential_creation_body function.
+    Then: Ensure the function returns a dictionary representing a valid credential creation / update request body.
+    """
     assert create_credential_creation_body(**test_input_kwargs) == expected_output
 
 
@@ -215,6 +235,11 @@ def test_create_credential_creation_body(test_input_kwargs: dict, expected_outpu
                              }),
                          ])
 def test_create_credential_creation_body_validations(test_input_kwargs: dict):
+    """
+    Given: A dictionary of invalid keyword arguments for the create_credential_creation_body function.
+    When: Calling the create_credential_creation_body function.
+    Then: Ensure validation errors are raised.
+    """
     with pytest.raises(ValueError):
         create_credential_creation_body(**test_input_kwargs)
 
@@ -227,6 +252,11 @@ def test_create_credential_creation_body_validations(test_input_kwargs: dict):
                               {"c": (1, "test"), "d": 1}),
                          ])
 def test_find_valid_params(test_input_kwargs: dict, expected_output: dict):
+    """
+    Given: A dictionary of valid keyword arguments for the find_valid_params function.
+    When: Calling the find_valid_params function.
+    Then: Ensure the function returns a dictionary containing only the valid keyword arguments.
+    """
     assert find_valid_params(**test_input_kwargs) == expected_output
 
 
@@ -238,6 +268,11 @@ def test_find_valid_params(test_input_kwargs: dict, expected_output: dict):
                                "hours": 12, "minutes": 43, "seconds": 12.5}, "P4Y3M1W2DT12H43M12.5S"),
                          ])
 def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
+    """
+    Given: A dictionary of valid keyword arguments for the generate_duration_time function.
+    When: Calling the generate_duration_time function.
+    Then: Ensure the function returns a string representing a valid duration time matching the given arguments.
+    """
     assert generate_duration_time(**test_input_kwargs) == expected_output
 
 
@@ -250,6 +285,11 @@ def test_generate_duration_time(test_input_kwargs: dict, expected_output: str):
 
                          ])
 def test_readable_duration_time(test_input: str, expected_output: float | None):
+    """
+    Given: A string representing a valid duration time in ISO 8601 format.
+    When: Calling the readable_duration_time function.
+    Then: Ensure the function returns a string representing a valid and correct readable duration time.
+    """
     if not re.fullmatch(r"P(?:[\d.]+[YMWD]){0,4}T(?:[\d.]+[HMS]){0,3}", test_input):
         with pytest.raises(ValueError):
             readable_duration_time(test_input)
@@ -265,8 +305,13 @@ def test_readable_duration_time(test_input: str, expected_output: float | None):
                              ([1, 2, {"a": "b", "test": "test"}], "test", [1, 2, {"a": "b"}]),
                              ({"a": {"b": {"test": "x"}}}, "test", {'a': {'b': {}}}),
                          ])
-def test_remove_dict_key(test_input_data: dict | list | tuple,
-                         test_input_key: str, expected_output: dict | list | tuple):
+def test_remove_dict_key(test_input_data: dict | list | tuple, test_input_key: str,
+                         expected_output: dict | list | tuple):
+    """
+    Given: A dictionary, list or tuple and a key to remove.
+    When: Calling the remove_dict_key function.
+    Then: Ensure the function returns a dictionary, list or tuple without the given key.
+    """
     assert remove_dict_key(test_input_data, test_input_key) == expected_output
 
 
@@ -281,8 +326,14 @@ def test_remove_dict_key(test_input_data: dict | list | tuple,
                               {"A": {"test": "x"}}),
                              ({}, {"a": "b"}, False, {})
                          ])
-def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
-                           include_none: bool, expected_output: dict | list):
+def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict, include_none: bool,
+                           expected_output: dict | list):
+    """
+    Given: A dictionary, list or tuple and a name-mapping dictionary.
+    When: Calling the generate_new_dict function.
+    Then: Ensure the function returns a dictionary, list or tuple with new keys
+        according to the name-mapping dictionary.
+    """
     result = generate_new_dict(test_input_data, name_mapping, include_none)
     assert result == expected_output
 
@@ -296,8 +347,13 @@ def test_generate_new_dict(test_input_data: dict | list, name_mapping: dict,
                              ("client_get_sites", None, "This site does not exist", True, None),
                              ("client_get_sites", None, None, True, None),
                          ])
-def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_client: bool,
-                   site_id: str | None, site_name: str | None, expected_output_id: str | None):
+def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_client: bool, site_id: str | None,
+                   site_name: str | None, expected_output_id: str | None):
+    """
+    Given: A site ID and a site name
+    When: Calling the Site class constructor
+    Then: If valid - ensure the class is initialized correctly. If not - ensure an exception is raised.
+    """
     sites_api_data = load_test_data("api_mock", sites_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=sites_api_data)
     client = mock_client if send_client else None
@@ -329,6 +385,11 @@ def test_site_init(mocker, mock_client: Client, sites_mock_file: str, send_clien
                          ])
 def test_client_create_report_config(mocker, mock_client: Client, scope: dict, template_id: str, report_name: str,
                                      report_format: str):
+    """
+    Given: Valid parameters for the create_report_config function.
+    When: Calling the create_report_config function.
+    Then: Ensure the API call is being called with the correct parameters.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request")
     mock_client.create_report_config(scope=scope,
                                      template_id=template_id,
@@ -353,6 +414,11 @@ def test_client_create_report_config(mocker, mock_client: Client, scope: dict, t
                              ("client_find_asset_site", Site(site_id="1", site_name="Test"))
                          ])
 def test_client_find_asset_site(mocker, mock_client: Client, api_mock_file: str, expected_output: Site):
+    """
+    Given: A valid asset ID.
+    When: Calling the find_asset_site function.
+    Then: Ensure the function returns the correct site.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -369,6 +435,11 @@ def test_client_find_asset_site(mocker, mock_client: Client, api_mock_file: str,
                              ("Site-That-Doesn't-Exist", None),
                          ])
 def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expected_output: Union[str, None]):
+    """
+    Given: A valid site name.
+    When: Calling the find_site_id function.
+    Then: Ensure the function returns the correct site ID.
+    """
     mocker.patch.object(Client, "_paged_http_request", return_value=load_test_data("api_mock", "client_get_sites"))
     assert mock_client.find_site_id(test_input) == expected_output
 
@@ -381,8 +452,13 @@ def test_client_find_site_id(mocker, mock_client: Client, test_input: str, expec
                                "host_name_source": "LDAP"}, {"id": 1}, {"id": 1}),
                              ({"site_id": "1", "date": "2022-01-01T10:00:00Z"}, None, None),
                          ])
-def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict,
-                              api_mock_data: dict | None, expected_output_context: dict | None):
+def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict | None,
+                              expected_output_context: dict | None):
+    """
+    Given: Valid parameters for the create_asset_command function.
+    When: Calling the create_asset_command function.
+    Then: Ensure the API call is made with the correct parameters.
+    """
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
     if test_input_kwargs.get("ip") is not None or test_input_kwargs.get("host_name") is not None:
         assert create_asset_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
@@ -401,6 +477,11 @@ def test_create_asset_command(mocker, mock_client: Client, test_input_kwargs: di
 def test_create_report_commands(mocker, mock_client: Client, report_templates_mock_file: str,
                                 report_config_mock_data: dict, report_mock_data: dict,
                                 expected_output_context_file: str):
+    """
+    Given: Valid parameters for different report creation commands.
+    When: Calling the create_report_command function.
+    Then: Ensure a valid context output is returned.
+    """
     report_templates_data = load_test_data("api_mock", report_templates_mock_file)
     mocker.patch.object(Client, "get_report_templates", return_value=report_templates_data)
     mocker.patch.object(Client, "create_report_config", return_value=report_config_mock_data)
@@ -491,6 +572,12 @@ def test_create_report_commands(mocker, mock_client: Client, report_templates_mo
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
                                       expected_post_data: dict | None, expected_output_context: dict):
+    """
+    Given: Valid or invalid parameters for the create_scan_schedule_command function.
+    When: Calling the create_scan_schedule_command function.
+    Then: If valid - ensure a valid API call is made and a valid context output is returned.
+        If invalid - Ensure an  exception is raised.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval_time") is None
@@ -533,6 +620,11 @@ def test_create_scan_schedule_command(mocker, mock_client: Client, test_input_kw
                          ])
 def test_create_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                           api_mock_data: dict, expected_output_context: dict):
+    """
+    Given: valid parameters for the create_shared_credential_command function.
+    When: Calling the create_shared_credential_command function.
+    Then: Ensure a valid context output is returned.
+    """
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
     assert create_shared_credential_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
 
@@ -561,6 +653,11 @@ def test_create_shared_credential_command(mocker, mock_client: Client, test_inpu
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
                      expected_post_data: dict, expected_output_context: dict):
+    """
+    Given: Valid parameters for the create_site function.
+    When: Calling the create_site function.
+    Then: Ensure a valid API call is made and a valid context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
     assert create_site_command(client=mock_client, **test_input_kwargs).outputs == expected_output_context
@@ -643,6 +740,11 @@ def test_create_site(mocker, mock_client: Client, test_input_kwargs: dict, api_m
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_create_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict, api_mock_data: dict,
                                              expected_post_data: dict, expected_output_context: dict):
+    """
+    Given: Valid parameters for the create_site_scan_credential_command function.
+    When: Calling the create_site_scan_credential_command function.
+    Then: Ensure a valid API call is made and a valid context output is returned.
+    """
     site_id = test_input_kwargs.pop("site_id")
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=api_mock_data)
 
@@ -666,6 +768,11 @@ def test_create_site_scan_credential_command(mocker, mock_client: Client, test_i
                          ])
 def test_create_vulnerability_exception_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                                 api_mock_data: dict | None, expected_output_context: dict | None):
+    """
+    Given: Valid  or invalid parameters for the create_vulnerability_exception_command function.
+    When: Calling the create_vulnerability_exception_command function.
+    Then: If valid - ensure a valid context output is returned. If invalid - Ensure an exception is raised.
+    """
     mocker.patch.object(Client, "_http_request", return_value=api_mock_data)
 
     if test_input_kwargs["scope_type"] != "Global" and test_input_kwargs.get("scope_id") is None:
@@ -682,6 +789,11 @@ def test_create_vulnerability_exception_command(mocker, mock_client: Client, tes
                              ("1",),
                          ])
 def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
+    """
+    Given: Valid parameters for the delete_asset_command function.
+    When: Calling the delete_asset_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_asset_command(client=mock_client, asset_id=asset_id)
 
@@ -700,6 +812,11 @@ def test_delete_asset_command(mocker, mock_client: Client, asset_id: str):
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str, schedule_id: str):
+    """
+    Given: Valid parameters for the delete_scheduled_scan_command function.
+    When: Calling the delete_scheduled_scan_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_scan_schedule_command(client=mock_client, site_id=site_id, schedule_id=schedule_id)
 
@@ -717,6 +834,11 @@ def test_delete_scheduled_scan_command(mocker, mock_client: Client, site_id: str
                              ("1",),
                          ])
 def test_delete_shared_credential_command(mocker, mock_client: Client, shared_credential_id: str):
+    """
+    Given: Valid parameters for the delete_shared_credential_command function.
+    When: Calling the delete_shared_credential_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_shared_credential_command(client=mock_client, shared_credential_id=shared_credential_id)
 
@@ -735,6 +857,11 @@ def test_delete_shared_credential_command(mocker, mock_client: Client, shared_cr
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_site_command(mocker, mock_client: Client, site_id: str):
+    """
+    Given: Valid parameters for the delete_site_command function.
+    When: Calling the delete_site_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_site_command(client=mock_client, site_id=site_id)
 
@@ -753,6 +880,11 @@ def test_delete_site_command(mocker, mock_client: Client, site_id: str):
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_id: str, credential_id: str):
+    """
+    Given: Valid parameters for the delete_site_scan_credential_command function.
+    When: Calling the delete_site_scan_credential_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_site_scan_credential_command(client=mock_client, site_id=site_id, credential_id=credential_id)
 
@@ -770,6 +902,11 @@ def test_delete_site_scan_credential_command(mocker, mock_client: Client, site_i
                              ("1",),
                          ])
 def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vulnerability_exception_id: str):
+    """
+    Given: Valid parameters for the delete_vulnerability_exception_command function.
+    When: Calling the delete_vulnerability_exception_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = delete_vulnerability_exception_command(client=mock_client,
                                                     vulnerability_exception_id=vulnerability_exception_id)
@@ -784,6 +921,11 @@ def test_delete_vulnerability_exception_command(mocker, mock_client: Client, vul
 
 
 def test_download_report_command(mocker, mock_client: Client):
+    """
+    Given: Valid parameters for the download_report_command function.
+    When: Calling the download_report_command function.
+    Then: Ensure a valid dictionary is returned matching the expected output.
+    """
     mocker.patch.object(Client, "download_report", return_value=b"Test")
     mocker.patch("builtins.open", mocker.mock_open())
     mocker.patch("uuid.uuid4", return_value="RandomUUID4")
@@ -807,6 +949,11 @@ def test_download_report_command(mocker, mock_client: Client):
                          ])
 def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, asset_vulnerability_api_mock_file: str,
                            vulnerability_api_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_asset_command function.
+    When: Calling the get_asset_command function.
+    Then: Ensure a valid context output is returned.
+    """
     asset_mock_data = load_test_data("api_mock", asset_mock_file)
     mocker.patch.object(Client, "get_asset", return_value=asset_mock_data)
 
@@ -833,6 +980,11 @@ def test_get_asset_command(mocker, mock_client: Client, asset_mock_file: str, as
                              ("client_get_assets", "get_assets_command")
                          ])
 def test_get_assets_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_assets_command function.
+    When: Calling the get_assets_command function.
+    Then: Ensure a valid context output is returned.
+    """
     assets_mock_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "get_assets", return_value=assets_mock_data)
 
@@ -855,6 +1007,11 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
                                          asset_vulnerability_mock_file: str, vulnerability_mock_file: str,
                                          asset_vulnerability_solution_mock_file: str,
                                          expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_asset_vulnerability_command function.
+    When: Calling the get_asset_vulnerability_command function.
+    Then: Ensure a valid context output is returned.
+    """
     asset_vulnerability_data = load_test_data("api_mock", asset_vulnerability_mock_file)
     mocker.patch.object(Client, "get_asset_vulnerability", return_value=asset_vulnerability_data)
 
@@ -876,6 +1033,11 @@ def test_get_asset_vulnerability_command(mocker, mock_client: Client, vulnerabil
                          ])
 def test_get_generated_report_status_command(mocker, mock_client: Client, api_mock_file: str,
                                              expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_generated_report_status_command function.
+    When: Calling the get_generated_report_status_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -891,6 +1053,11 @@ def test_get_generated_report_status_command(mocker, mock_client: Client, api_mo
                          ])
 def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file: str,
                                       expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_report_templates_command function.
+    When: Calling the get_report_templates_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -906,6 +1073,11 @@ def test_get_report_templates_command(mocker, mock_client: Client, api_mock_file
                          ])
 def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_input: str,
                           expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_scan_command function.
+    When: Calling the get_scan_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -920,6 +1092,11 @@ def test_get_scan_command(mocker, mock_client: Client, api_mock_file: str, ids_i
                              ("client_get_scans", "get_scans_command")
                          ])
 def test_get_scans_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_scans_command function.
+    When: Calling the get_scans_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
@@ -934,6 +1111,11 @@ def test_get_scans_command(mocker, mock_client: Client, api_mock_file: str, expe
                              ("client_get_sites", "get_sites_command")
                          ])
 def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_sites_command function.
+    When: Calling the get_sites_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
@@ -949,6 +1131,11 @@ def test_get_sites_command(mocker, mock_client: Client, api_mock_file: str, expe
                          ])
 def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
                                         expected_output_context_file: str):
+    """
+    Given: Valid parameters for the list_shared_credential_command function.
+    When: Calling the list_shared_credential_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -964,6 +1151,11 @@ def test_list_shared_credential_command(mocker, mock_client: Client, api_mock_fi
                          ])
 def test_list_assigned_shared_credential_command(mocker, mock_client: Client, api_mock_file: str,
                                                  expected_output_context_file: str):
+    """
+    Given: Valid parameters for the list_assigned_shared_credential_command function.
+    When: Calling the list_assigned_shared_credential_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_http_request", return_value=api_data)
 
@@ -979,6 +1171,11 @@ def test_list_assigned_shared_credential_command(mocker, mock_client: Client, ap
                          ])
 def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: str,
                                     expected_output_context_file: str):
+    """
+    Given: Valid parameters for the list_vulnerability_command function.
+    When: Calling the list_vulnerability_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
@@ -994,6 +1191,11 @@ def test_list_vulnerability_command(mocker, mock_client: Client, api_mock_file: 
                          ])
 def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_mock_file: str,
                                                expected_output_context_file: str):
+    """
+    Given: Valid parameters for the list_vulnerability_exceptions_command function.
+    When: Calling the list_vulnerability_exceptions_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=api_data)
 
@@ -1007,8 +1209,12 @@ def test_list_vulnerability_exceptions_command(mocker, mock_client: Client, api_
                          [
                              ("client_search_assets", "search_assets_command")
                          ])
-def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
-                               expected_output_context_file: str):
+def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the search_assets_command function.
+    When: Calling the search_assets_command function.
+    Then: Ensure a valid context output is returned.
+    """
     api_data = load_test_data("api_mock", api_mock_file)
     mocker.patch.object(Client, "_paged_http_request", return_value=api_data,)
     mocker.patch.object(Client, "find_asset_site", return_value=Site(site_id="1", site_name="Test"))
@@ -1030,11 +1236,14 @@ def test_search_assets_command(mocker, mock_client: Client, api_mock_file: str,
                          ])
 def test_set_assigned_shared_credential_status_command(mocker, mock_client: Client, site_id: str, credential_id: str,
                                                        enabled: bool):
+    """
+    Given: Valid parameters for the set_assigned_shared_credential_status_command function.
+    When: Calling the set_assigned_shared_credential_status_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(Client, "_http_request", return_value={})
-    result = set_assigned_shared_credential_status_command(client=mock_client,
-                                                           credential_id=credential_id,
-                                                           enabled=enabled,
-                                                           site_id=site_id)
+    result = set_assigned_shared_credential_status_command(client=mock_client, credential_id=credential_id,
+                                                           enabled=enabled, site_id=site_id)
 
     http_request.assert_called_with(
         method="PUT",
@@ -1054,6 +1263,11 @@ def test_set_assigned_shared_credential_status_command(mocker, mock_client: Clie
                          ])
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_status: ScanStatus):
+    """
+    Given: Valid parameters for the update_scan_command function.
+    When: Calling the update_scan_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(Client, "_http_request", return_value={})
     result = update_scan_command(mock_client, scan_id=scan_id, scan_status=scan_status)
 
@@ -1133,6 +1347,14 @@ def test_update_scan_command(mocker, mock_client: Client, scan_id: str, scan_sta
                          ])
 def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                       expected_post_data: dict | None):
+    """
+    Given: Valid or invalid parameters for the update_scan_schedule_command function.
+    When: Calling the update_scan_schedule_command function.
+    Then: If valid - ensure a valid API call is made and no context output is returned.
+        If invalid - ensure an exception is raised.
+
+
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
 
     if test_input_kwargs.get("frequency") is not None and (test_input_kwargs.get("interval") is None
@@ -1229,8 +1451,13 @@ def test_update_scan_schedule_command(mocker, mock_client: Client, test_input_kw
                                   }
                              }),
                          ])
-def test_update_shared_credential_command(mocker, mock_client: Client,
-                                          test_input_kwargs: dict, expected_post_data: dict):
+def test_update_shared_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
+                                          expected_post_data: dict):
+    """
+    Given: Valid parameters for the update_shared_credential_command function.
+    When: Calling the update_shared_credential_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_shared_credential_command(client=mock_client, **test_input_kwargs)
 
@@ -1316,6 +1543,11 @@ def test_update_shared_credential_command(mocker, mock_client: Client,
 # Note: This command hasn't been tested on an actual Nexpose instance
 def test_update_site_scan_credential_command(mocker, mock_client: Client, test_input_kwargs: dict,
                                              expected_post_data: dict):
+    """
+    Given: Valid parameters for the update_site_scan_credential_command function.
+    When: Calling the update_site_scan_credential_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_site_scan_credential_command(client=mock_client, **test_input_kwargs)
 
@@ -1335,6 +1567,11 @@ def test_update_site_scan_credential_command(mocker, mock_client: Client, test_i
                          ])
 def test_update_vulnerability_exception_expiration_command(mocker, mock_client: Client,
                                                            vulnerability_exception_id: str, expiration: str):
+    """
+    Given: Valid parameters for the update_vulnerability_exception_expiration_command function.
+    When: Calling the update_vulnerability_exception_expiration_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_vulnerability_exception_expiration_command(client=mock_client,
                                                                vulnerability_exception_id=vulnerability_exception_id,
@@ -1357,6 +1594,11 @@ def test_update_vulnerability_exception_expiration_command(mocker, mock_client: 
                          ])
 def test_update_vulnerability_exception_status_command(mocker, mock_client: Client,
                                                        vulnerability_exception_id: str, status: str):
+    """
+    Given: Valid parameters for the update_vulnerability_exception_status_command function.
+    When: Calling the update_vulnerability_exception_status_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     result = update_vulnerability_exception_status_command(client=mock_client,
                                                            vulnerability_exception_id=vulnerability_exception_id,
