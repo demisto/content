@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Generic SQL
+  id: Generic SQL - Dev
   version: -1
 configuration:
 - defaultvalue: MySQL
@@ -24,6 +24,30 @@ configuration:
   name: port
   required: false
   type: 0
+- additionalinfo: The Generic SQL search query by which to fetch events.
+  display: Fetch events query
+  name: fetchQuery
+  required: true
+  type: 0
+- defaultvalue: '50'
+  display: Fetch Limit (Default / Max - 50, Recommended less than 50)
+  name: fetch_limit
+  required: false
+  type: 0
+- additionalinfo: Time to start fetching.
+  display: Start Timestamp
+  name: start_timestamp
+  required: false
+  type: 0
+- additionalinfo: ID to start fetching.
+  display: Start ID
+  name: start_id
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
 - display: Database Name
   hidden: false
   name: dbname
@@ -56,8 +80,8 @@ configuration:
   required: false
   type: 0
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, and Oracle.'
-display: Generic SQL
-name: Generic SQL
+display: Generic SQL - Dev
+name: Generic SQL - Dev
 script:
   commands:
   - arguments:
@@ -173,7 +197,7 @@ script:
     name: sql-command
   dockerimage: demisto/genericsql:1.1.0.26235
   feed: false
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

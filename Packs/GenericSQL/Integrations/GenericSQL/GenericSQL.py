@@ -11,6 +11,8 @@ import logging
 from sqlalchemy.sql import text
 from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
+import dateparser
+FETCH_DEFAULT_LIMIT = '50'
 
 try:
     # if integration is using an older image (4.5 Server) we don't have expiringdict
@@ -24,6 +26,8 @@ pymysql.install_as_MySQLdb()
 
 GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
 DEFAULT_POOL_TTL = 600
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client:
@@ -186,8 +190,28 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     """
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
+    In case of Fetch Incidents, there are some validation
     """
-    return 'ok', {}, []
+    msg = ''
+    params = demisto.params()
+
+    if params.get('isFetch'):
+
+        if not params.get('fetchQuery'):
+            msg += 'Missing mandatory parameter Fetch events query. '
+
+        if limit := params.get('fetch_limit'):
+            limit = arg_to_number(limit)
+            if limit < 1 or limit > 50:
+                msg += 'Fetch Limit value should be between 1 and 50. '
+
+        if not (params.get('start_id') or params.get('start_timestamp')):
+            msg += 'A starting point for fetching is missing, please enter Start ID or Start Timestamp. '
+
+        if params.get('start_id') and params.get('start_timestamp'):
+            msg += 'You have entered both Start ID or Start Timestamp fields, please enter only one of them. '
+
+    return msg if msg else 'ok', {}, []
 
 
 def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -229,6 +253,122 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
             human_readable = "Command executed"
             return human_readable, {}, []
         raise err
+
+
+def get_last_run(params: dict):
+    """
+
+    Args:
+        params:
+
+    Returns:
+
+    """
+    last_run = demisto.getLastRun()
+    demisto.debug(f"original last run: {last_run}")
+    # for the first iteration
+    if not last_run:
+        # Fetch should be by timestamp or id
+        if params.get('start_timestamp'):
+            last_run = {'last_timestamp': params.get('start_timestamp'),
+                        'last_id': False}
+        else:
+            last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}
+    return last_run
+
+
+def create_sql_query(last_run: dict, params: dict):
+    if timestamp := last_run.get('last_timestamp'):
+        # Format example 2022-11-08 09:15:32
+        sql_query = f"{params.get('fetchQuery')} where timestamp > '{timestamp}'"
+    else:
+        sql_query = f'{params.get("fetchQuery")} where incident_id > {last_run.get("last_id")}'
+    return sql_query
+
+
+def convert_sqlalchemy_to_readable_table(result: dict):
+    """
+
+    Args:
+        result:
+
+    Returns:
+
+    """
+    # converting a sqlalchemy object to a table
+    converted_table = [dict(row) for row in result]
+    # converting b'' and datetime objects to readable ones
+    incidents = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+    return incidents
+
+
+def update_last_run_after_fetch(table: List[dict], last_run: dict):
+    """
+
+    Args:
+        table:
+        last_run:
+
+    Returns:
+
+    """
+    if last_run.get('last_timestamp'):
+        # allow till 3 digit after the decimal point - due to limits on querying
+        before_decimal_point, after_decimal_point = table[-1].get('timestamp').split('.')
+        last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
+        last_run['last_timestamp'] = last_timestamp
+    else:
+        last_run['last_id'] = table[-1].get('incident_id')
+
+    return last_run
+
+
+def table_to_incidents(table: List[dict], last_run: dict) -> List[Dict[str, Any]]:
+    """
+
+    Args:
+        last_run:
+        table:
+
+    Returns:
+
+    """
+    incidents = []
+    key_incident_unique_name = 'timestamp' if last_run.get('last_timestamp') else 'incident_id'
+    for record in table:
+        timestamp = record.get('timestamp')
+        date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
+        incident_context = {
+            'name': record.get(key_incident_unique_name),
+            'occurred': date_time.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(record),
+        }
+        incidents.append(incident_context)
+    return incidents
+
+
+def fetch_incidents(client: Client, params: dict):
+    """
+
+    Args:
+        client (Client): The API client.
+        params (dict): The params for fetch.
+    """
+    last_run = get_last_run(params)
+    sql_query = create_sql_query(last_run, params)
+    limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
+    result, headers = client.sql_query_execute_request(sql_query, {'limit': limit_fetch})
+    table = convert_sqlalchemy_to_readable_table(result)
+
+    if table:
+        last_run = update_last_run_after_fetch(table, last_run)
+
+    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run)
+
+    demisto.info(f'last record now is: {last_run}, '
+                 f'number of incidents fetched is {len(incidents)}')
+
+    return incidents, last_run
 
 
 # list of loggers we should set to debug when running in debug_mode
@@ -281,6 +421,11 @@ def main():
         }
         if command in commands:
             return_outputs(*commands[command](client, demisto.args(), command))
+        elif command == 'fetch-incidents':
+            incidents, last_run = fetch_incidents(client, params)
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
+
         else:
             raise NotImplementedError(f'{command} is not an existing Generic SQL command')
     except Exception as err:
