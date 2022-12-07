@@ -1,6 +1,4 @@
-from JiraCreateIssueExample import DATE_FORMAT, validate_date_field, parse_custom_fields
-    # , add_custom_fields \
-    # , rm_custom_field_from_args
+from JiraCreateIssueExample import DATE_FORMAT, validate_date_field, parse_custom_fields, add_custom_fields
 import pytest
 
 @pytest.mark.parametrize("due_date", [
@@ -62,4 +60,14 @@ def test_parse_custom_fields(custom_fields, expected):
     actual = parse_custom_fields(custom_fields)
 
     assert len(actual) == len(expected)
+    assert actual == expected
+
+
+@pytest.mark.parametrize("args, custom_fields, expected", [
+    ({"arg1": "val1", "arg2": 1}, [{"customfield_10096": "test"}, {"customfield_10040": 100}], {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}})
+])
+def test_add_custom_fields(args, custom_fields, expected):
+
+    actual = add_custom_fields(args, custom_fields)
+
     assert actual == expected
