@@ -26,11 +26,15 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: changed-files
+      id: changed-files
+      uses: tj-actions/changed-files@v34
+
     - name: Copy changed files to codeQL folder (to save runtime)
       run: |
         mkdir OnlyChangedFiles
 
-        for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+        for file in ${{ steps.changed-files.outputs.all_changed_and_modified_files }}; do
           mkdir -p "OnlyChangedFiles/$file"
           cp "$file" "OnlyChangedFiles/$file"
         done
