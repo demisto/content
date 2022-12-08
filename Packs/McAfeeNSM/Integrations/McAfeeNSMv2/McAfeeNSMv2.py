@@ -144,7 +144,7 @@ class Client(BaseClient):
         """
         url_suffix = f'/sdkapi/ruleobject/{rule_id}'
         self.headers['NSM-SDK-API'] = session_str
-        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
     def delete_rule_object(self, session_str: str, rule_id: str) -> Dict:
         """ Updates a Rule Object.
@@ -235,7 +235,7 @@ def rule_object_type_cases(str_type: str, case: str) -> str | None:
     else:
         r_type = f'NETWORK_IPV_{type_split[-1]}'
     if case == 'low':
-        return r_type.lower().replace('_','')
+        return r_type.lower().replace('_', '')
     return r_type
 
 
@@ -328,14 +328,14 @@ def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, 
     }
 
 
-def create_body_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int) -> tuple:
+def create_body_create_rule(rule_type: str, address: List, number: int,
+                            from_to_list: list[dict[str, Any | None]]) -> tuple:
     """ create part of the body for the command create_rule_object
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
-            from_address: str - The from address, if relevant.
-            to_address: str - The to address, if relevant.
             number: int - The number of the IPV.
+            from_to_list: List = None - A list that contains dictionaries with from and do addresses.
         Returns:
             Returns the body for the request.
         """
@@ -345,12 +345,7 @@ def create_body_create_rule(rule_type: str, address: List, from_address: str, to
         }
     elif 'ADDRESS_RANGE' in rule_type:
         return f'IPv{number}AddressRange', {
-            f'IPV{number}RangeList': [
-                    {
-                        'FromAddress': from_address,
-                        'ToAddress': to_address
-                    }
-                ]
+            f'IPV{number}RangeList': from_to_list
         }
     else:
         return f'NETWORK_IPV_{number}', {
@@ -365,14 +360,23 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
             address: List - A list of addresses, if relevant.
             from_address: str - The from address, if relevant.
             to_address: str - The to address, if relevant.
-            number: int - The number of the IPV.
+            number: int - The number of the addresses IP V.
         """
+    if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
+        raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
     if ('HOST' in rule_type or 'NETWORK' in rule_type) and not address:
-        raise Exception(f'If the type is “Endpoint IP V.{number}” or “Network IP V.{number}” than the argument '
-                        f'“address_ip_v.{number}” must contain a value.')
-    elif 'ADDRESS_RANGE' in rule_type and not to_address and not from_address:
-        raise Exception(f'If the type is “Range IP V.{number}” than the arguments “from_address_ip_v.{number}” and '
-                        f'“to_address_ip_v.{number}” must contain a value.')
+        raise Exception(
+            f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than the argument '
+            f'“address_ip_v.{number}” must contain a value.')
+    if ('HOST' in rule_type or 'NETWORK' in rule_type) and (from_address or to_address):
+        raise Exception('If the "rule_object_type" is Endpoint or Network than from_address and to_adresses parameters '
+                        'should not contain value.')
+    if 'ADDRESS_RANGE' in rule_type and not to_address and not from_address:
+        raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than the arguments '
+                        f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value.')
+    if 'ADDRESS_RANGE' in rule_type and address:
+        raise Exception(f'If the "rule_object_type" is “Range IP V.{number} than the both address_ip_v.4 and '
+                        f'address_ip_v.6 should not contain a value')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -725,6 +729,11 @@ def create_rule_object_command(client: Client, args: Dict, session_str: str) -> 
     from_address_ip_v_6 = args.get('from_address_ip_v.6')
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
 
+    if (address_ip_v_4 and address_ip_v_6) or (from_address_ip_v_4 and from_address_ip_v_6) or \
+            (to_address_ip_v_4 and to_address_ip_v_6):
+        raise Exception('This pair arguments (address_ip_v_4 and address_ip_v_6) or '
+                        '(from_address_ip_v_4 and from_address_ip_v_6) or (to_address_ip_v_4 and to_address_ip_v_6)'
+                        'should not have values in parallel, only one at a time.')
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
     number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
     from_address = from_address_ip_v_4 if from_address_ip_v_4 else from_address_ip_v_6
@@ -742,7 +751,12 @@ def create_rule_object_command(client: Client, args: Dict, session_str: str) -> 
         }
     }
 
-    d_name, extra_body = create_body_create_rule(rule_type, address, from_address, to_address, number)
+    from_to_list = [{
+        'FromAddress': from_address,
+        'ToAddress': to_address
+    }]
+
+    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
     body.get('RuleObjDef')[d_name] = extra_body
     response = client.create_rule_object_request(session_str, body)
 
@@ -772,31 +786,99 @@ def update_rule_object_command(client: Client, args: Dict, session_str: str) -> 
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
 
-    address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
-    number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
-    from_address = from_address_ip_v_4 if from_address_ip_v_4 else from_address_ip_v_6
-    to_address = to_address_ip_v_4 if to_address_ip_v_4 else to_address_ip_v_6
-
-    # check_args_create_rule(rule_type, address, from_address, to_address, number)
-
     response_get = client.get_rule_object_request(session_str, rule_id)
     response_get = response_get.get('RuleObjDef', {})
+
+    rule_type = response_get.get('ruleobjType')
+    if (rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4') and \
+            (from_address_ip_v_4 or to_address_ip_v_4 or address_ip_v_6 or from_address_ip_v_6 or to_address_ip_v_6):
+        raise Exception('If the rule object type is Endpoint IP V.4 or Network IP V.4 than only the argument '
+                        '"address_ip_v_4" should contain a value')
+    elif (rule_type == 'IPV_4_ADDRESS_RANGE') and \
+            ((from_address_ip_v_4 and not to_address_ip_v_4) or (not from_address_ip_v_4 and to_address_ip_v_4)):
+        raise Exception('If the rule object type is Range IP V.4 than both "from_address_ip_v_4" and '
+                        '"to_address_ip_v_4" must contain a value or be empty.')
+    elif (rule_type == 'IPV_4_ADDRESS_RANGE') and \
+            (address_ip_v_4 or address_ip_v_6 or from_address_ip_v_6 or to_address_ip_v_6):
+        raise Exception('If the rule object type is Range IP V.4 than only the arguments "from_address_ip_v_4" and '
+                        '"to_address_ip_v_4" should contain a value')
+    elif (rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6') and \
+            (address_ip_v_4 or from_address_ip_v_4 or to_address_ip_v_4 or from_address_ip_v_6 or to_address_ip_v_6):
+        raise Exception('If the rule object type is Endpoint IP V.6 or Network IP V.6 than only the argument '
+                        '"address_ip_v_6" should contain a value')
+    elif (rule_type == 'IPV_6_ADDRESS_RANGE') and \
+            ((from_address_ip_v_6 and not to_address_ip_v_6) or (not from_address_ip_v_6 and to_address_ip_v_6)):
+        raise Exception('If the rule object type is Range IP V.6 than both "from_address_ip_v_6" and '
+                        '"to_address_ip_v_6" must contain a value or be empty.')
+    elif (rule_type == 'IPV_6_ADDRESS_RANGE') and \
+            (address_ip_v_4 or address_ip_v_6 or from_address_ip_v_4 or to_address_ip_v_4):
+        raise Exception('If the rule object type is Range IP V.6 than only the arguments "from_address_ip_v_6" and '
+                        '"to_address_ip_v_6" should contain a value')
+
     name = name if name else response_get.get('name')
     visible_to_child = argToBoolean(visible_to_child) if visible_to_child else response_get.get('visible_to_child')
     description = description if description else response_get.get('description')
+    from_to_address_ip_v_6 = []
+    from_to_address_ip_v_4 = []
+    if is_overwrite:
+        if rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4':
+            address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('HostIPv4', {}) \
+                .get('hostIPv4AddressList')
+        if from_address_ip_v_4:
+            from_to_address_ip_v_4 = [{
+                'FromAddress': from_address_ip_v_4,
+                'ToAddress': to_address_ip_v_4
+            }]
+        elif not from_address_ip_v_4 and rule_type == 'IPV_4_ADDRESS_RANGE':
+            from_to_address_ip_v_4 = response_get.get('IPv4AddressRange', {}).get('IPV4RangeList')
+        if rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6':
+            address_ip_v_6 = address_ip_v_6 if address_ip_v_6 else response_get.get('HostIPv6', {}) \
+                .get('hostIPv6AddressList')
+        if from_address_ip_v_6:
+            from_to_address_ip_v_6 = [{
+                'FromAddress': from_address_ip_v_6,
+                'ToAddress': to_address_ip_v_6
+            }]
+        elif not from_address_ip_v_6 and rule_type == 'IPV_6_ADDRESS_RANGE':
+            from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList')
+    else:
+        if rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4':
+            old_address_ip_v_4 = response_get.get('HostIPv4', {}).get('hostIPv4AddressList', [])
+            old_address_ip_v_4.extend(address_ip_v_4)
+            address_ip_v_4 = old_address_ip_v_4
+        elif rule_type == 'IPV_4_ADDRESS_RANGE':
+            from_to_address_ip_v_4 = response_get.get('IPv4AddressRange', {}).get('IPV4RangeList', [])
+            from_to_address_ip_v_4.append({
+                'FromAddress': from_address_ip_v_4,
+                'ToAddress': to_address_ip_v_4
+            })
+        elif rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6':
+            old_address_ip_v_6 = response_get.get('HostIPv6', {}).get('hostIPv6AddressList', [])
+            old_address_ip_v_6.extend(address_ip_v_6)
+            address_ip_v_6 = old_address_ip_v_6
+        elif rule_type == 'IPV_6_ADDRESS_RANGE':
+            from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList', [])
+            from_to_address_ip_v_6.append({
+                'FromAddress': from_address_ip_v_6,
+                'ToAddress': to_address_ip_v_6
+            })
 
-    #body = {
-     #   'RuleObjDef': {
-      #      "domain": domain,
-       #     "ruleobjType": rule_type,
-        #    "visibleToChild": visible_to_child,
-         #   "description": description,
-          #  "name": name
-        #}
-    #}
-
-    #d_name, extra_body = create_body_create_rule(rule_type, address, from_address, to_address, number)
-    #body.get('RuleObjDef')[d_name] = extra_body
+    body = {
+        'RuleObjDef': {
+            "domain": domain,
+            "ruleobjType": rule_type,
+            "visibleToChild": visible_to_child,
+            "description": description,
+            "name": name
+        }
+    }
+    address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
+    number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
+    from_to_list = from_to_address_ip_v_4 if from_address_ip_v_4 else from_to_address_ip_v_6
+    d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
+    body.get('RuleObjDef')[d_name] = extra_body
+    client.update_rule_object_request(session_str, body, rule_id)
+    return CommandResults(readable_output=f'The rule object no.{rule_id} was updated successfully')
 
 
 def delete_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
@@ -870,6 +952,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-create-rule-object':
             results = create_rule_object_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-update-rule-object':
+            results = update_rule_object_command(client, demisto.args(), session_str)
             return_results(results)
         elif demisto.command() == 'nsm-delete-rule-object':
             results = delete_rule_object_command(client, demisto.args(), session_str)

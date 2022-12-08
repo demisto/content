@@ -398,7 +398,7 @@ script:
           required: false
         - name: is_overwrite
           required: false
-          description: Will the new addresses that was provided in the .
+          description: Will the new addresses that was provided in the update processes will override the current ones or will be added to them.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -680,6 +680,65 @@ script:
           required: false
           description: End IPv6 Range.
           isArray: false
+    - name: nsm-update-rule-object
+      description: Updates a Rule Object.
+      arguments:
+        - name: domain
+          required: true
+          description: The id of the domain. To get the domain id, use the !nsm-get-domains command.
+          isArray: false
+        - name: rule_id
+          description: The id of the rule. To get the rule object id, use the !nsm-list-domain-rule-object.
+          isArray: false
+          required: true
+        - name: name
+          required: false
+          description: The rule object name.
+          isArray: false
+        - name: visible_to_child
+          required: false
+          description: Will the rule object be visible to the child domain.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - yes
+            - no
+        - name: description
+          required: false
+          description: The description of the rule object.
+          isArray: false
+        - name: address_ip_v.4
+          required: false
+          description: List of IPv4 host Address, separated by comma.
+          isArray: false
+        - name: from_address_ip_v.4
+          required: false
+          description: Start IPv4 Range.
+          isArray: false
+        - name: to_address_ip_v.4
+          required: false
+          description: End IPv4 Range.
+          isArray: false
+        - name: address_ip_v.6
+          required: false
+          description: List of IPv6 host Address, separated by comma.
+          isArray: false
+        - name: from_address_ip_v.6
+          required: false
+          description: Start IPv6 Range.
+          isArray: false
+        - name: to_address_ip_v.6
+          required: false
+          description: End IPv6 Range.
+          isArray: false
+        - name: is_overwrite
+          required: false
+          description: Will the new addresses that was provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added.
+          isArray: false
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
     - name: nsm-delete-rule-object
       description: Deletes a Rule Object.
       arguments:
