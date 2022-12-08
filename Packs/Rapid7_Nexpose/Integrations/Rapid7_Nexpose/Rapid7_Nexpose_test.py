@@ -1553,7 +1553,7 @@ def test_update_site_scan_credential_command(mocker, mock_client: Client, test_i
 
     http_request.assert_called_with(
         method="PUT",
-        url_suffix=f"/sites/{test_input_kwargs['site_id']}/site_credentials",
+        url_suffix=f"/sites/{test_input_kwargs['site_id']}/site_credentials/{test_input_kwargs['credential_id']}",
         json_data=expected_post_data,
         resp_type="json",
     )

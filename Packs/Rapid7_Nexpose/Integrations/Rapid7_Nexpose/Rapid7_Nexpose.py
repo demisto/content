@@ -1693,7 +1693,7 @@ class Client(BaseClient):
         | Update an existing site scan credential.
         |
         | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateSiteCredential
 
         Args:
             name (str): Name of the credential.
@@ -1771,7 +1771,7 @@ class Client(BaseClient):
 
         return self._http_request(
             method="PUT",
-            url_suffix=f"/sites/{site_id}/site_credentials",
+            url_suffix=f"/sites/{site_id}/site_credentials/{credential_id}",
             json_data=post_data,
             resp_type="json",
         )
