@@ -154,7 +154,7 @@ def wait_for_uninstallation_to_complete(client: demisto_client, retries: int = 3
                                 'packs. Aborting.')
             logging.info(f'The process of uninstalling all packs is not over! There are still {len(installed_packs)} '
                          f'packs installed. Sleeping for 10 seconds.')
-            sleep(10)
+            sleep(60)
             installed_packs = get_all_installed_packs(client)
             retry = retry + 1
 
