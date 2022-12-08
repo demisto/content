@@ -2504,8 +2504,8 @@ def test_list_software_version_distribution_command(mocker, args, return_value, 
      '### Microsoft Defender ATP missing kb by software: microsoft-_-.product\n'
      '|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|\n'
      '|---|---|---|---|---|---|---|\n'
-     '| 4556813 | some_name | 11111 | .product | some_url | 1 | 2 |\n'
-     '| 4534271 | some_name | 11111 | .product | some_url | 1 | 2 |\n',
+     '| 4556813 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n'
+     '| 4534271 | some\_name | 11111 | .product | some\_url | 1 | 2 |\n',
      [{'id': '4556813', 'name': 'some_name', 'osBuild': 11111,
        'productsNames': ['.product'], 'url': 'some_url',
        'machineMissedOn': 1, 'cveAddressed': 2},
@@ -2542,11 +2542,7 @@ def test_list_missing_kb_by_software_command(mocker, args, return_value, expecte
                 'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.9, 'exposedMachines': 2,
                 'publishedOn': '2023-10-06T00:00:00Z', 'updatedOn': '2022-09-16T20:17:00Z', 'publicExploit': False,
                 'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
-     '### Microsoft Defender ATP vulnerabilities by software: some_id\n'
-     '|id|name|description|severity|publishedOn|updatedOn|'
-     'exposedMachines|exploitVerified|publicExploit|\n'
-     '|---|---|---|---|---|---|---|---|---|\n'
-     '| CVE-1111-1111 | CVE-1111-1111 | vulnerability_description | Medium | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n| CVE-2222-22222 | CVE-2222-22222 | vulnerability_description | Medium | 2023-10-06T00:00:00Z | 2022-09-16T20:17:00Z | 2 | false | false |\n',  # noqa: E501
+     '### Microsoft Defender ATP vulnerabilities by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n| CVE-2222-22222 | CVE-2222-22222 | vulnerability_description | Medium | 5.9 | 2023-10-06T00:00:00Z | 2022-09-16T20:17:00Z | 2 | false | false |\n',  # noqa: E501
      [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
        'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
        'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
@@ -2601,7 +2597,7 @@ def test_create_filters_conjunction(filters_arg_list, name, expected_result):
 
 @pytest.mark.parametrize('filters_arg_list, expected_result', [
     (["id eq 'id1' or id eq 'id2' or id eq 'id3'", "vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"],
-     "id eq 'id1' or id eq 'id2' or id eq 'id3' and vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3'"),
+     "(id eq 'id1' or id eq 'id2' or id eq 'id3') and (vendor eq 'vendor1' or vendor eq 'vendor2' or vendor eq 'vendor3')"),
     (["id eq 'id1' or id eq 'id2' or id eq 'id3'"], "id eq 'id1' or id eq 'id2' or id eq 'id3'"),
     ([], ""),
     (["", "id eq 'id1' or id eq 'id2' or id eq 'id3'", ""], "id eq 'id1' or id eq 'id2' or id eq 'id3'")
@@ -2624,9 +2620,9 @@ def test_create_filters_disjunctions(filters_arg_list, expected_result):
 
 
 @pytest.mark.parametrize('args_and_name_list, expected_result', [
-    ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "id eq 'id1' and vendor eq 'vendor1' or vendor eq 'vendor2'"),
+    ([(['id1'], 'id'), (['vendor1', 'vendor2'], 'vendor')], "(id eq 'id1') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
     ([(['id1', 'id2'], 'id'), (['vendor1', 'vendor2'], 'vendor')],
-     "id eq 'id1' or id eq 'id2' and vendor eq 'vendor1' or vendor eq 'vendor2'"),
+     "(id eq 'id1' or id eq 'id2') and (vendor eq 'vendor1' or vendor eq 'vendor2')"),
     ([(['id1'], 'id')], "id eq 'id1'")
 ])
 def test_create_filter(args_and_name_list, expected_result):
@@ -2646,7 +2642,13 @@ def test_create_filter(args_and_name_list, expected_result):
 
 
 @pytest.mark.parametrize('id_and_severity, name, description, published_on, cvss, updated_on, expected_result', [
-    ("", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z")
+    ("", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
+    ("", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
+    ("", "", "", "", "some_cvss", "", "cvssV3 ge some_cvss"),
+    ("", "", "some_description", "", "", "", "contains(description, 'some_description')"),
+    ("", "some_name", "", "", "", "", "contains(name, 'some_name')"),
+    ("", "some_name", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+     "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and (publishedOn ge 2020-12-16T00:00:00Z)")
 ])
 def test_create_filter_list_vulnerabilities(id_and_severity, name, description, published_on, cvss, updated_on, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import create_filter_list_vulnerabilities
@@ -2664,7 +2666,7 @@ def test_create_filter_list_vulnerabilities(id_and_severity, name, description, 
       {'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor', 'weaknesses': 0,
        'publicExploit': False, 'activeAlert': False, 'exposedMachines': 0, 'installedMachines': 1,
        'impactScore': 0, 'isNormalized': False, 'category': '', 'distributions': []}]},
-        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |\n| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
+        '### Microsoft Defender ATP list software:\n|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|\n|---|---|---|---|---|---|---|---|\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n| some\_id | some\_name | some\_vendor | 0 | false | 0 | 1 | false |\n',  # noqa: E501
      [{'id': 'some_id', 'name': 'some_name', 'vendor': 'some_vendor',
        'weaknesses': 0, 'publicExploit': False, 'activeAlert': False,
        'exposedMachines': 0, 'installedMachines': 1, 'impactScore': 0,
@@ -2704,11 +2706,11 @@ def test_list_software_command(mocker, args, return_value_get_list_software, exp
      '### Microsoft Defender ATP vulnerabilities:\n'
      '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
      '|---|---|---|---|---|---|---|\n|'
-     ' some_id | CVE-3333-33333 |'
-     ' some_machine_id |'
-     ' some_product_name | some_vendor | 7.0.2.0 | High |\n|'
-     ' some_id | CVE-3333-33333 |'
-     ' some_machine_id | some_product_name | some_vendor | 7.0.2.0 | High |\n',
+     ' some\_id | CVE-3333-33333 |'
+     ' some\_machine\_id |'
+     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n|'
+     ' some\_id | CVE-3333-33333 |'
+     ' some\_machine\_id | some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
      [{'id': 'some_id',
        'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
        'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
@@ -2798,3 +2800,22 @@ def test_list_vulnerabilities_command(mocker, args, return_value, expected_human
     result_list_software = list_vulnerabilities_command(client_mocker, args)
     assert result_list_software.readable_output == expected_human_readable
     assert result_list_software.outputs == expected_outputs
+
+
+@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [([
+    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+     'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+     'productVersion': '7.0.2.0', 'severity': 'High'},
+    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id', 'fixingKbId': None,
+     'productName': 'some_product_name', 'productVendor': 'some_vendor', 'productVersion': '7.0.2.0', 'severity': 'High'}],
+    [{'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
+     'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'},
+     {'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
+      'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
+      'productVersion': '7.0.2.0', 'severity': 'High'}])
+])
+def test_add_backslash_infront_of_underscore(data_to_escape_with_backslash, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore
+    result = add_backslash_infront_of_underscore(data_to_escape_with_backslash)
+    assert result == expected_result

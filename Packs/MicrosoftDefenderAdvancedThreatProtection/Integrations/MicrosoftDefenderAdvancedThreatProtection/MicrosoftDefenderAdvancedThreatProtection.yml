@@ -2318,7 +2318,7 @@ script:
     - default: false
       description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
-         (e.g., to retrieve alerts for user1@test.com, use user1).
+         (e.g., to retrieve alerts for user1@test.com, use user1).
       isArray: false
       name: username
       required: true
@@ -2416,7 +2416,7 @@ script:
     - default: false
       description: |-
         The user ID. Note that the ID is not the full UPN, but only the username.
-        (e.g., to retrieve machines for user1@test.com, use user1).
+        (e.g., to retrieve machines for user1@test.com, use user1).
       isArray: false
       name: username
       required: true
@@ -4606,7 +4606,7 @@ script:
       description: 'Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local"'
       type: String
     - contextPath: MicrosoftATP.SoftwareCVE.exploitUris
-      description: 'Exploit source URLs'
+      description: Exploit source URLs
       type: String
   - arguments:
     - default: false
@@ -4686,11 +4686,6 @@ script:
       name: cve_id
       secret: false
     - default: false
-      description: A comma-separated list of fixing kb ids used for getting the vulnerabilities.
-      isArray: true
-      name: fixing_kb_id
-      secret: false
-    - default: false
       description: A comma-separated list of product name used for getting the vulnerabilities.
       isArray: true
       name: product_name
@@ -4705,12 +4700,6 @@ script:
       isArray: true
       name: severity
       secret: false
-      auto: PREDEFINED
-      predefined:
-      - Low
-      - Medium
-      - High
-      - Critical
     - default: false
       description: A comma-separated list of product vendor used for getting the vulnerabilities.
       isArray: true
@@ -4785,12 +4774,6 @@ script:
       isArray: true
       name: severity
       secret: false
-      auto: PREDEFINED
-      predefined:
-      - Low
-      - Medium
-      - High
-      - Critical
     - description: Date when vulnerability was updated.
       isArray: false
       name: updated_on
@@ -6614,7 +6597,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.39526
+  dockerimage: demisto/crypto:1.0.0.40696
   feed: false
   isfetch: true
   longRunning: false

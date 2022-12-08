@@ -4522,8 +4522,9 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
     headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
     missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
     missing_kb_by_software_response_value = missing_kb_by_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore(missing_kb_by_software_response_value)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
-                                     missing_kb_by_software_response_value, headers=headers, removeNull=True)
+                                     mark_down_values, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.SoftwareKB',
         outputs_key_field='id',
@@ -4541,7 +4542,8 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> Co
             A CommandResults object with a list of vulnerabilities by software.
     """
     software_id = str(args.get('id'))
-    headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines', 'exploitVerified',
+    headers = ['id', 'name', 'description', 'severity', 'cvssV3', 'publishedOn', 'updatedOn',
+               'exposedMachines', 'exploitVerified',
                'publicExploit']
     vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
     vulnerabilities_response_value = vulnerabilities_response.get('value')
@@ -4577,6 +4579,25 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
     return query
 
 
+def add_backslash_infront_of_underscore(markdown_data: Optional[list[dict]]) -> list[dict]:
+    """ Escape underscores with a backslash in order to show underscores after markdown parsing.
+        Args:
+            markdown_data: list[dict] - list of dicts.
+        Returns:
+            A list of dicts with a backslash before each underscore.
+    """
+    markdown_data_to_return = []
+    if markdown_data:
+        for dict_item in markdown_data:
+            dict = {}
+            for k, v in dict_item.items():
+                if isinstance(v, str):
+                    v = str(v.replace('_', '\_'))
+                dict[k] = v
+            markdown_data_to_return.append(dict)
+    return markdown_data_to_return
+
+
 def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
     """ Create filter disjunctions (added 'and' between args)
         example output: id eq 'id1' and vendor eq 'vendor1'
@@ -4590,10 +4611,16 @@ def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
     list_length = len(filters_arg_list)
     if filters_arg_list:
         for index, list_item in enumerate(filters_arg_list):
-            if index == list_length - 1 or list_length == 1 or list_item == '':
+            if list_length == 1 and list_item == '':
+                continue
+            if list_length == 1:
                 query = f'{query}{list_item}'
+                continue
+            if index == list_length - 1:
+                query = f'{query}({list_item})'
+                continue
             else:
-                query = f'{query}{list_item} and '
+                query = f'{query}({list_item}) and '
         demisto.debug(query)
     return query
 
@@ -4629,8 +4656,9 @@ def list_software_command(client: MsClient, args: dict) -> CommandResults:
     headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
     list_software_response = client.get_list_software(filter_req, limit, offset)
     list_software_response_value = list_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore(list_software_response_value)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
-                                     list_software_response_value, headers=headers, removeNull=True)
+                                     mark_down_values, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.Software',
         outputs_key_field='id',
@@ -4663,8 +4691,9 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
     headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore(list_vulnerabilities_response_value)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                     list_vulnerabilities_response_value, headers=headers, removeNull=True)
+                                     mark_down_values, headers=headers, removeNull=True)
     return CommandResults(
         outputs_prefix='MicrosoftATP.MachineCVE',
         outputs_key_field='id',
@@ -4694,6 +4723,8 @@ def create_filter_list_vulnerabilities(id_and_severity: str, name: str, descript
     if description:
         filter_query_list.append(f"contains(description, '{description}')")
     if cvss:
+        filter_query_list.append(f"cvssV3 ge {cvss}")
+    if updated_on:
         filter_query_list.append(f"updatedOn ge {updated_on}")
     if published_on:
         filter_query_list.append(f"publishedOn ge {published_on}")
