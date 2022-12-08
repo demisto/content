@@ -19,7 +19,7 @@ from TrendMicroVisionOne import (
     add_note,
     update_status,
 )
-
+import demistomock as demisto
 # Provide valid API KEY
 api_key = "test api key"
 proxy = "false"
@@ -638,6 +638,7 @@ def test_submit_file_to_sandbox(mocker):
 
 # Test Cases for Submit file entry to sandbox.
 def test_submit_file_entry_to_sandbox(mocker):
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'README.md', 'name': 'test.txt'})
     mocker.patch(
         "TrendMicroVisionOne.requests.get",
         mocked_requests_get
