@@ -723,8 +723,7 @@ class Client(BaseClient):
         """
         | Delete an asset.
         |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html
+        | For more information see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/deleteAsset
 
         Args:
             asset_id (str): ID of the asset to delete.
@@ -1429,8 +1428,8 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def update_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str,
-                             start_date: str, enabled: bool, excluded_asset_groups: list[int] | None = None,
+    def update_scan_schedule(self, site_id: str, scan_schedule_id: int, repeat_behaviour: str, start_date: str,
+                             enabled: bool, excluded_asset_groups: list[int] | None = None,
                              excluded_targets: list[str] | None = None, included_asset_groups: list[int] | None = None,
                              included_targets: list[str] | None = None, duration: str | None = None,
                              frequency: RepeatFrequencyType | None = None,
