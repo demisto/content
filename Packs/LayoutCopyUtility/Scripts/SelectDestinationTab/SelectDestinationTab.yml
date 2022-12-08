@@ -1,3 +1,4 @@
+comment: Field display script for displaying the Destination Tab options.
 args:
 - name: dest_layout
 commonfields:
