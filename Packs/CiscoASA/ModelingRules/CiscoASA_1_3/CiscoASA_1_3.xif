@@ -29,9 +29,9 @@ alter
 | alter user_name = coalesce(user_name1 , user_name2, user_name3 , user_name4 , user_name5 , user_name6)
 // protocol on investigation
 /* | alter protocol1 = arrayindex(regextract(_raw_log,"([A-Z]+)\s*[A-Z]*\s+\w+\s+[from|for]{3,4}"),0),
-    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0) */
+    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0) 
 | alter
-    protocol = coalesce(protocol1, protocol2)
+    protocol = coalesce(protocol1, protocol2)*/
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
 // source_ip/source_port to dest_ip/dest_port
@@ -118,7 +118,7 @@ alter
     xdm.event.id = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    xdm.network.application_protocol = protocol,
+    //xdm.network.application_protocol = protocol,
     xdm.alert.category = category,
     xdm.source.host.hostname = host_ip,
     xdm.source.ipv4 = source_ip,
