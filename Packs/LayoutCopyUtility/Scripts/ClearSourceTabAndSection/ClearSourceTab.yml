@@ -1,12 +1,13 @@
+comment: Clears the Select Source Tab field
 commonfields:
-  id: ClearSourceTabAndSection
+  id: ClearSourceTab
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.8.39276
 enabled: true
-name: ClearSourceTabAndSection
+name: ClearSourceTab
 runas: DBotWeakRole
 runonce: false
 script: ''
