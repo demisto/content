@@ -1,0 +1,8 @@
+[MODEL: dataset="NetBox_IRM_raw", model="Audit"]
+alter XDM.Audit.original_event_id = to_string(id),
+    XDM.Audit.event_timestamp = created_time,
+    XDM.Audit.original_event_description = description,
+    XDM.Audit.operation_type = json_extract_scalar(custom_details, "$.type"),
+    XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(custom_details, "$.triggered_by_name"),
+    XDM.Audit.TriggeredBy.identity.uuid = json_extract_scalar(custom_details, "$.triggered_by_uuid");
+    
