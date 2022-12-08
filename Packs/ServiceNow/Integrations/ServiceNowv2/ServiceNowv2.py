@@ -2278,7 +2278,8 @@ def get_timezone_offset(full_response):
     Receives the full response of a ticket query from SNOW and computes the timezone offset between the timezone of the
     instance and UTC.
     """
-    local_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('display_value', ''), DATE_FORMAT)
+    local_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('display_value', ''),
+                                   DATE_FORMAT)
     utc_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('value', ''), DATE_FORMAT)
     offset = utc_time - local_time
     return offset

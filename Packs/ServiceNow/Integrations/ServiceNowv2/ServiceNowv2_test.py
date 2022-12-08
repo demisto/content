@@ -172,8 +172,10 @@ def test_convert_to_notes_result():
                    'sys_id': {'display_value': '123456789', 'value': '123456789'},
                    'urgency': {'display_value': '3 - Low', 'value': '3'},
                    'severity': {'display_value': '3 - Low', 'value': '3'},
-                   'comments': {'display_value': '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n' \
-                                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n', 'value': ''}}}
+                   'comments': {'display_value':
+                                '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n'
+                                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n',
+                                'value': ''}}}
 
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
                                    'value': 'Second comment',
@@ -214,7 +216,7 @@ def test_split_notes():
 
     raw_notes = '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n' \
                 '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
-    
+
     time_info = {'timezone_offset': timedelta(minutes=0),
                  'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
     notes = split_notes(raw_notes, 'comments', time_info)
