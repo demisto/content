@@ -1,3 +1,4 @@
+comment: Pulls, formats, and displays the results of copy attempts. 
 commonfields:
   id: LayoutCopyResults
   version: -1
