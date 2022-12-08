@@ -17,6 +17,7 @@ class ContentPackInstaller:
         self.already_on_machine_packs: Dict[str, Union[Version, LegacyVersion]] = dict()
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
+        self.packs_failed: Dict[str, str] = dict()
 
         self.get_installed_packs()
 
@@ -35,6 +36,10 @@ class ContentPackInstaller:
             error_message = f'{SCRIPT_NAME} - {res}'
             demisto.debug(error_message)
             return
+
+        # in some cases the command result returns as array with one response entry
+        if type(res) is list:
+            res = res[0]
 
         packs_data: List[Dict[str, str]] = res.get('response', [])
         for pack in packs_data:
@@ -152,23 +157,28 @@ class ContentPackInstaller:
             demisto.debug(f'{SCRIPT_NAME} - No packs were sent for installation.')
             return
 
-        data = {
-            'packs': packs_to_install,
-            'ignoreWarnings': True
-        }
-
         # make the pack installation request
         packs_names_versions = {pack['id']: parse(pack['version']) for pack in packs_to_install}
         demisto.debug(f'{SCRIPT_NAME} - Sending installation request for: {packs_names_versions}')
 
-        execute_command(
-            'demisto-api-post',
-            {'uri': '/contentpacks/marketplace/install', 'body': data},
-            extract_contents=False
-        )
+        for pack in packs_to_install:
+            pack_id = pack['id']
+            pack_payload = json.dumps([{pack_id: pack['version']}])
 
-        self.installed_packs.update(packs_names_versions)
-        self.newly_installed_packs.update(packs_names_versions)  # type: ignore[arg-type]
+            status, res = execute_command(
+                'demisto-api-install-packs',
+                {
+                    'packs_to_install': str(pack_payload)
+                },
+                fail_on_error=False,
+            )
+
+            if not status:
+                demisto.error(f'{SCRIPT_NAME} - Failed to install the pack {pack_id} - {str(res)}')
+                self.packs_failed[pack_id] = str(pack['version'])
+            else:
+                self.installed_packs[pack_id] = packs_names_versions[pack_id]
+                self.newly_installed_packs[pack_id] = packs_names_versions[pack_id]  # type: ignore
 
     def get_dependencies_for_pack(self, pack_data: Dict[str, str]) -> List[Dict[str, str]]:
         """Retrieves the packs' dependencies from the marketplace data.
@@ -218,11 +228,12 @@ class ContentPackInstaller:
         except Exception:
             return parse(self.get_latest_version_for_pack(pack_data['id'])) == self.installed_packs[pack_data['id']]
 
-    def install_pack_and_its_dependencies_recursively(self, pack_data: Dict[str, str]) -> None:
-        """Recursive method for installing a pack and it's prerequisites in order.
+    def install_pack_and_its_dependencies(self, pack_data: Dict[str, str], install_dependencies: bool) -> None:
+        """Method for installing a pack and it's prerequisites in order.
 
         Args:
             pack_data (Dict[str, str]): Packs' data for installation.
+            install_dependencies (bool): Whether to install the pack dependencies.
 
         """
         if self.is_pack_already_installed(pack_data):
@@ -234,15 +245,11 @@ class ContentPackInstaller:
         if pack_data['version'] == 'latest':
             pack_data = self.get_packs_data_for_installation([pack_data])[0]
 
-        dependencies_to_install = self.get_dependencies_for_pack(pack_data)
+        if install_dependencies:
+            dependencies_to_install = self.get_dependencies_for_pack(pack_data)
+            demisto.debug(f'{SCRIPT_NAME} - Updated dependencies for {pack_data["id"]}: {dependencies_to_install}')
+            self.install_packs(dependencies_to_install)
 
-        for dependency in dependencies_to_install:
-            self.install_pack_and_its_dependencies_recursively(dependency)
-
-        dependencies_to_install = self.get_packs_data_for_installation(dependencies_to_install)
-        demisto.debug(f'{SCRIPT_NAME} - Updated dependencies for {pack_data["id"]}: {dependencies_to_install}')
-
-        self.install_packs(dependencies_to_install)
         self.install_packs([pack_data])
 
 
@@ -291,7 +298,6 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
             'packversion': str(pack_version),
             'installationstatus': 'Success.' if pack_id in requested_packs_ids else 'Installed as requirement.',
         }
-
         context_data.append(content_installed)
 
     for pack_id in requested_packs_ids:
@@ -301,8 +307,15 @@ def create_context(packs_to_install: List[Dict[str, str]], content_packs_install
                 'packversion': str(content_packs_installer.installed_packs[pack_id]),
                 'installationstatus': 'Already Installed on the machine.',
             }
-
             context_data.append(content_installed)
+
+        if pack_id in content_packs_installer.packs_failed:
+            packs_failed = {
+                'packid': pack_id,
+                'packversion': content_packs_installer.packs_failed[pack_id],
+                'installationstatus': 'Failed to install.',
+            }
+            context_data.append(packs_failed)
 
     return context_data
 
@@ -313,9 +326,10 @@ def main():
 
         args = demisto.args()
         packs_to_install = format_packs_data_for_installation(args)
+        install_dependencies = argToBoolean(args.get('install_dependencies', 'true'))
 
         for pack in packs_to_install:
-            installer.install_pack_and_its_dependencies_recursively(pack)
+            installer.install_pack_and_its_dependencies(pack, install_dependencies)
 
         return_results(
             CommandResults(
