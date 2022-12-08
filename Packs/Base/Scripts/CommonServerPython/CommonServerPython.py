@@ -10691,7 +10691,7 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10710,11 +10710,19 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
     :return: None
     :rtype: ``None``
     """
     data = events
     amount_of_events = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
 
     if not events:
         demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
@@ -10749,7 +10757,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'format': data_format,
         'product': product,
         'vendor': vendor,
-        'content-encoding': 'gzip'
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url
     }
 
     header_msg = 'Error sending new events into XSIAM.\n'
