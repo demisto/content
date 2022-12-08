@@ -2598,7 +2598,7 @@ def get_connection_args() -> dict:
     return connection_args
 
 
-def main():  # pragma: no-cover
+def main():  # pragma: no cover
     command = demisto.command()
     params = demisto.params()
 
