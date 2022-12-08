@@ -1,0 +1,183 @@
+[
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0",
+                "mac": "00:0C:29:9A:D8:2C"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "history": [
+            {
+                "date": "2020-04-20T13:56:34.818Z",
+                "scanId": 10,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2020-04-21T11:01:58.151Z",
+                "scanId": 11,
+                "type": "SCAN",
+                "version": 2
+            },
+            {
+                "date": "2022-07-10T11:51:17.874Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 692,
+                "vulnerabilityExceptionId": 1
+            },
+            {
+                "date": "2022-11-02T14:54:19.040Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
+                "version": 693,
+                "vulnerabilityExceptionId": 1
+            }
+        ],
+        "id": 2,
+        "ip": "192.0.2.0",
+        "mac": "00:0C:29:9A:D8:2C",
+        "os": "Linux 3.10",
+        "osFingerprint": {
+            "cpe": {
+                "part": "o",
+                "product": "linux_kernel",
+                "targetHW": "arm64",
+                "v2.2": "cpe:/o:linux:linux_kernel:3.10.0::~~~~arm64~",
+                "v2.3": "cpe:2.3:o:linux:linux_kernel:3.10.0:*:*:*:*:*:arm64:*",
+                "vendor": "linux",
+                "version": "3.10.0"
+            },
+            "description": "Linux 3.10",
+            "family": "Linux",
+            "id": 6,
+            "product": "Linux",
+            "systemName": "Linux",
+            "type": "General",
+            "vendor": "Linux",
+            "version": "3.10"
+        },
+        "rawRiskScore": 1728.056884765625,
+        "riskScore": 1728.056884765625,
+        "services": [
+            {
+                "configurations": [
+                    {
+                        "name": "ssh.algorithms.compression",
+                        "value": "none,zlib@openssh.com"
+                    },
+                    {
+                        "name": "ssh.algorithms.encryption",
+                        "value": "chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr,aes128-gcm@openssh.com,aes256-gcm@openssh.com,aes128-cbc,aes192-cbc,aes256-cbc,blowfish-cbc,cast128-cbc,3des-cbc"
+                    },
+                    {
+                        "name": "ssh.algorithms.hostkey",
+                        "value": "ssh-rsa,rsa-sha2-512,rsa-sha2-256,ecdsa-sha2-nistp256,ssh-ed25519"
+                    },
+                    {
+                        "name": "ssh.algorithms.kex",
+                        "value": "curve25519-sha256,curve25519-sha256@libssh.org,ecdh-sha2-nistp256,ecdh-sha2-nistp384,ecdh-sha2-nistp521,diffie-hellman-group-exchange-sha256,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha1,diffie-hellman-group14-sha256,diffie-hellman-group14-sha1,diffie-hellman-group1-sha1"
+                    },
+                    {
+                        "name": "ssh.algorithms.mac",
+                        "value": "umac-64-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,hmac-sha1-etm@openssh.com,umac-64@openssh.com,umac-128@openssh.com,hmac-sha2-256,hmac-sha2-512,hmac-sha1"
+                    },
+                    {
+                        "name": "ssh.banner",
+                        "value": "SSH-2.0-OpenSSH_7.4"
+                    },
+                    {
+                        "name": "ssh.protocol.version",
+                        "value": "2.0"
+                    },
+                    {
+                        "name": "ssh.rsa.pubkey.fingerprint",
+                        "value": "A74AFD453C6FBD15CF99481E0FFFC110"
+                    }
+                ],
+                "family": "OpenSSH",
+                "name": "SSH",
+                "port": 22,
+                "product": "OpenSSH",
+                "protocol": "tcp",
+                "vendor": "OpenBSD",
+                "version": "7.4"
+            }
+        ],
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 4,
+            "severe": 3,
+            "total": 7
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "history": [
+            {
+                "date": "2020-07-26T09:54:20.099Z",
+                "scanId": 400,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2020-07-27T12:40:34.550Z",
+                "scanId": 402,
+                "type": "SCAN",
+                "version": 2
+            }
+        ],
+        "id": 3,
+        "ip": "192.0.2.0",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": false,
+        "history": [
+            {
+                "date": "2020-07-29T11:11:57.552Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 1
+            }
+        ],
+        "id": 4,
+        "ip": "192.0.2.0",
+        "rawRiskScore": 0.0,
+        "riskScore": 0.0,
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 0,
+            "total": 0
+        }
+    }
+]
