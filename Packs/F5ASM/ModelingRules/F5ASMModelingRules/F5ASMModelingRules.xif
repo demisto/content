@@ -1,16 +1,10 @@
 [MODEL: dataset="F5_ASM_raw", model="Network"] 
-alter event_type = cefName,
-        response_code = cn1,
-        policy_apply_date = deviceCustomDate1,
-        attack_type = cs4,
-        geo_location = cs6,
-        full_request = cs3,
-        policy_name = cs1,
-        user_agent=arrayindex(regextract(cs3 ,"user\-agent\:\s([^\"]+)\\"), 0),
-        host=arrayindex(regextract(cs3 ,"Host:\s([^\\]+)"), 0),
-	    referrer =arrayindex(regextract(cs3 ,"referer\:\s([^\\]+)"), 0),
-        source_address = c6a2,
-        destination_address = c6a3
+alter
+	user_agent = arrayindex(regextract(cs3 ,"user\-agent\:\s([^\"]+)\\"), 0),
+    host = arrayindex(regextract(cs3 ,"Host:\s([^\\]+)"), 0),
+	referrer = arrayindex(regextract(cs3 ,"referer\:\s([^\\]+)"), 0),
+    source_address = c6a2,
+    destination_address = c6a3
 // Parse src ip
 | alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
 | alter ipv6src = if(src != null and ipv4src = null, src, null)
@@ -27,24 +21,24 @@ alter event_type = cefName,
 | alter time = parse_timestamp("%s", rt)
 // end parse timestamp
 | alter
-        XDM.Network.Original_event_type = event_type,
-        XDM.Network.rule = policy_name,
-        XDM.Network.observation_timestamp = policy_apply_date,
+        XDM.Network.Original_event_type = cefName,
+        XDM.Network.rule = cs1,
+        XDM.Network.observation_timestamp = deviceCustomDate1,
         XDM.Network.Source.port = spt,
         XDM.Network.Destination.port = dpt,
         XDM.Network.application_protocol = app,
         XDM.Network.event_timestamp = time,
         XDM.Network.Observer.unique_identifier = deviceExternalId,
-        XDM.Network.threat.name = attack_type,
-        XDM.Network.Source.location.geo = geo_location,
+        XDM.Network.threat.name = cs4,
+        XDM.Network.Source.location.geo = cs6,
         XDM.Network.Source.ipv4 = ipv4src,
         XDM.Network.Source.ipv6 = ipv6src,
         XDM.Network.Destination.ipv4 = ipv4dest,
         XDM.Network.Destination.ipv6 = ipv6dest,
         XDM.Network.Observer.name = dvchost,
-        XDM.Network.http.response_code = response_code,
+        XDM.Network.http.response_code = cn1,
         XDM.Network.http.method = requestMethod,
         XDM.Network.http.url = request,
         XDM.Network.http.referrer = referrer,
         XDM.Network.http.user_agent = user_agent,
-        XDM.Network.Destination.process.executable.path = full_request;
+        XDM.Network.Destination.process.executable.path = cs3;
