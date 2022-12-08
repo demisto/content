@@ -105,12 +105,16 @@ alter
 // from 00.00.00.00 to 99.99.99.99
 | alter source_ip11 = arrayindex(regextract(_raw_log ,"\sfrom\s(\d+\.\d+\.\d+\.\d+) to \d+\.\d+\.\d+\.\d+"),0)
     ,dest_ip11 = arrayindex(regextract(_raw_log ,"\sfrom\s\d+\.\d+\.\d+\.\d+ to (\d+\.\d+\.\d+\.\d+)"),0)
+// option 12
+// faddr 00.00.00.00/00 to laddr 99.99.99.99
+| alter source_ip12 = arrayindex(regextract(_raw_log ,"for\s+faddr\s+(\d+\.\d+\.\d+\.\d+)\/\d+\s+to\s+"),0)
+| alter dest_ip12 = arrayindex(regextract(_raw_log ,"\s+to\s+laddr\s(\d+\.\d+\.\d+\.\d+)"),0)
 // merge the fields
 | alter
-    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11),
+    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12),
     source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7),
     source_interface = coalesce(source_interface2, source_interface3),
-    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11),
+    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12),
     dest_port = coalesce(dest_port1, dest_port2, dest_port3, dest_port5, dest_port7),
     dest_interface = coalesce(dest_interface2, dest_interface3, dest_interface5)
 // ------------------------------ end source/dest ip/port/interface part ---------------------------------
