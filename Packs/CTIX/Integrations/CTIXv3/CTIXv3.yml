@@ -1256,7 +1256,7 @@ script:
           description: The URL
           type: String
       description: Lookup url threat data
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.9.40422
   runonce: false
   subtype: python3
 tests:
