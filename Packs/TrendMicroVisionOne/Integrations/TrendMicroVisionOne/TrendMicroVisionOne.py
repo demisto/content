@@ -1237,18 +1237,10 @@ def submit_file_entry_to_sandbox(
     file_path = file_.get("path")
     archive_pass = args.get(ARCHIVE_PASSWORD)
     document_pass = args.get(DOCUMENT_PASSWORD)
-    try:
-        if not file_path == "test/test.txt":
-            body = open(file_path, "rb")
-            contents = body.read()
-            body.close()
-        else:
-            contents = b"Hello World!"
-    except FileNotFoundError as err:
-        demisto.error(err)
-        return_error(err)
     query_params: Dict[Any, Any] = {}
     headers = {AUTHORIZATION: f"{BEARER} {client.api_key}"}
+    with open(file_path, "rb") as f:
+        contents = f.read()
     data = {}
     if document_pass:
         data["documentPassword"] = base64.b64encode(document_pass.encode(ASCII)).decode(
@@ -1259,13 +1251,17 @@ def submit_file_entry_to_sandbox(
             ASCII
         )
     files = {"file": (f"{file_name}", contents, "application/octet-stream")}
-    result = requests.post(
-        f"{client.base_url}{SUBMIT_FILE_TO_SANDBOX}",
-        params=query_params,
-        headers=headers,
-        data=data,
-        files=files,
-    )
+    try:
+        result = requests.post(
+            f"{client.base_url}{SUBMIT_FILE_TO_SANDBOX}",
+            params=query_params,
+            headers=headers,
+            data=data,
+            files=files,
+        )
+    except HTTPError as http_err:
+        demisto.error(http_err)
+        return_error(http_err)
     response = result.json()
     message = {
         "filename": file_name,
