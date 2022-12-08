@@ -102,7 +102,7 @@ configuration:
   required: false
   type: 0
 - display: Log Type
-  name: log_type
+  name: log_types
   required: false
   defaultvalue: All
   type: 16

@@ -45,8 +45,9 @@ PRE_POST = ''
 OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
 FETCH_DEFAULT_TIME = '24 hours'
+MAX_INCIDENTS_TO_FETCH = 100
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -4997,18 +4998,18 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 
 @logger
-def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
+def panorama_query_logs(log_types: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
-        'log-type': log_type,
+        'log-type': log_types,
         'key': API_KEY
     }
 
-    if filedigest and log_type != 'wildfire':
+    if filedigest and log_types != 'wildfire':
         raise Exception('The filedigest argument is only relevant to wildfire log type.')
-    if url and log_type == 'traffic':
+    if url and log_types == 'traffic':
         raise Exception('The url argument is not relevant to traffic log type.')
 
     if query:
@@ -5041,7 +5042,7 @@ def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
-    log_type = args.get('log-type')
+    log_types = args.get('log-type')
     number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
     address_src = args.get('addr-src')
@@ -5066,7 +5067,7 @@ def panorama_query_logs_command(args: dict):
 
         result: PanosResponse = PanosResponse(
             panorama_query_logs(
-                log_type, number_of_logs, query, address_src, address_dst, ip_,
+                log_types, number_of_logs, query, address_src, address_dst, ip_,
                 zone_src, zone_dst, time_generated, action,
                 port_dst, rule, url, filedigest
             ),
@@ -5083,7 +5084,7 @@ def panorama_query_logs_command(args: dict):
         query_logs_output = {
             'JobID': result.ns.response.result.job,
             'Status': 'Pending',
-            'LogType': log_type,
+            'LogType': log_types,
             'Message': result.ns.response.result.msg.line
         }
 
@@ -5099,13 +5100,13 @@ def panorama_query_logs_command(args: dict):
             continue_to_poll=True,
             args_for_next_run={
                 'query_log_job_id': result.ns.response.result.job,
-                'log-type': log_type,
+                'log-type': log_types,
                 'polling': argToBoolean(args.get('polling', 'false')),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
                 'timeout': arg_to_number(args.get('timeout', 120))
             },
             partial_result=CommandResults(
-                readable_output=f"Fetching {log_type} logs for job ID {result.ns.response.result.job}...",
+                readable_output=f"Fetching {log_types} logs for job ID {result.ns.response.result.job}...",
                 raw_response=result.raw
             )
         )
@@ -5133,19 +5134,19 @@ def panorama_query_logs_command(args: dict):
         
         query_logs_output = {
             'JobID': job_id,
-            'LogType': log_type
+            'LogType': log_types
         }
         readable_output = None
         if parsed.ns.response.result.job.status.upper() == 'FIN':
             query_logs_output['Status'] = 'Completed'
             if parsed.ns.response.result.log.logs.count == '0':
-                readable_output = f'No {log_type} logs matched the query.'
+                readable_output = f'No {log_types} logs matched the query.'
                 query_logs_output['Logs'] = []
             else:
                 pretty_logs = prettify_logs(parsed.get_nested_key('response.result.log.logs.entry'))
                 query_logs_output['Logs'] = pretty_logs
                 readable_output = tableToMarkdown(
-                    f'Query {log_type} Logs:',
+                    f'Query {log_types} Logs:',
                     pretty_logs,
                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
                     removeNull=True
@@ -5307,9 +5308,9 @@ def panorama_get_logs_command(args: dict):
         result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
-            log_type = log_type_dt[0]
+            log_types = log_type_dt[0]
         else:
-            log_type = log_type_dt
+            log_types = log_type_dt
 
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -5346,11 +5347,11 @@ def panorama_get_logs_command(args: dict):
 
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
-                human_readable = f'No {log_type} logs matched the query.'
+                human_readable = f'No {log_types} logs matched the query.'
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                human_readable = tableToMarkdown('Query ' + log_types + ' Logs:', query_logs_output['Logs'],
                                                  ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True)
             return_results({
@@ -9888,8 +9889,8 @@ class HygieneLookups:
 
                 required_log_types = ["traffic", "threat"]
                 for log_forwarding_profile_match_list in match_list_list:
-                    if log_forwarding_profile_match_list.log_type in required_log_types:
-                        required_log_types.remove(log_forwarding_profile_match_list.log_type)
+                    if log_forwarding_profile_match_list.log_types in required_log_types:
+                        required_log_types.remove(log_forwarding_profile_match_list.log_types)
 
                 for missing_required_log_type in required_log_types:
                     issues.append(ConfigurationHygieneIssue(
@@ -12827,36 +12828,83 @@ def pan_os_delete_application_group_command(args):
 
 # EDITING: fetch commands 
 
+def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
+    first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+    if last_fetch is None:
+        return first_fetch_datetime
 
-def get_last_fetch(last_run: dict[str,str], first_fetch: str) -> str:
-    last_fetch = last_run.get('latest_detection_found')
-    if not last_fetch:
-        # handle first time fetch
-        demisto.debug('[PAN-OS] First fetch run')
-        first_fetch_parsed = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
-        assert first_fetch_parsed is not None, f'failed parsing {first_fetch}'
-        last_fetch = str(first_fetch_parsed.isoformat(timespec='milliseconds')) + 'Z'
-    demisto.debug(f'[PAN-OS] last_fetch: {last_fetch}')
-    return last_fetch
+    last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
+    if last_fetch_datetime is None:
+        raise DemistoException(f'Could not parse {last_fetch}.')
+    if first_fetch_datetime is None:
+        return last_fetch_datetime
+    return max(last_fetch_datetime, first_fetch_datetime)
 
-def build_query(queries, log_type):
-    pas
+
+def job_id_request(log_type:str , query: str, max_fetch: int):
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, action='get', nlogs=max_fetch, skip=0, dir='backward')
+    response = http_request(URL, 'GET', params=params)
+    response = xml2json(response)
+    job_id = response.get('response',{}).get('result',{}).get('job')
+    return job_id
+
+def fetch_entries_request(job_id: int):
+    params = assign_params(key=API_KEY,type = 'log', action='get', job_id=job_id)
+    response = http_request(URL, 'GET', params=params)
+    response = xml2json(response)
+    return response
+
+def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
+    # TODO: check how to deciede what queries to use; defulat based on log_types or user input.
+    entries = []
+    if queries:
+        transformed_queries = transform_queries(queries)
+        demisto.debug(f'Transformed queries:\n{str(queries)}')
         
+    # perform queary for each log_type chosen in 'Log Type' parameter list
+    if log_types:
+        for log_type in log_types:
+            if query := transformed_queries.get("log_type"):
+                # first http request: send request with query, valid response will contain a job id.
+                job_id = job_id_request(log_type, query, max_fetch)
+                demisto.debug(f'job_id: {job_id}')
+                
+                # second http request: send request with job id, valid response will contain a list of entries.
+                response = fetch_entries_request(job_id)
+                
+                # extract all entries from resposne
+                for entry in response.get('response',{}).get('log'):
+                    entries.append(entry)
+            
+            
 
-def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_type: str, fetch_result_limit: int, max_results: int):
-    demisto.debug(f'[PAN-OS] last run: {last_run}')
+def transform_queries(queries: str) -> dict:
+    """Transform queries paramter to a python dictionary
 
-    # get last fetch time
-    last_fetch = get_last_fetch(last_run, first_fetch)
-    query = build_query(queries, log_type)
+    Args:
+        queries (str): queries paramter
+
+    Returns:
+        - dict[str,str]: queries parameter transformed into a python dictionary
+        - Empty dictioanry if queries is None
+    """    
+    if queries:
+        return json.loads('{' + queries + '}')
+    return {}
+
+
+def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: list, max_fetch: int):
+    last_fetch = last_run.get("last_fetch", "")
+    last_id_fetched = last_run.get('last_id_fetched', '-1')
+    fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
     
+    demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
+                  f'time to fetch from is: {fetch_start_datetime}.')
 
+    responses = fetch_incidents_request(queries, log_types, max_fetch)
+     
 
     return next_run, incidents
-
-
-
-
 
 
 def main():
@@ -12880,15 +12928,13 @@ def main():
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             # NOTE: no need for client.some_http_request. use existing http_request function.
+            last_run = demisto.getLastRun()
             first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME).strip()
             queries = params.get("queries")
-            log_type = params.get("log_type")
-            maxFetch = arg_to_number(params.get('max_fetch'))
-            fetch_types = params.get('fetch_types')
+            log_types = params.get("log_types")
+            max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
             
-            next_run, incidents = fetch_incidents(
-                first_fetch=params.get('firstFetch', '24 hours').strip(),
-            )
+            next_run, incidents = fetch_incidents(last_run, first_fetch, queries, log_types, max_fetch)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
