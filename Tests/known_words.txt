@@ -193,6 +193,8 @@ maxPages
 cs-fx-upload-file
 lookback
 subclass
+paginate
+paginated
 pagination
 XDM
 Fortinet
