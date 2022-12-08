@@ -26,6 +26,30 @@ Content-Type: text/html; charset="UTF-8"
 --0000000000002b271405ac80bf8b--
 """
 
+MAIL_STRING_NO_DATE = br"""Delivered-To: to@test1.com
+MIME-Version: 1.0
+From: John Smith <from@test1.com>
+Date:
+Subject: Testing email for mail listener
+To: to@test1.com
+Content-Type: multipart/alternative; boundary="0000000000002b271405ac80bf8b"
+
+
+--0000000000002b271405ac80bf8b
+Content-Type: text/plain; charset="UTF-8"
+
+
+
+--0000000000002b271405ac80bf8b
+Content-Type: text/html; charset="UTF-8"
+
+<div dir="ltr"><br></div>
+<p>C:\Users</p>
+<p>C:\\Users</p>
+
+--0000000000002b271405ac80bf8b--
+"""
+
 MAIL_STRING_NOT_BYTES = r"""Delivered-To: to@test1.com
 MIME-Version: 1.0
 From: John Smith <from@test1.com>
@@ -64,7 +88,9 @@ EXPECTED_LABELS = [
     {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'}]
 
 
-def test_convert_to_incident():
+@pytest.mark.parametrize('mail_string, mail_date', [(MAIL_STRING, '2020-08-10T07:17:16+00:00'), (MAIL_STRING_NO_DATE, None)])
+
+def test_convert_to_incident(mail_string, mail_date):
     """
     Given:
         - Bytes representation of a mail
@@ -76,10 +102,10 @@ def test_convert_to_incident():
         - Validate the 'attachments', 'occurred', 'details' and 'name' fields are parsed as expected
     """
     from MailListenerV2 import Email
-    email = Email(MAIL_STRING, False, False, 0)
+    email = Email(mail_string, False, False, 0)
     incident = email.convert_to_incident()
     assert incident['attachment'] == []
-    assert incident['occurred'] == email.date.isoformat()
+    assert incident['occurred'] == mail_date
     assert incident['details'] == email.text or email.html
     assert incident['name'] == email.subject
 
