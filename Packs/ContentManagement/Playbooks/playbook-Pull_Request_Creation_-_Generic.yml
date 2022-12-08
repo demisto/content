@@ -14,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 08f47732-082f-460f-8ccb-0b15755bce27
@@ -41,8 +42,7 @@ tasks:
       id: 08f47732-082f-460f-8ccb-0b15755bce27
       version: -1
       name: Unzip pack
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -56,7 +56,6 @@ tasks:
           root: File
           accessor: EntryID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -71,6 +70,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 7248d03e-2b13-43cd-89ec-98fdd550c070
@@ -102,7 +102,6 @@ tasks:
                   simple: metadata.json
           accessor: EntryID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -117,6 +116,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: c38fe235-5a09-4621-82b0-1b65e94ea351
@@ -154,7 +154,6 @@ tasks:
                 value:
                   simple: ' '
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -169,6 +168,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 9107974c-e152-4a7b-8f69-ca988881b001
@@ -195,7 +195,6 @@ tasks:
         complex:
           root: MessageText
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -210,6 +209,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 21e06594-223f-4e48-815d-7caef3b9f39e
@@ -232,7 +232,6 @@ tasks:
           root: incident
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -247,6 +246,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 5cec1b8d-460f-444c-8606-b0ddf6233fa5
@@ -282,7 +282,6 @@ tasks:
           root: GitHub.PR.RequestedReviewer
           accessor: Login
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -297,6 +296,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "33":
     id: "33"
     taskid: 684639ae-9772-4cbe-8a1f-94bd39ff8b44
@@ -305,8 +305,7 @@ tasks:
       id: 684639ae-9772-4cbe-8a1f-94bd39ff8b44
       version: -1
       name: Is Slack v2 enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -322,7 +321,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -337,6 +335,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
     taskid: ac2776bf-b590-45b4-8c0f-a71529e04bad
@@ -345,8 +344,7 @@ tasks:
       id: ac2776bf-b590-45b4-8c0f-a71529e04bad
       version: -1
       name: Is Microsoft Teams enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -362,7 +360,6 @@ tasks:
     results:
     - brandInstances
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -377,6 +374,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 45cb8118-9845-49bd-838e-b22df3cec2c1
@@ -388,11 +386,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -407,6 +405,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
     taskid: bb251813-25d1-4567-8dc6-c59b67dd4ef1
@@ -418,8 +417,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -434,6 +433,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: 9a0fece8-462f-4528-85b5-5d7bcf3d60b4
@@ -442,10 +442,10 @@ tasks:
       id: 9a0fece8-462f-4528-85b5-5d7bcf3d60b4
       version: -1
       name: Is channel given?
-      description: Is channel given in order to send the message?
       type: condition
       iscommand: false
       brand: ""
+      description: Is channel given in order to send the message?
     nexttasks:
       '#default#':
       - "43"
@@ -463,7 +463,6 @@ tasks:
           right:
             value: {}
           ignorecase: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -478,6 +477,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "45":
     id: "45"
     taskid: 840fad60-19e4-4626-82c9-b297c28fd61c
@@ -508,7 +508,6 @@ tasks:
         complex:
           root: inputs.PullRequestTemplate
     separatecontext: false
-    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -528,6 +527,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "46":
     id: "46"
     taskid: e46c9f2a-788b-4bef-81f1-a3bb83bdc5e3
@@ -539,11 +539,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -558,6 +558,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
     taskid: b4894f8f-75e3-4406-86f3-06500e96ba77
@@ -566,20 +567,19 @@ tasks:
       id: b4894f8f-75e3-4406-86f3-06500e96ba77
       version: -1
       name: What integration to use for create the pull request
-      description: Check the GitIntegration input to know which git integration we
-        want to use to create the pull request.
+      description: Check the GitIntegration input to know which git integration we want to use to create the pull request.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "48"
-      GitLab:
-      - "53"
-      bitbucket:
-      - "49"
       github:
       - "45"
+      bitbucket:
+      - "49"
+      GitLab:
+      - "53"
     separatecontext: false
     conditions:
     - label: github
@@ -615,7 +615,6 @@ tasks:
           right:
             value:
               simple: gitlab
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -630,6 +629,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: fbc7b286-9eb2-4818-8ce0-a911a2eb654c
@@ -655,7 +655,6 @@ tasks:
                 value:
                   simple: ' integration is not supported.'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -670,6 +669,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
     taskid: 0f8941a5-780f-4aec-8b31-f19ab6d3af24
@@ -878,26 +878,26 @@ inputs:
   value: {}
   required: false
   description: The channel to which to send notifications.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PullRequestTemplate
   value:
-    simple: "### Pull Request created in Cortex XSOAR\n**Created by:** {}\n**Pack:**
-      {}\n**Branch:** {}\n**Link to incident in Cortex XSOAR:** {}\n{} \n---"
+    simple: "### Pull Request created in Cortex XSOAR\n**Created by:** {}\n**Pack:** {}\n**Branch:** {}\n**Link to incident in Cortex XSOAR:** {}\n{} \n---"
   required: true
   description: Pull request description template.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MainBranch
   value:
     simple: main
   required: true
-  description: The name of the branch you want the changes pulled into, which must
-    be an existing branch on the current repository.
-  playbookInputQuery: null
+  description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
+  playbookInputQuery:
 - key: GitIntegration
   value:
     simple: gitlab
   required: true
-  description: Which version control integration to use. We support github, gitlab
-    and bitbucket.
-  playbookInputQuery: null
+  description: Which version control integration to use. We support github, gitlab and bitbucket.
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,6 +1,5 @@
 id: Pull Request Creation - GitLab
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Pull Request Creation - GitLab
 description: This playbook creates a pull request using GitLab integration.
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -42,8 +42,7 @@ tasks:
       id: 9d0ae47a-be51-4532-83cd-d9f99ddb46a6
       version: -1
       name: Get main branch
-      description: Get a list of repository branches from a project, alphabetically
-        sorted by name.
+      description: Get a list of repository branches from a project, alphabetically sorted by name.
       script: GitLabv2|||gitlab-branch-list
       type: regular
       iscommand: true
@@ -81,8 +80,7 @@ tasks:
       id: 90d6c4f6-6720-4f8a-86e2-11ac710d1ab5
       version: -1
       name: Commit files
-      description: This script gets content files as input from the context, commits
-        the files in the correct folder and creates the pull request text.
+      description: This script gets content files as input from the context, commits the files in the correct folder and creates the pull request text.
       scriptName: CommitFiles
       type: regular
       iscommand: false
@@ -181,8 +179,7 @@ tasks:
       id: dd6e4ab9-b214-4b15-87ca-07d509b61e7d
       version: -1
       name: Request pr review
-      description: Updates an existing merge request. You can change the target branch,
-        title, or even close the merge request.
+      description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
       script: GitLabv2|||gitlab-merge-request-update
       type: regular
       iscommand: true
@@ -192,7 +189,7 @@ tasks:
       - "36"
     scriptarguments:
       assignee_ids:
-        simple: incident.cicdreviewer
+        simple: ${incident.cicdreviewer}
       merge_request_id:
         simple: ${GitLab.MergeRequest.iid}
       partial_response:
@@ -228,6 +225,7 @@ tasks:
       name: Add reviewer?
       type: condition
       iscommand: false
+      description: Add reviewer?
       brand: ""
     nexttasks:
       '#default#':
@@ -243,8 +241,6 @@ tasks:
             value:
               simple: incident.cicdreviewer
             iscontext: true
-          right:
-            value: {}
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -269,8 +265,7 @@ tasks:
       id: 365fbc78-7833-464d-8b27-1b29d015412f
       version: -1
       name: Get branch
-      description: Get a list of repository branches from a project, alphabetically
-        sorted by name.
+      description: Get a list of repository branches from a project, alphabetically sorted by name.
       script: GitLabv2|||gitlab-branch-list
       type: regular
       iscommand: true
@@ -306,10 +301,11 @@ tasks:
     task:
       id: 693bcb25-ccab-43ba-8f58-8bbfbf28ef35
       version: -1
-      name: Is the branch exist?
+      name: Does branch exist?
       type: condition
       iscommand: false
       brand: ""
+      description: Does branch exist?
     nexttasks:
       '#default#':
       - "48"
@@ -353,6 +349,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Does branch exist?
     nexttasks:
       '#default#':
       - "40"
@@ -435,6 +432,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is there a branch name in the update branch field in the incident.
     nexttasks:
       '#default#':
       - "27"
@@ -555,6 +553,7 @@ tasks:
       name: Is CI/CD Pull Request Branch field given
       type: condition
       iscommand: false
+      description: Is there a branch name in the update branch field in the incident.
       brand: ""
     nexttasks:
       '#default#':
@@ -749,6 +748,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: Check if branch exists and create it if not
     nexttasks:
       '#none#':
       - "18"
@@ -779,6 +779,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: running the script CommitFiles
     nexttasks:
       '#none#':
       - "6"
@@ -809,6 +810,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: creating pull request
     nexttasks:
       '#none#':
       - "46"
@@ -839,6 +841,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: Update existing pull request
     nexttasks:
       '#none#':
       - "31"
@@ -913,6 +916,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Is the field of the pull request title in the incident empty?
     nexttasks:
       '#default#':
       - "7"
@@ -1064,8 +1068,7 @@ tasks:
       id: 04fc84ad-5f4f-4eb1-8ffe-6bf2dc5ecba5
       version: -1
       name: merge request update
-      description: Updates an existing merge request. You can change the target branch,
-        title, or even close the merge request.
+      description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
       script: '|||gitlab-merge-request-update'
       type: regular
       iscommand: true
@@ -1117,16 +1120,18 @@ inputs:
   value: {}
   required: true
   description: Pull request description template.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: MainBranch
   value: {}
   required: true
-  description: The name of the branch you want the changes pulled into, which must
-    be an existing branch on the current repository.
-  playbookInputQuery: null
+  description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
+  playbookInputQuery:
 - key: PackName
   value: {}
   required: false
-  description: ""
-  playbookInputQuery: null
+  description:  The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
