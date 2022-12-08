@@ -5,6 +5,22 @@ if (serverURL.slice(-1) === '/') {
 
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
 
+getTenantAccountName = function () {
+    const urls = demistoUrls()
+    const server_url = urls['server'].toString()
+    // server_url example - https://account-testing-ysdkvou:443/acc_Test
+    var account_name = ''
+    // check if server_url contains "/acc_" string
+    if (server_url.indexOf("/acc_") >= 0){
+        const words = server_url.split('acc_')
+        const tenant_name = words[words.length - 1]
+        if (tenant_name !== "") {
+            account_name = 'acc_' + tenant_name
+        }
+    }
+    return account_name
+}
+
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
     if (uri.slice(-1) !== '/') {
@@ -58,6 +74,9 @@ var sendRequest = function(method, uri, body, raw) {
     var requestUrl = serverURL;
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
+    }
+    if (params.use_tenant){
+        requestUrl += "/" + getTenantAccountName();
     }
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
