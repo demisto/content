@@ -1120,22 +1120,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_mitretacticid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mitretacticname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mitretechniqueid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_mitretechniquename",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_mobiledevicemodel",
                         "isVisible": true
                     },
