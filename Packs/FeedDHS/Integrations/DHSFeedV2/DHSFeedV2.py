@@ -33,7 +33,7 @@ def get_limited_interval(given_interval: Union[str, datetime],
     """
     given_interval: datetime = get_datetime(given_interval)
     fetch_interval: datetime = get_datetime(fetch_interval or MAX_FETCH_INTERVAL)
-    return max(given_interval, fetch_interval)  # closer time is bigger
+    return max(given_interval, fetch_interval)  # later time is bigger
 
 
 def fetch_one_collection(client: Taxii2FeedClient, limit: int, initial_interval: datetime,
@@ -76,8 +76,29 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
 ''' COMMAND FUNCTIONS '''
 
 
-def command_test_module(client: Taxii2FeedClient):
+def command_test_module(client: Taxii2FeedClient, initial_interval: str):
     if client.collections:
+        if get_datetime(MAX_FETCH_INTERVAL) > get_datetime(initial_interval):
+            return 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.'
+
+        try:
+            get_indicators_command(client, {'limit': '1', 'added_after': '5 hours'})  # todo check how much time it runs
+        except requests.exceptions.ConnectTimeout:
+            return 'Connection Timeout Error - potential reasons might be that the \'Discovery Service URL\' parameter' \
+                   ' is incorrect or that the server is not accessible from your host.'
+        except requests.exceptions.SSLError:
+            return 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                   ' the instance configuration.'
+        except requests.exceptions.ProxyError:
+            return 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                   ' selected, try clearing the checkbox.'
+        except requests.exceptions.ConnectionError:
+            return 'Verify that the server URL parameter is correct and that you have access to the server from your host.' \
+                   ' Run the test again.'
+        except requests.HTTPError:
+            return 'HTTP error - check your certificate and key, and that you are trying to reach a valid URL and API root.' \
+                   ' Wait and run the test again.'
+
         return 'ok'
     return 'Could not connect to server'
 
@@ -199,7 +220,7 @@ def main():  # pragma: no cover
 
         start_time = time.time()
         if command == 'test-module':
-            return_results(command_test_module(client))
+            return_results(command_test_module(client, initial_interval))
 
         elif command == 'fetch-indicators':
             last_run_indicators = demisto.getLastRun()
