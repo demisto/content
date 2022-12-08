@@ -5469,7 +5469,7 @@
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
-        "PhishTank V2" : "Issue 4813",
+        "PhishTank V2" : "Issue 4813"
     },
     "nightly_integrations": [
     ],
