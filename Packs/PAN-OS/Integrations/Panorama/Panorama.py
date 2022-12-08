@@ -46,6 +46,7 @@ OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+FETCH_DEFAULT_TIME = '24 hours'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -12879,13 +12880,14 @@ def main():
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             # NOTE: no need for client.some_http_request. use existing http_request function.
+            first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME).strip()
+            queries = params.get("queries")
+            log_type = params.get("log_type")
+            maxFetch = arg_to_number(params.get('max_fetch'))
+            fetch_types = params.get('fetch_types')
+            
             next_run, incidents = fetch_incidents(
-                last_run=demisto.getLastRun(),
                 first_fetch=params.get('firstFetch', '24 hours').strip(),
-                queries = params.get("queries"),
-                log_type = params.get("log_type"),
-                fetch_result_limit=int(params.get('fetch_result_limit')),
-                max_results=int(params.get('max_fetch'))
             )
 
             demisto.setLastRun(next_run)
