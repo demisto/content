@@ -572,7 +572,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.example.com
+              simple: www.example.com/test
       - - operator: isEqualString
           left:
             value:
@@ -580,7 +580,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: www.example.com
+              simple: www.example.com/test
       - - operator: isEqualString
           left:
             value:
@@ -3257,13 +3257,6 @@ tasks:
             value:
               simple: ${MISP.Event.Object.Attribute.Value}
             iscontext: true
-      - - operator: in
-          left:
-            value:
-              simple: foo@test.com
-          right:
-            value:
-              simple: ${MISP.Event.Object.Attribute.Value}
     view: |-
       {
         "position": {
