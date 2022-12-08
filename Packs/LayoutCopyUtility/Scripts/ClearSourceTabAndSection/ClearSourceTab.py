@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 def clear_source_tab():
-    execute_command('setIncident', {'selectsourcetab': ' '})
+    execute_command('setIncident', {'selectsourcetab': ''})
 
 
 def main():
