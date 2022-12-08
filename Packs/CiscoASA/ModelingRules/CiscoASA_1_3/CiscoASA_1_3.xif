@@ -7,7 +7,6 @@ alter
 //direction = arrayindex(regextract(_raw_log,"Built\s+([A-Za-z]+)\s+[A-Z]+\s+connection"),0),// the field not exits on data model network
     duration = arrayindex(regextract(_raw_log,"duration\s*(\d+\:\d+\:\d+)\s*"),0), // not have function in xql to change it to milliseconds
     bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
-    category = arrayindex(regextract(_raw_log,"category\:\s*([A-Za-z]+)"),0),
     threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
 // host ip
 | alter host_ip1 = arrayindex(regextract(_raw_log ,"\s*IP\s\<(\d+\.\d+\.\d+\.\d+)\>[\s|\,]"),0),
@@ -43,7 +42,7 @@ alter
 //option 2
 // from|for source_interface:source_ip/source_port to dest_interface:dest_ip:dest_port
 | alter
-    source_ip2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*to\s*"),0),
+    source_ip2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/*\d*\s*to\s*"),0),
     source_port2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*to\s*"),0),
     dest_ip2 = arrayindex(regextract(_raw_log,"\s*to\s*[a-zA-Z0-9-_]+\:(\d+\.\d+\.\d+\.\d+)\/*[a-zA-Z0-9]+"),0), // same on option 2,3,4
     dest_port2 = arrayindex(regextract(_raw_log,"\s*to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/+([a-zA-Z0-9]+)"),0),// same on option 2,3,4
@@ -107,14 +106,18 @@ alter
     ,dest_ip11 = arrayindex(regextract(_raw_log ,"\sfrom\s\d+\.\d+\.\d+\.\d+ to (\d+\.\d+\.\d+\.\d+)"),0)
 // option 12
 // faddr 00.00.00.00/00 to laddr 99.99.99.99
-| alter source_ip12 = arrayindex(regextract(_raw_log ,"for\s+faddr\s+(\d+\.\d+\.\d+\.\d+)\/\d+\s+to\s+"),0)
-| alter dest_ip12 = arrayindex(regextract(_raw_log ,"\s+to\s+laddr\s(\d+\.\d+\.\d+\.\d+)"),0)
+| alter source_ip12 = arrayindex(regextract(_raw_log ,"for\s+faddr\s+(\d+\.\d+\.\d+\.\d+)\/\d+\s+to\s+"),0),
+    dest_ip12 = arrayindex(regextract(_raw_log ,"\s+to\s+laddr\s(\d+\.\d+\.\d+\.\d+)"),0)
+// option 13
+// from laddr 00.00.00.00 on interface outside to 99.99.99.99
+| alter source_ip13 = arrayindex(regextract(_raw_log ,"\s+from\s+laddr\s+(\d+\.\d+\.\d+\.\d+)\s+on"),0),
+    dest_ip13 = arrayindex(regextract(_raw_log ,"\s+from\s+laddr\s+\d+\.\d+\.\d+\.\d+\s+on\s+\w+\s\w+\sto\s+(\d+\.\d+\.\d+\.\d+)"),0)
 // merge the fields
 | alter
-    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12 ),
+    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12, source_ip13),
     source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7),
     source_interface = coalesce(source_interface2, source_interface3),
-    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12 ),
+    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12, dest_ip13),
     dest_port = coalesce(dest_port1, dest_port2, dest_port3, dest_port5, dest_port7),
     dest_interface = coalesce(dest_interface2, dest_interface3, dest_interface5)
 // ------------------------------ end source/dest ip/port/interface part ---------------------------------
@@ -123,7 +126,6 @@ alter
     xdm.event.description = message,
     xdm.alert.severity = severity,
     //xdm.network.application_protocol = protocol,
-    xdm.alert.category = category,
     xdm.source.ipv4 = coalesce(source_ip,host_ip),
     xdm.source.port = to_number(source_port),
     xdm.source.interface = source_interface,
