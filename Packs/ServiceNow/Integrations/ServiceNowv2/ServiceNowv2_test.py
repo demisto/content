@@ -15,7 +15,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -150,6 +151,119 @@ def test_split_fields_with_special_delimiter():
         assert "must contain a '=' to specify the keys and values" in str(err)
         return
     assert False
+
+
+def test_convert_to_notes_result():
+    """
+    Given:
+        - The full response for a ticket from SNOW.
+    When:
+        - Converting the comments and work notes to the format used in the integration.
+    Then:
+        - Verify that the expected notes are returned in the correct format.
+    """
+    # Note: the 'display_value' time is the local time of the SNOW instance, and the 'value' is in UTC.
+    # The results returned for notes are expected to be in UTC time.
+
+    # Example for an instance with local time UTC+1:
+    ticket_response = {
+        'result': {'sys_created_on': {'display_value': '2022-11-21 09:59:49', 'value': '2022-11-21 08:59:49'},
+                   'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
+                   'sys_id': {'display_value': '123456789', 'value': '123456789'},
+                   'urgency': {'display_value': '3 - Low', 'value': '3'},
+                   'severity': {'display_value': '3 - Low', 'value': '3'},
+                   'comments': {'display_value': '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n' \
+                                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n', 'value': ''}}}
+
+    expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
+                                   'value': 'Second comment',
+                                   'sys_created_by': 'System Administrator',
+                                   'element': 'comments'
+                                   },
+                                  {'sys_created_on': '2022-11-21 20:45:37',
+                                   'value': 'First comment',
+                                   'sys_created_by': 'Test User',
+                                   'element': 'comments'
+                                   }]}
+    assert convert_to_notes_result(ticket_response) == expected_result
+
+    # Filter comments by creation time (filter is given in UTC):
+    expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
+                                   'value': 'Second comment',
+                                   'sys_created_by': 'System Administrator',
+                                   'element': 'comments'
+                                   }]}
+    assert convert_to_notes_result(ticket_response, datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
+
+
+def test_split_notes():
+    """
+    Given:
+        - Notes response from SNOW.
+        - The type of the note (comment or work_note).
+        - The UTC timezone offset and (optionally) a time filter.
+    When:
+        - Converting the given notes to the note format used in the integration with different time filters.
+    Then:
+        - Verify that the expected notes are returned in the correct format.
+    """
+    # Note: the timezone in the raw_notes should mimic the local time of the SNOW instance,
+    # the time in the filter is in UTC (to mimic the behaviour of fetching).
+    # timezone_offset is the difference between UTC and local time, e.g. offset = -60, means that local time is UTC+1.
+    # The 'sys_created_on' time, returned by the command is normalized to UTC timezone.
+
+    raw_notes = '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n' \
+                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    
+    time_info = {'timezone_offset': timedelta(minutes=0),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 22:50:34',
+                       'value': 'Second comment',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       },
+                      {'sys_created_on': '2022-11-21 21:45:37',
+                       'value': 'First comment',
+                       'sys_created_by': 'Test User',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
+    time_info = {'timezone_offset': timedelta(minutes=-60),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
+                       'value': 'Second comment',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
+    time_info = {'timezone_offset': timedelta(minutes=-120),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    assert len(notes) == 0
+
+
+def test_get_timezone_offset():
+    """
+    Given:
+        - A response from a SNOW ticket created with 'sysparm_display_value=all'.
+    When:
+        - Testing different instance and UTC times.
+    Then:
+        - Assert the offset between the UTC and the instance times are correct.
+    """
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
+    offset = get_timezone_offset(full_response)
+    assert offset == timedelta(minutes=480)
+
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '2022-12-07 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    offset = get_timezone_offset(full_response)
+    assert offset == timedelta(minutes=-120)
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [

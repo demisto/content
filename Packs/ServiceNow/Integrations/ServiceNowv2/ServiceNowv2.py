@@ -499,6 +499,7 @@ def split_notes(raw_notes, note_type, time_info):
             continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
+        created_by = created_by.split(' (')[0]
         # todo: remove log
         demisto.log(f'Note in display time: {created_on}, note: {note}')
 
@@ -511,7 +512,6 @@ def split_notes(raw_notes, note_type, time_info):
             # If a time_filter was passed and the note was created before this time, do not return it.
             demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note}.')
             continue
-        created_by = created_by.split(' (')[0]
         note_dict = {
             "sys_created_on": created_on_UTC.strftime(DATE_FORMAT),
             "value": note_value,
@@ -685,7 +685,6 @@ class Client(BaseClient):
                             res = requests.request(method, url, headers=headers, data=body, params=params,
                                                    files={'file': f}, auth=self._auth,
                                                    verify=self._verify, proxies=self._proxies)
-                        demisto.debug(f'Sending request with url: {url} and data: {body} \n and params: {params}')
                     shutil.rmtree(demisto.getFilePath(file_entry)['name'], ignore_errors=True)
                 except Exception as err:
                     raise Exception('Failed to upload file - ' + str(err))
@@ -2359,7 +2358,6 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                         'sysparm_display_value': 'all'}
 
         full_result = client.send_request(path, 'GET', params=query_params)
-        # todo: check if the ticket can be empty? maybe if closed?
         comments_result = convert_to_notes_result(full_result, time_filter=datetime.fromtimestamp(last_update))
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)

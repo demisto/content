@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ServiceNow v2 - comment and work notes
+  id: ServiceNow v2
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -182,8 +182,8 @@ configuration:
   type: 0
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
   the way you manage and deliver services to your users.
-display: ServiceNow v2 - comment and work notes
-name: ServiceNow v2 - comment and work notes
+display: ServiceNow v2
+name: ServiceNow v2
 script:
   commands:
   - arguments:
@@ -1904,7 +1904,7 @@ script:
       name: offset
     - auto: PREDEFINED
       default: false
-      description: Whether to use sysparm_display_value=true to retrieve comments and work notes. Overrides the value set in the instance configuration.
+      description: Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration.
       isArray: false
       name: use_display_value
       predefined:
