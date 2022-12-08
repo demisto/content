@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -132,6 +132,11 @@ script:
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
       name: attach_cids
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Creates a draft message in the specified user's mailbox.
     name: msgraph-mail-create-draft
     outputs:
@@ -192,6 +197,7 @@ script:
     - contextPath: MicrosoftGraph.Draft.ConversationID
       description: The conversation ID of the draft email.
       type: String
+    polling: true
   - arguments:
     - description: A CSV list of email addresses for the 'to' field.
       isArray: true
@@ -224,6 +230,11 @@ script:
       name: attachCIDs
     - description: Email address of the sender.
       name: from
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Replies to an email using Graph Mail Single User.
     name: reply-mail
     outputs:
@@ -248,6 +259,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
+    polling: true
   - arguments:
     - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
@@ -302,6 +314,11 @@ script:
     - description: Email addresses that need to be used to reply to the message. Supports comma-separated values.
       isArray: true
       name: replyTo
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Sends an email using Microsoft Graph.
     name: send-mail
     outputs:
@@ -335,6 +352,7 @@ script:
     - contextPath: MicrosoftGraph.Email.replyTo
       description: The replyTo recipients of the email.
       type: String
+    polling: true
   - arguments:
     - description: The ID of the message.
       name: message_id
@@ -355,14 +373,26 @@ script:
     - description: A comma-separated list of CIDs to embed attachments within the actual email.
       isArray: true
       name: attach_cids
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: The replies to the recipients of a message.
     name: msgraph-mail-reply-to
+    polling: true
   - arguments:
     - description: The ID of the draft email.
       name: draft_id
       required: true
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     description: Sends a draft email using Microsoft Graph.
     name: msgraph-mail-send-draft
+    polling: true
   - description: Tests connectivity of the email.
     name: msgraph-mail-test
     arguments: []
@@ -378,6 +408,11 @@ script:
     - name: pages_to_pull
       description: The number of pages of emails to return (maximum is 10 emails per page).
       defaultValue: '1'
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MSGraphMail.ID
       description: The ID of the email.
@@ -458,6 +493,7 @@ script:
       description: A token to pass to the next list command to retrieve additional results.
       type: String
     description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
+    polling: true
   - name: msgraph-mail-list-attachments
     arguments:
     - name: message_id
@@ -465,6 +501,11 @@ script:
       required: true
     - name: folder_id
       description: The id of the folder
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: MSGraphMailAttachment.ID
       description: The email ID.
@@ -482,11 +523,17 @@ script:
       description: The ID of the user.
       type: String
     description: Lists all of the attachments of given email
+    polling: true
   - name: msgraph-mail-get-email-as-eml
     arguments:
     - name: message_id
       required: true
       description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - deprecated: true
+      description: flag for rate limit retry
+      isArray: false
+      name: ran_once_flag
+      required: false
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -522,7 +569,8 @@ script:
       description: The extension of the file.
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
-  dockerimage: demisto/crypto:1.0.0.31715
+    polling: true
+  dockerimage: demisto/crypto:1.0.0.39526
   isfetch: true
   runonce: false
   script: ''
