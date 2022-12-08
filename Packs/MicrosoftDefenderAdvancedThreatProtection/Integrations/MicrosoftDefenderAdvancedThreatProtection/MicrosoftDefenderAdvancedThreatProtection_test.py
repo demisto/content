@@ -2761,18 +2761,13 @@ def test_list_vulnerabilities_command(mocker, args, return_value, expected_human
     assert result_list_software[0].outputs == expected_outputs
 
 
-@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [([
-    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [(
+    [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
      'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
-     'productVersion': '7.0.2.0', 'severity': 'High'},
-    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id', 'fixingKbId': None,
-     'productName': 'some_product_name', 'productVendor': 'some_vendor', 'productVersion': '7.0.2.0', 'severity': 'High'}],
+     'productVersion': '7.0.2.0', 'severity': 'High'}],
     [{'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
      'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
-      'productVersion': '7.0.2.0', 'severity': 'High'},
-     {'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
-      'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
-      'productVersion': '7.0.2.0', 'severity': 'High'}])
+     'productVersion': '7.0.2.0', 'severity': 'High'}])
 ])
 def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore_list
