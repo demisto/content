@@ -500,13 +500,9 @@ def split_notes(raw_notes, note_type, time_info):
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
-        # todo: remove log
-        demisto.log(f'Note in display time: {created_on}, note: {note}')
 
         # convert note creation time to UTC
         created_on_UTC = datetime.strptime(created_on, DATE_FORMAT) + time_info.get('timezone_offset')
-        # todo: remove log
-        demisto.log(f'Note in UTC time: {created_on}')
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
@@ -2844,7 +2840,7 @@ def main():
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
-    use_display_value = argToBoolean(params.get('use_display_value'))
+    use_display_value = argToBoolean(params.get('use_display_value', False))
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (
@@ -2924,8 +2920,7 @@ def main():
         LOG(err)
         LOG.print_log()
         if not raise_exception:
-            # return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
-            raise err
+            return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
         else:
             raise
 
