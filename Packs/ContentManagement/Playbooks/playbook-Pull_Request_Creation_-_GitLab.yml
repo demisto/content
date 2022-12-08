@@ -635,7 +635,7 @@ tasks:
       version: -1
       name: Get merge request
       description: Get all merge requests for this project.
-      script: '|||gitlab-merge-request-list'
+      script: GitLabv2|||gitlab-merge-request-list
       type: regular
       iscommand: true
       brand: ""
