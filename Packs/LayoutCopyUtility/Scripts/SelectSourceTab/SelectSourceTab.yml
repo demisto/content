@@ -1,3 +1,4 @@
+comment: Field display script for displaying Select Source Tab options.
 args:
 - name: source_layout
 commonfields:
