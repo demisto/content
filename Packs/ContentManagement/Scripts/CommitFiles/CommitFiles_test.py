@@ -157,3 +157,23 @@ def delete_files():
         os.remove(script_path)
     if yml_path:
         os.remove(yml_path)
+
+
+def test_commit_content_item_gitlab(mocker):
+    """
+    Given:
+        - A branch name and a content file.
+    When:
+        - Committing the files to gitlab
+    """
+    from CommitFiles import commit_content_item_gitlab
+    branch_name = 'demisto'
+    expected_args = {
+        'branch': f'{branch_name}',
+        'commit_message': f'Added {content_file.file_name}',
+        'file_content': f'{content_file.file_text}',
+        'file_path': f'{content_file.path_to_file}/{content_file.file_name}'}
+    request = mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch('CommitFiles.get_file_sha', return_value=None)
+    commit_content_item_gitlab(branch_name, content_file, [], [])
+    request.assert_called_with('gitlab-file-create', expected_args)

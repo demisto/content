@@ -237,7 +237,7 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
 
 
 def commit_git(git_integration: str, branch_name: str, content_file: ContentFile,
-               new_files: List, modified_files: List):  # pragma: no cover
+               new_files: List, modified_files: List):
     if git_integration == 'Gitlab':
         commit_content_item_gitlab(branch_name, content_file, new_files, modified_files)
     elif git_integration == 'GitHub':
@@ -249,7 +249,7 @@ def commit_git(git_integration: str, branch_name: str, content_file: ContentFile
 ''' MAIN FUNCTION '''
 
 
-def main():  # pragma: no cover
+def main():
     try:
         files = demisto.getArg('files')
         branch_name = demisto.getArg('branch')
