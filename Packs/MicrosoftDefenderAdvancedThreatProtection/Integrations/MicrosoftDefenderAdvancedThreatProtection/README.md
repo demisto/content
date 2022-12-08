@@ -6110,8 +6110,7 @@ Retrieves the organization software inventory.
 | name | Software name. | Optional |
 | vendor | Software publisher name. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| page | The page number from which to start a search. | Optional |
-| page_size | Specifies the page size of the result set. Default is 25. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
  
  
 #### Context Output
@@ -6290,20 +6289,13 @@ Retrieve a list of device references that has this software installed.
 ### microsoft-atp-list-vulnerabilities-by-software
 ***
 Retrieves a list of all the vulnerabilities affecting the organization per software.
- 
- 
 #### Base Command
- 
 `microsoft-atp-list-vulnerabilities-by-software`
 #### Input
- 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. | Optional |
- 
- 
+| id | Software ID, use the !microsoft-atp-list-software command, in order to get the ID. | Optional |
 #### Context Output
- 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.SoftwareCVE.id | String | Vulnerability ID. |
@@ -6312,92 +6304,82 @@ Retrieves a list of all the vulnerabilities affecting the organization per softw
 | MicrosoftATP.SoftwareCVE.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical" |
 | MicrosoftATP.SoftwareCVE.cvssV3 | Number | CVSS v3 score. |
 | MicrosoftATP.SoftwareCVE.exposedMachines | Number | Number of exposed devices. |
-| MicrosoftATP.SoftwareCVE.publishedOn | Date | Date when vulnerability was published. |
-| MicrosoftATP.SoftwareCVE.updatedOn | Date | Date when vulnerability was updated. |
+| MicrosoftATP.SoftwareCVE.publishedOn | Date | Date when vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
+| MicrosoftATP.SoftwareCVE.updatedOn | Date | Date when vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
 | MicrosoftATP.SoftwareCVE.publicExploit | Boolean | Public exploit exists for some of the vulnerabilities. |
 | MicrosoftATP.SoftwareCVE.exploitVerified | Boolean | Public exploit exists. |
 | MicrosoftATP.SoftwareCVE.exploitInKit | Boolean | Exploit is part of an exploit kit. |
 | MicrosoftATP.SoftwareCVE.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local" |
 | MicrosoftATP.SoftwareCVE.exploitUris | String | Exploit source URLs |
- 
 #### Command example
-```!microsoft-atp-list-vulnerabilities-by-software id=some_id```
+```!microsoft-atp-list-vulnerabilities-by-software id=some_software```
 #### Context Example
 ```json
 {
-   "MicrosoftATP": {
-       "SoftwareCVE": [
-           {
-               "cvssV3": 1.1,
-               "description": "This vulnerability affects the following vendors: vendor1, vendor2, vendor3, vendor4. To view more details about this vulnerability please visit the vendor website.",
-               "exploitInKit": false,
-               "exploitTypes": [],
-               "exploitUris": [],
-               "exploitVerified": false,
-               "exposedMachines": 2,
-               "id": "CVE-1995-11111",
-               "name": "CVE-1995-11111",
-               "publicExploit": false,
-               "publishedOn": "1995-05-11T11:56:00Z",
-               "severity": "High",
-               "updatedOn": "1995-05-11T11:56:00Z"
-           },
-           {
-               "cvssV3": 2.2,
-               "description": "This vulnerability affects the following vendors: vendor1, vendor2, vendor3, vendor4. To view more details about this vulnerability please visit the vendor website.",
-               "exploitInKit": false,
-               "exploitTypes": [],
-               "exploitUris": [],
-               "exploitVerified": false,
-               "exposedMachines": 2,
-               "id": "CVE-1996-1111",
-               "name": "CVE-1996-1111",
-               "publicExploit": false,
-               "publishedOn": "1996-07-20T00:00:00Z",
-               "severity": "Medium",
-               "updatedOn": "1996-07-20T00:00:00Z"
-           },
-       ]
-   }
+  "CVE": [
+      {
+          "CVSS": {
+              "Score": 5.9
+          },
+          "Description": "This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website.",
+          "ID": "CVE-2222-22222",
+          "Modified": "2021-05-17T22:56:00Z",
+          "Published": "2021-05-17T22:56:00Z"
+      }
+  ],
+  "DBotScore": [
+      {
+          "Indicator": "CVE-2222-22222",
+          "Score": 0,
+          "Type": "cve",
+          "Vendor": "some_vendor"
+      }
+  ],
+  "MicrosoftATP": {
+      "SoftwareCVE": [
+          {
+              "cvssV3": 5.9,
+              "description": "This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website.",
+              "exploitInKit": false,
+              "exploitTypes": [],
+              "exploitUris": [],
+              "exploitVerified": false,
+              "exposedMachines": 2,
+              "id": "CVE-2222-22222",
+              "name": "CVE-2222-22222",
+              "publicExploit": false,
+              "publishedOn": "2021-05-17T22:56:00Z",
+              "severity": "Medium",
+              "updatedOn": "2021-05-17T22:56:00Z"
+          }
+      ]
+  }
 }
 ```
- 
 #### Human Readable Output
- 
->### Microsoft Defender ATP vulnerabilities by software: some_id
->|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|
->|---|---|---|---|---|---|---|---|---|
->| CVE-1995-11111 | CVE-1995-11111 | This vulnerability affects the following vendors: vendor1, vendor2, vendor3, vendor4. To view more details about this vulnerability please visit the vendor website. | High | 1995-05-11T11:56:00Z | 1995-05-11T11:56:00Z | 2 | false | false |
->| CVE-1996-1111 | CVE-1996-1111 | This vulnerability affects the following vendors: vendor1, vendor2, vendor3, vendor4. To view more details about this vulnerability please visit the vendor website. | Medium | 1996-07-20T00:00:00Z | 1996-07-20T00:00:00Z | 2 | false | false |
-
+>### Microsoft Defender ATP vulnerability CCVE-2222-22222 by software: some_software
+>|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|
+>|---|---|---|---|---|---|---|---|---|---|
+>| CVE-2222-22222 | CVE-2222-22222 | This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website. | Medium | 5.9 | 2021-05-17T22:56:00Z | 2021-05-17T22:56:00Z | 2 | false | false |
  
 ### microsoft-atp-list-vulnerabilities-by-machine
 ***
 Retrieves a list of all the vulnerabilities affecting the organization per machine.
- 
- 
 #### Base Command
- 
 `microsoft-atp-list-vulnerabilities-by-machine`
 #### Input
- 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | machine_id | A comma-separated list of machine IDs used for getting the vulnerabilities. | Optional |
 | software_id | A comma-separated list of software IDs used for getting the vulnerabilities. | Optional |
 | cve_id | A comma-separated list of CVE IDs used for getting the vulnerabilities. | Optional |
-| fixing_kb_id | A comma-separated list of fixing kb ids used for getting the vulnerabilities. | Optional |
 | product_name | A comma-separated list of product name used for getting the vulnerabilities. | Optional |
 | product_version | A comma-separated list of product version used for getting the vulnerabilities. | Optional |
-| severity | A comma-separated list of vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". Possible values are: Low, Medium, High, Critical. | Optional |
+| severity | A comma-separated list of vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
 | product_vendor | A comma-separated list of product vendor used for getting the vulnerabilities. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| page | The page number from which to start a search. | Optional |
-| page_size | Specifies the page size of the result set. Default is 25. | Optional |
- 
- 
+| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
 #### Context Output
- 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.MachineCVE.id | String | Vulnerability ID. |
@@ -6408,46 +6390,48 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 | MicrosoftATP.MachineCVE.productVendor | String | Name of Product vendor. |
 | MicrosoftATP.MachineCVE.productVersion | String | Product version. |
 | MicrosoftATP.MachineCVE.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". |
- 
 #### Command example
-```!microsoft-atp-list-vulnerabilities-by-machine cve_id=CVE-1111-11111```
+```!microsoft-atp-list-vulnerabilities-by-machine cve_id=CVE-1111-1111```
 #### Context Example
 ```json
 {
-   "MicrosoftATP": {
-       "CVEMachine": {
-           "cveId": "CVE-1111-11111",
-           "fixingKbId": null,
-           "id": "1111111111111111111111111111111111111111-_-CVE-1111-11111-_-some-_-tools-_-1.1.1-_-",
-           "machineId": "1111111111111111111111111111111111111111",
-           "productName": "tools",
-           "productVendor": "some_vendor",
-           "productVersion": "1.1.1",
-           "severity": "Medium"
-       }
-   }
+  "CVE": {
+      "CVSS": {},
+      "ID": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-"
+  },
+  "DBotScore": {
+      "Indicator": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-",
+      "Score": 0,
+      "Type": "cve",
+      "Vendor": "Microsoft Defender Advanced Threat Protection"
+  },
+  "MicrosoftATP": {
+      "MachineCVE": {
+          "cveId": "CVE-1111-1111",
+          "fixingKbId": null,
+          "id": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-",
+          "machineId": "1111111111111111111111111111111111111111",
+          "productName": "some_name",
+          "productVendor": "some_vendor",
+          "productVersion": "11.11.11.11111111",
+          "severity": "Medium"
+      }
+  }
 }
 ```
- 
 #### Human Readable Output
- 
->### Microsoft Defender ATP vulnerabilities:
+>### Microsoft Defender ATP vulnerability 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-:
 >|id|cveId|machineId|productName|productVendor|productVersion|severity|
 >|---|---|---|---|---|---|---|
->| 1111111111111111111111111111111111111111-_-CVE-1111-11111-_-some-_-tools-_-1.1.1-_- | CVE-1111-11111 | 1111111111111111111111111111111111111111 | tools | some_vendor | 1.1.1 | Medium |
+>| 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
  
  
-
 ### microsoft-atp-list-vulnerabilities
 ***
 Retrieves a list of all vulnerabilities.
- 
- 
 #### Base Command
- 
 `microsoft-atp-list-vulnerabilities`
 #### Input
- 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Vulnerability ID. | Optional |
@@ -6455,15 +6439,11 @@ Retrieves a list of all vulnerabilities.
 | description | Vulnerability description. | Optional |
 | published_on | Date when vulnerability was published. | Optional |
 | cvss | CVSS v3 score. | Optional |
-| severity | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". Possible values are: Low, Medium, High, Critical. | Optional |
+| severity | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
 | updated_on | Date when vulnerability was updated. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| page | The page number from which to start a search. | Optional |
-| page_size | Specifies the page size of the result set. Default is 25. | Optional |
- 
- 
+| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
 #### Context Output
- 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Vulnerability.id | String | Vulnerability ID. |
@@ -6479,39 +6459,50 @@ Retrieves a list of all vulnerabilities.
 | MicrosoftATP.Vulnerability.exploitInKit | Boolean | Exploit is part of an exploit kit. |
 | MicrosoftATP.Vulnerability.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local" |
 | MicrosoftATP.Vulnerability.exploitUris | String | Exploit source URLs. |
- 
 #### Command example
-```!microsoft-atp-list-vulnerabilities id="CVE-1111-11111"```
+```!microsoft-atp-list-vulnerabilities id="CVE-1111-1111"```
 #### Context Example
 ```json
 {
-   "MicrosoftATP": {
-       "Vulnerability": {
-           "cvssV3": 1.1,
-           "description": "some_description",
-           "exploitInKit": false,
-           "exploitTypes": [],
-           "exploitUris": [],
-           "exploitVerified": false,
-           "exposedMachines": 0,
-           "id": "CVE-1111-11111",
-           "name": "CVE-1111-11111",
-           "publicExploit": false,
-           "publishedOn": "1999-07-08T00:00:00Z",
-           "severity": "Medium",
-           "updatedOn": "1991-08-11T14:22:00Z"
-       }
-   }
+  "CVE": {
+      "CVSS": {
+          "Score": 6.5
+      },
+      "Description": "some_description.",
+      "ID": "CVE-1111-1111",
+      "Modified": "2002-09-10T00:00:00Z",
+      "Published": "2002-09-10T00:00:00Z"
+  },
+  "DBotScore": {
+      "Indicator": "CVE-1111-1111",
+      "Score": 0,
+      "Type": "cve",
+      "Vendor": "some_vendor"
+  },
+  "MicrosoftATP": {
+      "SoftwareCVE": {
+          "cvssV3": 6.5,
+          "description": "some_description.",
+          "exploitInKit": false,
+          "exploitTypes": [],
+          "exploitUris": [],
+          "exploitVerified": false,
+          "exposedMachines": 0,
+          "id": "CVE-1111-1111",
+          "name": "CVE-1111-1111",
+          "publicExploit": false,
+          "publishedOn": "2002-09-10T00:00:00Z",
+          "severity": "Medium",
+          "updatedOn": "2002-09-10T00:00:00Z"
+      }
+  }
 }
 ```
- 
 #### Human Readable Output
- 
 >### Microsoft Defender ATP vulnerabilities:
 >|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|
 >|---|---|---|---|---|---|---|---|---|---|
->| CVE-1111-11111 | CVE-1111-11111 | some_description | Medium | 1999-07-08T00:00:00Z | 1991-08-11T14:22:00Z | 0 | false | false | 1.1 |
- 
+>| CVE-1111-1111 | CVE-1111-1111 | some_description. | Medium | 2002-09-10T00:00:00Z | 2002-09-10T00:00:00Z | 0 | false | false | 6.5 |
 
 ### microsoft-atp-list-missing-kb-by-software
 ***
@@ -6581,4 +6572,4 @@ Retrieves missing KBs (security updates) by software ID.
 >|---|---|---|---|---|---|---|
 >| 1111111 | some_name_1 | 22222 | some_id | some_url_1 | 1 | 2 |
 >| 2222222 | some_name_2 | 22222 | some_id | some_url_2 | 1 | 2 |
- 
+
