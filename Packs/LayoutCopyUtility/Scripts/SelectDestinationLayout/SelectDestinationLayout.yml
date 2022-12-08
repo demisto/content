@@ -1,3 +1,4 @@
+comment: Field Display script for displaying Destination Layouts.
 args:
 - auto: PREDEFINED
   name: copy_type
