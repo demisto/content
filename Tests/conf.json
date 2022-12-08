@@ -2363,9 +2363,20 @@
             "has_api": false
         },
         {
+            "playbookID": "Active Directory Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "has_api": false
+        },
+        {
             "playbookID": "Active Directory - manual pagination check",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
+        },
+        {
+            "playbookID": "Active Directory - manual pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm"
         },
         {
             "playbookID": "Active Directory - automatic pagination check",
@@ -2373,9 +2384,21 @@
             "instance_names": "active_directory_ninja"
         },
         {
+            "playbookID": "Active Directory - automatic pagination check",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm"
+        },
+        {
             "playbookID": "AD v2 - debug-mode - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
             "fromversion": "5.0.0",
             "has_api": false
         },
@@ -2392,13 +2415,31 @@
         },
         {
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "playbookID": "Active Directory Query V2 configuration with port",
+            "has_api": false
+        },
+        {
+            "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "playbookID": "Active Directory - ad-get-user limit check",
+            "has_api": false
+        },
+        {
+            "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "playbookID": "active directory search user with parentheses test",
+            "has_api": false
+        },
+        {
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
             "playbookID": "active directory search user with parentheses test",
             "has_api": false
         },
@@ -2592,6 +2633,11 @@
             "instance_names": "active_directory_ninja"
         },
         {
+            "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm"
+        },
+        {
             "playbookID": "EmailReputationTest",
             "integrations": "Have I Been Pwned? V2"
         },
@@ -2629,6 +2675,12 @@
             "playbookID": "Account Enrichment - Generic v2.1 - Test",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
+            "has_api": false
+        },
+        {
+            "playbookID": "Account Enrichment - Generic v2.1 - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
             "has_api": false
         },
         {
