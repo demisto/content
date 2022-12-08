@@ -50,6 +50,20 @@ configuration:
   name: auth_code
   required: false
   type: 9
+- name: Reliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  options:
+    - A+ - 3rd party enrichment
+    - A - Completely reliable
+    - B - Usually reliable
+    - C - Fairly reliable
+    - D - Not usually reliable
+    - E - Unreliable
+    - F - Reliability cannot be judged
+  required: false
+  type: 15
 - display: Fetch incidents
   name: isFetch
   defaultvalue: 'true'
@@ -4760,7 +4774,7 @@ script:
       name: description
       secret: false
     - default: false
-      description: Date when vulnerability was published.
+      description: Date when vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
       isArray: false
       name: published_on
       secret: false
@@ -4774,7 +4788,7 @@ script:
       isArray: true
       name: severity
       secret: false
-    - description: Date when vulnerability was updated.
+    - description: Date when vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
       isArray: false
       name: updated_on
       default: false

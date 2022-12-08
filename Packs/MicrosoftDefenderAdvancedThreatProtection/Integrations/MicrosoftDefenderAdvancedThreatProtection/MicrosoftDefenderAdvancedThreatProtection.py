@@ -4522,7 +4522,7 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
     headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
     missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
     missing_kb_by_software_response_value = missing_kb_by_software_response.get('value')
-    mark_down_values = add_backslash_infront_of_underscore(missing_kb_by_software_response_value)
+    mark_down_values = add_backslash_infront_of_underscore_list(missing_kb_by_software_response_value)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
                                      mark_down_values, headers=headers, removeNull=True)
     return CommandResults(
@@ -4533,28 +4533,40 @@ def list_missing_kb_by_software_command(client: MsClient, args: dict) -> Command
         raw_response=missing_kb_by_software_response)
 
 
-def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> CommandResults:
+def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> list[CommandResults]:
     """ Retrieves list of vulnerabilities by software.
         Args:
             client: MsClient.
             args: dict - arguments from CortexSOAR.
         Returns:
-            A CommandResults object with a list of vulnerabilities by software.
+            A CommandResult list with a list of vulnerabilities by software.
     """
+    results_list = []
     software_id = str(args.get('id'))
     headers = ['id', 'name', 'description', 'severity', 'cvssV3', 'publishedOn', 'updatedOn',
                'exposedMachines', 'exploitVerified',
                'publicExploit']
     vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
     vulnerabilities_response_value = vulnerabilities_response.get('value')
-    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities by software: {software_id}',
-                                     vulnerabilities_response_value, headers=headers, removeNull=True)
-    return CommandResults(
-        outputs_prefix='MicrosoftATP.SoftwareCVE',
-        outputs_key_field='id',
-        outputs=vulnerabilities_response_value,
-        readable_output=human_readable,
-        raw_response=vulnerabilities_response)
+    demisto.debug(vulnerabilities_response_value)
+    if vulnerabilities_response_value:
+        for cve in vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
+                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+                                               outputs_key_field='id',
+                                               outputs=vulnerabilities_response_value,
+                                               readable_output=human_readable,
+                                               raw_response=vulnerabilities_response,
+                                               indicator=cve_indicator))
+    return results_list
 
 
 def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
@@ -4579,7 +4591,7 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
     return query
 
 
-def add_backslash_infront_of_underscore(markdown_data: Optional[list[dict]]) -> list[dict]:
+def add_backslash_infront_of_underscore_list(markdown_data: Optional[list[dict]]) -> list[dict]:
     """ Escape underscores with a backslash in order to show underscores after markdown parsing.
         Args:
             markdown_data: list[dict] - list of dicts.
@@ -4595,6 +4607,22 @@ def add_backslash_infront_of_underscore(markdown_data: Optional[list[dict]]) -> 
                     v = str(v.replace('_', '\_'))
                 dict[k] = v
             markdown_data_to_return.append(dict)
+    return markdown_data_to_return
+
+
+def add_backslash_infront_of_underscore(markdown_data: Optional[dict]) -> dict:
+    """ Escape underscores with a backslash in order to show underscores after markdown parsing.
+        Args:
+            markdown_data: dict - list of dicts.
+        Returns:
+            A dict with a backslash before each underscore.
+    """
+    markdown_data_to_return = {}
+    if markdown_data:
+        for k, v in markdown_data.items():
+            if isinstance(v, str):
+                v = str(v.replace('_', '\_'))
+            markdown_data_to_return[k] = v
     return markdown_data_to_return
 
 
@@ -4656,7 +4684,7 @@ def list_software_command(client: MsClient, args: dict) -> CommandResults:
     headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
     list_software_response = client.get_list_software(filter_req, limit, offset)
     list_software_response_value = list_software_response.get('value')
-    mark_down_values = add_backslash_infront_of_underscore(list_software_response_value)
+    mark_down_values = add_backslash_infront_of_underscore_list(list_software_response_value)
     human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
                                      mark_down_values, headers=headers, removeNull=True)
     return CommandResults(
@@ -4667,7 +4695,7 @@ def list_software_command(client: MsClient, args: dict) -> CommandResults:
         raw_response=list_software_response)
 
 
-def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> CommandResults:
+def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> list[CommandResults]:
     """ Retrieves a list of all the vulnerabilities affecting the organization per machine.
         Args:
             client: MsClient.
@@ -4678,28 +4706,37 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> Com
     machine_id = argToList(args.get('machine_id'))
     software_id = argToList(args.get('software_id', ''))
     cve_id = argToList(args.get('cve_id', ''))
-    fixing_kb_id = argToList(args.get('fixing_kb_id', ''))
     product_name = argToList(args.get('product_name', ''))
     product_version = argToList(args.get('product_version', ''))
     severity = argToList(args.get('severity', ''))
     product_vendor = argToList(args.get('product_vendor', ''))
     limit = args.get('limit', '50')
     offset = args.get('offset', '0')
-    filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'), (fixing_kb_id, 'fixingKbId'),
+    results_list = []
+    filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'),
                                 (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
                                 (product_vendor, 'productVendor')])
     headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
     list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
-    mark_down_values = add_backslash_infront_of_underscore(list_vulnerabilities_response_value)
-    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                     mark_down_values, headers=headers, removeNull=True)
-    return CommandResults(
-        outputs_prefix='MicrosoftATP.MachineCVE',
-        outputs_key_field='id',
-        outputs=list_vulnerabilities_response_value,
-        readable_output=human_readable,
-        raw_response=list_vulnerabilities_response)
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss='',
+                                       description='',
+                                       published='',
+                                       modified=''
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id}:',
+                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.MachineCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    return results_list
 
 
 def create_filter_list_vulnerabilities(id_and_severity: str, name: str, description: str, published_on: str, cvss: str,
@@ -4744,7 +4781,7 @@ def date_to_iso_format(date: str) -> str:
     return date
 
 
-def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults:
+def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandResults]:
     """ Retrieves a list of all vulnerabilities.
         Args:
             client: MsClient.
@@ -4767,15 +4804,26 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> CommandResults
                'exploitVerified', 'publicExploit', 'cvssV3']
     list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
-    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                     list_vulnerabilities_response_value, headers=headers, removeNull=True)
+    results_list = []
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
+                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
 
-    return CommandResults(
-        outputs_prefix='MicrosoftATP.Vulnerability',
-        outputs_key_field='id',
-        outputs=list_vulnerabilities_response_value,
-        readable_output=human_readable,
-        raw_response=list_vulnerabilities_response)
+    return results_list
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:

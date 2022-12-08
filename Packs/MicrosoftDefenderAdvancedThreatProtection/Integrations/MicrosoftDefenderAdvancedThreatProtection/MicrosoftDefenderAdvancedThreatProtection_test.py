@@ -2537,22 +2537,13 @@ def test_list_missing_kb_by_software_command(mocker, args, return_value, expecte
      'value': [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
                 'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2, 'publishedOn': '2023-09-06T00:00:00Z',
                 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False, 'exploitVerified': False,
-                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
-               {'id': 'CVE-2222-22222', 'name': 'CVE-2222-22222',
-                'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.9, 'exposedMachines': 2,
-                'publishedOn': '2023-10-06T00:00:00Z', 'updatedOn': '2022-09-16T20:17:00Z', 'publicExploit': False,
-                'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
-     '### Microsoft Defender ATP vulnerabilities by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n| CVE-2222-22222 | CVE-2222-22222 | vulnerability_description | Medium | 5.9 | 2023-10-06T00:00:00Z | 2022-09-16T20:17:00Z | 2 | false | false |\n',  # noqa: E501
+                'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
+     '### Microsoft Defender ATP vulnerability CVE-1111-1111 by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability\\_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n',  # noqa: E501
      [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
        'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
        'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
        'exploitVerified': False,
-       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
-      {'id': 'CVE-2222-22222', 'name': 'CVE-2222-22222',
-       'description': 'vulnerability_description', 'severity': 'Medium', 'cvssV3': 5.9,
-       'exposedMachines': 2, 'publishedOn': '2023-10-06T00:00:00Z',
-       'updatedOn': '2022-09-16T20:17:00Z', 'publicExploit': False,
-       'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}])
+       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}])
 ])
 def test_list_vulnerabilities_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
     """
@@ -2568,8 +2559,8 @@ def test_list_vulnerabilities_by_software_command(mocker, args, return_value, ex
     from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_software_command
     mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_software', return_value=return_value)
     result_list_software = list_vulnerabilities_by_software_command(client_mocker, args)
-    assert result_list_software.readable_output == expected_human_readable
-    assert result_list_software.outputs == expected_outputs
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
 
 
 @pytest.mark.parametrize('filters_arg_list, name, expected_result', [
@@ -2699,25 +2690,17 @@ def test_list_software_command(mocker, args, return_value_get_list_software, exp
      {'@odata.context': 'https://api.securitycenter.windows.com/api/$metadata#Collection(microsoft.windowsDefenderATP.api.PublicAssetVulnerabilityDto)',  # noqa: E501
      'value': [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
                 'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
-                'productVersion': '7.0.2.0', 'severity': 'High'},
-               {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
-                'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
                 'productVersion': '7.0.2.0', 'severity': 'High'}]},
-     '### Microsoft Defender ATP vulnerabilities:\n'
+     '### Microsoft Defender ATP vulnerability some_id:\n'
      '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
      '|---|---|---|---|---|---|---|\n|'
      ' some\_id | CVE-3333-33333 |'
      ' some\_machine\_id |'
-     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n|'
-     ' some\_id | CVE-3333-33333 |'
-     ' some\_machine\_id | some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
-     [{'id': 'some_id',
+     ' some\_product\_name | some\_vendor | 7.0.2.0 | High |\n',
+     {'id': 'some_id',
        'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
        'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
-       'productVersion': '7.0.2.0', 'severity': 'High'},
-      {'id': 'some_id',
-       'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id', 'fixingKbId': None,
-       'productName': 'some_product_name', 'productVendor': 'some_vendor', 'productVersion': '7.0.2.0', 'severity': 'High'}])
+       'productVersion': '7.0.2.0', 'severity': 'High'})
 ])
 def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, expected_human_readable, expected_outputs):
     """
@@ -2733,8 +2716,8 @@ def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, exp
     from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_by_machine_command
     mocker.patch.object(client_mocker, 'get_list_vulnerabilities_by_machine', return_value=return_value)
     result_list_software = list_vulnerabilities_by_machine_command(client_mocker, args)
-    assert result_list_software.readable_output == expected_human_readable
-    assert result_list_software.outputs == expected_outputs
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
 
 
 @pytest.mark.parametrize('args, return_value,expected_human_readable,expected_outputs', [
@@ -2745,44 +2728,18 @@ def test_list_vulnerabilities_by_machine_command(mocker, args, return_value, exp
                 'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2023-04-24T15:15:00Z',
                 'updatedOn': '2023-04-24T15:15:00Z', 'publicExploit': False,
                 'exploitVerified': False, 'exploitInKit': False,
-                'exploitTypes': [], 'exploitUris': []},
-               {'id': 'CVE-2024-22222', 'name': 'CVE-2024-22222',
-                'description': 'some_description',
-                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
-                'publishedOn': '2023-04-24T15:15:00Z', 'updatedOn': '2023-04-24T15:15:00Z',
-                'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
-               {'id': 'CVE-2023-33333', 'name': 'CVE-2023-33333',
-                'description': 'some_description',
-                'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2022-11-28T13:15:00Z',
-                'updatedOn': '2023-04-24T15:15:00Z', 'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False,
                 'exploitTypes': [], 'exploitUris': []}]},
-     '### Microsoft Defender ATP vulnerabilities:\n'
-     '|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|\n'
+     '### Microsoft Defender ATP vulnerabilities:\n|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|\n'
      '|---|---|---|---|---|---|---|---|---|---|\n|'
-     ' CVE-2023-11111 | CVE-2023-11111 | some_description |'
-     ' Critical | 2023-04-24T15:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n| CVE-2024-22222 |'
-     ' CVE-2024-22222 | some_description |'
-     ' Critical | 2023-04-24T15:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n|'
-     ' CVE-2023-33333 | CVE-2023-33333 | some_description |'
-     ' Critical | 2022-11-28T13:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n',
-     [{'id': 'CVE-2023-11111',
-       'name': 'CVE-2023-11111',
-       'description': 'some_description',
-       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
-       'publishedOn': '2023-04-24T15:15:00Z',
-       'updatedOn': '2023-04-24T15:15:00Z',
-       'publicExploit': False, 'exploitVerified': False,
-       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
-      {'id': 'CVE-2024-22222', 'name': 'CVE-2024-22222',
-       'description': 'some_description',
-       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
-       'publishedOn': '2023-04-24T15:15:00Z', 'updatedOn': '2023-04-24T15:15:00Z',
-       'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []},
-      {'id': 'CVE-2023-33333', 'name': 'CVE-2023-33333',
-       'description': 'some_description',
-       'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0, 'publishedOn': '2022-11-28T13:15:00Z',
-       'updatedOn': '2023-04-24T15:15:00Z', 'publicExploit': False, 'exploitVerified': False, 'exploitInKit': False,
-       'exploitTypes': [], 'exploitUris': []}])
+     ' CVE-2023-11111 | CVE-2023-11111 | some\\_description | Critical | 2023-04-24T15:15:00Z | 2023-04-24T15:15:00Z | 0 | false | false | 9.8 |\n',
+     {'id': 'CVE-2023-11111',
+      'name': 'CVE-2023-11111',
+      'description': 'some_description',
+      'severity': 'Critical', 'cvssV3': 9.8, 'exposedMachines': 0,
+      'publishedOn': '2023-04-24T15:15:00Z',
+      'updatedOn': '2023-04-24T15:15:00Z',
+      'publicExploit': False, 'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
 ])
 def test_list_vulnerabilities_command(mocker, args, return_value, expected_human_readable, expected_outputs):
     """
@@ -2798,8 +2755,8 @@ def test_list_vulnerabilities_command(mocker, args, return_value, expected_human
     from MicrosoftDefenderAdvancedThreatProtection import list_vulnerabilities_command
     mocker.patch.object(client_mocker, 'get_list_vulnerabilities', return_value=return_value)
     result_list_software = list_vulnerabilities_command(client_mocker, args)
-    assert result_list_software.readable_output == expected_human_readable
-    assert result_list_software.outputs == expected_outputs
+    assert result_list_software[0].readable_output == expected_human_readable
+    assert result_list_software[0].outputs == expected_outputs
 
 
 @pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [([
@@ -2814,6 +2771,20 @@ def test_list_vulnerabilities_command(mocker, args, return_value, expected_human
      {'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
       'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
       'productVersion': '7.0.2.0', 'severity': 'High'}])
+])
+def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash, expected_result):
+    from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore_list
+    result = add_backslash_infront_of_underscore_list(data_to_escape_with_backslash)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [(
+    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
+     'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
+     'productVersion': '7.0.2.0', 'severity': 'High'},
+    {'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
+     'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
+     'productVersion': '7.0.2.0', 'severity': 'High'})
 ])
 def test_add_backslash_infront_of_underscore(data_to_escape_with_backslash, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore
