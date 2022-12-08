@@ -21786,7 +21786,7 @@ Create a new asset tag.
 | name | Name of the created tag. | Required | 
 | child_name | Names of the created child tags. | Optional | 
 | rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
-| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24<br/>VULN_EXIST(QID) - format: 12345(int)<br/>OPEN_PORTS - format: 443,888,12034(int)<br/>NAME_CONTAINS - format: REGEX<br/>INSTALLED_SOFTWARE - format: REGEX<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: IP Range OR IP Subnet Mask (Exmaple: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24)<br/>VULN_EXIST(QID) - format: Number (Exmple: 12345)<br/>OPEN_PORTS - format: List of numbers (Exmaple: 443,888,12034)<br/>NAME_CONTAINS - format: REGEX (Exmaple: "/^example/")<br/>INSTALLED_SOFTWARE - format: REGEX (Exmaple: "/^example/")<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
 | criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
 
 
@@ -21853,7 +21853,7 @@ Update an existing asset tag.
 | id | ID of the tag you wish to update. | Required | 
 | name | Name of the created tag. | Required | 
 | rule_type | Type of rule to dynamically tagging host.<br>The Rule Type argument determines the type of the Rule Text argument that is acceptable.<br>Possible values are: INSTALLED_SOFTWARE, NETWORK_RANGE, NAME_CONTAINS, OPEN_PORTS, VULN_EXIST, STATIC. | Required | 
-| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24<br/>VULN_EXIST(QID) - format: 12345(int)<br/>OPEN_PORTS - format: 443,888,12034(int)<br/>NAME_CONTAINS - format: REGEX<br/>INSTALLED_SOFTWARE - format: REGEX<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
+| rule_text | Criteria for the rule. <br/>Optional for STATIC rule type, required for the rest of the rule types. <br/>Acceptable formats for each Rule Type argument: <br/>NETWORK_RANGE - formats: IP Range OR IP Subnet Mask (Exmaple: 10.10.10.1-10.10.10.6 OR 10.10.10.0/24)<br/>VULN_EXIST(QID) - format: Number (Exmple: 12345)<br/>NAME_CONTAINS - format: REGEX (Exmaple: "/^example/")<br/>INSTALLED_SOFTWARE - format: REGEX (Exmaple: "/^example/")<br/>STATIC - *RULE TEXT OPTIONAL* | Optional | 
 | child_to_remove | Child tag to remove from the child tag list. | Optional | 
 | criticality_score | Criticality score of the asset tag. Values between 1 (lowest) and 5 (highest). | Optional | 
 
