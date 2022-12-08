@@ -708,7 +708,7 @@
                 "description": "",
                 "fields": [
                     {
-                       "fieldId": "incident_additionaldata",
+                        "fieldId": "incident_additionaldata",
                         "isVisible": true
                     },
                     {
