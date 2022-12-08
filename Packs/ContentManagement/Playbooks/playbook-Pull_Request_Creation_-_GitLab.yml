@@ -1069,7 +1069,7 @@ tasks:
       version: -1
       name: merge request update
       description: Updates an existing merge request. You can change the target branch, title, or even close the merge request.
-      script: '|||gitlab-merge-request-update'
+      script: GitLabv2|||gitlab-merge-request-update
       type: regular
       iscommand: true
       brand: ""
