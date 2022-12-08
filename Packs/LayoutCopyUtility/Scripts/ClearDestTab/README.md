@@ -7,6 +7,7 @@ Clears the Destination Tab field
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-change-triggered |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

@@ -1,4 +1,4 @@
-
+Clears the Select Source Tab field
 
 ## Script Data
 ---
@@ -7,6 +7,7 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-change-triggered |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

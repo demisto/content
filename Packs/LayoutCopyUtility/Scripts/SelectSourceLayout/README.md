@@ -7,6 +7,7 @@ Pulls & returns filtered list of Source Names. Filtered by 'Copy Type' field val
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-display |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

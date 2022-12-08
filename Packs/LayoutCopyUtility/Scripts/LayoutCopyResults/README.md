@@ -1,4 +1,4 @@
-
+Pulls, formats, and displays the results of copy attempts.
 
 ## Script Data
 ---
@@ -7,6 +7,7 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | dynamic-section |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

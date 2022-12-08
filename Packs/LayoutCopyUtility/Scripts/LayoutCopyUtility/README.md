@@ -7,6 +7,7 @@ Script used to Copy/Propagate Layout Tabs from one layout to others. It will cre
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

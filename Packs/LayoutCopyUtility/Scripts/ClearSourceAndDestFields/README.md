@@ -1,4 +1,4 @@
-
+Clears Layout and Tab fields for Source and Destination. Triggered by the SelectCopyType field changes.
 
 ## Script Data
 ---
@@ -7,6 +7,7 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-change-triggered |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---

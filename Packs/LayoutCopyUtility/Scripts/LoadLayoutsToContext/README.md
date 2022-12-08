@@ -7,6 +7,12 @@ Loads certain layout details to the context
 | --- | --- |
 | Script Type | python3 |
 | Tags | Utility |
+| Cortex XSOAR Version | 6.0.0 |
+
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Add Layouts To Context
 
 ## Inputs
 ---

@@ -1,4 +1,4 @@
-
+Field display script for displaying Select Source Tab options.
 
 ## Script Data
 ---
@@ -7,6 +7,7 @@
 | --- | --- |
 | Script Type | python3 |
 | Tags | field-display |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
