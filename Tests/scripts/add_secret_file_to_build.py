@@ -1,5 +1,5 @@
 import argparse
-import json
+import json5
 
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 
@@ -27,7 +27,7 @@ def run(options):
     print(f'secrets from API: {secret_file}')
     print(f'json_path_file: {options.json_path_file}')
     with open(options.json_path_file, 'w') as secrets_out_file:
-        secrets_out_file.write(json.dumps(secret_file))
+        secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
     print(f'saved the json file to: {options.json_path_file}')
 
 

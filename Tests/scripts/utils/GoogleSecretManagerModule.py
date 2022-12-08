@@ -1,6 +1,6 @@
 import google
 from google.cloud import secretmanager
-import json
+import json5
 from Tests.scripts.utils import logging_wrapper as logging
 
 
@@ -11,9 +11,9 @@ class GoogleSecreteManagerModule:
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
         response = self.client.access_secret_version(request={"name": name})
-        return json.loads(response.payload.data.decode("UTF-8"))
+        return json5.loads(response.payload.data.decode("UTF-8"))
 
-    def list_secrets(self, project_id: str, name_filter: str = '', with_secret=False) -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         print(f'parent: {parent}')
@@ -22,7 +22,7 @@ class GoogleSecreteManagerModule:
             for secret in self.client.list_secrets(request={"parent": parent}):
                 secret.name = str(secret.name).split('/')[-1]
                 print(f'_____________________{secret.name}_____________________')
-                if name_filter and name_filter not in secret.name:
+                if secret.name in name_filter:
                     continue
                 if with_secret:
                     try:
