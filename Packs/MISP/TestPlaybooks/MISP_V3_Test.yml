@@ -531,7 +531,7 @@ tasks:
       - "11"
     scriptarguments:
       url:
-        simple: www.example.com
+        simple: www.example.com/test
     separatecontext: false
     view: |-
       {
