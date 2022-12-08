@@ -8,14 +8,9 @@ def clear_source_tab():
     execute_command('setIncident', {'selectsourcetab': ' '})
 
 
-def clear_source_section():
-    execute_command('setIncident', {'selectsourcesection': ' '})
-
-
 def main():
     try:
         clear_source_tab()
-        clear_source_section()
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
