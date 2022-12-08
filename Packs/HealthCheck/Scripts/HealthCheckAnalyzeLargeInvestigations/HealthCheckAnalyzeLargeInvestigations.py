@@ -9,8 +9,8 @@ THRESHOLDS = {
     'numberofincidentsbiggerthan1mb': 300,
 }
 DESCRIPTION = [
-    'Too many incidents with high number of war room entries were found, consider to use quite mode in task settings',
-    'Large incidents were found, consider to use quite mode in task settings and delete unneeded Context'
+    'Too many incidents with high number of war room entries were found, consider to use quiet mode in task settings',
+    'Large incidents were found, consider to use quiet mode in task settings and delete unneeded Context'
 ]
 RESOLUTION = [
     'Playbook Settings: https://xsoar.pan.dev/docs/playbooks/playbook-settings',

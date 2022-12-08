@@ -89,7 +89,7 @@ create-instances:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 1000m
+    KUBERNETES_CPU_REQUEST: 2000m
   needs: []
   stage: create-instances
   script:
@@ -149,7 +149,7 @@ prepare-testing-bucket-mpv2:
     policy: pull-push
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
-    KUBERNETES_CPU_REQUEST: 1000m
+    KUBERNETES_CPU_REQUEST: 2000m
   needs: []
   stage: create-instances
   script:
@@ -193,6 +193,66 @@ prepare-testing-bucket-mpv2:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+
+
+prepare-testing-bucket-xpanse:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+  cache:
+    policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
+    KUBERNETES_CPU_REQUEST: 2000m
+  needs: []
+  stage: create-instances
+  script:
+    - !reference [.download-demisto-conf]
+    - !reference [.create-id-set-xpanse]
+    - !reference [.create-release-notes-and-common-docs]
+
+    - section_start "Create Content Artifacts and Update Conf" --collapsed
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xpanse" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - zip -j $ARTIFACTS_FOLDER/uploadable_packs_xpanse.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
+    - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
+    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+    - section_end "Create Content Artifacts and Update Conf"
+
+    - section_start "Calculate Packs Dependencies" --collapsed
+    - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
+    - section_end "Calculate Packs Dependencies"
+
+    - section_start "Replace Cortex XSOAR" --collapsed
+    - pushd "$ARTIFACTS_FOLDER"
+    - export PRODUCT_NAME_XPANSE="Cortex XPANSE"
+    - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME_XPANSE"'/gI' {} \;
+    - pushd content_packs; zip -r ../content_packs.zip *; popd
+    - pushd all_content; zip -r ../all_content.zip *; popd
+    - pushd content_new; zip -r ../content_new.zip *; popd
+    - pushd content_test; zip -r ../content_test.zip *; popd
+    - rm -rf content_packs all_content content_new content_test
+    - popd
+    - section_end "Replace Cortex XSOAR"
+
+    - section_start "Collect Tests and Content Packs"
+    - |
+      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+      python3 ./Tests/scripts/collect_tests/collect_tests.py -n $IS_NIGHTLY --marketplace "xpanse" --service_account $GCS_MARKET_KEY
+    - section_end "Collect Tests and Content Packs"
+
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_XPANSE_BUCKET" "$STORAGE_BASE_PATH" "xpanse"
+    - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Upload Artifacts to GCP" --collapsed
+    - ./Tests/scripts/upload_artifacts.sh
+    - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+
 
 .test_content_on_xsoar_server_instances_base:
   tags:

@@ -1,3 +1,4 @@
+  
   alert_category: EXECUTION
   alert_description: This alert will trigger in an event where multiple attempts of
     unauthorized actions were detected
@@ -32,6 +33,7 @@
   suppression_enabled: false
   suppression_fields: null
   user_defined_category: null
+  fromversion: 6.10.0
   user_defined_severity: null
   xql_query: "datamodel \r\n|filter xdm.observer.vendor=\"alibaba\" and  xdm.observer.product=\"\
     action-trail\"\r\n|filter  xdm.event.type=\"ApiCall\"\r\n|filter xdm.event.outcome\

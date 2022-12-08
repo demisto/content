@@ -89,7 +89,7 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
-| CrowdStrike.Device.Status | String | The device status. | 
+| CrowdStrike.Device.Status | String | The device status which might be Online, Offline or Unknown. | 
 | Endpoint.Hostname | String | The endpoint's hostname. | 
 | Endpoint.OS | String | The endpoint's operation system. | 
 | Endpoint.OSVersion | String | The endpoint's operation system version. | 
