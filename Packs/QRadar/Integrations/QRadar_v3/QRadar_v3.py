@@ -1525,7 +1525,7 @@ def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, grou
                 return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
 
 
-def is_positive(*values: None) -> bool:
+def is_positive(*values: int | None) -> bool:
     # checks if all values are positive or None but not a negative numbers
     for value in values:
         if value is not None and value < 1:
@@ -1663,7 +1663,7 @@ def create_search_with_retry(client: Client,
 def poll_offense_events(client: Client,
                         search_id: str,
                         should_get_events: bool,
-                        offense_id: int,
+                        offense_id: int | None,
                         ):
     try:
         print_debug_msg(f"Getting search status for {search_id}")
@@ -3629,7 +3629,7 @@ def qradar_search_retrieve_events_command(
         search_id = search_command_results.outputs[0].get('ID')  # type: ignore
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
-    end_date: datetime = dateparser.parse(sm.get('end_date'))
+    end_date: datetime | None = dateparser.parse(sm.get('end_date'))
     if not end_date or end_date.year == 1:
         end_date = None
     # determine if this is the last run of the polling command
