@@ -14,9 +14,9 @@ This playbook does not use any scripts.
 
 ### Commands
 * gcp-compute-insert-firewall
-* gcp-compute-add-network-tag
-* gcp-compute-list-firewall
 * gcp-compute-get-instance
+* gcp-compute-list-firewall
+* gcp-compute-add-network-tag
 
 ## Playbook Inputs
 ---
@@ -27,6 +27,7 @@ This playbook does not use any scripts.
 | GcpZone | The zone of the GCP instance that is hosted in. |  | Required |
 | GcpNetwork | The VPC network of the GCP instance. |  | Required |
 | RemotePort | The remote port that is publicly exposed to. | alert.remoteport | Required |
+| RemoteProtocol | The remote protocol that is publicly exposed to. |  | Required |
 
 ## Playbook Outputs
 ---

@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: ba19b01d-df00-4533-84df-fddcfe526820
+    taskid: afd45690-ffd2-446e-8dcc-6e346e3ace58
     type: condition
     task:
-      id: ba19b01d-df00-4533-84df-fddcfe526820
+      id: afd45690-ffd2-446e-8dcc-6e346e3ace58
       version: -1
       name: Is Google Cloud Compute enabled and are Input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -50,7 +50,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "15"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -104,6 +104,12 @@ tasks:
               complex:
                 root: inputs.RemotePort
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemoteProtocol
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -138,51 +144,6 @@ tasks:
         "position": {
           "x": 350,
           "y": 2345
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: e199c0eb-fac4-4726-8d82-76404786772d
-    type: regular
-    task:
-      id: e199c0eb-fac4-4726-8d82-76404786772d
-      version: -1
-      name: Lookup Firewall rule names with associated network
-      description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}.
-      script: Google Cloud Compute|||gcp-compute-list-firewall
-      type: regular
-      iscommand: true
-      brand: Google Cloud Compute
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      filters:
-        complex:
-          root: inputs.RemotePort
-          transformers:
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: name="remediation-allow-port-
-              suffix:
-                value:
-                  simple: '"'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 605
         }
       }
     note: false
@@ -239,13 +200,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ef32796a-7e27-4172-8760-42d8193c0039
+    taskid: c3660121-04fb-4300-8fe3-e11064217f81
     type: regular
     task:
-      id: ef32796a-7e27-4172-8760-42d8193c0039
+      id: c3660121-04fb-4300-8fe3-e11064217f81
       version: -1
       name: Get network tags information.
-      description: Returns the specified Instance resource. Gets a list of available instances by making a list() request.
+      description: Returns the tags of instance.
       script: Google Cloud Compute|||gcp-compute-get-instance
       type: regular
       iscommand: true
@@ -266,7 +227,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1710
+          "y": 1720
         }
       }
     note: false
@@ -309,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 9e84d483-f3b2-41a2-80b1-980582da3822
+    taskid: d58efdff-2746-431e-8010-f9168b5efb22
     type: regular
     task:
-      id: 9e84d483-f3b2-41a2-80b1-980582da3822
+      id: d58efdff-2746-431e-8010-f9168b5efb22
       version: -1
       name: Add block everything firewall rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -332,7 +293,20 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: ipprotocol=tcp,ports=
+                  simple: ',ports='
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ipprotocol=
               suffix: {}
       direction:
         simple: INGRESS
@@ -345,7 +319,16 @@ tasks:
               prefix:
                 value:
                   simple: remediation-block-port-
-              suffix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
       network:
         complex:
           root: inputs.GcpNetwork
@@ -363,6 +346,19 @@ tasks:
                 value:
                   simple: remediation-tag-
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -381,10 +377,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 4d571bd3-50fe-4676-8052-2b23b492c13e
+    taskid: 5a5a01bf-4ada-4624-8215-0dedefc853c2
     type: regular
     task:
-      id: 4d571bd3-50fe-4676-8052-2b23b492c13e
+      id: 5a5a01bf-4ada-4624-8215-0dedefc853c2
       version: -1
       name: Add allow rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -404,7 +400,20 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: ipprotocol=tcp,ports=
+                  simple: ',ports='
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ipprotocol=
               suffix: {}
       direction:
         simple: INGRESS
@@ -417,7 +426,16 @@ tasks:
               prefix:
                 value:
                   simple: remediation-allow-port-
-              suffix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
       network:
         complex:
           root: inputs.GcpNetwork
@@ -435,6 +453,19 @@ tasks:
                 value:
                   simple: remediation-tag-
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -453,14 +484,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 1b324975-a2b2-46e6-8c33-35ef711d362d
+    taskid: 7413070c-c8d2-435f-8aae-3225cae3e03d
     type: condition
     task:
-      id: 1b324975-a2b2-46e6-8c33-35ef711d362d
+      id: 7413070c-c8d2-435f-8aae-3225cae3e03d
       version: -1
       name: Does the network tags already exist on the instance?
       description: |+
-        Check whether the last command returned remediation tag or not. If the tag is not present, the tag remediation-tag-{port#} is created.
+        Check whether the last command returned remediation tag or not. If the tag is not present, the tag remediation-tag-{port#}-{protocol} is created.
 
       type: condition
       iscommand: false
@@ -492,6 +523,19 @@ tasks:
                       value:
                         simple: remediation-tag-
                     suffix: {}
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: '-'
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: inputs.RemoteProtocol
+                      iscontext: true
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -510,10 +554,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b171bbba-4039-4026-8ea0-c683ee7d42fe
+    taskid: 3e5be817-d180-46ba-8d10-5e399abad5e6
     type: regular
     task:
-      id: b171bbba-4039-4026-8ea0-c683ee7d42fe
+      id: 3e5be817-d180-46ba-8d10-5e399abad5e6
       version: -1
       name: Add and set network tags
       description: Add network tag for the specified instance.
@@ -538,6 +582,19 @@ tasks:
                 value:
                   simple: remediation-tag-
               suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
       zone:
         complex:
           root: inputs.GcpZone
@@ -548,6 +605,64 @@ tasks:
         "position": {
           "x": 740,
           "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 6822b4bb-5d01-48c2-8aca-13693dbb031a
+    type: regular
+    task:
+      id: 6822b4bb-5d01-48c2-8aca-13693dbb031a
+      version: -1
+      name: Lookup Firewall rule names with associated network
+      description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: name="remediation-allow-port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 605
         }
       }
     note: false
@@ -592,6 +707,11 @@ inputs:
       accessor: remoteport
   required: true
   description: The remote port that is publicly exposed to.
+  playbookInputQuery:
+- key: RemoteProtocol
+  value: {}
+  required: true
+  description: The remote protocol that is publicly exposed to.
   playbookInputQuery:
 outputs: []
 tests:

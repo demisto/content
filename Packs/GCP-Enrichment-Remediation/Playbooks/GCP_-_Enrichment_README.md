@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Google Cloud Compute
 * GCP-IAM
+* Google Cloud Compute
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* gcp-compute-list-firewall
 * gcp-compute-aggregated-list-instances-by-ip
+* gcp-compute-list-firewall
 * gcp-iam-project-iam-policy-get
 
 ## Playbook Inputs
@@ -23,7 +23,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| GcpIP | GCP IP in alert | 34.168.3.66 | Required |
+| GcpIP | GCP IP in alert | alert.remoteip | Required |
 
 ## Playbook Outputs
 ---

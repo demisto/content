@@ -381,7 +381,9 @@ view: |-
 inputs:
 - key: GcpIP
   value:
-    simple: 34.168.3.66
+    complex:
+      root: alert
+      accessor: remoteip
   required: true
   description: GCP IP in alert
   playbookInputQuery:
