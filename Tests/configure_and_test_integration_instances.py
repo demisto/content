@@ -73,8 +73,13 @@ ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
-MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
-ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
+# MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
+MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng'
+
+ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/xsoar"
+# ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
+
+
 SET_SERVER_KEYS = True
 
 
@@ -750,7 +755,7 @@ class XSIAMBuild(Build):
 
     @property
     def marketplace_name(self) -> str:
-        return 'marketplacev2'
+        return 'xsoar'
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -823,9 +828,9 @@ class XSIAMBuild(Build):
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
     @staticmethod
-    def set_marketplace_url(servers, branch_name, ci_build_number):
+    def set_marketplace_url(self, servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
-        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/marketplacev2/content'
+        from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{self.marketplace_name()}/content'
         output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
             to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
