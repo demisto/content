@@ -1843,8 +1843,8 @@ script:
         - sc_task
         - sc_req_item
         - sn_si_incident
-    description: Gets notes from the specified ServiceNow ticket. "Read permissions"
-      are required for the sys_journal_field table.
+    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions"
+      for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
