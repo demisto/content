@@ -34,6 +34,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
+  name: use_tenant
+  type: 8
+  required: false
 script:
   script: ''
   type: javascript
