@@ -29,7 +29,7 @@ alter
 | alter user_name = coalesce(user_name1 , user_name2, user_name3 , user_name4 , user_name5 , user_name6)
 // protocol on investigation
 /* | alter protocol1 = arrayindex(regextract(_raw_log,"([A-Z]+)\s*[A-Z]*\s+\w+\s+[from|for]{3,4}"),0),
-    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0) 
+    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0)
 | alter
     protocol = coalesce(protocol1, protocol2)*/
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
@@ -111,10 +111,10 @@ alter
 | alter dest_ip12 = arrayindex(regextract(_raw_log ,"\s+to\s+laddr\s(\d+\.\d+\.\d+\.\d+)"),0)
 // merge the fields
 | alter
-    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12),
+    source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12 ),
     source_port = coalesce(source_port1, source_port2, source_port3, source_port4, source_port5, source_port7),
     source_interface = coalesce(source_interface2, source_interface3),
-    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12),
+    dest_ip = coalesce(dest_ip1, dest_ip2, dest_ip3, dest_ip5, dest_ip6, dest_ip7, dest_ip8, dest_ip9, dest_ip10, dest_ip11, dest_ip12 ),
     dest_port = coalesce(dest_port1, dest_port2, dest_port3, dest_port5, dest_port7),
     dest_interface = coalesce(dest_interface2, dest_interface3, dest_interface5)
 // ------------------------------ end source/dest ip/port/interface part ---------------------------------
@@ -124,8 +124,7 @@ alter
     xdm.alert.severity = severity,
     //xdm.network.application_protocol = protocol,
     xdm.alert.category = category,
-    xdm.source.host.hostname = host_ip,
-    xdm.source.ipv4 = source_ip,
+    xdm.source.ipv4 = coalesce(source_ip,host_ip),
     xdm.source.port = to_number(source_port),
     xdm.source.interface = source_interface,
     xdm.source.sent_bytes = to_number(bytes),
