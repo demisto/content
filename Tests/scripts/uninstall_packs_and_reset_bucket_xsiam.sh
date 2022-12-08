@@ -6,9 +6,6 @@ set -e
 CLOUD_SERVERS_PATH=$(cat $CLOUD_SERVERS_FILE)
 echo ${CLOUD_API_KEYS} > "cloud_api_keys.json"
 
-echo "cloud_api_keys.json > cat file: "
-cat cloud_api_keys.json
-
 if [[ -z ${XSIAM_CHOSEN_MACHINE_ID} ]]; then
   echo "XSIAM_CHOSEN_MACHINE_ID is not defiened, exiting..."
 else
