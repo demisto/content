@@ -1,0 +1,11 @@
+[
+    {
+        "href": "/orgs/1/workloads/dummy",
+        "errors": [
+            {
+                "token": "invalid_uri",
+                "message": "Invalid URI: {/orgs/1/workloads/dummy}"
+            }
+        ]
+    }
+]
