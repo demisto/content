@@ -1,3 +1,4 @@
+comment: Clears Layout and Tab fields for Source and Destination. Triggered by the SelectCopyType field changes.
 commonfields:
   id: ClearSourceAndDestFields
   version: -1
