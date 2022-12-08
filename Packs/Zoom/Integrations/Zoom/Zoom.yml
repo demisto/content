@@ -89,7 +89,7 @@ script:
             - Scheduled
           description: The type of the meeting
           defaultValue: Instant
-        - name: user
+        - name: user_id
           required: true
           description: email address or id of user for meeting
         - name: topic
@@ -157,7 +157,8 @@ script:
     - name: zoom-user-list
       arguments:
         - name: status
-          default: true
+          default: false
+          required: false
           auto: PREDEFINED
           predefined:
             - active
@@ -166,24 +167,25 @@ script:
           description: Which status of users to list
           defaultValue: active
         - name: page-size
-          description: Number of users to return. Max 300.
-          defaultValue: "30"
-        - name: page
-          description: Which page of results to return
-          defaultValue: "1"
+          description: Number of users to return. Max 300. The default is 30.
+          type: int
+        - name: next_page_token
+          description: The next page token is used to paginate through large result sets
+          type: string
+          required: false
         - name: limit
           required: false
-          description: i dont know
-          type: string
-        - name: user
-          description: A user ID. this is for a singel user 
+          description: The total amunt of results to show.
+        - name: user_id
+          description: A user ID. this is for a singel user
           required: false
-          defaultValue: None
           type: string
-        - name: role_id 
+        - name: role_id
           required: false
-          description: filter the response by a specific role
-          type: string
+          description: >
+            Filter the response by a specific role.
+
+            For example: role_id=0 (Owner), role_id=2 (Member)
       outputs:
         - contextPath: Zoom.Metadata.Count
           description: Total page count available
@@ -236,7 +238,7 @@ script:
       description: List the existing users
     - name: zoom-user-delete
       arguments:
-        - name: user
+        - name: user_id
           required: true
           default: true
           description: The user ID or email to delete
@@ -269,9 +271,9 @@ script:
       outputs:
         - contextPath: Zoom.Meetings
       description: Get the information of an existing zoom meeting
-    - name: zoom-meetings-list
+    - name: zoom-meeting-list
       arguments:
-        - name: user
+        - name: user_id
           required: true
           description: The user ID
           type: string
@@ -281,6 +283,22 @@ script:
           defaultValue: "30"
         - name: next-page-token
           description: The next page token is used to paginate through large result sets
+          type: string
+        - name: limit
+          description: The total amunt of results to show.
+          type: string
+          default: false
+        - name: type
+          description: Filter the results by searching specific types.
+          auto: PREDEFINED
+          predefined:
+            - all
+            - scheduled
+            - live
+            - upcoming
+            - upcoming_meetings
+            - previous_meetings
+          defaultValue: '"scheduled"'
       description:
         "This command will show all the user meetings. Note: only scheduled
         and unexpired meetings will appear."

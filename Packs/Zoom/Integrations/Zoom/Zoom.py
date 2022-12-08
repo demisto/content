@@ -12,6 +12,8 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 
+MAX_RECORDS_PER_PAGE = 2
+
 
 '''CLIENT CLASS'''
 
@@ -133,13 +135,9 @@ class Client(BaseClient):
 
         )
 
-    def zoom_user_list(self, status: str = "active", page_size: str = "30", page: str = "1",
-                       role_id: str = None, limit: str = None, user_id: str = None):
-        if not user_id:
-            url_suffix = 'users'
-        else:
-            url_suffix = f'users/{user_id}'
-        # finel_page_token = None
+    def user_list_basic_request(self, page_size: int = 30, user_id: str = None, status: str = "active",
+                                next_page_token: str = None,
+                                role_id: str = None, limit: int = None, url_suffix: str = None):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -147,21 +145,62 @@ class Client(BaseClient):
             params={
                 'status': status,
                 'page_size': page_size,
-                'page_number': page,
-                # 'next_page_token': finel_page_token
+                'next_page_token': next_page_token,
+                'role_id': role_id
             })
 
-    def zoom_user_delete(self, user: str, action: str):
+    def zoom_user_list(self, page_size: int = 1, user_id: str = None, status: str = "active",
+                       next_page_token: str = None,
+                       role_id: str = None, limit: int = None):
+        args = demisto.args()
+        if not user_id:
+            url_suffix = 'users'
+        else:
+            url_suffix = f'users/{user_id}'
+
+        if limit:
+            limit = arg_to_number(args['limit'])
+            # TODO why args to number dose not worke??
+            if "page_size" in args:
+                page_size = int(args['page_size'])
+
+            if limit and (user_id or args.get("page_size")):
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
+            else:
+                return self.manual_user_list_pagination(next_page_token, page_size,
+                                                        limit, status, role_id)
+        return self.user_list_basic_request(page_size, user_id, status,
+                                            next_page_token,
+                                            role_id, limit, url_suffix)
+
+    def manual_user_list_pagination(self, next_page_token, page_size, limit, status, role_id):
+        res = []
+        while limit > 0 and next_page_token != '':
+            if limit < MAX_RECORDS_PER_PAGE:
+                page_size = limit
+            else:
+                page_size = MAX_RECORDS_PER_PAGE
+
+            basic_request = self.user_list_basic_request(page_size, None, status,
+                                                         next_page_token,
+                                                         role_id, limit, "users")
+            next_page_token = basic_request.get("next_page_token")
+            # basic_request.pop("next_page_token")
+            res.append(basic_request)
+            limit -= MAX_RECORDS_PER_PAGE
+        return res
+
+    def zoom_user_delete(self, user_id: str, action: str):
         return self._http_request(
             method='DELETE',
-            url_suffix='users/' + user,
+            url_suffix='users/' + user_id,
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data={'action': action},
             resp_type='response',
             return_empty_response=True
         )
 
-    def zoom_meeting_create(self, type: str, topic: str, user: str,
+    def zoom_meeting_create(self, type: str, topic: str, user_id: str,
                             start_time: str, timezone: str, auto_record_meeting: str = "none"):
         if auto_record_meeting == 'yes':
             auto_recording = "cloud"
@@ -181,7 +220,7 @@ class Client(BaseClient):
             })
         return self._http_request(
             method='POST',
-            url_suffix=f"users/{user}/meetings",
+            url_suffix=f"users/{user_id}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
             json_data=params)
 
@@ -196,16 +235,51 @@ class Client(BaseClient):
                 "show_previous_occurrences": show_previous_occurrences
             })
 
-    def zoom_meeting_list(self, user: str, next_page_token: str, page_size: str):
+    def meeting_list_basic_request(self, user_id: str, next_page_token: str = None, page_size: int = 30,
+                                   limit: int = None, type: str = None):
         return self._http_request(
             method='GET',
-            url_suffix=f"users/{user}/meetings",
+            url_suffix=f"users/{user_id}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
             params={
+                'type': type,
                 'next_page_token': next_page_token,
                 'page_size': page_size
-
             })
+
+    def zoom_meeting_list(self, user_id: str, next_page_token: str = None, page_size: int = 30,
+                          limit: int = None, type: str = None):
+        args = demisto.args()
+        if limit:
+            limit = arg_to_number(args['limit'])
+            # TODO same same
+            page_size = int(args["page_size"])
+            # page_size = arg_to_number(args['page_size'])
+
+            if limit and (args.get("page-size")):
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
+            else:
+                return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,
+                                                           limit, type)
+        return self.meeting_list_basic_request(user_id, next_page_token, page_size,
+                                               limit, type)
+
+    def manual_meeting_list_pagination(self, user_id, next_page_token, page_size,
+                                       limit, type):
+        res = []
+        while limit > 0 and next_page_token != '':
+            if limit < MAX_RECORDS_PER_PAGE:
+                page_size = limit
+            else:
+                page_size = MAX_RECORDS_PER_PAGE
+
+            basic_request = self.meeting_list_basic_request(user_id, next_page_token, page_size,
+                                                            limit, type)
+            next_page_token = basic_request.get("next_page_token")
+            # basic_request.pop("next_page_token")
+            res.append(basic_request)
+            limit -= MAX_RECORDS_PER_PAGE
+        return res
 
     def zoom_recording_get(self, meeting_id: str):
         succeed = []
@@ -262,6 +336,7 @@ def get_jwt_token(apiKey: str, apiSecret: str) -> str:
     expire_time = int(now.strftime('%s')) + 5000
     payload = {
         'iss': apiKey,
+
         'exp': expire_time
     }
     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
@@ -291,7 +366,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
-        client.zoom_user_list('active', '30', '1', None, None, None)
+        client.zoom_user_list(30, "None", 'active', '1')
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -309,13 +384,31 @@ def test_module(
 '''FORMATTING FUNCTIONS'''
 
 
-def zoom_user_list_command(client: Client, status: str, page_size: str = "30", page: str = "1",
-                           role_id: str = None, limit: str = None, user_id: str = None) -> CommandResults:
-    raw_data = client.zoom_user_list(status, page_size, page, role_id, limit, user_id)
+def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = None,
+                           status: str = "active", next_page_token: str = None,
+                           role_id: str = None, limit: int = None) -> CommandResults:
+    raw_data = client.zoom_user_list(page_size, user_id, status, next_page_token, role_id, limit)
     # parse data to md
-    md = tableToMarkdown('Users', raw_data.get('users'), ['id', 'email',
-                         'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
-    md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number', 'page_size', 'total_records'])
+    if limit:
+        all_info = []
+        for pages in range(len(raw_data)):
+            page = raw_data[pages].get("users")
+            for record in range(len(page)):
+                all_info.append(page[record])
+
+        md = tableToMarkdown('Users', all_info, ['id', 'email',
+                                                 'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
+        md += '\n' + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
+        raw_data = raw_data[0]
+    else:
+        if user_id:
+            md = tableToMarkdown('User', [raw_data], ['id', 'email',
+                                                      'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
+        else:
+            md = tableToMarkdown('Users', raw_data.get("users"), ['id', 'email',
+                                                                  'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
+            md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number',
+                                                                  'page_size', 'total_records', 'next_page_token'])
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=md,
@@ -324,10 +417,7 @@ def zoom_user_list_command(client: Client, status: str, page_size: str = "30", p
             'Number': raw_data.get('page_number'),
             'Size': raw_data.get('page_size'),
             'Total': raw_data.get('total_records')
-        },
-            # TODO do i need this line?
-            'User': raw_data.get('users')
-        },
+        }},
         raw_response=raw_data
     )
 
@@ -343,17 +433,17 @@ def zoom_user_create_command(client: Client, user_type: int, email: str, first_n
     )
 
 
-def zoom_user_delete_command(client: Client, user: str, action: str) -> CommandResults:
-    client.zoom_user_delete(user, action)
+def zoom_user_delete_command(client: Client, user_id: str, action: str) -> CommandResults:
+    client.zoom_user_delete(user_id, action)
     return CommandResults(
         outputs_prefix='Zoom',
-        readable_output=f'User {user} was deleted successfully',
+        readable_output=f'User {user_id} was deleted successfully',
     )
 
 
-def zoom_meeting_create_command(client: Client, type: str, topic: str, user: str, auto_record_meeting: str,
+def zoom_meeting_create_command(client: Client, type: str, topic: str, user_id: str, auto_record_meeting: str,
                                 start_time: str, timezone: str) -> CommandResults:
-    raw_data = client.zoom_meeting_create(type, topic, user,
+    raw_data = client.zoom_meeting_create(type, topic, user_id,
                                           auto_record_meeting, start_time, timezone)
     md = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
@@ -390,13 +480,15 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
     )
 
 
-def zoom_meeting_list_command(client: Client, user: str,
-                              next_page_token: str, page_size: str) -> CommandResults:
-    raw_data = client.zoom_meeting_list(user, next_page_token, page_size)
-    md = tableToMarkdown('Meeting list', [raw_data], ['page_size', 'total_records', 'uuid', 'id',
-                                                      'host id', 'topic', 'type', 'start time', 'duration',
-                                                      'timezone', 'created_at', 'join_url'
-                                                      ])
+def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str = None,
+                              page_size: int = 30, limit: int = None, type: str = None) -> CommandResults:
+    raw_data = client.zoom_meeting_list(user_id, next_page_token, page_size, limit, type)
+    md = tableToMarkdown('Meeting list', [raw_data], ['next_page_token', 'page_size', 'total_records'])
+    #TODO work here
+    md += tableToMarkdown("aa", raw_data.get("meetings"), ['uuid', 'id',
+                                                           'host id', 'topic', 'type', 'start time', 'duration',
+                                                           'timezone', 'created_at', 'join_url'
+                                                           ])
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,
