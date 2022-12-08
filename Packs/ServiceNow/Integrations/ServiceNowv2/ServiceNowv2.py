@@ -14,6 +14,8 @@ SIR_INCIDENT = 'sn_si_incident'
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -489,7 +491,7 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     return dic_fields
 
 
-def split_notes(raw_notes, note_type, time_info=None):
+def split_notes(raw_notes, note_type, time_info):
     notes = []
     notes_split = raw_notes.split('\n\n')
     for note in notes_split:
@@ -497,17 +499,21 @@ def split_notes(raw_notes, note_type, time_info=None):
             continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
-        # todo: normalize time to be in the same timezone
-        demisto.debug(f'Note in display time: {created_on}, note: {note}')
-        created_on = datetime.strptime(created_on, '%Y-%m-%d %H:%M:%S') + time_info.get('timezone_offset')
-        demisto.debug(f'Note in UTC time: {created_on}')
-        if created_on < time_info.get('filter'):
+        # todo: remove log
+        demisto.log(f'Note in display time: {created_on}, note: {note}')
+
+        # convert note creation time to UTC
+        created_on_UTC = datetime.strptime(created_on, DATE_FORMAT) + time_info.get('timezone_offset')
+        # todo: remove log
+        demisto.log(f'Note in UTC time: {created_on}')
+
+        if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
-            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note.')
+            demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note}.')
             continue
         created_by = created_by.split(' (')[0]
         note_dict = {
-            "sys_created_on": created_on,
+            "sys_created_on": created_on_UTC.strftime(DATE_FORMAT),
             "value": note_value,
             "sys_created_by": created_by,
             "element": note_type
@@ -516,27 +522,26 @@ def split_notes(raw_notes, note_type, time_info=None):
     return notes
 
 
-def convert_to_notes_result(full_response, time_info=None):
+def convert_to_notes_result(full_response, time_filter=None):
     """
     Converts the response of a ticket to the response format when making a query for notes only.
     """
     if not full_response or 'result' not in full_response or not full_response.get('result'):
         return []
 
+    time_info = {}
+    timezone_offset = get_timezone_offset(full_response)
+    time_info['timezone_offset'] = timezone_offset
+    if time_filter:
+        time_info['filter'] = time_filter
+
     all_notes = []
-    demisto.debug(f'full response: {full_response}')
     raw_comments = full_response.get('result', {}).get('comments', {}).get('display_value', '')
-    demisto.debug(f'raw_comments: {full_response}')
-    # todo: use 'all' in both cases and avoid this if
-    # if isinstance(raw_comments, dict):  # in case we use sysparm_display_value=all (used in mirroring)
-    #     raw_comments = raw_comments.get('display_values', '')
     if raw_comments:
         comments = split_notes(raw_comments, 'comments', time_info=time_info)
         all_notes.extend(comments)
 
-    raw_work_notes = full_response.get('result', {}).get('work_notes')
-    if isinstance(raw_work_notes, dict):
-        raw_work_notes = raw_work_notes.get('display_value', '')
+    raw_work_notes = full_response.get('result', {}).get('work_notes', {}).get('display_value', '')
     if raw_work_notes:
         work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info)
         all_notes.extend(work_notes)
@@ -1437,12 +1442,9 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
 
     if use_display_value:  # make query using sysparm_display_value=true (requires less permissions)
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
-        # number = str(args.get('number', ''))  # todo: check if this should be added
         path = f'table/{ticket_type}/{ticket_id}'
-        # todo: change to use 'all'
-        query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'true'}
+        query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'all'}
         full_result = client.send_request(path, 'GET', params=query_params)
-        # todo: need to convert notes here as well to UTC time
         result = convert_to_notes_result(full_result)
     else:
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
@@ -2077,12 +2079,11 @@ def fetch_incidents(client: Client) -> list:
     incidents = []
 
     last_run = demisto.getLastRun()
-    date_format = '%Y-%m-%d %H:%M:%S'
 
     start_snow_time, end_snow_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=date_format
+        last_run=last_run, first_fetch=client.fetch_time, look_back=client.look_back, date_format=DATE_FORMAT
     )
-    snow_time_as_date = datetime.strptime(start_snow_time, date_format)
+    snow_time_as_date = datetime.strptime(start_snow_time, DATE_FORMAT)
 
     fetch_limit = last_run.get('limit') or client.sys_param_limit
 
@@ -2113,7 +2114,7 @@ def fetch_incidents(client: Client) -> list:
             break
 
         try:
-            if datetime.strptime(ticket[client.timestamp_field], date_format) < snow_time_as_date:
+            if datetime.strptime(ticket[client.timestamp_field], DATE_FORMAT) < snow_time_as_date:
                 continue
             parse_dict_ticket_fields(client, ticket)
         except Exception:
@@ -2147,13 +2148,13 @@ def fetch_incidents(client: Client) -> list:
         look_back=client.look_back,
         created_time_field='occurred',
         id_field='name',
-        date_format=date_format
+        date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')
 
     for ticket in incidents:
         # the occurred time requires to be in ISO format.
-        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), date_format).isoformat()}Z"
+        ticket['occurred'] = f"{datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()}Z"
 
     demisto.setLastRun(last_run)
     return incidents
@@ -2165,7 +2166,7 @@ def test_instance(client: Client):
     function will raise an exception and cause the test_module/oauth_test_module function to fail.
     """
     # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
-    parse_date_range(client.fetch_time, '%Y-%m-%d %H:%M:%S')
+    parse_date_range(client.fetch_time, DATE_FORMAT)
 
     result = client.send_request(f'table/{client.ticket_type}', params={'sysparm_limit': 1}, method='GET')
     if 'result' not in result:
@@ -2277,33 +2278,15 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     return ticket
 
 
-def get_manual_timezone_offset(full_result):
-    date_format = '%Y-%m-%d %H:%M:%S'
-    local_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('display_value', ''), date_format)
-    utc_time = datetime.strptime(full_result.get('result', {}).get('sys_created_on', {}).get('value', ''), date_format)
+def get_timezone_offset(full_response):
+    """
+    Receives the full response of a ticket query from SNOW and computes the timezone offset between the timezone of the
+    instance and UTC.
+    """
+    local_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('display_value', ''), DATE_FORMAT)
+    utc_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('value', ''), DATE_FORMAT)
     offset = utc_time - local_time
     return offset
-
-
-def get_instance_timezone_offset(client: Client):
-    """
-    Get the timezone offset from the SNOW instance. First try to get the user timezone and if not available the system timezone.
-    """
-    # First, try to get the timezone from the sys_user table:
-    path = 'table/sys_user'
-    query_params = {'user_name': client._username, 'sysparm_fields': 'time_zone'}
-    result = client.send_request(path, 'GET', params=query_params)
-    user_tz = result.get('result', {}).get('time_zone', '')
-    if user_tz:
-        return user_tz
-
-    # If no timezone is defined for the user, take the timezone of the system from the sys_properties table:
-    path = 'table/sys_properties'
-    query_params = {'name': 'glide.sys.default.tz', 'sysparm_fields': 'value'}
-    result = client.send_request(path, 'GET', params=query_params)
-    system_tz = result.get('result', {}).get('value', '')
-    return system_tz
-
 
 
 def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> Union[List[Dict[str, Any]], str]:
@@ -2377,10 +2360,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
         full_result = client.send_request(path, 'GET', params=query_params)
         # todo: check if the ticket can be empty? maybe if closed?
-        timezone_offset = get_manual_timezone_offset(full_result)
-        time_info = {'filter': datetime.fromtimestamp(last_update), 'timezone_offset': timezone_offset}
-        demisto.debug(f'time info: {time_info}')
-        comments_result = convert_to_notes_result(full_result, time_info=time_info)
+        comments_result = convert_to_notes_result(full_result, time_filter=datetime.fromtimestamp(last_update))
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
@@ -2575,7 +2555,7 @@ def get_modified_remote_data_command(
     remote_args = GetModifiedRemoteDataArgs(args)
     parsed_date = dateparser.parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
     assert parsed_date is not None, f'could not parse {remote_args.last_update}'
-    last_update = parsed_date.strftime('%Y-%m-%d %H:%M:%S')
+    last_update = parsed_date.strftime(DATE_FORMAT)
 
     demisto.debug(f'Running get-modified-remote-data command. Last update is: {last_update}')
 
@@ -2943,7 +2923,8 @@ def main():
         LOG(err)
         LOG.print_log()
         if not raise_exception:
-            return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+            # return_error(f'Unexpected error: {str(err)}', error=traceback.format_exc())
+            raise err
         else:
             raise
 
