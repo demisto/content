@@ -23,7 +23,7 @@ class GoogleSecreteManagerModule:
 
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
-            print(f'_____________________{secret.name}_____________________')
+            print(f'______________________{secret.name}______________________')
             if secret.name in name_filter:
                 continue
             if with_secret:
