@@ -495,7 +495,7 @@ def split_notes(raw_notes, note_type, time_info):
     notes = []
     notes_split = raw_notes.split('\n\n')
     for note in notes_split:
-        if not note:
+        if not note or 'Mirrored from Cortex XSOAR' in note:
             continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
