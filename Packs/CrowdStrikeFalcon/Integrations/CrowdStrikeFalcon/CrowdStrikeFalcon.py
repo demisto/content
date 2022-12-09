@@ -11,10 +11,10 @@ from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import requests
-from dateutil.parser import parse
-
 # Disable insecure warnings
 import urllib3
+from dateutil.parser import parse
+
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
@@ -1272,6 +1272,7 @@ def search_custom_iocs(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
+        after: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1281,6 +1282,7 @@ def search_custom_iocs(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param after: A pagination token used with the limit parameter to manage pagination of results. On your first request, don't provide an 'after' token. On subsequent requests, provide the 'after' token from the previous response to continue from that place in the results. To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     filter_list = []
     if types:
@@ -1297,6 +1299,7 @@ def search_custom_iocs(
         'sort': sort,
         'offset': offset,
         'limit': limit,
+        'after': after,
     }
 
     return http_request('GET', '/iocs/combined/indicator/v1', params=params)
@@ -2254,6 +2257,7 @@ def search_custom_iocs_command(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
+        after: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -2263,6 +2267,7 @@ def search_custom_iocs_command(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param after: A pagination token used with the limit parameter to manage pagination of results. On your first request, don't provide an 'after' token. On subsequent requests, provide the 'after' token from the previous response to continue from that place in the results. To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     raw_res = search_custom_iocs(
         types=argToList(types),
@@ -2272,15 +2277,17 @@ def search_custom_iocs_command(
         offset=offset,
         expiration=expiration,
         limit=limit,
+        after=after,
     )
     iocs = raw_res.get('resources')
+    pagination_token = raw_res['meta']['pagination'].get('after')
     if not iocs:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     return create_entry_object(
         contents=raw_res,
-        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+        ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec, 'CrowdStrike.after': pagination_token},
         hr=tableToMarkdown('Indicators of Compromise', ec, headers=IOC_HEADERS),
     )
 

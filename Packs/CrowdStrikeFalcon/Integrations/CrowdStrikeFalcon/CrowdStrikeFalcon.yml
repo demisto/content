@@ -89,7 +89,7 @@ configuration:
   required: false
   type: 19
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: 1
+  defaultvalue: '1'
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   required: false
@@ -344,8 +344,7 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: false
-      required: false
+      defaultValue: 'false'
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -1175,6 +1174,8 @@ script:
       - expiration_timestamp.desc
     - description: The offset to begin the list from. For example, start from the 10th record and return the list.
       name: offset
+    - description: A pagination token used with the limit parameter to manage pagination of results.
+      name: after
     description: Returns a list of your uploaded IOCs that match the search criteria.
     name: cs-falcon-search-custom-iocs
     outputs:
@@ -1214,6 +1215,8 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
+    - contextPath: CrowdStrike.after
+      description: A pagination token used with the limit parameter to manage pagination of results
   - arguments:
     - auto: PREDEFINED
       description: 'The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided.'
@@ -1996,6 +1999,11 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
       secret: false
     description: Returns information about an endpoint.
     name: endpoint
@@ -2507,7 +2515,7 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2519,6 +2527,3 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
-defaultclassifier: CrowdStrike Falcon
-defaultmapperin: CrowdStrike Falcon-Mapper
-defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
