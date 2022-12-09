@@ -1676,7 +1676,7 @@ def delete_group():
     # delete group
     success = conn.delete(dn)
     if not success:
-        raise Exception("Failed to delete group")
+        raise Exception("Failed to delete groupKKK")
 
     demisto_entry = {
         'ContentsFormat': formats['text'],
