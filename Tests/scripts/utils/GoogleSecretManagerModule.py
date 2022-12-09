@@ -11,30 +11,30 @@ class GoogleSecreteManagerModule:
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
         response = self.client.access_secret_version(request={"name": name})
-        return json5.loads(response.payload.data.decode("UTF-8"))
+        try:
+            return json5.loads(response.payload.data.decode("UTF-8"))
+        except Exception as e:
+            logging.error(f'Secret json is malformed for: {secret_id}, got error: {e}')
 
     def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False) -> list:
         secrets = []
         parent = f"projects/{project_id}"
         print(f'parent: {parent}')
 
-        try:
-            for secret in self.client.list_secrets(request={"parent": parent}):
-                secret.name = str(secret.name).split('/')[-1]
-                print(f'_____________________{secret.name}_____________________')
-                if secret.name in name_filter:
-                    continue
-                if with_secret:
-                    try:
-                        secret_value = self.get_secret(project_id, secret.name)
-                        secrets.append(secret_value)
-                    except google.api_core.exceptions.NotFound:
-                        logging.error(f'Could not find the secret: {secret.name}')
-                else:
-                    secrets.append(secret)
+        for secret in self.client.list_secrets(request={"parent": parent}):
+            secret.name = str(secret.name).split('/')[-1]
+            print(f'_____________________{secret.name}_____________________')
+            if secret.name in name_filter:
+                continue
+            if with_secret:
+                try:
+                    secret_value = self.get_secret(project_id, secret.name)
+                    secrets.append(secret_value)
+                except google.api_core.exceptions.NotFound:
+                    logging.error(f'Could not find the secret: {secret.name}')
+            else:
+                secrets.append(secret)
 
-        except Exception as e:
-            print(e)
         return secrets
 
     @staticmethod
@@ -44,5 +44,5 @@ class GoogleSecreteManagerModule:
                 service_account)  # type: ignore # noqa
             return client
         except Exception as e:
-            print('EEEEEERRRRRRRRRRRROOOOOOORRRRR')
-            print(e)
+            print('EEEEEERRRRRRRRRRRROOOOOOORRRRR' + str(e))
+            logging.error(f'Could not create GSM client, error: {e}')

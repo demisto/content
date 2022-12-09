@@ -2,15 +2,12 @@ import argparse
 import json5
 
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def run(options):
     try:
-        print(f'******************conf file location: {options.json_path_file}')
-        print(str(options.service_account))
-        print(str(options.user)[0:5])
-        print(str(options.password)[0:5])
-        print(str(options.gsm_project_id)[0:5])
+        print(f'********************conf file location: {options.json_path_file}')
     except Exception as e:
         print(e)
         raise e
@@ -24,10 +21,11 @@ def run(options):
         "integrations": secrets
     }
 
-    print(f'secrets from API: {secret_file}')
-    print(f'json_path_file: {options.json_path_file}')
     with open(options.json_path_file, 'w') as secrets_out_file:
-        secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
+        try:
+            secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
+        except Exception as e:
+            logging.error(f'Could not save secrets file, malformed json5 format, the error is: {e}')
     print(f'saved the json file to: {options.json_path_file}')
 
 
