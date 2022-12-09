@@ -1,4 +1,4 @@
-category: Endpoint
+category:    "Data Enrichment & Threat Intelligence"
 commonfields:
   id: decyfir
   version: -1

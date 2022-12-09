@@ -1,5 +1,5 @@
  # Partner Contributed Integration
-Integration Author: <b> DeCYFIR Team</b> 
+Integration Author: <b> Cyfirma Team</b> 
 
 #### DeCYFIR API's provides External Threat Landscape Management insights. 
 
