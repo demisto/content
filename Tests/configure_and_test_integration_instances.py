@@ -827,7 +827,7 @@ class XSIAMBuild(Build):
                                                                        use_mock=False)
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
-    @staticmethod
+    # @staticmethod
     def set_marketplace_url(self, servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{self.marketplace_name()}/content'
