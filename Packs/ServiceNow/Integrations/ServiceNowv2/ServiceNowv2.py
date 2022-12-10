@@ -494,8 +494,13 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 def split_notes(raw_notes, note_type, time_info):
     notes = []
     notes_split = raw_notes.split('\n\n')
+    retrieved_last_note = False
     for note in notes_split:
-        if not note or 'Mirrored from Cortex XSOAR' in note:
+        if not note:
+            continue
+        if 'Mirrored from Cortex XSOAR' in note:
+            if retrieved_last_note:  # add to last note only in case the note was not filtered by the time filter
+                notes[-1]['value'] += '\n\n Mirrored from Cortex XSOAR'
             continue
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
@@ -507,6 +512,7 @@ def split_notes(raw_notes, note_type, time_info):
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
             demisto.debug(f'Using time filter: {time_info.get("filter")}. Not including note: {note}.')
+            retrieved_last_note = False
             continue
         note_dict = {
             "sys_created_on": created_on_UTC.strftime(DATE_FORMAT),
@@ -515,6 +521,7 @@ def split_notes(raw_notes, note_type, time_info):
             "element": note_type
         }
         notes.append(note_dict)
+        retrieved_last_note = True
     return notes
 
 

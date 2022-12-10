@@ -214,14 +214,14 @@ def test_split_notes():
     # timezone_offset is the difference between UTC and local time, e.g. offset = -60, means that local time is UTC+1.
     # The 'sys_created_on' time, returned by the command is normalized to UTC timezone.
 
-    raw_notes = '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n' \
-                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    raw_notes = '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
 
     time_info = {'timezone_offset': timedelta(minutes=0),
                  'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
     notes = split_notes(raw_notes, 'comments', time_info)
     expected_notes = [{'sys_created_on': '2022-11-21 22:50:34',
-                       'value': 'Second comment',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
                        'sys_created_by': 'System Administrator',
                        'element': 'comments'
                        },
@@ -236,7 +236,7 @@ def test_split_notes():
                  'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
     notes = split_notes(raw_notes, 'comments', time_info)
     expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
-                       'value': 'Second comment',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
                        'sys_created_by': 'System Administrator',
                        'element': 'comments'
                        }]
