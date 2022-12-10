@@ -1,0 +1,2743 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": null,
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "indicator",
+	"id": "ca518505-2570-43c2-84c6-6a5bd33f44de",
+	"indicatorsDetails": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "main",
+				"name": "Summary",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+						"isVisible": true,
+						"items": [
+							{
+								"args": {
+									"field": {
+										"simple": "specialtags"
+									},
+									"fieldValue": {
+										"simple": "⭐️"
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "2d872910-566d-11ed-a5c0-81bc572f7b91",
+								"index": 0,
+								"name": "⭐️ Favorite",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "specialtags",
+								"height": 53,
+								"id": "acf8bd80-566d-11ed-a5c0-81bc572f7b91",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "vendors",
+								"height": 53,
+								"id": "62ef8ed0-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 2,
+								"listId": "main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "products",
+								"height": 53,
+								"id": "72e5b580-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcetags",
+								"height": 53,
+								"id": "586ea770-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 53,
+								"id": "083ac1b0-4e75-11ea-8bf6-67db400d7da5",
+								"index": 5,
+								"listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "timestamp",
+								"height": 53,
+								"id": "0030d590-7d0d-11ec-abe4-4fa9d22d9889",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 53,
+								"id": "790baae0-8a4f-11ec-a1ef-6369524b39c7",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 53,
+								"id": "ea9dea60-7d0c-11ec-abe4-4fa9d22d9889",
+								"index": 8,
+								"listId": "main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "name",
+								"height": 53,
+								"id": "600f1ba0-7d19-11ec-9cc4-5f8baabc422c",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 53,
+								"id": "96772e60-ccc8-11ea-937a-6f8841d9fed1",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "opencvelink",
+								"height": 53,
+								"id": "dbe22960-565e-11ed-90b0-5930ff2b1f3e",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "nvdlink",
+								"height": 53,
+								"id": "3760b980-5594-11ed-84a8-51c4a878c07f",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "mitrelink",
+								"height": 53,
+								"id": "46cb9020-5594-11ed-84a8-51c4a878c07f",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"field": {
+										"simple": "specialtags"
+									},
+									"fieldValue": {
+										"simple": "❗️"
+									}
+								},
+								"buttonClass": "warning",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "28ca1630-566d-11ed-a5c0-81bc572f7b91",
+								"index": 0,
+								"listId": "main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
+								"name": "❗️ Important",
+								"scriptId": "Builtin|||appendIndicatorField",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vulnerability Details",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "id",
+								"width": 110
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "name",
+								"width": 120
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "severity",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "type",
+								"width": 104
+							},
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "status",
+								"width": 80
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "owner",
+								"width": 160
+							}
+						],
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+						"isVisible": true,
+						"items": null,
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"readOnly": true,
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 3,
+						"x": 0,
+						"y": 12
+					},
+					{
+						"h": 3,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-174e7bd0-3d57-11ea-9dff-c57e8949d2f9",
+						"items": null,
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
+						"items": [
+							{
+								"endCol": 4,
+								"fieldId": "description",
+								"height": 44,
+								"id": "d1a43d10-561f-11ed-a80e-9f9b27ee9b69",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vulnerability Description ",
+						"static": false,
+						"w": 2,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssversion",
+								"height": 53,
+								"id": "26bc3a40-8e3a-11ec-9c49-5f11296515d9",
+								"index": 0,
+								"listId": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "43b25550-55ac-11ed-ab5f-9587ddf6e144",
+								"index": 0,
+								"name": "⚠️ CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "2debb950-5593-11ed-84a8-51c4a878c07f",
+								"index": 2,
+								"name": "HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "2b6164f0-5593-11ed-84a8-51c4a878c07f",
+								"index": 3,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"name": "MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "28fb1350-5593-11ed-84a8-51c4a878c07f",
+								"index": 4,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"name": "LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "b600b260-588f-11ed-a4a8-c3ca43a9382b",
+								"index": 5,
+								"name": "Enrich",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv2bigscore",
+								"height": 106,
+								"id": "076dba20-55d5-11ed-bef3-81d20319358c",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2vector",
+								"height": 53,
+								"id": "20998980-5593-11ed-84a8-51c4a878c07f",
+								"index": 7,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssvector",
+								"height": 53,
+								"id": "d0c64ea0-8e39-11ec-9c49-5f11296515d9",
+								"index": 8,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2exploitabilitye",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "19f1a320-557e-11ed-a25e-d7616ac6b640",
+								"index": 9,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2accessvectorav",
+								"height": 53,
+								"id": "098980c0-557e-11ed-a25e-d7616ac6b640",
+								"index": 10,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2accesscomplexityac",
+								"height": 53,
+								"id": "084010d0-557e-11ed-a25e-d7616ac6b640",
+								"index": 11,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2authenticationau",
+								"height": 53,
+								"id": "0a8fa620-557e-11ed-a25e-d7616ac6b640",
+								"index": 12,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2confidentialityimpactc",
+								"height": 53,
+								"id": "178250d0-557e-11ed-a25e-d7616ac6b640",
+								"index": 13,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2integrityimpact",
+								"height": 53,
+								"id": "1b417bb0-557e-11ed-a25e-d7616ac6b640",
+								"index": 14,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv2availabilityimpacta",
+								"height": 53,
+								"id": "0f149200-557e-11ed-a25e-d7616ac6b640",
+								"index": 15,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvsstable",
+								"height": 53,
+								"id": "d532a970-8e39-11ec-9c49-5f11296515d9",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "CVSS v2",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-cveRep-main-cveRep-ca518505-2570-43c2-84c6-6a5bd33f44de-main-58326530-5591-11ed-ab41-eb9178ed6d46",
+						"items": [
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "f7dddab0-55a5-11ed-8dab-b18ed4ecb3fe",
+								"index": 0,
+								"name": "⚠️ CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "2463f470-5592-11ed-8c2d-1985dd346b87",
+								"index": 1,
+								"listId": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-ca518505-2570-43c2-84c6-6a5bd33f44de-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
+								"name": "HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "285ca5e0-5592-11ed-8c2d-1985dd346b87",
+								"index": 2,
+								"name": "MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "2a53baf0-5592-11ed-8c2d-1985dd346b87",
+								"index": 3,
+								"name": "LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 53,
+								"id": "beec7ad0-588f-11ed-a4a8-c3ca43a9382b",
+								"index": 4,
+								"name": "Enrich",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3bigscore",
+								"height": 106,
+								"id": "fb0d2c60-55cb-11ed-bef3-81d20319358c",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3vector",
+								"height": 53,
+								"id": "f3ec4fd0-5592-11ed-84a8-51c4a878c07f",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv3attackvectorav",
+								"height": 53,
+								"id": "23aaf4c0-557e-11ed-a25e-d7616ac6b640",
+								"index": 7,
+								"listId": "main-58326530-5591-11ed-ab41-eb9178ed6d46",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3attackcomplexityac",
+								"height": 53,
+								"id": "2245bf70-557e-11ed-a25e-d7616ac6b640",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3privilegesrequiredpr",
+								"height": 53,
+								"id": "d8cb3cc0-55ab-11ed-ab5f-9587ddf6e144",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv3userinteractionui",
+								"height": 53,
+								"id": "2c247360-557e-11ed-a25e-d7616ac6b640",
+								"index": 10,
+								"listId": "main-58326530-5591-11ed-ab41-eb9178ed6d46",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv3confidentialityimpactc",
+								"height": 53,
+								"id": "25ee2e00-557e-11ed-a25e-d7616ac6b640",
+								"index": 11,
+								"listId": "main-58326530-5591-11ed-ab41-eb9178ed6d46",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv3integrityimpacti",
+								"height": 53,
+								"id": "272c2c40-557e-11ed-a25e-d7616ac6b640",
+								"index": 12,
+								"listId": "main-58326530-5591-11ed-ab41-eb9178ed6d46",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3availabilityimpacta",
+								"height": 53,
+								"id": "24c47b10-557e-11ed-a25e-d7616ac6b640",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3scopes",
+								"height": 53,
+								"id": "28d52150-557e-11ed-a25e-d7616ac6b640",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "CVSS v3",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 4,
+						"hideName": false,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-b4b4c900-5bd2-11ed-ad96-2b7a09327717",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "references",
+								"height": 106,
+								"id": "dd77a920-5bd2-11ed-ad96-2b7a09327717",
+								"index": 0,
+								"listId": "main-b4b4c900-5bd2-11ed-ad96-2b7a09327717",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "References",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 8
+					},
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "entityB",
+								"width": 312
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "description",
+								"width": 479
+							}
+						],
+						"h": 4,
+						"i": "main-ca518505-2570-43c2-84c6-6a5bd33f44de-cveRep-main-2a656ab0-5bd3-11ed-ad96-2b7a09327717",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "kopixekjqw",
+				"name": "Additional Details",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 6,
+						"hideName": false,
+						"i": "kopixekjqw-ca518505-2570-43c2-84c6-6a5bd33f44de-kopixekjqw-ca518505-2570-43c2-84c6-6a5bd33f44de-kopixekjqw-cveRep-kopixekjqw-89359390-9878-11ec-8a36-89f2ae31e8cd",
+						"items": [
+							{
+								"endCol": 6,
+								"fieldId": "references",
+								"height": 106,
+								"id": "715bd360-5bcd-11ed-9c7c-6936da632b4c",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "communitynotes",
+								"height": 106,
+								"id": "9835c180-9878-11ec-8a36-89f2ae31e8cd",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 6,
+								"fieldId": "publications",
+								"height": 106,
+								"id": "96266980-9878-11ec-8a36-89f2ae31e8cd",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Additional Details",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "kdn6unizzk",
+				"name": "Timeline",
+				"sections": [
+					{
+						"h": 9,
+						"i": "kdn6unizzk-462222b0-5bd4-11ed-ad96-2b7a09327717",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline",
+						"static": false,
+						"type": "indicatorTimeline",
+						"w": 3,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"indicatorsQuickView": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "indicator-quick-view-info",
+				"name": "Info",
+				"sections": [
+					{
+						"h": 2,
+						"i": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-comments",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Comments",
+						"static": false,
+						"type": "comments",
+						"w": 1,
+						"x": 0,
+						"y": 7
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "vendors",
+								"height": 22,
+								"id": "80c07640-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "products",
+								"height": 22,
+								"id": "7d277100-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "tags",
+								"height": 22,
+								"id": "indicator-quick-view-info-tags-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcetags",
+								"height": 22,
+								"id": "85b0ce20-589d-11ed-b5bf-630f9e1c4c24",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "timestamp",
+								"height": 22,
+								"id": "8337a3a0-84ed-11ec-a589-e73aadc98c9a",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "modified",
+								"height": 22,
+								"id": "8f4f4870-8a4f-11ec-a1ef-6369524b39c7",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "stixid",
+								"height": 22,
+								"id": "92f211b0-8a4f-11ec-a1ef-6369524b39c7",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "name",
+								"height": 22,
+								"id": "9693d8b0-84ed-11ec-a589-e73aadc98c9a",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "trafficlightprotocol",
+								"height": 22,
+								"id": "a0e3a360-ccc8-11ea-937a-6f8841d9fed1",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "opencvelink",
+								"height": 22,
+								"id": "ea4fb440-565e-11ed-90b0-5930ff2b1f3e",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "nvdlink",
+								"height": 22,
+								"id": "95c08800-55c3-11ed-9329-25af595658ea",
+								"index": 10,
+								"listId": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "mitrelink",
+								"height": 22,
+								"id": "9b355220-55c3-11ed-9329-25af595658ea",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vulnerability Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": false,
+						"hideName": false,
+						"i": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+						"items": [
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "7406a820-5898-11ed-b5bf-630f9e1c4c24",
+								"index": 0,
+								"name": "⚠️ CVSS v2 CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "7842f240-5898-11ed-b5bf-630f9e1c4c24",
+								"index": 1,
+								"name": "CVSS v2 HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "7976b750-5898-11ed-b5bf-630f9e1c4c24",
+								"index": 2,
+								"name": "CVSS v2 MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "763bb090-5898-11ed-b5bf-630f9e1c4c24",
+								"index": 3,
+								"name": "CVSS v2 LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "eae42f80-55c3-11ed-9329-25af595658ea",
+								"index": 4,
+								"name": "⚠️ CVSS v2 CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "f4089420-55c3-11ed-9329-25af595658ea",
+								"index": 5,
+								"name": "CVSS v2 HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "f1f6a410-55c3-11ed-9329-25af595658ea",
+								"index": 6,
+								"name": "CVSS v2 MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 1,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "ef7b6ae0-55c3-11ed-9329-25af595658ea",
+								"index": 7,
+								"name": "CVSS v2 LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "861ac240-5897-11ed-b5bf-630f9e1c4c24",
+								"index": 8,
+								"listId": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+								"name": "⚠️ CVSS v3 CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "8b1ad190-5897-11ed-b5bf-630f9e1c4c24",
+								"index": 9,
+								"listId": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+								"name": "CVSS v3 HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "87cb3160-5897-11ed-b5bf-630f9e1c4c24",
+								"index": 10,
+								"listId": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+								"name": "CVSS v3 MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isNotExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "899a2500-5897-11ed-b5bf-630f9e1c4c24",
+								"index": 11,
+								"listId": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+								"name": "CVSS v3 LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssversion",
+								"height": 22,
+								"id": "03bdb440-9945-11ec-97f5-a1136dc35e61",
+								"index": 12,
+								"listId": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvsstable",
+								"height": 22,
+								"id": "aed665a0-9898-11ec-8810-754d8dd0d227",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEqualNumber",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										},
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isEmpty",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "0b7bd340-5891-11ed-9fda-65ef29f85bd6",
+								"index": 12,
+								"name": "Enrich",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv2score",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 22,
+								"id": "dfd36430-55c3-11ed-9329-25af595658ea",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv2vector",
+								"height": 22,
+								"id": "703e53f0-55c3-11ed-9329-25af595658ea",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "cvssv3score",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									]
+								],
+								"height": 22,
+								"id": "da6b6b50-55c3-11ed-9329-25af595658ea",
+								"index": 15,
+								"listId": "indicator-quick-view-info-a171d910-55c3-11ed-9329-25af595658ea",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "cvssv3vector",
+								"height": 22,
+								"id": "b05186b0-55c3-11ed-9329-25af595658ea",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "e52b0960-55c3-11ed-9329-25af595658ea",
+								"index": 4,
+								"name": "⚠️ CVSS v3 CRITICAL",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {},
+								"buttonClass": "error",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "9"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "e7224580-55c3-11ed-9329-25af595658ea",
+								"index": 5,
+								"name": "CVSS v3 HIGH",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThanOrEqual",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "7"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "e98785b0-55c3-11ed-9329-25af595658ea",
+								"index": 6,
+								"name": "CVSS v3 MEDIUM",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {},
+								"endCol": 2,
+								"fieldId": "",
+								"filters": [
+									[
+										{
+											"id": 0,
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "greaterThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "0"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv3score"
+												}
+											},
+											"operator": "lessThan",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "4"
+												}
+											},
+											"type": "number"
+										}
+									],
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "cvssv2score"
+												}
+											},
+											"operator": "isExists",
+											"right": null,
+											"type": "number"
+										}
+									]
+								],
+								"height": 44,
+								"id": "e84e1b50-55c3-11ed-9329-25af595658ea",
+								"index": 7,
+								"name": "CVSS v3 LOW",
+								"scriptId": "Builtin|||enrichIndicators",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "CVSS",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-ca518505-2570-43c2-84c6-6a5bd33f44de-indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "cvedescription",
+								"height": 22,
+								"id": "49b81130-5893-11ed-b5bf-630f9e1c4c24",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Vulnerability Description",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "ksuqyogsni",
+				"name": "Relationships",
+				"sections": [
+					{
+						"columns": [
+							{
+								"displayed": true,
+								"isDefault": true,
+								"key": "entityB",
+								"width": 100
+							},
+							{
+								"displayed": true,
+								"isDefault": false,
+								"key": "description",
+								"width": 273
+							}
+						],
+						"h": 3,
+						"i": "ksuqyogsni-ca518505-2570-43c2-84c6-6a5bd33f44de-ksuqyogsni-ec1e5850-84ed-11ec-a589-e73aadc98c9a",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Relationships",
+						"static": false,
+						"type": "relationshipsTable",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 3,
+						"i": "ksuqyogsni-92b257c0-5bd0-11ed-b52e-475a42b54d2d",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Related Incidents",
+						"static": false,
+						"type": "relatedIncidents",
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "ksuqyogsni-3602a970-5bd1-11ed-b52e-475a42b54d2d",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "references",
+								"height": 22,
+								"id": "40744e90-5bd1-11ed-b52e-475a42b54d2d",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "References",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					}
+				],
+				"type": "custom"
+			}
+		]
+	},
+	"itemVersion": "3.3.26",
+	"locked": false,
+	"mobile": null,
+	"name": "CVE Indicator (OpenCVE)",
+	"packID": "",
+	"packName": "Common Types",
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

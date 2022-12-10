@@ -1,0 +1,293 @@
+category: Vulnerability Management
+commonfields:
+  id: OpenCVE
+  version: -1
+configuration:
+- defaultvalue: https://opencve.io
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: username
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+description: Searches for CVE information using OpenCVE.
+display: OpenCVE
+name: OpenCVE
+script:
+  commands:
+  - arguments:
+    - description: The maximum number of CVEs to display.
+      name: limit
+    - name: lastRun
+    description: Returns the latest updated CVEs.
+    name: cve-latest
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The CVE ID. For example: CVE-2014-1234.'
+      isArray: true
+      name: cve_id
+      required: true
+    description: Returns CVE information by CVE ID.
+    name: cve
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator value.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The indicator score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the score of the indicator.
+      type: String
+  - arguments: []
+    description: List the vendors subscriptions of the authenticated user.
+    name: ocve-get-my-vendors
+    outputs:
+    - contextPath: OpenCVE.Vendors
+  - arguments: []
+    description: List the products subscriptions of the authenticated user.
+    name: ocve-get-my-products
+    outputs:
+    - contextPath: OpenCVE.Products
+  - arguments:
+    - name: vendor_name
+      required: true
+    name: ocve-get-vendor
+    outputs:
+    - contextPath: OpenCVE.Vendor
+  - arguments:
+    - name: vendor_name
+      required: true
+    - description: filter by keyword in summary
+      name: search
+    - description: filter by product name
+      name: product
+    - auto: PREDEFINED
+      description: filter by CVSS
+      name: cvss
+      predefined:
+      - none
+      - low
+      - medium
+      - high
+      - critical
+    - description: filter by CWE
+      name: cwe
+    - defaultValue: "1"
+      description: the page to start
+      name: page
+    name: ocve-get-vendor-cves
+    outputs:
+    - contextPath: vendor_cves
+  - arguments:
+    - name: vendor_name
+      required: true
+    - name: product_name
+      required: true
+    name: ocve-get-product
+  - arguments:
+    - name: vendor_name
+      required: true
+    - name: product_name
+      required: true
+    - description: filter by keyword in summary
+      name: search
+    - auto: PREDEFINED
+      description: filter by CVSS
+      name: cvss
+      predefined:
+      - none
+      - low
+      - medium
+      - high
+      - critical
+    - description: filter by CWE
+      name: cwe
+    - defaultValue: "1"
+      description: the page to start
+      name: page
+    name: ocve-get-product-cves
+    outputs:
+    - contextPath: product_cves
+  - arguments: []
+    name: ocve-get-reports
+    outputs:
+    - contextPath: reports
+  - arguments:
+    - name: report_id
+      required: true
+    name: ocve-get-report
+    outputs:
+    - contextPath: report
+  - arguments:
+    - name: report_id
+      required: true
+    - defaultValue: "1"
+      description: the page to start
+      name: page
+    name: ocve-get-alerts
+    outputs:
+    - contextPath: alerts
+  - arguments:
+    - name: report_id
+      required: true
+    - name: alert_id
+      required: true
+    name: ocve-get-alert
+    outputs:
+    - contextPath: alert
+  - arguments:
+    - name: cve_id
+      required: true
+    description: Get the details of a specific CVE.
+    name: ocve-get-cve
+    outputs:
+    - contextPath: CVE.ID
+    - contextPath: CVE.CVSS
+    - contextPath: CVE.Published
+    - contextPath: CVE.Modified
+    - contextPath: CVE.Description
+    - contextPath: DBotScore.Indicator
+    - contextPath: DBotScore.Score
+    - contextPath: DBotScore.Type
+    - contextPath: DBotScore.Vendor
+  - arguments:
+    - description: filter by keyword
+      name: search
+    - description: filter by the first letter
+      name: letter
+    - description: the page to start
+      name: page
+    name: ocve-get-vendors
+    outputs:
+    - contextPath: vendors
+  - arguments:
+    - name: vendor_name
+      required: true
+    - description: filter by keyword
+      name: search
+    - defaultValue: "1"
+      description: the page to start
+      name: page
+    name: ocve-get-products
+    outputs:
+    - contextPath: products
+  dockerimage: demisto/python3:3.10.1.26972
+  feed: true
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: CVE Search v2
