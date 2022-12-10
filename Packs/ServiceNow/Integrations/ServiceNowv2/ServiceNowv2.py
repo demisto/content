@@ -492,7 +492,7 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
 
 
 def split_notes(raw_notes, note_type, time_info):
-    notes = []
+    notes: List = []
     notes_split = raw_notes.split('\n\n')
     retrieved_last_note = False
     for note in notes_split:
