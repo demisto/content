@@ -7,7 +7,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 def run(options):
     try:
-        print(f'********************conf file location: {options.json_path_file}')
+        print(f'*********************conf file location: {options.json_path_file}')
     except Exception as e:
         print(e)
         raise e
