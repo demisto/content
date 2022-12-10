@@ -607,14 +607,14 @@ def fetch_credentials():
     concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
+    engines_to_fetch_from = [{'path': '', 'version': '1', 'type': 'AWS'}]
+    # for engine_type in ENGINES:
+        # engines_to_fetch = list(
+        #     filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
+        # engines_to_fetch_from += engines_to_fetch
 
-    for engine_type in ENGINES:
-        engines_to_fetch = list(
-            filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
-        engines_to_fetch_from += engines_to_fetch
-
-    if len(engines_to_fetch_from) == 0:
-        return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
+    # if len(engines_to_fetch_from) == 0:
+    #     return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
     for engine in engines_to_fetch_from:
         if engine['type'] == 'KV':
@@ -628,7 +628,7 @@ def fetch_credentials():
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
+            credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name)
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -733,26 +733,42 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 
 
 def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
-    params = {
-        'list': 'true'
-    }
+    # TODO: figure out if concat_username_to_cred_name is needed in AWS ?
     secrets = []
-    roles_list_url = f'{engine_path}/v1/aws/roles'
-    res = send_request(roles_list_url, 'get', params=params)
+    roles_list_url = f'{engine_path}aws/roles?list=true'
+    res = send_request(roles_list_url, 'get')
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
-        role_url = f'{engine_path}/v1/aws/roles/{role}'
+        role_url = f'{engine_path}aws/roles/{role}'
         role_data = send_request(role_url, 'get')
-        credential_type = demisto.params().get('credentials_type', 'creds')
-        method = 'GET'
-        if credential_type == 'sts':
+        credential_type = role_data['data'].get('credential_type')
+
+        if credential_type != 'iam_user':
             method = 'POST'
-        generate_credentials_url = f'{engine_path}/v1/aws/{credential_type}/{role}'
+            credential_type = 'sts'
+        else:
+            method = 'GET'
+            credential_type = 'creds'
+        generate_credentials_url = f'{engine_path}aws/{credential_type}/{role}'
         body = {}
-        if 'credential_types' in role_data['data'].get('credential_types', []):
+        # TODO: check more about the role arn an how to use them, we must have it for not iam
+        if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
-        send_request(generate_credentials_url, method, body=body)
+        aws_credentials = send_request(generate_credentials_url, method, body=body)
+        if not aws_credentials or 'data' not in aws_credentials:
+            return []
+        access_key = aws_credentials['data'].get('access_key')
+        secret_key = aws_credentials['data'].get('secret_key')
+        if aws_credentials['data'].get('security_token'):
+            # TODO: ask Guy if the security token is the same as the session key
+            secret_key = f'{access_key}@@@{aws_credentials["data"].get("security_token")}'
+        secrets.append({
+            'user': access_key,
+            'password': secret_key,
+            'name': role
+        })
+
 
     return secrets
 
