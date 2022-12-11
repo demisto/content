@@ -12,7 +12,7 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 
-MAX_RECORDS_PER_PAGE = 2
+MAX_RECORDS_PER_PAGE = 300
 
 
 '''CLIENT CLASS'''
@@ -106,8 +106,9 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
         except DemistoException as e:
-            if 'Invalid access token' in e.message:
+            if 'Invalid access token' in e.message or "Access token is expired." in e.message or "Access token is expired." in e.message:
                 self.access_token = self.generate_oauth_token()
+                headers = {'authorization': f'Bearer {self.access_token}'}
             return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
                                          data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
@@ -149,7 +150,7 @@ class Client(BaseClient):
                 'role_id': role_id
             })
 
-    def zoom_user_list(self, page_size: int = 1, user_id: str = None, status: str = "active",
+    def zoom_user_list(self, page_size: int = 30, user_id: str = None, status: str = "active",
                        next_page_token: str = None,
                        role_id: str = None, limit: int = None):
         args = demisto.args()
