@@ -1954,6 +1954,14 @@ def return_outputs_dev(readable_output, outputs=None, raw_response=None, timelin
     demisto.results(return_entry)
 
 
+class DisableLogger():
+    def __enter__(self):
+       logging.disable(logging.CRITICAL)
+
+    def __exit__(self, exit_type, exit_value, exit_traceback):
+       logging.disable(logging.NOTSET)
+
+
 def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, htmlBody=None,
                attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None,
                transientFile=None, transientFileContent=None, transientFileCID=None, templateParams=None,
@@ -1999,7 +2007,8 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
         message = create_message(to, subject, body, bcc, cc, htmlBody, attachments, additionalHeader, from_address,
                                  reply_to)
 
-    client.send_email(message)
+    with DisableLogger():
+        client.send_email(message)
 
     return 'Mail sent successfully', {}, {}
 
