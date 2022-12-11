@@ -2,7 +2,7 @@
     "name": "CyberArk Identity",
     "description": "This integration collects events from the Idaptive Next-Gen Access (INGA) using REST APIs.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,7 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Data Source"
+        "marketplacev2:Data Source"
     ],
     "useCases": [],
     "keywords": [],
