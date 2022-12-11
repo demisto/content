@@ -1,5 +1,5 @@
-Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose
+Rapid7's vulnerability management solutions, Nexpose and InsightVM, help you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
+This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose.
 
 ## Configure Rapid7 Nexpose on Cortex XSOAR
 
