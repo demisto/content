@@ -216,8 +216,11 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
      None, None),
 
-    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None)
+    (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None),
 
+    # modeling rule testdata file exists, expect modeling rule to be collected
+    (MockerCases.MR1, XSIAMNightlyTestCollector, (), ('MyXSIAMPack', 'CoreAlertFields'), None,
+     (Path('MyXSIAMPack/ModelingRules/HarryRule'),)),
 )
 
 
