@@ -673,7 +673,23 @@ script:
       Permission: Directory.AccessAsUser.All(Delegated)
     execution: false
     name: msgraph-user-session-revoke
-  dockerimage: demisto/crypto:1.0.0.34720
+  - arguments:
+    - name: user_id
+      description: Object ID of the deleted user that needs to be restored
+      required: true
+      isArray: false
+      defaultValue: ""
+    description: Restores a recently deleted user from deleted items.
+    deprecated: false
+    name: msgraph-user-restore-user
+    outputs:
+    - contextPath: MSGraphUser.ID
+      description: User ID
+      type: String
+    - contextPath: MSGraphUser.DisplayName
+      description: User's Display name
+      type: String
+  dockerimage: demisto/crypto:1.0.0.40696
   feed: false
   isfetch: false
   longRunning: false
