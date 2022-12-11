@@ -382,16 +382,16 @@ slack-notify-nightly-build:
   extends:
     - .default-job-settings
     - .push-rule
-  needs: []
+#  needs: []
   stage: run-instances
   script:
-#    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
+    - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
-    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
-    - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
+#    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
+#    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
+#    - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
+#    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
@@ -402,7 +402,7 @@ slack-notify-nightly-build:
     - section_end "Are there tests to run?"
 
     - section_start "Lock XSIAM Machine" --collapsed
-#    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
+    - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
@@ -482,7 +482,7 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-#  needs: ["prepare-testing-bucket-mpv2"]
+  needs: ["prepare-testing-bucket-mpv2"]
 
 xsoar_ng_server_ga:
   extends:
@@ -505,4 +505,4 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "gs://marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-#  needs: ["create-instances"]
+  needs: ["create-instances"]
