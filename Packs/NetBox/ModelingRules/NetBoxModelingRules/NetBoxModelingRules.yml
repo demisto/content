@@ -1,9 +1,9 @@
 from_xdr_version: 3.4.0
 fromversion: 6.8.0
-id: NetBox_modeling_rule
-name: NetBox Modeling Rule
+id: NetBox_IRM_modeling_rule
+name: NetBoxIRM Modeling Rule
 rules: ''
 schema: ''
-tags: hello
+tags: NetBox
 to_xdr_version: 3.4.9
 toversion: 6.9.9

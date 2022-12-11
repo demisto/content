@@ -116,7 +116,7 @@ def get_events(client: Client, limit: int):
         else:
             hr = f'No events found for {log_type}.'
 
-    return events, hr
+    return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
