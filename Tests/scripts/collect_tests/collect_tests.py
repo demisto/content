@@ -59,6 +59,7 @@ class CollectionReason(str, Enum):
     MODELING_RULE_XIF_CHANGED = 'modeling rule\'s associated xif file was changed'
     MODELING_RULE_SCHEMA_CHANGED = 'modeling rule\'s associated schema file was changed'
     MODELING_RULE_TEST_DATA_CHANGED = 'modeling rule\'s associated testdata file was changed'
+    MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -493,7 +494,8 @@ class TestCollector(ABC):
 
     def _collect_pack_for_modeling_rule(
         self, pack_id: str, reason_description: str, changed_file_path: Path,
-        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False,
+        reason: Optional[CollectionReason] = None
     ) -> CollectionResult:
         """Create a CollectionResult for a pack because of a modeling rule
 
@@ -501,6 +503,7 @@ class TestCollector(ABC):
 
         Args:
             pack_id (str): the id of the pack being collected
+            reason (Optional[CollectionReason]): the reason the pack is being collected. Defaults to None.
             reason_description (str): the reason the pack is being collected
             changed_file_path (Path): the path to the file that was modified
             content_item_range (Optional[VersionRange], optional): version range. Defaults to None.
@@ -515,14 +518,15 @@ class TestCollector(ABC):
             if pack.version_range.is_default \
             else (pack.version_range | content_item_range)
 
-        reason = CollectionReason.MODELING_RULE_CHANGED
-        file_type = find_type(changed_file_path.as_posix())
-        if file_type == FileType.MODELING_RULE_SCHEMA:
-            reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
-        elif file_type == FileType.MODELING_RULE_TEST_DATA:
-            reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
-        elif file_type == FileType.MODELING_RULE_XIF:
-            reason = CollectionReason.MODELING_RULE_XIF_CHANGED
+        if not reason:
+            reason = CollectionReason.MODELING_RULE_CHANGED
+            file_type = find_type(changed_file_path.as_posix())
+            if file_type == FileType.MODELING_RULE_SCHEMA:
+                reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
+            elif file_type == FileType.MODELING_RULE_TEST_DATA:
+                reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
+            elif file_type == FileType.MODELING_RULE_XIF:
+                reason = CollectionReason.MODELING_RULE_XIF_CHANGED
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         mr_to_test = relative_path_of_mr.parent
@@ -811,7 +815,10 @@ class BranchTestCollector(TestCollector):
 
             if file_type in MODELING_RULE_COMPONENT_FILES:
                 # mark pack for installation and mark the modeling rule for dynamic testing
-                return self._collect_pack_for_modeling_rule(pack_id, reason_description, path, content_item_range)
+                return self._collect_pack_for_modeling_rule(
+                    pack_id=pack_id, reason_description=reason_description,
+                    changed_file_path=path, content_item_range=content_item_range
+                )
             else:
                 # install pack without collecting tests.
                 return self._collect_pack(
@@ -1060,6 +1067,29 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                     continue
         return CollectionResult.union(result)
 
+    def _collect_modeling_rule_packs(self) -> Optional[CollectionResult]:
+        """Collect packs that are XSIAM compatible and have a modeling rule with a testdata file.
+
+        Returns:
+            Optional[CollectionResult]: pack collection result.
+        """
+        result = []
+        for modeling_rule in self.id_set.modeling_rules:
+            try:
+                path = PATHS.content_path / modeling_rule.file_path_str
+                result.append(self._collect_pack_for_modeling_rule(
+                    pack_id=modeling_rule.pack_id,
+                    changed_file_path=path,
+                    reason=CollectionReason.MODELING_RULE_NIGHTLY,
+                    reason_description=f'{modeling_rule.file_path_str} ({modeling_rule.id_})',
+                    content_item_range=modeling_rule.version_range,
+                    is_nightly=True,
+                ))
+            except (NothingToCollectException, NonXsoarSupportedPackException) as e:
+                logger.debug(str(e))
+
+        return CollectionResult.union(result)
+
     @property
     def sanity_tests(self) -> Optional[CollectionResult]:
         return CollectionResult.union(tuple(
@@ -1082,6 +1112,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             self._id_set_tests_matching_marketplace_value(),
             self._collect_all_marketplace_compatible_packs(),
             self._collect_packs_of_content_matching_marketplace_value(),
+            self._collect_modeling_rule_packs(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
 
