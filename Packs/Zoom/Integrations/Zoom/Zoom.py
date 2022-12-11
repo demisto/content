@@ -367,7 +367,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
-        client.zoom_user_list(30, "None", 'active', '1')
+        client.zoom_user_list(1, None, 'active')
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
