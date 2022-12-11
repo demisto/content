@@ -4721,7 +4721,7 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> lis
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
     if list_vulnerabilities_response_value:
         for cve in list_vulnerabilities_response_value:
-            cve_id = cve.get('id')
+            cve_id = cve.get('cveId')
             cve_indicator = Common.CVE(id=cve_id,
                                        cvss='',
                                        description='',
@@ -4816,7 +4816,7 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                              add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
-            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.Vulnerability',
                                                outputs_key_field='id',
                                                outputs=cve,
                                                readable_output=human_readable,

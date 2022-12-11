@@ -2691,7 +2691,7 @@ def test_list_software_command(mocker, args, return_value_get_list_software, exp
      'value': [{'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
                 'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
                 'productVersion': '7.0.2.0', 'severity': 'High'}]},
-     '### Microsoft Defender ATP vulnerability some_id:\n'
+     '### Microsoft Defender ATP vulnerability CVE-3333-33333:\n'
      '|id|cveId|machineId|productName|productVendor|productVersion|severity|\n'
      '|---|---|---|---|---|---|---|\n|'
      ' some\_id | CVE-3333-33333 |'
