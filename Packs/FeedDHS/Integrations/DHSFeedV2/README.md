@@ -41,7 +41,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### dhs-get-indicators
 
 ***
-Allows you to test your feed and to make sure you can fetch indicators successfully. Due to API limitations this command may take a long time to run.
+Allows you to test your feed and to make sure you can fetch indicators successfully. 
+Due to API limitations, running this command may take longer than the default 5 minutes. 
+To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 seconds to a higher value, the recommended value is 1800 seconds.
 
 
 #### Base Command
@@ -66,7 +68,7 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 
 #### Command Example
 
-```!dhs-get-indicators limit=3```
+```!dhs-get-indicators limit=3 execution-timeout=1800```
 
 #### Context Example
 
@@ -251,3 +253,7 @@ In the *dhs-get-indicators* command:
 ## Additional Considerations for this version
 
 Use this version if your certificate supports TAXII 2 protocol.
+
+## Known Limitations
+"First Fetch Time" parameter can be configured for a maximum of 48 hours, due to limitations in DHS TAXII2 API. 
+Therefore, it is not possible to fetch indicators that last appeared in the feed more than 48 hours ago.

@@ -227,3 +227,16 @@ def test_get_datetime(given_interval, expected_datetime):
         - Returns the corresponding datetime
     """
     assert get_datetime(given_interval) == expected_datetime
+
+
+def test_get_datetime_invalid():
+    """
+    Given:
+        - Invalid time interval
+    When:
+        - Turning it into datetime
+    Then:
+        - Raises an error
+    """
+    with pytest.raises(DemistoException, match='Given time interval is not in a valid format.'):
+        get_datetime('3 yamim')

@@ -23,6 +23,8 @@ def get_datetime(given_interval: Union[str, datetime]) -> datetime:
     if isinstance(given_interval, datetime):
         return given_interval
     date = dateparser.parse(given_interval, date_formats=[TAXII_TIME_FORMAT])
+    if not date:
+        raise DemistoException('Given time interval is not in a valid format.')
     return date.replace(tzinfo=utc)  # type: ignore[union-attr]
 
 
@@ -77,12 +79,12 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
 
 
 def command_test_module(client: Taxii2FeedClient, initial_interval: str):
-    if client.collections:
-        if get_datetime(MAX_FETCH_INTERVAL) > get_datetime(initial_interval):
-            return 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.'
+    if get_datetime(MAX_FETCH_INTERVAL) > get_datetime(initial_interval):
+        return 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.'
 
+    if client.collections:
         try:
-            get_indicators_command(client, {'limit': '1', 'added_after': '5 hours'})  # todo check how much time it runs
+            get_indicators_command(client, {'limit': '1', 'added_after': get_limited_interval('6 hours', initial_interval)})  # todo check how much time it runs
         except requests.exceptions.ConnectTimeout:
             return 'Connection Timeout Error - potential reasons might be that the \'Discovery Service URL\' parameter' \
                    ' is incorrect or that the server is not accessible from your host.'
@@ -135,8 +137,10 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     :return: indicators in cortex TIM format
     """
     limit = arg_to_number(args.get('limit')) or 10
-    added_after: datetime = get_limited_interval(get_datetime(args.get('added_after', DEFAULT_FETCH_INTERVAL)))
     raw = argToBoolean(args.get('raw', 'false'))
+    added_after: datetime = get_datetime(args.get('added_after', DEFAULT_FETCH_INTERVAL))
+    if get_datetime(MAX_FETCH_INTERVAL) > added_after:
+        raise DemistoException('Due to DHS API limitations, "added_after" is limited to 48 hours.')
 
     try:
         if client.collection_to_fetch:

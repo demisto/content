@@ -213,7 +213,7 @@ script:
         example, 1 minute, 12 hour, 24 days. Limited to 48 hours.
       name: added_after
     description: Allows you to test your feed and to make sure you can fetch indicators
-      successfully. Due to API limitations this command may take a long time to run, make sure 'execution-timeout' argument is increased.
+      successfully. Due to API limitations this command may take a long time to run, make sure 'execution-timeout' argument is increased. See documentation for further information.
     name: dhs-get-indicators
     outputs:
     - contextPath: DHS.Indicators.value
