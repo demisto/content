@@ -175,7 +175,7 @@ def test_command_test_module(has_collections, initial_interval_input, expected_o
     mock_client.collections = [MockCollection("first id", 'first name')] if has_collections else None
     mocker.patch.object(mock_client, 'build_iterator', return_value=[])
 
-    result = test_module_command(mock_client, initial_interval_input)
+    result = command_test_module(mock_client, initial_interval_input)
 
     assert result == expected_output
 
