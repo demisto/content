@@ -24,7 +24,7 @@ configuration:
   name: port
   required: false
   type: 0
-- additionalinfo: The Generic SQL search query by which to fetch events.
+- additionalinfo: The Generic SQL query/procedure.
   display: Fetch events query
   name: fetchQuery
   required: true
@@ -42,6 +42,11 @@ configuration:
 - additionalinfo: ID to start fetching.
   display: Start ID
   name: start_id
+  required: false
+  type: 0
+- additionalinfo: The name of the dynamic parameter as defined in the procedure.
+  display: Dynamic parameter's name
+  name: dynamic_parameter_name
   required: false
   type: 0
 - display: Fetch incidents

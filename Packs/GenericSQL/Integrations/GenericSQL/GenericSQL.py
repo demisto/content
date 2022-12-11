@@ -208,9 +208,6 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if not (params.get('start_id') or params.get('start_timestamp')):
             msg += 'A starting point for fetching is missing, please enter Start ID or Start Timestamp. '
 
-        if params.get('start_id') and params.get('start_timestamp'):
-            msg += 'You have entered both Start ID or Start Timestamp fields, please enter only one of them. '
-
     return msg if msg else 'ok', {}, []
 
 
@@ -278,11 +275,18 @@ def get_last_run(params: dict):
 
 
 def create_sql_query(last_run: dict, params: dict):
-    if timestamp := last_run.get('last_timestamp'):
-        # Format example 2022-11-08 09:15:32
-        sql_query = f"{params.get('fetchQuery')} where timestamp > '{timestamp}'"
-    else:
-        sql_query = f'{params.get("fetchQuery")} where incident_id > {last_run.get("last_id")}'
+    # in case of query
+    # if timestamp := last_run.get('last_timestamp'):
+    #     # Format example 2022-11-08 09:15:32
+    #     sql_query = f"{params.get('fetchQuery')} where timestamp > '{timestamp}'"
+    # else:
+    #     sql_query = f'{params.get("fetchQuery")} where incident_id > {last_run.get("last_id")}'
+    # return sql_query
+    # in case of runStoreProcedure
+    last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get('last_id')
+    sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
+                f"{params.get('fetchQuery')} @{params.get('dynamic_parameter_name')} = '{last_timestamp_or_id}';" \
+                f"SET ROWCOUNT 0"
     return sql_query
 
 
