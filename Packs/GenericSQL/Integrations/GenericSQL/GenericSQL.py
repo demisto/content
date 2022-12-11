@@ -306,10 +306,11 @@ def convert_sqlalchemy_to_readable_table(result: dict):
     return incidents
 
 
-def update_last_run_after_fetch(table: List[dict], last_run: dict):
+def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict):
     """
 
     Args:
+        params:
         table:
         last_run:
 
@@ -318,11 +319,12 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict):
     """
     if last_run.get('last_timestamp'):
         # allow till 3 digit after the decimal point - due to limits on querying
-        before_decimal_point, after_decimal_point = table[-1].get('timestamp').split('.')
+        before_decimal_point, after_decimal_point = table[-1].get({params.get('dynamic_parameter_name')}).split('.')
         last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
         last_run['last_timestamp'] = last_timestamp
     else:
-        last_run['last_id'] = table[-1].get('incident_id')
+        # last_run['last_id'] = table[-1].get('incident_id')
+        last_run['last_id'] = table[-1].get({params.get('dynamic_parameter_name')})
 
     return last_run
 
@@ -365,7 +367,7 @@ def fetch_incidents(client: Client, params: dict):
     table = convert_sqlalchemy_to_readable_table(result)
 
     if table:
-        last_run = update_last_run_after_fetch(table, last_run)
+        last_run = update_last_run_after_fetch(table, last_run, params)
 
     incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run)
 
