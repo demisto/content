@@ -746,6 +746,17 @@ script:
           required: true
           description: The id of the rule object. To get the rule object id, use the !nsm-list-domain-rule-object.
           isArray: false
+    - name: nsm-get-alerts
+      description: Retrieves the alerts.
+      arguments:
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
   isfetch: false
   runonce: false
   script: '-'

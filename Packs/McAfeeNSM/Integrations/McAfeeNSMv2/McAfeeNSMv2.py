@@ -372,7 +372,7 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
             from_address: str - The from address, if relevant.
             to_address: str - The to address, if relevant.
             number: int - The number of the addresses IP V.
-        """
+    """
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
     if ('HOST' in rule_type or 'NETWORK' in rule_type) and not address:
@@ -388,6 +388,38 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
     if 'ADDRESS_RANGE' in rule_type and address:
         raise Exception(f'If the "rule_object_type" is “Range IP V.{number} than the both address_ip_v.4 and '
                         f'address_ip_v.6 should not contain a value')
+
+
+def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
+    """ Add entries to the alert_list and update what needed in order not to break backward.
+        Args:
+            alert_list: List[Dict] - a list of the alerts that returned from the API.
+        Returns:
+            Returns the updated alert list.
+    """
+    for alert in alert_list:
+        alert['ID'] = alert.get('event', {}).get('alertId')
+        alert['CreatedTime'] = alert.get('event', {}).get('time')
+        alert['Assignee'] = alert.get('assignTo')  # TODO delete the original assignTo ?
+        alert['Application'] = alert.get('application')
+        alert['EventResult'] = alert.get('event', {}).get('result')
+        alert['SensorID'] = alert.get('detection', {}).get('deviceId')
+        event_obj = alert.get('event', {})
+        event_obj['domain'] = alert.get('detection', {}).get('domain')
+        event_obj['interface'] = alert.get('detection', {}).get('interface')
+        event_obj['device'] = alert.get('detection', {}).get('device')
+        alert['Attack'] = alert.get('attack')
+        alert['Attacker'] = alert.get('attacker')
+        alert['Target'] = alert.get('target')
+        alert['MalwareFile'] = alert.get('malwareFile')
+        del alert['assignTo']
+        del alert['application']
+        del alert['attack']
+        del alert['attacker']
+        del alert['target']
+        del alert['malwareFile']
+        del alert['uniqueAlertId']
+    return alert_list
 
 
 ''' COMMAND FUNCTIONS '''
@@ -918,20 +950,20 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
     response = client.get_alerts_request(session_str)
-    print(response.get('alertsList'))
     total_alerts_count = response.get('totalAlertsCount')
     alerts_list = pagination(response.get('alertsList', []), limit, page)
-
+    print(response.get('alertsList'))
+    alerts_list = add_entries_to_alert_list(alerts_list)
     human_readable = []
     for alert_info in alerts_list:
-        d = {'ID': alert_info.get('uniqueAlertId'),  # TODO check
+        d = {'ID': alert_info.get('ID'),
              'Name': alert_info.get('name'),
              'Event Time': alert_info.get('event.time'),
              'Severity': alert_info.get('attackSeverity'),
-             'State': alert_info.get(''),
+             'State': alert_info.get('alertState'),
              'Direction': alert_info.get('event.direction'),
-             'Result':alert_info.get('event.result'),
-             'Attack Count':alert_info.get('event.attackCount'),
+             'Result': alert_info.get('event.result'),
+             'Attack Count': alert_info.get('event.attackCount'),
              'Attacker IP': alert_info.get('attacker.ipAddrs'),
              'Target IP': alert_info.get('target.ipAddrs')}
         human_readable.append(d)
@@ -943,7 +975,14 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
         t=human_readable,
         removeNull=True,
         headers=headers
-    )  #TODO continue
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Alerts',
+        outputs=alerts_list,
+        raw_response=alerts_list,
+        outputs_key_field='uniqueAlertId'
+    )
 
 
 ''' MAIN FUNCTION '''
