@@ -267,6 +267,16 @@ def test_get_timezone_offset():
     offset = get_timezone_offset(full_response)
     assert offset == timedelta(minutes=-120)
 
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '2022-12-06 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    offset = get_timezone_offset(full_response)
+    assert offset == timedelta(minutes=600)
+
+    full_response = {
+        'result': {'sys_created_on': {'display_value': '2022-12-07 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    offset = get_timezone_offset(full_response)
+    assert offset == timedelta(minutes=-300)
+
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
