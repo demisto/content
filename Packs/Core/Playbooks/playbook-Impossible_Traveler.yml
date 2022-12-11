@@ -1,17 +1,15 @@
 id: Impossible Traveler Response
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Impossible Traveler Response
 description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/impossible-traveler---sso.html)"
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 43458e58-6d49-4273-89a9-113c506dd3bb
+    taskid: 88f861eb-119b-433f-80fb-a44f7dc6eb48
     type: start
     task:
-      id: 43458e58-6d49-4273-89a9-113c506dd3bb
+      id: 88f861eb-119b-433f-80fb-a44f7dc6eb48
       version: -1
       name: ""
       iscommand: false
@@ -35,12 +33,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 6361db3c-08f5-466b-8f46-16bb67a9e88d
+    taskid: d2cc6f85-633d-4296-862a-5f925794182e
     type: title
     task:
-      id: 6361db3c-08f5-466b-8f46-16bb67a9e88d
+      id: d2cc6f85-633d-4296-862a-5f925794182e
       version: -1
       name: Containment
       type: title
@@ -65,12 +64,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
-    taskid: b7269401-e59c-4ff0-8e6d-9c7b2df79bef
+    taskid: 6ea8cc97-01a6-4500-8db9-70dd3cc2bdb8
     type: title
     task:
-      id: b7269401-e59c-4ff0-8e6d-9c7b2df79bef
+      id: 6ea8cc97-01a6-4500-8db9-70dd3cc2bdb8
       version: -1
       name: Travel Information Enrichment
       type: title
@@ -97,12 +97,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
-    taskid: 34a572ff-d7e5-493a-81a0-8a4e0573d853
+    taskid: 9f0e24af-30c8-444f-8e7c-6b9b0c2c1658
     type: title
     task:
-      id: 34a572ff-d7e5-493a-81a0-8a4e0573d853
+      id: 9f0e24af-30c8-444f-8e7c-6b9b0c2c1658
       version: -1
       name: 'Containment '
       type: title
@@ -127,12 +128,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "63":
     id: "63"
-    taskid: d14bb855-3fd8-49fa-86e7-b938ec629ab8
+    taskid: 9e9924bf-582c-4c05-880a-ce2faabc672f
     type: condition
     task:
-      id: d14bb855-3fd8-49fa-86e7-b938ec629ab8
+      id: 9e9924bf-582c-4c05-880a-ce2faabc672f
       version: -1
       name: Did the user travel more than the allowed MPH?
       description: Checks whether the user traveled faster than the allowed speed in MPH.
@@ -173,12 +175,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "67":
     id: "67"
-    taskid: c57d6b8b-9e75-4e4c-8fde-647015300e2b
+    taskid: 1afa0528-0863-40fb-864e-164aef0f660b
     type: condition
     task:
-      id: c57d6b8b-9e75-4e4c-8fde-647015300e2b
+      id: 1afa0528-0863-40fb-864e-164aef0f660b
       version: -1
       name: Did the user login from IP addresses on allow list?
       description: Checks whether both user login events originated from IP addresses on the allow list.
@@ -243,10 +246,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: d912768b-29a7-4497-8d4b-6592fa102827
+    taskid: 0aae9ff5-92b0-4196-8df9-fe62836dc988
     type: condition
     task:
-      id: d912768b-29a7-4497-8d4b-6592fa102827
+      id: 0aae9ff5-92b0-4196-8df9-fe62836dc988
       version: -1
       name: Are there IPs / CIDR configured on allow list?
       description: Checks whether the allow list IPs were configured.
@@ -292,10 +295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 94fb6bd2-f332-41e6-864a-c27747ff9476
+    taskid: 26fbbf6a-8cdf-4252-846f-59667df1acc9
     type: regular
     task:
-      id: 94fb6bd2-f332-41e6-864a-c27747ff9476
+      id: 26fbbf6a-8cdf-4252-846f-59667df1acc9
       version: -1
       name: Close alert
       description: Closes the alert.
@@ -324,12 +327,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "73":
     id: "73"
-    taskid: 4caf8449-6b23-431d-8d23-a2bc76176498
+    taskid: b3f5688f-8244-481c-8edb-b109bb896850
     type: title
     task:
-      id: 4caf8449-6b23-431d-8d23-a2bc76176498
+      id: b3f5688f-8244-481c-8edb-b109bb896850
       version: -1
       name: Process Travel Data
       type: title
@@ -354,12 +358,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "84":
     id: "84"
-    taskid: ce76b9a6-a4a4-4149-8d2c-94fa50e1bbd7
+    taskid: b13f2219-7b15-400e-8b7f-311c944f4b00
     type: condition
     task:
-      id: ce76b9a6-a4a4-4149-8d2c-94fa50e1bbd7
+      id: b13f2219-7b15-400e-8b7f-311c944f4b00
       version: -1
       name: Can the manager be contacted for travel approval?
       description: Checks whether an email address was retrieved for the manger of the offending user.
@@ -379,7 +384,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.UserManagerEmail
+                root: UserManagerEmail
             iscontext: true
           right:
             value: {}
@@ -407,12 +412,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "97":
     id: "97"
-    taskid: b0112fcc-3a0d-4729-8a2a-6e63262565a3
+    taskid: 29168b8b-4682-4c83-8442-f9b240441bce
     type: title
     task:
-      id: b0112fcc-3a0d-4729-8a2a-6e63262565a3
+      id: 29168b8b-4682-4c83-8442-f9b240441bce
       version: -1
       name: Investigation
       type: title
@@ -437,12 +443,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "102":
     id: "102"
-    taskid: 8b9120b4-5687-4f02-8f1f-37f739b8de96
+    taskid: 761f3691-27cd-4689-8c72-f33cdf3ceff8
     type: title
     task:
-      id: 8b9120b4-5687-4f02-8f1f-37f739b8de96
+      id: 761f3691-27cd-4689-8c72-f33cdf3ceff8
       version: -1
       name: Done
       type: title
@@ -464,12 +471,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "104":
     id: "104"
-    taskid: 08cf69f1-48a0-4c20-86f5-524f59529bbb
+    taskid: 310b06ad-c117-4aa9-87cb-59ce2eec50a5
     type: condition
     task:
-      id: 08cf69f1-48a0-4c20-86f5-524f59529bbb
+      id: 310b06ad-c117-4aa9-87cb-59ce2eec50a5
       version: -1
       name: Check if the IP is blacklisted
       description: Checks if the IP address is blacklisted.
@@ -542,10 +550,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "106":
     id: "106"
-    taskid: ddb83845-ed7a-4120-83f6-beb1877424e1
+    taskid: 5e758133-c223-4b51-82dc-23e5e7fb9870
     type: regular
     task:
-      id: ddb83845-ed7a-4120-83f6-beb1877424e1
+      id: 5e758133-c223-4b51-82dc-23e5e7fb9870
       version: -1
       name: 'Close alert '
       description: commands.local.cmd.close.inv
@@ -571,12 +579,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "107":
     id: "107"
-    taskid: 851e8bf2-5306-4b63-8dd8-b4ac2e0346bb
+    taskid: 3e64301f-3cc8-4687-86c9-9174c5ebd246
     type: playbook
     task:
-      id: 851e8bf2-5306-4b63-8dd8-b4ac2e0346bb
+      id: 3e64301f-3cc8-4687-86c9-9174c5ebd246
       version: -1
       name: Impossible Traveler - Enrichment
       description: |-
@@ -622,12 +631,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "110":
     id: "110"
-    taskid: 954a463e-36fd-4351-8d28-1948c2dde3eb
+    taskid: 94db504a-51c6-4c26-82cc-83e29e829184
     type: regular
     task:
-      id: 954a463e-36fd-4351-8d28-1948c2dde3eb
+      id: 94db504a-51c6-4c26-82cc-83e29e829184
       version: -1
       name: Set containment actions
       description: Sets a value in context under the key you entered.
@@ -658,12 +668,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "111":
     id: "111"
-    taskid: f7228f6e-5f4f-470e-83f6-5c6d60d54074
+    taskid: fdd29a04-07fb-4099-8319-e8610b6d6ca3
     type: regular
     task:
-      id: f7228f6e-5f4f-470e-83f6-5c6d60d54074
+      id: fdd29a04-07fb-4099-8319-e8610b6d6ca3
       version: -1
       name: Get all Impossible Traveler IP Addresses
       description: 'Creates an array object in context from any given string input. '
@@ -701,12 +712,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "112":
     id: "112"
-    taskid: 39d974a3-1258-4d12-8e37-9b52df92bb95
+    taskid: 6bc4d7e3-c086-43ac-82bb-09c17225c564
     type: regular
     task:
-      id: 39d974a3-1258-4d12-8e37-9b52df92bb95
+      id: 6bc4d7e3-c086-43ac-82bb-09c17225c564
       version: -1
       name: Calculate geographical distance between logins
       description: Computes the distance between two sets of coordinates, in miles.
@@ -748,12 +760,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "113":
     id: "113"
-    taskid: a4b0b9e4-608e-4a4f-8d58-8b801425db2d
+    taskid: fa93ec7b-8855-4faa-8d83-c072bc2108e2
     type: collection
     task:
-      id: a4b0b9e4-608e-4a4f-8d58-8b801425db2d
+      id: fa93ec7b-8855-4faa-8d83-c072bc2108e2
       version: -1
       name: Ask manager if travel was expected
       description: Asks the manager to confirm the abnormal activity.
@@ -777,7 +790,7 @@ tasks:
     message:
       to:
         complex:
-          root: inputs.UserManagerEmail
+          root: UserManagerEmail
       subject:
         simple: Impossible Traveler Alert Validation
       body:
@@ -831,12 +844,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "114":
     id: "114"
-    taskid: beb82392-b25d-46f9-800c-cc0b1c08aeda
+    taskid: e2d0f764-b76d-4b82-88e9-2ec0ff0fef15
     type: condition
     task:
-      id: beb82392-b25d-46f9-800c-cc0b1c08aeda
+      id: e2d0f764-b76d-4b82-88e9-2ec0ff0fef15
       version: -1
       name: Check Manager Response
       description: Checks the manager response.
@@ -874,12 +888,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "117":
     id: "117"
-    taskid: 7b33e5cb-8d2b-4405-84ad-d6e2180ed78a
+    taskid: 02daa225-5853-458d-8c40-fb3e671a5568
     type: playbook
     task:
-      id: 7b33e5cb-8d2b-4405-84ad-d6e2180ed78a
+      id: 02daa225-5853-458d-8c40-fb3e671a5568
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -945,12 +960,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "118":
     id: "118"
-    taskid: 53ca72da-b295-4a8f-8f97-23454bab59b6
+    taskid: bd5bd031-c623-4eba-82b0-b342ebdab5dd
     type: playbook
     task:
-      id: 53ca72da-b295-4a8f-8f97-23454bab59b6
+      id: bd5bd031-c623-4eba-82b0-b342ebdab5dd
       version: -1
       name: Containment Plan
       description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1023,12 +1039,13 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "119":
     id: "119"
-    taskid: 0cacae9b-6463-4c71-84a5-74cbcacebdba
+    taskid: 9f60839c-b73f-410c-8d26-e4d6fb3a8f98
     type: condition
     task:
-      id: 0cacae9b-6463-4c71-84a5-74cbcacebdba
+      id: 9f60839c-b73f-410c-8d26-e4d6fb3a8f98
       version: -1
       name: Should execute pre investigation containment?
       description: Checks whether to run containment plan before Investigation phase.
@@ -1069,7 +1086,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1077,8 +1093,6 @@ view: |-
       "104_119_yes": 0.51,
       "114_32_#default#": 0.26,
       "114_70_Approved": 0.18,
-      "63_106_#default#": 0.68,
-      "63_84_yes": 0.4,
       "67_112_#default#": 0.51,
       "68_112_#default#": 0.58,
       "84_32_#default#": 0.31
@@ -1109,12 +1123,6 @@ inputs:
     simple: "True"
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events, in case of an alleged impossible traveler.
-  playbookInputQuery:
-- key: UserManagerEmail
-  value:
-    simple: poc@demistodev.com
-  required: false
-  description: The user's manager email address.
   playbookInputQuery:
 - key: AutoContainment
   value:
