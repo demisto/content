@@ -832,7 +832,7 @@ class CLOUDBuild(Build):
 
     def set_marketplace_url(self, servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
-        marketplace_name = self.marketplace_name()
+        marketplace_name = self.marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
         output_file = f'{self.artifacts_folder}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
