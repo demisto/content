@@ -25,8 +25,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Rapid7's vulnerability management solutions, Nexpose and InsightVM, help you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-display: Rapid7 Nexpose
+description: Vulnerability management solution to help reduce threat exposure.
+display: Rapid7 InsightVM
 name: Rapid7 Nexpose
 script:
   commands:
