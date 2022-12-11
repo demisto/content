@@ -1,13 +1,29 @@
 {
-    "metablob": {
-        "num_records": -1, "num_bytes": -1, "compression": "none", "key": "sup-json", "new_pipeline": false, "vendor": "harry", "product": "rule", "format": "json"
-    },
-    "events": [
+    "data": [
         {
-            "SOME_SESSION_ID": "1234555555.0", "ENTRYID": null, "SOME_TEXT": null, "SOME_HOSTNAME": "ENV8\\DC2ENV8AORACLE", "CURRENT_USER": "SYSTEM", "AUDIT_TYPE": "Standard", "PROXY_SESSIONID": "0.0", "OS_USERNAME": "ENV8\\Administrator", "INSTANCE_ID": "1.0", "SOME_LOGON_TYPE": "(TYPE\u003d(DATABASE));(CLIENT ADDRESS\u003d((PROTOCOL\u003dbeq)(HOST\u003d10.10.11.61)));", "SOME_APPLICATION_NAME": "sqlplus.EXE", "ENTRY_ID": "1.0", "SOME_CONNECTION_ID": "36.0", "EVENT_TIMESTAMP": "2021-06-06 22:22:22.222222", "TIMESTAMP": "2021-06-06 22:22:22.222222", "SOME_FIELD": "CREATE USER"
-        },
-        {
-            "SOME_SESSION_ID": "1234566666.0", "ENTRYID": null, "SOME_TEXT": "event 2", "USERID": null, "SOME_HOSTNAME": "ENV8\\DC2ENV8AORACLE", "CURRENT_USER": "SYS", "AUDIT_TYPE": "Standard", "PROXY_SESSIONID": "0.0", "OS_USERNAME": "ENV8\\Administrator", "INSTANCE_ID": "1.0", "SOME_APPLICATION_NAME": "sqlplus.exe", "DBLINK_INFO": null, "XS_USER_NAME": null, "XS_SESSIONID": null, "ENTRY_ID": "1.0", "SOME_CONNECTION_ID": "1.0", "EVENT_TIMESTAMP": "2021-06-06 22:30:30.303030", "TIMESTAMP": "2021-06-06 22:30:30.303030", "SOME_FIELD": "LOGON"
+            "test_data_event_id": "419dc852-a6e7-4bc2-87b0-417dc9d833f5",
+            "vendor": "harry",
+            "product": "rule",
+            "dataset": "harry_rule_raw",
+            "event_data": {
+                "SOME_FIELD": "thefield",
+                "SOME_USERNAME": "blah",
+                "SOME_TEXT": "text",
+                "SOME_HOSTNAME": "hostname",
+                "SOME_LOGON_TYPE": "logon",
+                "SOME_APPLICATION_NAME": "application",
+                "SOME_SESSION_ID": "1",
+                "SOME_CONNECTION_ID": "2",
+                "TIMESTAMP": "12 November, 2022"
+            },
+            "expected_values": {
+                "xdm.session_context_id": "1",
+                "xdm.event.outcome_reason": "thefield",
+                "xdm.source.user.username": "blah",
+                "xdm.logon.type": "logon",
+                "xdm.source.host.hostname": "hostname",
+                "xdm.source.application.name": "application"
+            }
         }
     ]
 }
