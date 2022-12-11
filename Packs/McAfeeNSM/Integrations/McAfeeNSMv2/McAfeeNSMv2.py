@@ -146,7 +146,7 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
-    def delete_rule_object(self, session_str: str, rule_id: str) -> Dict:
+    def delete_rule_object_request(self, session_str: str, rule_id: str) -> Dict:
         """ Updates a Rule Object.
             Args:
                 session_str: str - The session id.
@@ -157,6 +157,17 @@ class Client(BaseClient):
         url_suffix = f'/sdkapi/ruleobject/{rule_id}'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='DELETE', url_suffix=url_suffix)
+
+    def get_alerts_request(self, session_str: str) -> Dict:
+        """ Retrieves All Alerts.
+            Args:
+                session_str: str - The session id.
+            Returns:
+                A dictionary with the list of alerts and info about the list.
+        """
+        url_suffix = '/sdkapi/alerts'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -891,8 +902,48 @@ def delete_rule_object_command(client: Client, args: Dict, session_str: str) -> 
             A CommandResult object with a success message.
     """
     rule_id = args.get('rule_id')
-    client.delete_rule_object(session_str, rule_id)
+    client.delete_rule_object_request(session_str, rule_id)
     return CommandResults(readable_output=f'The rule object no.{rule_id} was deleted successfully')
+
+
+def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Retrieves All Alerts.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    response = client.get_alerts_request(session_str)
+    print(response.get('alertsList'))
+    total_alerts_count = response.get('totalAlertsCount')
+    alerts_list = pagination(response.get('alertsList', []), limit, page)
+
+    human_readable = []
+    for alert_info in alerts_list:
+        d = {'ID': alert_info.get('uniqueAlertId'),  # TODO check
+             'Name': alert_info.get('name'),
+             'Event Time': alert_info.get('event.time'),
+             'Severity': alert_info.get('attackSeverity'),
+             'State': alert_info.get(''),
+             'Direction': alert_info.get('event.direction'),
+             'Result':alert_info.get('event.result'),
+             'Attack Count':alert_info.get('event.attackCount'),
+             'Attacker IP': alert_info.get('attacker.ipAddrs'),
+             'Target IP': alert_info.get('target.ipAddrs')}
+        human_readable.append(d)
+
+    headers = ['ID', 'Name', 'Event Time', 'Severity', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP',
+               'Target IP']
+    readable_output = tableToMarkdown(
+        name=f'Alerts list. Showing {limit} of {total_alerts_count}',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )  #TODO continue
 
 
 ''' MAIN FUNCTION '''
@@ -958,6 +1009,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-delete-rule-object':
             results = delete_rule_object_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-alerts':
+            results = get_alerts_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
