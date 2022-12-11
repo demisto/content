@@ -1,24 +1,9 @@
-[MODEL: dataset=harry_rule_raw, model=Audit]
-filter SOME_FIELD in ("F1", "F2", "F3", "F4", "F5")
-| alter XDM.Audit.TriggeredBy.identity.name = NAME,
-XDM.Audit.event_timestamp = TIMESTAMP,
-XDM.Audit.operation_type = SOME_FIELD,
-XDM.Audit.reason = SOME_TEXT;
-
-[MODEL: dataset=harry_rule_raw, model=Auth]
+[MODEL: dataset=harry_rule_raw]
 filter SOME_FIELD in ("F6", "F7", "F8", "F9", "F10")
-| alter XDM.Auth.session_id = SOME_SESSION_ID,
-XDM.Auth.Client.user.username = SOME_USERNAME,
-XDM.Auth.Client.host.hostname = SOME_HOSTNAME,
-XDM.Auth.logon.type = SOME_LOGON_TYPE,
-XDM.Auth.Client.application.name = SOME_APPLICATION_NAME,
-XDM.Auth.event_timestamp = TIMESTAMP,
-XDM.Auth.reason = SOME_FIELD;
-
-[MODEL: dataset=harry_rule_raw, model=Database]
-filter SOME_FIELD in ("F11", "F12", "F13", "F14", "F15")
-| alter XDM.Database.connection_id = SOME_CONNECTION_ID,
-XDM.Database.Client.user.username = SOME_USERNAME,
-XDM.Database.event_timestamp = TIMESTAMP,
-XDM.Database.operation = SOME_FIELD,
-XDM.Database.statement = SOME_TEXT;
+| alter xdm.session_context_id = SOME_SESSION_ID,
+xdm.source.user.username = SOME_USERNAME,
+xdm.source.host.hostname = SOME_HOSTNAME,
+xdm.logon.type = SOME_LOGON_TYPE,
+xdm.source.application.name = SOME_APPLICATION_NAME,
+_time = parse_timestamp("%d/%b/%Y:%k:%M:%S", TIMESTAMP),
+xdm.event.outcome_reason = SOME_FIELD;
