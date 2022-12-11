@@ -4816,7 +4816,7 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
                                              add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
-            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.Vulnerability',
                                                outputs_key_field='id',
                                                outputs=cve,
                                                readable_output=human_readable,
