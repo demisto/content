@@ -16,7 +16,7 @@ Amazon Web Services Guard Duty Service Event Collector integration for Cortex XS
     | Secret Key | The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required. | False |
     | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout preceded by a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | First fetch time | First fetch query <number> <time unit>, e.g., 7 days. Default 3 days. | False |
+    | First fetch time | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`. | False |
     | Number of events to fetch per fetch. | Default is 10. | False |
     | Guard Duty Severity level | The severity level or higher of findings to be fetched: Low, Medium, or High. For example, if you set the severity level to Medium, only findings with severity level Medium or High will be fetched. | True |
     | Trust any certificate (not secure) |  | False |
