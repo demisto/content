@@ -62,6 +62,26 @@ After you successfully execute a command, a DBot message appears in the War Room
 33. ciscofp-get-device-records
 34. ciscofp-deploy-to-devices
 35. ciscofp-get-task-status
+36. ciscofp-get-url-groups-object
+37. ciscofp-update-url-groups-objects
+38. ciscofp-create-intrusion-policy
+39. ciscofp-list-intrusion-policy
+40. ciscofp-update-intrusion-policy
+41. ciscofp-delete-intrusion-policy
+42. ciscofp-create-intrusion-rule
+43. ciscofp-list-intrusion-rule
+44. ciscofp-update-intrusion-rule
+45. ciscofp-delete-intrusion-rule
+46. ciscofp-upload-intrusion-rule-file
+47. ciscofp-create-intrusion-rule-group
+48. ciscofp-list-intrusion-rule-group
+49. ciscofp-update-intrusion-rule-group
+50. ciscofp-delete-intrusion-rule-group
+51. ciscofp-create-network-analysis-policy
+52. ciscofp-list-network-analysis-policy
+53. ciscofp-update-network-analysis-policy
+54. ciscofp-delete-network-analysis-policy
+
 ### 1. ciscofp-list-zones
 ---
 Retrieves a list of all security zone objects.
@@ -1270,8 +1290,9 @@ Updates a group of network objects.
 | network_objects_id_list | A comma-separated list of object IDs to add the group. | Optional | 
 | network_address_list | A comma-separated list of IP addresses or CIDR ranges to add the group. | Optional | 
 | description | The new description for the object. | Optional | 
-| overridable | Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false". | Optional | 
-| name | The group name. | Required | 
+| overridable | Boolean indicating whether object values can be overridden. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
+| update_strategy | Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided. Possible values are: MERGE, OVERRIDE. | Optional | 
+| name | The group name. | Optional | 
 
 
 ##### Context Output
@@ -4341,6 +4362,7 @@ Retrieves a list of all policy assignments to target devices.
 | --- | --- | --- |
 | limit | The maximum number of items to return. The default is 50 | Optional | 
 | offset | Index of first item to return. The default is 0 | Optional | 
+| policy_assignment_id | The policy assignments ID. | Optional | 
 
 
 ##### Context Output
@@ -4457,6 +4479,7 @@ Updates the specified policy assignments to target devices.
 | policy_id | The policy ID. | Optional | 
 | device_ids | A list of device IDs. | Optional | 
 | device_group_ids | A list of device group IDs. | Optional | 
+| update_strategy | Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided. Possible values are: MERGE, OVERRIDE. | Optional | 
 
 
 ##### Context Output
@@ -4738,8 +4761,9 @@ Updates the ID of a group of url objects.
 | url_objects_id_list | A comma-separated list of object IDs to add the url. | Optional | 
 | url_list | A comma-separated list of url to add the group. | Optional | 
 | description | The new description for the object. | Optional | 
-| overridable | Boolean indicating whether object values can be overridden. Default is false. | Optional | 
-| name | The group name. | Required | 
+| overridable | Boolean indicating whether object values can be overridden. Possible values are: true, false. Default is false. | Optional | 
+| name | The group name. | Optional | 
+| update_strategy | Update method to use in the command. Can be "MERGE" or "OVERRIDE". If merge, will add the changes requested to the existing rule. If override, will override the fields with the inputs provided and will delete any fields that were not provided. Possible values are: MERGE, OVERRIDE. | Optional | 
 
 
 #### Context Output
@@ -4762,3 +4786,1351 @@ Updates the ID of a group of url objects.
 |ID|Name|Overridable|Description|Addresses|Objects|
 |---|---|---|---|---|---|
 | 00224867-78A7-0ed3-0000-004294969111 | XXX_Proactive_Response_URL | false |  | 1 | 0 |
+
+### 38. ciscofp-upload-intrusion-rule-file
+***
+Imports or validate custom Snort 3 intrusion rules within a file. Import arguments: rule_import_mode, rule_group_ids.
+
+
+#### Base Command
+
+`ciscofp-upload-intrusion-rule-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | File containing the custom Snort 3 intrusion rules. .rules and .txt are supported file formats. | Required | 
+| rule_import_mode | Merge or replace the rules in the rulegroups. Possible values are: MERGE, REPLACE. | Optional | 
+| rule_group_ids | Comma-separated list of rulegroups to which rules should be associated. Example are group-id1,group-id2. Required when importing rules. Can be acquired from: ciscofp-list-intrusion-rule-group. | Optional | 
+| validate_only | Boolean identifier to validate or import rules. True is the default value. Possible values are: True, False. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRuleUpload.summary.type | String | Type of the response object. This value is always ruleimportsummary. | 
+| CiscoFP.IntrusionRuleUpload.summary.deleted.type | String | Type of the response object. This value is always ruleimportsummaryentry. | 
+| CiscoFP.IntrusionRuleUpload.summary.deleted.count | Number | Specifies the count of deleted rules. By default shows 0 | 
+| CiscoFP.IntrusionRuleUpload.summary.deleted.rules | String | Specifies the rule details in the format GID:SID for the imported rules. | 
+| CiscoFP.IntrusionRuleUpload.summary.added.type | String | Type of the response object. This value is always ruleimportsummaryentry. | 
+| CiscoFP.IntrusionRuleUpload.summary.added.count | Number | Specifies the count of added rules. By default shows 0 | 
+| CiscoFP.IntrusionRuleUpload.summary.added.rules | String | Specifies the rule details in the format GID:SID for the imported rules. | 
+| CiscoFP.IntrusionRuleUpload.summary.unassociated.type | String | Type of the response object. This value is always ruleimportsummaryentry. | 
+| CiscoFP.IntrusionRuleUpload.summary.unassociated.count | Number | Specifies the count of unassociated rules. By default shows 0 | 
+| CiscoFP.IntrusionRuleUpload.summary.unassociated.rules | String | Specifies the rule details in the format GID:SID for the imported rules. | 
+| CiscoFP.IntrusionRuleUpload.summary.updated.type | String | Type of the response object. This value is always ruleimportsummaryentry. | 
+| CiscoFP.IntrusionRuleUpload.summary.updated.count | Number | Specifies the count of updated rules. By default shows 0 | 
+| CiscoFP.IntrusionRuleUpload.summary.updated.rules | String | Specifies the rule details in the format GID:SID for the imported rules. | 
+| CiscoFP.IntrusionRuleUpload.summary.skipped.type | String | Type of the response object. This value is always ruleimportsummaryentry. | 
+| CiscoFP.IntrusionRuleUpload.summary.skipped.count | Number | Specifies the count of skipped rules. By default shows 0 | 
+| CiscoFP.IntrusionRuleUpload.summary.skipped.rules | String | Specifies the rule details in the format GID:SID for the imported rules. | 
+| CiscoFP.IntrusionRuleUpload.validateOnly | String | Specifies if rules should be validated or validated and imported. Default value is true. | 
+| CiscoFP.IntrusionRuleUpload.ruleImportMode | String | Indicates the rule Import mode. Can be either MERGE or REPLACE. | 
+| CiscoFP.IntrusionRuleUpload.files.path | String | File path. | 
+| CiscoFP.IntrusionRuleUpload.files.attrib | String | File attribute, payloadFile. | 
+| CiscoFP.IntrusionRuleUpload.files.name | String | File name. | 
+| CiscoFP.IntrusionRuleUpload.files.id | String | File ID. | 
+| CiscoFP.IntrusionRuleUpload.files.type | String | File type. | 
+| CiscoFP.IntrusionRuleUpload.ruleGroups.id | String | Name of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleUpload.ruleGroups.name | String | Unique identifier of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleUpload.ruleGroups.type | String | Type of the response object. This value is always IntrusionRuleGroup. | 
+
+#### Command example
+```!ciscofp-upload-intrusion-rule-file validate_only=True entry_id=7110@117def34-6ca2-4db3-86eb-c9378ad46e65```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRuleUpload": {
+            "files": [
+                {
+                    "attrib": "payloadFile",
+                    "path": "/var/tmp/test.txt_1670429061268"
+                }
+            ],
+            "summary": {
+                "added": {
+                    "count": 2,
+                    "rules": [
+                        "2000:1011234",
+                        "2000:1011233"
+                    ],
+                    "type": "ruleimportsummaryentry"
+                },
+                "deleted": {
+                    "count": 0,
+                    "type": "ruleimportsummaryentry"
+                },
+                "skipped": {
+                    "count": 0,
+                    "type": "ruleimportsummaryentry"
+                },
+                "type": "ruleimportsummary",
+                "unassociated": {
+                    "count": 0,
+                    "type": "ruleimportsummaryentry"
+                },
+                "updated": {
+                    "count": 0,
+                    "type": "ruleimportsummaryentry"
+                }
+            },
+            "validateOnly": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Intrusion Rule Upload Information
+>|Added Count|Added Rules|Updated Count|Deleted Count|Skipped Count|Unassociated Count|
+>|---|---|---|---|---|---|
+>| 2 | 2000:1011234,<br/>2000:1011233 | 0 | 0 | 0 | 0 |
+
+### 39. ciscofp-list-intrusion-rule
+***
+Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET argument: intrusion_rule_id | LIST arguments: sort, filter, expanded_response, limit, page, page_size.
+
+
+#### Base Command
+
+`ciscofp-list-intrusion-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_rule_id | Identifier of a Snort 3 intrusion rule. | Optional | 
+| expanded_response | If set to true, the response displays a list of objects with additional attributes. Possible values are: True, False. | Optional | 
+| sort | Sorting parameters to be provided e.g. sid,-sid,gid,-gid,msg,-msg. | Optional | 
+| filter | Value can be any of the formats: "gid:123;sid:456" or "overrides:true;ipspolicy:{uuid1,uuid2,...} or "fts:789". ipspolicy is a comma-separated list of Snort 3 Intrusion Policy IDs. | Optional | 
+| limit | Number of items to return. | Optional | 
+| page | Page number to return. | Optional | 
+| page_size | Number of items to return in a page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRule.type | String | Type of the response object. This value is always IntrusionRule. | 
+| CiscoFP.IntrusionRule.id | String | Unique identifier \(UUID\) for the intrusion rule. | 
+| CiscoFP.IntrusionRule.name | String | Name of the intrusion rule. | 
+| CiscoFP.IntrusionRule.gid | Number | Generator Identifier used to identify the part of Snort which generates an event. | 
+| CiscoFP.IntrusionRule.sid | Number | Snort Identifier used to uniquely identify Snort rules. | 
+| CiscoFP.IntrusionRule.revision | Number | Revision number of a given Snort rule. Incremented by one each time a change is made to a rule. | 
+| CiscoFP.IntrusionRule.isSystemDefined | Boolean | Read-only field indicating if the rule is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
+| CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
+| CiscoFP.IntrusionRule.description | String | User provided resource description. | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
+| CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined | Boolean | If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.metadata.domain.name | String | Name of the domain. | 
+| CiscoFP.IntrusionRule.metadata.domain.id | String | Unique UUID of this domain | 
+| CiscoFP.IntrusionRule.metadata.domain.type | String | Domain type definition \(fixed\). | 
+| CiscoFP.IntrusionRule.ruleGroups.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionRule.ruleGroups.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionRule.ruleGroups.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-list-intrusion-rule limit=3```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRule": [
+            {
+                "id": "c45009b0-b6c7-5573-af40-971531d4513c",
+                "name": "116:109",
+                "type": "IntrusionRule"
+            },
+            {
+                "id": "bada5682-05cb-521e-9f8c-f4b941f2e48e",
+                "name": "112:3",
+                "type": "IntrusionRule"
+            },
+            {
+                "id": "ebf34a54-0864-5e9e-a8fb-803a942ac199",
+                "name": "112:4",
+                "type": "IntrusionRule"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched Intrusion Rule Information
+>|ID|Name|
+>|---|---|
+>| c45009b0-b6c7-5573-af40-971531d4513c | 116:109 |
+>| bada5682-05cb-521e-9f8c-f4b941f2e48e | 112:3 |
+>| ebf34a54-0864-5e9e-a8fb-803a942ac199 | 112:4 |
+
+
+### 40. ciscofp-create-intrusion-rule
+***
+Creates or overrides the Snort3 Intrusion rule group with the specified parameters. Guide to Snort 3 Rule Writing: https://docs.snort.org/welcome.
+
+
+#### Base Command
+
+`ciscofp-create-intrusion-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_data | Snort Rule structure data. Guide to Snort Rule Structure: https://docs.snort.org/rules/. | Required | 
+| rule_group_ids | Unique identifier representing the rule group. Comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRule.type | String | Type of the response object. This value is always IntrusionRule. | 
+| CiscoFP.IntrusionRule.id | String | Unique identifier \(UUID\) for the intrusion rule. | 
+| CiscoFP.IntrusionRule.name | String | Name of the intrusion rule. | 
+| CiscoFP.IntrusionRule.gid | Number | Generator Identifier used to identify the part of Snort which generates an event. | 
+| CiscoFP.IntrusionRule.sid | Number | Snort Identifier used to uniquely identify Snort rules. | 
+| CiscoFP.IntrusionRule.revision | Number | Revision number of a given Snort rule. Incremented by one each time a change is made to a rule. | 
+| CiscoFP.IntrusionRule.isSystemDefined | Boolean | Read-only field indicating if the rule is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
+| CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
+| CiscoFP.IntrusionRule.description | String | User provided resource description. | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
+| CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined | Boolean | If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.metadata.domain.name | String | Name of the domain. | 
+| CiscoFP.IntrusionRule.metadata.domain.id | String | Unique UUID of this domain | 
+| CiscoFP.IntrusionRule.metadata.domain.type | String | Domain type definition \(fixed\). | 
+| CiscoFP.IntrusionRule.ruleGroups.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionRule.ruleGroups.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionRule.ruleGroups.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-create-intrusion-rule rule_data="alert ( gid:1; sid:1011226; rev:1; msg:\"This is a test rule\";)" rule_group_ids="005056A6-3FB1-0ed3-0000-004294971373"```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRule": {
+            "gid": 2000,
+            "id": "005056A6-3FB1-0ed3-0000-004294995730",
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                }
+            },
+            "msg": "This is a test rule",
+            "name": "2000:1011226",
+            "revision": 1,
+            "ruleData": "alert ( gid:2000; sid:1011226; rev:1; msg:\"This is a test rule\"; classtype:unknown;  )",
+            "ruleGroups": [
+                {
+                    "id": "005056A6-3FB1-0ed3-0000-004294971373",
+                    "name": "TestGroupUpdate12",
+                    "type": "IntrusionRuleGroup"
+                }
+            ],
+            "sid": 1011226,
+            "type": "IntrusionRule"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Intrusion Rule Information
+>|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
+>|---|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294995730 | 2000:1011226 | 1011226 | 1 | alert ( gid:2000; sid:1011226; rev:1; msg:"This is a test rule"; classtype:unknown;  ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
+
+
+### 41. ciscofp-update-intrusion-rule
+***
+Modifies the Snort3 Intrusion rule group with the specified ID. Must enter at least one of the following if not both: rule_data or rule_group_ids. The variable that was not entered will stay the same. If merging rule_group_ids must be entered.
+
+
+#### Base Command
+
+`ciscofp-update-intrusion-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_rule_id | Identifier of a Snort 3 intrusion rule. | Required | 
+| rule_data | Snort Rule structure data. Guide to Snort Rule Structure: https://docs.snort.org/rules/. | Optional | 
+| rule_group_ids | Unique identifier representing the rule group. Comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group. | Optional | 
+| update_strategy | Update method to use in the command. Can be "MERGE" or "OVERRIDE". If MERGE, will append new rule groups. If OVERRIDE, will override old rule groups. Possible values are: MERGE, OVERRIDE. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRule.type | String | Type of the response object. This value is always IntrusionRule. | 
+| CiscoFP.IntrusionRule.id | String | Unique identifier \(UUID\) for the intrusion rule. | 
+| CiscoFP.IntrusionRule.name | String | Name of the intrusion rule. | 
+| CiscoFP.IntrusionRule.gid | Number | Generator Identifier used to identify the part of Snort which generates an event. | 
+| CiscoFP.IntrusionRule.sid | Number | Snort Identifier used to uniquely identify Snort rules. | 
+| CiscoFP.IntrusionRule.revision | Number | Revision number of a given Snort rule. Incremented by one each time a change is made to a rule. | 
+| CiscoFP.IntrusionRule.isSystemDefined | Boolean | Read-only field indicating if the rule is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.msg | String | User provided rule description. | 
+| CiscoFP.IntrusionRule.ruleData | String | Details of the rule based on which rule created or updated. | 
+| CiscoFP.IntrusionRule.description | String | User provided resource description. | 
+| CiscoFP.IntrusionRule.overrideState | String | User override state of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.defaultState | String | Default State of the rule. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | 
+| CiscoFP.IntrusionRule.ruleAction.defaultState | String | Default state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.overrideState | String | Override state of the rule for the specified intrusion policy. One of: DROP | BLOCK | ALERT | DISABLE | DEFAULT | PASS | REJECT | REACT | REWRITE | 
+| CiscoFP.IntrusionRule.ruleAction.policy.name | String | Name of the intrusion policy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.id | String | Intrusion Policy UUID | 
+| CiscoFP.IntrusionRule.ruleAction.policy.type | String | Type must be intrusionpolicy | 
+| CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined | Boolean | If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRule.metadata.domain.name | String | Name of the domain. | 
+| CiscoFP.IntrusionRule.metadata.domain.id | String | Unique UUID of this domain | 
+| CiscoFP.IntrusionRule.metadata.domain.type | String | Domain type definition \(fixed\). | 
+| CiscoFP.IntrusionRule.ruleGroups.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionRule.ruleGroups.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionRule.ruleGroups.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-update-intrusion-rule intrusion_rule_id=005056A6-3FB1-0ed3-0000-004294994716 rule_group_ids="005056A6-3FB1-0ed3-0000-004294971373"```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRule": {
+            "gid": 2000,
+            "id": "005056A6-3FB1-0ed3-0000-004294994716",
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                }
+            },
+            "msg": "This is a test rule",
+            "name": "2000:1011225",
+            "revision": 1,
+            "ruleData": "alert ( gid:2000; sid:1011225; rev:1; msg:\"This is a test rule\"; classtype:unknown; )",
+            "ruleGroups": [
+                {
+                    "id": "005056A6-3FB1-0ed3-0000-004294971373",
+                    "name": "TestGroupUpdate12",
+                    "type": "IntrusionRuleGroup"
+                }
+            ],
+            "sid": 1011225,
+            "type": "IntrusionRule"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Intrusion Rule Information
+>|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
+>|---|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994716 | 2000:1011225 | 1011225 | 1 | alert ( gid:2000; sid:1011225; rev:1; msg:"This is a test rule"; classtype:unknown; ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
+
+
+### 42. ciscofp-delete-intrusion-rule
+***
+Deletes the specified Snort3 rule.
+
+
+#### Base Command
+
+`ciscofp-delete-intrusion-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_rule_id | Identifier of a Snort 3 intrusion rule. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!ciscofp-delete-intrusion-rule intrusion_rule_id=005056A6-3FB1-0ed3-0000-004294994716```
+#### Human Readable Output
+
+>### Deleted Intrusion Rule Information
+>|ID|Name|Snort ID|Revision|Rule Data|Rule Group|
+>|---|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994716 | 2000:1011225 | 1011225 | 1 | alert ( gid:2000; sid:1011225; rev:1; msg:"This is a test rule"; classtype:unknown; ) | {'name': 'TestGroupUpdate12', 'id': '005056A6-3FB1-0ed3-0000-004294971373', 'type': 'IntrusionRuleGroup'} |
+
+
+### 43. ciscofp-list-intrusion-policy
+***
+Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves list of all intrusion policies. GET arguments: intrusion_policy_id, include_count | LIST arguments: expanded_response, limit, page, page_size.
+
+
+#### Base Command
+
+`ciscofp-list-intrusion-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_policy_id | Identifier for intrusion policy. | Optional | 
+| include_count | Boolean value if the count of rules should be calculated in the response. Possible values are: True, False. | Optional | 
+| expanded_response | If set to true, the response displays a list of objects with additional attributes. Possible values are: True, False. | Optional | 
+| limit | Number of items to return. | Optional | 
+| page | Page number to return. | Optional | 
+| page_size | Number of items to return in a page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionPolicy.name | String | Name of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.id | String | Unique identifier of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.type | String | Type of the object. This value is always "intrusionpolicy". | 
+| CiscoFP.IntrusionPolicy.description | String | Description of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.inlineDrop | Number | Indicates the inspection mode. Applicable for Snort 2 engine only. Value can be 0 or 1. | 
+| CiscoFP.IntrusionPolicy.version | String | Version number of the response object. | 
+| CiscoFP.IntrusionPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.isSystemDefined | Boolean | Is the policy system defined | 
+| CiscoFP.IntrusionPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id | String | Unique identifier of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type | String | Type of the object. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.IntrusionPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.IntrusionPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-list-intrusion-policy limit=3```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionPolicy": [
+            {
+                "id": "6c66b83c-bc23-55b6-879d-c4d847443503",
+                "name": "Balanced Security and Connectivity",
+                "type": "intrusionpolicy"
+            },
+            {
+                "id": "4cba6c52-6a07-54cd-a324-5bb7be06a484",
+                "name": "Connectivity Over Security",
+                "type": "intrusionpolicy"
+            },
+            {
+                "id": "005056A6-3FB1-0ed3-0000-004294975537",
+                "name": "Lior Tes",
+                "type": "intrusionpolicy"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched Intrusion Policy Information
+>|ID|Name|
+>|---|---|
+>| 6c66b83c-bc23-55b6-879d-c4d847443503 | Balanced Security and Connectivity |
+>| 4cba6c52-6a07-54cd-a324-5bb7be06a484 | Connectivity Over Security |
+>| 005056A6-3FB1-0ed3-0000-004294975537 | Lior Tes |
+
+
+### 44. ciscofp-create-intrusion-policy
+***
+Creates an intrusion policy with the specified parameters.
+
+
+#### Base Command
+
+`ciscofp-create-intrusion-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the Intrusion Policy. | Required | 
+| description | Description of the Intrusion Policy. | Optional | 
+| basepolicy_id | Unique identifier representing the base intrusion policy. Can be acquired from: ciscofp-list-intrusion-policy. | Required | 
+| inspection_mode | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. Possible values are: DETECTION, PREVENTION. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionPolicy.name | String | Name of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.id | String | Unique identifier of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.type | String | Type of the object. This value is always "intrusionpolicy". | 
+| CiscoFP.IntrusionPolicy.description | String | Description of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.inlineDrop | Number | Indicates the inspection mode. Applicable for Snort 2 engine only. Value can be 0 or 1. | 
+| CiscoFP.IntrusionPolicy.version | String | Version number of the response object. | 
+| CiscoFP.IntrusionPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.isSystemDefined | Boolean | Is the policy system defined | 
+| CiscoFP.IntrusionPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id | String | Unique identifier of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type | String | Type of the object. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.IntrusionPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.IntrusionPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-create-intrusion-policy name=TestDocs2IntrusionPolicy basepolicy_id=005056A6-3FB1-0ed3-0000-004294969533```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionPolicy": {
+            "basePolicy": {
+                "description": "Test Test",
+                "id": "005056A6-3FB1-0ed3-0000-004294969533",
+                "inlineDrop": 0,
+                "inspectionMode": "DETECTION",
+                "isSystemDefined": false,
+                "metadata": {
+                    "domain": {
+                        "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                        "name": "Global",
+                        "type": "Domain"
+                    },
+                    "snortEngine": "SNORT3"
+                },
+                "name": "Test",
+                "type": "intrusionpolicy"
+            },
+            "id": "005056A6-3FB1-0ed3-0000-004294995587",
+            "inlineDrop": 0,
+            "inspectionMode": "DETECTION",
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                },
+                "mappedPolicy": {
+                    "id": "246dfd66-7645-11ed-acca-d35385e25dab",
+                    "inspectionMode": "DETECTION",
+                    "name": "TestDocs2IntrusionPolicy",
+                    "snortEngine": "SNORT2",
+                    "type": "intrusionpolicy"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "name": "TestDocs2IntrusionPolicy",
+            "type": "intrusionpolicy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Intrusion Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|
+>|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294995587 | TestDocs2IntrusionPolicy | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
+
+
+### 45. ciscofp-update-intrusion-policy
+***
+Modifies the intrusion policy associated with the specified ID.
+
+
+#### Base Command
+
+`ciscofp-update-intrusion-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_policy_id | Identifier for intrusion policy. | Required | 
+| replicate_inspection_mode | Flag to replicate inspection mode from snort 3 version to snort 2 version. Possible values are: True, False. | Optional | 
+| name | Name of the Intrusion Policy. | Optional | 
+| description | Description of the Intrusion Policy. | Optional | 
+| basepolicy_id | Unique identifier representing the base intrusion policy. Can be acquired from: ciscofp-list-intrusion-policy. | Optional | 
+| inspection_mode | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. Possible values are: DETECTION, PREVENTION. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionPolicy.name | String | Name of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.id | String | Unique identifier of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.type | String | Type of the object. This value is always "intrusionpolicy". | 
+| CiscoFP.IntrusionPolicy.description | String | Description of the Intrusion Policy. | 
+| CiscoFP.IntrusionPolicy.inlineDrop | Number | Indicates the inspection mode. Applicable for Snort 2 engine only. Value can be 0 or 1. | 
+| CiscoFP.IntrusionPolicy.version | String | Version number of the response object. | 
+| CiscoFP.IntrusionPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.isSystemDefined | Boolean | Is the policy system defined | 
+| CiscoFP.IntrusionPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id | String | Unique identifier of the mapped policy | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type | String | Type of the object. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.IntrusionPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.IntrusionPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.IntrusionPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.IntrusionPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.IntrusionPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.IntrusionPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-update-intrusion-policy intrusion_policy_id=005056A6-3FB1-0ed3-0000-004294994664 name=TestIntrusionPolicyToDelete```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionPolicy": {
+            "basePolicy": {
+                "id": "005056A6-3FB1-0ed3-0000-004294969533",
+                "name": "Test",
+                "type": "intrusionpolicy"
+            },
+            "id": "005056A6-3FB1-0ed3-0000-004294994664",
+            "inspectionMode": "DETECTION",
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                },
+                "mappedPolicy": {
+                    "id": "ee04430a-7641-11ed-a534-d05385e25dab",
+                    "inspectionMode": "DETECTION",
+                    "name": "TestIntrusionPolicyToDelete",
+                    "snortEngine": "SNORT2",
+                    "type": "intrusionpolicy"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "name": "TestIntrusionPolicyToDelete",
+            "type": "intrusionpolicy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Intrusion Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|
+>|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994664 | TestIntrusionPolicyToDelete | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
+
+
+### 46. ciscofp-delete-intrusion-policy
+***
+Deletes the intrusion policy associated with the specified ID.
+
+
+#### Base Command
+
+`ciscofp-delete-intrusion-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| intrusion_policy_id | Identifier for intrusion policy. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!ciscofp-delete-intrusion-policy intrusion_policy_id=005056A6-3FB1-0ed3-0000-004294994664```
+#### Human Readable Output
+
+>### Deleted Intrusion Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|
+>|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994664 | TestIntrusionPolicyToDelete | DETECTION | 005056A6-3FB1-0ed3-0000-004294969533 |
+
+
+### 47. ciscofp-list-intrusion-rule-group
+***
+Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET arguments: rule_group_id | LIST arguments: expanded_response, filter, limit, page, page_size.
+
+
+#### Base Command
+
+`ciscofp-list-intrusion-rule-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_group_id | Identifier of a Snort 3 intrusion rulegroup. | Optional | 
+| expanded_response | If set to true, the response displays a list of objects with additional attributes. Possible values are: True, False. | Optional | 
+| filter | Value can be any of the formats: "name:Browser/Firefox" or "currentSecurityLevel:DISABLED" or "showonlyparents:{true/false}" or "includeCount:true". | Optional | 
+| limit | Number of items to return. | Optional | 
+| page | Page number to return. | Optional | 
+| page_size | Number of items to return in a page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRuleGroup.name | String | Name of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.id | String | Unique identifier of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.type | String | Type of the response object. This value is always IntrusionRuleGroup. | 
+| CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type | String | Domain type | 
+| CiscoFP.IntrusionRuleGroup.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | Domain type | 
+
+#### Command example
+```!ciscofp-list-intrusion-rule-group limit=3```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRuleGroup": [
+            {
+                "id": "a836656c-4557-11ed-887b-6a7885e25dab",
+                "name": "Local Rules",
+                "type": "IntrusionRuleGroup"
+            },
+            {
+                "id": "20deb0ce-82c9-55c2-891c-46662ae4ff37",
+                "name": "Browser",
+                "type": "IntrusionRuleGroup"
+            },
+            {
+                "id": "bef5d060-3e6b-5ef1-ba2f-d17e92b1c04e",
+                "name": "Server",
+                "type": "IntrusionRuleGroup"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched Intrusion Rule Group Information
+>|ID|Name|
+>|---|---|
+>| a836656c-4557-11ed-887b-6a7885e25dab | Local Rules |
+>| 20deb0ce-82c9-55c2-891c-46662ae4ff37 | Browser |
+>| bef5d060-3e6b-5ef1-ba2f-d17e92b1c04e | Server |
+
+
+### 48. ciscofp-create-intrusion-rule-group
+***
+Creates or overrides the Snort3 Intrusion rule group with the specified parameters.
+
+
+#### Base Command
+
+`ciscofp-create-intrusion-rule-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the Snort 3 intrusion rulegroup. | Required | 
+| description | Description of the Snort 3 intrusion rulegroup. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRuleGroup.name | String | Name of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.id | String | Unique identifier of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.type | String | Type of the response object. This value is always IntrusionRuleGroup. | 
+| CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type | String | Domain type | 
+| CiscoFP.IntrusionRuleGroup.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | Domain type | 
+
+#### Command example
+```!ciscofp-create-intrusion-rule-group name=TestRuleGroupDocs2```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRuleGroup": {
+            "id": "005056A6-3FB1-0ed3-0000-004294995782",
+            "isSystemDefined": false,
+            "name": "TestRuleGroupDocs2",
+            "type": "IntrusionRuleGroup"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Intrusion Rule Group Information
+>|ID|Name|
+>|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294995782 | TestRuleGroupDocs2 |
+
+
+### 49. ciscofp-update-intrusion-rule-group
+***
+Modifies the Snort3 Intrusion rule group with the specified ID.
+
+
+#### Base Command
+
+`ciscofp-update-intrusion-rule-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_group_id | Identifier of a Snort 3 intrusion rulegroup. | Required | 
+| name | Name of the Snort 3 intrusion rulegroup. | Required | 
+| description | Description of the Snort 3 intrusion rulegroup. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.IntrusionRuleGroup.name | String | Name of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.id | String | Unique identifier of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.type | String | Type of the response object. This value is always IntrusionRuleGroup. | 
+| CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type | String | Domain type | 
+| CiscoFP.IntrusionRuleGroup.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.name | String | lastUser name | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.id | String | lastUser ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.lastUser.type | String | lastUser type | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.name | String | Domain name | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.id | String | Domain ID | 
+| CiscoFP.IntrusionRuleGroup.metadata.domain.type | String | Domain type | 
+
+#### Command example
+```!ciscofp-update-intrusion-rule-group rule_group_id=005056A6-3FB1-0ed3-0000-004294994731 name=TestRuleGroupToDelete```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "IntrusionRuleGroup": {
+            "description": " ",
+            "id": "005056A6-3FB1-0ed3-0000-004294994731",
+            "isSystemDefined": false,
+            "name": "TestRuleGroupToDelete",
+            "type": "IntrusionRuleGroup"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Intrusion Rule Group Information
+>|ID|Name|Description|
+>|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994731 | TestRuleGroupToDelete |   |
+
+
+### 50. ciscofp-delete-intrusion-rule-group
+***
+Deletes the specified Snort3 intrusion rule group.
+
+
+#### Base Command
+
+`ciscofp-delete-intrusion-rule-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_group_id | Identifier of a Snort 3 intrusion rulegroup. | Required | 
+| delete_related_rules | Boolean value for deleting orphan rules. Mandatory if custom rulegroup has unique/unshared rules which becomes orphan after custom rule Group delete. Possible values are: True, False. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!ciscofp-delete-intrusion-rule-group rule_group_id=005056A6-3FB1-0ed3-0000-004294994731```
+#### Human Readable Output
+
+>### Deleted Intrusion Rule Group Information
+>|ID|Name|Description|
+>|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994731 | TestRuleGroupToDelete |   |
+
+
+### 51. ciscofp-list-network-analysis-policy
+***
+Retrieves the network analysis policy with the specified ID. If no ID is specified, retrieves list of all network analysis policies. GET arguments: network_analysis_policy_id | LIST arguments: expanded_response, limit, page, page_size.
+
+
+#### Base Command
+
+`ciscofp-list-network-analysis-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_analysis_policy_id | Unique identifier of the Network Analysis Policy. | Optional | 
+| expanded_response | If set to true, the response displays a list of objects with additional attributes. Possible values are: True, False. | Optional | 
+| limit | Number of items to return. | Optional | 
+| page | Page number to return. | Optional | 
+| page_size | Number of items to return in a page. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.NetworkAnalysisPolicy.name | String | Name of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.id | String | Unique identifier of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.type | String | Type must be NetworkAnalysisPolicy. | 
+| CiscoFP.NetworkAnalysisPolicy.description | String | Description of the Network Analysis Policy | 
+| CiscoFP.NetworkAnalysisPolicy.version | String | Version number of the response object. | 
+| CiscoFP.NetworkAnalysisPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.isSystemDefined | Boolean | Specifies if the policy is system defined. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id | String | ID of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type | String | Type of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name | String | Name of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id | String | ID of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type | String | Type of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-list-network-analysis-policy limit=3```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "NetworkAnalysisPolicy": [
+            {
+                "id": "db7dc865-16b5-5eab-8b5a-c85f3a61690b",
+                "name": "Balanced Security and Connectivity",
+                "type": "NetworkAnalysisPolicy"
+            },
+            {
+                "id": "ae21223c-eb33-5ff0-bbe0-80c702115d13",
+                "name": "Connectivity Over Security",
+                "type": "NetworkAnalysisPolicy"
+            },
+            {
+                "id": "8bda2bed-f951-5cca-9d2a-96b9660a4fb1",
+                "name": "Maximum Detection",
+                "type": "NetworkAnalysisPolicy"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Fetched Network Analysis Policy Information
+>|ID|Name|
+>|---|---|
+>| db7dc865-16b5-5eab-8b5a-c85f3a61690b | Balanced Security and Connectivity |
+>| ae21223c-eb33-5ff0-bbe0-80c702115d13 | Connectivity Over Security |
+>| 8bda2bed-f951-5cca-9d2a-96b9660a4fb1 | Maximum Detection |
+
+
+### 52. ciscofp-create-network-analysis-policy
+***
+Creates a network analysis policy.
+
+
+#### Base Command
+
+`ciscofp-create-network-analysis-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the Network Analysis Policy. | Required | 
+| description | Description of the Network Analysis Policy. | Optional | 
+| inspection_mode | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. Possible values are: DETECTION, PREVENTION. | Optional | 
+| basepolicy_id | Unique identifier representing the base network analysis policy. Can be acquired from: ciscofp-list-network-analysis-policy. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.NetworkAnalysisPolicy.name | String | Name of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.id | String | Unique identifier of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.type | String | Type must be NetworkAnalysisPolicy. | 
+| CiscoFP.NetworkAnalysisPolicy.description | String | Description of the Network Analysis Policy | 
+| CiscoFP.NetworkAnalysisPolicy.version | String | Version number of the response object. | 
+| CiscoFP.NetworkAnalysisPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.isSystemDefined | Boolean | Specifies if the policy is system defined. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id | String | ID of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type | String | Type of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name | String | Name of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id | String | ID of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type | String | Type of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-create-network-analysis-policy basepolicy_id=005056A6-3FB1-0ed3-0000-004294973459 name=TestNetworkAnalysisDocs2```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "NetworkAnalysisPolicy": {
+            "basePolicy": {
+                "id": "005056A6-3FB1-0ed3-0000-004294973459",
+                "name": "Test2",
+                "type": "NetworkAnalysisPolicy"
+            },
+            "id": "005056A6-3FB1-0ed3-0000-004294995834",
+            "inspectionMode": "PREVENTION",
+            "inspectorConfig": {
+                "type": "InspectorConfig"
+            },
+            "inspectorOverrideConfig": {
+                "type": "InspectorOverrideConfig"
+            },
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                },
+                "mappedPolicy": {
+                    "id": "931462a0-7645-11ed-acca-d35385e25dab",
+                    "inspectionMode": "DETECTION",
+                    "name": "TestNetworkAnalysisDocs2",
+                    "snortEngine": "SNORT2",
+                    "type": "NetworkAnalysisPolicy"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "name": "TestNetworkAnalysisDocs2",
+            "type": "NetworkAnalysisPolicy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Network Analysis Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
+>|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294995834 | TestNetworkAnalysisDocs2 | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |
+
+
+### 53. ciscofp-update-network-analysis-policy
+***
+Modifies the network analysis policy associated with the specified ID.
+
+
+#### Base Command
+
+`ciscofp-update-network-analysis-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_analysis_policy_id | Unique identifier of the Network Analysis Policy. | Required | 
+| replicate_inspection_mode | Flag to replicate inspection mode from snort 3 version to snort 2 version. Possible values are: True, False. | Optional | 
+| name | Name of the Network Analysis Policy. | Optional | 
+| description | Description of the Network Analysis Policy. | Optional | 
+| inspection_mode | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. Possible values are: DETECTION, PREVENTION. | Optional | 
+| basepolicy_id | Unique identifier representing the base network analysis policy. Can be acquired from: ciscofp-list-network-analysis-policy. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CiscoFP.NetworkAnalysisPolicy.name | String | Name of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.id | String | Unique identifier of the Network Analysis Policy. | 
+| CiscoFP.NetworkAnalysisPolicy.type | String | Type must be NetworkAnalysisPolicy. | 
+| CiscoFP.NetworkAnalysisPolicy.description | String | Description of the Network Analysis Policy | 
+| CiscoFP.NetworkAnalysisPolicy.version | String | Version number of the response object. | 
+| CiscoFP.NetworkAnalysisPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.isSystemDefined | Boolean | Specifies if the policy is system defined. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name | String | Name of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id | String | ID of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type | String | Type of the mapped policy. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode | String | Indicates the inspection mode. Can be either DETECTION or PREVENTION. Only applicable for Snort 3 engine. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert | Number | Alert rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block | Number | Block rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled | Number | Disabled rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden | Number | Overridden rule count | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy | Number | Number of access policy | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices | Number | Number of devices | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name | String | Name of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id | String | ID of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type | String | Type of the lastUser | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.name | String | Name of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.id | String | ID of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.domain.type | String | Type of the domain | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine | String | Indicates the Snort engine version. Can be either SNORT2 or SNORT3 | 
+| CiscoFP.NetworkAnalysisPolicy.metadata.timestamp | Number | Metadata timestamp | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type | String | Response object associated with resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.name | String | User chosen resource name. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.id | String | Unique identifier representing resource. | 
+| CiscoFP.NetworkAnalysisPolicy.basePolicy.type | String | Response object associated with resource. | 
+
+#### Command example
+```!ciscofp-update-network-analysis-policy network_analysis_policy_id=005056A6-3FB1-0ed3-0000-004294994745 name=TestNetworkAnalysisToDelete```
+#### Context Example
+```json
+{
+    "CiscoFP": {
+        "NetworkAnalysisPolicy": {
+            "basePolicy": {
+                "id": "005056A6-3FB1-0ed3-0000-004294973459",
+                "name": "Test2",
+                "type": "NetworkAnalysisPolicy"
+            },
+            "id": "005056A6-3FB1-0ed3-0000-004294994745",
+            "inspectionMode": "PREVENTION",
+            "isSystemDefined": false,
+            "metadata": {
+                "domain": {
+                    "id": "e276abec-e0f2-11e3-8169-6d9ed49b625f",
+                    "name": "Global",
+                    "type": "Domain"
+                },
+                "mappedPolicy": {
+                    "id": "41b5e1f2-7642-11ed-a534-d05385e25dab",
+                    "inspectionMode": "DETECTION",
+                    "name": "TestNetworkAnalysisToDelete",
+                    "snortEngine": "SNORT2",
+                    "type": "NetworkAnalysisPolicy"
+                },
+                "snortEngine": "SNORT3"
+            },
+            "name": "TestNetworkAnalysisToDelete",
+            "type": "NetworkAnalysisPolicy"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated Network Analysis Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
+>|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994745 | TestNetworkAnalysisToDelete | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |
+
+
+### 54. ciscofp-delete-network-analysis-policy
+***
+Deletes the network analysis policy associated with the specified ID.
+
+
+#### Base Command
+
+`ciscofp-delete-network-analysis-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| network_analysis_policy_id | Unique identifier of the Network Analysis Policy. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!ciscofp-delete-network-analysis-policy network_analysis_policy_id=005056A6-3FB1-0ed3-0000-004294994745```
+#### Human Readable Output
+
+>### Deleted Network Analysis Policy Information
+>|ID|Name|Inspection Mode|Base Policy ID|Base Policy Name|
+>|---|---|---|---|---|
+>| 005056A6-3FB1-0ed3-0000-004294994745 | TestNetworkAnalysisToDelete | PREVENTION | 005056A6-3FB1-0ed3-0000-004294973459 | Test2 |

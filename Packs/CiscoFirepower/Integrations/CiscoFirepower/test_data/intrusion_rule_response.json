@@ -1,0 +1,25 @@
+{
+    "type": "IntrusionRule",
+    "id": "id",
+    "name": "2000:1000000",
+    "gid": 2000,
+    "sid": 1000000,
+    "revision": 4,
+    "isSystemDefined": false,
+    "msg": "(cip) CIP data is non-conforming to ODVA standard",
+    "ruleData": "alert ( gid:2000; sid:1000000; rev:4; msg:\"(cip) CIP data is non-conforming to ODVA standard\"; metadata:rule-type preproc; classtype:protocol-command-decode; )",
+    "metadata": {
+        "domain": {
+            "name": "Global",
+            "id": "metadata_domain_id",
+            "type": "Domain"
+        }
+    },
+    "ruleGroups": [
+        {
+            "name": "TestGroup",
+            "id": "ruleGroups[0]_id",
+            "type": "IntrusionRuleGroup"
+        }
+    ]
+}
