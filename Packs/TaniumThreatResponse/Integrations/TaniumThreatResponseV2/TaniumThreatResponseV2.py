@@ -424,7 +424,7 @@ def test_module(client, data_args):
         raise ValueError(f'Please check your credentials and try again. Error is:\n{str(e)}')
 
 
-def fetch_incidents(client, alerts_states_to_retrieve, label_names_to_retrieve, last_run, fetch_time, max_fetch):
+def fetch_incidents(client, alerts_states_to_retrieve, label_name_to_retrieve, last_run, fetch_time, max_fetch):
     """
     Fetch events from this integration and return them as Demisto incidents
 

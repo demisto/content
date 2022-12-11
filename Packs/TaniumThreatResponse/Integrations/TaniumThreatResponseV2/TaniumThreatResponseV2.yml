@@ -39,11 +39,10 @@ configuration:
   - suppressed
   required: false
   type: 16
-- display: Label names to filter by in fetch incidents command. Empty list won't filter the incidents by label name.
+- display: Label name to filter by in fetch incidents command. Leave empty to not filter the incidents by label name.
   name: filter_by_label_name
   required: false
   type: 0
-  additionalinfo: A comma-separated list of label names
   defaultvalue: ''
 - display: Trust any certificate (not secure)
   name: insecure
