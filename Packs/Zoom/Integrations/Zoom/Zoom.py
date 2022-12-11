@@ -106,7 +106,9 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
         except DemistoException as e:
-            if 'Invalid access token' in e.message or "Access token is expired." in e.message or "Access token is expired." in e.message:
+            if ('Invalid access token' in e.message
+                or "Access token is expired." in e.message
+                    or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
             return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
@@ -162,8 +164,9 @@ class Client(BaseClient):
         # TODO why args to number dose not worke??
         if "page_size" in args:
             page_size = int(args['page_size'])
+
         if limit:
-            limit = arg_to_number(args['limit'])
+            #limit = arg_to_number(args['limit'])
 
             if limit and (user_id or args.get("page_size")):
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")

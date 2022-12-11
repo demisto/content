@@ -2,6 +2,7 @@ from Zoom import Client
 from freezegun import freeze_time
 import Zoom
 import pytest
+from CommonServerPython import DemistoException
 
 
 def mock_client_ouath(mocker):
@@ -41,9 +42,9 @@ def test_get_oauth_token__if_not_ctx(mocker, result):
            client
         When -
             asking for the latest token's generation_time and the result is None
-            or empty 
+            or empty
         Then -
-            Validate that a new token will be generated.            
+            Validate that a new token will be generated.
     """
     mocker.patch.object(Zoom, "get_integration_context",
                         return_value={"generation_time": result,
@@ -114,3 +115,129 @@ def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
                     client_id="mockclient", client_secret="mocksecret")
     assert generate_token_mock.called
     assert client.access_token != "old token"
+
+
+# def test_http_request___when_raising_invalid_token_message(mocker):
+#     """
+#   Given -
+#      client
+#   When -
+#       asking for a connection when the first try fails, and return an
+#       'Invalid access token' error messoge
+#   Then -
+#       Validate that a retry to connect with a new token has been done
+# """
+
+#     m = mocker.patch.object(Zoom.BaseClient, "_http_request",
+#                             side_effect=DemistoException('Invalid access token'))
+#     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
+#     mocker.patch.object(Zoom, "get_integration_context",
+#                         return_value={"generation_time": "1988-03-03T10:50:00",
+#                                       'oauth_token': "old token"})
+#     try:
+#         client = Client(base_url='https://test.com', account_id="mockaccount",
+#                         client_id="mockclient", client_secret="mocksecret")
+#     except Exception as e:
+#         pass
+#     assert m.call_count == 2
+#     assert generate_token_mock.called
+#     assert client.access_token != "old token"
+#     # TODO
+#     #infinate loop
+
+
+def test_zoom_user_list__limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a limit of results
+        Then -
+            Validate that a func that runs a pagination has been called
+    """
+
+    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
+
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_user_list(limit=50)
+    assert manual_user_list_pagination_mock.called
+
+
+def test_zoom_user_list__no_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for one page results (the default)
+        Then -
+            Validate that a func that runs a pagination has not been called
+            Validate that a func that returns the first page is called
+    """
+    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
+    user_list_basic_request_mock = mocker.patch.object(Client, "user_list_basic_request")
+
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_user_list()
+    assert not manual_user_list_pagination_mock.called
+    assert user_list_basic_request_mock.called
+
+
+def test_zoom_user_list__limit_and_page_size(mocker):
+    """
+        When -
+            asking for a limit of results and for a specific page size
+        Then -
+            Validate that an error message will be returned
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    with pytest.raises(DemistoException) as e:
+        client.zoom_user_list(limit=50, page_size=10)
+    assert e == "Too money arguments.if you choose a limit, don't enter a user_id or page_size"
+ # TODO
+  # i have a problem, becase i check the args, not the func params
+
+
+def test_zoom_user_list__user_id(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a specific user
+        Then -
+            Validate that the API call will be for a specific user
+    """
+    url_suffix = "mockSuffix"
+   # mocker.patch.object(Client, "zoom_user_list", return_value=url_suffix)
+
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    res = client.zoom_user_list(user_id="bla@bla.com")
+    assert url_suffix == "users/{bla@bla.com}"
+
+
+def test_manual_user_list_pagination__small_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            limitm > 0 < MAX_RECORDS_PER_PAGE
+        Then -
+            Validate that the page_size == limit
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    a = client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=5,
+                                           status="all", role_id=None)
+    assert page_size == limit
+    #TODO hoe to check a varible in a finction?
