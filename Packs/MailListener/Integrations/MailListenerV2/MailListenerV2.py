@@ -147,7 +147,7 @@ class Email(object):
         """
         date = self.date
         if not date:
-            demisto.warning(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
+            demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
             date = datetime.now(timezone.utc).isoformat()
         else:
             date = self.date.isoformat()
