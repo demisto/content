@@ -220,8 +220,7 @@ touch queue
 touch ChosenMachine
 touch XSIAMEnvVariables
 
-$ cat > $GCS_LOCKS_PATH/$TEST_MACHINES_LIST
-qa2-test-9997236697754
+echo -e "qa2-test-9997236697754" > "$GCS_LOCKS_PATH/$TEST_MACHINES_LIST"
 
 # copy TestMachines locally for faster perf
 gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. 3 machines names.
