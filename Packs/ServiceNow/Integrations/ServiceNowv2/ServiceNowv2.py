@@ -1442,7 +1442,7 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
 
     use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
 
-    if use_display_value:  # make query using sysparm_display_value=true (requires less permissions)
+    if use_display_value:  # make query using sysparm_display_value=all (requires less permissions)
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'all'}
