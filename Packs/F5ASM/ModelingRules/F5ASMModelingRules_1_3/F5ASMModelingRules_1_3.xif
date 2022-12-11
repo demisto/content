@@ -27,7 +27,7 @@ alter
         xdm.target.ipv4 = ipv4dest,
         xdm.target.ipv6 =ipv6dest,
         xdm.observer.name = dvchost,
-        xdm.network.http.response_code = cn1,
+        xdm.network.http.response_code = to_string(cn1),
         xdm.network.http.method = requestMethod,
         xdm.network.http.url = request,
         xdm.network.http.referrer = referrer,
