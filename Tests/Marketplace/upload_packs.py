@@ -980,7 +980,9 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                                                                storage_base_path, overridden_upload_path=upload_path)
                     logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
                                  f"uploaded successfully")
-                if not task_status:
+                if task_status:
+                    pack.status = PackStatus.SUCCESS
+                else:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
         except Exception as e:
