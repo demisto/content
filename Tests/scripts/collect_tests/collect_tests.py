@@ -791,10 +791,11 @@ class BranchTestCollector(TestCollector):
                 path,
                 f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
+        content_item = None
         try:
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
-        except IncompatibleMarketplaceException as e:
+        except IncompatibleMarketplaceException:
             if file_type not in MODELING_RULE_COMPONENT_FILES:
                 raise
         except NonDictException:
