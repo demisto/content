@@ -152,6 +152,34 @@ def test_get_collections_command():
     assert result.outputs == [{"Name": "first name", "ID": "first id"}, {"Name": "second name", "ID": "second id"}]
 
 
+no_collections = (False, '24 hours', 'Could not connect to server')
+all_parameters_good = (True, '24 hours', 'ok')
+large_time_interval = (True, '3 days', 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.')
+
+
+@pytest.mark.parametrize('has_collections, initial_interval_input, expected_output',
+                         [no_collections,
+                          all_parameters_good,
+                          large_time_interval,
+                          ])
+def test_command_test_module(has_collections, initial_interval_input, expected_output, mocker):
+    """
+    Given:
+        - All integration parameters
+    When:
+        - Running 'test-module' command
+    Then:
+        - Returns the relevant message according to the given parameters values
+    """
+    mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+    mock_client.collections = [MockCollection("first id", 'first name')] if has_collections else None
+    mocker.patch.object(mock_client, 'build_iterator', return_value=[])
+
+    result = test_module_command(mock_client, initial_interval_input)
+
+    assert result == expected_output
+
+
 less_then_max = ('24 hours', None, '24 hours')
 a_bit_less_then_max = ('44 hours', None, '44 hours')
 more_then_max = ('57 hours', None, MAX_FETCH_INTERVAL)

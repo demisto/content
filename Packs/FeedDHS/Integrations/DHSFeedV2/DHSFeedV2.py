@@ -78,13 +78,14 @@ def fetch_all_collections(client: Taxii2FeedClient, limit: int, initial_interval
 ''' COMMAND FUNCTIONS '''
 
 
-def command_test_module(client: Taxii2FeedClient, initial_interval: str):
+def test_module_command(client: Taxii2FeedClient, initial_interval: str):
     if get_datetime(MAX_FETCH_INTERVAL) > get_datetime(initial_interval):
         return 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.'
 
     if client.collections:
         try:
-            get_indicators_command(client, {'limit': '1', 'added_after': get_limited_interval('6 hours', initial_interval)})  # todo check how much time it runs
+            get_indicators_command(client, {'limit': '1', 'added_after': get_limited_interval('6 hours', initial_interval)})
+            # todo check how much time it runs
         except requests.exceptions.ConnectTimeout:
             return 'Connection Timeout Error - potential reasons might be that the \'Discovery Service URL\' parameter' \
                    ' is incorrect or that the server is not accessible from your host.'
@@ -224,7 +225,7 @@ def main():  # pragma: no cover
 
         start_time = time.time()
         if command == 'test-module':
-            return_results(command_test_module(client, initial_interval))
+            return_results(test_module_command(client, initial_interval))
 
         elif command == 'fetch-indicators':
             last_run_indicators = demisto.getLastRun()
