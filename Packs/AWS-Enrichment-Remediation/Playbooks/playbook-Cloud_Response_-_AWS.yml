@@ -2,7 +2,7 @@ id: Cloud Response - AWS
 version: -1
 name: Cloud Response - AWS
 description: |-
-  This playbook provides response actions to Azure. The following are available for execution automatically/manually:
+  This playbook provides response actions to AWS. The following are available for execution automatically/manually:
    - Resource remediation:
      - Terminate the instance
      - Stop the instance

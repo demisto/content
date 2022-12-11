@@ -1,20 +1,23 @@
-# Uncomment while development
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
+import urllib3
+import requests
+from typing import Any, Dict
+import urllib.parse
+import time
+import json
+import hmac
+import hashlib
+import base64
+
+# register_module_line("CTIX v3", "start", __line__())
+# Uncomment while development=
+
 
 """IMPORTS"""
 
-
-import base64
-import hashlib
-import hmac
-import json
-import time
-import urllib.parse
-from typing import Any, Dict
-
-import requests
-import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -38,7 +41,7 @@ tag_colors = {
     "turquoise": "#00A2C2",
     "pink": "#C341E7",
     "light-red": "#AD6B76",
-    "grey": "#95A1B1"
+    "grey": "#95A1B1",
 }
 
 CTIX_DBOT_MAP = {
@@ -68,7 +71,7 @@ CTIX_DBOT_MAP = {
     "autonomous-system": "custom",
     "cidr": "custom",
     "certificate": "x509-certificate",
-    "url": "url"
+    "url": "url",
 }
 
 REGEX_MAP = {
@@ -100,12 +103,12 @@ class Client(BaseClient):
         self.proxies = proxies
 
     def signature(self, expires: int):
-        '''
+        """
         Signature Generation
 
         :param int expires: Epoch time in which time when signature will expire
         :return str signature : signature queryset
-        '''
+        """
         to_sign = "%s\n%i" % (self.access_id, expires)
         return base64.b64encode(
             hmac.new(
@@ -114,12 +117,12 @@ class Client(BaseClient):
         ).decode("utf-8")
 
     def add_common_params(self, params: dict):
-        '''
+        """
         Add Common Params
 
         :param dict params: Paramters to be added in request
         :return dict: Params dictionary with AccessID, Expires and Signature
-        '''
+        """
         expires = int(time.time() + 5)
         params["AccessID"] = self.access_id
         params["Expires"] = expires
@@ -127,14 +130,14 @@ class Client(BaseClient):
         return params
 
     def get_http_request(self, full_url: str, payload: dict = None, **kwargs):
-        '''
+        """
         GET HTTP Request
 
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
         :return dict: Response object
-        '''
+        """
         kwargs = self.add_common_params(kwargs)
         full_url = full_url + "?" + urllib.parse.urlencode(kwargs)
         headers = {"content-type": "application/json"}
@@ -152,17 +155,17 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f'Error: status-> {status_code!r}; Reason-> {resp.reason!r}]')
+            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def post_http_request(self, full_url: str, payload: dict, params):
-        '''
+        """
         POST HTTP Request
 
         :param str full_url: URL to be called
         :param dict payload: Request body, defaults to None
         :raises DemistoException: If Any error is found will be raised on XSOAR
         :return dict: Response object
-        '''
+        """
         headers = {"content-type": "application/json"}
         params = self.add_common_params(params)
         full_url = full_url + "?" + urllib.parse.urlencode(params)
@@ -180,14 +183,14 @@ class Client(BaseClient):
             response = {"data": resp.json(), "status": status_code}
             return response
         except requests.exceptions.HTTPError:
-            return_error(f'Error: status-> {status_code!r}; Reason-> {resp.reason!r}]')
+            return_error(f"Error: status-> {status_code!r}; Reason-> {resp.reason!r}]")
 
     def test_auth(self):
-        '''
+        """
         Test authentication
 
         :return dict: Returns result for ping
-        '''
+        """
         client_url = self.base_url + "ping/"
         return self.get_http_request(client_url)
 
@@ -272,14 +275,14 @@ class Client(BaseClient):
         )
 
     def get_threat_data(self, page: int, page_size: int, query: str):
-        '''
+        """
         Get Threat Data
 
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :param str query: CQL query for polling specific result
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/list/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
@@ -287,40 +290,40 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload=payload, params=params)
 
     def get_saved_searches(self, page: int, page_size: int):
-        '''
+        """
         Get Saved Searches
 
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/saved-searches/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
         return self.get_http_request(client_url, {}, **params)
 
     def get_server_collections(self, page: int, page_size: int):
-        '''
+        """
         Get Server Collections
 
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "publishing/collection/"
         client_url = self.base_url + url_suffix
         params = {"page": page, "page_size": page_size}
         return self.get_http_request(client_url, {}, **params)
 
     def get_actions(self, page: int, page_size: int, params: Dict[str, Any]):
-        '''
+        """
         Get Actions
 
         :param int page: Paginated number from where data will be polled
         :param int page_size: Size of the result
         :param Dict[str, Any] params: Params to be send with request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/actions/"
         client_url = self.base_url + url_suffix
         params["page"] = page
@@ -328,13 +331,13 @@ class Client(BaseClient):
         return self.get_http_request(client_url, **params)
 
     def add_indicator_as_false_positive(self, object_ids: list[str], object_type: str):
-        '''
+        """
         Add Indicator as False Positive
 
         :param list[str] object_ids: Object IDs of the IOCs
         :param str object_type: Object type of the IOCs
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/bulk-action/false_positive/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
@@ -342,13 +345,13 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, {})
 
     def add_ioc_to_manual_review(self, object_ids: list[str], object_type: str):
-        '''
+        """
         Add IOC to Manual Review
 
         :param list[str] object_ids: Object IDs of the IOCs
         :param str object_type: Object type of the IOCs
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/bulk-action/manual_review/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
@@ -356,13 +359,13 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, {})
 
     def deprecate_ioc(self, object_ids: str, object_type: str):
-        '''
+        """
         Deprecate IOC
 
         :param str object_ids: Object ID of the IOC
         :param str object_type: Object type of the IOC
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/bulk-action/deprecate/"
         client_url = self.base_url + url_suffix
         payload = {"object_ids": object_ids, "object_type": object_type, "data": {}}
@@ -370,14 +373,14 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, {})
 
     def add_analyst_tlp(self, object_id: str, object_type: str, data):
-        '''
+        """
         Add Analyst TLP
 
         :param str object_id: Object ID of the IOCs
         :param str object_type: _Object type of the IOCs
         :param dict data: data to be send over POST request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/action/analyst_tlp/"
         client_url = self.base_url + url_suffix
         payload = {"object_id": object_id, "object_type": object_type, "data": data}
@@ -385,14 +388,14 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, {})
 
     def add_analyst_score(self, object_id: str, object_type, data):
-        '''
+        """
         Add Analyst Score
 
         :param str object_id: Object ID of the IOCs
         :param str object_type: Object type of the IOCs
         :param dict data: Request body to be send over POST request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/action/analyst_score/"
         client_url = self.base_url + url_suffix
         payload = {"object_id": object_id, "object_type": object_type, "data": data}
@@ -400,7 +403,7 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, {})
 
     def saved_result_set(self, page: int, page_size: int, label_name: str, query: str):
-        '''
+        """
         Saved Result Set
 
         :param int page: Paginated number from where data will be polled
@@ -408,7 +411,7 @@ class Client(BaseClient):
         :param str label_name: Label name used to get the data from the rule
         :param str query: CQL query to get specific data
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/list/"
         client_url = self.base_url + url_suffix
         params = {}
@@ -429,7 +432,7 @@ class Client(BaseClient):
         tag_id: str,
         operation: str,
     ):
-        '''
+        """
         Tag Indicator Updation
 
         :param str q: query to be send
@@ -440,7 +443,7 @@ class Client(BaseClient):
         :param str tag_id: Tag ID that will be removed or added
         :param str operation: Addition or Removal of tag operation
         :return dict: Returns response for query
-        '''
+        """
         tags_data = self.get_indicator_tags(
             object_type, object_id, {"page": page, "page_size": page_size}
         )["data"]
@@ -464,93 +467,102 @@ class Client(BaseClient):
         return self.post_http_request(client_url, payload, params)
 
     def search_for_tag(self, params: dict):
-        '''
+        """
         Search for tag
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/tags/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_indicator_details(self, object_type: str, object_id: str, params: dict):
-        '''
+        """
         Get Indicator Details
 
         :param str object_type: Object type of the IOCs
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/basic/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_indicator_tags(self, object_type: str, object_id: str, params: dict):
-        '''
+        """
         Get Indicator Tags
 
         :param str object_type: Object type of the IOCs
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/quick-actions/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_indicator_relations(self, object_type: str, object_id: str, params: dict):
-        '''
+        """
         Get Indicator Relations
 
         :param str object_type: Object type of the IOCs
         :param str object_id: Object ID of the IOCs
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = f"ingestion/threat-data/{object_type}/{object_id}/relations/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_indicator_observations(self, params: dict):
-        '''
+        """
         Get Indicator Observations
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/source-references/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_conversion_feed_source(self, params: dict):
-        '''
+        """
         Get Conversion Feed Source
 
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "conversion/feed-sources/"
         client_url = self.base_url + url_suffix
         return self.get_http_request(client_url, **params)
 
     def get_lookup_threat_data(
-        self, object_type: str, object_names: list, params: dict
+        self, object_type: str, ioc_type: list, object_names: list, params: dict
     ):
-        '''
+        """
         Get Lookup Threat Data
 
-        :param str object_type: Object type of the IOCs
+        :param str object_type: (SDO) Object type of the IOCs
+        :param list ioc_type: the IOC type of the Indicator (eg. URL, MD5, IPv4)
         :param list object_names: Indicator/IOCs names
         :param dict params: Paramters to be added in request
         :return dict: Returns response for query
-        '''
+        """
         url_suffix = "ingestion/threat-data/list/"
+        query = f"type={object_type}"
+
+        if len(ioc_type) == 1:
+            query += f" AND ioc_type IN ('{ioc_type[0]}')"
+        elif len(ioc_type) > 1:
+            query += f" AND ioc_type IN {tuple(ioc_type)}"
+
         if len(object_names) == 1:
-            query = f"type={object_type} AND value IN ('{object_names[0]}')"
+            query += f" AND value IN ('{object_names[0]}')"
         else:
-            query = f"type={object_type} AND value IN {tuple(object_names)}"
+            query += f" AND value IN {tuple(object_names)}"
+
         payload = {"query": query}
         client_url = self.base_url + url_suffix
         return self.post_http_request(client_url, payload, params)
@@ -575,9 +587,9 @@ def to_dbot_score(ctix_score: int) -> int:
 
 
 def no_result_found(data: Any):
-    if data in ('', ' ', None, [], {}):
+    if data in ("", " ", None, [], {}):
         result = CommandResults(
-            readable_output='No results were found',
+            readable_output="No results were found",
             outputs=None,
             raw_response=None,
         )
@@ -587,46 +599,56 @@ def no_result_found(data: Any):
 
 
 def check_for_empty_variable(value: str, default: Any):
-    return value if value not in ('', ' ', None) else default
+    return value if value not in ("", " ", None) else default
 
 
-def iter_dbot_score(data: list, score_key: str, type_key: str, table_name: str,
-                    output_prefix: str, outputs_key_field: str):
+def iter_dbot_score(
+    data: list,
+    score_key: str,
+    type_key: str,
+    table_name: str,
+    output_prefix: str,
+    outputs_key_field: str,
+    reliability: str = None
+):
     final_data = []
     for value in data:
         if value[type_key] is not None:
             indicator_type = CTIX_DBOT_MAP[value[type_key]]
             score = to_dbot_score(value.get(score_key, 0))
-            if indicator_type == 'ip':
+            if indicator_type == "ip":
                 dbot_score = Common.DBotScore(
                     indicator=value.get("id"),
                     indicator_type=DBotScoreType.IP,
-                    integration_name='CTIX',
-                    score=score
+                    integration_name="CTIX",
+                    score=score,
+                    reliability=reliability
                 )
                 ip_standard_context = Common.IP(
-                    ip=value.get("name"),
-                    asn=value.get("asn"),
-                    dbot_score=dbot_score
+                    ip=value.get("name"), asn=value.get("asn"), dbot_score=dbot_score
                 )
-                final_data.append(CommandResults(
-                    readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                    outputs_prefix=output_prefix,
-                    outputs_key_field=outputs_key_field,
-                    outputs=value,
-                    indicator=ip_standard_context,
-                    raw_response=value
-                ))
-            elif indicator_type == 'file':
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        indicator=ip_standard_context,
+                        raw_response=value,
+                    )
+                )
+            elif indicator_type == "file":
                 dbot_score = Common.DBotScore(
                     indicator=value.get("id"),
                     indicator_type=DBotScoreType.FILE,
-                    integration_name='CTIX',
-                    score=score
+                    integration_name="CTIX",
+                    score=score,
+                    reliability=reliability
                 )
                 file_standard_context = Common.File(
-                    name=value.get("name"),
-                    dbot_score=dbot_score
+                    name=value.get("name"), dbot_score=dbot_score
                 )
                 file_key = value.get("name")
                 hash_type = value.get("attribute_field", "Unknown").lower()
@@ -639,87 +661,109 @@ def iter_dbot_score(data: list, score_key: str, type_key: str, table_name: str,
                 elif hash_type == "sha-512":
                     file_standard_context.sha512 == file_key
 
-                final_data.append(CommandResults(
-                    readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                    outputs_prefix=output_prefix,
-                    outputs_key_field=outputs_key_field,
-                    outputs=value,
-                    indicator=file_standard_context,
-                    raw_response=value
-                ))
-            elif indicator_type == 'domain':
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        indicator=file_standard_context,
+                        raw_response=value,
+                    )
+                )
+            elif indicator_type == "domain":
                 dbot_score = Common.DBotScore(
                     indicator=value.get("id"),
                     indicator_type=DBotScoreType.DOMAIN,
-                    integration_name='CTIX',
-                    score=score
+                    integration_name="CTIX",
+                    score=score,
+                    reliability=reliability
                 )
                 domain_standard_context = Common.Domain(
-                    domain=value.get("name"),
-                    dbot_score=dbot_score
+                    domain=value.get("name"), dbot_score=dbot_score
                 )
-                final_data.append(CommandResults(
-                    readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                    outputs_prefix=output_prefix,
-                    outputs_key_field=outputs_key_field,
-                    outputs=value,
-                    indicator=domain_standard_context,
-                    raw_response=value
-                ))
-            elif indicator_type == 'email':
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        indicator=domain_standard_context,
+                        raw_response=value,
+                    )
+                )
+            elif indicator_type == "email":
                 dbot_score = Common.DBotScore(
                     indicator=value.get("id"),
                     indicator_type=DBotScoreType.EMAIL,
-                    integration_name='CTIX',
-                    score=score
+                    integration_name="CTIX",
+                    score=score,
+                    reliability=reliability
                 )
                 email_standard_context = Common.Domain(
-                    domain=value.get("name"),
-                    dbot_score=dbot_score
+                    domain=value.get("name"), dbot_score=dbot_score
                 )
-                final_data.append(CommandResults(
-                    readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                    outputs_prefix=output_prefix,
-                    outputs_key_field=outputs_key_field,
-                    outputs=value,
-                    indicator=email_standard_context,
-                    raw_response=value
-                ))
-            elif indicator_type == 'url':
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        indicator=email_standard_context,
+                        raw_response=value,
+                    )
+                )
+            elif indicator_type == "url":
                 dbot_score = Common.DBotScore(
                     indicator=value.get("id"),
                     indicator_type=DBotScoreType.URL,
-                    integration_name='CTIX',
+                    integration_name="CTIX",
                     score=score,
+                    reliability=reliability
                 )
                 url_standard_context = Common.URL(
-                    url=value.get("name"),
-                    dbot_score=dbot_score
+                    url=value.get("name"), dbot_score=dbot_score
                 )
-                final_data.append(CommandResults(
-                    readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                    outputs_prefix=output_prefix,
-                    outputs_key_field=outputs_key_field,
-                    outputs=value,
-                    indicator=url_standard_context,
-                    raw_response=value
-                ))
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        indicator=url_standard_context,
+                        raw_response=value,
+                    )
+                )
             else:  # indicator_type == 'custom'
-                final_data.append(CommandResults(
+                final_data.append(
+                    CommandResults(
+                        readable_output=tableToMarkdown(
+                            table_name, value, removeNull=True
+                        ),
+                        outputs_prefix=output_prefix,
+                        outputs_key_field=outputs_key_field,
+                        outputs=value,
+                        raw_response=value,
+                    )
+                )
+        else:
+            final_data.append(
+                CommandResults(
                     readable_output=tableToMarkdown(table_name, value, removeNull=True),
                     outputs_prefix=output_prefix,
                     outputs_key_field=outputs_key_field,
                     outputs=value,
-                    raw_response=value
-                ))
-        else:
-            final_data.append(CommandResults(
-                readable_output=tableToMarkdown(table_name, value, removeNull=True),
-                outputs_prefix=output_prefix,
-                outputs_key_field=outputs_key_field,
-                outputs=value,
-                raw_response=value
-            ))
+                    raw_response=value,
+                )
+            )
     return final_data
 
 
@@ -768,7 +812,7 @@ def get_tags_command(client: Client, args=Dict[str, Any]) -> List[CommandResults
     page = check_for_empty_variable(page, 1)
     page_size = args["page_size"]
     page_size = check_for_empty_variable(page_size, 10)
-    query = args.get("q", '')
+    query = args.get("q", "")
     response = client.get_tags(page, page_size, query)
     tags_list = response.get("data", {}).get("results", [])
     tags_list = no_result_found(tags_list)
@@ -804,7 +848,9 @@ def delete_tag_command(client: Client, args: dict) -> CommandResults:
         return final_result
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Tag Response", final_result, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Tag Response", final_result, removeNull=True
+            ),
             outputs_prefix="CTIX.DeleteTag",
             outputs_key_field="result",
             outputs=final_result,
@@ -814,13 +860,13 @@ def delete_tag_command(client: Client, args: dict) -> CommandResults:
 
 
 def whitelist_iocs_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    '''
+    """
     Whitelist IOCs command
 
     :Description Whitelist IOCs for a given value
     :param Dict[str, Any] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     ioc_type = args.get("type")
     values = args.get("values")
     values = argToList(values)
@@ -865,7 +911,9 @@ def get_whitelist_iocs_command(
         for ioc in ioc_list:
             results.append(
                 CommandResults(
-                    readable_output=tableToMarkdown("Whitelist IOC", ioc, removeNull=True),
+                    readable_output=tableToMarkdown(
+                        "Whitelist IOC", ioc, removeNull=True
+                    ),
                     outputs_prefix="CTIX.IOC",
                     outputs_key_field="value",
                     outputs=ioc,
@@ -897,7 +945,9 @@ def remove_whitelisted_ioc_command(
         return results
 
 
-def get_threat_data_command(client: Client, args=Dict[str, Any]) -> List[CommandResults]:
+def get_threat_data_command(
+    client: Client, args=Dict[str, Any]
+) -> List[CommandResults]:
     """
     get_threat_data: List thread data and allow query
     """
@@ -910,10 +960,20 @@ def get_threat_data_command(client: Client, args=Dict[str, Any]) -> List[Command
     threat_data_list = response.get("data", {}).get("results", [])
     results = [data for data in threat_data_list]
     results = no_result_found(results)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return [results]
     else:
-        result = iter_dbot_score(results, 'confidence_score', 'ioc_type', "Threat Data", "CTIX.ThreatData", "id")
+        result = iter_dbot_score(
+            results,
+            "confidence_score",
+            "ioc_type",
+            "Threat Data",
+            "CTIX.ThreatData",
+            "id",
+            reliability
+        )
         return result
 
 
@@ -960,7 +1020,9 @@ def get_server_collections_command(
         return results
     else:
         result = CommandResults(
-            readable_output=tableToMarkdown("Server Collection", results, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Server Collection", results, removeNull=True
+            ),
             outputs_prefix="CTIX.ServerCollection",
             outputs_key_field="id",
             outputs=results,
@@ -1004,13 +1066,13 @@ def get_actions_command(client: Client, args=Dict[str, Any]) -> CommandResults:
 def add_indicator_as_false_positive_command(
     client: Client, args: Dict[str, str]
 ) -> CommandResults:
-    '''
+    """
     Add Indicator as False Positive Command
 
     :Description Add Indicator as False Positive for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     object_ids = args.get("object_ids")
     object_type = args.get("object_type", "indicator")
     object_ids = argToList(object_ids)
@@ -1021,7 +1083,9 @@ def add_indicator_as_false_positive_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Indicator False Positive", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Indicator False Positive", data, removeNull=True
+            ),
             outputs_prefix="CTIX.IndicatorFalsePositive",
             outputs=data,
             raw_response=data,
@@ -1033,13 +1097,13 @@ def add_indicator_as_false_positive_command(
 def add_ioc_manual_review_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    '''
+    """
     Add IOC for Manual Review Command
 
     :Description Add IOC for Manual Review for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     object_ids = args.get("object_ids")
     object_type = args.get("object_type", "indicator")
     object_ids = argToList(object_ids)
@@ -1083,13 +1147,13 @@ def deprecate_ioc_command(client: Client, args: dict) -> CommandResults:
 
 
 def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
-    '''
+    """
     Add Analyst TLP Command
 
     :Description Add Analyst TLP for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     object_id = args["object_id"]
     object_type = args["object_type"]
     data = json.loads(args["data"])
@@ -1115,13 +1179,13 @@ def add_analyst_tlp_command(client: Client, args: dict) -> CommandResults:
 
 
 def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
-    '''
+    """
     Add Analyst Score Command
 
     :Description Add Analyst Score for a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     object_id = args["object_id"]
     object_type = args.get("object_type")
     data = json.loads(args.get("data", "{}"))
@@ -1146,13 +1210,13 @@ def add_analyst_score_command(client: Client, args: dict) -> CommandResults:
 
 
 def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    '''
+    """
     Get Saved Result Set data Command
 
     :Description Get Saved Result Set data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args["page"]
     page = check_for_empty_variable(page, 1)
     page_size = args["page_size"]
@@ -1162,23 +1226,33 @@ def saved_result_set_command(client: Client, args: Dict[str, Any]) -> CommandRes
     response = client.saved_result_set(page, page_size, label_name, query)
     data_list = response.get("data", {}).get("results", [])
     results = no_result_found(data_list)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return results
     else:
-        results = iter_dbot_score(results, 'confidence_score', 'ioc_type', "Saved Result Set", "CTIX.SavedResultSet", "id")
+        results = iter_dbot_score(
+            results,
+            "confidence_score",
+            "ioc_type",
+            "Saved Result Set",
+            "CTIX.SavedResultSet",
+            "id",
+            reliability
+        )
         return results
 
 
 def tag_indicator_updation_command(
     client: Client, args: Dict[str, Any], operation: str
 ) -> CommandResults:
-    '''
+    """
     Tag Indicator Updation Command
 
     :Description Updating Tag of a given Indicator
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -1195,7 +1269,9 @@ def tag_indicator_updation_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Tag Indicator Updation", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Tag Indicator Updation", data, removeNull=True
+            ),
             outputs_prefix="CTIX.TagUpdation",
             outputs=data,
             raw_response=data,
@@ -1205,20 +1281,20 @@ def tag_indicator_updation_command(
 
 
 def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    '''
+    """
     Search for Tag Command
 
     :Description Search for Tag
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     q = args.get("q")
     params = {"page": page, "page_size": page_size, "q": q}
 
     response = client.search_for_tag(params)
-    data = response.get("data", {}).get('results', [])
+    data = response.get("data", {}).get("results", [])
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
@@ -1236,13 +1312,13 @@ def search_for_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def get_indicator_details_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    '''
+    """
     Get Indicator Details Command
 
     :Description Get Indicator Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -1256,7 +1332,9 @@ def get_indicator_details_command(
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Get Indicator Details", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Get Indicator Details", data, removeNull=True
+            ),
             outputs_prefix="CTIX.IndicatorDetails",
             outputs=data,
             raw_response=data,
@@ -1265,13 +1343,13 @@ def get_indicator_details_command(
 
 
 def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    '''
+    """
     Get Indicator Tags  Command
 
     :Description Get Tags Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
@@ -1285,7 +1363,9 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Get Indicator Tags", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Get Indicator Tags", data, removeNull=True
+            ),
             outputs_prefix="CTIX.IndicatorTags",
             outputs=data,
             raw_response=data,
@@ -1297,26 +1377,28 @@ def get_indicator_tags_command(client: Client, args: Dict[str, Any]) -> CommandR
 def get_indicator_relations_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    '''
+    """
     Get Indicator Relations Command
 
     :Description Get Relations Details
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args["object_id"]
     object_type = args["object_type"]
     params = {"page": page, "page_size": page_size}
     response = client.get_indicator_relations(object_type, object_id, params)
-    data = response.get("data", {}).get('results', {})
+    data = response.get("data", {}).get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Get Indicator Relations", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Get Indicator Relations", data, removeNull=True
+            ),
             outputs_prefix="CTIX.IndicatorRelations",
             outputs=data,
             raw_response=data,
@@ -1328,13 +1410,13 @@ def get_indicator_relations_command(
 def get_indicator_observations_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    '''
+    """
     Get Indicator Observations Command
 
     :Description Get Indicator Observations
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args.get("object_id")
@@ -1347,13 +1429,15 @@ def get_indicator_observations_command(
     }
 
     response = client.get_indicator_observations(params)
-    data = response.get("data", {}).get('results', {})
+    data = response.get("data", {}).get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Get Indicator Observations", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Get Indicator Observations", data, removeNull=True
+            ),
             outputs_prefix="CTIX.IndicatorObservations",
             outputs=data,
             raw_response=data,
@@ -1365,13 +1449,13 @@ def get_indicator_observations_command(
 def get_conversion_feed_source_command(
     client: Client, args: Dict[str, Any]
 ) -> CommandResults:
-    '''
+    """
     Get Conversion Feed Source Command
 
     :Description Get Conversion Feed Source
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     page = args.get("page", 1)
     page_size = args.get("page_size", 10)
     object_id = args.get("object_id")
@@ -1387,13 +1471,15 @@ def get_conversion_feed_source_command(
         params.update({"q": q})
 
     response = client.get_conversion_feed_source(params)
-    data = response.get("data", []).get('results', {})
+    data = response.get("data", []).get("results", {})
     data = no_result_found(data)
     if isinstance(data, CommandResults):
         return data
     else:
         results = CommandResults(
-            readable_output=tableToMarkdown("Conversion Feed Source", data, removeNull=True),
+            readable_output=tableToMarkdown(
+                "Conversion Feed Source", data, removeNull=True
+            ),
             outputs_prefix="CTIX.ConversionFeedSource",
             outputs=data,
             raw_response=data,
@@ -1405,38 +1491,90 @@ def get_conversion_feed_source_command(
 def get_lookup_threat_data_command(
     client: Client, args: Dict[str, Any]
 ) -> List[CommandResults]:
-    '''
+    """
     Get Lookup Threat Data Command
 
     :Description Get Lookup Threat Data
     :param Dict[str, str] args: Paramters to be send to in request
     :return CommandResults: XSOAR based result
-    '''
+    """
     object_type = args.get("object_type", "indicator")
+    ioc_type = argToList(args.get("ioc_type"))
     object_names = argToList(args.get("object_names"))
     page_size = args.get("page_size", 10)
     params = {"page_size": page_size}
-    response = client.get_lookup_threat_data(object_type, object_names, params)
+    response = client.get_lookup_threat_data(
+        object_type, ioc_type, object_names, params
+    )
     data_set = response.get("data").get("results")
     results = no_result_found(data_set)
+    reliability = args.get("reliability")
+
     if isinstance(results, CommandResults):
         return [results]
     else:
-        results = iter_dbot_score(results, 'confidence_score', 'ioc_type', "Lookup Data", "CTIX.ThreatDataLookup", "id")
+        results = iter_dbot_score(
+            results,
+            "confidence_score",
+            "ioc_type",
+            "Lookup Data",
+            "CTIX.ThreatDataLookup",
+            "id",
+            reliability
+        )
         return results
 
 
+def domain(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    args["object_names"] = args["domain"]
+    args["ioc_type"] = ["domain-name"]
+    return get_lookup_threat_data_command(client, args)
+
+
+def url(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    args["object_names"] = args["url"]
+    args["ioc_type"] = ["url"]
+    return get_lookup_threat_data_command(client, args)
+
+
+def ip(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    args["object_names"] = args["ip"]
+    args["ioc_type"] = ["ipv4-addr", "ipv6-addr"]
+    return get_lookup_threat_data_command(client, args)
+
+
+def file(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    args["object_names"] = args["file"]
+    args["ioc_type"] = [
+        "MD5",
+        "SHA-1",
+        "SHA-224",
+        "SHA-256",
+        "SHA-384",
+        "SHA-512",
+        "SSDEEP",
+    ]
+    return get_lookup_threat_data_command(client, args)
+
+
 def main() -> None:
+    params = demisto.params()
+    base_url = params.get("base_url")
+    access_id = params.get("access_id")
+    secret_key = params.get("secret_key")
+    verify = not params.get("insecure", False)
+    reliability = params.get('integrationReliability', DBotScoreReliability.C)
 
-    base_url = demisto.params().get("base_url")
-    access_id = demisto.params().get("access_id")
-    secret_key = demisto.params().get("secret_key")
-    verify = not demisto.params().get("insecure", False)
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    demisto.args()['reliability'] = reliability
     proxies = handle_proxy(proxy_param_name="proxy")
-
     demisto.debug(f"Command being called is {demisto.command()}")
-    try:
 
+    try:
         client = Client(
             base_url=base_url,
             access_id=access_id,
@@ -1503,6 +1641,14 @@ def main() -> None:
             return_results(get_conversion_feed_source_command(client, demisto.args()))
         elif demisto.command() == "ctix-get-lookup-threat-data":
             return_results(get_lookup_threat_data_command(client, demisto.args()))
+        elif demisto.command() == "domain":
+            return_results(domain(client, demisto.args()))
+        elif demisto.command() == "url":
+            return_results(url(client, demisto.args()))
+        elif demisto.command() == "ip":
+            return_results(ip(client, demisto.args()))
+        elif demisto.command() == "file":
+            return_results(file(client, demisto.args()))
         elif demisto.command() == "ctix-add-indicator-as-false-positive":
             return_results(
                 add_indicator_as_false_positive_command(client, demisto.args())
@@ -1518,3 +1664,5 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
+# register_module_line("CTIX v3", "end", __line__())
