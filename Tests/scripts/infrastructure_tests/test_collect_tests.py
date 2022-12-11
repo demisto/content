@@ -109,7 +109,7 @@ ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_machines: Optional[Iterable[Machine]],
-          expected_mrs_to_test: Optional[Iterable[str|Path]],
+          expected_mrs_to_test: Optional[Iterable[str | Path]],
           collector_class_args: tuple[Any, ...] = ()):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
@@ -329,40 +329,40 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',), ()),
 
      # (22) Test Playbook using skipped integration - should not be collected.
-     (MockerCases.P, None, ('myPack',), None, XSOAR_BRANCH_ARGS, ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), ()),
+     (MockerCases.P, None, ('myPack',), None, None, XSOAR_BRANCH_ARGS, ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), ()),
 
      # (22) (23) Old-formatted script changes, expecting its test playbook to be collected
      (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Scripts/script-myScript.yml',), ()),
 
      # (24) When content is moved between packs, both packs (old, new) should be collected
-     (MockerCases.C, None, ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), None, XSOAR_BRANCH_ARGS, (),
+     (MockerCases.C, None, ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), None, None, XSOAR_BRANCH_ARGS, (),
       ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
 
      # (25) Deprecated integration changes - should not be collected
-     (MockerCases.Q, (), (), None, XSOAR_BRANCH_ARGS,
+     (MockerCases.Q, (), (), None, None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',), ()),
 
      # (26) Deprecated integration changes - should not be collected
-     (MockerCases.Q, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS,
+     (MockerCases.Q, ('myTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
        'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), ()),
 
      # (27) modeling rule yml file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',)),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
+      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',), ()),
 
      # (28) modeling rule schema json file changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',)),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
+      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',), ()),
 
      # (29) modeling rule xif file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',)),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
+      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',), ()),
 
      # (30) modeling rule test data file is changed - expect the modeling rule dir to be marked
-     (MockerCases.MR1, None, ('MyXSIAMPack',), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',)),
+     (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields'), None, (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
+      ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), ()),
      )
     )
 def test_branch(
@@ -372,7 +372,7 @@ def test_branch(
         expected_tests: Optional[set[str]],
         expected_packs: Optional[tuple[str, ...]],
         expected_machines: Optional[tuple[Machine, ...]],
-        expected_mrs_to_test: Optional[Iterable[str|Path]],
+        expected_mrs_to_test: Optional[Iterable[str | Path]],
         collector_class_args: tuple[str, ...],
         mocked_changed_files: tuple[str, ...],
         mocked_packs_files_were_moved_from: tuple[str, ...],
@@ -488,7 +488,7 @@ def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch)
                         return_value=FilesToCollect(('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',), ()))
 
     _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
-          expected_packs=(), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
+          expected_mrs_to_test=(), expected_packs=(), expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
 @pytest.mark.parametrize('file_type', ONLY_COLLECT_PACK_TYPES)
