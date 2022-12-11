@@ -2363,30 +2363,14 @@
             "has_api": false
         },
         {
-            "playbookID": "Active Directory Test",
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm",
-            "has_api": false
-        },
-        {
             "playbookID": "Active Directory - manual pagination check",
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja"
-        },
-        {
-            "playbookID": "Active Directory - manual pagination check",
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm"
-        },
-        {
-            "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "Active Directory - automatic pagination check",
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm"
+            "instance_names": "active_directory_ninja"
         },
         {
             "playbookID": "AD v2 - debug-mode - Test",
@@ -2415,31 +2399,13 @@
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm",
-            "playbookID": "Active Directory Query V2 configuration with port",
-            "has_api": false
-        },
-        {
-            "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
             "playbookID": "Active Directory - ad-get-user limit check",
             "has_api": false
         },
         {
             "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm",
-            "playbookID": "Active Directory - ad-get-user limit check",
-            "has_api": false
-        },
-        {
-            "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_ninja",
-            "playbookID": "active directory search user with parentheses test",
-            "has_api": false
-        },
-        {
-            "integrations": "Active Directory Query v2",
-            "instance_names": "active_directory_ninja_with_ntlm",
             "playbookID": "active directory search user with parentheses test",
             "has_api": false
         },
