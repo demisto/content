@@ -99,7 +99,7 @@ class Server:
         self.name = ''
 
 
-class XSIAMServer(Server):
+class CLOUDServer(Server):
 
     def __init__(self, api_key, server_numeric_version, base_url, xdr_auth_id, name):
         super().__init__()
@@ -194,7 +194,7 @@ class Build(ABC):
 
     def __init__(self, options):
         self._proxy = None
-        self.is_xsiam = False
+        self.is_cloud = False
         self.xsiam_machine = None
         self.servers = []
         self.server_numeric_version = ''
@@ -337,7 +337,7 @@ class Build(ABC):
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
-                hostname = self.xsiam_machine if self.is_xsiam else ''
+                hostname = self.xsiam_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
@@ -366,7 +366,7 @@ class Build(ABC):
                 tests_for_iteration = []
             else:
                 # if not filtered_tests in XSIAM, we not running tests at all
-                if self.is_xsiam and not filtered_tests:
+                if self.is_cloud and not filtered_tests:
                     tests_for_iteration = []
                 else:
                     tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
@@ -729,18 +729,18 @@ class XSOARBuild(Build):
         run_threads_list(threads_list)
 
 
-class XSIAMBuild(Build):
+class CLOUDBuild(Build):
 
     def __init__(self, options):
         global SET_SERVER_KEYS
         SET_SERVER_KEYS = False
         super().__init__(options)
-        self.is_xsiam = True
+        self.is_cloud = True
         self.xsiam_machine = options.xsiam_machine
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
             self.get_xsiam_configuration(options.xsiam_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
-        self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
+        self.servers = [CLOUDServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.xsiam_machine)]
 
     @staticmethod
@@ -1672,7 +1672,7 @@ def create_build_object() -> Build:
     if options.build_object_type == XSOAR_BUILD_TYPE:
         return XSOARBuild(options)
     elif options.build_object_type == XSIAM_BUILD_TYPE:
-        return XSIAMBuild(options)
+        return CLOUDBuild(options)
     else:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
