@@ -158,13 +158,23 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
-    def get_alerts_request(self, session_str: str) -> Dict:
+    def get_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
+                           search: str, filter_arg: str) -> Dict:
         """ Retrieves All Alerts.
             Args:
-                session_str: str - The session id.
+                session_str: str - The session id of the alert.
+                time_period: str - The time period of the alert.
+                start_time: str - The start time of the alert.
+                end_time: str - The end time of the alert.
+                state: str - The state of the alert.
+                search: str - Search string in alert details.
+                filter_arg: str - Filter alert by fields.
             Returns:
                 A dictionary with the list of alerts and info about the list.
         """
+        params = {}
+        if time_period:
+            params['timeperiod'] = time_period
         url_suffix = '/sdkapi/alerts'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
@@ -949,7 +959,13 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     """
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    response = client.get_alerts_request(session_str)
+    time_period = args.get('time_period')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    state = args.get('state')
+    search = args.get('search')
+    filter_arg = args.get('filter')
+    response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg)
     total_alerts_count = response.get('totalAlertsCount')
     alerts_list = pagination(response.get('alertsList', []), limit, page)
     print(response.get('alertsList'))

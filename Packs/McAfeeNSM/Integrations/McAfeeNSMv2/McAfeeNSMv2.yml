@@ -757,6 +757,48 @@ script:
           required: false
           isArray: false
           description: The specific result page to display. The default is 1.
+        - name: time_period
+          auto: PREDEFINED
+          predefined:
+            - LAST_5_MINUTES
+            - LAST_1_HOUR
+            - LAST_6_HOURS
+            - LAST_12_HOURS
+            - LAST_24_HOURS
+            - LAST_7_DAYS
+            - LAST_14_DAYS
+            - CUSTOM
+          description: Time Period
+          required: false
+          isArray: false
+        - name: start_time
+          description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+            only
+          required: false
+          isArray: false
+        - name: end_time
+          description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time
+            only
+          required: false
+          isArray: false
+        - name: state
+          auto: PREDEFINED
+          predefined:
+            - ANY
+            - Acknowledged
+            - Unacknowledged
+          description: Alert State
+          defaultValue: ANY
+          required: false
+          isArray: false
+        - name: search
+          description: Search string in alert details
+          required: false
+          isArray: false
+        - name: filter
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4".'
+          required: false
+          isArray: false
   isfetch: false
   runonce: false
   script: '-'
