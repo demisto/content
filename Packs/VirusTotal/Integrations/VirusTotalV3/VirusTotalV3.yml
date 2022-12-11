@@ -1418,6 +1418,7 @@ script:
 
   runonce: false
   dockerimage: demisto/python3:3.10.8.36650
+deprecated: true
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
