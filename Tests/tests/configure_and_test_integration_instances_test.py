@@ -34,7 +34,8 @@ def create_build_object_with_mock(mocker, build_object_type):
             '--pack_ids_to_install', "$ARTIFACTS_FOLDER/content_packs_to_install.txt",
             '-g', "$GIT_SHA1", '--ami_env', "$1", '-n', 'false', '--branch', "$CI_COMMIT_BRANCH",
             '--build-number', "$CI_PIPELINE_ID", '-sa', "$GCS_MARKET_KEY", '--build_object_type', build_object_type,
-            '--xsiam_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH']
+            '--xsiam_machine', "qa2-test-111111", '--cloud_servers_path', '$XSIAM_SERVERS_PATH',
+            '--marketplace_name', 'marketplacev2']
     options = options_handler(args=args)
     json_data = {
         'tests': [],
