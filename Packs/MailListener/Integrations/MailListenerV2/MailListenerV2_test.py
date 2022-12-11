@@ -1,5 +1,5 @@
-from datetime import datetime
-
+from datetime import datetime, timezone
+from freezegun import freeze_time
 import pytest
 
 MAIL_STRING = br"""Delivered-To: to@test1.com
@@ -88,8 +88,10 @@ EXPECTED_LABELS = [
     {'type': 'Email/html', 'value': '<div dir="ltr"><br></div>\n<p>C:\\\\Users</p>\n<p>C:\\\\Users</p>'}]
 
 
-@pytest.mark.parametrize('mail_string, mail_date', [(MAIL_STRING, '2020-08-10T07:17:16+00:00'), (MAIL_STRING_NO_DATE, None)])
-
+@freeze_time("2022-12-11 13:40:00 UTC")
+@pytest.mark.parametrize('mail_string, mail_date',
+                         [(MAIL_STRING, '2020-08-10T07:17:16+00:00'),
+                          (MAIL_STRING_NO_DATE, "2022-12-11T13:40:00+00:00")])
 def test_convert_to_incident(mail_string, mail_date):
     """
     Given:
