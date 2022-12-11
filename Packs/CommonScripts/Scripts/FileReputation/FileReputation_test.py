@@ -1,6 +1,7 @@
 import demistomock as demisto
 import pytest
 
+
 @pytest.mark.parametrize('contents', ({'Error': 'error'}, None))
 def test_file_reputation(mocker, contents):
     """

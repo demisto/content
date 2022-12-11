@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import pytest
 
+
 @pytest.mark.parametrize('contents', ({'Error': 'error'}, None))
 def test_url_reputation(mocker, contents):
     """
