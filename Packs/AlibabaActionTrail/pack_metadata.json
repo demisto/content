@@ -2,7 +2,7 @@
     "name": "Alibaba Action Trail",
     "description": "An Integration Pack to fetch Alibaba action trail events.",
     "support": "xsoar",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.10",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,7 +10,7 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Data Source"
+        "marketplacev2:Data Source"
     ],
     "useCases": [],
     "keywords": [],
