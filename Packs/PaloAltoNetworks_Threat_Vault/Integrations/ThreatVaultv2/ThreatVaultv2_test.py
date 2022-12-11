@@ -1,10 +1,16 @@
 from CommonServerPython import *
 import pytest
 import json
+from unittest import mock
 
 from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
     threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_incident
 
+
+class MockException(Exception):
+    class MockStatus:
+        status_code = 404
+    res = MockStatus()
 
 @pytest.mark.parametrize(
     'command, demisto_args, expected_results',
@@ -12,12 +18,12 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
         (
             threat_batch_search_command,
             {'id': '123', 'md5': '52463745'},
-            'There can only be one argument from the following list in the command -> [id, md5, sha256, name]'
+            'Only one of the following can be used at a time: id, md5, sha256, name'
         ),
         (
             threat_batch_search_command,
             {},
-            'One of following arguments is required -> [id, sha256, md5, name]'
+            'Only one of the following can be used at a time: id, md5, sha256, name'
         ),
         (
             release_note_get_command,
@@ -27,37 +33,37 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
         (
             threat_signature_get_command,
             {},
-            'One of following arguments is required -> [signature_id, sha256, md5]'
+            'One of following arguments is required: signature_id, sha256, md5'
         ),
         (
             threat_search_command,
             {},
-            ('One of following arguments is required -> [cve, vendor, signature-name, type,'
-             ' from-release-version, from-release-date, release-date, release-version]')
+            ('One of following arguments is required: cve, vendor, signature-name, type,'
+             ' from-release-version, from-release-date, release-date, release-version')
         ),
         (
             threat_search_command,
             {'cve': 'test', 'from-release-date': 'test'},
-            ('When using a release date range in a query, it must be used with the following two arguments ->'
-             '[from-release-date, to-release-date]')
+            ('When using a release date range in a query, it must be used with the following two arguments: '
+             'from-release-date, to-release-date')
         ),
         (
             threat_search_command,
             {'cve': 'test', 'from-release-version': 'test'},
-            ('When using a release version range in a query, it must be used with the following two arguments ->'
-             '[from-release-version, to-release-version]')
+            ('When using a release version range in a query, it must be used with the following two arguments: '
+             'from-release-version, to-release-version')
         ),
         (
             threat_search_command,
             {'cve': 'test', 'release-date': 'test', 'release-version': 'test'},
-            ('There can only be one argument from the following list in the command ->'
-             '[release-date, release-version]')
+            ('There can only be one argument from the following list in the command: '
+             'release-date, release-version')
         ),
         (
             threat_search_command,
             {'cve': 'test', 'release-date': 'test', 'from-release-date': 'test', 'to-release-date': 'test'},
             ('When using a release version range or a release date range in a query'
-             'it is not possible to use with the following arguments -> [release-date, release-version]')
+             'it is not possible to use with the following arguments: release-date, release-version')
         ),
         (
             threat_search_command,
@@ -132,10 +138,10 @@ def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_ou
         reliability='E - Unreliable'
     )
 
-    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
-    mocker.patch.object(client, 'release_notes_get_request', side_effect=Exception('Error in API call [404] - Not Found'))
-    mocker.patch.object(client, 'threat_search_request', side_effect=Exception('Error in API call [404] - Not Found'))
-    mocker.patch.object(client, 'threat_batch_search_request', side_effect=Exception('Error in API call [404] - Not Found'))
+    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=MockException())
+    mocker.patch.object(client, 'release_notes_get_request', side_effect=MockException())
+    mocker.patch.object(client, 'threat_search_request', side_effect=MockException())
+    mocker.patch.object(client, 'threat_batch_search_request', side_effect=MockException())
 
     results = cmd(client, demisto_args)
 
@@ -784,7 +790,7 @@ def test_release_note_get_command(mocker, args, expected_results):
         reliability='E - Unreliable'
     )
 
-    mocker.patch.object(client, 'release_notes_get_request', return_value={'data': []})
+    mocker.patch.object(client, 'release_notes_get_request', return_value={'data': [[]]})
     mocker.patch('ThreatVaultv2.resp_to_hr', return_value={'release_notes': 'test'})
     results = release_note_get_command(client, args)
 

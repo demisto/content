@@ -105,7 +105,7 @@
                         "type": "workplan",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
@@ -120,7 +120,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 1,
-                        "y": 8
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -134,7 +134,7 @@
                         "type": "evidence",
                         "w": 1,
                         "x": 2,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -149,7 +149,7 @@
                         "type": "team",
                         "w": 1,
                         "x": 2,
-                        "y": 8
+                        "y": 7
                     },
                     {
                         "displayType": "ROW",
@@ -165,7 +165,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 6
+                        "y": 5
                     },
                     {
                         "displayType": "CARD",
@@ -268,24 +268,22 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 8
+                        "y": 7
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": true,
                         "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksreleasenotesmd",
+                                "fieldId": "threatvaultbypaloaltonetworksreleasenotes",
                                 "height": 106,
-                                "id": "f9abfd70-55c5-11ed-99c8-3fb08ac8a5ae",
+                                "id": "90d0a730-7963-11ed-a2a1-b331cf5cac26",
                                 "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

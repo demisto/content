@@ -1,5 +1,5 @@
-from typing import Tuple
 from CommonServerPython import *
+import demistomock as demisto
 
 BASE_URL = 'https://api.threatvault.paloaltonetworks.com/service/v1/'
 SCORE_TABLE_FILE = {
@@ -34,17 +34,19 @@ class Client(BaseClient):
 
     def antivirus_signature_get_request(self, arg: str, value: str) -> dict:
 
-        params = {arg: value}
         suffix = 'threats'
 
-        return self._http_request(method='GET', url_suffix=suffix, params=params)
+        return self._http_request(method='GET', url_suffix=suffix, params={arg: value})
 
     def release_notes_get_request(self, type_: str, version: str) -> dict:
 
-        params = {'type': type_, 'version': version}
         suffix = 'release-notes'
 
-        return self._http_request(method='GET', url_suffix=suffix, params=params)
+        return self._http_request(
+            method='GET',
+            url_suffix=suffix,
+            params={'type': type_, 'version': version}
+        )
 
     def threat_batch_search_request(self, arg: str, value: list, type_: str) -> dict:
 
@@ -67,14 +69,14 @@ HELP FUNCTIONS
 '''
 
 
-def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> Tuple[Optional[int], Optional[int]]:
+def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> tuple[int, Optional[int]]:
     '''
     The page_size and page arguments are converted so they match the offset and limit parameters of the API call.
     '''
 
     if page and page_size:
         if page < 0:
-            raise ValueError('The page argument ')
+            raise ValueError('The page number must be a positive number')
         return page * page_size, page_size
 
     if not page and not page_size:
@@ -88,86 +90,85 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 
     match type_:
         case 'file':
-            antivirus = (response.get('signatures', {}).get('antivirus', [])[0]
-                         if response.get('signatures', {}).get('antivirus', []) else {})
-            table_for_md = {'Active': antivirus.get('status', None),
-                            'CreateTime': response.get('create_time', None),
-                            'Release': antivirus.get('release', None),
-                            'SignatureId': antivirus.get('id', None),
-                            'FileType': response.get('filetype', None),
-                            'MD5': response.get('md5', None),
-                            'SHA256': response.get('sha256', None),
-                            'SHA1': response.get('sha1', None),
+            antivirus = response.get('signatures', {}).get('antivirus', ({}, ...))[0]
+            table_for_md = {'Active': antivirus.get('status'),
+                            'CreateTime': response.get('create_time'),
+                            'Release': antivirus.get('release'),
+                            'SignatureId': antivirus.get('id'),
+                            'FileType': response.get('filetype'),
+                            'MD5': response.get('md5'),
+                            'SHA256': response.get('sha256'),
+                            'SHA1': response.get('sha1'),
                             }
             if expanded:
                 table_for_md.update({
-                    'Family': response.get('family', None),
-                    'Platform': response.get('platform', None),
-                    'Signature Name': antivirus.get('name', None),
-                    'Severity': antivirus.get('severity', None),
-                    'Description': antivirus.get('description', None),
-                    'Size': response.get('size', None),
-                    'Wildfire verdict': response.get('wildfire_verdict', None),
+                    'Family': response.get('family'),
+                    'Platform': response.get('platform'),
+                    'Signature Name': antivirus.get('name'),
+                    'Severity': antivirus.get('severity'),
+                    'Description': antivirus.get('description'),
+                    'Size': response.get('size'),
+                    'Wildfire verdict': response.get('wildfire_verdict'),
                 })
 
         case 'fileformat':
             table_for_md = {'ID': response.get('id'),
-                            'Name': response.get('name', None),
-                            'Description': response.get('Description', None),
-                            'Category': response.get('category', None),
-                            'Severity': response.get('severity', None),
-                            'Default action': response.get('default_action', None),
-                            'Vendor': response.get('vendor', None),
-                            'Reference': response.get('reference', None),
-                            'Status': response.get('status', None),
-                            'Ori release version': response.get('ori_release_version', None),
-                            'Latest release version': response.get('latest_release_version', None),
-                            'Ori release time': response.get('ori_release_time', None),
-                            'Latest release time': response.get('latest_release_time', None),
+                            'Name': response.get('name'),
+                            'Description': response.get('Description'),
+                            'Category': response.get('category'),
+                            'Severity': response.get('severity'),
+                            'Default action': response.get('default_action'),
+                            'Vendor': response.get('vendor'),
+                            'Reference': response.get('reference'),
+                            'Status': response.get('status'),
+                            'Ori release version': response.get('ori_release_version'),
+                            'Latest release version': response.get('latest_release_version'),
+                            'Ori release time': response.get('ori_release_time'),
+                            'Latest release time': response.get('latest_release_time'),
                             }
 
         case 'vulnerability':
             table_for_md = {'ID': response.get('id'),
-                            'Name': response.get('name', None),
-                            'Description': response.get('Description', None),
-                            'Category': response.get('category', None),
-                            'Severity': response.get('severity', None),
-                            'Default action': response.get('default_action', None),
-                            'Vendor': response.get('vendor', None),
-                            'Reference': response.get('reference', None),
-                            'Status': response.get('status', None),
-                            'Ori release version': response.get('ori_release_version', None),
-                            'Latest release version': response.get('latest_release_version', None),
-                            'Ori release time': response.get('ori_release_time', None),
-                            'Latest release time': response.get('latest_release_time', None),
-                            'CVE': response.get('cve', None),
+                            'Name': response.get('name'),
+                            'Description': response.get('Description'),
+                            'Category': response.get('category'),
+                            'Severity': response.get('severity'),
+                            'Default action': response.get('default_action'),
+                            'Vendor': response.get('vendor'),
+                            'Reference': response.get('reference'),
+                            'Status': response.get('status'),
+                            'Ori release version': response.get('ori_release_version'),
+                            'Latest release version': response.get('latest_release_version'),
+                            'Ori release time': response.get('ori_release_time'),
+                            'Latest release time': response.get('latest_release_time'),
+                            'CVE': response.get('cve'),
                             }
 
         case 'antivirus':
             table_for_md = {'ID': response.get('id'),
-                            'Name': response.get('name', None),
-                            'Description': response.get('Description', None),
-                            'Subtype': response.get('subtype', None),
-                            'Severity': response.get('severity', None),
-                            'Default action': response.get('default_action', None),
-                            'Create time': response.get('create_time', None),
-                            'Related sha256 hashes': response.get('related_sha256_hashes', None),
-                            'Release': response.get('release', None),
+                            'Name': response.get('name'),
+                            'Description': response.get('Description'),
+                            'Subtype': response.get('subtype'),
+                            'Severity': response.get('severity'),
+                            'Default action': response.get('default_action'),
+                            'Create time': response.get('create_time'),
+                            'Related sha256 hashes': response.get('related_sha256_hashes'),
+                            'Release': response.get('release'),
                             }
 
         case 'spyware':
             table_for_md = {'ID': response.get('id'),
-                            'Name': response.get('name', None),
-                            'Description': response.get('description', None),
-                            'Vendor': response.get('vendor', None),
-                            'Severity': response.get('severity', None),
-                            'Default action': response.get('default_action', None),
-                            'Details': response.get('details', None),
-                            'Reference': response.get('reference', None),
-                            'Status': response.get('status', None),
-                            'Min version': response.get('min_version', None),
-                            'Max version': response.get('max_version', None),
-                            'CVE': response.get('cve', None),
+                            'Name': response.get('name'),
+                            'Description': response.get('description'),
+                            'Vendor': response.get('vendor'),
+                            'Severity': response.get('severity'),
+                            'Default action': response.get('default_action'),
+                            'Details': response.get('details'),
+                            'Reference': response.get('reference'),
+                            'Status': response.get('status'),
+                            'Min version': response.get('min_version'),
+                            'Max version': response.get('max_version'),
+                            'CVE': response.get('cve'),
                             }
 
         case 'release_notes':
@@ -192,6 +193,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
             }
 
         case _:
+            demisto.debug(f"Unexpected item type {type_}")
             return {}
 
     return table_for_md
@@ -205,7 +207,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             antiviruses = response.get('data', {}).get('antivirus', [])
         else:
-            antiviruses = [response.get('data', {}).get('antivirus', [])[0]]
+            antiviruses = [response.get('data', {}).get('antivirus', ([], ...))[0]]
 
         for antivirus in antiviruses:
             table_for_md = resp_to_hr(response=antivirus, type_='antivirus')
@@ -224,7 +226,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             spywares = response.get('data', {}).get('spyware', [])
         else:
-            spywares = [response.get('data', {}).get('spyware', [])[0]]
+            spywares = [response.get('data', {}).get('spyware', ([], ...))[0]]
         for spyware in spywares:
             table_for_md = resp_to_hr(response=spyware, type_='spyware')
             readable_output = tableToMarkdown(name=f"{spyware.get('id')} spyware reputation:", t=table_for_md,
@@ -242,7 +244,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             vulnerabilities = response.get('data', {}).get('vulnerability', [])
         else:
-            vulnerabilities = [response.get('data', {}).get('vulnerability', [])[0]]
+            vulnerabilities = [response.get('data', {}).get('vulnerability', ([], ...))[0]]
         for vulnerability in vulnerabilities:
             table_for_md = resp_to_hr(response=vulnerability, type_='vulnerability')
             readable_output = tableToMarkdown(name=f"{vulnerability.get('id')} vulnerability reputation:", t=table_for_md,
@@ -260,7 +262,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             filesformat = response.get('data', {}).get('fileformat', [])
         else:
-            filesformat = [response.get('data', {}).get('fileformat', [])[0]]
+            filesformat = [response.get('data', {}).get('fileformat', ([], ...))[0]]
         for fileformat in filesformat:
             table_for_md = resp_to_hr(response=fileformat, type_='fileformat')
             readable_output = tableToMarkdown(name=f"{fileformat.get('id')} fileformat reputation:", t=table_for_md,
@@ -279,7 +281,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
 
 def parse_incident(incident: dict):
     '''
-    1. Parse the release notes information received
+    1. Parses the release notes information received
     2. Organizes the release notes so that they are easily readable
     3. Adds source name to the incident
     4. Deletes keys from the incident when no values were found in them
@@ -320,7 +322,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
         type_hash = get_hash_type(_hash)
         try:
             response = client.antivirus_signature_get_request(arg=type_hash, value=_hash)
-            file_info: dict = response.get('data', {}).get('fileinfo')[0]
+            file_info: dict = response.get('data', {}).get('fileinfo', ({}, ...))[0]
             dbot_score = Common.DBotScore(
                 indicator=_hash,
                 indicator_type=DBotScoreType.FILE,
@@ -329,9 +331,9 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 reliability=dbot_reliability
             )
             file = Common.File(
-                sha256=file_info.get('sha256', None),
-                md5=file_info.get('md5', None),
-                sha1=file_info.get('sha1', None),
+                sha256=file_info.get('sha256'),
+                md5=file_info.get('md5'),
+                sha1=file_info.get('sha1'),
                 dbot_score=dbot_score
             )
 
@@ -340,7 +342,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
             readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
                                               removeNull=True)
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
+            if err.res.status_code == 404:  # type:ignore
                 response = {}
                 dbot_score = Common.DBotScore(
                     indicator=_hash,
@@ -357,12 +359,15 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
 
                 readable_output = f"Hash {_hash} antivirus reputation is unknown to Threat Vault."
             else:
-                raise Exception(err)
+                raise
 
         command_results = CommandResults(
             readable_output=readable_output,
             indicator=file
         )
+        if args.get('expanded'):
+            command_results.outputs = file_info
+            command_results.outputs_prefix = 'ThreatVault.FileInfo'
         command_results_list.append(command_results)
 
     return command_results_list
@@ -376,7 +381,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
     for cve in cves:
         try:
             response = client.antivirus_signature_get_request(arg='cve', value=cve)
-            vulnerability = response.get('data', {}).get('vulnerability', [])[0]
+            vulnerability = response.get('data', {}).get('vulnerability', ([], ...))[0]
             _cve = Common.CVE(
                 id=vulnerability.get('cve')[0],
                 cvss=vulnerability.get('severity'),
@@ -388,11 +393,11 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
             readable_output = tableToMarkdown(name=f"CVE {cve} vulnerability reputation:", t=table_for_md,
                                               removeNull=True)
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
+            if err.res.status_code == 404:  # type:ignore
                 readable_output = f'CVE {cve} vulnerability reputation is unknown to Threat Vault.'
                 _cve = None
             else:
-                raise Exception(err)
+                raise
 
         command_results = CommandResults(
             readable_output=readable_output,
@@ -406,13 +411,13 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
 def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResults]:
 
     args['file'] = args.get('sha256', '')
-    if md5 := args.get('md5', ''):
+    if md5 := args.get('md5'):
         args['file'] += f",{md5}" if args['file'] else md5
     args['expanded'] = True
     ids = argToList(args.get('signature_id'))
 
     if not ids and not args['file']:
-        raise ValueError('One of following arguments is required -> [signature_id, sha256, md5]')
+        raise ValueError('One of following arguments is required: signature_id, sha256, md5')
 
     if ids and args['file']:
         raise ValueError('The command cannot be run with more than one argument.')
@@ -428,7 +433,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
             response = client.antivirus_signature_get_request(arg='id', value=_id)
             command_results_list.extend(parse_resp_by_type(response=response))
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
+            if err.res.status_code == 404:  # type:ignore
                 readable_output = f'{_id} reputation is unknown to Threat Vault.'
                 command_results_list.append(
                     CommandResults(
@@ -436,26 +441,26 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
                     )
                 )
             else:
-                raise ValueError(err)
+                raise
     return command_results_list
 
 
 def release_note_get_command(client: Client, args: Dict) -> CommandResults:
 
-    if 'version' not in args:
+    if not args.get('version'):
         raise ValueError('The version argument is required')  # UT
 
     version = args['version']
     try:
         response = client.release_notes_get_request('content', version)
-        data = response.get('data', [])[0] if response.get('data') else []
+        data = response.get('data', ([], ...))[0]
     except Exception as err:
-        if 'Error in API call [404] - Not Found' in str(err):
+        if err.res.status_code == 404:  # type:ignore
             return CommandResults(
                 readable_output=f'{version} release note not found.'
             )
         else:
-            raise ValueError(err)
+            raise
 
     table_for_md = resp_to_hr(response=data, type_='release_notes')
     readable_output = tableToMarkdown(name="Release notes:", t=table_for_md,
@@ -474,10 +479,9 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
     names = argToList(args.get('name'))
     threat_type = args.get('type', '')
 
-    if len([x for x in (ids, md5, sha256, names) if x]) > 1:
-        raise ValueError('There can only be one argument from the following list in the command -> [id, md5, sha256, name]')
-    if not [x for x in (ids, md5, sha256, names) if x]:
-        raise ValueError('One of following arguments is required -> [id, sha256, md5, name]')
+    argument_count = sum(1 for x in (ids, md5, sha256, names) if x)
+    if argument_count != 1:
+        raise ValueError('Only one of the following can be used at a time: id, md5, sha256, name')
 
     command_results_list: List[CommandResults] = []
 
@@ -487,7 +491,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
             command_results_list.extend(parse_resp_by_type(response, True))
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
+            if err.res.status_code == 404:  # type:ignore
                 readable_output = f'There is no information about the {str(ids) if ids else str(names)}'
                 command_results_list.append(
                     CommandResults(
@@ -495,13 +499,13 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                     )
                 )
             else:
-                raise ValueError(err)
+                raise
 
     elif md5 or sha256:
         dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
         try:
             type_ = 'md5' if md5 else 'sha256'
-            response = client.threat_batch_search_request(arg=type_, value=md5 if md5 else sha256, type_=threat_type)
+            response = client.threat_batch_search_request(arg=type_, value=md5 or sha256, type_=threat_type)
             files_info: List[dict] = response.get('data', {}).get('fileinfo', [])
             for file_info in files_info:
 
@@ -513,9 +517,9 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                     reliability=dbot_reliability
                 )
                 file = Common.File(
-                    sha256=file_info.get('sha256', None),
-                    md5=file_info.get('md5', None),
-                    sha1=file_info.get('sha1', None),
+                    sha256=file_info.get('sha256'),
+                    md5=file_info.get('md5'),
+                    sha1=file_info.get('sha1'),
                     dbot_score=dbot_score
                 )
 
@@ -533,7 +537,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                 )
 
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
+            if err.res.status_code == 404:  # type:ignore
                 readable_output = f'There is no information about the {str(md5) if md5 else str(sha256)}'
                 command_results_list.append(
                     CommandResults(
@@ -541,7 +545,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                     )
                 )
             else:
-                raise ValueError(err)
+                raise
 
     return command_results_list
 
@@ -552,47 +556,44 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     vendor = args.get('vendor')
     name = args.get('signature-name')
 
-    if len([x for x in (cve, vendor, name) if x]) > 1:
-        raise ValueError('There can only be one argument from the following list in the command ->'
-                         '[release-date, release-version]')
+    if sum(1 for x in (cve, vendor, name) if x) > 1:
+        raise ValueError('There can only be one argument from the following list in the command: '
+                         'cve, vendor, name')
 
     from_release_date = args.get('from-release-date')
     to_release_date = args.get('to-release-date')
 
-    if len([x for x in (from_release_date, to_release_date) if x]) == 1:
-        raise ValueError('When using a release date range in a query, it must be used with the following two arguments ->'
-                         '[from-release-date, to-release-date]')
+    if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
+        raise ValueError('When using a release date range in a query, it must be used with the following two arguments: '
+                         'from-release-date, to-release-date')
 
     from_release_version = args.get('from-release-version')
     to_release_version = args.get('to-release-version')
 
-    if len([x for x in (from_release_version, to_release_version) if x]) == 1:
-        raise ValueError('When using a release version range in a query, it must be used with the following two arguments ->'
-                         '[from-release-version, to-release-version]')
+    if sum(1 for x in (from_release_version, to_release_version) if x) == 1:
+        raise ValueError('When using a release version range in a query, it must be used with the following two arguments: '
+                         'from-release-version, to-release-version')
 
     release_date = args.get('release-date')
     release_version = args.get('release-version')
 
     if release_date and release_version:
-        raise ValueError('There can only be one argument from the following list in the command ->'
-                         '[release-date, release-version]')
+        raise ValueError('There can only be one argument from the following list in the command: '
+                         'release-date, release-version')
 
     if (from_release_date or from_release_version) and (release_date or release_version):
         raise ValueError('When using a release version range or a release date range in a query'
-                         'it is not possible to use with the following arguments -> [release-date, release-version]')
+                         'it is not possible to use with the following arguments: release-date, release-version')
 
     if from_release_date and from_release_version:
         raise ValueError('from-release-version and from-release-date cannot be used together.')
 
     type_ = args.get('type')
 
-    if len([x for x in (cve, vendor, name, type_,
-                        from_release_date,
-                        from_release_version,
-                        release_date,
-                        release_version) if x]) == 0:
-        raise ValueError('One of following arguments is required -> [cve, vendor, signature-name, type, '
-                         'from-release-version, from-release-date, release-date, release-version]')
+    if not any((cve, vendor, name, type_, from_release_date,
+                from_release_version, release_date, release_version)):
+        raise ValueError('One of following arguments is required: cve, vendor, signature-name, type, '
+                         'from-release-version, from-release-date, release-date, release-version')
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -617,7 +618,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
         response = client.threat_search_request(args=query)
         command_results_list.extend(parse_resp_by_type(response, True))
     except Exception as err:
-        if 'Error in API call [404] - Not Found' in str(err):
+        if err.res.status_code == 404:  # type:ignore
             readable_output = f'{cve or vendor or name} reputation is unknown to Threat Vault.'
             command_results_list.append(
                 CommandResults(
@@ -625,7 +626,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
                 )
             )
         else:
-            raise ValueError(err)
+            raise
 
     return command_results_list
 
@@ -643,33 +644,36 @@ def fetch_incidents(client: Client, args: dict) -> List:
     last_run = demisto.getLastRun()
     first_fetch = args.get('first_fetch', '3 Days')
     if not last_run.get('scound_fetch'):
-        if first_fetch.strip().split(' ')[1].lower() not in ['days', 'month', 'months', 'year', 'years']:
+        if (first_fetch.strip().split(' ')[1].lower() not in
+           ['days', 'month', 'months', 'year', 'years']):  # only these are allowed
             raise ValueError('The unit of date_range is invalid. Must be days, months or years.')
         start_time, now = parse_date_range(first_fetch)
     else:
         _, now = parse_date_range(first_fetch)
         start_time = now
 
-    start_time = start_time.date()
+    current = start_time.date()
     now = now.date()
     incidents: List[dict] = []
-    while start_time <= now:
+    while current <= now:
         try:
             # Bringing the daily date for the first api call
-            demisto.debug(f'Time for request fetch-incidents -> {start_time}')
-            release_date = start_time.strftime('%Y-%m-%d')
-            response = client.threat_search_request({'releaseDate': release_date})
+            demisto.debug(f'Time for request fetch-incidents -> {current}')
+            response = client.threat_search_request({'releaseDate': current.strftime('%Y-%m-%d')})
         except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
-                start_time += timedelta(days=1)
+            if err.res.status_code == 404:  # type:ignore
+                current += timedelta(days=1)
                 continue
             else:
-                raise ValueError(err)
+                raise
 
-        if keys_of_resp := [x for x in response['data'].keys() if x in ('spyware', 'vulnerability', 'fileformat', 'antivirus')]:
+        if keys_of_resp := tuple({'spyware', 'vulnerability', 'fileformat', 'antivirus'}.intersection(response['data'].keys())):
 
             # The version of the release notes for the second API call can be extracted
-            number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
+            try:
+                number_version = response['data'][keys_of_resp[0]][0]['latest_release_version']
+            except KeyError as err:
+                raise Exception(f'Error parsing release note latest_release_version: {str(err)}')
             # The API is called by the version number
             release = client.release_notes_get_request('content', number_version)
 
@@ -679,7 +683,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
                 'occurred': release['data'][0]['release_time'],
                 'rawJSON': json.dumps(parse_incident(release))
             })
-        start_time += timedelta(days=1)
+        current += timedelta(days=1)
 
     demisto.setLastRun({'scound_fetch': 'true'})
     return incidents
@@ -695,10 +699,7 @@ def test_module(client: Client, *_) -> str:
         string.
     """
 
-    try:
-        client.threat_search_request({'type': 'ips'})
-    except Exception as err:
-        raise ValueError(err)
+    client.threat_search_request({'type': 'ips'})
     return 'ok'
 
 

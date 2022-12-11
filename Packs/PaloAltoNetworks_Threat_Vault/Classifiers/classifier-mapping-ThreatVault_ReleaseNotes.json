@@ -62,9 +62,6 @@
                 },
                 "Threat Vault by Palo Alto Networks release notes": {
                     "simple": "data.[0].release_notes.notes.[0]"
-                },
-                "Threat Vault by Palo Alto Networks release notes md": {
-                    "simple": "data.[0].release_notes_md"
                 }
             }
         },
