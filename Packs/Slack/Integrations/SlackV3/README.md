@@ -9,8 +9,8 @@ Refer to the [video tutorial](https://live.paloaltonetworks.com/t5/cortex-xsoar-
 2. Search for SlackV3.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                 | **Description**                                                                                                                                                                                                                                                                       | **Required** |
--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+    | **Parameter** | **Description** | **Required** |
+    |---|---| ---|
     | `bot_token`                   | Slack API bot token.                                                                                                                                                                                                                                                                  | False |
     | `app_token`                   | Slack API app token.                                                                                                                                                                                                                                                                  | False |
     | `incidentNotificationChannel` | Dedicated Slack channel to receive notifications.                                                                                                                                                                                                                                     | False |
