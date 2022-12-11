@@ -476,8 +476,8 @@ class Client(BaseClient):
                                limit: int = 10,
                                value_contains: Optional[str] = None,
                                ok_codes: list = [200],
-                               includeChildren: Optional[bool] = None,
-                               includeParents: Optional[bool] = None):
+                               include_children: Optional[bool] = None,
+                               include_parents: Optional[bool] = None):
         """
         When includeChildren and includeParents are set to True in API request-
         it will return all items in the exclusion list.
@@ -490,8 +490,8 @@ class Client(BaseClient):
             osTypes=os_types,
             type=exclusion_type,
             value__contains=value_contains,
-            includeChildren=includeChildren,
-            includeParents=includeParents,
+            includeChildren=include_children,
+            includeParents=include_parents,
             limit=limit
         )
 
@@ -2021,9 +2021,13 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
     os_types = argToList(args.get('os_types', []))
     exclusion_type = args.get('exclusion_type')
     limit = int(args.get('limit', 10))
+    should_include_parent = argToBoolean(args.get('include_parent', False))
+    should_include_children = argToBoolean(args.get('include_children', False))
 
     # Make request and get raw response
-    exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit)
+    exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit,
+                                                    includeParents=should_include_parent,
+                                                    includeChildren=should_include_children)
 
     # Parse response into context & content entries
     for exclusion_item in exclusion_items:
@@ -2060,8 +2064,8 @@ def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, 
     """
     item_ids: list = []
     limit = OS_COUNT + 1
-    white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item, includeChildren=True,
-                                               includeParents=True)
+    white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item, include_children=True,
+                                               include_parents=True)
     demisto.debug(f'white_list: {white_list}')
 
     ret = []
