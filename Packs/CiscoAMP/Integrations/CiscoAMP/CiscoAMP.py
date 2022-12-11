@@ -3248,9 +3248,8 @@ def get_context_output(
 
     if item_to_add:
         for context_output in context_outputs:
-            context_output = {
+            context_output |= {
                 item_to_add[0]: item_to_add[1],
-                **context_output
             }
 
     return context_outputs
