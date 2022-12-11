@@ -89,6 +89,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
     FileType.XDRC_TEMPLATE,
+    FileType.XSIAM_LAYOUT,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
