@@ -74,9 +74,9 @@ XSOAR_BUILD_TYPE = "XSOAR"
 XSIAM_BUILD_TYPE = "XSIAM"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
 # MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
-MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng'
+# MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng'
 
-ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/xsoar"
+# ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/xsoar"
 # ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
 
 
@@ -742,6 +742,9 @@ class CLOUDBuild(Build):
                                          options.cloud_servers_api_keys)
         self.servers = [CLOUDServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.xsiam_machine)]
+        self.marketplace_tag_name = options.marketplace_name
+        self.artifacts_folder = options.artifacts_folder
+        self.marketplace_buckets = options.marketplace_buckets
 
     @staticmethod
     def get_xsiam_configuration(xsiam_machine, cloud_servers_path, cloud_servers_api_keys_path):
@@ -755,7 +758,7 @@ class CLOUDBuild(Build):
 
     @property
     def marketplace_name(self) -> str:
-        return 'xsoar'
+        return self.marketplace_tag_name
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -831,9 +834,9 @@ class CLOUDBuild(Build):
     def set_marketplace_url(self, servers, branch_name, ci_build_number):
         logging.info('Copying custom build bucket to xsiam_instance_bucket.')
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/xsoar/content'
-        output_file = f'{ARTIFACTS_FOLDER_MPV2}/Copy_custom_bucket_to_xsiam_machine.log'
+        output_file = f'{self.artifacts_folder}/Copy_custom_bucket_to_xsiam_machine.log'
         for server in servers:
-            to_bucket = f'{MARKETPLACE_XSIAM_BUCKETS}/{server.name}'
+            to_bucket = f'{self.marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
             with open(output_file, "w") as outfile:
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
@@ -879,6 +882,9 @@ def options_handler(args=None):
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret xsiam server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
+    parser.add_argument('--marketplace_name', help='the name of the marketplace to use.')
+    parser.add_argument('--artifacts_folder', help='the artifacts folder to use.')
+    parser.add_argument('--marketplace_buckets', help='the path to the marketplace buckets.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
