@@ -220,6 +220,7 @@ class PackFolders(enum.Enum):
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
+    XSIAM_LAYOUTS = 'XSIAMLayouts'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -232,7 +233,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.XSIAM_LAYOUTS,
         }
 
     @classmethod
@@ -251,7 +252,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
-            PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.XDRC_TEMPLATES.value, PackFolders.XSIAM_LAYOUTS,
         }
 
 
@@ -304,6 +305,7 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.TRIGGERS.value: "Triggers",
     PackFolders.WIZARDS.value: "Wizards",
     PackFolders.XDRC_TEMPLATES.value: "XDRCTemplates",
+    PackFolders.XSIAM_LAYOUTS.value: 'XSIAMLayouts',
 }
 
 
@@ -387,6 +389,7 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
+    'XSIAM Layouts': 'XSIAMLayouts',
 }
 
 
@@ -419,6 +422,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
+    PackFolders.XSIAM_LAYOUTS.value: "xsiamlayout",
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -449,4 +453,5 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_LAYOUTS.value]: "XSIAM Layout",
 }
