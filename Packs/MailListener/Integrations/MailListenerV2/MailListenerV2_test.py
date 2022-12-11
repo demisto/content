@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
