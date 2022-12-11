@@ -91,6 +91,7 @@ demisto-sdk-nightly:create-instance:
     - .sdk-nightly-schedule-rule
   variables:
     IFRA_ENV_TYPE: "Server Master"
+    KUBERNETES_CPU_REQUEST: 2000m
   cache:
     policy: pull-push
   needs: []

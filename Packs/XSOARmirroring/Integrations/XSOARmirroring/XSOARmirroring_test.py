@@ -128,7 +128,7 @@ def test_fetch_incidents(mocker):
                                                  query='', mirror_direction='None', mirror_tag=[])
 
     assert len(incidents_result) == 3
-    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(microseconds=1)
+    assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created']) + timedelta(milliseconds=1)
 
 
 def test_update_remote_system(mocker):
