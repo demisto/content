@@ -30,7 +30,7 @@ class Client(BaseClient):
             params=params
         )
 
-    def search_events(self, limit, prev_ids={}, ordering=''):
+    def search_events(self, url_suffix, limit=DEFAULT_LIMIT, prev_id=0, ordering=''):
         """
         Searches for NetBox alerts using the '/<log_type>' API endpoint for log_type in LOG_TYPES.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -42,69 +42,41 @@ class Client(BaseClient):
             dict: A dict containing the next_run
             list: A list containing the events
         """
-        next_ids = prev_ids.copy()
+        next_id = prev_id
         results: List[Dict] = []
 
-        for log_type in LOG_TYPES:
-            result: List[Dict] = []
-            next_page = True
+        next_page = True
+        params = {
+            'limit': limit,
+            'ordering': ordering,
+            'id__gte': next_id,
+        }
 
-            params = {
-                'limit': limit,
-                'ordering': ordering,
-                'id__gt': prev_ids.get(log_type, 0)
-            }
+        while next_page and len(results) < limit:
+            full_url = next_page if type(next_page) == str else ''
+            response = self.http_request(url_suffix=url_suffix, full_url=full_url, params=params)
 
-            while next_page and len(result) < limit:
-                full_url = next_page if type(next_page) == str else ''
-                response = self.http_request(url_suffix=f'/{log_type}', full_url=full_url, params=params)
+            results += response.get('results', [])
 
-                result += response.get('results', [])
+            next_page = response.get('next')
+            params['limit'] = limit - len(results)
 
-                next_page = response.get('next')
-                params['limit'] = limit - len(result)
+            if results:
+                next_id = results[-1]['id'] + 1
 
-            results += result
+        return next_id, results
 
-            if result:
-                next_ids[log_type] = result[-1]['id']
-
-        return next_ids, results
-
-    def get_first_fetch_ids(self, first_fetch_time):
+    def get_first_fetch_id(self, url_suffix, params):
         """
         Sets the first fetch ids for each log type.
         Args:
             first_fetch_time: int, the first fetch time in timestamp.
         """
-        next_run: Dict[str, int] = {}
-
-        # get the first journal-entries id
-        first_fetch_time_strftime = dateparser.parse(str(first_fetch_time)).strftime(DATE_FORMAT)
-
-        next_page = True
-        while next_page:
-            full_url = next_page if type(next_page) == str else ''
-            response = self.http_request(url_suffix='/journal-entries', full_url=full_url,
-                                         params={'limit': 100, 'ordering': 'created',
-                                                 'last_updated__gte': first_fetch_time_strftime})
-
-            next_page = response.get('next')
-            results = response.get('results', [])
-
-            for result in results:
-                created = int(arg_to_datetime(result['created']).timestamp())  # type: ignore
-                if created >= first_fetch_time:
-                    next_run['journal-entries'] = result['id']
-                    next_page = False
-                    break
-
-        # get the first object-changes id
-        if next_run.get('journal-entries'):
-            first_object_changes = self.http_request(url_suffix='/object-changes',
-                                                     params={'ordering': 'time', 'limit': 1,
-                                                             'changed_object_id': next_run['journal-entries']})
-            next_run['object-changes'] = first_object_changes.get('results', [{}])[0].get('id')
+        first_log = self.http_request(url_suffix=url_suffix, params={'ordering': 'id', 'limit': 1} | params)
+        try:
+            next_run = first_log.get('results', [{}])[0].get('id')
+        except IndexError:
+            next_run = None
 
         return next_run
 
@@ -122,7 +94,7 @@ def test_module(client: Client) -> str:
     """
 
     try:
-        client.search_events(limit=1)
+        client.search_events(url_suffix=LOG_TYPES[0], limit=1)
 
     except Exception as e:
         if 'Forbidden' in str(e):
@@ -134,12 +106,15 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, limit: int):
-    _, events = client.search_events(limit=limit)
-    if events:
-        hr = tableToMarkdown(name='Journal-entries and Object-changes Events',
-                             t=events, headers=(events[0] | events[-1]).keys())
-    else:
-        hr = 'No events found.'
+    events: List[Dict] = []
+    hr = ''
+    for log_type in LOG_TYPES:
+        _, events_ = client.search_events(url_suffix=log_type, limit=limit)
+        if events_:
+            hr += tableToMarkdown(name=f'{log_type} Events', t=events_)
+            events += events_
+        else:
+            hr = f'No events found for {log_type}.'
 
     return events, hr
 
@@ -157,20 +132,31 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    if not last_run:
-        last_run = client.get_first_fetch_ids(first_fetch_time)
-        if not last_run:
-            return {}, []
+    # In the first fetch, get the ids for the first fetch time
+    first_fetch_time_strftime = dateparser.parse(str(first_fetch_time)).strftime(DATE_FORMAT)  # type: ignore
+    params = {'journal-entries': {'created_after': first_fetch_time_strftime},
+              'object-changes': {'time_after': first_fetch_time_strftime}}
+    for log_type in LOG_TYPES:
+        if last_run.get(log_type) is None:
+            last_run[log_type] = client.get_first_fetch_id(url_suffix=log_type,
+                                                           params=params[log_type])
 
-    next_run, events = client.search_events(
-        limit=max_fetch,
-        ordering='id',
-        prev_ids=last_run,
-    )
-    demisto.info(f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}')
+    next_run = last_run.copy()
+    events = []
+
+    for log_type in LOG_TYPES:
+        if last_run[log_type] is None:
+            continue
+        next_run[log_type], events_ = client.search_events(url_suffix=log_type,
+                                                           limit=max_fetch,
+                                                           ordering='id',
+                                                           prev_id=last_run[log_type])
+        events += events_
+
+    demisto.info(f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    demisto.info(f'Setting next run with ids: {", ".join(f"{log_type}: {id_+1}" for log_type, id_ in next_run.items())}.')
+    demisto.info(f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.')
     return next_run, events
 
 
