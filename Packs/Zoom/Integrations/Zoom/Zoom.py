@@ -158,11 +158,11 @@ class Client(BaseClient):
         else:
             url_suffix = f'users/{user_id}'
 
+        # TODO why args to number dose not worke??
+        if "page_size" in args:
+            page_size = int(args['page_size'])
         if limit:
             limit = arg_to_number(args['limit'])
-            # TODO why args to number dose not worke??
-            if "page_size" in args:
-                page_size = int(args['page_size'])
 
             if limit and (user_id or args.get("page_size")):
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
@@ -250,14 +250,15 @@ class Client(BaseClient):
     def zoom_meeting_list(self, user_id: str, next_page_token: str = None, page_size: int = 30,
                           limit: int = None, type: str = None):
         args = demisto.args()
+        # TODO same same
+        # page_size = arg_to_number(args['page_size'])
+        if "page_size" in args:
+            page_size = int(args["page_size"])
         if limit:
             limit = arg_to_number(args['limit'])
-            # TODO same same
-            page_size = int(args["page_size"])
-            # page_size = arg_to_number(args['page_size'])
 
-            if limit and (args.get("page-size")):
-                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
+            if "limit" and "page_size" in args:
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
             else:
                 return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,
                                                            limit, type)
@@ -483,12 +484,25 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
 def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str = None,
                               page_size: int = 30, limit: int = None, type: str = None) -> CommandResults:
     raw_data = client.zoom_meeting_list(user_id, next_page_token, page_size, limit, type)
-    md = tableToMarkdown('Meeting list', [raw_data], ['next_page_token', 'page_size', 'total_records'])
-    #TODO work here
-    md += tableToMarkdown("aa", raw_data.get("meetings"), ['uuid', 'id',
-                                                           'host id', 'topic', 'type', 'start time', 'duration',
-                                                           'timezone', 'created_at', 'join_url'
-                                                           ])
+    if limit:
+        all_info = []
+        for pages in range(len(raw_data)):
+            page = raw_data[pages].get("meetings")
+
+            for record in range(len(page)):
+                all_info.append(page[record])
+        md = tableToMarkdown("Meeting list", all_info, ['uuid', 'id',
+                                                        'host_id', 'topic', 'type', 'start time', 'duration',
+                                                        'timezone', 'created_at', 'join_url'
+                                                        ])
+        md += "\n" + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
+    else:
+        md = tableToMarkdown("Meeting list", raw_data.get("meetings"), ['uuid', 'id',
+                                                                        'host_id', 'topic', 'type', 'start time', 'duration',
+                                                                        'timezone', 'created_at', 'join_url'
+                                                                        ])
+        md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'total_records'])
+
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,
