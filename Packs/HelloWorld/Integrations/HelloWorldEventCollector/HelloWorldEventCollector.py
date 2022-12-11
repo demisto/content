@@ -96,7 +96,7 @@ def get_events(client, alert_status):
         alert_status=alert_status
     )
     hr = tableToMarkdown(name='Test Event', t=events)
-    return events, hr
+    return events, CommandResults(readable_output=hr)
 
 
 def fetch_events(client: Client, last_run: Dict[str, int],
@@ -140,7 +140,7 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey')
+    api_key = params.get('apikey', {}).get('password')
     base_url = urljoin(params.get('url'), '/api/v1')
     verify_certificate = not params.get('insecure', False)
 
