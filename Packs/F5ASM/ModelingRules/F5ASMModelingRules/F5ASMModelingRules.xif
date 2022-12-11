@@ -23,7 +23,6 @@ alter
 | alter
         XDM.Network.Original_event_type = cefName,
         XDM.Network.rule = cs1,
-        XDM.Network.observation_timestamp = deviceCustomDate1,
         XDM.Network.Source.port = spt,
         XDM.Network.Destination.port = dpt,
         XDM.Network.application_protocol = app,
@@ -36,7 +35,7 @@ alter
         XDM.Network.Destination.ipv4 = ipv4dest,
         XDM.Network.Destination.ipv6 = ipv6dest,
         XDM.Network.Observer.name = dvchost,
-        XDM.Network.http.response_code = cn1,
+        XDM.Network.http.response_code = to_string(cn1),
         XDM.Network.http.method = requestMethod,
         XDM.Network.http.url = request,
         XDM.Network.http.referrer = referrer,
