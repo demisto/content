@@ -147,7 +147,9 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         assert False, description
 
     if collected is None:
-        assert False, f'should have collected something: {expected_tests=}, {expected_packs=}, {expected_machines=}, {expected_mrs_to_test=}'
+        err_msg = (f'should have collected something: {expected_tests=}, {expected_packs=},'
+                   f' {expected_machines=}, {expected_mrs_to_test=}')
+        assert False, err_msg
 
     if expected_tests is not None:
         assert collected.tests == set(expected_tests)
@@ -210,22 +212,26 @@ NIGHTLY_TESTS: tuple = (
     (MockerCases.I_xsoar, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myXSOAROnlyPack'}, None, None),
 
     # cases where nightly_packs doesn't hold all packs
-    (MockerCases.limited_nightly_packs, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'}, None, None),
+    (MockerCases.limited_nightly_packs, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
+     None, None),
 
     (MockerCases.non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'}, None, None),
 
-    (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'}, None, None),
+    (MockerCases.script_non_api_test, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack', 'myOtherPack'},
+     None, None),
 
     (MockerCases.skipped_nightly_test, XSOARNightlyTestCollector, {}, {'myPack'}, None, None)
 
 )
 
 
-@pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs,expected_machines,expected_mrs_to_test', NIGHTLY_TESTS)
+@pytest.mark.parametrize(
+    'case_mocker,collector_class,expected_tests,expected_packs,expected_machines,expected_mrs_to_test', NIGHTLY_TESTS
+)
 def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: Optional[tuple[Machine]],
-                 expected_mrs_to_test: Optional[Iterable[str|Path]]):
+                 expected_mrs_to_test: Optional[Iterable[str | Path]]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -243,8 +249,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 
 @pytest.mark.parametrize(
-    'case_mocker,expected_tests,expected_packs,expected_machines,expected_mrs_to_test,collector_class_args,mocked_changed_files,'
-    'mocked_packs_files_were_moved_from,expected_packs_to_upload',
+    'case_mocker,expected_tests,expected_packs,expected_machines,expected_mrs_to_test,collector_class_args,'
+    'mocked_changed_files,mocked_packs_files_were_moved_from,expected_packs_to_upload',
     (
      # (0) change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
      (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, None, XSOAR_BRANCH_ARGS,
@@ -262,12 +268,14 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), None),
 
      # (4) Case A: yml file changes, expect the test playbook testing the integration to be collected
-     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None, XSIAM_BRANCH_ARGS,
-      ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSIAMOnlyPack',)),
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None,
+      XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
+      ('myXSIAMOnlyPack',)),
 
      # (5) Case A: py file changes, expect the test playbook testing the integration to be collected
-     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None, XSIAM_BRANCH_ARGS,
-      ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSIAMOnlyPack',)),
+     (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None,
+      XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',), (),
+      ('myXSIAMOnlyPack',)),
 
      # (6) Case B: test playbook changes, expect it to be collected
      (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
@@ -308,15 +316,16 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myPack/Integrations/myIntegration/test_data/file.json',), (), None),
 
      # (15) a file under ParsingRules/Samples is changed, nothing should be collected.
-     (MockerCases.J, (), (), None, None, XSOAR_BRANCH_ARGS, ('Packs/myPack/ParsingRules/Samples/some_sample.json',), (), None),
+     (MockerCases.J, (), (), None, None, XSOAR_BRANCH_ARGS, ('Packs/myPack/ParsingRules/Samples/some_sample.json',),
+      (), None),
 
      # (16) Integration is changed but its test playbook is skipped - pack should be collected, test should not.
      (MockerCases.K, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
       ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',), (), None),
 
      # (17) Testing version ranges
-     (MockerCases.L, None, ('myXSIAMOnlyPack', 'CoreAlertFields'), (Machine.MASTER, Machine.V6_9), None, XSIAM_BRANCH_ARGS,
-      ('Packs/myXSIAMOnlyPack/Wizards/harry.json',), (), ('myXSIAMOnlyPack',)),
+     (MockerCases.L, None, ('myXSIAMOnlyPack', 'CoreAlertFields'), (Machine.MASTER, Machine.V6_9), None,
+      XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Wizards/harry.json',), (), ('myXSIAMOnlyPack',)),
 
      # (18) see M2 definition at the top of this file
      (MockerCases.M2, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,

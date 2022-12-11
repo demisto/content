@@ -73,7 +73,7 @@ class CollectionResult:
     def __init__(
             self,
             test: Optional[str],
-            mr_to_test: Optional[str|Path],  # path to dir of modeling rule to test
+            mr_to_test: Optional[str | Path],  # path to dir of modeling rule to test
             pack: Optional[str],
             reason: CollectionReason,
             version_range: Optional[VersionRange],
@@ -111,7 +111,7 @@ class CollectionResult:
         :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
         """
         self.tests: set[str] = set()
-        self.mrs_to_test: set[str|Path] = set()
+        self.mrs_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
@@ -533,8 +533,10 @@ class TestCollector(ABC):
             only_to_install=only_to_install
         )
 
-    def _collect_pack_for_modeling_rule(self, pack_id: str, reason_description: str, changed_file_path: Path,
-                      content_item_range: Optional[VersionRange] = None, is_nightly: bool = False) -> CollectionResult:
+    def _collect_pack_for_modeling_rule(
+        self, pack_id: str, reason_description: str, changed_file_path: Path,
+        content_item_range: Optional[VersionRange] = None, is_nightly: bool = False
+    ) -> CollectionResult:
         """Create a CollectionResult for a pack because of a modeling rule
 
         Marks the pack being collected and the modeling rule that needs to be tested
