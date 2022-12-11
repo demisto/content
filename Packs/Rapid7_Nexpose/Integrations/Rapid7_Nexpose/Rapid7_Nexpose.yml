@@ -1793,7 +1793,7 @@ script:
       description: The severity score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10.
       type: number
     - contextPath: Nexpose.Vulnerability.pci.fail
-      description: Whether, if present on a host. this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise.
+      description: Whether, if present on a host, this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise.
       type: boolean
     - contextPath: Nexpose.Vulnerability.pci.specialNotes
       description: Any special notes or remarks about the vulnerability that pertain to PCI compliance.
