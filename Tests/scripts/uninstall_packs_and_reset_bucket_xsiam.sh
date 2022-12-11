@@ -14,4 +14,3 @@ else
   gsutil -m cp -r "gs://$GCS_SOURCE_BUCKET/content" "$GCS_MACHINES_BUCKET/$XSIAM_CHOSEN_MACHINE_ID/" > "$ARTIFACTS_FOLDER/Copy_prod_bucket_to_xsiam_machine_cleanup.log" 2>&1
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --xsiam_machine $XSIAM_CHOSEN_MACHINE_ID --cloud_servers_path $CLOUD_SERVERS_PATH --cloud_servers_api_keys "cloud_api_keys.json"
 fi
-
