@@ -26,11 +26,11 @@ alter
     user_name5 = arrayindex(regextract(_raw_log ,"\sfor\suser\s([a-zA-Z0-9\_\-\.\@]+)\s*"),0),
     user_name6 = arrayindex(regextract(_raw_log ,"\sUser\s([a-zA-Z0-9\-\_\.\@]+)\,"),0)
 | alter user_name = coalesce(user_name1 , user_name2, user_name3 , user_name4 , user_name5 , user_name6)
-// protocol on investigation
-/* | alter protocol1 = arrayindex(regextract(_raw_log,"([A-Z]+)\s*[A-Z]*\s+\w+\s+[from|for]{3,4}"),0),
-    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0)
-| alter
-    protocol = coalesce(protocol1, protocol2)*/
+// protocol
+| alter protocol1 = arrayindex(regextract(_raw_log,"prot\=([A-Z]{2,})"),0),
+    protocol2 = arrayindex(regextract(_raw_log,"\:\s*[A-Za-z]*\s+[A-Z]*[a-z]+\s+([A-Z]+)\s+connection"),0),
+    protocol3 = uppercase(arrayindex(regextract(_raw_log ,"\sprotocol\=([a-zA-Z]+)"),0))
+| alter protocol = coalesce(protocol1, protocol2, protocol3 )
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
 // source_ip/source_port to dest_ip/dest_port
@@ -125,7 +125,7 @@ alter
     xdm.event.id = to_string(event_id),
     xdm.event.description = message,
     xdm.alert.severity = severity,
-    //xdm.network.application_protocol = protocol,
+    xdm.network.application_protocol = protocol,
     xdm.source.ipv4 = coalesce(source_ip,host_ip),
     xdm.source.port = to_number(source_port),
     xdm.source.interface = source_interface,
