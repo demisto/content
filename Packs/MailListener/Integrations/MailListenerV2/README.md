@@ -199,5 +199,6 @@ There is no context output for this command.
 ```
 
 ## Additional Information
-In the first fetch iteration, some emails may be skipped and not fetched as incidents - the integration will fetch just the last available emails for the given day, as set in *The maximum number of incidents to fetch each time* and *First fetch time*. This behavior is due to the fact that IMAP time filter is limited to day based filter.
+- In the first fetch iteration, some emails may be skipped and not fetched as incidents - the integration will fetch just the last available emails for the given day, as set in *The maximum number of incidents to fetch each time* and *First fetch time*. This behavior is due to the fact that IMAP time filter is limited to day based filter.
 Subsequent fetch iterations should fetch emails as they are received, without further issue.
+- The occurred time for mails with no received date field will be the time it fetched to the system.
