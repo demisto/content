@@ -778,7 +778,7 @@ script:
     - contextPath: ThreatVault.Fileformat.latest_release_time
       description: The latest release time of the signature.
       type: String
-  dockerimage: demisto/crypto:1.0.0.39526
+  dockerimage: demisto/crypto:1.0.0.40696
   isfetch: true
   longRunning: false
   longRunningPort: false
