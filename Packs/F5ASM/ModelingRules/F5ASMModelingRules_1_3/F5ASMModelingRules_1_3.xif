@@ -1,4 +1,4 @@
-[MODEL: dataset="F5_ASM_raw", model="Network"]
+[MODEL: dataset="F5_ASM_raw"]
 alter
       user_agent=arrayindex(regextract(cs3 ,"user\-agent\:\s([^\"]+)\\"), 0),
       host=arrayindex(regextract(cs3 ,"Host:\s([^\\]+)"), 0),
