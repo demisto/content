@@ -8,6 +8,10 @@ alter
     duration = arrayindex(regextract(_raw_log,"duration\s*(\d+\:\d+\:\d+)\s*"),0), // not have function in xql to change it to milliseconds
     bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
     threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
+// Action
+| alter action1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s([a-zA-Z]+[\s|\-][a-zA-Z]{2,}\s+[a-zA-Z\s]{3,})"),0),
+    action2 = arrayindex(regextract(_raw_log ,"([a-zA-Z]{3,}\s[a-zA-Z]{3,}\s[a-zA-Z\s]{3,})\.*$"),0)
+| alter action = coalesce(action1 ,action2)
 // host ip
 | alter host_ip1 = arrayindex(regextract(_raw_log ,"\s*IP\s\<(\d+\.\d+\.\d+\.\d+)\>[\s|\,]"),0),
     host_ip2 = arrayindex(regextract(_raw_log ,"\s*[IP|server]\s*\=\s*(\d+\.\d+\.\d+\.\d+)\s*"),0),
@@ -133,4 +137,5 @@ alter
     xdm.target.ipv4 = dest_ip,
     xdm.target.port = to_number(dest_port),
     xdm.target.interface = dest_interface,
-    xdm.source.user.username = user_name;
+    xdm.source.user.username = user_name,
+    xdm.event.operation = action;
