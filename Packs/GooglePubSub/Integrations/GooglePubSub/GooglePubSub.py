@@ -1310,15 +1310,26 @@ def fetch_incidents(
         client.default_project, client.default_subscription
     )
 
+    demisto.debug(f'{sub_name=}')
+
     # Setup subscription for fetch
     last_run_fetched_ids, last_run_time = setup_subscription_last_run(
         client, first_fetch_time, last_run, sub_name, ack_incidents
     )
 
+    demisto.debug(f"last run fetched ids is: {str(last_run_fetched_ids)}")
+    demisto.debug(f"last run time is: {str(last_run_time)}")
+
     # Pull unique messages if available
     msgs, msg_ids, acknowledges, max_publish_time = try_pull_unique_messages(
         client, sub_name, last_run_fetched_ids, last_run_time, retry_times=1
     )
+
+    demisto.debug(f"msg_ids: {str(msg_ids)}")
+    demisto.debug(f"acks: {str(acknowledges)}")
+    demisto.debug(f"max_publis_time: {str(max_publish_time)}")
+
+
 
     # Handle fetch results
     return handle_fetch_results(
