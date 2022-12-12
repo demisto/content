@@ -98,7 +98,7 @@ class Client(BaseClient):
         offset = 0
         max_results = '1'
 
-        
+       # unreachable code error was removed 
         request_params['offset'] = offset
         if max_results:
             request_params['limit'] = max_results
