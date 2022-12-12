@@ -46,6 +46,7 @@ OUTPUT_PREFIX = "PANOS."
 UNICODE_FAIL = u'\U0000274c'
 UNICODE_PASS = u'\U00002714\U0000FE0F'
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
 
@@ -12829,8 +12830,20 @@ def pan_os_delete_application_group_command(args):
 # EDITING: fetch commands 
 
 def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
+    """_summary_
+
+    Args:
+        last_fetch (str): _description_
+        first_fetch (str): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        _type_: _description_
+    """    
     first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
-    if last_fetch is None:
+    if not last_fetch:
         return first_fetch_datetime
 
     last_fetch_datetime = dateparser.parse(last_fetch, settings={'TIMEZONE': 'UTC'})
@@ -12841,70 +12854,186 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str):
     return max(last_fetch_datetime, first_fetch_datetime)
 
 
-def job_id_request(log_type:str , query: str, max_fetch: int):
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, action='get', nlogs=max_fetch, skip=0, dir='backward')
+def get_query_job_id_request(log_type:str , query: str, max_fetch: int) -> str:
+    """Get the Job ID linked to a particular query.
+
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        job_id (str): returns the Job ID associated with the given query
+    """    
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, skip=0)
     response = http_request(URL, 'GET', params=params)
-    response = xml2json(response)
     job_id = response.get('response',{}).get('result',{}).get('job')
     return job_id
 
-def fetch_entries_request(job_id: int):
+
+def get_query_entries_by_id_request(job_id: str) -> dict:
+    """Get the entries of a particular Job ID.
+
+    Args:
+        job_id (int): ID of a query job
+
+    Returns:
+        dict: return a dictionary of the entries linked to the Job ID
+    """    
     params = assign_params(key=API_KEY,type = 'log', action='get', job_id=job_id)
     response = http_request(URL, 'GET', params=params)
-    response = xml2json(response)
     return response
 
-def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
-    # TODO: check how to deciede what queries to use; defulat based on log_types or user input.
+
+def get_query_entries(log_type:str , query: str, max_fetch: int) -> list[dict]:
+    """Get query entries accourding to a specific query.
+    
+    Args:
+        log_type (str): query log type
+        query (str): query for the fetch
+        max_fetch (int): maximum number of entries to fetch
+
+    Returns:
+        entries (list): a list of entries for the the specified query
+    """    
     entries = []
-    if queries:
-        transformed_queries = transform_queries(queries)
-        demisto.debug(f'Transformed queries:\n{str(queries)}')
-        
-    # perform queary for each log_type chosen in 'Log Type' parameter list
-    if log_types:
-        for log_type in log_types:
-            if query := transformed_queries.get("log_type"):
-                # first http request: send request with query, valid response will contain a job id.
-                job_id = job_id_request(log_type, query, max_fetch)
-                demisto.debug(f'job_id: {job_id}')
-                
-                # second http request: send request with job id, valid response will contain a list of entries.
-                response = fetch_entries_request(job_id)
-                
-                # extract all entries from resposne
-                for entry in response.get('response',{}).get('log'):
-                    entries.append(entry)
-            
-            
-
-def transform_queries(queries: str) -> dict:
-    """Transform queries paramter to a python dictionary
-
+    # first http request: send request with query, valid response will contain a job id.
+    job_id = get_query_job_id_request(log_type, query, max_fetch)
+    demisto.debug(f'job_id: {job_id}')
+    
+    # second http request: send request with job id, valid response will contain a dictionary of entries.
+    query_entries = get_query_entries_by_id_request(job_id)
+    
+    # extract all entries from resposne
+    for entry in query_entries.get('response',{}).get('result',{}).get('log',{}).get('logs',{}).get('entry'):
+        entries.append(entry)
+    
+    return entries
+    
+    
+def parse_queries(queries: str) -> dict:
+    """Parse queries paramter string and transform it to a python dictionary
+    EXAMPLE: "Decryption:(receive_time geq '2021/01/22 08:00:00')" --> {"Decryption":"(receive_time geq '2021/01/22 08:00:00')"}
     Args:
         queries (str): queries paramter
 
     Returns:
         - dict[str,str]: queries parameter transformed into a python dictionary
         - Empty dictioanry if queries is None
-    """    
+    """
     if queries:
-        return json.loads('{' + queries + '}')
+        parsed_queries = {}
+        queries_list = queries.split(',')
+        for query_pair in queries_list:
+            query_pair_list = query_pair.split(':',1)
+            if len(query_pair_list) == 2:
+                parsed_queries[query_pair_list[0]] = query_pair_list[1]
+        return parsed_queries
     return {}
+
+
+def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):    
+    # TODO: check how to deciede what queries to use; defulat based on log_types or user input.
+    """Get interies of incidents accourding to provided queries, log types and max_fetch paramters
+
+    Args:
+        queries (str): Query paramter
+        log_types (list): Log Type parameter
+        max_fetch (int): Max incidents per fetch parameter
+
+    Returns:
+        entries (list): a list of all the incidents entries for all the specified queries
+    """    
+    entries = []
+    parsed_queries = {}
+    if queries:
+        parsed_queries = parse_queries(queries)
+        demisto.debug(f'Parse queries:\n{str(queries)}')
+        
+    # perform queary for each log_type chosen in 'Log Type' parameter list
+    if log_types and parsed_queries:
+        if 'All' in log_types:
+            for log_type,query in parsed_queries.items():
+                response_entries = get_query_entries(log_type, query, max_fetch)
+                entries.extend(response_entries)
+        else:            
+            for log_type in log_types:
+                if query := parsed_queries.get(log_type):
+                    response_entries = get_query_entries(log_type, query, max_fetch)
+                    entries.extend(response_entries)
+    return entries
+
+
+def filter_incident_entries_by_time(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
+    """ filter list of incident entries by removing all entries that accoured before 'fetch_start_datetime' value.
+
+    Args:
+        incident_entries (List[Dict[str,Any]]): list of dictioneries representing incident entries
+        fetch_start_datetime (datetime): the minimum start time allowed for the incident
+
+    Returns:
+        incident_entries (List[Dict[str,Any]]): filterd list of dictioneries representing incident entries
+    """
+    filterd_incident_entries = []
+    for entry in incident_entries:
+        if time_generated := entry.get("time_generated"):
+            time_generated = dateparser.parse(time_generated, settings={'TIMEZONE': 'UTC'})
+            if time_generated > fetch_start_datetime:
+                filterd_incident_entries.append(entry)
+    return filterd_incident_entries
+                
+
+def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
+    # filter the incident entries list by the time they were created.
+    filterd_incident_entries = filter_incident_entries_by_time(incident_entries, fetch_start_datetime)
+    demisto.debug(f'incident entries filterd by time: {str(filterd_incident_entries)}')
+    
+    # if no new incidents are available, return most updated time and empty list of incidents
+    if not filterd_incident_entries:
+        return fetch_start_datetime, filterd_incident_entries
+    
+    # sort incidents list by 'occurred' key
+    filterd_incident_entries = sorted(filterd_incident_entries, key=lambda d: d['time_generated'])
+    demisto.debug('incidents list sorted')
+
+    last_fetch_plain = filterd_incident_entries[-1].get('time_generated',"")
+    demisto.debug(f'last fetch time: {last_fetch_plain}')
+    last_fatch_datetime = dateparser.parse(last_fetch_plain, settings={'TIMEZONE': 'UTC'})
+    
+    # convert incedent entries to incident context
+    incidents: list[dict[str,Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
+    demisto.debug(f'incidents list created with {len(incidents)}')
+    
+    return last_fatch_datetime, incidents
+
+def incident_entry_to_incident_context(incident_entry: Dict[str, Any]):
+    #TODO: maybe more filtering needed
+    occurred = incident_entry.get('time_generated',"")
+    occurred_datetime = dateparser.parse(occurred, settings={'TIMEZONE': 'UTC'})
+    if occurred_datetime:
+        incident_context = {
+            'name': incident_entry.get('seqno'),
+            'occurred': occurred_datetime.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(incident_entry),
+            'type': incident_entry.get('type')
+        }
+    return incident_context
 
 
 def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: list, max_fetch: int):
     last_fetch = last_run.get("last_fetch", "")
-    last_id_fetched = last_run.get('last_id_fetched', '-1')
+
     fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
     
-    demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
-                  f'time to fetch from is: {fetch_start_datetime}.')
+    demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from: {fetch_start_datetime}.')
 
-    responses = fetch_incidents_request(queries, log_types, max_fetch)
-     
+    incident_entries = fetch_incidents_request(queries, log_types, max_fetch)
+    
+    demisto.debug(f'{len(incident_entries)} incident entries found.')
+    
+    last_fetch, incidents = parse_incident_entries(incident_entries, fetch_start_datetime)
 
-    return next_run, incidents
+    return last_fetch, incidents
 
 
 def main():
@@ -12933,10 +13062,9 @@ def main():
             queries = params.get("queries")
             log_types = params.get("log_types")
             max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
+            last_fetch, incidents = fetch_incidents(last_run, first_fetch, queries, log_types, max_fetch)
             
-            next_run, incidents = fetch_incidents(last_run, first_fetch, queries, log_types, max_fetch)
-
-            demisto.setLastRun(next_run)
+            demisto.setLastRun({"last_fetch":last_fetch.isoformat()})
             demisto.incidents(incidents)
 
         elif command == 'panorama' or command == 'pan-os':
