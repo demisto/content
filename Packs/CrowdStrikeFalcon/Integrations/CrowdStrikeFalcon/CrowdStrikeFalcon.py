@@ -11,10 +11,10 @@ from threading import Timer
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import requests
-# Disable insecure warnings
-import urllib3
 from dateutil.parser import parse
 
+# Disable insecure warnings
+import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''

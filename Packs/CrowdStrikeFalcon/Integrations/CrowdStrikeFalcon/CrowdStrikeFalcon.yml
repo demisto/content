@@ -89,7 +89,7 @@ configuration:
   required: false
   type: 19
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: '1'
+  defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   required: false
@@ -344,7 +344,8 @@ script:
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline
-      defaultValue: 'false'
+      defaultValue: false
+      required: false
     - description: A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.)
       name: host_ids
       required: true
@@ -1999,11 +2000,6 @@ script:
       name: ip
     - description: The endpoint hostname.
       name: hostname
-    - default: true
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
       secret: false
     description: Returns information about an endpoint.
     name: endpoint
@@ -2515,7 +2511,7 @@ script:
   - arguments: []
     description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.8.37753
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2527,3 +2523,6 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+defaultclassifier: CrowdStrike Falcon
+defaultmapperin: CrowdStrike Falcon-Mapper
+defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
