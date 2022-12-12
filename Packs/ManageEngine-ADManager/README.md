@@ -1,7 +1,7 @@
 # ManageEngine ADManager Plus
 This pack includes Cortex XSIAM content. 
 ## Configuration on Server Side
-You need to configure ManageEngine ADAudit Plus to forward Syslog messages in **CEF format**.
+You need to configure ManageEngine ADManager Plus to forward Syslog messages in **CEF format**.
 
 Steps to enable Syslog Logging in ADManager Plus:
 1. Login to ADManager Plus.

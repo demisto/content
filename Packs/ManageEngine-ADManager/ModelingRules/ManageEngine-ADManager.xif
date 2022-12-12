@@ -4,7 +4,9 @@ status = arrayindex(regextract(_raw_log ,"Status\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 operation = arrayindex(regextract(_raw_log ,"Task\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 action= arrayindex(regextract(_raw_log ,"ACTION\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 domainName=arrayindex(regextract(_raw_log ,"Domain Name\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
-objectName=arrayindex(regextract(_raw_log ,"Object Name\=([a-zA-Z0-9\-\_\s\.]+)\]"),0)
+objectName=arrayindex(regextract(_raw_log ,"Object Name\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
+sourceUserFirstName=arrayindex(regextract(_raw_log ,"TechnicianName\=([a-zA-Z0-9\-\_\s\.]+)\s"),0),
+sourceUserLastName=arrayindex(regextract(_raw_log ,"TechnicianName\=[a-zA-Z0-9\-\_\s\.]+\s(\w+)\]"),0)
 |alter xdm.observer.vendor=_vendor,
 xdm.observer.product=_product,
 xdm.observer.name=observername,
@@ -12,4 +14,5 @@ xdm.event.outcome=status,
 xdm.observer.action=action,
 xdm.event.operation=operation,
 xdm.target.domain=domainName,
-xdm.target.user.username=objectName;
+xdm.source.user.first_name=sourceUserFirstName,
+xdm.source.user.last_name=sourceUserLastName;
