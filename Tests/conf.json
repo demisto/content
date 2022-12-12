@@ -5757,7 +5757,7 @@
             "demisto/python3:3.10.4.29342": {
                 "memory_threshold": 85
             },
-            "devdemisto/py3-native": {
+            "demisto/py3-native": {
                 "pid_threshold": 11,
                 "memory_threshold": 200
             }

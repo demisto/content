@@ -299,7 +299,7 @@ script:
     description: Updates a managed cluster with the specified configuration.
     execution: false
     name: azure-ks-cluster-addon-update
-  dockerimage: devdemisto/py3-native:8.1.0.40312
+  dockerimage: demisto/py3-native:8.1.0.40314
   feed: false
   isfetch: false
   longRunning: false

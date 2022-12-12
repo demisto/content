@@ -6938,7 +6938,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: devdemisto/py3-native:8.1.0.40312
+  dockerimage: demisto/py3-native:8.1.0.40314
   feed: false
   isfetch: false
   longRunning: false
