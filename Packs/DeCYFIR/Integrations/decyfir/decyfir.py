@@ -288,8 +288,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # IP Reputation
-            if json_val.get(VAR_IP_REPUTATION) is not None:
-                json_data = json_val.get(VAR_IP_REPUTATION)
+            if json_data := json_val.get(VAR_IP_REPUTATION):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_IP_REPUTATION)
                 return_data = return_data + incidents_json_data
