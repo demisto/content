@@ -289,6 +289,11 @@ script:
       isArray: false
       name: file_name
       required: false
+    - description: 'File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status.'
+      deprecated: true
+      isArray: false
+      name: file_hash
+      required: false
     - auto: PREDEFINED
       defaultValue: All
       description: The features to use on the file.
