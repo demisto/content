@@ -3,14 +3,16 @@
     "description": "Deprecated. Use FeedMitreAttack v2 instead.",
     "support": "xsoar",
     "hidden": true,
-    "currentVersion": "1.2.2",
+    "currentVersion": "1.2.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Threat Intelligence Management"],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
     "created": "2020-04-23T17:32:00Z",
     "useCases": [],
     "keywords": [

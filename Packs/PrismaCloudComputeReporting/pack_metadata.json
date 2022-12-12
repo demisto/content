@@ -3,14 +3,16 @@
     "description": "Deprecated. No available replacement.",
     "support": "community",
     "hidden": true,
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "SA Team",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
     "categories": [
         "Cloud Services"
     ],
-    "tags": ["Palo Alto Networks Products"],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
