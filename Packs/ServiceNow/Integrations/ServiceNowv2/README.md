@@ -70,38 +70,38 @@ If MFA is enabled for your user, follow the next steps:
 1. When using basic authorization, you will have to update your password with the current OTP every time the current code expires (30 seconds), hence we recommend using OAuth 2.0 authorization.
 2. For using OAuth 2.0 see the above instructions. The OTP code should be appended to the password parameter in the `!servicenow-oauth-login` command.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | ServiceNow URL, in the format https://company.service-now.com/ |  | True |
-    | Username/Client ID |  | False |
-    | Password |  | False |
-    | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information. | False |
-    | Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item. | False |
-    | ServiceNow API Version (e.g. 'v1') |  | False |
-    | Fetch incidents |  | False |
-    | The query to use when fetching incidents |  | False |
-    | How many incidents to fetch each time |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |  | False |
-    | ServiceNow ticket column to be set as the incident name. Default is the incident number |  | False |
-    | Incident type |  | False |
-    | Get incident attachments |  | False |
+    | **Parameter** | **Description**                                                                                                                                                                       | **Required** |
+    |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+    | ServiceNow URL, in the format https://company.service-now.com/ |                                                                                                                                                                                       | True |
+    | Username/Client ID |                                                                                                                                                                                       | False |
+    | Password |                                                                                                                                                                                       | False |
+    | Use OAuth Login | Select this checkbox if to use OAuth 2.0 authentication. See \(?\) for more information.                                                                                              | False |
+    | Default ticket type for running ticket commands and fetching incidents | The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.                                                                                        | False |
+    | ServiceNow API Version (e.g. 'v1') |                                                                                                                                                                                       | False |
+    | Fetch incidents |                                                                                                                                                                                       | False |
+    | The query to use when fetching incidents |                                                                                                                                                                                       | False |
+    | How many incidents to fetch each time |                                                                                                                                                                                       | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |                                                                                                                                                                                       | False |
+    | Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at&gt;[Last Run]".<br/>To prevent duplicate incidents, this field is mandatory for fetching incidents. |                                                                                                                                                                                       | False |
+    | ServiceNow ticket column to be set as the incident name. Default is the incident number |                                                                                                                                                                                       | False |
+    | Incident type |                                                                                                                                                                                       | False |
+    | Get incident attachments |                                                                                                                                                                                       | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to XSOAR\), Outgoing \(from XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to XSOAR and ServiceNow\). | False |
-    | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
-    | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
-    | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
-    | File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
-    | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates. | False |
-    | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in. | False |
-    | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
-    | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
-    | Mirrored ServiceNow SIR Ticket closure method | Define how to close the mirrored SIR tickets, If you want to override the SIR default closing method, choose an integer representing the state code within ServiceNow. | False |
-    | Close Mirrored ServiceNow Ticket | When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Incidents Fetch Interval |  | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow.                                                                                                            | False |
+    | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow.                                                                                                          | False |
+    | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow.                                                                                                               | False |
+    | File Entry Tag From ServiceNow | Choose the tag to add to an entry to mirror it as a file from ServiceNow.                                                                                                             | False |
+    | Timestamp field to query for updates as part of the mirroring flow | According to the timestamp in this field, records will be queried to check for updates.                                                                                               | False |
+    | How many incidents to mirror incoming each time | If a greater number of incidents than the limit were modified, then they won't be mirrored in.                                                                                        | False |
+    | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here.  | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.                                                                                                             | False |
+    | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.                                                              | False |
+    | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets, If you want to override the tickets default closing method, choose an integer representing the custom close state code within ServiceNow.   | False |
+    | Close Mirrored ServiceNow Ticket | When selected, closing the XSOAR incident is mirrored in ServiceNow.                                                                                                                  | False |
+    | Use system proxy settings |                                                                                                                                                                                       | False |
+    | Trust any certificate (not secure) |                                                                                                                                                                                       | False |
+    | Incidents Fetch Interval |                                                                                                                                                                                       | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.  | False |
 
 
 5. Click **Test** to validate the URLs, token, and connection.

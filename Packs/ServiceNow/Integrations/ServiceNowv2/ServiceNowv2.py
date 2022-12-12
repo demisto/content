@@ -64,6 +64,15 @@ TICKET_STATES = {
     }
 }
 
+
+TICKET_TYPE_TO_CLOSED_STATE = {'incident': '7',
+                               'problem': '4',
+                               'change_request': '3',
+                               'sc_task': '3',
+                               'sc_request': '3',
+                               SIR_INCIDENT: '3'}
+
+
 TICKET_APPROVAL = {
     'sc_req_item': {
         'waiting_for_approval': 'Waiting for approval',
@@ -2352,24 +2361,23 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     ticket_type = client.ticket_type
     ticket_id = parsed_args.remote_incident_id
     closure_case = get_closure_case(params)
-    is_sir_custom_close = False
-    sir_custom_state = params.get('close_sir_custom_state')
-    demisto.debug(f'sir_custom_state = {sir_custom_state}')
+    is_custom_close = False
+    close_custom_state = params.get('close_custom_state', None)
 
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
             if closure_case and ticket_type in {'sc_task', 'sc_req_item', SIR_INCIDENT}:
                 parsed_args.data['state'] = '3'
-            if closure_case and sir_custom_state and ticket_type == SIR_INCIDENT:
-                is_sir_custom_close = True
-                parsed_args.data['state'] = sir_custom_state  # Closing by custom state
             # These ticket types are closed by changing their state.
             if closure_case == 'closed' and ticket_type == INCIDENT:
                 parsed_args.data['state'] = '7'  # Closing incident ticket.
             elif closure_case == 'resolved' and ticket_type == INCIDENT:
                 parsed_args.data['state'] = '6'  # resolving incident ticket.
-
+            if closure_case and close_custom_state:  # Closing by custom state
+                demisto.debug(f'Closing by custom state = {close_custom_state}')
+                is_custom_close = True
+                parsed_args.data['state'] = close_custom_state
         fields = get_ticket_fields(parsed_args.data, ticket_type=ticket_type)
         if closure_case:
             fields = {key: val for key, val in fields.items() if key != 'closed_at' and key != 'resolved_at'}
@@ -2377,10 +2385,12 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         demisto.debug(f'Sending update request to server {ticket_type}, {ticket_id}, {fields}')
         result = client.update(ticket_type, ticket_id, fields)
 
-        # Handle case of custom state doesn't exist, reverting to the original close state for SIR ("close")
-        if is_sir_custom_close and demisto.get(result, 'result.state') != sir_custom_state:
-            fields['state'] = '3'
-            demisto.debug(f'Sending second update request to server for SIR {ticket_type}, {ticket_id}, {fields}')
+        # Handle case of custom state doesn't exist, reverting to the original close state
+        if is_custom_close and demisto.get(result, 'result.state') != close_custom_state:
+            fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
+            demisto.debug('Given custom state doesn\'t exist')
+            demisto.debug(f'Sending second update request to server with default closed state: '
+                          f'{ticket_type}, {ticket_id}, {fields}')
             result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')

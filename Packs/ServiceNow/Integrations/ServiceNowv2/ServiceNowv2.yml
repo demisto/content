@@ -133,10 +133,10 @@ configuration:
   - resolved
   required: false
   type: 15
-- additionalinfo: Define how to close the mirrored SIR tickets, If you want to override the SIR default closing method, choose an integer representing the state code within ServiceNow.
-  defaultvalue: 'None'
-  display: Mirrored ServiceNow SIR Ticket closure method
-  name: close_sir_custom_state
+- additionalinfo: Define how to close the mirrored tickets, If you want to override the tickets default closing method, choose an integer representing the custom close state code within ServiceNow. # TODO - if not exist...
+  defaultvalue: ''
+  display: Mirrored ServiceNow Ticket custom close state code
+  name: close_custom_state
   required: false
   type: 0
 - defaultvalue: 'false'
