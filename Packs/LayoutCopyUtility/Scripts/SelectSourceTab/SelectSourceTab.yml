@@ -1,7 +1,7 @@
 comment: Field display script for displaying Select Source Tab options.
 args:
 - name: source_layout
-    description: The source layout field value
+  description: The source layout field value
 commonfields:
   id: SelectSourceTab
   version: -1
