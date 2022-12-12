@@ -218,9 +218,7 @@ class Client(BaseClient):
                     else:
                         domain = domain + ", " + json_.get("top_domain")
 
-                name = ""
-                if domain is not None and domain != "":
-                    name = "DOMAIN : {}".format(domain)
+                name = "DOMAIN : {}".format(domain) if domain else ""
 
                 if ip:
                     name = name + "\n IP: {}".format(ip) if name else "IP: {}".format(ip)
