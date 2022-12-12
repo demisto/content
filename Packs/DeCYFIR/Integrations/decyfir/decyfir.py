@@ -380,7 +380,6 @@ def fetch_incidents(client, last_run, first_fetch_time):
     try:
         org_api_key: str = demisto.params().get('decyfir_api_key')
         # incident_type: str = demisto.params().get('incidentType')
-        is_first_fetch = True
 
         fetch_from = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch_time)
 
