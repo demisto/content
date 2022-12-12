@@ -406,11 +406,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
         # incident_type: str = demisto.params().get('incidentType')
         is_first_fetch = True
 
-        if not last_run:
-            fetch_from = dateparser.parse(first_fetch_time)
-        else:
-            fetch_from = dateparser.parse(last_run.get("last_fetch"))
-            is_first_fetch = False
+        fetch_from = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch_time)
 
         after_val: int = int(fetch_from.timestamp() * 1000)
 
