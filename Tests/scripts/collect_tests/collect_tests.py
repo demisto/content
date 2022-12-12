@@ -54,7 +54,7 @@ class CollectionReason(str, Enum):
     ALWAYS_INSTALLED_PACKS = 'packs that are always installed'
     PACK_TEST_DEPENDS_ON = 'a test depends on this pack'
     NON_XSOAR_SUPPORTED = 'support level is not xsoar: collecting the pack, not collecting tests'
-    FILES_MOVED_FROM_PACK = 'files were moved from this pack, installing to make sure it is not broken'
+    FILES_REMOVED_FROM_PACK = 'files were removed from this pack, installing to make sure it is not broken'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
 
 
@@ -572,7 +572,7 @@ class BranchTestCollector(TestCollector):
 
         return CollectionResult.union([
             self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_moved(collect_from.pack_ids_files_were_removed_from)
+            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
         ])
 
     def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> Optional[CollectionResult]:
@@ -597,14 +597,14 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_moved(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
+    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> Optional[CollectionResult]:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
-            logger.info(f'one or more files were moved from the {pack_id} pack, attempting to collect the pack.')
+            logger.info(f'one or more files were removed from the {pack_id} pack, attempting to collect the pack.')
             try:
                 if pack_to_collect := self._collect_pack(pack_id=pack_id,
-                                                         reason=CollectionReason.FILES_MOVED_FROM_PACK,
+                                                         reason=CollectionReason.FILES_REMOVED_FROM_PACK,
                                                          reason_description='',
                                                          allow_incompatible_marketplace=True):
                     collected.append(pack_to_collect)
