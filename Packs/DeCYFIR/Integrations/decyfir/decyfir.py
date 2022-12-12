@@ -270,8 +270,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # IP Vulnerability
-            if json_val.get(VAR_IP_VULNERABILITY) is not None:
-                json_data = json_val.get(VAR_IP_VULNERABILITY)
+            if json_data := json_val.get(VAR_IP_VULNERABILITY):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_IP_VULNERABILITY)
                 return_data = return_data + incidents_json_data
