@@ -1,0 +1,131 @@
+[
+    {
+        "id": 5,
+        "url": "https://www.example.com/api/extras/journal-entries/5/",
+        "display": "2022-12-04 14:33 ()",
+        "assigned_object_type": "dcim.device",
+        "assigned_object_id": 4,
+        "assigned_object": {
+            "id": 4,
+            "url": "https://www.example.com/api/dcim/devices/4/",
+            "display": "test3",
+            "name": "test3"
+        },
+        "created": "2022-12-04T14:33:49.437636Z",
+        "created_by": 1,
+        "kind": null,
+        "comments": "",
+        "tags": [],
+        "custom_fields": {},
+        "last_updated": "2022-12-04T14:33:49.437656Z"
+    },
+    {
+        "id": 6,
+        "url": "https://www.example.com/api/extras/journal-entries/6/",
+        "display": "2022-12-04 14:33 (Info)",
+        "assigned_object_type": "dcim.device",
+        "assigned_object_id": 4,
+        "assigned_object": {
+            "id": 4,
+            "url": "https://www.example.com/api/dcim/devices/4/",
+            "display": "test3",
+            "name": "test3"
+        },
+        "created": "2022-12-04T14:33:52.067484Z",
+        "created_by": 1,
+        "kind": {
+            "value": "info",
+            "label": "Info"
+        },
+        "comments": "",
+        "tags": [],
+        "custom_fields": {},
+        "last_updated": "2022-12-07T08:19:57.807055Z"
+    },
+    {
+        "id": 9,
+        "url": "https://www.example.com/api/extras/object-changes/9/",
+        "display": "extras | journal entry 2022-12-04 14:33 () created by netbox",
+        "time": "2022-12-04T14:33:52.071214Z",
+        "user": {
+            "id": 1,
+            "url": "https://www.example.com/api/users/users/1/",
+            "display": "netbox",
+            "username": "netbox"
+        },
+        "user_name": "netbox",
+        "request_id": "87654321-dcba-4321-dcba-0987654321ab",
+        "action": {
+            "value": "create",
+            "label": "Created"
+        },
+        "changed_object_type": "extras.journalentry",
+        "changed_object_id": 5,
+        "changed_object": {
+            "id": 5,
+            "url": "https://www.example.com/api/extras/journal-entries/5/",
+            "display": "2022-12-04 14:33 (Info)",
+            "created": "2022-12-04T14:33:52.067484Z"
+        },
+        "prechange_data": null,
+        "postchange_data": {
+            "kind": "",
+            "tags": [],
+            "created": "2022-12-04T14:33:52.067Z",
+            "comments": "",
+            "created_by": 1,
+            "last_updated": "2022-12-04T14:33:52.067Z",
+            "custom_fields": {},
+            "assigned_object_id": 4,
+            "assigned_object_type": 25
+        }
+    },
+    {
+        "id": 10,
+        "url": "https://www.example.com/api/extras/object-changes/10/",
+        "display": "extras | journal entry 2022-12-04 14:33 (Info) updated by netbox",
+        "time": "2022-12-07T08:19:57.810348Z",
+        "user": {
+            "id": 1,
+            "url": "https://www.example.com/api/users/users/1/",
+            "display": "netbox",
+            "username": "netbox"
+        },
+        "user_name": "netbox",
+        "request_id": "12345678-abcd-1234-abcd-1234567890ab",
+        "action": {
+            "value": "update",
+            "label": "Updated"
+        },
+        "changed_object_type": "extras.journalentry",
+        "changed_object_id": 6,
+        "changed_object": {
+            "id": 6,
+            "url": "https://www.example.com/api/extras/journal-entries/6/",
+            "display": "2022-12-04 14:33 (Info)",
+            "created": "2022-12-04T14:33:52.067484Z"
+        },
+        "prechange_data": {
+            "kind": "",
+            "tags": [],
+            "created": "2022-12-04T14:33:52.067Z",
+            "comments": "",
+            "created_by": 1,
+            "last_updated": "2022-12-04T14:33:52.067Z",
+            "custom_fields": {},
+            "assigned_object_id": 4,
+            "assigned_object_type": 25
+        },
+        "postchange_data": {
+            "kind": "info",
+            "tags": [],
+            "created": "2022-12-04T14:33:52.067Z",
+            "comments": "",
+            "created_by": 1,
+            "last_updated": "2022-12-07T08:19:57.807Z",
+            "custom_fields": {},
+            "assigned_object_id": 4,
+            "assigned_object_type": 25
+        }
+    }
+]

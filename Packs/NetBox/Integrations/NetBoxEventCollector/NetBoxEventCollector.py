@@ -59,18 +59,21 @@ class Client(BaseClient):
             results += response.get('results', [])
 
             next_page = response.get('next')
-            params['limit'] = limit - len(results)
+            params = {}
 
             if results:
                 next_id = results[-1]['id'] + 1
 
-        return next_id, results
+        return next_id, results[:limit]
 
     def get_first_fetch_id(self, url_suffix, params):
         """
-        Sets the first fetch ids for each log type.
+        Sets the first fetch ids for log type.
         Args:
-            first_fetch_time: int, the first fetch time in timestamp.
+            url_suffix: str, the log type to fetch.
+            params: dict, the time parameters to fetch.
+        Returns:
+            int: The first fetch id for the log type.
         """
         first_log = self.http_request(url_suffix=url_suffix, params={'ordering': 'id', 'limit': 1} | params)
         try:
@@ -106,6 +109,15 @@ def test_module(client: Client) -> str:
 
 
 def get_events(client: Client, limit: int):
+    """
+    Gets all the events from the NetBox API for each log type.
+    Args:
+        client (Client): NetBox client to use.
+        limit: int, the limit of the results to return per log_type.
+    Returns:
+        list: A list containing the events
+        CommandResults: A CommandResults object that contains the events in a table format.
+    """
     events: List[Dict] = []
     hr = ''
     for log_type in LOG_TYPES:
@@ -125,6 +137,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
     """
     Args:
         client (Client): NetBox client to use.
+        max_fetch (int): The maximum number of events to fetch per log type.
         last_run (dict): A dict with a keys containing the latest events ids we got from last fetch for each log type.
         first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.

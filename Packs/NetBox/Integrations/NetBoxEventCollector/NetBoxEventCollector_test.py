@@ -1,42 +1,53 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
 
 
+BASE_URL = 'https://www.example.com/api/extras'
+LOG_TYPES = ['journal-entries', 'object-changes']
+
+
+# helper function to load json file
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_get_events(mocker, requests_mock):
+    from NetBoxEventCollector import Client, get_events
 
-    Checks the output of the command function with the expected output.
+    for log_type in LOG_TYPES:
+        requests_mock.get(f'{BASE_URL}/{log_type}?limit=4&ordering=&id__gte=0',
+                          json=util_load_json(f'test_data/get_events_{log_type}-01.json'))
+        requests_mock.get(f'{BASE_URL}/{log_type}/?id__gte=0&limit=2&offset=2&ordering=',
+                          json=util_load_json(f'test_data/get_events_{log_type}-02.json'))
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    client = Client(base_url=BASE_URL, verify=False)
+    events, _ = get_events(client, limit=4)
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+    mock_events = util_load_json('test_data/netbox-get-events.json')
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    assert events == mock_events
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_fetch_events(mocker, requests_mock):
+    from NetBoxEventCollector import Client, fetch_events
+
+    # mock the first fetch id
+    requests_mock.get(f'{BASE_URL}/journal-entries?ordering=id&limit=1&created_after=2022-01-01T02%3A00%3A00Z',
+                      json={'results': [{'id': 5}]})
+    requests_mock.get(f'{BASE_URL}/object-changes?ordering=id&limit=1&time_after=2022-01-01T02%3A00%3A00Z',
+                      json={'results': [{'id': 9}]})
+
+    # mock the events
+    requests_mock.get(f'{BASE_URL}/journal-entries?limit=2&ordering=id&id__gte=5',
+                      json=util_load_json('test_data/fetch_events_journal-entries.json'))
+    requests_mock.get(f'{BASE_URL}/object-changes?limit=2&ordering=id&id__gte=9',
+                      json=util_load_json('test_data/fetch_events_object-changes.json'))
+
+    client = Client(base_url=BASE_URL, verify=False)
+    next_run, events = fetch_events(client, max_fetch=2, last_run={}, first_fetch_time=1640995200)
+
+    mock_events = util_load_json('test_data/netbox-fetch-events.json')
+
+    assert events == mock_events
+    assert next_run == {'journal-entries': 7, 'object-changes': 11}

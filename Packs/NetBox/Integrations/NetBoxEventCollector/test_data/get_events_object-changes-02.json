@@ -1,0 +1,83 @@
+{
+    "count": 10,
+    "next": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&offset=4&ordering=",
+    "previous": "https://www.example.com/api/extras/object-changes/?id__gte=0&limit=2&ordering=",
+    "results": [
+        {
+            "id": 8,
+            "url": "https://www.example.com/api/extras/object-changes/8/",
+            "display": "extras | journal entry 2022-12-04 14:33 () created by netbox",
+            "time": "2022-12-04T14:33:49.440462Z",
+            "user": {
+                "id": 1,
+                "url": "https://www.example.com/api/users/users/1/",
+                "display": "netbox",
+                "username": "netbox"
+            },
+            "user_name": "netbox",
+            "request_id": "56781234-abcd-1234-abcd-567812345678",
+            "action": {
+                "value": "create",
+                "label": "Created"
+            },
+            "changed_object_type": "extras.journalentry",
+            "changed_object_id": 4,
+            "changed_object": {
+                "id": 4,
+                "url": "https://www.example.com/api/extras/journal-entries/4/",
+                "display": "2022-12-04 14:33 ()",
+                "created": "2022-12-04T14:33:49.437636Z"
+            },
+            "prechange_data": null,
+            "postchange_data": {
+                "kind": "",
+                "tags": [],
+                "created": "2022-12-04T14:33:49.437Z",
+                "comments": "",
+                "created_by": 1,
+                "last_updated": "2022-12-04T14:33:49.437Z",
+                "custom_fields": {},
+                "assigned_object_id": 4,
+                "assigned_object_type": 25
+            }
+        },
+        {
+            "id": 7,
+            "url": "https://www.example.com/api/extras/object-changes/7/",
+            "display": "extras | journal entry 2022-12-04 14:32 () created by netbox",
+            "time": "2022-12-04T14:32:47.723223Z",
+            "user": {
+                "id": 1,
+                "url": "https://www.example.com/api/users/users/1/",
+                "display": "netbox",
+                "username": "netbox"
+            },
+            "user_name": "netbox",
+            "request_id": "67891234-abcd-1234-abcd-678912345678",
+            "action": {
+                "value": "create",
+                "label": "Created"
+            },
+            "changed_object_type": "extras.journalentry",
+            "changed_object_id": 3,
+            "changed_object": {
+                "id": 3,
+                "url": "https://www.example.com/api/extras/journal-entries/3/",
+                "display": "2022-12-04 14:32 ()",
+                "created": "2022-12-04T14:32:47.718968Z"
+            },
+            "prechange_data": null,
+            "postchange_data": {
+                "kind": "",
+                "tags": [],
+                "created": "2022-12-04T14:32:47.718Z",
+                "comments": "",
+                "created_by": 1,
+                "last_updated": "2022-12-04T14:32:47.718Z",
+                "custom_fields": {},
+                "assigned_object_id": 4,
+                "assigned_object_type": 25
+            }
+        }
+    ]
+}
