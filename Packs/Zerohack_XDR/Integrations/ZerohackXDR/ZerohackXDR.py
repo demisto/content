@@ -98,8 +98,8 @@ class Client(BaseClient):
         offset = 0
         max_results = '1'
 
-        if offset:
-            request_params['offset'] = offset
+        
+        request_params['offset'] = offset
         if max_results:
             request_params['limit'] = max_results
 
