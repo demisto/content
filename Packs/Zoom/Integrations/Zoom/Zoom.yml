@@ -89,6 +89,47 @@ script:
             - Scheduled
           description: The type of the meeting
           defaultValue: Instant
+        - name: allow_multiple_devices
+          defaultValue: true
+          description: Whether to allow attendees to join a meeting from multiple devices
+        - name: auto_recording
+          auto: PREDEFINED
+          predefined:
+            - Local
+            - Cloud
+            - none
+          defaultValue: none
+          description: The automatic recording settings
+        - name: email_notification
+          defaultValue: true
+          description: Whether to send email notifications to alternative hosts and users with scheduling privileges. 
+        - name: encryption_type
+          defaultValue: enhanced_encryption
+          description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee
+        - name: focus_mode
+          defaultValue: true
+          description:  Enable the Focus Mode feature when the meeting starts.
+        - name: host_video
+          defaultValue: true
+          description: start meetings with the host video on.
+        - name: jbh_time
+          description: >
+             If the value of the join_before_host field is true, this field indicates the time that a participant can join before the meeting's host. 
+
+             You can choose: 0, 5, 10, (minuts).
+        - name: join_before_host
+          defaultValue: false
+          description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only.
+        - name: meeting_authentication
+          defaultValue: false
+          description: If true, only authenticated users can join the meeting.
+        - name: meeting_invitees
+          description: >
+            A list of the meeting's invitees. 
+            For example : "meeting_invitees": [
+            {
+                "email": "admin@demistodev.com"
+            }
         - name: user_id
           required: true
           description: email address or id of user for meeting
@@ -105,6 +146,7 @@ script:
         - name: start-time
           description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”, always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
         - name: timezone
+          defaultValue: "no"
           description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
       outputs:
         - contextPath: Zoom.Meeting.join_url
