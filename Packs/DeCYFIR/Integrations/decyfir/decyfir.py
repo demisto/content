@@ -313,8 +313,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # Product Solution
-            if json_val.get(VAR_PRODUCT_SOLUTION) is not None:
-                json_data = json_val.get(VAR_PRODUCT_SOLUTION)
+            if json_data := json_val.get(VAR_PRODUCT_SOLUTION):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_PRODUCT_SOLUTION)
                 return_data = return_data + incidents_json_data
