@@ -329,8 +329,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # ransomware
-            if json_val.get(VAR_RANSOMWARE) is not None:
-                json_data = json_val.get(VAR_RANSOMWARE)
+            if json_data := json_val.get(VAR_RANSOMWARE):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_DB_WM,
                                                                               LABEL_RANSOMWARE)
                 return_data = return_data + incidents_json_data
