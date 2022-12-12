@@ -725,6 +725,7 @@
                 "hidden": true,
                 "id": "relatedIncidents",
                 "name": "Related Incidents",
+"name_x2": "Related Alerts",
                 "type": "relatedIncidents"
             },
             {

@@ -31,6 +31,7 @@
                     {
                         "minH": 1,
                         "name": "Related Incidents",
+"name_x2": "Related Alerts",
                         "i": "c1f3f0d0-a09d-11e9-8956-390f602b039a",
                         "hideName": false,
                         "moved": false,

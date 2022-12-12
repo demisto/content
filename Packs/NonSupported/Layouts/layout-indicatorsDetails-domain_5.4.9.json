@@ -22,6 +22,7 @@
                     },
                     {
                         "name": "Related Incidents",
+"name_x2": "Related Alerts",
                         "i": "relatedIncidents",
                         "h": 3,
                         "moved": false,

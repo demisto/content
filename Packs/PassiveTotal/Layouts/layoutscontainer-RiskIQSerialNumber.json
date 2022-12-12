@@ -25,6 +25,7 @@
                         "hideName": true,
                         "i": "default-main-relatedIncidents",
                         "name": "Related Incidents",
+"name_x2": "Related Alerts",
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
@@ -150,6 +151,7 @@
                             }
                         ],
                         "name": "Related Incidents",
+"name_x2": "Related Alerts",
                         "w": 2,
                         "x": 0,
                         "y": 3
