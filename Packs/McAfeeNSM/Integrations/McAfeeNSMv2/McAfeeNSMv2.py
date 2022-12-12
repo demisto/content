@@ -159,7 +159,7 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
     def get_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
-                           search: str, filter_arg: str) -> Dict:
+                           search: str, filter_arg: str, page: str = None) -> Dict:
         """ Retrieves All Alerts.
             Args:
                 session_str: str - The session id of the alert.
@@ -169,15 +169,27 @@ class Client(BaseClient):
                 state: str - The state of the alert.
                 search: str - Search string in alert details.
                 filter_arg: str - Filter alert by fields.
+                page: str - Next/Previous page.
             Returns:
                 A dictionary with the list of alerts and info about the list.
         """
         params = {}
         if time_period:
             params['timeperiod'] = time_period
+            if time_period == 'CUSTOM':
+                params['starttime'] = start_time
+                params['endtime'] = end_time
+        if state:
+            params['alertstate'] = state
+        if search:
+            params['search'] = search
+        if filter_arg:
+            params['Filter'] = filter_arg
+        if page:
+            params['page'] = page
         url_suffix = '/sdkapi/alerts'
         self.headers['NSM-SDK-API'] = session_str
-        return self._http_request(method='GET', url_suffix=url_suffix)
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -218,12 +230,49 @@ def pagination(records_list: List, limit: int, page: int) -> List:
     Returns:
         The wanted records.
     """
-    if page == 1:
+    num_rec_2_remove = (limit * (page - 1))
+    results_list = records_list[num_rec_2_remove:]
+    return results_list[:limit]
+
+
+def alerts_list_pagination(records_list: List, limit: int, page: int, session_str: str, time_period: str,
+                           start_time: str, end_time: str, state: str, search: str, filter_arg: str,
+                           total_alerts_count: int, client: Client) -> List:
+    """ Returns the wanted records.
+    Args:
+        records_list: List - The original list of objects.
+        limit: str - The amount of records to be returned
+        page: int - The page of the results (The results in page 1, 2 ...)
+        session_str: str - The session id of the alert.
+        time_period: str - The time period of the alert.
+        start_time: str - The start time of the alert.
+        end_time: str - The end time of the alert.
+        state: str - The state of the alert.
+        search: str - Search string in alert details.
+        filter_arg: str - Filter alert by fields.
+        total_alerts_count: int - the total alerts number.
+        client: Client - McAfeeNSMv2 client
+    Returns:
+        The wanted records.
+    """
+    if page == 1 and limit < 1000:
         return records_list[:limit]
     else:
         num_rec_2_remove = (limit * (page - 1))
-        results_list = records_list[num_rec_2_remove:]
-        return results_list[:limit]
+        results_list = []
+        if total_alerts_count > 1000:
+            while num_rec_2_remove + limit > 1000:
+                records_list = records_list[num_rec_2_remove:]
+                results_list.extend(records_list)
+                limit = limit - len(results_list)
+                num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
+                response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search,
+                                                     filter_arg, 'next')  #TODO check next page
+                records_list = response.get('alertsList')
+
+        records_list = records_list[num_rec_2_remove:]
+        results_list.extend(records_list[:limit])
+        return results_list
 
 
 def response_cases(response_str: str) -> None | str:
@@ -967,7 +1016,8 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     filter_arg = args.get('filter')
     response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg)
     total_alerts_count = response.get('totalAlertsCount')
-    alerts_list = pagination(response.get('alertsList', []), limit, page)
+    alerts_list = alerts_list_pagination(response.get('alertsList', []), limit, page, session_str, time_period,
+                                         start_time, end_time, state, search, filter_arg, total_alerts_count, client)
     print(response.get('alertsList'))
     alerts_list = add_entries_to_alert_list(alerts_list)
     human_readable = []
