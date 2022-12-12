@@ -188,10 +188,10 @@ class LayoutCollection:
 
         return self._format_tab_copy_results(results)
 
+    
 def main():
-    def getArg(arg): 
+    def getArg(arg):
         return demisto.getArg(arg)
-
 
     source_layout_name = getArg('source_layout_name')
     source_tab_name = getArg('source_tab_name')
