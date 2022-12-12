@@ -210,7 +210,7 @@ class Client(BaseClient):
                 uid = json_.get("uid")
 
                 domain: str = ""
-                if json_.get("sub_domain") is not None and json_.get("sub_domain") != "":
+                if json_.get("sub_domain"):
                     domain = json_.get("sub_domain")
                 if json_.get("top_domain") is not None and json_.get("top_domain") != "":
                     if domain.__eq__("") or domain == "":
