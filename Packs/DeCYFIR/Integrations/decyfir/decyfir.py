@@ -301,8 +301,7 @@ class Client(BaseClient):
 
             # Digital Risk
             # impersonation & infringement
-            if json_val.get(VAR_DOMAIN_IT_ASSET) is not None:
-                json_data = json_val.get(VAR_DOMAIN_IT_ASSET)
+            if json_data := json_val.get(VAR_DOMAIN_IT_ASSET):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_DOMAIN_IT_ASSET)
                 return_data = return_data + incidents_json_data
