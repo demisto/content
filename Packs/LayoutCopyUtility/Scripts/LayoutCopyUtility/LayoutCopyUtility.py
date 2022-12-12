@@ -55,10 +55,9 @@ class Layout:
 
         tab['id'] = ''.join(random.choices(string.ascii_lowercase, k=10))
 
-        # update this to always gen valid uuids
-        def mod_uid(uid): return uid.replace(uid[random.randrange(len(uid))], random.choice(string.ascii_lowercase))
-        def gen_i_id(uid): return f"{tab.get('id')}-{mod_uid(uid[0])}-{'-'.join(uid[1:])}"
-        def gen_item_id(uid): return f"{uid[1]}-{mod_uid(uid[2])}-{'-'.join(uid[3:])}"
+        mod_uid = lambda uid: uid.replace(uid[random.randrange(len(uid))], random.choice(string.ascii_lowercase))
+        gen_i_id = lambda uid: f"{tab.get('id')}-{mod_uid(uid[0])}-{'-'.join(uid[1:])}"
+        gen_item_id = lambda uid: f"{uid[1]}-{mod_uid(uid[2])}-{'-'.join(uid[3:])}"
 
         for section in tab.get('sections'):
             uid = str(uuid4()).split('-')
