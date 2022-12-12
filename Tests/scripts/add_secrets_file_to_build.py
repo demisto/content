@@ -37,7 +37,7 @@ def options_handler(args=None):
     parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
-                        help=("Path to gcloud service account, is for circleCI usage. "
+                        help=("Path to gcloud service account, for circleCI usage. "
                               "For local development use your personal account and "
                               "authenticate using Google Cloud SDK by running: "
                               "`gcloud auth application-default login` and leave this parameter blank. "
