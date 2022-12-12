@@ -159,7 +159,7 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
     def get_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
-                           search: str, filter_arg: str, page: str = None) -> Dict:
+                           search: str, filter_arg: str, domain_id: str, page: str = None) -> Dict:
         """ Retrieves All Alerts.
             Args:
                 session_str: str - The session id of the alert.
@@ -170,6 +170,7 @@ class Client(BaseClient):
                 search: str - Search string in alert details.
                 filter_arg: str - Filter alert by fields.
                 page: str - Next/Previous page.
+                domain_id: str - The id of the domain
             Returns:
                 A dictionary with the list of alerts and info about the list.
         """
@@ -184,9 +185,11 @@ class Client(BaseClient):
         if search:
             params['search'] = search
         if filter_arg:
-            params['Filter'] = filter_arg
+            params['filter'] = filter_arg
         if page:
             params['page'] = page
+        if domain_id:
+            params['domainId'] = domain_id
         url_suffix = '/sdkapi/alerts'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
@@ -237,7 +240,7 @@ def pagination(records_list: List, limit: int, page: int) -> List:
 
 def alerts_list_pagination(records_list: List, limit: int, page: int, session_str: str, time_period: str,
                            start_time: str, end_time: str, state: str, search: str, filter_arg: str,
-                           total_alerts_count: int, client: Client) -> List:
+                           total_alerts_count: int, client: Client, domain_id: str) -> List:
     """ Returns the wanted records.
     Args:
         records_list: List - The original list of objects.
@@ -252,6 +255,7 @@ def alerts_list_pagination(records_list: List, limit: int, page: int, session_st
         filter_arg: str - Filter alert by fields.
         total_alerts_count: int - the total alerts number.
         client: Client - McAfeeNSMv2 client
+        domain_id: str - The id of the domain.
     Returns:
         The wanted records.
     """
@@ -267,7 +271,7 @@ def alerts_list_pagination(records_list: List, limit: int, page: int, session_st
                 limit = limit - len(results_list)
                 num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
                 response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search,
-                                                     filter_arg, 'next')  #TODO check next page
+                                                     filter_arg, domain_id, 'next')  #TODO check next page
                 records_list = response.get('alertsList')
 
         records_list = records_list[num_rec_2_remove:]
@@ -458,12 +462,13 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
     """
     for alert in alert_list:
         alert['ID'] = alert.get('event', {}).get('alertId')
+        alert['Event'] = alert.get('event')
         alert['CreatedTime'] = alert.get('event', {}).get('time')
-        alert['Assignee'] = alert.get('assignTo')  # TODO delete the original assignTo ?
+        alert['Assignee'] = alert.get('assignTo')
         alert['Application'] = alert.get('application')
         alert['EventResult'] = alert.get('event', {}).get('result')
         alert['SensorID'] = alert.get('detection', {}).get('deviceId')
-        event_obj = alert.get('event', {})
+        event_obj = alert.get('Event', {})
         event_obj['domain'] = alert.get('detection', {}).get('domain')
         event_obj['interface'] = alert.get('detection', {}).get('interface')
         event_obj['device'] = alert.get('detection', {}).get('device')
@@ -478,6 +483,7 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         del alert['target']
         del alert['malwareFile']
         del alert['uniqueAlertId']
+        del alert['event']
     return alert_list
 
 
@@ -493,7 +499,7 @@ def test_module(client: Client, username_n_password: str) -> str:
         'ok' if the connection was successful, else throws exception.
     """
     try:
-        get_session(username_n_password)
+        get_session(client, username_n_password)
         return 'ok'
     except DemistoException as e:
         raise Exception(e.message)
@@ -1014,11 +1020,13 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     state = args.get('state')
     search = args.get('search')
     filter_arg = args.get('filter')
-    response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg)
+    domain_id = args.get('domain_id')
+    response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg,
+                                         domain_id)
     total_alerts_count = response.get('totalAlertsCount')
     alerts_list = alerts_list_pagination(response.get('alertsList', []), limit, page, session_str, time_period,
-                                         start_time, end_time, state, search, filter_arg, total_alerts_count, client)
-    print(response.get('alertsList'))
+                                         start_time, end_time, state, search, filter_arg, total_alerts_count, client,
+                                         domain_id)
     alerts_list = add_entries_to_alert_list(alerts_list)
     human_readable = []
     for alert_info in alerts_list:
