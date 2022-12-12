@@ -1042,6 +1042,7 @@ script:
       description: 'Search query '
     outputs:
     - contextPath: Threatgrid.SearchResult
+      description: Result for the searched query
     description: Advanced search that allows searching URLS, Submissions, Samples
       etc...
   
