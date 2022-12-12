@@ -355,7 +355,7 @@ script:
     description: Adds new content to an existing policy dictionary.
     execution: false
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: demisto/py3-native:8.1.0.40314
   feed: false
   isfetch: true
   longRunning: false

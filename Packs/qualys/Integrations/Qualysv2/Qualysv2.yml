@@ -3190,7 +3190,7 @@ script:
       required: true
     name: qualys-update-unix-record
     description: Update Unix records for authenticated scans of hosts running on Unix
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: demisto/py3-native:8.1.0.40314
   runonce: false
   script: ''
   subtype: python3

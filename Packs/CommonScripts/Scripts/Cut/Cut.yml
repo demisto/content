@@ -36,4 +36,4 @@ runas: DBotWeakRole
 tests:
 - CutTransformerTest
 fromversion: 5.0.0
-dockerimage: devdemisto/py3-primary:8.1.0.38621
+dockerimage: demisto/py3-native:8.1.0.40314

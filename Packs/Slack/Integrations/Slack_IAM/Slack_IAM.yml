@@ -401,7 +401,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: demisto/py3-native:8.1.0.40314
   feed: false
   isfetch: false
   longRunning: false

@@ -2290,7 +2290,7 @@ script:
       description: A name that appears in the "From:" header for email sent using
         this alias.
       type: String
-  dockerimage: devdemisto/py3-primary:8.1.0.38621
+  dockerimage: demisto/py3-native:8.1.0.40314
   isfetch: true
   longRunning: false
   longRunningPort: false

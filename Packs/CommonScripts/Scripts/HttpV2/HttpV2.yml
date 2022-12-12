@@ -203,7 +203,7 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: devdemisto/py3-primary:8.1.0.38621
+dockerimage: demisto/py3-native:8.1.0.40314
 tests:
 - HttpV2-test
 fromversion: 6.5.0
