@@ -1,9 +1,9 @@
 import json
 import io
 
+from NetBoxEventCollector import LOG_TYPES
 
 BASE_URL = 'https://www.example.com/api/extras'
-LOG_TYPES = ['journal-entries', 'object-changes']
 
 
 # helper function to load json file
@@ -13,6 +13,14 @@ def util_load_json(path):
 
 
 def test_get_events_command(requests_mock):
+    """
+    Given:
+        - NetBox client and limit of events to fetch
+    When:
+        - Calling get_events_command
+    Then:
+        - Ensure the events are returned as expected and the pagination is working as expected
+    """
     from NetBoxEventCollector import Client, get_events_command
 
     for log_type in LOG_TYPES:
@@ -30,6 +38,14 @@ def test_get_events_command(requests_mock):
 
 
 def test_fetch_events_command(requests_mock):
+    """
+        Given:
+            - NetBox client and max_fetch, last_run and first_fetch_time
+        When:
+            - Calling fetch_events_command
+        Then:
+            - Ensure the events are returned as expected and the next_run is as expected
+    """
     from NetBoxEventCollector import Client, fetch_events_command
 
     # mock the first fetch id
