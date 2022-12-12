@@ -213,10 +213,7 @@ class Client(BaseClient):
                 if json_.get("sub_domain"):
                     domain = json_.get("sub_domain")
                 if json_.get("top_domain"):
-                    if domain.__eq__("") or domain == "":
-                        domain = json_.get("top_domain")
-                    else:
-                        domain = domain + ", " + json_.get("top_domain")
+                    domain = domain + ", " + json_.get("top_domain") if domain else json_.get("top_domain")
 
                 name = "DOMAIN : {}".format(domain) if domain else ""
 
