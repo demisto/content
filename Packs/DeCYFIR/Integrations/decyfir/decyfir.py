@@ -443,6 +443,9 @@ def main():  # pragma: no cover
             # Pushing Incidents data to XSOAR
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
+        else:
+            raise NotImplementedError(f'DeCYFIR error: '
+                                      f'command {command} is not implemented')
 
         else:
             raise NotImplementedError('DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
