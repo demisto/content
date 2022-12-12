@@ -1,5 +1,4 @@
 from typing import Tuple
-from urllib import parse
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -38,7 +37,8 @@ def install_custom_pack(pack_id: str, skip_verify: bool, skip_validation: bool, 
             break
 
     if pack_file_entry_id:
-        args = {'entry_id': pack_file_entry_id, 'skip_verify': str(skip_verify), 'skip_validation': str(skip_validation)}
+        args = {'entry_id': pack_file_entry_id, 'skip_verify': str(skip_verify),
+                'skip_validation': str(skip_validation)}
         if instance_name:
             args['using'] = instance_name
 
