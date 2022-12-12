@@ -314,3 +314,21 @@ def test_zoom_user_create__Corporate_user_type(mocker):
 
 #     client.zoom_meeting_create("instant", "nonsense", "mock@moker.com", "bla", "bla", "None")
 #     assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 1
+
+
+def test_meeting_get__show_previous_occurrences_is_false(mocker):
+    """
+       Given -
+          client
+       When -
+           asking to get a meeting, but not the previous_occurrences
+       Then -
+           Validate that the right argument is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    
+    client.zoom_meeting_get("1234", "123", False)
+    assert http_request_mocker.call_args[1].get("params").get("show_previous_occurrences") == False
