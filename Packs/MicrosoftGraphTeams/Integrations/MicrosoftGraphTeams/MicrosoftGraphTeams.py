@@ -599,10 +599,7 @@ def add_member_command(client: MsGraphClient, args):
         headers=['Chat ID', 'User ID', 'Share history'],
         removeNull=True
     )
-
-    entry_context = {}  # type: ignore
-
-    return_outputs(human_readable, entry_context)
+    return_outputs(human_readable)
 
 
 def list_messages_command(client: MsGraphClient, args):
