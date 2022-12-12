@@ -2,7 +2,7 @@ import time
 from datetime import datetime, timedelta
 import requests
 
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, Dict, List
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -26,6 +26,7 @@ class OpenCVE():
         self.reliability = reliability
 
         # Pagination is defined in the OpenCVE config file
+        # https://opencve.io uses 20 for each value
         self.pagination = {
             'cves_per_page': 20,
             'vendors_per_page': 20,
@@ -93,7 +94,7 @@ class OpenCVE():
 
         raise Exception(f'ERROR: [{r.status_code}] {r.text}')
 
-    def get_my_vendors(self) -> Dict:
+    def get_my_vendors(self) -> CommandResults:
         '''
         List the vendors subscriptions of the authenticated user.
 
@@ -455,7 +456,7 @@ def dedupe_cves(cves: List[Dict[str, str]]) -> List[Dict[str, str]]:
 
 
 # Commands
-def test_module(ocve: OpenCVE) -> Tuple[str, None, None]:
+def test_module(ocve: OpenCVE) -> str:
     '''
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
@@ -470,10 +471,11 @@ def test_module(ocve: OpenCVE) -> Tuple[str, None, None]:
     except Exception as e:
         if 'Read timed out.' not in str(e):
             raise
-    return 'ok', None, None
+
+    return 'ok'
 
 
-def cve_latest(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
+def cve_latest(ocve: OpenCVE, args: Dict) -> CommandResults:
     parsed_cves = []
     lastRun = args.get('lastRun', {})
 
@@ -504,26 +506,68 @@ def cve_latest(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
     parsed_cves = dedupe_cves(parsed_cves)
     create_cves(parsed_cves)
 
-    return parsed_cves
+    # Update the lastRun timestamp
+    now = datetime.now()                                # Get an object of the current timestamp
+    lastRun = now.strftime('%Y-%m-%dT%H:%M:%SZ')        # Convert the object to a string of the current timestamp
+    demisto.setLastRun({                                # Save the current run info as the lastRun variable
+        'fetch_time': lastRun,
+        'fetch_count': len(parsed_cves)
+    })
+
+    return CommandResults(
+        outputs_prefix='OpenCVE.CVE',
+        outputs=parsed_cves
+    )
 
 
-def get_cve(ocve: OpenCVE, args: Dict) -> List[Dict]:
-    cve_ids = args.get('cve_id', None)
-    cve_ids = cve_ids.split(',')
+def get_cve(ocve: OpenCVE, args: Dict) -> CommandResults:
+    cves = args.get('cve_id', None)
+    cves = cves.split(',')
 
     parsed_cves = []
-
-    for cve_id in cve_ids:
-        cve_info = ocve.get_cve(cve_id)
+    for cve in cves:
+        cve_info = ocve.get_cve(cve)
         parsed_cve = parse_cve(ocve, args, cve_info)
         parsed_cves.append(parsed_cve)
 
     create_cves(parsed_cves)
 
-    return parsed_cves
+    pretty_results = [cve_to_context(cve) for cve in cves]
+    readable = tableToMarkdown('OpenCVE Results', pretty_results)
+
+    return CommandResults(
+        outputs_prefix='OpenCVE.CVE',
+        outputs=parsed_cves,
+        readable_output=readable,
+        raw_response=parsed_cves
+    )
 
 
-def get_vendors(ocve: OpenCVE, args: Dict) -> Dict:
+def get_my_vendors(ocve: OpenCVE) -> CommandResults:
+    my_vendors = ocve.get_my_vendors()
+    return CommandResults(
+        outputs_prefix='OpenCVE.myVendors',
+        outputs=my_vendors
+    )
+
+
+def get_vendor(ocve: OpenCVE, args: Dict) -> CommandResults:
+    vendor = args.get('vendor_name', None)
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.{vendor}',
+        outputs=ocve.get_vendor(vendor)
+    )
+
+
+def get_my_products(ocve: OpenCVE) -> CommandResults:
+    my_products = ocve.get_my_products()
+    return CommandResults(
+        outputs_prefix='OpenCVE.myProducts',
+        outputs=my_products
+    )
+
+
+def get_vendors(ocve: OpenCVE, args: Dict) -> CommandResults:
     params = {}
     if 'search' in args:
         params['search'] = args.get('search')
@@ -532,11 +576,14 @@ def get_vendors(ocve: OpenCVE, args: Dict) -> Dict:
     if 'page' in args:
         params['page'] = args.get('page')
 
-    return ocve.get_vendors(params)
+    return CommandResults(
+        outputs_prefix='OpenCVE.Vendors',
+        outputs=ocve.get_vendors(params)
+    )
 
 
-def get_vendor_cves(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
-    vendor_name = args.get('vendor_name', None)
+def get_vendor_cves(ocve: OpenCVE, args: Dict) -> CommandResults:
+    vendor = args.get('vendor_name', None)
     params = {}
     if 'search' in args:
         params['search'] = args.get('search')
@@ -549,7 +596,7 @@ def get_vendor_cves(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
     if 'page' in args:
         params['page'] = args.get('page')
 
-    cves = ocve.get_cves_by_vendor(vendor_name, params=params)
+    cves = ocve.get_cves_by_vendor(vendor, params=params)
     parsed_cves = []
     for cve in cves:
         cve_info = ocve.get_cve(cve['id'])
@@ -558,30 +605,44 @@ def get_vendor_cves(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
 
     create_cves(parsed_cves)
 
-    return parsed_cves
+    pretty_results = [cve_to_context(cve) for cve in cves]
+    readable = tableToMarkdown('OpenCVE Results', pretty_results)
+
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.{vendor}.CVE',
+        outputs=cves,
+        readable_output=readable,
+        raw_response=cves
+    )
 
 
-def get_products(ocve: OpenCVE, args: Dict) -> Dict:
-    vendor_name = args.get('vendor_name', None)
+def get_products(ocve: OpenCVE, args: Dict) -> CommandResults:
+    vendor = args.get('vendor_name', None)
     params = {}
     if 'search' in args:
         params['search'] = args.get('search', None)
     if 'page' in args:
         params['page'] = args.get('page', None)
 
-    return ocve.get_vendor_products(vendor_name, params=params)
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.{vendor}.Products',
+        outputs=ocve.get_vendor_products(vendor, params=params)
+    )
 
 
-def get_product(ocve: OpenCVE, args: Dict) -> Dict:
-    vendor_name = args.get('vendor_name', None)
-    product_name = args.get('product_name', None)
+def get_product(ocve: OpenCVE, args: Dict) -> CommandResults:
+    vendor = args.get('vendor_name', None)
+    product = args.get('product_name', None)
 
-    return ocve.get_vendor_product(vendor_name, product_name)
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.{vendor}.{product}',
+        outputs=ocve.get_vendor_product(vendor, product)
+    )
 
 
-def get_product_cves(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
-    vendor_name = args.get('vendor_name', None)
-    product_name = args.get('product_name', None)
+def get_product_cves(ocve: OpenCVE, args: Dict) -> CommandResults:
+    vendor = args.get('vendor_name', None)
+    product = args.get('product_name', None)
     params = {}
 
     if 'search' in args:
@@ -593,27 +654,82 @@ def get_product_cves(ocve: OpenCVE, args: Dict) -> List[Dict[str, str]]:
     if 'page' in args:
         params['page'] = args.get('page', None)
 
-    cves = ocve.get_cves_by_product(vendor_name, product_name, params=params)
+    cves = ocve.get_cves_by_product(vendor, product, params=params)
+
     parsed_cves = []
     for cve in cves:
         cve_info = ocve.get_cve(cve['id'])
         parsed_cve = parse_cve(ocve, args, cve_info)
         parsed_cves.append(parsed_cve)
+
     create_cves(parsed_cves)
 
-    return parsed_cves
+    pretty_results = [cve_to_context(cve) for cve in cves]
+    readable = tableToMarkdown('OpenCVE Results', pretty_results)
+
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.{vendor}.{product}.CVE',
+        outputs=cves,
+        readable_output=readable,
+        raw_response=cves
+    )
+
+
+def get_reports(ocve: OpenCVE) -> CommandResults:
+    return CommandResults(
+        outputs_prefix='OpenCVE.Reports',
+        outputs=ocve.get_reports()
+    )
+
+
+def get_report(ocve: OpenCVE, args: Dict) -> CommandResults:
+    report_id = args.get('report_id', None)
+
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.Reports.{report_id}',
+        outputs=ocve.get_report(report_id)
+    )
+
+
+def get_alerts(ocve: OpenCVE, args: Dict) -> CommandResults:
+    params = {}
+    report_id = args.get('report_id', None)
+    if 'page' in args:
+        params['page'] = args.get('page', None)
+
+    return CommandResults(
+        outputs_prefix='OpenCVE.Reports.Alerts',
+        outputs=ocve.get_alerts(report_id, params=params)
+    )
+
+
+def get_alert(ocve: OpenCVE, args: Dict) -> CommandResults:
+    report_id = args.get('report_id', None)
+    alert_id = args.get('alert_id', None)
+
+    return CommandResults(
+        outputs_prefix=f'OpenCVE.Reports.Alerts.{alert_id}',
+        outputs=ocve.get_alert(report_id, alert_id)
+    )
 
 
 def main():
     params = demisto.params()
-    base_url = params.get('url', 'https://opencve.io')
+    url = params.get('url', 'https://opencve.io')
     username = params.get('username')
     password = params.get('password')
     verify_ssl = not params.get('insecure', True)
     tlp = params.get('tlp', 'White')
-    reliability = params.get('feedReliability', None)
+    reliability = params.get('feedReliability')
+    reliability = reliability if reliability else DBotScoreReliability.F
 
-    ocve = OpenCVE(url=base_url, username=username, password=password,
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    else:
+        raise Exception('Please provide a valid value for the Source Reliability parameter.')
+    # reliability = params.get('feedReliability', None)
+
+    ocve = OpenCVE(url=url, username=username, password=password,
                    verify_ssl=verify_ssl, tlp=tlp, reliability=reliability)
 
     command = demisto.command()
@@ -625,140 +741,46 @@ def main():
             return_outputs(*test_module(ocve))
 
         elif command == 'cve-latest' or command == 'fetch-indicators':
-            # Update the lastRun timestamp
-            now = datetime.now()                                # Get an object of the current timestamp
-            lastRun = now.strftime('%Y-%m-%dT%H:%M:%SZ')        # Convert the object to a string of the current timestamp
-            results = cve_latest(ocve, args)
-
-            demisto.setLastRun({                                # Save the current run info as the lastRun variable
-                'fetch_time': lastRun,
-                'fetch_count': len(results)
-            })
-
-            return_results(results)
+            return_results(cve_latest(ocve, args))
 
         elif command == 'cve' or command == 'ocve-get-cve':
-            results = get_cve(ocve, args)
-            pretty_results = [cve_to_context(result) for result in results]
-
-            readable = tableToMarkdown('OpenCVE Results', pretty_results)
-
-            return_results(CommandResults(
-                outputs_prefix='OpenCVE.CVE',
-                outputs_key_field='value',
-                outputs=results,
-                readable_output=readable,
-                raw_response=results
-            ))
+            return_results(get_cve(ocve, args))
 
         elif command == 'ocve-get-my-vendors':
-            my_vendors = ocve.get_my_vendors()
-            results = CommandResults(outputs_prefix='OpenCVE.myVendors', outputs=my_vendors)
-            return_results(results)
+            return_results(get_my_vendors(ocve))
 
         elif command == 'ocve-get-my-products':
-            my_products = ocve.get_my_products()
-            results = CommandResults(
-                outputs_prefix='OpenCVE.myProducts',
-                outputs=my_products
-            )
-            return_results(results)
+            return_results(get_my_products(ocve))
 
         elif command == 'ocve-get-vendors':
-            vendors = get_vendors(ocve, args)
-            results = CommandResults(
-                outputs_prefix='OpenCVE.Vendors',
-                outputs=vendors
-            )
-            return_results(results)
+            return_results(get_vendors(ocve, args))
 
         elif command == 'ocve-get-vendor':
-            vendor_name = args.get('vendor_name')
-            vendor = ocve.get_vendor(vendor_name)
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.{vendor_name}',
-                outputs=vendor
-            )
-            return_results(results)
+            return_results(get_vendor(ocve, args))
 
         elif command == 'ocve-get-vendor-cves':
-            vendor_name = args.get('vendor_name')
-            vendor_cves = get_vendor_cves(ocve, args)
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.{vendor_name}.CVE',
-                outputs=vendor_cves
-            )
-            return_results(results)
+            return_results(get_vendor_cves(ocve, args))
 
         elif command == 'ocve-get-products':
-            vendor = args.get('vendor_name', None)
-            products = get_products(ocve, args)
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.{vendor}.Products',
-                outputs=products
-            )
-            return_results(results)
+            return_results(get_products(ocve, args))
 
         elif command == 'ocve-get-product':
-            vendor = args.get('vendor_name', None)
-            product = args.get('product_name', None)
-            product_info = get_product(ocve, args)
-
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.{vendor}.{product}',
-                outputs=product_info
-            )
-            return_results(results)
-
+            return_results(get_product(ocve, args))
 
         elif command == 'ocve-get-product-cves':
-            vendor = args.get('vendor_name', None)
-            product = args.get('product_name', None)
-            product_cves = get_product_cves(ocve, args)
-
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.{vendor}.{product}.CVE',
-                outputs=product_cves
-            )
-            return_results(results)
+            return_results(get_product_cves(ocve, args))
 
         elif command == 'ocve-get-reports':
-            results = CommandResults(
-                outputs_prefix='OpenCVE.Reports',
-                outputs=ocve.get_reports()
-            )
-            return_results(results)
+            return_results(get_reports(ocve))
 
         elif command == 'ocve-get-report':
-            report_id = args.get('report_id', None)
-
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.Reports.{report_id}',
-                outputs=ocve.get_report(report_id)
-            )
-            return_results(results)
+            return_results(get_report(ocve, args))
 
         elif command == 'ocve-get-alerts':
-            params = {}
-            report_id = args.get('report_id', None)
-            if 'page' in args:
-                params['page'] = args.get('page', None)
-
-            results = CommandResults(
-                outputs_prefix='OpenCVE.Reports.Alerts',
-                outputs=ocve.get_alerts(report_id, params=params)
-            )
-            return_results(results)
+            return_results(get_alerts(ocve, args))
 
         elif command == 'ocve-get-alert':
-            report_id = args.get('report_id', None)
-            alert_id = args.get('alert_id', None)
-
-            results = CommandResults(
-                outputs_prefix=f'OpenCVE.Reports.Alerts.{alert_id}',
-                outputs=ocve.get_alert(report_id, alert_id)
-            )
-            return_results(results)
+            return_results(get_alert(ocve, args))
 
         else:
             raise NotImplementedError(f'{command} is not an existing CVE Search command')
