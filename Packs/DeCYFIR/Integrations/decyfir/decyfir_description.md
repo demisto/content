@@ -10,6 +10,6 @@ Support and maintenance for this integration are provided by the author. Please 
 
 Authorization:
 
-To obtain a trial or commercial DeCYFIR API Key, please contact <b> contact@cyfirma.com. </b>
+To obtain a trial or commercial DeCYFIR API Key, please contact *contact@cyfirma.com*. 
 
 Your API key carries all your privileges, so keep it secure and don’t share it with anyone.
