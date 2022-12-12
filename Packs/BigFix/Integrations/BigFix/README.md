@@ -1233,7 +1233,7 @@
 <p><a href="https://user-images.githubusercontent.com/7270217/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/7270217/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png" alt="image" width="751" height="589"></a></p>
 <h3 id="h_7402382876931540902368673">8. Delete an action</h3>
 <hr>
-<p>Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to IBM BigFix V9.2 and later.</p>
+<p>Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to HCL BigFix V9.2 and later.</p>
 <h5>Base Command</h5>
 <pre><code>bigfix-action-delete</code></pre>
 <h5>Input</h5>
