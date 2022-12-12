@@ -475,7 +475,6 @@ def main():
     # Log exceptions
     except Exception as e:
         err = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
-        demisto.error('ERROR level - ' + err)
         return_error(err)
 
 
