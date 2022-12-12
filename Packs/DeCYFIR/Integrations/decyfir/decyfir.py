@@ -471,6 +471,9 @@ def main():
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time)
             demisto.setLastRun(next_run)
+        else:
+            raise NotImplementedError(f'DeCYFIR error: '
+                                      f'command {command} is not implemented')
 
     # Log exceptions
     except Exception as e:
