@@ -1,2 +1,5 @@
 [file:MicrosoftGraphUser.yml]
 ignore=IN145
+
+[known_words]
+msgraph
