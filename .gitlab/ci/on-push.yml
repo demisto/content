@@ -437,9 +437,7 @@ slack-notify-nightly-build:
     - section_start "Test Modeling Rules"
     - |
       if [[ -f "$ARTIFACTS_FOLDER/mrs_to_test.txt" ]]; then
-        cp "$ARTIFACTS_FOLDER/mrs_to_test.txt" "./artifact/mrs_to_test.txt"
-        echo "Testing Modeling Rules"
-        ./Tests/scripts/test_modeling_rules.py || EXIT_CODE=$?
+        ./Tests/scripts/test_modeling_rules.sh || EXIT_CODE=$?
       else
         echo "No modeling rules were marked for testing during test collection"
       fi
