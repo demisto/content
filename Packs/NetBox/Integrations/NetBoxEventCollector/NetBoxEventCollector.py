@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
-from typing import Dict, List, Optional
+from typing import Dict, List, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +13,7 @@ VENDOR = 'NetBox'
 PRODUCT = 'IRM'
 
 LOG_TYPES = ['journal-entries', 'object-changes']
-DEFAULT_LIMIT = 1000
+DEFAULT_LIMIT = '1000'
 
 ''' CLIENT CLASS '''
 
@@ -30,14 +30,14 @@ class Client(BaseClient):
             params=params
         )
 
-    def search_events(self, url_suffix, limit=DEFAULT_LIMIT, prev_id=0, ordering=''):
+    def search_events(self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ''
+                      ) -> Tuple[int, List[Dict[str, Any]]]:
         """
-        Searches for NetBox alerts using the '/<log_type>' API endpoint for log_type in LOG_TYPES.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
         Args:
             limit: int, the limit of the results to return per log_type.
             prev_id: dict of previous ids that was fetched fot each log_type.
-            ordering: boll, if is True this will return the data starting with the oldest, otherwise, the opposite.
+            ordering: bool, The oldest data will be returned if is True, otherwise the opposite.
         Returns:
             dict: A dict containing the next_run
             list: A list containing the events
@@ -84,7 +84,7 @@ class Client(BaseClient):
         return next_run
 
 
-def test_module(client: Client) -> str:
+def test_module_command(client: Client) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -108,7 +108,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_events(client: Client, limit: int):
+def get_events_command(client: Client, limit: int) -> Tuple[List[Dict[str, Any]], CommandResults]:
     """
     Gets all the events from the NetBox API for each log type.
     Args:
@@ -131,9 +131,9 @@ def get_events(client: Client, limit: int):
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int]
-                 ):
+def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int],
+                         first_fetch_time: int | None
+                         ) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
     """
     Args:
         client (Client): NetBox client to use.
@@ -177,7 +177,7 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
     """
@@ -189,8 +189,6 @@ def main() -> None:
     base_url = urljoin(params.get('url'), '/api/extras')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = arg_to_number(params.get('max_fetch', DEFAULT_LIMIT))
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = arg_to_datetime(
@@ -214,21 +212,22 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module_command(client)
             return_results(result)
 
         elif command in ('netbox-get-events', 'fetch-events'):
             if command == 'netbox-get-events':
                 should_push_events = argToBoolean(args.get('should_push_events'))
-                events, results = get_events(client, limit=limit)  # type: ignore
+                events, results = get_events_command(client,
+                                                     limit=arg_to_number(args.get('limit', DEFAULT_LIMIT)))  # type: ignore
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
                 last_run = demisto.getLastRun()
-                next_run, events = fetch_events(
+                next_run, events = fetch_events_command(
                     client=client,
-                    max_fetch=max_fetch,  # type: ignore
+                    max_fetch=arg_to_number(params.get('max_fetch', DEFAULT_LIMIT)),  # type: ignore
                     last_run=last_run,
                     first_fetch_time=first_fetch_timestamp
                 )
