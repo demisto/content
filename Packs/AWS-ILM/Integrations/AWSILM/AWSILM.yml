@@ -8,13 +8,20 @@ configuration:
   required: true
   type: 0
 - display: Tenant ID
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Authentication Token
+- display: Tenant ID
   name: tenant_id
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: Authentication Token
   name: authentication_token
   type: 4
-  required: true
+  required: false
+  hidden: true
 - defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
@@ -367,7 +374,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: false
   longRunning: false
   longRunningPort: false
