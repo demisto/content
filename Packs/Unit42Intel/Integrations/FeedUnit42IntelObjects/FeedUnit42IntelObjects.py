@@ -573,7 +573,7 @@ def main():  # pragma: no cover
 
     command = demisto.command()
     args = demisto.args()
-
+    demisto.info('just a test')
     demisto.debug(f'Command being called is {command}')
 
     try:

@@ -45,7 +45,7 @@ def _get_missing_file_result(file_hash: str) -> CommandResults:
         'Indicator': file_hash,
         'Score': 0
     }
-
+    demisto.info('just a test')
     return CommandResults(
         readable_output=f'The Hash {file_hash} was not found on Intezer genome database',
         outputs={
