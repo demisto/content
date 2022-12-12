@@ -222,11 +222,9 @@ class Client(BaseClient):
                 if domain is not None and domain != "":
                     name = "DOMAIN : {}".format(domain)
 
-                if ip is not None and ip != "":
-                    if name is not None and name != "":
-                        name = name + "\n IP: {}".format(ip)
-                    else:
-                        name = "IP: {}".format(ip)
+                if ip:
+                    name = name + "\n IP: {}".format(ip) if name else "IP: {}".format(ip)
+
 
                 incident_json = self.prepare_incident_json(LABEL_DECYFIR, alert_type, alert_subtype,
                                                            name, date_val, severity, details, uid)
