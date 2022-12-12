@@ -22,7 +22,7 @@
         "all"
     ],
     "required": false,
-    "script": "ClearSourceTabAndSection",
+    "script": "ClearSourceTab",
     "selectValues": [
         ""
     ],
