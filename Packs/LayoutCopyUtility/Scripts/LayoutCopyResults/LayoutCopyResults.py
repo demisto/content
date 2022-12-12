@@ -12,7 +12,6 @@ def result_check(result):
 def get_results():
     context = argToList(demisto.context().get('XSOAR').get('results'))
     if context:
-        result_check = lambda result: result if result != {} else None
         results = [result for result in [k.get('layoutcopy').get('pretty') for k in context if result_check(k)]]
         results = '\n'.join(list(chain(*results)))
         return results
