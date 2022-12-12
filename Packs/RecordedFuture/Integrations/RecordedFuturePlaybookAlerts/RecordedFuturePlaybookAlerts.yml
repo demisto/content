@@ -1,0 +1,167 @@
+commonfields:
+  id: RecordedFuturePlaybookAlerts
+  version: -1
+name: RecordedFuturePlaybookAlerts
+display: 'Recorded Future - Playbook Alerts'
+category: Data Enrichment & Threat Intelligence
+image:
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+configuration:
+- display: Server URL (e.g., https://api.recordedfuture.com/gw/xsoar/)
+  name: server_url
+  defaultvalue: https://api.recordedfuture.com/gw/xsoar/
+  type: 0
+  required: true
+- display: API Token
+  name: token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Playbook Alert Categories
+  name: pa_categories
+  required: false
+  type: 16
+  options: 
+    - Domain Abuse
+    - Cyber Vulnerability
+- display: Playbook Alert Statuses to include in the fetch
+  name: alert_statuses
+  required: false
+  type: 16
+  options:
+    - New
+    - In Progress
+    - Dismissed
+    - Resolved
+- display: First fetch time
+  additionalinfo: 'Format: <number> <time unit>, e.g., "12 hours", "7 days", "3 months", "1 year".'
+  defaultvalue: 24 hours
+  name: first_fetch
+  required: false
+  type: 0
+script:
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.7.35188
+  commands:
+    - name: recorded-future-playbook-alerts-details
+      description: Get Playbook alert details by id.
+      arguments:
+        - name: alert-id
+          required: true
+          description: Id of the playbook alert that should be fetched
+        - name: panels 
+          required: false
+          isArray: true
+          description: panels to include in fetch
+          auto: PREDEFINED
+            - status
+            - action
+            - summary
+            - log
+            - domain-abuse-whois
+            - domain-abuse-dns
+    - name: recorded-future-playbook-alerts-update
+      description: Update the status of a Playbook alert
+      arguments: 
+        - name: alert-ids
+          required: true
+          description: Id of the playbook alert that will be updated
+        - name: new-status
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - new
+            - in-progress
+            - dismissed
+            - resolved
+
+    - name: recorded-future-playbook-alerts-search
+      description: Search playbook alerts based on filters
+      arguments: 
+        - name: category
+          required: false
+          isArray: true
+          description: filter what playbook alert categories that is wanted. (default = all available)
+        - name: limit
+          required: false
+          description: Limits the number of alerts to fetch.
+        - name: time-since-update
+          required: false
+          description: Time between now and e.g. "2 hours" or "7 days" ago
+        - name: playbook-alert-status
+          required: false
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - new
+            - in-progress
+            - dismissed
+            - resolved
+          description: Filter what statuses are fetched, defaults to only new status if not specified.
+        - name: priority
+          required: false
+          isArray: true
+          auto: PREDEFINED
+          predefined:
+            - high
+            - moderate
+            - informational
+          description: Actions pritority assigned in Recorded Future
+      outputs:
+        - contextPath: RecordedFuture.PlaybookAlerts.playbook_alert_id
+          description: Unique id of the playbook alert
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.category
+          description: Playbook alert category 
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.priority
+          description: Recommended Priority of the alert
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.status
+          description: Current alert status in Recorded Future
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.title
+          description: Title of the alert
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.updated
+          description: Date of last update
+          type: date
+        - contextPath: RecordedFuture.PlaybookAlerts.created
+          description: Date of creation
+          type: date
+        - contextPath: RecordedFuture.PlaybookAlerts.organization_id
+          description: Organization uhash
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.organization_name
+          description: Plaintext Organization name
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.assignee_id
+          description: uhash of the assigned user
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.assignee_name
+          description: name of the assigned user
+        - contextPath: RecordedFuture.PlaybookAlerts.owner_id
+          description: uhash of the enterprise that owns the alert
+          type: String
+        - contextPath: RecordedFuture.PlaybookAlerts.owner_name
+          description: Name of the enterprise that owns the alert
+          type: String
+  isfetch: true
+  runonce: false
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
