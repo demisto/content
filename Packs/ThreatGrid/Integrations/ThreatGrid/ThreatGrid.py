@@ -966,7 +966,7 @@ def advanced_search():
     for record in r.json().get('data', {}).get('sample'):
        final_results.append(record)
     markdown += tableToMarkdown('Threat Grid submission results', final_results)
-        results = CommandResults(
+    results = CommandResults(
             readable_output=markdown,
             outputs_prefix='Threatgrid.SearchResult',
             outputs_key_field='Info',
