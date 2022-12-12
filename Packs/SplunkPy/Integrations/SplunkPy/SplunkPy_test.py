@@ -220,6 +220,11 @@ class Service:
         self.jobs = Jobs(status, self)
         self.status = status
         self.disable_v2_api = False
+        self.namespace = {'app': 'test', 'owner': 'test', 'sharing': 'global'}
+        self._abspath = lambda x, **kwargs: x
+
+    def get(self, path_segment, owner=None, app=None, headers=None, sharing=None, **query):
+        return {'status': '200', 'body': 'test', 'headers': {'content-type': 'application/json'}, 'reason': 'OK'}
 
     def job(self, sid):
         return self.jobs
@@ -618,6 +623,8 @@ def test_fetch_notables(mocker):
     - make sure the incident response is valid.
     - make sure that the owner is not part of the incident response
     """
+    mocker.patch.object(splunk.client.Job, 'is_done', return_value=True)
+    mocker.patch.object(splunk.client.Job, 'results', return_value=None)
     mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', [splunk.ASSET_ENRICHMENT,
                         splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
     mocker.patch.object(demisto, 'incidents')
