@@ -178,7 +178,6 @@ def test_zoom_user_list__no_limit(mocker):
     """
     manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
     user_list_basic_request_mock = mocker.patch.object(Client, "user_list_basic_request")
-
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -329,6 +328,68 @@ def test_meeting_get__show_previous_occurrences_is_false(mocker):
     http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    
+
     client.zoom_meeting_get("1234", "123", False)
     assert http_request_mocker.call_args[1].get("params").get("show_previous_occurrences") == False
+
+
+def test_zoom_meeting_list__limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for a limit of results
+        Then -
+            Validate that a func that runs a pagination has been called
+    """
+
+    manual_meeting_list_pagination_mock = mocker.patch.object(Client, "manual_meeting_list_pagination")
+    mocker.patch.object(Client, "meeting_list_basic_request")
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_meeting_list("mock@moker.com", limit=50)
+    assert manual_meeting_list_pagination_mock.called
+
+
+def test_zoom_meeting_list__no_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            asking for one page results (the default)
+        Then -
+            Validate that a func that runs a pagination has not been called
+            Validate that a func that returns the first page is called
+            Validate that the API call will be for a specific user
+    """
+    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_meeting_list_pagination")
+    user_list_basic_request_mock = mocker.patch.object(Client, "meeting_list_basic_request")
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_meeting_list("mock@moker.com")
+    assert not manual_user_list_pagination_mock.called
+    assert user_list_basic_request_mock.called
+    user_list_basic_request_mock.call_args[0][0] == 'mock@moker.com'
+
+
+def test_manual_meeting_list_pagination__small_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            limit > 0 < MAX_RECORDS_PER_PAGE
+        Then -
+            Validate that the page_size == limit
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    basic_request_mocker = mocker.patch.object(Client, "meeting_list_basic_request", return_value={"next_page_token": "mockmock"})
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    limit = 20
+    client.manual_meeting_list_pagination(user_id='mock@moker.com', next_page_token=None, page_size=1, limit=limit,
+                                          type=None)
+    assert basic_request_mocker.call_args[0][2] == limit
