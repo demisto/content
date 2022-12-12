@@ -357,8 +357,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # dumps-pii-cii
-            if json_val.get(VAR_DUMPS_PII_CII) is not None:
-                json_data = json_val.get(VAR_DUMPS_PII_CII)
+            if json_data := json_val.get(VAR_DUMPS_PII_CII):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_DUMPS_PII_CII)
                 return_data = return_data + incidents_json_data
