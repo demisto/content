@@ -186,7 +186,7 @@ class LayoutCollection:
 
 def main():
     def getArg(arg): return demisto.getArg(arg)
-    layout_type = getArg('layout_type')
+    #layout_type = getArg('layout_type')
     source_layout_name = getArg('source_layout_name')
     source_tab_name = getArg('source_tab_name')
     destination_layout_name = argToList(getArg('destination_layout_name'))
