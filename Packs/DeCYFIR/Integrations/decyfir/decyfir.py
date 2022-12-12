@@ -335,8 +335,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
                 # Dark web
-            if json_val.get(VAR_DARK_WEB) is not None:
-                json_data = json_val.get(VAR_DARK_WEB)
+            if json_data := json_val.get(VAR_DARK_WEB):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_DB_WM,
                                                                               LABEL_DARK_WEB)
                 return_data = return_data + incidents_json_data
