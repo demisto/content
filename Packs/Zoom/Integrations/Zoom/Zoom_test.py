@@ -157,7 +157,7 @@ def test_zoom_user_list__limit(mocker):
     """
 
     manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
-
+    mocker.patch.object(Client, "user_list_basic_request")
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -195,14 +195,15 @@ def test_zoom_user_list__limit_and_page_size(mocker):
         Then -
             Validate that an error message will be returned
     """
+    mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
+    mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     with pytest.raises(DemistoException) as e:
-        client.zoom_user_list(limit=50, page_size=10)
-    assert e == "Too money arguments.if you choose a limit, don't enter a user_id or page_size"
- # TODO
-  # i have a problem, becase i check the args, not the func params
+        client.zoom_user_list(limit=50, user_id="fdghdf")
+    assert e.value.message == "Too money arguments. if you choose a limit, don't enter a user_id or page_size"
+
 
 
 def test_zoom_user_list__user_id(mocker):
@@ -213,16 +214,18 @@ def test_zoom_user_list__user_id(mocker):
             asking for a specific user
         Then -
             Validate that the API call will be for a specific user
+            and the url_suffix has changed to the right value
     """
-    url_suffix = "mockSuffix"
-   # mocker.patch.object(Client, "zoom_user_list", return_value=url_suffix)
+    # url_suffix = "mockSuffix"
+    mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
+    basic_request_mocker = mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
 
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
-    res = client.zoom_user_list(user_id="bla@bla.com")
-    assert url_suffix == "users/{bla@bla.com}"
+    client.zoom_user_list(user_id="bla@bla.com")
+    assert basic_request_mocker.call_args[0][6] == "users/bla@bla.com"
 
 
 def test_manual_user_list_pagination__small_limit(mocker):
@@ -235,9 +238,9 @@ def test_manual_user_list_pagination__small_limit(mocker):
             Validate that the page_size == limit
     """
     mocker.patch.object(Client, "generate_oauth_token")
+    basic_request_mocker = mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    a = client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=5,
-                                           status="all", role_id=None)
-    assert page_size == limit
-    #TODO hoe to check a varible in a finction?
+    client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=5,
+                                       status="all", role_id=None)
+    assert basic_request_mocker.call_args[0][0] == 5
