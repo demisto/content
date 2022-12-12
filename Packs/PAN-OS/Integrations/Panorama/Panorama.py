@@ -270,6 +270,8 @@ def http_request(uri: str, method: str, headers: dict = {},
         files=files
     )
 
+    demisto.info('just a test')
+
     if result.status_code < 200 or result.status_code >= 300:
         raise Exception(
             'Request Failed. with status: ' + str(result.status_code) + '. Reason is: ' + str(result.reason))

@@ -38,6 +38,7 @@ def list_languages_command() -> CommandResults:
 def extract_text_command(args: dict, instance_languages: list) -> CommandResults:
     langs = argToList(args.get('langs')) or instance_languages
     demisto.debug("Using langs settings: {}".format(langs))
+    demisto.info('just a test')
 
     entry_id = args.get('entryid')
     file_path = demisto.getFilePath(entry_id)

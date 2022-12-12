@@ -139,6 +139,7 @@ def extract_using_unrar(file_path, dir_path, password=None):
 
 
 def extract_using_tarfile(file_path: str, dir_path: str, file_name: str) -> str:
+    demisto.info('just a test')
     if '.tar.gz' in file_name:
         cmd = 'tar -xzvf {} -C {}'.format(file_path, dir_path)
     elif file_name.endswith('.tar'):

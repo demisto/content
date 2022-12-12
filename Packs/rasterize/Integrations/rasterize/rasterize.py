@@ -110,6 +110,7 @@ def merge_options(default_options, user_options):
     Returns:
         list -- merged options
     """
+    demisto.info('just a test')
     user_options = re.split(r'(?<!\\),', user_options) if user_options else list()
     if not user_options:  # nothing to do
         return default_options.copy()
