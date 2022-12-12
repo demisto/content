@@ -29,7 +29,7 @@ filter
 		bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
         httpMethod=arrayindex(regextract(_raw_log, "\"([A-Z]+)\s\S+\sHTTP"),0),
 // extract source_ip
-		sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
+		sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s"),0),
 		sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
 | alter sourceip = coalesce(sourceipv4,sourceipv6)
 // end extract source_ip
