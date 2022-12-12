@@ -264,8 +264,7 @@ class Client(BaseClient):
 
             # Attack Surface
             # Open Ports
-            if json_val.get(VAR_OPEN_PORTS) is not None:
-                json_data = json_val.get(VAR_OPEN_PORTS)
+            if json_data := json_val.get(VAR_OPEN_PORTS):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_OPEN_PORTS)
                 return_data = return_data + incidents_json_data
