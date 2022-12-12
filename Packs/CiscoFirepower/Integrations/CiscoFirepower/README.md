@@ -4891,7 +4891,7 @@ Imports or validate custom Snort 3 intrusion rules within a file. Import argumen
 
 ### 39. ciscofp-list-intrusion-rule
 ***
-Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET argument: intrusion_rule_id | LIST arguments: sort, filter, expanded_response, limit, page, page_size.
+Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET argument: intrusion_rule_id ; List arguments: sort, filter, expanded_response, limit, page, page_size.
 
 
 #### Base Command
@@ -5184,7 +5184,7 @@ There is no context output for this command.
 
 ### 43. ciscofp-list-intrusion-policy
 ***
-Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves list of all intrusion policies. GET arguments: intrusion_policy_id, include_count | LIST arguments: expanded_response, limit, page, page_size.
+Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves list of all intrusion policies. GET arguments: intrusion_policy_id, include_count ; List arguments: expanded_response, limit, page, page_size.
 
 
 #### Base Command
@@ -5518,7 +5518,7 @@ There is no context output for this command.
 
 ### 47. ciscofp-list-intrusion-rule-group
 ***
-Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET arguments: rule_group_id | LIST arguments: expanded_response, filter, limit, page, page_size.
+Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a list of all Snort3 Intrusion rule groups. GET arguments: rule_group_id ; List arguments: expanded_response, filter, limit, page, page_size.
 
 
 #### Base Command
@@ -5546,15 +5546,15 @@ Retrieves the Snort3 Intrusion rule group. If no ID is specified, retrieves a li
 | CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
-| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
@@ -5633,15 +5633,15 @@ Creates or overrides the Snort3 Intrusion rule group with the specified paramete
 | CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
-| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
@@ -5708,15 +5708,15 @@ Modifies the Snort3 Intrusion rule group with the specified ID.
 | CiscoFP.IntrusionRuleGroup.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.description | String | Description of the Snort 3 intrusion rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.version | String | Rule group version | 
-| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.name | String | Name of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.id | String | ID of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.type | String | Type of rulegroup associated with the parent rulegroup. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined | Boolean | Read-only field indicating if the rulegroup is system-defined \(i.e., Talos provided\). If value is false, then rule is user-defined. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.description | String | Description of rulegroup associated with the parent rulegroup. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
-| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED | LEVEL_1 | LEVEL_2 | LEVEL_3 | LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel | String | Override level in context of a policy. Allowed only for custom intrusion policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
+| CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel | String | Default level in context of a policy. One of: DISABLED ; LEVEL_1 ; LEVEL_2 ; LEVEL_3 ; LEVEL_4. | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp | Number | Metadata timestamp | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name | String | lastUser name | 
 | CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id | String | lastUser ID | 
@@ -5788,7 +5788,7 @@ There is no context output for this command.
 
 ### 51. ciscofp-list-network-analysis-policy
 ***
-Retrieves the network analysis policy with the specified ID. If no ID is specified, retrieves list of all network analysis policies. GET arguments: network_analysis_policy_id | LIST arguments: expanded_response, limit, page, page_size.
+Retrieves the network analysis policy with the specified ID. If no ID is specified, retrieves list of all network analysis policies. GET arguments: network_analysis_policy_id ; List arguments: expanded_response, limit, page, page_size.
 
 
 #### Base Command
