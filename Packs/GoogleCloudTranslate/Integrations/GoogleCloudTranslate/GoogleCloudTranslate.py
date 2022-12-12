@@ -91,7 +91,6 @@ class Client:
         return self.project if self.project is not None else self.service_account['project_id']
 
     def _get_client(self):
-        # turning off the proxy as the SDK doesn't support it.
         handle_proxy()
 
         cur_directory_path = os.getcwd()
