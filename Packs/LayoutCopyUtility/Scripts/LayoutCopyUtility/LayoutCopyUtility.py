@@ -55,10 +55,12 @@ class Layout:
 
         tab['id'] = ''.join(random.choices(string.ascii_lowercase, k=10))
 
-        def mod_uid(uid): 
+        def mod_uid(uid):
             return uid.replace(uid[random.randrange(len(uid))], random.choice(string.ascii_lowercase))
-        def gen_i_id(uid): 
+        
+        def gen_i_id(uid):
             return f"{tab.get('id')}-{mod_uid(uid[0])}-{'-'.join(uid[1:])}"
+        
         def gen_item_id(uid):
             return f"{uid[1]}-{mod_uid(uid[2])}-{'-'.join(uid[3:])}"
 
@@ -70,6 +72,7 @@ class Layout:
                 item.update({'id': gen_item_id(i_id)})
         return tab
 
+    
     def merge_in_tab(self,
                      source_layout,
                      source_tab_name: str,
