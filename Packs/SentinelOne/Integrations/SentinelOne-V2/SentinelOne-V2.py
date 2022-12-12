@@ -2026,8 +2026,8 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
 
     # Make request and get raw response
     exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit,
-                                                    includeParents=should_include_parent,
-                                                    includeChildren=should_include_children)
+                                                    include_parents=should_include_parent,
+                                                    include_children=should_include_children)
 
     # Parse response into context & content entries
     for exclusion_item in exclusion_items:
