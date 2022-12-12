@@ -1,4 +1,4 @@
-[MODEL: dataset="ManageEngine_ADAuditPlus_raw"]
+[MODEL: dataset="manageengine_adauditplus_raw"]
 alter 
 xdm.session_context_id=coalesce(cn2,cn3),
 xdm.event.id=cn1,
