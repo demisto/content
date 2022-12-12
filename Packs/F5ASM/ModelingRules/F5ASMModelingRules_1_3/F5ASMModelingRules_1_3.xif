@@ -21,7 +21,6 @@ alter
         xdm.network.application_protocol = app,
         xdm.observer.unique_identifier = deviceExternalId,
         xdm.alert.name = cs4,
-        xdm.source.location.latitude = cs6,
         xdm.source.ipv4 = ipv4src,
         xdm.source.ipv6 = ipv6src,
         xdm.target.ipv4 = ipv4dest,
@@ -31,5 +30,5 @@ alter
         xdm.network.http.method = requestMethod,
         xdm.network.http.url = request,
         xdm.network.http.referrer = referrer,
-        xdm.network.http.user_agent = user_agent,
+        xdm.source.user_agent = user_agent,
         xdm.target.process.executable.path = cs3;

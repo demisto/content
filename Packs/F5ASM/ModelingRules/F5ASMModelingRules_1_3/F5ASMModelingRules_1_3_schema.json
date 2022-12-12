@@ -12,10 +12,6 @@
       "type": "string",
       "is_array": false
     },
-    "cs6": {
-      "type": "string",
-      "is_array": false
-    },
     "cs3": {
       "type": "string",
       "is_array": false
