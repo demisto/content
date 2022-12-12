@@ -1,5 +1,5 @@
 {
-    "name": "Splunk Prerelease",
+    "name": "Splunk Prerelease (Deprecated)",
     "hidden": "true",
     "description": "Run queries on Splunk servers - pre release version.",
     "support": "xsoar",
