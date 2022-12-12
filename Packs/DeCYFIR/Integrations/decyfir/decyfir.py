@@ -353,8 +353,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # confidential-files
-            if json_val.get(VAR_CONFIDENTIAL_FILES) is not None:
-                json_data = json_val.get(VAR_CONFIDENTIAL_FILES)
+            if json_data := json_val.get(VAR_CONFIDENTIAL_FILES):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_S_PE,
                                                                               LABEL_CONFIDENTIAL_FILES)
                 return_data = return_data + incidents_json_data
