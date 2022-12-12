@@ -1,7 +1,7 @@
 {
     "cisco_firepower_raw": {
         "dpt": {
-          "type": "string",
+          "type": "int",
           "is_array": false
         },
         "dst": {
@@ -13,7 +13,7 @@
           "is_array": false
         },
         "spt": {
-          "type": "string",
+          "type": "int",
           "is_array": false
         },
         "act": {
@@ -93,11 +93,11 @@
           "is_array": false
         },
         "bytesOut": {
-          "type": "string",
+          "type": "int",
           "is_array": false
         },
         "bytesIn": {
-          "type": "string",
+          "type": "int",
           "is_array": false
         },
         "cefName": {
