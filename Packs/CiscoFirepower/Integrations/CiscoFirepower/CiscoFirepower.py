@@ -2623,11 +2623,11 @@ def update_network_groups_objects_command(client: Client, args: Dict) -> Command
                     inner_key='id',
                 )
                 values = append_items_to_value(
-                raw_response=raw_response,
-                value=values,
-                items_key='literals',
-                inner_key='value',
-            )
+                    raw_response=raw_response,
+                    value=values,
+                    items_key='literals',
+                    inner_key='value',
+                )
 
         raw_response = client.update_network_groups_objects(name, ids, values, group_id, description, overridable)
         title = f'{INTEGRATION_NAME} - network group has been updated.'

@@ -361,7 +361,7 @@ def assert_output_has_no_links(outputs: Union[list[dict[str, Any]], dict[str, An
         assert 'links' not in output
 
 
-def assert_command_results(command_results: CommandResults,  method: str, expected_output_prefix: str = ''):
+def assert_command_results(command_results: CommandResults, method: str, expected_output_prefix: str = ''):
     """
     Test that the command results outputs has no links in it, if it exists.
     Test the output prefix.
