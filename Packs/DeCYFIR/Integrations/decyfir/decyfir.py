@@ -282,8 +282,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # Cloud Weakness
-            if json_val.get(VAR_CLOUD_WEAKNESS) is not None:
-                json_data = json_val.get(VAR_CLOUD_WEAKNESS)
+            if json_data := json_val.get(VAR_CLOUD_WEAKNESS):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CLOUD_WEAKNESS)
                 return_data = return_data + incidents_json_data
