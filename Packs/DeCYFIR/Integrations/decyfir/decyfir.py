@@ -307,8 +307,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # Executive People
-            if json_val.get(VAR_EXECUTIVE_PEOPLE) is not None:
-                json_data = json_val.get(VAR_EXECUTIVE_PEOPLE)
+            if json_data := json_val.get(VAR_EXECUTIVE_PEOPLE):
                 incidents_json_data = self.prepare_incidents_for_digital_risk(json_data, LABEL_DIGITAL_RISK_IM_IN,
                                                                               LABEL_EXECUTIVE_PEOPLE)
                 return_data = return_data + incidents_json_data
