@@ -146,7 +146,8 @@ def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, int],
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
-    first_fetch_time_strftime = dateparser.parse(str(first_fetch_time)).strftime(DATE_FORMAT)  # type: ignore
+    first_fetch_time_strftime = dateparser.parse(str(first_fetch_time),
+                                                 settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)  # type: ignore
     params = {'journal-entries': {'created_after': first_fetch_time_strftime},
               'object-changes': {'time_after': first_fetch_time_strftime}}
     for log_type in LOG_TYPES:

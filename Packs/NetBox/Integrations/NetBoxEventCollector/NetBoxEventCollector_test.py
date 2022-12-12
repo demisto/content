@@ -33,9 +33,9 @@ def test_fetch_events(mocker, requests_mock):
     from NetBoxEventCollector import Client, fetch_events
 
     # mock the first fetch id
-    requests_mock.get(f'{BASE_URL}/journal-entries?ordering=id&limit=1&created_after=2022-01-01T02%3A00%3A00Z',
+    requests_mock.get(f'{BASE_URL}/journal-entries?ordering=id&limit=1&created_after=2022-01-01T00%3A00%3A00Z',
                       json={'results': [{'id': 5}]})
-    requests_mock.get(f'{BASE_URL}/object-changes?ordering=id&limit=1&time_after=2022-01-01T02%3A00%3A00Z',
+    requests_mock.get(f'{BASE_URL}/object-changes?ordering=id&limit=1&time_after=2022-01-01T00%3A00%3A00Z',
                       json={'results': [{'id': 9}]})
 
     # mock the events
