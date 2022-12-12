@@ -8,6 +8,10 @@ alter
     duration = arrayindex(regextract(_raw_log,"duration\s*(\d+\:\d+\:\d+)\s*"),0), // not have function in xql to change it to milliseconds
     bytes = arrayindex(regextract(_raw_log,"bytes\s*(\d+)\s+"),0),
     threat_level = arrayindex(regextract(_raw_log,"threat-level\:\s*([^\,]+)\,"),0)
+// Action
+| alter action1 = arrayindex(regextract(_raw_log ,"\d+\-\d+\:\s([a-zA-Z]+[\s|\-][a-zA-Z]{2,}\s+[a-zA-Z\s]{3,})"),0),
+    action2 = arrayindex(regextract(_raw_log ,"([a-zA-Z]{3,}\s[a-zA-Z]{3,}\s[a-zA-Z\s]{3,})\.*$"),0)
+| alter action = coalesce(action1 ,action2)
 // host ip
 | alter host_ip1 = arrayindex(regextract(_raw_log ,"\s*IP\s\<(\d+\.\d+\.\d+\.\d+)\>[\s|\,]"),0),
     host_ip2 = arrayindex(regextract(_raw_log ,"\s*[IP|server]\s*\=\s*(\d+\.\d+\.\d+\.\d+)\s*"),0),
@@ -26,11 +30,11 @@ alter
     user_name5 = arrayindex(regextract(_raw_log ,"\sfor\suser\s([a-zA-Z0-9\_\-\.\@]+)\s*"),0),
     user_name6 = arrayindex(regextract(_raw_log ,"\sUser\s([a-zA-Z0-9\-\_\.\@]+)\,"),0)
 | alter user_name = coalesce(user_name1 , user_name2, user_name3 , user_name4 , user_name5 , user_name6)
-// protocol on investigation
-/* | alter protocol1 = arrayindex(regextract(_raw_log,"([A-Z]+)\s*[A-Z]*\s+\w+\s+[from|for]{3,4}"),0),
-    protocol2 = arrayindex(regextract(_raw_log,"Built\s+[A-Za-z]+\s+([A-Z]+)\s+connection"),0)
-| alter
-    protocol = coalesce(protocol1, protocol2)*/
+// protocol
+| alter protocol1 = arrayindex(regextract(_raw_log,"prot\=([A-Z]{2,})"),0),
+    protocol2 = arrayindex(regextract(_raw_log,"\:\s*[A-Za-z]*\s+[A-Z]*[a-z]+\s+([A-Z]+)\s+connection"),0),
+    protocol3 = uppercase(arrayindex(regextract(_raw_log ,"\sprotocol\=([a-zA-Z]+)"),0))
+| alter protocol = coalesce(protocol1, protocol2, protocol3 )
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
 // source_ip/source_port to dest_ip/dest_port
@@ -125,7 +129,7 @@ alter
     XDM.Network.original_event_id = to_string(event_id),
     XDM.Network.original_event_description = message,
     XDM.Network.threat.severity = severity,
-    //XDM.Network.application_protocol = protocol,
+    XDM.Network.application_protocol = protocol,
     XDM.Network.Source.ipv4 = source_ip,
     XDM.Network.Source.port = to_number(source_port ),
     XDM.Network.Source.interface = source_interface,
