@@ -863,15 +863,15 @@ class BranchTestCollector(TestCollector):
                 logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
 
             if git_status == 'D':  # git-deleted file
-                logger.warning(f'Found a file deleted from git {file_path}, '
-                               f'skipping it as TestCollector cannot properly find the appropriate tests (by design)')
-                continue
+                if pack_file_removed_from := find_pack_file_removed_from(Path(old_file_path), None):
+                    packs_files_were_removed_from.add(pack_file_removed_from)
+
             changed_files.append(file_path)  # non-deleted files (added, modified)
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
 
 
-def find_pack_file_removed_from(old_path: Path, new_path: Path):
+def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     """
     If a file is moved between packs, we should collect the older one, to make sure it is installed properly.
     """
@@ -879,17 +879,25 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path):
     try:
         old_pack = find_pack_folder(old_path).name
     except NotUnderPackException:
+        logger.debug(f'Skipping pack collection for removed file: {old_path}, as it does not belong to any pack')'
         return None  # not moved from a pack, no special treatment we can do here.
 
-    try:
-        new_pack = find_pack_folder(new_path).name
-    except NotUnderPackException:
-        new_pack = None
+    if new_path:
+        try:
+            new_pack = find_pack_folder(new_path).name
+        except NotUnderPackException:
+            new_pack = None
+            logger.warning(f'')
 
-    if old_pack != new_pack:  # file moved between packs
-        logger.info(f'file {old_path.name} was moved '
+        if old_pack != new_pack:  # file moved between packs
+            logger.info(f'file {old_path.name} was moved '
+                        f'from pack {old_pack}, adding it, to make sure it still installs properly')
+    else:
+        # Since new_path is None we understand the item was deleted
+        logger.info(f'file {old_path.name} was deleted ' # changing log
                     f'from pack {old_pack}, adding it, to make sure it still installs properly')
-        return old_pack
+
+    return old_pack
 
 
 class UploadCollector(BranchTestCollector):
