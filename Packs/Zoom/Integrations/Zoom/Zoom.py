@@ -116,7 +116,7 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
 
-    def zoom_user_create(self, user_type: int, email: str, first_name: str, last_name: str):
+    def zoom_user_create(self, user_type: str, email: str, first_name: str, last_name: str):
         ut = user_type
         user_type = 1  # Basic
         if ut == 'Pro':
@@ -427,7 +427,7 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
     )
 
 
-def zoom_user_create_command(client: Client, user_type: int, email: str, first_name: str, last_name: str) -> CommandResults:
+def zoom_user_create_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
     raw_data = client.zoom_user_create(user_type, email, first_name, last_name)
     return CommandResults(
         outputs_prefix='Zoom',

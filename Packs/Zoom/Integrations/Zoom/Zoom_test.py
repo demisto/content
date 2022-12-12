@@ -191,7 +191,7 @@ def test_zoom_user_list__no_limit(mocker):
 def test_zoom_user_list__limit_and_page_size(mocker):
     """
         When -
-            asking for a limit of results and for a specific page size
+            asking for a limit of results and for a user_id
         Then -
             Validate that an error message will be returned
     """
@@ -205,7 +205,6 @@ def test_zoom_user_list__limit_and_page_size(mocker):
     assert e.value.message == "Too money arguments. if you choose a limit, don't enter a user_id or page_size"
 
 
-
 def test_zoom_user_list__user_id(mocker):
     """
         Given -
@@ -216,10 +215,8 @@ def test_zoom_user_list__user_id(mocker):
             Validate that the API call will be for a specific user
             and the url_suffix has changed to the right value
     """
-    # url_suffix = "mockSuffix"
     mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
     basic_request_mocker = mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
-
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -233,7 +230,7 @@ def test_manual_user_list_pagination__small_limit(mocker):
         Given -
            client
         When -
-            limitm > 0 < MAX_RECORDS_PER_PAGE
+            limit > 0 < MAX_RECORDS_PER_PAGE
         Then -
             Validate that the page_size == limit
     """
@@ -241,6 +238,61 @@ def test_manual_user_list_pagination__small_limit(mocker):
     basic_request_mocker = mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=5,
+    limit = 5
+    client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=limit,
                                        status="all", role_id=None)
-    assert basic_request_mocker.call_args[0][0] == 5
+    assert basic_request_mocker.call_args[0][0] == limit
+
+
+def test_zoom_user_create__basic_user_type(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a basic user type
+       Then -
+           Validate that the right type is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_user_create("Basic", "mock@moker.com", "John", "Smith")
+    assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 1
+
+
+def test_zoom_user_create__pro_user_type(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a pro user type
+       Then -
+           Validate that the right type is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_user_create("Pro", "mock@moker.com", "John", "Smith")
+    assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 2
+
+
+def test_zoom_user_create__Corporate_user_type(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a Corporate user type
+       Then -
+           Validate that the right type is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_user_create("Corporate", "mock@moker.com", "John", "Smith")
+    assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 3
