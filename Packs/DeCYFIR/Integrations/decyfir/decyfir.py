@@ -294,8 +294,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # Certificates
-            if json_val.get(VAR_CERTIFICATES) is not None:
-                json_data = json_val.get(VAR_CERTIFICATES)
+            if json_data:= json_val.get(VAR_CERTIFICATES):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CERTIFICATES)
                 return_data = return_data + incidents_json_data
