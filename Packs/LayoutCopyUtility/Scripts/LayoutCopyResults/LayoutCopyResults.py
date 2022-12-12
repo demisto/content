@@ -5,10 +5,12 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 def result_check(result):
-    if result !={}:
+    if result != {}:
         return result
     else:
         return None
+    
+    
 def get_results():
     context = argToList(demisto.context().get('XSOAR').get('results'))
     if context:
