@@ -383,17 +383,17 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
     )
 )
 def test_branch(
-        monkeypatch,
-        mocker,
-        case_mocker,
-        expected_tests: Optional[set[str]],
-        expected_packs: Optional[tuple[str, ...]],
-        expected_machines: Optional[tuple[Machine, ...]],
-        expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
-        collector_class_args: tuple[str, ...],
-        mocked_changed_files: tuple[str, ...],
-        mocked_packs_files_were_moved_from: tuple[str, ...],
-    ):
+    monkeypatch,
+    mocker,
+    case_mocker,
+    expected_tests: Optional[set[str]],
+    expected_packs: Optional[tuple[str, ...]],
+    expected_machines: Optional[tuple[Machine, ...]],
+    expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
+    collector_class_args: tuple[str, ...],
+    mocked_changed_files: tuple[str, ...],
+    mocked_packs_files_were_moved_from: tuple[str, ...],
+):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
     _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
@@ -462,7 +462,8 @@ ONLY_COLLECT_PACK_TYPES = {
 
 def test_only_collect_pack_args():
     """
-    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
+    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES)
+    match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
     from Tests.scripts.collect_tests.constants import \
