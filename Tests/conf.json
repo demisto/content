@@ -2380,6 +2380,13 @@
             "has_api": false
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
             "playbookID": "Docker Hardening Test",
             "fromversion": "5.0.0",
             "runnable_on_docker_only": true
@@ -5346,7 +5353,8 @@
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
-        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
+        "97393cfc-2fc4-4dfe-8b6e-af64067fc436": "AWS S3 test playbook, issue CRTX-69915"
     },
     "skipped_integrations": {
         "Lastline v2": "No license",
