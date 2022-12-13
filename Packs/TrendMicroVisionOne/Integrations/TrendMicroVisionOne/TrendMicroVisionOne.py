@@ -50,10 +50,6 @@ TASKID = "task_id"
 REPORT_ID = "report_id"
 ENTRY_ID = "entry_id"
 TASKSTATUS = "taskStatus"
-PROCESSING = "processing"
-RUNNING = "running"
-FINISHED = "finished"
-QUEUED = "queued"
 OS_TYPE = "os"
 FILE_PATH = "file_path"
 FILE_URL = "file_url"
@@ -291,7 +287,7 @@ class Client(BaseClient):
     def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
         """
         Check the submission status of sandbox submission
-        :type args: ``dict``
+        :type data: ``dict``
         :param method: Response data received from sandbox.
         :return: Performs polling and returns sandbox submission response data.
         :rtype: ``Any``
@@ -450,7 +446,7 @@ def run_polling_command(
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get("interval_in_seconds", 30))
     command_results = client.status_check(args)
-    action_id = args.get("actionId")
+    action_id = args.get(ACTION_ID)
     task_id = args.get(TASKID)
     if action_id:
         command_results = client.status_check(args)
