@@ -1,13 +1,18 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Palo Alto Networks Threat Vault v2
+  id: Palo Alto Networks Threat Vault v2 Dev
   version: -1
 configuration:
-- additionalinfo: TIM customers who upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
-  display: API Key
-  name: api_key
+- defaultvalue: https://api.threatvault.paloaltonetworks.com/
+  display: URL
+  name: url
   required: true
-  type: 4
+  type: 0
+- displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
 - display: Source Reliability
   name: integrationReliability
   type: 15
@@ -37,7 +42,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 3 days
+- defaultvalue: 14 days
   additionalinfo: The time unit must be days, months, or years.
   display: First fetch timestamp (<number> <time unit>, e.g., 3 days)
   name: first_fetch
@@ -49,8 +54,8 @@ configuration:
   required: false
   type: 19
 description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-display: Palo Alto Networks Threat Vault v2
-name: Palo Alto Networks Threat Vault v2
+display: Palo Alto Networks Threat Vault v2 Dev
+name: Palo Alto Networks Threat Vault v2 Dev
 script:
   commands:
   - arguments:
@@ -89,6 +94,39 @@ script:
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
       type: String
+    - contextPath: ThreatVault.FileInfo.filetype
+      description: The file type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha256
+      description: The SHA256 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.sha1
+      description: The SHA1 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.md5
+      description: The MD5 of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.size
+      description: The size of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.type
+      description: The type of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.family
+      description: The family of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.platform
+      description: The platform of the file.
+      type: String
+    - contextPath: ThreatVault.FileInfo.wildfire_verdict
+      description: The Wildfire verdict.
+      type: String
+    - contextPath: ThreatVault.FileInfo.create_time
+      description: The threat signature creation time.
+      type: String
+    - contextPath: ThreatVault.FileInfo.signatures
+      description: The signatures.
+      type: String
   - arguments:
     - default: true
       description: A comma-separated list of CVE names.
@@ -121,6 +159,57 @@ script:
       type: String
     - contextPath: CVE.Published
       description: The timestamp of when the CVE was published.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.id
+      description: The unique ID of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.name
+      description: The name of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.description
+      description: The description of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.category
+      description: The threat category of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.min_version
+      description: The PAN-OS minimum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.max_version
+      description: The PAN-OS maximum version.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.severity
+      description: The severity of the threat.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.default_action
+      description: The default action when the signature is triggered.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.cve
+      description: The CVE (Common Vulnerabilities and Exposures) of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.vendor.
+      description: The vulnerability identifier issued by the vendor on advisories.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.reference
+      description: The public reference of the threat.
+      type: Array
+    - contextPath: ThreatVault.Vulnerability.status
+      description: The status of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.details
+      description: Any additional details of the signature.
+      type: Object
+    - contextPath: ThreatVault.Vulnerability.ori_release_version
+      description: The original release version of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_version
+      description: The latest release version of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.ori_release_time
+      description: The original release time of the signature.
+      type: String
+    - contextPath: ThreatVault.Vulnerability.latest_release_time
+      description: The latest release time of the signature.
       type: String
   - arguments:
     - default: false
@@ -542,13 +631,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The release dates range (used with the to-release-date argument).
+      description: "The release dates range (used with the to-release-date argument),
+        Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
       isArray: false
       name: from-release-date
       required: false
       secret: false
     - default: false
-      description: The right boundary of date range query (used with the from-release-date argument).
+      description: "The right boundary of date range query (used with the from-release-date argument),
+        Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
       isArray: false
       name: to-release-date
       required: false
@@ -566,7 +657,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The release date.
+      description: "The release date, Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
       isArray: false
       name: release-date
       required: false
@@ -606,7 +697,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of results to return.
+      description: The maximum number of results to return (default is 50).
       isArray: false
       name: limit
       required: false

@@ -1,7 +1,6 @@
 from CommonServerPython import *
 import demistomock as demisto
 
-BASE_URL = 'https://api.threatvault.paloaltonetworks.com/service/v1/'
 SCORE_TABLE_FILE = {
     'unknown': Common.DBotScore.NONE,
     'benign': Common.DBotScore.GOOD,
@@ -19,14 +18,16 @@ LIST_OF_RN_KEYS = [
     'applications'
 ]
 
+DATE_REGEX = r'\d{4}-[0-9]{2}-[0-9]{2}$'
+
 
 class Client(BaseClient):
     """
     Client to use in the Threat Vault integration. Overrides BaseClient.
     """
 
-    def __init__(self, api_key: str, verify: bool, proxy: bool, reliability: str):
-        super().__init__(base_url=BASE_URL, verify=verify, proxy=proxy,
+    def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool, reliability: str):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy,
                          headers={'Content-Type': 'application/json', 'X-API-KEY': api_key})
 
         self.name = 'ThreatVault'
@@ -69,6 +70,58 @@ HELP FUNCTIONS
 '''
 
 
+def validate_arguments_search_command(cve,
+                                      vendor,
+                                      name,
+                                      from_release_date,
+                                      to_release_date,
+                                      from_release_version,
+                                      to_release_version,
+                                      release_date,
+                                      release_version,
+                                      type_):
+
+    if sum(1 for x in (cve, vendor, name) if x) > 1:
+        raise ValueError('Only one of the following can be used at a time: '
+                         'cve, vendor, name')
+
+    if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
+        raise ValueError('When using a release date range in a query, it must be used with the following two arguments: '
+                         'from-release-date, to-release-date')
+
+    if sum(1 for x in (from_release_version, to_release_version) if x) == 1:
+        raise ValueError('When using a release version range in a query, it must be used with the following two arguments: '
+                         'from-release-version, to-release-version')
+
+    if release_date and release_version:
+        raise ValueError('There can only be one argument from the following list in the command: '
+                         'release-date, release-version')
+
+    if (from_release_date or from_release_version) and (release_date or release_version):
+        raise ValueError('When using a release version range or a release date range in a query'
+                         'it is not possible to use with the following arguments: release-date, release-version')
+
+    if from_release_date and from_release_version:
+        raise ValueError('from-release-version and from-release-date cannot be used together.')
+
+    if not any((cve, vendor, name, type_, from_release_date,
+                from_release_version, release_date, release_version)):
+        raise ValueError('One of following arguments is required: cve, vendor, signature-name, type, '
+                         'from-release-version, from-release-date, release-date, release-version')
+
+
+def parse_date(date: str = None) -> str | None:
+
+    if not date:
+        return None
+    if re.match(DATE_REGEX, date):
+        return date
+
+    date_time, _ = parse_date_range(date)
+
+    return date_time.date().strftime('%Y-%m-%d')
+
+
 def pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int]) -> tuple[int, Optional[int]]:
     '''
     The page_size and page arguments are converted so they match the offset and limit parameters of the API call.
@@ -105,51 +158,51 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                     'Family': response.get('family'),
                     'Platform': response.get('platform'),
                     'Signature Name': antivirus.get('name'),
-                    'Severity': antivirus.get('severity'),
+                    'Score': antivirus.get('severity'),
                     'Description': antivirus.get('description'),
                     'Size': response.get('size'),
                     'Wildfire verdict': response.get('wildfire_verdict'),
                 })
 
         case 'fileformat':
-            table_for_md = {'ID': response.get('id'),
+            table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
                             'Description': response.get('Description'),
                             'Category': response.get('category'),
-                            'Severity': response.get('severity'),
+                            'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
                             'Vendor': response.get('vendor'),
                             'Reference': response.get('reference'),
                             'Status': response.get('status'),
-                            'Ori release version': response.get('ori_release_version'),
+                            'Published version': response.get('ori_release_version'),
                             'Latest release version': response.get('latest_release_version'),
-                            'Ori release time': response.get('ori_release_time'),
+                            'Published': response.get('ori_release_time'),
                             'Latest release time': response.get('latest_release_time'),
                             }
 
         case 'vulnerability':
-            table_for_md = {'ID': response.get('id'),
+            table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
                             'Description': response.get('Description'),
                             'Category': response.get('category'),
-                            'Severity': response.get('severity'),
+                            'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
                             'Vendor': response.get('vendor'),
                             'Reference': response.get('reference'),
                             'Status': response.get('status'),
-                            'Ori release version': response.get('ori_release_version'),
+                            'Published version': response.get('ori_release_version'),
                             'Latest release version': response.get('latest_release_version'),
-                            'Ori release time': response.get('ori_release_time'),
+                            'Published': response.get('ori_release_time'),
                             'Latest release time': response.get('latest_release_time'),
                             'CVE': response.get('cve'),
                             }
 
         case 'antivirus':
-            table_for_md = {'ID': response.get('id'),
+            table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
                             'Description': response.get('Description'),
                             'Subtype': response.get('subtype'),
-                            'Severity': response.get('severity'),
+                            'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
                             'Create time': response.get('create_time'),
                             'Related sha256 hashes': response.get('related_sha256_hashes'),
@@ -157,11 +210,11 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
                             }
 
         case 'spyware':
-            table_for_md = {'ID': response.get('id'),
+            table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
                             'Description': response.get('description'),
                             'Vendor': response.get('vendor'),
-                            'Severity': response.get('severity'),
+                            'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
                             'Details': response.get('details'),
                             'Reference': response.get('reference'),
@@ -287,8 +340,6 @@ def parse_incident(incident: dict):
     4. Deletes keys from the incident when no values were found in them
     '''
 
-    incident['data'][0]['release_notes_md'] = incident['data'][0]['release_notes']['notes'][0]
-
     incident['data'][0]['Source name'] = 'THREAT VAULT - RELEASE NOTES'
 
     for key in incident['data'][0]['release_notes'].copy():
@@ -296,7 +347,7 @@ def parse_incident(incident: dict):
             if not incident['data'][0]['release_notes'][key]['new']:
                 del incident['data'][0]['release_notes'][key]
             else:
-                incident['data'][0]['release_notes'][key]['new'] = tableToMarkdown(
+                incident['data'][0]['release_notes'][key]['new-md'] = tableToMarkdown(
                     name=key,
                     t=incident['data'][0]['release_notes'][key]['new'],
                 )
@@ -358,16 +409,17 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 )
 
                 readable_output = f"Hash {_hash} antivirus reputation is unknown to Threat Vault."
+                file_info = None
             else:
                 raise
 
         command_results = CommandResults(
             readable_output=readable_output,
+            outputs=file_info,
+            outputs_prefix='ThreatVault.FileInfo',
             indicator=file
         )
-        if args.get('expanded'):
-            command_results.outputs = file_info
-            command_results.outputs_prefix = 'ThreatVault.FileInfo'
+
         command_results_list.append(command_results)
 
     return command_results_list
@@ -396,11 +448,14 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
             if err.res.status_code == 404:  # type:ignore
                 readable_output = f'CVE {cve} vulnerability reputation is unknown to Threat Vault.'
                 _cve = None
+                vulnerability = None
             else:
                 raise
 
         command_results = CommandResults(
             readable_output=readable_output,
+            outputs=vulnerability,
+            outputs_prefix='ThreatVault.Vulnerability',
             indicator=_cve
         )
         command_results_list.append(command_results)
@@ -555,49 +610,20 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     cve = args.get('cve')
     vendor = args.get('vendor')
     name = args.get('signature-name')
-
-    if sum(1 for x in (cve, vendor, name) if x) > 1:
-        raise ValueError('There can only be one argument from the following list in the command: '
-                         'cve, vendor, name')
-
-    from_release_date = args.get('from-release-date')
-    to_release_date = args.get('to-release-date')
-
-    if sum(1 for x in (from_release_date, to_release_date) if x) == 1:
-        raise ValueError('When using a release date range in a query, it must be used with the following two arguments: '
-                         'from-release-date, to-release-date')
-
+    from_release_date = parse_date(args.get('from-release-date'))
+    to_release_date = parse_date(args.get('to-release-date'))
     from_release_version = args.get('from-release-version')
     to_release_version = args.get('to-release-version')
-
-    if sum(1 for x in (from_release_version, to_release_version) if x) == 1:
-        raise ValueError('When using a release version range in a query, it must be used with the following two arguments: '
-                         'from-release-version, to-release-version')
-
-    release_date = args.get('release-date')
+    release_date = parse_date(args.get('release-date'))
     release_version = args.get('release-version')
-
-    if release_date and release_version:
-        raise ValueError('There can only be one argument from the following list in the command: '
-                         'release-date, release-version')
-
-    if (from_release_date or from_release_version) and (release_date or release_version):
-        raise ValueError('When using a release version range or a release date range in a query'
-                         'it is not possible to use with the following arguments: release-date, release-version')
-
-    if from_release_date and from_release_version:
-        raise ValueError('from-release-version and from-release-date cannot be used together.')
-
     type_ = args.get('type')
-
-    if not any((cve, vendor, name, type_, from_release_date,
-                from_release_version, release_date, release_version)):
-        raise ValueError('One of following arguments is required: cve, vendor, signature-name, type, '
-                         'from-release-version, from-release-date, release-date, release-version')
-
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
-    offset, limit = pagination(page, page_size, arg_to_number(args.get('limit')))
+    offset, limit = pagination(page, page_size, arg_to_number(args.get('limit', 50)))
+
+    validate_arguments_search_command(cve, vendor, name, from_release_date, to_release_date,
+                                      from_release_version, to_release_version, release_date,
+                                      release_version, type_)
 
     query = assign_params(cve=cve,
                           vendor=vendor,
@@ -708,7 +734,8 @@ def main():
     params = demisto.params()
     '''PARAMS'''
 
-    api_key = params.get('api_key')
+    base_url = params.get('url', '') + 'service/v1/'
+    api_key = params.get('credentials', {}).get('password')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
     reliability = params.get('integrationReliability', 'D - Not usually reliable')
@@ -719,7 +746,8 @@ def main():
     try:
         command = demisto.command()
         demisto.debug(f'Command being called is {demisto.command()}')
-        client = Client(api_key=api_key,
+        client = Client(base_url=base_url,
+                        api_key=api_key,
                         verify=verify,
                         proxy=proxy,
                         reliability=reliability)

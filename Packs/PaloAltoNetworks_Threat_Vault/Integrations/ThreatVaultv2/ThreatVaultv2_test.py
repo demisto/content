@@ -1,16 +1,16 @@
 from CommonServerPython import *
 import pytest
 import json
-from unittest import mock
 
 from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
-    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_incident
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_incident, parse_date
 
 
 class MockException(Exception):
     class MockStatus:
         status_code = 404
     res = MockStatus()
+
 
 @pytest.mark.parametrize(
     'command, demisto_args, expected_results',
@@ -43,32 +43,32 @@ class MockException(Exception):
         ),
         (
             threat_search_command,
-            {'cve': 'test', 'from-release-date': 'test'},
+            {'cve': 'test', 'from-release-date': '2000-09-09'},
             ('When using a release date range in a query, it must be used with the following two arguments: '
              'from-release-date, to-release-date')
         ),
         (
             threat_search_command,
-            {'cve': 'test', 'from-release-version': 'test'},
+            {'cve': 'test', 'from-release-version': '2000-09-09'},
             ('When using a release version range in a query, it must be used with the following two arguments: '
              'from-release-version, to-release-version')
         ),
         (
             threat_search_command,
-            {'cve': 'test', 'release-date': 'test', 'release-version': 'test'},
+            {'cve': 'test', 'release-date': '2000-09-09', 'release-version': 'test'},
             ('There can only be one argument from the following list in the command: '
              'release-date, release-version')
         ),
         (
             threat_search_command,
-            {'cve': 'test', 'release-date': 'test', 'from-release-date': 'test', 'to-release-date': 'test'},
+            {'cve': 'test', 'release-date': '2000-09-09', 'from-release-date': '2000-09-09', 'to-release-date': '2000-09-09'},
             ('When using a release version range or a release date range in a query'
              'it is not possible to use with the following arguments: release-date, release-version')
         ),
         (
             threat_search_command,
             {'cve': 'test', 'from-release-version': 'test', 'to-release-version': 'test',
-             'from-release-date': 'test', 'to-release-date': 'test'},
+             'from-release-date': '2000-09-09', 'to-release-date': '2000-09-09'},
             'from-release-version and from-release-date cannot be used together.'
         )
     ]
@@ -132,6 +132,7 @@ def test_commands_failure(command, demisto_args, expected_results):
 def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_output, expected_indicator):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -542,6 +543,7 @@ FILE_COMMAND_ARGS = [
 def test_file_command(mocker, args, resp, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -682,6 +684,7 @@ CVE_COMMAND_ARGS = [
 def test_cve_command(mocker, args, resp, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -756,6 +759,7 @@ def test_cve_command(mocker, args, resp, expected_results):
 def test_threat_signature_get_command(mocker, args, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -784,6 +788,7 @@ def test_threat_signature_get_command(mocker, args, expected_results):
 def test_release_note_get_command(mocker, args, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -812,6 +817,7 @@ def test_release_note_get_command(mocker, args, expected_results):
 def test_threat_batch_search_command(mocker, args, mocking, expected_args, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -832,15 +838,15 @@ def test_threat_batch_search_command(mocker, args, mocking, expected_args, expec
     [
         (
             {'cve': '123'},
-            {'cve': '123', 'offset': 0}
+            {'cve': '123', 'offset': 0, 'limit': 50}
         ),
         (
-            {'cve': '123', 'release-date': 'test'},
-            {'cve': '123', 'offset': 0, 'releaseDate': 'test'}
+            {'cve': '123', 'release-date': '2000-09-09'},
+            {'cve': '123', 'offset': 0, 'releaseDate': '2000-09-09', 'limit': 50}
         ),
         (
-            {'cve': '123', 'from-release-date': 'test', 'to-release-date': 'test'},
-            {'cve': '123', 'offset': 0, 'fromReleaseDate': 'test', 'toReleaseDate': 'test'}
+            {'cve': '123', 'from-release-date': '2000-09-09', 'to-release-date': '2000-09-09'},
+            {'cve': '123', 'offset': 0, 'fromReleaseDate': '2000-09-09', 'toReleaseDate': '2000-09-09', 'limit': 50}
         ),
         (
             {'signature-name': '123', 'page': '2', 'page_size': '100'},
@@ -851,6 +857,7 @@ def test_threat_batch_search_command(mocker, args, mocking, expected_args, expec
 def test_threat_search_command(mocker, args, expected_results):
 
     client = Client(
+        base_url='test',
         api_key='test',
         verify=False,
         proxy=False,
@@ -881,3 +888,18 @@ def test_parse_incident(mocker, incident_input):
 
     assert 'file_type' not in results['data'][0]['release_notes']
     assert results['data'][0]['Source name'] == 'THREAT VAULT - RELEASE NOTES'
+
+
+@pytest.mark.parametrize(
+    'date, expected_result',
+    [
+        (
+            '2022-09-03',
+            '2022-09-03'
+        )
+    ]
+)
+def test_parse_date(date, expected_result):
+
+    res = parse_date(date)
+    assert res == expected_result

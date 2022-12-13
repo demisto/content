@@ -12,7 +12,8 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | API Key | TIM customers who upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key. | True |
+    | URL |  | True |
+    | API Key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. |  |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -52,6 +53,17 @@ Checks the reputation of an antivirus in Threat Vault.
 | File.SHA1 | String | The SHA1 hash of the file. | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
+| ThreatVault.FileInfo.filetype | String | The file type of the file. | 
+| ThreatVault.FileInfo.sha256 | String | The SHA256 of the file. | 
+| ThreatVault.FileInfo.sha1 | String | The SHA1 of the file. | 
+| ThreatVault.FileInfo.md5 | String | The MD5 of the file. | 
+| ThreatVault.FileInfo.size | String | The size of the file. | 
+| ThreatVault.FileInfo.type | String | The type of the file. | 
+| ThreatVault.FileInfo.family | String | The family of the file. | 
+| ThreatVault.FileInfo.platform | String | The platform of the file. | 
+| ThreatVault.FileInfo.wildfire_verdict | String | The Wildfire verdict. | 
+| ThreatVault.FileInfo.create_time | String | The threat signature creation time. | 
+| ThreatVault.FileInfo.signatures | String | The signatures. |
 
 #### Command example
 ```!file file= 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8```
@@ -120,6 +132,23 @@ Checks the reputation of CVE in Threat Vault.
 | CVE.CVSS.Score | String | The CVSS of the CVE. | 
 | CVE.Modified | String | The timestamp of when the CVE was last modified. | 
 | CVE.Published | String | The timestamp of when the CVE was published. | 
+| ThreatVault.Vulnerability.id | String | The unique ID of the signature. | 
+| ThreatVault.Vulnerability.name | String | The name of the signature. | 
+| ThreatVault.Vulnerability.description | String | The description of the signature. | 
+| ThreatVault.Vulnerability.category | String | The threat category of the signature. | 
+| ThreatVault.Vulnerability.min_version | String | The PAN-OS minimum version. | 
+| ThreatVault.Vulnerability.max_version | String | The PAN-OS maximum version. | 
+| ThreatVault.Vulnerability.severity | String | The severity of the threat. | 
+| ThreatVault.Vulnerability.default_action | String | The default action when the signature is triggered. | 
+| ThreatVault.Vulnerability.cve | Array | The CVE \(Common Vulnerabilities and Exposures\) of the threat. | 
+| ThreatVault.Vulnerability.vendor. | Array | The vulnerability identifier issued by the vendor on advisories. | 
+| ThreatVault.Vulnerability.reference | Array | The public reference of the threat. | 
+| ThreatVault.Vulnerability.status | String | The status of the signature. | 
+| ThreatVault.Vulnerability.details | Object | Any additional details of the signature. | 
+| ThreatVault.Vulnerability.ori_release_version | String | The original release version of the signature. | 
+| ThreatVault.Vulnerability.latest_release_version | String | The latest release version of the signature. | 
+| ThreatVault.Vulnerability.ori_release_time | String | The original release time of the signature. | 
+| ThreatVault.Vulnerability.latest_release_time | String | The latest release time of the signature. |
 
 #### Command example
 ```!cve cve=CVE-2020-2040```
@@ -905,16 +934,16 @@ Retrieves threat metadata. The nature of the query is determined by the query pa
 | cve | The CVE tied to the signature. | Optional | 
 | vendor | The vendor ID tied to the signatures. | Optional | 
 | signature-name | The signature name. | Optional | 
-| from-release-date | The release dates range (use with the to-release-date argument). | Optional | 
-| to-release-date | The right boundary of date range query (use with the from-release-date argument). | Optional | 
+| from-release-date | The release dates range (use with the to-release-date argument), Format: YYYY-MM-DD or timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year). | Optional | 
+| to-release-date | The right boundary of date range query (use with the from-release-date argument), Format: YYYY-MM-DD or timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year). | Optional | 
 | from-release-version | The release versions range (use with the to-release-version argument). | Optional | 
 | to-release-version | The right boundary of version range query (use with the from-release-version argument). | Optional | 
-| release-date | The release date. | Optional | 
+| release-date | The release date. Format: YYYY-MM-DD or timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year). | Optional | 
 | release-version | The release version. | Optional | 
 | type | The threat type. Use together with the other fields to filter out the results. Possible values are: ips, fileformat, spyware, vulnerability, antivirus, dns, rtdns, spywarec2. | Optional | 
 | page | Page number to get result from. Needs to be use with the page_size argument. | Optional | 
 | page_size | The page size of the returned results. Needs to be use with the page argument. | Optional | 
-| limit | The maximum number of results to return. | Optional | 
+| limit | The maximum number of results to return (default is 50). | Optional | 
 
 
 #### Context Output
