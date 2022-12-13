@@ -288,6 +288,51 @@ class Client(BaseClient):
             outputs=message,
         )
 
+    def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
+        """
+        Check the submission status of sandbox submission
+        :type args: ``dict``
+        :param method: Response data received from sandbox.
+        :return: Performs polling and returns sandbox submission response data.
+        :rtype: ``Any``
+        """
+        task_id = data.get(TASKID)
+        result = self.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
+        message = {
+            "message": result.get("message", ""),
+            "code": result.get("code", ""),
+            "task_id": result.get("data", {}).get("taskId", ""),
+            "taskStatus": result.get("data", {}).get("taskStatus", ""),
+            "digest": result.get("data", {}).get("digest", ""),
+            "analysis_completion_time": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("analysisCompletionTime", ""),
+            "risk_level": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("riskLevel", ""),
+            "description": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("description", ""),
+            "detection_name_list": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("detectionNameList", ""),
+            "threat_type_list": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("threatTypeList", ""),
+            "file_type": result.get("data", {})
+            .get("analysisSummary", "")
+            .get("trueFileType", ""),
+            "report_id": result.get("data", {}).get("reportId", ""),
+        }
+        return CommandResults(
+            readable_output=tableToMarkdown(
+                TABLE_SANDBOX_SUBMISSION_POLLING, message, removeNull=True
+            ),
+            outputs_prefix="VisionOne.Sandbox_Submission_Polling",
+            outputs_key_field="report_id",
+            outputs=message,
+        )
+
     def lookup_type(self, param: Any) -> str:
 
         # Regex expression for validating IPv4
@@ -392,7 +437,7 @@ def run_polling_command(
     args: Dict[str, Any], cmd: str, client: Client
 ) -> Union[str, CommandResults]:
     """
-    Performs polling interval to check status of task.
+    Performs polling interval to check status of task or sandbox submission result.
     :type args: ``args``
     :param client: argument required for polling.
 
@@ -406,15 +451,23 @@ def run_polling_command(
     interval_in_secs = int(args.get("interval_in_seconds", 30))
     command_results = client.status_check(args)
     action_id = args.get("actionId")
+    task_id = args.get(TASKID)
+    if action_id:
+        command_results = client.status_check(args)
+        value = "actionId"
+    else:
+        command_results = client.sandbox_submission_polling(args)
+        value = "task_id"
     if command_results.outputs.get("taskStatus") not in (
         "success",
         "failed",
         "timeout",
         "skipped",
+        "finished",
     ):
         # schedule next poll
         polling_args = {
-            "actionId": action_id,
+            f"{value}": action_id if action_id else task_id,
             "interval_in_seconds": interval_in_secs,
             "polling": True,
             **args,
@@ -440,6 +493,21 @@ def get_task_status(args: Dict[str, Any], client: Client) -> Union[str, CommandR
     :param client: client object to use http_request.
     """
     return run_polling_command(args, CHECK_TASK_STATUS, client)
+
+
+def get_sandbox_submission_status(
+    args: Dict[str, Any], client: Client
+) -> Union[str, CommandResults]:
+    """
+    Perform polling to get status of sandbox submission.
+
+    :type args: ``args``
+    :param client: argument required for polling.
+
+    :type client: ``Client``
+    :param client: client object to use http_request.
+    """
+    return run_polling_command(args, SANDBOX_SUBMISSION_POLLING, client)
 
 
 def test_module(client: Client) -> Any:
@@ -1283,64 +1351,6 @@ def submit_file_entry_to_sandbox(
     return results
 
 
-def sandbox_submission_polling(
-    client: Client, args: Dict[str, Any], poll: bool = True, poll_time_sec: int = 1500
-) -> Union[str, CommandResults]:
-    task_id = args.get(TASKID)
-    if poll:
-        start_time: float = time.time()
-        elapsed_time: float = 0
-        while _is_submission_running(client, task_id) and elapsed_time < poll_time_sec:
-            elapsed_time = start_time - time.time()
-    result = _submission_status_request(client, task_id)
-    message = {
-        "message": result.get("message", ""),
-        "code": result.get("code", ""),
-        "task_id": result.get("data", {}).get("taskId", ""),
-        "taskStatus": result.get("data", {}).get("taskStatus", ""),
-        "digest": result.get("data", {}).get("digest", ""),
-        "analysis_completion_time": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("analysisCompletionTime", ""),
-        "risk_level": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("riskLevel", ""),
-        "description": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("description", ""),
-        "detection_name_list": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("detectionNameList", ""),
-        "threat_type_list": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("threatTypeList", ""),
-        "file_type": result.get("data", {})
-        .get("analysisSummary", "")
-        .get("trueFileType", ""),
-        "report_id": result.get("data", {}).get("reportId", ""),
-    }
-    results = CommandResults(
-        readable_output=tableToMarkdown(
-            TABLE_SANDBOX_SUBMISSION_POLLING, message, removeNull=True
-        ),
-        outputs_prefix="VisionOne.Sandbox_Submission_Polling",
-        outputs_key_field="report_id",
-        outputs=message,
-    )
-    return results
-
-
-def _submission_status_request(client: Client, task_id: Any) -> Dict[str, Any]:
-    response = client.http_request(GET, GET_FILE_STATUS.format(taskId=task_id))
-    return response
-
-
-def _is_submission_running(client: Client, task_id: Any) -> bool:
-    return _submission_status_request(client, task_id).get(DATA, {}).get(
-        TASKSTATUS, ""
-    ) in [PROCESSING, QUEUED, RUNNING]
-
-
 def add_note(client: Client, args: Dict[str, Any]) -> Union[str, CommandResults]:
     """
     Adds a note to an existing workbench alert
@@ -1487,7 +1497,12 @@ def main():
             return_results(submit_file_entry_to_sandbox(client, args))
 
         elif command == SANDBOX_SUBMISSION_POLLING:
-            return_results(sandbox_submission_polling(client, args))
+            if args.get("polling") == "true":
+                cmd_res = get_sandbox_submission_status(args, client)
+                if cmd_res is not None:
+                    return_results(cmd_res)
+            else:
+                return_results(client.sandbox_submission_polling(args))
 
         elif command == UPDATE_STATUS:
             return_results(update_status(client, args))
