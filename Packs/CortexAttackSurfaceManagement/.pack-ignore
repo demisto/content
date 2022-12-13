@@ -9,3 +9,7 @@ ignore=PB121
 
 [file:Cortex_ASM_-_Tenable.io_Enrichment.yml]
 ignore=PB114
+
+[known_words]
+CMDB
+subplaybooks
