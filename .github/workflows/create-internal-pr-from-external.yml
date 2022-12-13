@@ -8,15 +8,19 @@ on:
 jobs:
   create_internal_pr:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
+    if: github.repository == 'demisto/content'
     steps:
+      - name: Print Logs
+        run: |
+          echo "$github.repository"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.9'
-
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
