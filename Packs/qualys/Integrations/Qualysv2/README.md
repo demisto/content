@@ -605,7 +605,7 @@ Gives you a list of SCAP scans in your account
 | Qualys.SCAP.Scan.Schedule | unknown | Scan Schedule. | 
 | Qualys.SCAP.Scan.Target | unknown | Scan Target. | 
 | Qualys.SCAP.Scan.AssetGroupTitle | unknown | Target Asset Group Title. | 
-| Qualys.SCAP.Scan.DefaultFlag | unknown | Scan Default Flag. | 
+| Qualys.SCAP.Scan.DeafualtFlag | unknown | Scan Default Flag. | 
 | Qualys.SCAP.Scan.UserLogin | unknown | The user that created the scan. | 
 
 
