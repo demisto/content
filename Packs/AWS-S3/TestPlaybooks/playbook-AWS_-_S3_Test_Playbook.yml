@@ -1,27 +1,21 @@
-id: 97393cfc-2fc4-4dfe-8b6e-af64067fc436
-version: 11
+id: AWS - S3 Test Playbook
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: AWS-S3
-    packName: AWS - S3
-    itemVersion: 1.2.3
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: AWS - S3 Test Playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a9ad3c63-47ff-4a65-8564-4a83ad27621b
+    taskid: 20d3e914-b75a-480d-808c-276703c9615d
     type: start
     task:
-      id: a9ad3c63-47ff-4a65-8564-4a83ad27621b
+      id: 20d3e914-b75a-480d-808c-276703c9615d
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -43,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 6dcb3947-2bb8-46b3-829f-c51d01ffbb0c
+    taskid: 6a27f975-faf8-4785-86fc-73d6ad40a75a
     type: regular
     task:
-      id: 6dcb3947-2bb8-46b3-829f-c51d01ffbb0c
+      id: 6a27f975-faf8-4785-86fc-73d6ad40a75a
       version: -1
       name: aws-s3-list-buckets
       description: List all S3 buckets in AWS account
@@ -75,10 +69,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: fc75291c-3704-46dc-8e1a-446659321da8
+    taskid: 29b82426-c918-4b54-8c3b-9675fe322742
     type: regular
     task:
-      id: fc75291c-3704-46dc-8e1a-446659321da8
+      id: 29b82426-c918-4b54-8c3b-9675fe322742
       version: -1
       name: aws-s3-upload-file
       description: Upload file to S3 bucket
@@ -91,7 +85,7 @@ tasks:
       - "6"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12344
       entryID:
         simple: ${File.EntryID}
       key:
@@ -114,10 +108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4e122b5b-33c9-48e5-80bf-27f964c37064
+    taskid: 2899941d-4a4d-4f62-8a6f-e8623896e559
     type: regular
     task:
-      id: 4e122b5b-33c9-48e5-80bf-27f964c37064
+      id: 2899941d-4a4d-4f62-8a6f-e8623896e559
       version: -1
       name: aws-s3-download-file
       description: Download a file from S3 bucket to war room.
@@ -130,9 +124,9 @@ tasks:
       - "5"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12344
       key:
-        simple: binks
+        simple: ${File.Name}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -151,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5e8005fe-3861-4b66-8de7-aa62475a33ae
+    taskid: 1dd6840e-51c9-40b1-8f45-11270990f7ce
     type: regular
     task:
-      id: 5e8005fe-3861-4b66-8de7-aa62475a33ae
+      id: 1dd6840e-51c9-40b1-8f45-11270990f7ce
       version: -1
       name: aws-s3-get-bucket-policy
       description: Get AWS S3 Bucket Policy
@@ -167,7 +161,7 @@ tasks:
       - "9"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12344
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -186,10 +180,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 774f7a1c-d98b-450d-8f08-35e1e16710f8
+    taskid: f21a1d62-cf3d-4919-8f5f-6b31349fa277
     type: regular
     task:
-      id: 774f7a1c-d98b-450d-8f08-35e1e16710f8
+      id: f21a1d62-cf3d-4919-8f5f-6b31349fa277
       version: -1
       name: aws-s3-list-bucket-objects
       description: List object in S3 bucket.
@@ -202,7 +196,7 @@ tasks:
       - "4"
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12344
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -221,10 +215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: e25274b1-91cd-4291-8967-958e6a80eb40
+    taskid: 41747932-d8aa-4d33-8462-fea8d16c1968
     type: regular
     task:
-      id: e25274b1-91cd-4291-8967-958e6a80eb40
+      id: 41747932-d8aa-4d33-8462-fea8d16c1968
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -262,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 38fc3e2c-de3d-4251-8802-c55157ea0379
+    taskid: 7024a8cc-09bb-41c8-8c93-ec1bd401c066
     type: regular
     task:
-      id: 38fc3e2c-de3d-4251-8802-c55157ea0379
+      id: 7024a8cc-09bb-41c8-8c93-ec1bd401c066
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -297,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 04c113c8-b2fd-4e20-809c-69c9e404e008
+    taskid: 1c042622-b4c5-4261-8ef6-5cdac6b03690
     type: regular
     task:
-      id: 04c113c8-b2fd-4e20-809c-69c9e404e008
+      id: 1c042622-b4c5-4261-8ef6-5cdac6b03690
       version: -1
       name: aws-s3-get-bucket-encryption
       description: Get AWS S3 Bucket Encryption
@@ -310,7 +304,7 @@ tasks:
       brand: AWS - S3
     scriptarguments:
       bucket:
-        simple: demisto-test1234
+        simple: demisto-test12344
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -327,7 +321,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -343,3 +336,4 @@ view: |-
 inputs: []
 fromversion: 5.0.0
 outputs: []
+description: A test playbook for AWS - S3
