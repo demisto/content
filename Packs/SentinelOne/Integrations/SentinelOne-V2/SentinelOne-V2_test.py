@@ -260,7 +260,43 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    assert outputs['status'] == 'Added to blocklist'
+    assert outputs['status'] == 'Added to scoped blocklist'
+
+
+def test_remove_item_from_whitelist(mocker, requests_mock):
+    """
+    When:
+        A hash is removed from the whitelist
+    Return:
+        Status that it has been removed from the whitelist
+    """
+    raw_whitelist_response = util_load_json('test_data/remove_item_from_whitelist.json')
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/exclusions?osTypes=windows&type=white_hash"
+                      "&value__contains=f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2&"
+                      "includeChildren=True&includeParents=True&limit=5",
+                      json=raw_whitelist_response)
+    requests_mock.delete("https://usea1.sentinelone.net/web/api/v2.1/exclusions", json={"data": []})
+
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-remove-item-from-whitelist')
+    mocker.patch.object(demisto, 'args', return_value={
+        # 'sha1': 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
+        'item': "f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2",
+        'exclusion_type': "white_hash", 'os_type': "windows"
+    })
+
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs['item'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
+    assert outputs['status'] == 'Removed 1 entries from whitelist'
 
 
 def test_update_threat_analyst_verdict(mocker, requests_mock):
