@@ -85,8 +85,10 @@ script:
           default: true
           auto: PREDEFINED
           predefined:
-            - Instant
-            - Scheduled
+            - instant
+            - scheduled
+            - recurring meeting with no fixed time
+            - recurring meeting with fixed time
           description: The type of the meeting
           defaultValue: Instant
         - name: allow_multiple_devices
