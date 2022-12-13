@@ -1,6 +1,6 @@
 #!/bin/bash
 
-${XSIAM_SERVERS_PATH:=xsiam_servers.json}
+${XSIAM_SERVERS_PATH:="xsiam_servers.json"}
 
 # Get XSIAM Tenant Config Details
 XSIAM_SERVER_CONFIG=$(jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]" < "$XSIAM_SERVERS_PATH")
@@ -9,7 +9,10 @@ AUTH_ID=$(echo "$XSIAM_SERVER_CONFIG" | jq ".[\"x-xdr-auth-id\"]")
 API_KEY=$(jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]" < "$XSIAM_API_KEYS")
 XSIAM_TOKEN=$(echo "$XSIAM_TOKENS" | jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]")
 
-MODELING_RULES_TO_TEST="$(tr '\n' ' ' < "$ARTIFACTS_FOLDER"/modeling_rules_to_test.txt)"
+MODELING_RULES_ARRAY=($(cat "$ARTIFACTS_FOLDER"/modeling_rules_to_test.txt))
+for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
+    MODELING_RULES_TO_TEST="$MODELING_RULES_TO_TEST Packs/$modeling_rule"
+done
 
 if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
     echo "There was a problem reading the list of modeling rules that require testing from '$ARTIFACTS_FOLDER/modeling_rules_to_test.txt'"

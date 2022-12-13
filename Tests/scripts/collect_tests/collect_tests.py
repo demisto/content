@@ -513,6 +513,12 @@ class TestCollector(ABC):
         Returns:
             CollectionResult: the object detailing the pack to collect and the modeling rule that should be tested
         """
+        if self.marketplace != MarketplaceVersions.MarketplaceV2:
+            logger.info(f'Not collecting pack {pack_id} for Modeling Rule {changed_file_path} because '
+                        f'it is not a collection for an XSIAM (MarketplaceV2) marketplace - '
+                        f'marketplace is {self.marketplace}')
+            raise NothingToCollectException(changed_file_path, 'packs for Modeling Rules are only collected for XSIAM')
+
         pack = PACK_MANAGER.get_pack_metadata(pack_id)
 
         version_range = content_item_range \
