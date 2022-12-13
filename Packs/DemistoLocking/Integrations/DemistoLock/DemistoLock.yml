@@ -51,4 +51,6 @@ script:
     arguments: []
     description: Release all locks
   runonce: false
+marketplaces:
+  - xsoar
 fromversion: 5.0.0

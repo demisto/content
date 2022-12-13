@@ -41,6 +41,7 @@
   suppression_enabled: true
   suppression_fields: null
   user_defined_category: null
+  fromversion: 6.10.0
   user_defined_severity: null
   xql_query: 'datamodel
 
