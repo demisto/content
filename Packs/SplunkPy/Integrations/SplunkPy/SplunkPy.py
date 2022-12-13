@@ -2625,7 +2625,8 @@ def main():  # pragma: no cover
     if proxy or not VERIFY_CERTIFICATE:
         if proxy:
             handle_proxy()
-        connection_args['handler'] = requests_handler
+
+    connection_args['handler'] = requests_handler
 
     service = client.connect(**connection_args)
 
