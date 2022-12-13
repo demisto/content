@@ -1,10 +1,8 @@
 name: Create Internal PR from Merged External PR
 on:
   pull_request_target:
-    types: [closed]
     branches:
-      - contrib/**
-
+      - debbug_create_internal_pr
 jobs:
   create_internal_pr:
     runs-on: ubuntu-latest
