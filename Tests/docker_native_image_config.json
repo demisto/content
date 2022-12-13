@@ -39,13 +39,6 @@
          "ignored_native_images":[
             "native:8.1"
          ]
-      },
-      {
-         "id":"MITRE ATT&CK v2",
-         "reason":"Failed testplaybook FeedMitreAttackv2_test: taxii2 module prints out warnings messages",
-         "ignored_native_images":[
-            "native:8.1"
-         ]
       }
    ]
 }
