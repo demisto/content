@@ -20,16 +20,23 @@
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
 
-    - section_start "Get list of packs to update in content graph" --collapsed
-    - git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq | tee $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt
-    - section_end "Get list of packs to update in content graph"
-
     - section_start "Update content graph" --collapsed
-    - PACKS_TO_UPDATE=( $(cat $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt) )
-    - demisto-sdk update-content-graph -p $PACKS_TO_UPDATE
+
+    - echo "Getting the list of packs to update in content graph"
+    - PACKS_TO_UPDATE = $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq)
+    - echo $PACKS_TO_UPDATE
+
+    - echo "Pulling all CSV import files from bucket"
+    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+    - gsutil cp -R "gs://$GCS_MARKET_BUCKET/content/content_graph" /var/lib/neo4j/import
+
+    - demisto-sdk update-content-graph -p ($PACKS_TO_UPDATE)
     - echo "Successfully updated content graph"
+
+    - echo "Moving exported CSV files to artifacts"
     - mkdir $ARTIFACTS_FOLDER/content_graph
-    - cp -R var/lib/import $ARTIFACTS_FOLDER/content_graph
+    - cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
+
     - section_end "Update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
