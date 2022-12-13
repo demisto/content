@@ -1197,7 +1197,7 @@ def output(result: Optional[CollectionResult]):
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     modeling_rules_to_test = sorted(
-        result.modeling_rules_to_test, key=lambda x: x.casefold()
+        result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
     machines = result.machines if result and result.machines else ()
 
