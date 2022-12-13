@@ -7,8 +7,8 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 ## Configure AWS - SQS on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-3. Search for AWS - SQS.
-4. Click **Add instance** to create and configure a new integration instance.
+2. Search for AWS - SQS.
+3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
@@ -23,7 +23,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time." More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
     | Fetch incidents |  | False        |
     | Maximum incidents for one fetch. Hard cap of 100. | Maximum number of incidents for a single fetch. | 10           |
-    | First fetch timestamp | First fetch query <number> <time unit>, e.g., 7 days. Default 3 days  | False        |
+    | First fetch timestamp | First fetch query '<number> <time unit>', e.g., '7 days'. Default '3 days'.  | False        |
     | Incident type |  | False        |
     | Use system proxy settings |  | False        |
     | Trust any certificate (not secure) |  | False        |
@@ -38,7 +38,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-sqs-get-queue-url
 ***
