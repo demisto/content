@@ -110,7 +110,7 @@ ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_packs_to_upload: Iterable[str],
-          expected_machines: Optional[Iterable[Machine]], expected_mrs_to_test: Optional[Iterable[str | Path]],
+          expected_machines: Optional[Iterable[Machine]], expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
           collector_class_args: tuple[Any, ...] = ()):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
@@ -121,7 +121,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
     :param expected_tests: the expected test names. (pass None to not check)
     :param expected_packs: the expected pack names. (pass None to not check)
     :param expected_machines: the expected machines. (pass None to not check)
-    :param expected_mrs_to_test: the expected modeling rules directory names. (pass None to not check)
+    :param expected_modeling_rules_to_test: the expected modeling rules directory names. (pass None to not check)
     :param collector_class_args: with which to instantiate the collector class.
     :return: Nothing: only calls assert.
     """
@@ -130,7 +130,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         collector = collector_class(*collector_class_args)
         collected = collector.collect()
 
-    if not any((expected_tests, expected_packs, expected_machines, expected_mrs_to_test)):
+    if not any((expected_tests, expected_packs, expected_machines, expected_modeling_rules_to_test)):
         if not collected:
             # matches expectation
             return
@@ -140,15 +140,15 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         if collected.packs_to_upload:
             description += f'packs_to_upload: {collected.packs_to_upload}. '
         if collected.tests:
-            description += f'tests: {collected.tests}'
-        if collected.mrs_to_test:
-            description += f'modeling rules: {collected.mrs_to_test}'
+            description += f'tests {collected.tests}'
+        if collected.modeling_rules_to_test:
+            description += f'modeling rules: {collected.modeling_rules_to_test}'
 
         assert False, description
 
     if collected is None:
         err_msg = (f'should have collected something: {expected_tests=}, {expected_packs=},'
-                   f' {expected_machines=}, {expected_mrs_to_test=}')
+                   f' {expected_machines=}, {expected_modeling_rules_to_test=}')
         assert False, err_msg
 
     if expected_tests is not None:
@@ -160,8 +160,8 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
     if expected_machines is not None:
         assert set(collected.machines) == set(expected_machines)
 
-    if expected_mrs_to_test is not None:
-        assert collected.mrs_to_test == set(expected_mrs_to_test)
+    if expected_modeling_rules_to_test is not None:
+        assert collected.modeling_rules_to_test == set(expected_modeling_rules_to_test)
 
     assert Machine.MASTER in collected.machines
 
@@ -171,7 +171,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         print(f'machine {machine}')
     for pack in collected.packs_to_install:
         print(f'collected pack {pack}')
-    for mr in collected.mrs_to_test:
+    for mr in collected.modeling_rules_to_test:
         print(f'collected modeling rule to test {mr}')
 
 
@@ -229,12 +229,13 @@ NIGHTLY_TESTS: tuple = (
 
 
 @pytest.mark.parametrize(
-    'case_mocker,collector_class,expected_tests,expected_packs,expected_machines,expected_mrs_to_test', NIGHTLY_TESTS
+    'case_mocker,collector_class,expected_tests,'
+    'expected_packs,expected_machines,expected_modeling_rules_to_test', NIGHTLY_TESTS
 )
 def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: Optional[tuple[Machine]],
-                 expected_mrs_to_test: Optional[Iterable[str | Path]]):
+                 expected_modeling_rules_to_test: Optional[Iterable[str | Path]]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -244,7 +245,7 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
     _test(monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_packs_to_upload={},
           expected_machines=expected_machines,
-          expected_mrs_to_test=expected_mrs_to_test)
+          expected_modeling_rules_to_test=expected_modeling_rules_to_test)
 
 
 XSOAR_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR, None)
@@ -252,8 +253,8 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
 
 
 @pytest.mark.parametrize(
-    'case_mocker,expected_tests,expected_packs,expected_machines,expected_mrs_to_test,collector_class_args,'
-    'mocked_changed_files,mocked_packs_files_were_moved_from,expected_packs_to_upload',
+    'case_mocker,expected_tests,expected_packs,expected_machines,expected_modeling_rules_to_test,'
+    'collector_class_args,mocked_changed_files,mocked_packs_files_were_moved_from,expected_packs_to_upload',
     (
      # (0) change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
      (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, None, XSOAR_BRANCH_ARGS,
@@ -405,7 +406,7 @@ def test_branch(
         expected_tests: Optional[set[str]],
         expected_packs: Optional[tuple[str, ...]],
         expected_machines: Optional[tuple[Machine, ...]],
-        expected_mrs_to_test: Optional[Iterable[str | Path]],
+        expected_modeling_rules_to_test: Optional[Iterable[str | Path]],
         collector_class_args: tuple[str, ...],
         mocked_changed_files: tuple[str, ...],
         mocked_packs_files_were_moved_from: tuple[str, ...],
@@ -418,7 +419,7 @@ def test_branch(
     _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs,
           expected_packs_to_upload=expected_packs_to_upload,
-          expected_machines=expected_machines, expected_mrs_to_test=expected_mrs_to_test,
+          expected_machines=expected_machines, expected_modeling_rules_to_test=expected_modeling_rules_to_test,
           collector_class_args=collector_class_args)
 
 
@@ -525,7 +526,7 @@ def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch)
                         return_value=FilesToCollect(('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',), ()))
 
     _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
-          expected_mrs_to_test=(), expected_packs=(), expected_packs_to_upload=(),
+          expected_modeling_rules_to_test=(), expected_packs=(), expected_packs_to_upload=(),
           expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
@@ -544,7 +545,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=('myPack',), expected_packs_to_upload=('myPack',), expected_machines=None,
-          expected_mrs_to_test=None, collector_class_args=XSOAR_BRANCH_ARGS)
+          expected_modeling_rules_to_test=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
 
 def test_invalid_content_item(mocker, monkeypatch):
@@ -559,5 +560,5 @@ def test_invalid_content_item(mocker, monkeypatch):
 
     _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=(), expected_packs_to_upload=(), expected_machines=None,
-          expected_mrs_to_test=None,
+          expected_modeling_rules_to_test=None,
           collector_class_args=XSOAR_BRANCH_ARGS)

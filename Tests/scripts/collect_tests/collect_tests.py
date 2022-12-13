@@ -112,7 +112,7 @@ class CollectionResult:
         :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
         """
         self.tests: set[str] = set()
-        self.mrs_to_test: set[str | Path] = set()
+        self.modeling_rules_to_test: set[str | Path] = set()
         self.packs_to_install: set[str] = set()
         self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
@@ -173,7 +173,7 @@ class CollectionResult:
                 logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
         if modeling_rule_to_test:
-            self.mrs_to_test = {modeling_rule_to_test}
+            self.modeling_rules_to_test = {modeling_rule_to_test}
             logger.info(f'collected {modeling_rule_to_test=}, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
@@ -261,7 +261,7 @@ class CollectionResult:
             return self
         result = self.__empty_result()
         result.tests = self.tests | other.tests  # type: ignore[operator]
-        result.mrs_to_test = self.mrs_to_test | other.mrs_to_test
+        result.modeling_rules_to_test = self.modeling_rules_to_test | other.modeling_rules_to_test
         result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
         result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
@@ -1196,25 +1196,27 @@ def output(result: Optional[CollectionResult]):
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
     packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
-    mrs_to_test = sorted(result.mrs_to_test, key=lambda x: x.casefold()) if result else ()
+    modeling_rules_to_test = sorted(
+        result.modeling_rules_to_test, key=lambda x: x.casefold()
+    ) if result else ()
     machines = result.machines if result and result.machines else ()
 
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)
     packs_to_upload_str = '\n'.join(packs_to_upload)
-    mrs_to_test_str = '\n'.join(mrs_to_test)
+    modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
     machine_str = ', '.join(sorted(map(str, machines)))
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
-    logger.info(f'collected {len(mrs_to_test)} modeling rules to test:\n{mrs_to_test_str}')
+    logger.info(f'collected {len(modeling_rules_to_test_str)} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
     PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
-    PATHS.output_mrs_to_test_file.write_text(mrs_to_test_str)
+    PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
 
 
