@@ -1,9 +1,6 @@
 [file:incidentfield-ASM_-_Alert_Summary.json]
 ignore=IF100
 
-[known_words]
-ASM
-
 [file:Cortex_ASM_-_ASM_Alert.yml]
 ignore=PB121
 
@@ -11,5 +8,6 @@ ignore=PB121
 ignore=PB114
 
 [known_words]
+ASM
 CMDB
 subplaybooks
