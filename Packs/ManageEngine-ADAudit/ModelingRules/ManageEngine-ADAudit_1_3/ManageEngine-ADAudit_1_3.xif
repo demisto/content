@@ -1,6 +1,6 @@
 [MODEL: dataset="manageengine_adauditplus_raw"]
 alter 
-xdm.session_context_id=coalesce(cn2,cn3),
+xdm.session_context_id=coalesce(cn2,to_string(cn3)),
 xdm.event.id=cn1,
 xdm.source.ipv4=cs2,
 xdm.source.host.hostname=coalesce(shost,cs3),
