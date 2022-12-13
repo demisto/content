@@ -1,3 +1,4 @@
+import time
 import urllib3
 
 from CommonServerPython import *
@@ -42,13 +43,17 @@ class Client(BaseClient):
             return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def get_http_request(self, url_suffix: str):
-        result = self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            resp_type="text",
-            error_handler=handle_error
-        )
-        return result
+        while True:
+            result = self._http_request(
+                method='GET',
+                url_suffix=url_suffix,
+                resp_type="response",
+                error_handler=handle_error,
+            )
+            if result.status_code == 429:
+                time.sleep(int(result.headers.get('Retry-After')))
+            else:
+                return result.text
 
 
 ''' COMMAND FUNCTIONS '''
@@ -248,7 +253,8 @@ def reload(client: Client) -> dict:
         invalid_parsed_line = line is None
         if invalid_parsed_line:
             continue
-        url = remove_last_slash(line[columns.index("url")])
+        url_index = columns.index("url")
+        url = None if not url_index else remove_last_slash(line[columns.index("url")])
         if url:
             parsed_response[url] = {
                 "phish_id": line[columns.index("phish_id")].strip(),
