@@ -1325,6 +1325,25 @@ def modify_computer_ou(default_base_dn):
     demisto.results(demisto_entry)
 
 
+def modify_user_ou_command(default_base_dn):
+    assert conn is not None
+    args = demisto.args()
+
+    user_name = args.get('user-name')
+    dn = user_dn(user_name, args.get('base-dn') or default_base_dn)
+
+    success = conn.modify_dn(dn, "CN={}".format(user_name), new_superior=args.get('full-superior-dn'))
+    if not success:
+        raise Exception("Failed to modify user OU")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Moved user {} to {}".format(user_name, args.get('full-superior-dn'))
+    }
+    demisto.results(demisto_entry)
+
+
 def expire_user_password(default_base_dn):
     args = demisto.args()
 
@@ -1913,6 +1932,9 @@ def main():
 
         elif command == 'ad-modify-computer-ou':
             modify_computer_ou(DEFAULT_BASE_DN)
+
+        elif command == 'ad-modify-user-ou':
+            modify_user_ou_command(DEFAULT_BASE_DN)
 
         elif command == 'ad-create-contact':
             create_contact()
