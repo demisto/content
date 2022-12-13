@@ -40,7 +40,7 @@ def __line__():
 
 # 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
 
@@ -8283,10 +8283,10 @@ if 'requests' in sys.modules:
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
 
-            def __init__(self, verify: bool = True) -> None:
-                if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
-                    self.context.options |= 0x4
-                super().__init__()
+            # def __init__(self, verify: bool = True) -> None:
+            #     if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
+            #         self.context.options |= 0x4
+            #     super().__init__()
 
             def init_poolmanager(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
