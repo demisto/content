@@ -24,9 +24,13 @@
     - git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq | tee $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt
     - section_end "Get list of packs to update in content graph"
 
-    - section_start "Create content graph" --collapsed
-    - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
-    - section_end "Create content graph"
+    - section_start "Update content graph" --collapsed
+    - PACKS_TO_UPDATE=( $(cat $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt) )
+    - demisto-sdk update-content-graph -p $PACKS_TO_UPDATE -o $ARTIFACTS_FOLDER/content-graph.dump
+    - echo "Successfully updated content graph"
+    - mkdir $ARTIFACTS_FOLDER/content_graph
+    - cp -R var/lib/import $ARTIFACTS_FOLDER/content_graph
+    - section_end "Update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - |
