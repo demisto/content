@@ -162,7 +162,7 @@ class Client(BaseClient):
                            search: str, filter_arg: str, domain_id: str, page: str = None) -> Dict:
         """ Retrieves All Alerts.
             Args:
-                session_str: str - The session id of the alert.
+                session_str: str - The session id.
                 time_period: str - The time period of the alert.
                 start_time: str - The start time of the alert.
                 end_time: str - The end time of the alert.
@@ -197,7 +197,7 @@ class Client(BaseClient):
     def get_alert_details_request(self, session_str: str, alert_id: str, sensor_id: str) -> Dict:
         """ Retrieves the alert details.
             Args:
-                session_str: str - The session id of the alert.
+                session_str: str - The session id.
                 alert_id: str - The id of the relevant alert.
                 sensor_id: str - The id of the relevant sensor.
             Returns:
@@ -208,6 +208,20 @@ class Client(BaseClient):
         params = {
             'sensorId': sensor_id
         }
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def get_attacks_request(self, session_str: str, attack_id: str) -> Dict:
+        """ If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI..
+            Args:
+                session_str: str - The session id.
+                attack_id: str - The id of the relevant attack.
+            Returns:
+                A dictionary with the attack list of the specific attack details.
+        """
+        url_suffix = f'/sdkapi/attacks'
+        if attack_id:
+            url_suffix = f'{url_suffix}/{attack_id}'
+        self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 

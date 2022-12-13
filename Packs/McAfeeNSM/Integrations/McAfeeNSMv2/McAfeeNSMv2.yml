@@ -1254,6 +1254,21 @@ script:
         - contextPath: NSM.Alerts.description.comments.parentDomainComments
           description: Parent domain comments.
           type: Unknown
+    - name: nsm-get-attacks
+      description: If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI.
+      arguments:
+        - name: attack_id
+          required: false
+          description: The id of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack id.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
   isfetch: false
   runonce: false
   script: '-'
