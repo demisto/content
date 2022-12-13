@@ -511,6 +511,8 @@ class FeedIndicatorType(object):
     AS = "ASN"
     MUTEX = "Mutex"
     Malware = "Malware"
+    Identity = "Identity"
+    Location = "Location"
 
     @staticmethod
     def is_valid_type(_type):
@@ -531,7 +533,9 @@ class FeedIndicatorType(object):
             FeedIndicatorType.URL,
             FeedIndicatorType.AS,
             FeedIndicatorType.MUTEX,
-            FeedIndicatorType.Malware
+            FeedIndicatorType.Malware,
+            FeedIndicatorType.Identity,
+            FeedIndicatorType.Location
         )
 
     @staticmethod
@@ -3777,7 +3781,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension:
+            if self.extension: 
                 file_context['Extension'] = self.extension
 
             if self.file_type:
@@ -3912,6 +3916,9 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If file has a score then create and set a DBotScore object
+
         :return: None
         :rtype: ``None``
         """
@@ -3919,7 +3926,7 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None):
+                     tags=None, traffic_light_protocol=None, dbot_score=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3941,12 +3948,10 @@ class Common(object):
 
             # XSOAR Fields
             self.relationships = relationships
-            self.dbot_score = Common.DBotScore(
-                indicator=id,
-                indicator_type=DBotScoreType.CVE,
-                integration_name=None,
-                score=Common.DBotScore.NONE
-            )
+            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
+                                                                             indicator_type=DBotScoreType.CVE,
+                                                                             integration_name=None,
+                                                                             score=Common.DBotScore.NONE)
 
         def to_context(self):
             cve_context = {
@@ -6364,6 +6369,8 @@ class EntityRelationship:
         CREATES = 'creates'
         DELIVERED_BY = 'delivered-by'
         DELIVERS = 'delivers'
+        DETECTS = 'detects'
+        DETECTED_BY = 'detected-by'
         DOWNLOADS = 'downloads'
         DOWNLOADS_FROM = 'downloads-from'
         DROPPED_BY = 'dropped-by'
@@ -6385,6 +6392,7 @@ class EntityRelationship:
         INJECTS_INTO = 'injects-into'
         INVESTIGATES = 'investigates'
         IS_ALSO = 'is-also'
+        LOCATED_AT = 'located-at'
         MITIGATED_BY = 'mitigated-by'
         MITIGATES = 'mitigates'
         ORIGINATED_FROM = 'originated-from'
@@ -6435,6 +6443,8 @@ class EntityRelationship:
                                'creates': 'created-by',
                                'delivered-by': 'delivers',
                                'delivers': 'delivered-by',
+                               'detects': 'detected-by',
+                               'detected-by': 'detects',
                                'downloads': 'downloaded-by',
                                'downloads-from': 'hosts',
                                'dropped-by': 'drops',
@@ -6506,8 +6516,11 @@ class EntityRelationship:
             :return: Returns the reversed relationship name
             :rtype: ``str``
             """
-
-            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            try:
+                return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            except KeyError:
+                demisto.debug('Cannot find a reverse name for relationship name, using "related-to" instead.')
+                return EntityRelationship.Relationships.RELATED_TO
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
                  reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
@@ -6515,12 +6528,12 @@ class EntityRelationship:
 
         # Relationship
         if not EntityRelationship.Relationships.is_valid(name):
-            raise ValueError("Invalid relationship: " + name)
+            demisto.debug("Unknown relationship name: " + name)
         self._name = name
 
         if reverse_name:
             if not EntityRelationship.Relationships.is_valid(reverse_name):
-                raise ValueError("Invalid reverse relationship: " + reverse_name)
+                demisto.debug("Unknown reverse relationship name: " + reverse_name)
             self._reverse_name = reverse_name
         else:
             self._reverse_name = EntityRelationship.Relationships.get_reverse(name)
@@ -10687,7 +10700,7 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10706,11 +10719,19 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
     :return: None
     :rtype: ``None``
     """
     data = events
     amount_of_events = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
 
     if not events:
         demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
@@ -10745,7 +10766,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'format': data_format,
         'product': product,
         'vendor': vendor,
-        'content-encoding': 'gzip'
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url
     }
 
     header_msg = 'Error sending new events into XSIAM.\n'
