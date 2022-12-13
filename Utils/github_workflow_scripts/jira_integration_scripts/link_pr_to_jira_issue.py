@@ -65,6 +65,14 @@ def trigger_generic_webhook(options):
 
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
+    # Handle cases where the PR did not intend to add links:
+    if ("fixes:" not in pr_body.lower()
+            and "relates:" not in pr_body.lower()
+            and "fixed:" not in pr_body.lower()
+            and "related:" not in pr_body.lower()):
+        print("Did not detect Jira linking pattern.")
+        return
+
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
     if not issues_in_pr:
