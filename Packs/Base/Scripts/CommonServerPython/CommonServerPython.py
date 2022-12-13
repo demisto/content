@@ -8280,15 +8280,23 @@ if 'requests' in sys.modules:
                 :return: No data returned
                 :rtype: ``None``
             """
+            context = create_urllib3_context(ciphers=CIPHERS_STRING)
+          
+            def __init__(self) -> None:
+                # set the flag and set only if openssl v >= 3
+                # context.options |= 0x4                
+                import ssl
+                open_ssl_version = (3, 0, 0, 0)
+                if ssl.OPENSSL_VERSION_INFO > open_ssl_version:
+                    self.context.options |= 0x4
+                super().__init__()
 
             def init_poolmanager(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
             def proxy_manager_for(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
     class BaseClient(object):
