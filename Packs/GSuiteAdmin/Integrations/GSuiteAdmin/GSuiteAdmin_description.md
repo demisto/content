@@ -8,8 +8,7 @@ Provide at least one of the scopes mentioned for each command.
 * gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
 * gsuite-mobile-update 
-	*  https://www.googleapis.com/auth/admin.directory.device.mobile.action   		
-	* https://www.googleapis.com/auth/admin.directory.device.mobile 
+	* https://www.googleapis.com/auth/admin.directory.device.mobile.action
 * gsuite-mobile-delete 
 	* https://www.googleapis.com/auth/admin.directory.user.readonly
 	* https://www.googleapis.com/auth/admin.directory.user 
@@ -36,7 +35,13 @@ Provide at least one of the scopes mentioned for each command.
 * gsuite-custom-user-schema-create 
 	 * https://www.googleapis.com/auth/admin.directory.userschema 
 * gsuite-custom-user-schema-update 
-	* https://www.googleapis.com/auth/admin.directory.userschema 
+	* https://www.googleapis.com/auth/admin.directory.userschema
+* gsuite-mobiledevice-list
+	* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
+* gsuite-chromeosdevice-action
+	* https://www.googleapis.com/auth/admin.directory.device.chromeos
+* gsuite-chromeosdevice-list
+	* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
 
 
 To execute the command either provide the value of the Admin Email in the integration configuration or provide the value of the *admin_email* argument for the command or provide the admin role to the created service account's email by performing the following steps:
@@ -46,7 +51,7 @@ To execute the command either provide the value of the Admin Email in the integr
 3. Go to Admin roles.
 4. Click the role you want to assign (the appropriate role).
 5. Click on *Assign Admin*.
-6. On the opened page, click *Assign users*.
+6. On the opened page, click *Assign Service Accounts*.
 7. Append the email ID of the service account created and click *ASSIGN ROLE* to save.
 
 Precedence of this will be admin_email in command argument > Admin Email in integration configuration > admin role provided to the service account.

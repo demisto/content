@@ -100,8 +100,7 @@ SCOPES: Dict[str, List[str]] = {
 
 COMMAND_SCOPES: Dict[str, List[str]] = {
     'DATA_TRANSFER_LIST': ['https://www.googleapis.com/auth/admin.datatransfer.readonly', *SCOPES['DATA_TRANSFER']],
-    'MOBILE_UPDATE': ['https://www.googleapis.com/auth/admin.directory.device.mobile.action',
-                      'https://www.googleapis.com/auth/admin.directory.device.mobile'],
+    'MOBILE_UPDATE': ['https://www.googleapis.com/auth/admin.directory.device.mobile.action'],
     'USER_ALIAS_ADD': ['https://www.googleapis.com/auth/admin.directory.user.alias',
                        'https://www.googleapis.com/auth/admin.directory.user'],
     'ROLE_ASSIGNMENT': ['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
