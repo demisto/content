@@ -29,7 +29,7 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
-    RESPONSE_GENERIC_TICKET
+    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -39,7 +39,7 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, \
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
     EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
-    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
+    EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE
 from test_data.created_ticket_context import CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND, \
     CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
 
@@ -165,18 +165,6 @@ def test_convert_to_notes_result():
     # Note: the 'display_value' time is the local time of the SNOW instance, and the 'value' is in UTC.
     # The results returned for notes are expected to be in UTC time.
 
-    # Example for an instance with local time UTC+1:
-    ticket_response = {
-        'result': {'sys_created_on': {'display_value': '2022-11-21 09:59:49', 'value': '2022-11-21 08:59:49'},
-                   'sys_created_by': {'display_value': 'admin', 'value': 'admin'},
-                   'sys_id': {'display_value': '123456789', 'value': '123456789'},
-                   'urgency': {'display_value': '3 - Low', 'value': '3'},
-                   'severity': {'display_value': '3 - Low', 'value': '3'},
-                   'comments': {'display_value':
-                                '2022-11-21 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n'
-                                '2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n',
-                                'value': ''}}}
-
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
                                    'value': 'Second comment',
                                    'sys_created_by': 'System Administrator',
@@ -187,7 +175,7 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(ticket_response) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -195,7 +183,12 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(ticket_response, datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
+
+    ticket_response = {'result': []}
+    assert convert_to_notes_result(ticket_response) == []
+
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS) == {'result': []}
 
 
 def test_split_notes():
@@ -297,6 +290,10 @@ def test_get_timezone_offset():
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true'}, RESPONSE_COMMENTS_DISPLAY_VALUE,
+     EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true'}, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
+     {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},

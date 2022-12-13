@@ -505,9 +505,14 @@ def split_notes(raw_notes, note_type, time_info):
         note_info, note_value = note.split('\n')
         created_on, created_by = note_info.split(' - ')
         created_by = created_by.split(' (')[0]
+        if not created_on or not created_by:
+            raise Exception(f'Failed to extract the required information from the following note: {note}')
 
         # convert note creation time to UTC
-        created_on_UTC = datetime.strptime(created_on, DATE_FORMAT) + time_info.get('timezone_offset')
+        try:
+            created_on_UTC = datetime.strptime(created_on, DATE_FORMAT) + time_info.get('timezone_offset')
+        except ValueError as e:
+            raise Exception(f'Failed to convert {created_on} to a datetime object. Error: {e}')
 
         if time_info.get('filter') and created_on_UTC < time_info.get('filter'):
             # If a time_filter was passed and the note was created before this time, do not return it.
@@ -2285,9 +2290,16 @@ def get_timezone_offset(full_response):
     Receives the full response of a ticket query from SNOW and computes the timezone offset between the timezone of the
     instance and UTC.
     """
-    local_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('display_value', ''),
-                                   DATE_FORMAT)
-    utc_time = datetime.strptime(full_response.get('result', {}).get('sys_created_on', {}).get('value', ''), DATE_FORMAT)
+    try:
+        local_time = full_response.get('result', {}).get('sys_created_on', {}).get('display_value', '')
+        local_time = datetime.strptime(local_time, DATE_FORMAT)
+    except ValueError as e:
+        raise Exception(f'Failed to convert {local_time} to datetime object. Error {e}')
+    try:
+        utc_time = full_response.get('result', {}).get('sys_created_on', {}).get('value', '')
+        utc_time = datetime.strptime(utc_time, DATE_FORMAT)
+    except ValueError as e:
+        raise Exception(f'Failed to convert {utc_time} to datetime object. Error {e}')
     offset = utc_time - local_time
     return offset
 
@@ -2362,7 +2374,10 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                         'sysparm_display_value': 'all'}
 
         full_result = client.send_request(path, 'GET', params=query_params)
-        comments_result = convert_to_notes_result(full_result, time_filter=datetime.fromtimestamp(last_update))
+        try:
+            comments_result = convert_to_notes_result(full_result, time_filter=datetime.fromtimestamp(last_update))
+        except Exception as e:
+            demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
