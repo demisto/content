@@ -1,21 +1,20 @@
-Used as a container folder for all enrichments of ASM alerts.
+Given the IP address this playbook enriches AWS information relevant to ASM alerts.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - ServiceNow CMDB Enrichment
-* Cortex ASM - Tenable.io Enrichment
-* Cortex ASM - AWS Enrichment
+* AWS - Enrichment
 
 ### Integrations
-* Cortex Attack Surface Management
+This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* GridFieldSetup
+* GetTime
 
 ### Commands
-* asm-list-external-service
+This playbook does not use any commands.
 
 ## Playbook Inputs
 ---
@@ -30,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex ASM - Enrichment](../doc_files/Cortex_ASM_-_Enrichment.png)
+![Cortex ASM - AWS Enrichment](../doc_files/Cortex_ASM_-_AWS_Enrichment.png)
