@@ -337,7 +337,7 @@ def get_mapping_fields(client: Client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
     api_key = params.get('api_key')

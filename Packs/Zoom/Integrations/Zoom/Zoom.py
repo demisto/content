@@ -204,18 +204,32 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def zoom_meeting_create(self, type: str, topic: str, user_id: str,
-                            start_time: str, timezone: str, auto_record_meeting: str = "none"):
-        if auto_record_meeting == 'yes':
-            auto_recording = "cloud"
-            params = {
-                'type': 1,
-                'topic': topic,
-                'settings': {
-                    'join_before_host': True,
-                    'auto_recording': auto_recording
-                }
-            }
+    def zoom_meeting_create(self, user_id: str, topic: str, auto_record_meeting: bool,
+                            host_video: bool, jbh_time: str,
+                            start_time: str = None, timezone: str = None, type: str = "instant",
+                            allow_multiple_devices: bool = True,
+                            auto_recording: str = "none", email_notification: bool = True,
+                            encryption_type: str = "enhanced_encryption", focus_mode: bool = True,
+                            join_before_host: bool = False,
+                            meeting_authentication: bool = False):
+        if type == "instant" and (timezone or start_time):
+            raise DemistoException("Too money arguments. start_time and timezone are for schdualde meetings only")
+
+        num_type = 1
+        if type == "scheduled":
+            num_type = 2
+        if type == "recurring meeting with no fixed time":
+            num_type = 3
+        if type == "recurring meeting with fixed time":
+            num_type = 8
+
+        params = {
+            'type': num_type,
+            'topic': topic,
+            'settings': {
+                'join_before_host': True,
+                'auto_recording': auto_recording}
+        }
         if type == 'Scheduled':
             params.update({
                 'type': 2,
@@ -259,8 +273,7 @@ class Client(BaseClient):
         if "page_size" in args:
             page_size = int(args["page_size"])
         if limit:
-            limit = arg_to_number(args['limit'])
-
+            # limit = arg_to_number(args['limit'])
             if "limit" and "page_size" in args:
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
             else:
@@ -446,10 +459,21 @@ def zoom_user_delete_command(client: Client, user_id: str, action: str) -> Comma
     )
 
 
-def zoom_meeting_create_command(client: Client, type: str, topic: str, user_id: str, auto_record_meeting: str,
-                                start_time: str, timezone: str) -> CommandResults:
-    raw_data = client.zoom_meeting_create(type, topic, user_id,
-                                          auto_record_meeting, start_time, timezone)
+def zoom_meeting_create_command(client: Client, user_id: str, topic: str, auto_record_meeting: bool,
+                                host_video: bool, jbh_time: str,
+                                start_time: str = None, timezone: str = None, type: str = "instant",
+                                allow_multiple_devices: bool = True,
+                                auto_recording: str = "none", email_notification: bool = True,
+                                encryption_type: str = "enhanced_encryption", focus_mode: bool = True,
+                                join_before_host: bool = False,
+                                meeting_authentication: bool = False) -> CommandResults:
+    raw_data = client.zoom_meeting_create(user_id, topic, auto_record_meeting,
+                                          host_video, jbh_time, start_time, timezone, type,
+                                          allow_multiple_devices,
+                                          auto_recording, email_notification,
+                                          encryption_type, focus_mode,
+                                          join_before_host,
+                                          meeting_authentication)
     md = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
     return CommandResults(
@@ -516,7 +540,7 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
     )
 
 
-def main():
+def main():  # pragma: no cover
     # TODO do i need this line?
     results: Union[CommandResults, str, List[CommandResults]]
 
