@@ -1,12 +1,12 @@
 commonfields:
-  id: test_for_md
+  id: MarkdownRepresentationThreatVaultIncident
   version: -1
-name: test_for_md
+name: MarkdownRepresentationThreatVaultIncident
 script: ''
 type: python
 tags:
 - dynamic-section
-comment: Return a process list from the XDRIR integration.
+comment: This automation takes several Incident fields from the Threat Vault incident context and displays them as markdown in the layout.
 enabled: true
 scripttarget: 0
 subtype: python3
