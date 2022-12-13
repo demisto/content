@@ -30,7 +30,7 @@
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
     - gsutil cp -R "gs://$GCS_MARKET_BUCKET/content/content_graph" /var/lib/neo4j/import
 
-    - demisto-sdk update-content-graph -p ($PACKS_TO_UPDATE)
+    - demisto-sdk update-content-graph -p ( $PACKS_TO_UPDATE )
     - echo "Successfully updated content graph"
 
     - echo "Moving exported CSV files to artifacts"
