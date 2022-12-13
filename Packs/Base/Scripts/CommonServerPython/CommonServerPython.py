@@ -8283,8 +8283,8 @@ if 'requests' in sys.modules:
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
 
-            def __init__(self) -> None:
-                if ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
+            def __init__(self, verify: bool = True) -> None:
+                if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__()
 
@@ -8350,7 +8350,7 @@ if 'requests' in sys.modules:
             # https://bugs.python.org/issue43998
 
             if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
-                self._session.mount('https://', SSLAdapter())
+                self._session.mount('https://', SSLAdapter(verify=verify))
 
             if proxy:
                 ensure_proxy_has_http_prefix()
@@ -8441,7 +8441,7 @@ if 'requests' in sys.modules:
                 if self._verify:
                     https_adapter = http_adapter
                 elif IS_PY3 and PY_VER_MINOR >= 10:
-                    https_adapter = SSLAdapter(max_retries=retry)
+                    https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)
                 else:
                     https_adapter = http_adapter
 
