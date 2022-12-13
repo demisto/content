@@ -5,7 +5,8 @@ ignore=IN145
 ignore=IM111
 
 [known_words]
+G
 gsuite-mobiledevice-list
 gsuite-chromeosdevice-action
 gsuite-chromeosdevice-list
-G
+
