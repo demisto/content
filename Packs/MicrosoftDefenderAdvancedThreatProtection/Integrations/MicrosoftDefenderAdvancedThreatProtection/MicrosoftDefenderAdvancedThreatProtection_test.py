@@ -2539,11 +2539,11 @@ def test_list_missing_kb_by_software_command(mocker, args, return_value, expecte
                 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False, 'exploitVerified': False,
                 'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}]},
      '### Microsoft Defender ATP vulnerability CVE-1111-1111 by software: some_id\n|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|\n|---|---|---|---|---|---|---|---|---|---|\n| CVE-1111-1111 | CVE-1111-1111 | vulnerability\\_description | Medium | 5.3 | 2023-09-06T00:00:00Z | 2022-11-09T00:00:00Z | 2 | false | false |\n',  # noqa: E501
-     [{'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
-       'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
-       'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
-       'exploitVerified': False,
-       'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []}])
+     {'id': 'CVE-1111-1111', 'name': 'CVE-1111-1111', 'description': 'vulnerability_description',
+      'severity': 'Medium', 'cvssV3': 5.3, 'exposedMachines': 2,
+      'publishedOn': '2023-09-06T00:00:00Z', 'updatedOn': '2022-11-09T00:00:00Z', 'publicExploit': False,
+      'exploitVerified': False,
+      'exploitInKit': False, 'exploitTypes': [], 'exploitUris': []})
 ])
 def test_list_vulnerabilities_by_software_command(mocker, args, return_value, expected_human_readable, expected_outputs):
     """
@@ -2772,18 +2772,4 @@ def test_list_vulnerabilities_command(mocker, args, return_value, expected_human
 def test_add_backslash_infront_of_underscore_list(data_to_escape_with_backslash, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore_list
     result = add_backslash_infront_of_underscore_list(data_to_escape_with_backslash)
-    assert result == expected_result
-
-
-@pytest.mark.parametrize('data_to_escape_with_backslash, expected_result', [(
-    {'id': 'some_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some_machine_id',
-     'fixingKbId': None, 'productName': 'some_product_name', 'productVendor': 'some_vendor',
-     'productVersion': '7.0.2.0', 'severity': 'High'},
-    {'id': 'some\\_id', 'cveId': 'CVE-3333-33333', 'machineId': 'some\\_machine\\_id',
-     'fixingKbId': None, 'productName': 'some\\_product\\_name', 'productVendor': 'some\\_vendor',
-     'productVersion': '7.0.2.0', 'severity': 'High'})
-])
-def test_add_backslash_infront_of_underscore(data_to_escape_with_backslash, expected_result):
-    from MicrosoftDefenderAdvancedThreatProtection import add_backslash_infront_of_underscore
-    result = add_backslash_infront_of_underscore(data_to_escape_with_backslash)
     assert result == expected_result

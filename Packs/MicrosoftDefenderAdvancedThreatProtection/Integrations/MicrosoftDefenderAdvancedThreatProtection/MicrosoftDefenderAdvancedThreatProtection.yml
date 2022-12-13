@@ -4636,10 +4636,12 @@ script:
       isArray: true
       name: vendor
     - default: false
+      defaultValue: '50'
       description: Maximum number of results to retrieve. Default is 50.
       isArray: false
       name: limit
     - default: false
+      defaultValue: '0'
       description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
       name: offset
@@ -4720,11 +4722,13 @@ script:
       name: product_vendor
       secret: false
     - default: false
+      defaultValue: '50'
       description: Maximum number of results to retrieve. Default is 50.
       isArray: false
       name: limit
       secret: false
     - default: false
+      defaultValue: '0'
       description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
       name: offset
@@ -4797,10 +4801,12 @@ script:
       description: Maximum number of results to retrieve. Default is 50.
       isArray: false
       name: limit
+      defaultValue: '50'
       secret: false
     - default: false
       description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
       isArray: false
+      defaultValue: '0'
       name: offset
       secret: false
     deprecated: false

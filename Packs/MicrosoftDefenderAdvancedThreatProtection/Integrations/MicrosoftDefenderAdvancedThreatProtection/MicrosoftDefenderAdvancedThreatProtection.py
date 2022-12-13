@@ -4550,6 +4550,8 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
     vulnerabilities_response_value = vulnerabilities_response.get('value')
     demisto.debug(vulnerabilities_response_value)
     if vulnerabilities_response_value:
+        demisto.debug(vulnerabilities_response_value)
+        demisto.debug(len(vulnerabilities_response_value))
         for cve in vulnerabilities_response_value:
             cve_id = cve.get('id')
             cve_indicator = Common.CVE(id=cve_id,
@@ -4559,12 +4561,12 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
                                        modified=cve.get('updatedOn')
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
-                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
             results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
                                                outputs_key_field='id',
-                                               outputs=vulnerabilities_response_value,
+                                               outputs=cve,
                                                readable_output=human_readable,
-                                               raw_response=vulnerabilities_response,
+                                               raw_response=cve,
                                                indicator=cve_indicator))
     return results_list
 
@@ -4587,7 +4589,7 @@ def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
                 query = f"{query}{name} eq '{list_item}'"
             else:
                 query = f"{query}{name} eq '{list_item}' or "
-        demisto.debug(query)
+        demisto.debug(f'Filter conjunction query results: {query} ')
     return query
 
 
@@ -4607,22 +4609,6 @@ def add_backslash_infront_of_underscore_list(markdown_data: Optional[list[dict]]
                     v = str(v.replace('_', '\_'))
                 dict[k] = v
             markdown_data_to_return.append(dict)
-    return markdown_data_to_return
-
-
-def add_backslash_infront_of_underscore(markdown_data: Optional[dict]) -> dict:
-    """ Escape underscores with a backslash in order to show underscores after markdown parsing.
-        Args:
-            markdown_data: dict - list of dicts.
-        Returns:
-            A dict with a backslash before each underscore.
-    """
-    markdown_data_to_return = {}
-    if markdown_data:
-        for k, v in markdown_data.items():
-            if isinstance(v, str):
-                v = str(v.replace('_', '\_'))
-            markdown_data_to_return[k] = v
     return markdown_data_to_return
 
 
@@ -4649,7 +4635,7 @@ def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
                 continue
             else:
                 query = f'{query}({list_item}) and '
-        demisto.debug(query)
+        demisto.debug(f'Filter disjunctions query results: {query} ')
     return query
 
 
@@ -4729,7 +4715,7 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> lis
                                        modified=''
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id}:',
-                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
             results_list.append(CommandResults(outputs_prefix='MicrosoftATP.MachineCVE',
                                                outputs_key_field='id',
                                                outputs=cve,
@@ -4806,6 +4792,8 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
     results_list = []
     if list_vulnerabilities_response_value:
+        demisto.debug(list_vulnerabilities_response_value)
+        demisto.debug(len(list_vulnerabilities_response_value))
         for cve in list_vulnerabilities_response_value:
             cve_id = cve.get('id')
             cve_indicator = Common.CVE(id=cve_id,
@@ -4815,14 +4803,14 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
                                        modified=cve.get('updatedOn')
                                        )
             human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
-                                             add_backslash_infront_of_underscore(cve), headers=headers, removeNull=True)
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
             results_list.append(CommandResults(outputs_prefix='MicrosoftATP.Vulnerability',
                                                outputs_key_field='id',
                                                outputs=cve,
                                                readable_output=human_readable,
                                                raw_response=cve,
                                                indicator=cve_indicator))
-
+        demisto.debug(len(results_list))
     return results_list
 
 
