@@ -2219,10 +2219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: fb67b4db-3f17-437f-8051-b3e1f31192e6
+    taskid: 51d0550f-e42d-4d76-802d-ccd0796e274f
     type: regular
     task:
-      id: fb67b4db-3f17-437f-8051-b3e1f31192e6
+      id: 51d0550f-e42d-4d76-802d-ccd0796e274f
       version: -1
       name: Close alert (Auto-Close)
       description: Close the current alert because auto-close was selected,
@@ -2235,9 +2235,9 @@ tasks:
       - "4"
     scriptarguments:
       closeNotes:
-        simple: Alert status set to 'Resolve' by Active Response Module
+        simple: Alert status set to 'Resolved' by Active Response Module
       closeReason:
-        simple: Resolved
+        simple: STATUS_160_RESOLVED
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2256,10 +2256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: d93c8c24-2f4c-44fe-8f4c-0ebceccf6ef4
+    taskid: 752ce11d-3829-469a-80b0-e3c599d494b0
     type: regular
     task:
-      id: d93c8c24-2f4c-44fe-8f4c-0ebceccf6ef4
+      id: 752ce11d-3829-469a-80b0-e3c599d494b0
       version: -1
       name: Close alert (Remediated Automatically)
       description: Close the current alert because Automated Remediation path was selected.
@@ -2274,7 +2274,7 @@ tasks:
       closeNotes:
         simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
       closeReason:
-        simple: Resolved - Auto
+        simple: Resolved - Remediated Automatically
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3010,4 +3010,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
 system: true
