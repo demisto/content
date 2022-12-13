@@ -630,6 +630,11 @@ def test_submit_file_entry_to_sandbox(mocker):
 # Test Cases for Sandbox submission polling
 def test_sandbox_submission_polling(mocker):
     """Test to get status of sandbox submission"""
+    mocker.patch.object(
+        demisto,
+        "demistoVersion",
+        return_value={'version': '6.2.0', 'buildNumber': '12345'},
+    )
     mocker.patch("TrendMicroVisionOne.Client.http_request", mock_file_status_response)
     args = {"task_id": "921674d0-9735-4f79-b7de-c852e00a003d"}
     client = Client("https://api.xdr.trendmicro.com", api_key, proxy, verify)
