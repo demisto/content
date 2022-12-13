@@ -295,7 +295,7 @@ script:
       description: Scan Target.
     - contextPath: Qualys.SCAP.Scan.AssetGroupTitle
       description: Target Asset Group Title.
-    - contextPath: Qualys.SCAP.Scan.DefaultFlag
+    - contextPath: Qualys.SCAP.Scan.DeafualtFlag
       description: Scan Default Flag.
     - contextPath: Qualys.SCAP.Scan.UserLogin
       description: The user that created the scan.
