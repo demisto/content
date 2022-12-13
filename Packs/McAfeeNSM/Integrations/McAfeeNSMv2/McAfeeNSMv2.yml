@@ -811,6 +811,9 @@ script:
         - contextPath: NSM.Alerts.name
           description: Alert Name.
           type: String
+        - contextPath: NSM.Alerts.uniqueAlertId
+          description: Unique alert id.
+          type: String
         - contextPath: NSM.Alerts.alertState
           description: Alert State (Acknowledged,Unacknowledged).
           type: String
@@ -994,6 +997,263 @@ script:
         - contextPath: NSM.Alerts.SensorID
           description: Sensor ID.
           type: String
+    - name: nsm-get-alert-details
+      arguments:
+        - name: alert_id
+          required: true
+          default: true
+          description: Alert ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “ID”.
+        - name: sensor_id
+          description: Sensor ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “SensorID”.
+          required: true
+          isArray: false
+      outputs:
+        - contextPath: NSM.Alerts.ID
+          description: Alet Id.
+          type: number
+        - contextPath: NSM.Alerts.name
+          description: Alert Name.
+          type: String
+        - contextPath: NSM.Alerts.uniqueAlertId
+          description: Unique Alert Id.
+          type: String
+        - contextPath: NSM.Alerts.alertState
+          description: The state of the alert.
+          type: String
+        - contextPath: NSM.Alerts.assignTo
+          description: Alert Assignee.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.application
+          description: The event application.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.protocol
+          description: The event protocol.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.event.domain
+          description: The domain of the event.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.manager
+          description: the event manager.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.event.device
+          description: The event device.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.deviceId
+          description: The id of the device that related to the event.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.interface
+          description: The event interface.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.matchedPolicy
+          description: The policy that matched the event.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.zone
+          description: The event zone.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.event.vlan
+          description: The event vlan.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.detection
+          description: The vent detection.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.time
+          description: The creation time of the event.
+          type: Date
+        - contextPath: NSM.Alerts.summary.event.direction
+          description: The event direction.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.result
+          description: The event result.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.attackCount
+          description: Event attack count.
+          type: Number
+        - contextPath: NSM.Alerts.summary.event.relevance
+          description: The relevance of the event.
+          type: String
+        - contextPath: NSM.Alerts.summary.event.alertId
+          description: Alert Id.
+          type: String
+        - contextPath: NSM.Alerts.summary.attacker.ipAddrs
+          description:  Attacker IP addresses.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attacker.port
+          description: Attacker port.
+          type: Number
+        - contextPath: NSM.Alerts.summary.attacker.hostName
+          description: Attacker host name.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attacker.country
+          description: Attacker country.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attacker.os
+          description: Attacker os.
+          type: String
+        - contextPath: NSM.Alerts.summary.attacker.vmName
+          description: Attacker vm name.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attacker.proxyIP
+          description: Attacker proxy IP.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attacker.user
+          description: Attacker user.
+          type: String
+        - contextPath: NSM.Alerts.summary.attacker.risk
+          description: Attacker risk.
+          type: String
+        - contextPath: NSM.Alerts.summary.attacker.networkObject
+          description: Attacker network object.
+          type: String
+        - contextPath: NSM.Alerts.summary.target.ipAddrs
+          description: Target IP address.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.target.port
+          description: Target port.
+          type: Number
+        - contextPath: NSM.Alerts.summary.target.hostName
+          description: Target host name.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.target.country
+          description: Target country.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.target.os
+          description: Target os.
+          type: String
+        - contextPath: NSM.Alerts.summary.target.vmName
+          description: Target vm name.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.target.proxyIP
+          description: Target proxy IP.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.target.user
+          description: Target user.
+          type: String
+        - contextPath: NSM.Alerts.summary.target.risk
+          description: Target risk.
+          type: String
+        - contextPath: NSM.Alerts.summary.target.networkObject
+          description: Target network object.
+          type: String
+        - contextPath: NSM.Alerts.summary.source
+          description: The source of the alert.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.destination
+          description: The destination of the alert.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.zoombie
+          description: Alert zoombie.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.cAndcServer
+          description: The command and control server.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.fastFluxAgent
+          description: Fast Flux Agent.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.attackedHIPEndpoint
+          description: attackedHIPEndpoint.
+          type: Unknown
+        - contextPath: NSM.Alerts.summary.compromisedEndpoint
+          description: Compromised endpoint.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.matchedSignature
+          description: Matched signature.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.malwareFile
+          description: Malware file.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.hostSweep
+          description: Host sweep.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.portScan
+          description: Port scan.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.fastFlux
+          description: Fast flux.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.triggeredComponentAttacks
+          description: Triggered component attack.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.sqlInjection
+          description: SQL injection.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.callbackDetectors
+          description: Call back detectors.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.exceededThreshold
+          description: Exceeded threshold.
+          type: Unknown
+        - contextPath: NSM.Alerts.details.communicationRuleMatch
+          description: Communication rule match.
+          type: Unknown
+        - contextPath: NSM.Alerts.description.definition
+          description: definition.
+          type: String
+        - contextPath: NSM.Alerts.description.btp
+          description: btp.
+          type: String
+        - contextPath: NSM.Alerts.description.rfSB
+          description: rfSb.
+          type: String
+        - contextPath: NSM.Alerts.description.protectionCategory
+          description: Protection Category.
+          type: String
+        - contextPath: NSM.Alerts.description.target
+          description: The target.
+          type: String
+        - contextPath: NSM.Alerts.description.httpResponseAttack
+          description: Http response attack.
+          type: String
+        - contextPath: NSM.Alerts.description.priority
+          description: Priority.
+          type: String
+        - contextPath: NSM.Alerts.description.protocols
+          description: Protocols.
+          type: String
+        - contextPath: NSM.Alerts.description.attackCategory
+          description: Attack category.
+          type: String
+        - contextPath: NSM.Alerts.description.attackSubCategory
+          description: Attack sub category.
+          type: String
+        - contextPath: NSM.Alerts.description.snortEngine
+          description: Snort engine.
+          type: String
+        - contextPath: NSM.Alerts.description.versionAdded
+          description: When the version was added.
+          type: String
+        - contextPath: NSM.Alerts.description.versionUpdated
+          description: When the version was updated.
+          type: Unknown
+        - contextPath: NSM.Alerts.description.reference.nspId
+          description: nspID.
+          type: String
+        - contextPath: NSM.Alerts.description.reference.cveId
+          description: CVE ID.
+          type: String
+        - contextPath: NSM.Alerts.description.reference.microsoftId
+          description: Microsoft ID.
+          type: String
+        - contextPath: NSM.Alerts.description.reference.bugtraqId
+          description: Bugtraq Id.
+          type: String
+        - contextPath: NSM.Alerts.description.reference.certId
+          description: Cert ID.
+          type: Unknown
+        - contextPath: NSM.Alerts.description.reference.arachNidsId
+          description: arachNidsId
+          type: String
+        - contextPath: NSM.Alerts.description.reference.additionInfo
+          description: Additional info.
+          type: String
+        - contextPath: NSM.Alerts.description.comments.comments
+          description: comments.
+          type: String
+        - contextPath: NSM.Alerts.description.comments.availabeToChildDomains
+          description: Is the alert available to child domains.
+          type: Boolean
+        - contextPath: NSM.Alerts.description.comments.parentDomainComments
+          description: Parent domain comments.
+          type: Unknown
   isfetch: false
   runonce: false
   script: '-'

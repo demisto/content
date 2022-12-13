@@ -194,6 +194,22 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
+    def get_alert_details_request(self, session_str: str, alert_id: str, sensor_id: str) -> Dict:
+        """ Retrieves the alert details.
+            Args:
+                session_str: str - The session id of the alert.
+                alert_id: str - The id of the relevant alert.
+                sensor_id: str - The id of the relevant sensor.
+            Returns:
+                A dictionary with the alert details.
+        """
+        url_suffix = f'/sdkapi/alerts/{alert_id}'
+        self.headers['NSM-SDK-API'] = session_str
+        params = {
+            'sensorId': sensor_id
+        }
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -271,7 +287,7 @@ def alerts_list_pagination(records_list: List, limit: int, page: int, session_st
                 limit = limit - len(results_list)
                 num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
                 response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search,
-                                                     filter_arg, domain_id, 'next')  #TODO check next page
+                                                     filter_arg, domain_id, 'next')
                 records_list = response.get('alertsList')
 
         records_list = records_list[num_rec_2_remove:]
@@ -482,7 +498,6 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         del alert['attacker']
         del alert['target']
         del alert['malwareFile']
-        del alert['uniqueAlertId']
         del alert['event']
     return alert_list
 
@@ -1010,7 +1025,7 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with a success message.
+            A CommandResult object with a list of alerts.
     """
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
@@ -1055,6 +1070,47 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
         outputs_prefix='NSM.Alerts',
         outputs=alerts_list,
         raw_response=alerts_list,
+        outputs_key_field='uniqueAlertId'
+    )
+
+
+def get_alert_details_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Retrieves the relevant alert.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a success message.
+    """
+    alert_id = args.get('alert_id')
+    sensor_id = args.get('sensor_id')
+    response = client.get_alert_details_request(session_str, alert_id, sensor_id)
+    response['ID'] = alert_id
+
+    human_readable = {
+        'ID': response.get('ID'),
+        'Name': response.get('name'),
+        'Event Time': response.get('summary', {}).get('event', {}).get('time'),
+        'State': response.get('alertState'),
+        'Direction': response.get('summary', {}).get('event', {}).get('direction'),
+        'Result': response.get('summary', {}).get('event', {}).get('result'),
+        'Attack Count': response.get('summary', {}).get('event', {}).get('attackCount'),
+        'Attacker IP': response.get('summary', {}).get('attacker', {}).get('ipAddrs'),
+        'Target IP': response.get('summary', {}).get('target', {}).get('ipAddrs')
+    }
+    headers = ['ID', 'Name', 'Event Time', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP', 'Target IP']
+    readable_output = tableToMarkdown(
+        name=f'Alert no.{alert_id}',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Alerts',
+        outputs=response,
+        raw_response=response,
         outputs_key_field='uniqueAlertId'
     )
 
@@ -1125,6 +1181,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-alerts':
             results = get_alerts_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-alert-details':
+            results = get_alert_details_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
