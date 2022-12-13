@@ -114,10 +114,19 @@ def get_cve(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
         ))
 
     create_cves(parsed_cves)
+
     return results
 
 
 def get_my_vendors(ocve: OpenCVE) -> CommandResults:
+    '''
+    Gets the vendors that the registered user is subscribed to.
+
+    Args:
+        ocve: OpenCVE object
+    Returns:
+        CommandResults with a list of vendors
+    '''
     my_vendors = ocve.get_my_vendors()
     return CommandResults(
         outputs_prefix='OpenCVE.myVendors',
@@ -126,6 +135,14 @@ def get_my_vendors(ocve: OpenCVE) -> CommandResults:
 
 
 def get_my_products(ocve: OpenCVE) -> CommandResults:
+    '''
+    Gets the products taht the registered user is subscribed to
+
+    Args:
+        ocve: OpenCVE object
+    Returns:
+        CommandResults with a list of products
+    '''
     my_products = ocve.get_my_products()
     return CommandResults(
         outputs_prefix='OpenCVE.myProducts',
@@ -134,6 +151,15 @@ def get_my_products(ocve: OpenCVE) -> CommandResults:
 
 
 def get_vendor(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Get a specific vendor machine name and human readable name
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults with a dict of the results
+    '''
     vendor = args.get('vendor_name', None)
     return CommandResults(
         outputs_prefix=f'OpenCVE.{vendor}',
@@ -142,6 +168,15 @@ def get_vendor(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_vendors(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets vendors based on filter criteria
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults with a list of dicts of vendors
+    '''
     params = {}
     if 'search' in args:
         params['search'] = args.get('search')
@@ -157,6 +192,15 @@ def get_vendors(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_vendor_cves(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
+    '''
+    Gets CVEs related to a vendor
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        A list of CommandResults with a single CVE per CommandResult
+    '''
     vendor = args.get('vendor_name', None)
     params = {}
     if 'search' in args:
@@ -195,6 +239,15 @@ def get_vendor_cves(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
 
 
 def get_products(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets a list of products for a specific vendor based on the provided filters
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandREsults with a list of products
+    '''
     vendor = args.get('vendor_name', None)
     params = {}
     if 'search' in args:
@@ -209,6 +262,15 @@ def get_products(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_product(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets info for a specific product
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults with a dict of the results
+    '''
     vendor = args.get('vendor_name', None)
     product = args.get('product_name', None)
 
@@ -219,6 +281,15 @@ def get_product(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_product_cves(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
+    '''
+    Gets CVEs related to a specific product.
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        A list of CommandResults with one CVE per CommandResult
+    '''
     vendor = args.get('vendor_name', None)
     product = args.get('product_name', None)
     params = {}
@@ -257,6 +328,14 @@ def get_product_cves(ocve: OpenCVE, args: Dict) -> List[CommandResults]:
 
 
 def get_reports(ocve: OpenCVE) -> CommandResults:
+    '''
+    Gets all reports
+
+    Args:
+        ocve: OpenCVE object
+    Returns:
+        CommandResult with a list of reports
+    '''
     return CommandResults(
         outputs_prefix='OpenCVE.Reports',
         outputs=ocve.get_reports()
@@ -264,6 +343,15 @@ def get_reports(ocve: OpenCVE) -> CommandResults:
 
 
 def get_report(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets a specific report
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults with a dict of the report
+    '''
     report_id = args.get('report_id', None)
 
     return CommandResults(
@@ -273,6 +361,15 @@ def get_report(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_alerts(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets all alerts from a report
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults with a list of alerts
+    '''
     params = {}
     report_id = args.get('report_id', None)
     if 'page' in args:
@@ -285,6 +382,15 @@ def get_alerts(ocve: OpenCVE, args: Dict) -> CommandResults:
 
 
 def get_alert(ocve: OpenCVE, args: Dict) -> CommandResults:
+    '''
+    Gets a specific alert
+
+    Args:
+        ocve: OpenCVE object
+        args: demisto.args
+    Returns:
+        CommandResults witha dict of the alert
+    '''
     report_id = args.get('report_id', None)
     alert_id = args.get('alert_id', None)
 
