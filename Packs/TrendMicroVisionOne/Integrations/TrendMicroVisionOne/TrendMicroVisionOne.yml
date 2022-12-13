@@ -628,6 +628,7 @@ script:
       type: string
     description: Runs a polling command to retrieve the status of a sandbox analysis submission
     name: trendmicro-visionone-run-sandbox-submission-polling
+    polling: true
   - arguments:
     - description: polling the task for 30 seconds interval.
       name: polling
