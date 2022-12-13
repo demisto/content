@@ -30,7 +30,6 @@
     "fromVersion": "5.5.0",
     "openEnded": true,
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+		"xsoar"
 	]
 }
