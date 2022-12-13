@@ -138,7 +138,7 @@ def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True)
     ({'id': [1, 2]}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
     ({'id': '1,2'}, {'id': '1,2'}, [EXAMPLE_INCIDENTS_RAW_RESPONSE[0], EXAMPLE_INCIDENTS_RAW_RESPONSE[1]]),
 ])
-def test_filter_events(mocker, args, filtered_args, expected_result, platform):
+def test_filter_events(mocker, args, filtered_args, expected_result):
     """
     Given:
         - The script args.
