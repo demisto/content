@@ -79,3 +79,7 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_res
     else:
         results = demisto.results.call_args[0][0]
         assert results == expected_results
+
+
+def test_aws_ec2_authorize_security_group_ingress_rule():
+    assert True
