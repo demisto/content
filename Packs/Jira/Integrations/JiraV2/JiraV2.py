@@ -45,7 +45,8 @@ def jira_req(
         link: bool = False,
         resp_type: str = 'text',
         headers: Optional[dict] = None,
-        files: Optional[dict] = None
+        files: Optional[dict] = None,
+        params: Optional[dict] = None
 ):
     url = resource_url if link else (BASE_URL + resource_url)
     AUTH = get_auth()
@@ -60,7 +61,8 @@ def jira_req(
             auth=AUTH,
             headers=headers if headers else HEADERS,
             verify=USE_SSL,
-            files=files
+            files=files,
+            params=params
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -188,14 +190,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
-        result = jira_req(method='GET', resource_url=url, headers=HEADERS)
-        result = requests.get(
-            url=url,
-            headers=HEADERS,
-            verify=USE_SSL,
-            params=query_params,
-            auth=get_auth(),
-        )
+        result = jira_req(method='GET', resource_url=url, headers=HEADERS, params=query_params)
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
