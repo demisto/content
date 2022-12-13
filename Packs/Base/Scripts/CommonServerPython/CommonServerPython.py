@@ -19,6 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
+import ssl
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -8281,13 +8282,9 @@ if 'requests' in sys.modules:
                 :rtype: ``None``
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
-          
+
             def __init__(self) -> None:
-                # set the flag and set only if openssl v >= 3
-                # context.options |= 0x4                
-                import ssl
-                open_ssl_version = (3, 0, 0, 0)
-                if ssl.OPENSSL_VERSION_INFO > open_ssl_version:
+                if ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__()
 
