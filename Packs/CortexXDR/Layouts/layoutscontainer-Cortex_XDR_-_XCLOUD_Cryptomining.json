@@ -829,14 +829,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_dbotpredictionprobability",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_description",
                         "isVisible": true
                     },
@@ -938,22 +930,6 @@
                     },
                     {
                         "fieldId": "incident_dsts",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletefrombrand",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletereason",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeleteresult",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_emaildeletetype",
                         "isVisible": true
                     },
                     {
@@ -1070,10 +1046,6 @@
                     },
                     {
                         "fieldId": "incident_incidentlink",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_incidentsinfo",
                         "isVisible": true
                     },
                     {
@@ -1398,10 +1370,6 @@
                     },
                     {
                         "fieldId": "incident_tags",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_target",
                         "isVisible": true
                     },
                     {
