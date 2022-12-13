@@ -21,7 +21,7 @@
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Get list of packs to update in content graph" --collapsed
-    - git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq > $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt
+    - git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq | tee $ARTIFACTS_FOLDER/packs_to_update_in_graph.txt
     - section_end "Get list of packs to update in content graph"
 
     - section_start "Create content graph" --collapsed
