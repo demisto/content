@@ -1,19 +1,18 @@
 {
     "NetBox_IRM_raw": {
-      "id": {
+      "comments": {
         "type": "string",
         "is_array": false
       },
-      "created_time": {
+      "kind": {
         "type": "string",
         "is_array": false
       },
-    
-      "description": {
+      "assigned_object": {
         "type": "string",
         "is_array": false
       },
-      "custom_details": {
+      "assigned_object_type": {
         "type": "string",
         "is_array": false
       }

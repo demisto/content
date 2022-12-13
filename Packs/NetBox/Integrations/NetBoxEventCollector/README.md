@@ -1,5 +1,5 @@
 This is the NetBox event collector integration for XSIAM.
-This integration was integrated and tested with version 3.0 of NetBox API.
+This integration was integrated and tested with version 3.0 and above of NetBox API. 
 
 ## Configure NetBox Event Collector on Cortex XSIAM
 

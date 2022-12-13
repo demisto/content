@@ -132,24 +132,21 @@ def get_events_command(client: Client, limit: int) -> Tuple[List[Dict[str, Any]]
 
 
 def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int],
-                         first_fetch_time: int | None
-                         ) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
+                         first_fetch_time: str) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
     """
     Args:
         client (Client): NetBox client to use.
         max_fetch (int): The maximum number of events to fetch per log type.
         last_run (dict): A dict with a keys containing the latest events ids we got from last fetch for each log type.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
+        first_fetch_time (str): In case of first fetch, fetch events from this date.
             milliseconds on when to start fetching events.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
-    first_fetch_time_strftime = dateparser.parse(str(first_fetch_time),
-                                                 settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)  # type: ignore
-    params = {'journal-entries': {'created_after': first_fetch_time_strftime},
-              'object-changes': {'time_after': first_fetch_time_strftime}}
+    params = {'journal-entries': {'created_after': first_fetch_time},
+              'object-changes': {'time_after': first_fetch_time}}
     for log_type in LOG_TYPES:
         if last_run.get(log_type) is None:
             last_run[log_type] = client.get_first_fetch_id(url_suffix=log_type,
@@ -191,13 +188,12 @@ def main() -> None:  # pragma: no cover
     proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
+    first_fetch_time: datetime = arg_to_datetime(
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
+    )  # type: ignore
+    first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -229,7 +225,7 @@ def main() -> None:  # pragma: no cover
                     client=client,
                     max_fetch=arg_to_number(params.get('max_fetch', DEFAULT_LIMIT)),  # type: ignore
                     last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp
+                    first_fetch_time=first_fetch_time_strftime
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)

@@ -49,9 +49,9 @@ def test_fetch_events_command(requests_mock):
     from NetBoxEventCollector import Client, fetch_events_command
 
     # mock the first fetch id
-    requests_mock.get(f'{BASE_URL}/journal-entries?ordering=id&limit=1&created_after=2022-01-01T00%3A00%3A00Z',
+    requests_mock.get(f'{BASE_URL}/journal-entries?ordering=id&limit=1&created_after=2022-01-01T00:00:00Z',
                       json={'results': [{'id': 5}]})
-    requests_mock.get(f'{BASE_URL}/object-changes?ordering=id&limit=1&time_after=2022-01-01T00%3A00%3A00Z',
+    requests_mock.get(f'{BASE_URL}/object-changes?ordering=id&limit=1&time_after=2022-01-01T00:00:00Z',
                       json={'results': [{'id': 9}]})
 
     # mock the events
@@ -61,7 +61,7 @@ def test_fetch_events_command(requests_mock):
                       json=util_load_json('test_data/fetch_events_object-changes.json'))
 
     client = Client(base_url=BASE_URL, verify=False)
-    next_run, events = fetch_events_command(client, max_fetch=2, last_run={}, first_fetch_time=1640995200)
+    next_run, events = fetch_events_command(client, max_fetch=2, last_run={}, first_fetch_time='2022-01-01T00:00:00Z')
 
     mock_events = util_load_json('test_data/netbox-fetch-events.json')
 
