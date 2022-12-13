@@ -11,5 +11,10 @@ XSIAM_TOKEN=$(echo "$XSIAM_TOKENS" | jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]")
 
 MODELING_RULES_TO_TEST="$(tr '\n' ' ' < "$ARTIFACTS_FOLDER"/modeling_rules_to_test.txt)"
 
+if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
+    echo "There was a problem reading the list of modeling rules that require testing from '$ARTIFACTS_FOLDER/modeling_rules_to_test.txt'"
+    exit 1
+fi
+
 echo "Testing Modeling Rules"
 demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive "$MODELING_RULES_TO_TEST"
