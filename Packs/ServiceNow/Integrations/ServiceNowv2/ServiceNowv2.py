@@ -2378,7 +2378,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             comments_result = convert_to_notes_result(full_result, time_filter=datetime.fromtimestamp(last_update))
         except Exception as e:
             demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
-            comments_result = []
+            comments_result = {'result': []}
     else:
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
