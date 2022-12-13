@@ -2103,7 +2103,7 @@ script:
       name: exclusion_type
     description: Remove an item from the SentinelOne exclusion list
     name: sentinelone-remove-item-from-whitelist
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   runonce: false
   script: ''
