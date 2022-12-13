@@ -34,6 +34,9 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
 
+SESSION = requests.Session()
+SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=USE_SSL))
+
 
 def jira_req(
         method: str,
@@ -49,9 +52,8 @@ def jira_req(
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        session = requests.Session()
-        session.mount(prefix='https://', adapter=SSLAdapter())
-        result = session.request(
+        
+        result = SESSION.request(
             method=method,
             url=url,
             data=body,
@@ -141,13 +143,6 @@ def get_custom_field_names():
     HEADERS['Accept'] = "application/json"
     try:
         jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
-        # res = requests.request(
-        #     method='GET',
-        #     url=BASE_URL + 'rest/api/latest/field',
-        #     headers=HEADERS,
-        #     verify=USE_SSL,
-        #     auth=get_auth(),
-        # )
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -193,6 +188,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
+        result = jira_req(method='GET', resource_url=url, headers=HEADERS)
         result = requests.get(
             url=url,
             headers=HEADERS,
@@ -239,13 +235,7 @@ def get_custom_fields():
     custom_id_description_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        res = jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -1302,8 +1292,7 @@ def get_user_info_data():
     :return: API response
     """
     HEADERS['Accept'] = "application/json"
-    return requests.request(method='GET', url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS, verify=USE_SSL,
-                            auth=get_auth())
+    return jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/myself', headers=HEADERS)
 
 
 def get_modified_remote_data_command(args):
