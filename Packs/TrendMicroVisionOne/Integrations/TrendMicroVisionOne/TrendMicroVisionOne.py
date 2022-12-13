@@ -286,10 +286,10 @@ class Client(BaseClient):
 
     def sandbox_submission_polling(self, data: Dict[str, Any]) -> Any:
         """
-        Check the submission status of sandbox submission
+        Check the status of sandbox submission
         :type data: ``dict``
         :param method: Response data received from sandbox.
-        :return: Performs polling and returns sandbox submission response data.
+        :return: Sandbox submission response data.
         :rtype: ``Any``
         """
         task_id = data.get(TASKID)
@@ -495,7 +495,7 @@ def get_sandbox_submission_status(
     args: Dict[str, Any], client: Client
 ) -> Union[str, CommandResults]:
     """
-    Perform polling to get status of sandbox submission.
+    call polling command to check status of sandbox submission.
 
     :type args: ``args``
     :param client: argument required for polling.
