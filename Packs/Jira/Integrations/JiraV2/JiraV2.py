@@ -49,7 +49,9 @@ def jira_req(
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        result = requests.request(
+        session = requests.Session()
+        session.mount(prefix='https://', adapter=SSLAdapter())
+        result = session.request(
             method=method,
             url=url,
             data=body,
@@ -138,13 +140,14 @@ def get_custom_field_names():
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        res = requests.request(
-            method='GET',
-            url=BASE_URL + 'rest/api/latest/field',
-            headers=HEADERS,
-            verify=USE_SSL,
-            auth=get_auth(),
-        )
+        jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
+        # res = requests.request(
+        #     method='GET',
+        #     url=BASE_URL + 'rest/api/latest/field',
+        #     headers=HEADERS,
+        #     verify=USE_SSL,
+        #     auth=get_auth(),
+        # )
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
