@@ -1269,6 +1269,22 @@ script:
           required: false
           isArray: false
           description: The specific result page to display. The default is 1.
+      outputs:
+        - contextPath: NSM.Attacks.DosDirection
+          description: Attack direction.
+          type: Unknown
+        - contextPath: NSM.Attacks.Severity
+          description: Attack severity.
+          type: Number
+        - contextPath: NSM.Attacks.UiCategory
+          description: Attack category.
+          type: String
+        - contextPath: NSM.Attacks.attackId
+          description: Attack id.
+          type: String
+        - contextPath: NSM.Attacks.name
+          description: Attack name.
+          type: String
   isfetch: false
   runonce: false
   script: '-'

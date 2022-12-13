@@ -6,6 +6,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Dict, Any
 import base64
+import re
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -218,11 +219,12 @@ class Client(BaseClient):
             Returns:
                 A dictionary with the attack list of the specific attack details.
         """
-        url_suffix = f'/sdkapi/attacks'
         if attack_id:
-            url_suffix = f'{url_suffix}/{attack_id}'
+            url_suffix = f'/sdkapi/attack/{attack_id}'
+        else:
+            url_suffix = '/sdkapi/attacks/'
         self.headers['NSM-SDK-API'] = session_str
-        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -1095,7 +1097,7 @@ def get_alert_details_command(client: Client, args: Dict, session_str: str) -> C
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with a success message.
+            A CommandResult object with the alert details.
     """
     alert_id = args.get('alert_id')
     sensor_id = args.get('sensor_id')
@@ -1126,6 +1128,55 @@ def get_alert_details_command(client: Client, args: Dict, session_str: str) -> C
         outputs=response,
         raw_response=response,
         outputs_key_field='uniqueAlertId'
+    )
+
+
+def get_attacks_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ If an attack id is given The command returns the details for the specific attack.
+        Else, gets all available attack definitions in the Manager UI.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The attack details or attack list.
+    """
+    attack_id = args.get('attack_id')
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    if attack_id:
+        if not re.match('^0x[0-9A-Fa-f]{8}$', attack_id):
+            raise Exception('Error! Attack ID must be formated as 32-bit hexadecimal number. for example: 0x1234BEEF')
+    response = client.get_attacks_request(session_str, attack_id)
+    if not attack_id:
+        title = 'Attacks List'
+        attacks_list = pagination(response.get('AttackDescriptorDetailsList'), limit, page)
+    else:
+        title = f'Attack no.{attack_id}'
+        attacks_list = [response.get('AttackDescriptor', {})]
+    human_readable = []
+    for attack in attacks_list:
+        d = {
+            'ID': attack.get('attackId'),
+            'Name': attack.get('name'),
+            'Direction': attack.get('DosDirection'),
+            'Severity': attack.get('Severity'),
+            'Category': attack.get('UiCategory')
+        }
+        human_readable.append(d)
+    headers = ['ID', 'Name', 'Direction', 'Severity', 'Category']
+    readable_outputs = tableToMarkdown(
+        name=title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_outputs,
+        outputs_prefix='NSM.Attacks',
+        outputs=attacks_list,
+        raw_response=attacks_list,
+        outputs_key_field='attackId'
     )
 
 
@@ -1198,6 +1249,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-alert-details':
             results = get_alert_details_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-attacks':
+            results = get_attacks_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
