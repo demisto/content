@@ -1135,8 +1135,9 @@ def output(result: Optional[CollectionResult]):
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     modeling_rules_to_test = sorted(
-        result.modeling_rules_to_test, key=lambda x: x.casefold()
+        result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
+    modeling_rules_to_test = [x.as_posix() if isinstance(x, Path) else x for x in modeling_rules_to_test]
     packs = sorted(result.packs, key=lambda x: x.lower()) if result else ()
     machines = result.machines if result and result.machines else ()
 
