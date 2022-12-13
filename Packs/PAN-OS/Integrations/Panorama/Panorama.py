@@ -12936,9 +12936,11 @@ def remove_duplicate_entries(entries: list[Dict[Any,Any]]) -> list[Dict[Any,Any]
     if not entries: 
         return entries
     unique_entries = []
-    for i in range(len(entries)):
-        if entries[i] not in entries[i + 1:]:
-            unique_entries.append(entries[i])
+    # for i in range(len(entries)):
+    #     if entries[i] not in entries[i + 1:]:
+    #         unique_entries.append(entries[i])
+    # for entry in entries:
+    #     if entry.get('seqno') in entries
     return unique_entries
     
 
@@ -12972,8 +12974,9 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
                     response_entries = get_query_entries(log_type, query, max_fetch)
                     entries.extend(response_entries)
                     
-    unique_entries = remove_duplicate_entries(entries)
-    return unique_entries
+    # TODO: check where duplicates are coming from
+    # unique_entries = remove_duplicate_entries(entries)
+    return entries
 
 
 def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
@@ -13022,10 +13025,7 @@ def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_da
     if not filterd_incident_entries:
         return fetch_start_datetime, filterd_incident_entries
 
-    filterd_incident_entries = sorted(filterd_incident_entries, key=lambda d: d['time_generated'])
-    demisto.debug('incidents list sorted.')
-
-    last_fetch_plain = filterd_incident_entries[-1].get('time_generated',"")
+    last_fetch_plain = max({entry.get("time_generated") for entry in filterd_incident_entries})
     demisto.debug(f'last fetch time: {last_fetch_plain}')
     last_fatch_datetime = dateparser.parse(last_fetch_plain, settings={'TIMEZONE': 'UTC'})
     
