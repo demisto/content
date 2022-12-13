@@ -38,14 +38,14 @@ alter
 | alter protocol = coalesce(protocol1, protocol2, protocol3 )
 // ------------------------------ create source/dest ip/port/interface part ---------------------------------
 //option 1
-// source_ip/source_port to dest_ip/dest_port
+// <source_ip>/<source_port> to <dest_ip>/<dest_port>
 | alter
     source_ip1 = arrayindex(regextract(_raw_log,"(\d+\.\d+\.\d+\.\d+)\/\d+\s*to\s*\d+\.\d+\.\d+\.\d+"),0),
     source_port1 = arrayindex(regextract(_raw_log,"\d+\.\d+\.\d+\.\d+\/(\d+)\s*to\s*\d+\.\d+\.\d+\.\d+"),0),
     dest_ip1 = arrayindex(regextract(_raw_log,"to\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     dest_port1 = arrayindex(regextract(_raw_log,"to\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0)
 //option 2
-// from|for source_interface:source_ip/source_port to dest_interface:dest_ip:dest_port
+// from|for <source_interface>:<source_ip>/<source_port> to <dest_interface>:<dest_ip>:<dest_port>
 | alter
     source_ip2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\/*\d*\s*to\s*"),0),
     source_port2 = arrayindex(regextract(_raw_log,"\w+\s*[a-zA-Z0-9-_]+\:\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*to\s*"),0),
@@ -54,7 +54,7 @@ alter
     source_interface2 = arrayindex(regextract(_raw_log,"([a-zA-Z0-9-_]+)\:\s*\d+\.\d+\.\d+\.\d+\/\d+\s*to"),0),
     dest_interface2 = arrayindex(regextract(_raw_log,"\s*to\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/+[a-zA-Z0-9]+"),0)// same on option 2,3,4
 //option 3
-// for interface:source_ip/source_port (mapped_ip/mappedport) to dest_ip/dest_port
+// for <interface>:<source_ip>/<source_port> (<mapped_ip>/<mapped_port>) to <dest_ip>/<dest_port>
 // dest_ip, dest_port, dest_interface on option 3 is the same as option 2,4,5
 | alter
     source_ip3 = arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\:\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*\([^\)]+\)\s*\(*[^\)]*\)*\s*to"),0),
@@ -68,13 +68,12 @@ alter
     dest_mapped_ip = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\((\d+\.\d+\.\d+\.\d+)\/"),0),
     dest_mapped_port = arrayindex(regextract(_raw_log,"to\s*[a-zA-Z0-9-_]+\:\d+\.\d+\.\d+\.\d+\/\d+\s*\([^\/]+\/(\d+)\)"),0)
 //option 4
-//from 00.00.00.00/000 to interface:99.99.99.99/99
-//from 00.00.00.00/00 to interface:99.99.99.99/99
+//from <source_ip>/<source_port> to <interface>:<source_ip>/<source_port>
 | alter
     source_ip4 = arrayindex(regextract(_raw_log,"from\s*(\d+\.\d+\.\d+\.\d+)\/\d+\s*to"),0),
     source_port4 = arrayindex(regextract(_raw_log,"from\s*\d+\.\d+\.\d+\.\d+\/(\d+)\s*to"),0)
 // option 5
-// interface/00.00.00.00(00) -> interface/99.99.99.99(99)
+// <interface>/<source_ip>(<source_port>) -> <interface>/<dest_ip>(<dest_port>)
 | alter
     source_ip5 = arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\/(\d+\.\d+\.\d+\.\d+)\(\d+\)\s*\-\>"),0),
     source_port5 = arrayindex(regextract(_raw_log,"[a-zA-Z0-9-_]+\/\d+\.\d+\.\d+\.\d+\((\d+)\)\s*\-\>"),0),
@@ -82,39 +81,39 @@ alter
     dest_ip5 = arrayindex(regextract(_raw_log,"\s*\-\>\s[a-zA-Z0-9-_]+\/(\d+\.\d+\.\d+\.\d+)\(\d+\)"),0),
     dest_port5 = arrayindex(regextract(_raw_log,"\s*\-\>\s[a-zA-Z0-9-_]+\/\d+\.\d+\.\d+\.\d+\((\d+)\)"),0)
 // option 6
-// src = 00.00.00.00, dest = 99.99.99.99
+// src = <source_ip>, dest = <dest_ip>
 | alter
     source_ip6 = arrayindex(regextract(_raw_log,"src\s*\=\s*(\d+\.\d+\.\d+\.\d+)"),0),
     dest_ip6 = arrayindex(regextract(_raw_log,"dest\s*\=\s*(\d+\.\d+\.\d+\.\d+)"),0)
 // option 7
-// src 00.00.00.00/00 dst 99.99.99.99/99
+// src <source_ip>/<source_port> dst <dest_ip>/<dest_port>
 | alter
     source_ip7 = arrayindex(regextract(_raw_log,"src\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     source_port7 = arrayindex(regextract(_raw_log,"src\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0),
     dest_ip7 = arrayindex(regextract(_raw_log,"dst\s*(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
     dest_port7 = arrayindex(regextract(_raw_log,"dst\s*\d+\.\d+\.\d+\.\d+\/(\d+)"),0)
 // option 8
-// from 00.00.00.00 to 99.99.99.99
+// from <source_ip> to <dest_ip>
 | alter source_ip8 = arrayindex(regextract(_raw_log ,"\sfrom\s(\d+\.\d+\.\d+\.\d+)\sto\s\d+\.\d+\.\d+\.\d+\s"),0)
     ,dest_ip8 = arrayindex(regextract(_raw_log ,"\sfrom\s\d+\.\d+\.\d+\.\d+\sto\s(\d+\.\d+\.\d+\.\d+)\s"),0)
 // option 9
-//, dest_addr=00.00.00.00, src_addr=99.99.99.99
+//, dest_addr=<dest_ip>, src_addr=<source_ip>
 | alter source_ip9 = arrayindex(regextract(_raw_log ,"\,\ssrc_addr\=(\d+\.\d+\.\d+\.\d+)\,"),0)
     ,dest_ip9 = arrayindex(regextract(_raw_log ,"\,\sdest_addr\=(\d+\.\d+\.\d+\.\d+)\,"),0)
 // option 10
-//src direction:00.00.00.00 dst direction:2.250.107.56 (type 8, code 0)
+//src <direction>:<source_ip> dst <direction>:<dest_ip>
 | alter source_ip10 = arrayindex(regextract(_raw_log ,"\ssrc\s[a-zA-Z]+\:(\d+\.\d+\.\d+\.\d+)\sdst\s"),0)
     ,dest_ip10 = arrayindex(regextract(_raw_log ,"\ssrc\s[a-zA-Z]+\:\d+\.\d+\.\d+\.\d+\sdst\s[a-zA-Z]+\:(\d+\.\d+\.\d+\.\d+)"),0)
 // option 11
-// from 00.00.00.00 to 99.99.99.99
+// from <source_ip> to <dest_ip>
 | alter source_ip11 = arrayindex(regextract(_raw_log ,"\sfrom\s(\d+\.\d+\.\d+\.\d+) to \d+\.\d+\.\d+\.\d+"),0)
     ,dest_ip11 = arrayindex(regextract(_raw_log ,"\sfrom\s\d+\.\d+\.\d+\.\d+ to (\d+\.\d+\.\d+\.\d+)"),0)
 // option 12
-// faddr 00.00.00.00/00 to laddr 99.99.99.99
+// faddr <source_ip>/<source_port> to laddr <dest_ip>
 | alter source_ip12 = arrayindex(regextract(_raw_log ,"for\s+faddr\s+(\d+\.\d+\.\d+\.\d+)\/\d+\s+to\s+"),0),
     dest_ip12 = arrayindex(regextract(_raw_log ,"\s+to\s+laddr\s(\d+\.\d+\.\d+\.\d+)"),0)
 // option 13
-// from laddr 00.00.00.00 on interface outside to 99.99.99.99
+// from laddr <source_ip> on interface <interface>> to <dest_ip>
 | alter source_ip13 = arrayindex(regextract(_raw_log ,"\s+from\s+laddr\s+(\d+\.\d+\.\d+\.\d+)\s+on"),0),
     dest_ip13 = arrayindex(regextract(_raw_log ,"\s+from\s+laddr\s+\d+\.\d+\.\d+\.\d+\s+on\s+\w+\s\w+\sto\s+(\d+\.\d+\.\d+\.\d+)"),0)
 // merge the fields
