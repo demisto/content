@@ -351,6 +351,9 @@ def create_relationships(cve: dict) -> List:
 
 
 def create_publications(cve: dict) -> list:
+    """
+        Creates publications list from CVE, while using get_cve_command.
+    """
     publications = []
     if cve.get('references'):
         for reference in cve.get('references', {}):
@@ -4016,9 +4019,9 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
-    if not args or not args.get('cve_ids'):
-        raise DemistoException('Please insert at least one cve_ids argument')
-    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(args.get('cve_ids'), args.get('limit', '50'))
+    cve_ids = args.get('cve_ids')
+    limit = args.get('limit', '50')
+    vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids, limit)
     headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
                'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name',
                'CVE Exploitability Score', 'CVE Vector']
@@ -4049,8 +4052,6 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     command_results_list = []
     http_response = cve_request(args.get('cve_id'))
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
-    if not raw_cve:
-        raise DemistoException('Could not find any vulnerabilities with cve_id as requested.')
     for cve in raw_cve:
         relationships_list = create_relationships(cve)
         cve_indicator = Common.CVE(id=cve.get('id'),
