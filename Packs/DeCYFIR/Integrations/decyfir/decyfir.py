@@ -20,7 +20,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 MAX_INCIDENTS_TO_FETCH = 500
 DEFAULT_INDICATORS_THRESHOLD = 65
 
-QA_API_PATH: str = 'https://qadecyfir.cyfirma.com/core/api-ua/v2/alerts'
 PROD_API_PATH: str = 'https://decyfir.cyfirma.com/core/api-ua/v2/alerts'
 
 LABEL_DECYFIR = "DeCYFIR"
@@ -108,9 +107,6 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def say_hello(self, name):
-        return f'Hello {name}'
-
     def get_severity(self, risk_score: int):
         if risk_score > 8:
             return IncidentSeverity.CRITICAL
@@ -123,56 +119,80 @@ class Client(BaseClient):
         else:
             return IncidentSeverity.UNKNOWN
 
-    def request_decyfir_api(self, endpoint) -> str:
-        response = requests.get(f"{endpoint}")
+    def request_decyfir_api(self, url_path, category, category_type, api_param_query) -> str:
+        response = requests.get(f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query)
         if response.status_code == 200:
             if len(response.text) > 0:
                 return json.dumps(response.json())
+            else:
+                return ""
         else:
-            print(f"Error: =>  {response.status_code} error with API request")
             return ""
 
-    def get_decyfir_data(self, after_val: int, is_first_fetch: bool, org_api_key: str, incident_type: str) -> str:
-        endpoint_env = f"{QA_API_PATH}"
+    def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch) -> str:
+        endpoint_env = f"{PROD_API_PATH}"
 
-        size: int = MAX_INCIDENTS_TO_FETCH
-        if is_first_fetch:
-            size = 1000
+        size = max_fetch if max_fetch else MAX_INCIDENTS_TO_FETCH
 
-        api_query = "&" + f"key={org_api_key}&" + f"size={size}&" + f"after={after_val}"
+        api_param_query = "&" + f"key={decyfir_api_key}&" + f"size={size}&" + f"after={after_val}"
 
-        return_data: json = {}
-        for cat_type in VAR_ATTACK_SURFACES_SUB_TYPES:
-            endpoint = f"{endpoint_env}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={cat_type}" + api_query
-            data = self.request_decyfir_api(endpoint)
-            return_data[cat_type] = data
+        return_data = {}
+        incident_types = []
+        if not incident_type:
+            if incident_type.__eq__(LABEL_ATTACK_SURFACE):
+                incident_types.append(LABEL_ATTACK_SURFACE)
+            if incident_type.__eq__(LABEL_DIGITAL_RISK_IM_IN):
+                incident_types.append(LABEL_DIGITAL_RISK_IM_IN)
+            if incident_type.__eq__(LABEL_DIGITAL_RISK_S_PE):
+                incident_types.append(LABEL_DIGITAL_RISK_S_PE)
+            if incident_type.__eq__(LABEL_DIGITAL_RISK_DB_WM):
+                incident_types.append(LABEL_DIGITAL_RISK_DB_WM)
+        else:
+            incident_types.append(LABEL_ATTACK_SURFACE)
+            incident_types.append(LABEL_DIGITAL_RISK_IM_IN)
+            incident_types.append(LABEL_DIGITAL_RISK_S_PE)
+            incident_types.append(LABEL_DIGITAL_RISK_DB_WM)
 
-        for cat_type in VAR_IMPERSONATION_AND_INFRINGEMENT_SUB_TYPE:
-            endpoint = f"{endpoint_env}" + f"/{VAR_IMPERSONATION_AND_INFRINGEMENT}?" + f"type={cat_type}" + api_query
-            data = self.request_decyfir_api(endpoint)
-            return_data[cat_type] = data
+        for type_ in incident_types:
+            if type_.__eq__(LABEL_ATTACK_SURFACE):
+                for cat_type in VAR_ATTACK_SURFACES_SUB_TYPES:
+                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                     VAR_ATTACK_SURFACE,
+                                                                     cat_type,
+                                                                     api_param_query)
 
-        for cat_type in VAR_DATA_BREACH_AND_WEB_MONITORING_SUB_TYPES:
-            endpoint = f"{endpoint_env}" + f"/{VAR_DATA_BREACH_AND_WEB_MONITORING}?" + f"type={cat_type}" + api_query
-            data = self.request_decyfir_api(endpoint)
-            return_data[cat_type] = data
+            if type_.__eq__(LABEL_DIGITAL_RISK_IM_IN):
+                for cat_type in VAR_IMPERSONATION_AND_INFRINGEMENT_SUB_TYPE:
+                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                     VAR_IMPERSONATION_AND_INFRINGEMENT,
+                                                                     cat_type,
+                                                                     api_param_query)
 
-        for cat_type in VAR_SOCIAL_AND_PUBLIC_EXPOSURE_SUB_TYPES:
-            endpoint = f"{endpoint_env}" + f"/{VAR_SOCIAL_AND_PUBLIC_EXPOSURE}?" + f"type={cat_type}" + api_query
-            data = self.request_decyfir_api(endpoint)
-            return_data[cat_type] = data
+            if type_.__eq__(LABEL_DIGITAL_RISK_DB_WM):
+                for cat_type in VAR_DATA_BREACH_AND_WEB_MONITORING_SUB_TYPES:
+                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                     VAR_DATA_BREACH_AND_WEB_MONITORING,
+                                                                     cat_type,
+                                                                     api_param_query)
+
+            if type_.__eq__(LABEL_DIGITAL_RISK_S_PE):
+                for cat_type in VAR_SOCIAL_AND_PUBLIC_EXPOSURE_SUB_TYPES:
+                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                     VAR_SOCIAL_AND_PUBLIC_EXPOSURE,
+                                                                     cat_type,
+                                                                     api_param_query)
 
         return json.dumps(return_data)
 
     def prepare_incident_json(self, source_brand: str, alert_type: str, alert_subtype: str, name: str, date_val: str,
                               severity: int, details: str, record_id: str) -> Dict[str, Any]:
 
-        incident_owner = "Administrator"
+        # incident_owner = "Administrator"
         return_data = {
             "type": "" + f"{alert_type}",
             "name": name,
             "occurred": dateparser.parse(date_val).strftime(DATE_FORMAT),
-            "owner": incident_owner,
+            # "owner": incident_owner,
             "severity": severity,
             "details": details,
             "rawJSON": details,
@@ -220,16 +240,17 @@ class Client(BaseClient):
                 if ip:
                     name = name + "\n IP: {}".format(ip) if name else "IP: {}".format(ip)
 
+                if not name:
+                    name = "Asset: {}".format(json_.get("asset_name")) if json_.get("asset_name") else ""
 
                 incident_json = self.prepare_incident_json(LABEL_DECYFIR, alert_type, alert_subtype,
                                                            name, date_val, severity, details, uid)
                 incidents_json.append(incident_json)
 
             return incidents_json
-
         except Exception as e:
-            print("Exception when calling prepare_incidents_for_attack_surface=> : %s\n" % e)
             return_error(str(e))
+            return []
 
     def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> List:
         try:
@@ -247,8 +268,8 @@ class Client(BaseClient):
 
             return incidents_json
         except Exception as e:
-            print("Exception when calling prepare_incidents_for_digital_risk=> : %s\n" % e)
             return_error(str(e))
+            return []
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents: json):
         try:
@@ -287,7 +308,7 @@ class Client(BaseClient):
                 return_data = return_data + incidents_json_data
 
             # Certificates
-            if json_data:= json_val.get(VAR_CERTIFICATES):
+            if json_data := json_val.get(VAR_CERTIFICATES):
                 incidents_json_data = self.prepare_incidents_for_attack_surface(json_data, LABEL_ATTACK_SURFACE,
                                                                                 LABEL_CERTIFICATES)
                 return_data = return_data + incidents_json_data
@@ -362,32 +383,35 @@ class Client(BaseClient):
             return return_data
         except Exception as e:
             demisto.error(traceback.format_exc())
-            print("Exception when calling convert_decyfir_data_to_incidents_format => : %s\n" % e)
             return_error(str(e))
+            return []
 
 
 # commands
 # This is the call made when pressing the integration Test button.
-def test_module(client):
-    result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
+def test_module(client, decyfir_api_key):
+    response = requests.get(
+        f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" + "&size=1" + "&key=" + f"{decyfir_api_key}+")
+
+    if response.status_code == 200:
         return 'ok'
+    elif response.status_code == 401 or response.status_code == 403:
+        return 'Not Authorized'
     else:
-        return 'Test failed because ......'
+        return f"Error_code: {response.status_code}" + ", Please contact the DeCYFIR team to assist you further on this."
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
+def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
     try:
-        org_api_key: str = demisto.params().get('decyfir_api_key')
-        # incident_type: str = demisto.params().get('incidentType')
 
-        fetch_from = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch_time)
+        fetch_from = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
 
         after_val: int = int(fetch_from.timestamp() * 1000)
 
         # To get the DeCYFIR data in JSON format
-        json_decyfir_data = client.get_decyfir_data(after_val=after_val, is_first_fetch=is_first_fetch,
-                                                    org_api_key=org_api_key, incident_type=None)
+        json_decyfir_data = client.get_decyfir_data(after_val=after_val,
+                                                    decyfir_api_key=decyfir_api_key,
+                                                    incident_type=incident_type, max_fetch=max_fetch)
 
         decyfir_incidents = client.convert_decyfir_data_to_incidents_format(json_decyfir_data)
 
@@ -395,15 +419,14 @@ def fetch_incidents(client, last_run, first_fetch_time):
         demisto.incidents(decyfir_incidents)
 
         # Assigning the current date time value to last_fetch for next run
-        fetch_time = datetime.now().strftime(DATE_FORMAT)
-        fetch_timings_data = {"last_fetch": fetch_time}
+        last_fetch_time = datetime.now().strftime(DATE_FORMAT)
+        last_fetch = {"last_fetch": last_fetch_time}
 
-        return fetch_timings_data
+        return last_fetch
     except Exception as e:
         if 'Forbidden' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
         else:
-            print("Exception when calling command=> fetch_incidents: {}".format(e))
             raise e
 
 
@@ -411,17 +434,17 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
-
+    username = demisto.params().get('credentials').get('identifier')
+    password = demisto.params().get('credentials').get('password')
+    decyfir_api_key: str = demisto.params().get('decyfir_api_key')
+    incident_type: str = demisto.params().get('incidentType')
+    max_fetch: str = demisto.params().get('max_fetch')
     verify_certificate = not demisto.params().get('insecure', False)
-
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('first_fetch_time', '30 days').strip()
-
+    first_fetch = demisto.params().get('first_fetch', '30 days').strip()
     proxy = demisto.params().get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
@@ -433,22 +456,26 @@ def main():
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            result = test_module(client)
+            result = test_module(client, decyfir_api_key)
             demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
             next_run = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
+                first_fetch=first_fetch,
+                decyfir_api_key=decyfir_api_key,
+                incident_type=incident_type,
+                max_fetch=max_fetch
+            )
             demisto.setLastRun(next_run)
+
         else:
-            raise NotImplementedError(f'DeCYFIR error: '
-                                      f'command {command} is not implemented')
+            raise NotImplementedError(f'DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
 
     # Log exceptions
     except Exception as e:
-        err = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+        err = f'Failed to execute {demisto.command()} command. DeCYFIR error: {str(e)}'
         return_error(err)
 
 
