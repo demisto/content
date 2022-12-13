@@ -483,7 +483,8 @@ ONLY_COLLECT_PACK_TYPES = {
 
 def test_only_collect_pack_args():
     """
-    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES) match constants.ONLY_COLLECT_PACK_TYPES
+    comparing the test_only_collect_packs arguments (ONLY_INSTALL_PACK_FILE_TYPES)
+    match constants.ONLY_COLLECT_PACK_TYPES
     Any change there will require a change here.
     """
     from Tests.scripts.collect_tests.constants import \
