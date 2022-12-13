@@ -6,3 +6,6 @@ ASM
 
 [file:Cortex_ASM_-_ASM_Alert.yml]
 ignore=PB121
+
+[file:Cortex_ASM_-_Tenable.io_Enrichment.yml]
+ignore=PB114
