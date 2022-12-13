@@ -1,5 +1,5 @@
 {
-    "name": "ManageEngine-ADAudit",
+    "name": "ManageEngine ADAudit Plus",
     "description": "ADAudit Plus helps keep your Windows Server ecosystem secure and compliant by providing full visibility into all activities.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
