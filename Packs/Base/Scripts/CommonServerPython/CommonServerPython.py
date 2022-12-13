@@ -8283,7 +8283,8 @@ if 'requests' in sys.modules:
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
 
-            def __init__(self, verify=True) -> None:
+            def __init__(self, verify=True):
+                # type: (bool) -> None
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
                 super().__init__()
