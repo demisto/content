@@ -4696,7 +4696,7 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> lis
     product_version = argToList(args.get('product_version', ''))
     severity = argToList(args.get('severity', ''))
     product_vendor = argToList(args.get('product_vendor', ''))
-    limit = args.get('limit', '50')
+    limit = args.get('limit', '25')
     offset = args.get('offset', '0')
     results_list = []
     filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'),
@@ -4782,7 +4782,7 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
     published_on = date_to_iso_format(args.get('published_on', ''))
     updated_on = date_to_iso_format(args.get('updated_on', ''))
     cvss = args.get('cvss', '')
-    limit = args.get('limit', '50')
+    limit = args.get('limit', '25')
     offset = args.get('offset', '0')
     filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
     filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name, description, published_on, cvss, updated_on)

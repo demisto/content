@@ -4722,8 +4722,8 @@ script:
       name: product_vendor
       secret: false
     - default: false
-      defaultValue: '50'
-      description: Maximum number of results to retrieve. Default is 50.
+      defaultValue: '25'
+      description: Maximum number of results to retrieve. Default is 25.
       isArray: false
       name: limit
       secret: false
@@ -4798,10 +4798,10 @@ script:
       default: false
       secret: false
     - default: false
-      description: Maximum number of results to retrieve. Default is 50.
+      description: Maximum number of results to retrieve. Default is 25.
       isArray: false
       name: limit
-      defaultValue: '50'
+      defaultValue: '25'
       secret: false
     - default: false
       description: The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0.
