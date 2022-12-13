@@ -4,13 +4,13 @@ This pack includes Cortex XSIAM content.
 You need to configure ManageEngine ADManager Plus to forward Syslog messages in **CEF format**.
 
 Steps to enable Syslog Logging in ADManager Plus:
-1. Login to ADManager Plus.
-2. Go to **Admin** → **Personlize** → **Integration**
-3. Click the Syslog Server option.
+1. Log in to ADManager Plus.
+2. Go to **Admin** > **Personlize** > **Integration**
+3. Click the **Syslog Server** option.
 4. Enter the details including Syslog Server Name, Port Number and Port Protocol. Also, choose the syslog standard and specify the data format needed for your XSIAM parser.
-5. Click Save.
+5. Click **Save**.
 
-#### More information on SIEM integration can be found [here](https://www.manageengine.com/products/ad-manager/admanager-kb/how-to-integrate-admanagerplus-with-splunk-and-syslog-servers.html)
+More information on a SIEM integration can be found [here](https://www.manageengine.com/products/ad-manager/admanager-kb/how-to-integrate-admanagerplus-with-splunk-and-syslog-servers.html).
 
 ## Collect Events from Vendor
 
