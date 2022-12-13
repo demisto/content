@@ -2,7 +2,7 @@
     "name": "DeCYFIR",
     "description": "DeCYFIR API's provides External Threat Landscape Management insights",
     "support": "partner",
-    "currentVersion": "1.0",
+    "currentVersion": "1.0.0",
     "author": "Cyfirma",
     "url": "https://www.cyfirma.com/",
     "email": "contact@cyfirma.com",
@@ -14,12 +14,8 @@
     "keywords": [
         "Attack Surface",
         "Digital Risk",
-        "open ports",
-        "Certificates",
-        "Assets",
-        "Domains",
-        "Configuration",
-        "IP Vulnerability"
+        "DeCYFIR",
+        "Cyfirma"
     ],
     "marketplaces": [
         "xsoar",

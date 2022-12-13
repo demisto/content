@@ -3,7 +3,11 @@ commonfields:
   id: decyfir
   version: -1
 configuration:
-- defaultvalue: https://20.193.159.126:443
+- display: Incident type
+  name: incidentType
+  required: false
+  type:  13
+- defaultvalue:
   display: Server URL (e.g. https://example.net)
   name: url
   required: true
@@ -12,6 +16,11 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: DeCYFIR API key
+  hidden: false
+  name: decyfir_api_key
+  required: true
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -24,15 +33,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: DeCYFIR API key
-  hidden: false
-  name: decyfir_api_key
-  required: false
-  type: 0
 - defaultvalue: 30 days
   display: How much time before the first fetch to retrieve incidents
   hidden: false
-  name: first_fetch_time
+  name: first_fetch
   options:
   - 10 days
   - 15 days
@@ -41,11 +45,16 @@ configuration:
   - 90 days
   required: false
   type: 15
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
+  hidden: false
 description: DeCYFIR API's provides External Threat Landscape Management insights.
 display: DeCYFIR
 name: decyfir
 script:
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.10.9.40422
   feed: false
   isfetch: true
   longRunning: false
@@ -54,3 +63,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.5.0
