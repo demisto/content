@@ -4,11 +4,9 @@ For more information regarding the AWS SQS service, please visit the official do
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Configure AWS - SQS on Cortex XSOAR or Cortex XSIAM
+## Configure AWS - SQS on Cortex XSOAR
 
-1. For Cortex XSOAR: Navigate to **Settings** > **Integrations** > **Servers & Services**.
-
-   For Cortex XSIAM:  Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 3. Search for AWS - SQS.
 4. Click **Add instance** to create and configure a new integration instance.
 
@@ -40,7 +38,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR or Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-sqs-get-queue-url
 ***
