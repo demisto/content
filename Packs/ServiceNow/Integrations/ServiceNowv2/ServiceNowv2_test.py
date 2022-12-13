@@ -183,7 +183,8 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+                                   datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
 
     ticket_response = {'result': []}
     assert convert_to_notes_result(ticket_response) == []
