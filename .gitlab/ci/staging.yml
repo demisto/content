@@ -23,7 +23,7 @@
     - section_start "Update content graph" --collapsed
 
     - echo "Getting the list of packs to update in content graph"
-    - PACKS_TO_UPDATE = $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq)
+    - PACKS_TO_UPDATE=$(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq)
     - echo $PACKS_TO_UPDATE
 
     - echo "Pulling all CSV import files from bucket"
