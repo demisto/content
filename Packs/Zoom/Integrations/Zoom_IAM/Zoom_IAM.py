@@ -96,7 +96,10 @@ class Client(BaseClient):
         set_integration_context(ctx)
         return oauth_token
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False, error_handler=None, empty_valid_codes=None, **kwargs):
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None,
+                      data=None, files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False,
+                      retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False,
+                      raise_on_status=False, error_handler=None, empty_valid_codes=None, **kwargs):
         """ This is a rewrite of the classic _http_request, 
             all future functions should call this function instead of the original _http_request.
             This is needed because the OAuth token may not behave consistently,
@@ -337,6 +340,14 @@ def get_mapping_fields(client: Client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
+def check_authentication_type_arguments(api_key: str, api_secret: str,
+                                        account_id: str, client_id: str, client_secret: str):
+    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
+        raise DemistoException("""Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+
+
 def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
@@ -365,10 +376,7 @@ def main():  # pragma: no cover
                              get_user_iam_attrs=['id', 'username', 'email']
                              )
     try:
-        if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-            raise DemistoException("""Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+        check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
 
         if command == 'test-module':
             return_results(test_module(

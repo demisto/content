@@ -262,3 +262,39 @@ def test_enable_user_command__non_existing_user(mocker):
     assert outputs.get('success') is True
     assert outputs.get('skipped') is True
     assert outputs.get('reason') == IAMErrors.USER_DOES_NOT_EXIST[1]
+
+
+def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
+    """
+        Given -
+           client
+        When -
+            creating a client with an extra authentication type argument
+        Then -
+            Validate that the error wil raise as excepted
+    """
+    with pytest.raises(DemistoException) as e:
+        Zoom_IAM.check_authentication_type_arguments(account_id="mockaccount",
+                                                     client_id="mockclient", client_secret="mocksecret",
+                                                     api_key="blabla", api_secret="")
+    assert e.value.message == """Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
+
+
+def test_check_authentication_type_arguments__with_extra_AOuth_member(mocker):
+    """
+        Given -
+           client
+        When -
+            creating a client with an extra authentication type argument
+        Then -
+            Validate that the error wil raise as excepted
+    """
+    with pytest.raises(DemistoException) as e:
+        Zoom_IAM.check_authentication_type_arguments(account_id="",
+                                                     client_id="", client_secret="mocksecret",
+                                                     api_key="blabla", api_secret="ertert")
+    assert e.value.message == """Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)"""

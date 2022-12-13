@@ -166,7 +166,7 @@ class Client(BaseClient):
             page_size = int(args['page_size'])
 
         if limit:
-            #limit = arg_to_number(args['limit'])
+            # limit = arg_to_number(args['limit'])
 
             if limit and (user_id or args.get("page_size")):
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
@@ -213,7 +213,7 @@ class Client(BaseClient):
                             join_before_host: bool = False,
                             meeting_authentication: bool = False):
         if type == "instant" and (timezone or start_time):
-            raise DemistoException("Too money arguments. start_time and timezone are for schdualde meetings only")
+            raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
 
         num_type = 1
         if type == "scheduled":
@@ -540,6 +540,14 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
     )
 
 
+def check_authentication_type_arguments(api_key: str, api_secret: str,
+                                        account_id: str, client_id: str, client_secret: str):
+    if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
+        raise DemistoException("""Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+
+
 def main():  # pragma: no cover
     # TODO do i need this line?
     results: Union[CommandResults, str, List[CommandResults]]
@@ -558,11 +566,7 @@ def main():  # pragma: no cover
     # this is for BC, because the arguments given as <a-b>, i.e "page-number"
     args = {key.replace('-', '_'): val for key, val in args.items()}
     try:
-        if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-            raise DemistoException("""Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
-
+        check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
         if command == 'test-module':
             return_results(test_module(
                 verify=verify_certificate,
