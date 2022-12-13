@@ -3914,7 +3914,7 @@ def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_
                                                      cve_severity: list[str] | None, tags: list[str] | None,
                                                      status: list[str] | None, platform_name: list[str] | None,
                                                      host_group: list[str] | None, host_type: list[str] | None,
-                                                     last_seen_within: str | None, is_suppressed: str | None, filter: str,
+                                                     last_seen_within: str | None, is_suppressed: str | None, filter_: str,
                                                      remediation: bool | None, evaluation_logic: bool | None,
                                                      host_info: bool | None, limit: str | None,
                                                      filter_operator='AND') -> dict:
@@ -3930,10 +3930,11 @@ def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_
                       'suppression_info.is_suppressed': is_suppressed}
     remove_nulls_from_dictionary(input_arg_dict)
     op = ',' if filter_operator == 'OR' else '%2B'
-    url_filter = filter.replace('+', op)
+    url_filter = filter_.replace('+', op)
     if not any((input_arg_dict, url_filter)):
         raise DemistoException('Please add a at least one filter argument')
-
+    if cve_severity:
+        input_arg_dict['cve.severity'] = [severity.upper() for severity in cve_severity]
     # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
     for key, arg in input_arg_dict.items():

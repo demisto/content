@@ -4211,7 +4211,7 @@ If an API query doesn’t exactly match the query used on the Spotlight Vulnera
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 ### cve
-*** Returns indicator according to the cve_id that was entered.
+Returns indicator according to the cve_id that was entered.
 
 #### Base Command
 
