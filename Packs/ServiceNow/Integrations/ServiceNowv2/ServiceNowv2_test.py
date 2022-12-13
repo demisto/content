@@ -166,7 +166,7 @@ def test_convert_to_notes_result():
     # The results returned for notes are expected to be in UTC time.
 
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
-                                   'value': 'Second comment',
+                                   'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    },
@@ -179,7 +179,7 @@ def test_convert_to_notes_result():
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
-                                   'value': 'Second comment',
+                                   'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
