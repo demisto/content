@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: Proofpoint Threat Response
   version: -1
@@ -895,7 +895,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.39276
 tests:
 - No test - beta_integration
 beta: true

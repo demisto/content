@@ -1301,7 +1301,8 @@ def get_modified_remote_data_command(service, args):
     search = '|`incident_review` ' \
              '| eval last_modified_timestamp=_time ' \
              '| where last_modified_timestamp>{} ' \
-             '| fields - time'.format(last_update_splunk_timestamp)
+             '| fields rule_id ' \
+             '| dedup rule_id'.format(last_update_splunk_timestamp)
     demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         modified_notable_ids.append(item['rule_id'])

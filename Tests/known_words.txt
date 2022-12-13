@@ -175,6 +175,7 @@ subdomain
 PDF
 auth
 endpoints
+SSDeep
 DNS
 XDR
 CommandRunner
@@ -192,6 +193,8 @@ maxPages
 cs-fx-upload-file
 lookback
 subclass
+paginate
+paginated
 pagination
 XDM
 Fortinet
@@ -209,3 +212,5 @@ NPS
 SRX
 vCenter
 ESXi
+MT
+AWS
