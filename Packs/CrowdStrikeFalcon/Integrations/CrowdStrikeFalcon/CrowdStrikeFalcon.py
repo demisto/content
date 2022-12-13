@@ -3929,17 +3929,18 @@ def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_
                       'last_seen_within': last_seen_within,
                       'suppression_info.is_suppressed': is_suppressed}
     remove_nulls_from_dictionary(input_arg_dict)
-    url_filter = filter
+    op = ',' if filter_operator == 'OR' else '%2B'
+    url_filter = filter.replace('+', op)
     if not any((input_arg_dict, url_filter)):
         raise DemistoException('Please add a at least one filter argument')
-    op = ',' if filter_operator == 'OR' else '%2B'
+
     # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
     for key, arg in input_arg_dict.items():
         if url_filter:
             url_filter += '%2B'
-        elif isinstance(arg, list):
-            url_filter += f"{key}:['" + "','".join(arg) + "']"
+        if isinstance(arg, list):
+            url_filter += f'{key}:[\'' + "','".join(arg) + '\']'
         else:
             url_filter = f"{url_filter}{op}{key}:'{arg}'"  # All args should be a list. this is a fallback
     url_facet = '&facet=cve'
@@ -3952,7 +3953,7 @@ def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_
             url_facet += f"&facet={argument}"
 
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
-    suffix_url = f'/spotlight/combined/vulnerabilities/v1?filter={url_filter}+{url_facet}+&limit={limit}'
+    suffix_url = f'/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}'
     return http_request('GET', suffix_url)
 
 
@@ -3974,6 +3975,7 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
         : args: filter which include params or filter param.
         : return: a list of vulnerabilities according to the user.
     """
+
     vulnerability_response = cs_falcon_spotlight_search_vulnerability_request(argToList(args.get('aid')),
                                                                               argToList(args.get('cve_id')),
                                                                               argToList(args.get('cve_severity')),

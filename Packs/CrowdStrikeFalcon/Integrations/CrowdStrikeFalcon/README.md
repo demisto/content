@@ -4050,7 +4050,7 @@ If an API query doesn’t exactly match the query used on the Spotlight Vulnera
 | CrowdStrike.Vulnerability.cve.name | String | The vulnerability name |
 
 #### Command example
-``` cs-falcon-spotlight-search-vulnerability filter=status:['open','slosed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
+``` cs-falcon-spotlight-search-vulnerability filter=status:['open','closed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
 #### Context Example
 ```json
 {
