@@ -24,4 +24,4 @@ if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
 fi
 
 echo "Testing Modeling Rules"
-demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive "$MODELING_RULES_TO_TEST"
+demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive $(echo "$MODELING_RULES_TO_TEST")
