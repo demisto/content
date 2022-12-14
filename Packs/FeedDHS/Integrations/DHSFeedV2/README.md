@@ -174,7 +174,7 @@ To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/do
 
 #### Human Readable Output
 
-> Found 3 results added after 2022-12-07T10:29:13.079493Z:
+> Found 3 results added after 2022-12-07T10:29:13.079493Z UTC:
 >### DHS Indicators
 >|value|type|
 >|---|---|

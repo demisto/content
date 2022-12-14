@@ -210,7 +210,7 @@ script:
     - defaultValue: '24 hours'
       description: Fetch only indicators that were added to the server after the given
         time. Provide a <number> and <time unit> of type minute/hour/day. For
-        example, 1 minute, 12 hours, 24 days. Limited to 48 hours.
+        example, 1 minute, 12 hours, 2 days. Limited to 48 hours.
       name: added_after
     description: Allows you to test your feed and to make sure you can fetch indicators
       successfully. Due to API limitations, this command may take a long time to run. Make sure the 'execution-timeout' argument is increased. See the integration readme for further information.
