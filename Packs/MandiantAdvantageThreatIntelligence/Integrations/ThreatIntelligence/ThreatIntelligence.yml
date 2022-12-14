@@ -59,6 +59,7 @@ configuration:
   - WHITE
   required: false
   type: 15
+  defaultvalue: AMBER
 - name: feedExpirationPolicy
   display: Feed Expiration Policy
   options:
