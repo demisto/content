@@ -282,7 +282,7 @@
                                 "endCol": 6,
                                 "fieldId": "threatvaultbypaloaltonetworksreleasenotes",
                                 "height": 106,
-                                "id": "90d0a730-7963-11ed-a2a1-b331cf5cac26",
+                                "id": "322e9c80-7a19-11ed-9836-65d11293c45f",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -332,126 +332,19 @@
                 "name": "More information",
                 "sections": [
                     {
-                        "displayType": "CARD",
-                        "h": 5,
+                        "h": 16,
                         "hideName": true,
-                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksapplications",
-                                "filters": [
-                                    [
-                                        {
-                                            "ignoreCase": false,
-                                            "left": {
-                                                "isContext": true,
-                                                "value": {
-                                                    "simple": "threatvaultbypaloaltonetworksapplications"
-                                                }
-                                            },
-                                            "operator": "isNotEmpty",
-                                            "right": null,
-                                            "type": "longText"
-                                        }
-                                    ]
-                                ],
-                                "height": 53,
-                                "id": "f30e7550-55c6-11ed-99c8-3fb08ac8a5ae",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksdatacorrelation",
-                                "height": 53,
-                                "id": "5a380b41-5dcb-11ed-bdb8-c1558b4587d3",
-                                "index": 0,
-                                "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksdecoders",
-                                "height": 53,
-                                "id": "79b6f0d1-5dcb-11ed-bdb8-c1558b4587d3",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksfiletype",
-                                "height": 53,
-                                "id": "800a5b21-5dcb-11ed-bdb8-c1558b4587d3",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksvulnerabilitynew",
-                                "height": 106,
-                                "id": "8e4a9471-5dcb-11ed-bdb8-c1558b4587d3",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksspywarenew",
-                                "height": 106,
-                                "id": "84b2d491-5dcb-11ed-bdb8-c1558b4587d3",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksapplicationsnew",
-                                "height": 106,
-                                "id": "b2448ac0-5ddf-11ed-bdb8-c1558b4587d3",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksdatacorrelationnew",
-                                "height": 106,
-                                "id": "ba343ff0-5ddf-11ed-bdb8-c1558b4587d3",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksfiletypenew",
-                                "height": 106,
-                                "id": "bfaaded0-5ddf-11ed-bdb8-c1558b4587d3",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 6,
-                                "fieldId": "threatvaultbypaloaltonetworksdecodersnew",
-                                "height": 106,
-                                "id": "d2f560a0-5ddf-11ed-bdb8-c1558b4587d3",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "i": "caseinfoid-c32f1dd0-7ace-11ed-98c8-33a2d346d11f",
+                        "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Investigation data",
+                        "name": "More information",
+                        "query": "MarkdownRepresentationThreatVaultIncident",
+                        "queryType": "script",
                         "static": false,
+                        "type": "dynamic",
                         "w": 3,
                         "x": 0,
                         "y": 0

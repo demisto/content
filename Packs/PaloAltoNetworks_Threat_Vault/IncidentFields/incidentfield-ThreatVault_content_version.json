@@ -1,7 +1,7 @@
 {
     "id": "incident_threatvaultbypaloaltonetworkscontentversion",
     "version": -1,
-    "modified": "2022-10-24T09:45:27.455611694Z",
+    "modified": "2022-12-14T08:45:16.703899923Z",
     "name": "Threat Vault by Palo Alto Networks Content Version",
     "ownerOnly": false,
     "cliName": "threatvaultbypaloaltonetworkscontentversion",
@@ -18,7 +18,10 @@
     "group": 0,
     "hidden": false,
     "openEnded": false,
-    "associatedToAll": true,
+    "associatedTypes": [
+        "Threat Vault Release notes"
+    ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,

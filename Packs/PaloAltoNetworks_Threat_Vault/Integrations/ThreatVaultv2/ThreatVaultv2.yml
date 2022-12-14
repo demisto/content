@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Palo Alto Networks Threat Vault v2 Dev
+  id: Palo Alto Networks Threat Vault v2
   version: -1
 configuration:
 - defaultvalue: https://api.threatvault.paloaltonetworks.com/
@@ -54,8 +54,8 @@ configuration:
   required: false
   type: 19
 description: Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-display: Palo Alto Networks Threat Vault v2 Dev
-name: Palo Alto Networks Threat Vault v2 Dev
+display: Palo Alto Networks Threat Vault v2
+name: Palo Alto Networks Threat Vault v2
 script:
   commands:
   - arguments:

@@ -29,7 +29,7 @@ def json_to_md(incident_fields: dict) -> str:
     md = ''
 
     for incident_field in incident_fields.keys():
-        md += tableToMarkdown(name=incident_fields[incident_field], t=incident_field)
+        md += tableToMarkdown(name=incident_field, t=incident_fields[incident_field])
         md += '\n\n\n'
 
     return md
