@@ -26,6 +26,13 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 
 4.  Click **Test** to validate the URLs, token, and connection.
 
+### Required API client scope
+In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+- Real Time Response - Read and Write
+- Alerts - Read and Write
+- Hosts - Read
+- IOC Manager - Read and Write
+
 ### Incident Mirroring
  
 You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections (available from Cortex XSOAR version 6.0.0).
