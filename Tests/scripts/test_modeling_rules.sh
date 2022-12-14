@@ -1,6 +1,6 @@
 #!/bin/bash
 
-${XSIAM_SERVERS_PATH:="xsiam_servers.json"}
+XSIAM_SERVERS_PATH=${XSIAM_SERVERS_PATH:-"xsiam_servers.json"}
 
 # Get XSIAM Tenant Config Details
 XSIAM_SERVER_CONFIG=$(jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]" < "$XSIAM_SERVERS_PATH")
@@ -11,7 +11,11 @@ XSIAM_TOKEN=$(echo "$XSIAM_TOKENS" | jq ".[\"$XSIAM_CHOSEN_MACHINE_ID\"]")
 
 MODELING_RULES_ARRAY=($(cat "$ARTIFACTS_FOLDER"/modeling_rules_to_test.txt))
 for modeling_rule in "${MODELING_RULES_ARRAY[@]}"; do
-    MODELING_RULES_TO_TEST="$MODELING_RULES_TO_TEST Packs/$modeling_rule"
+    if [[ -n "$MODELING_RULES_TO_TEST" ]]; then
+        MODELING_RULES_TO_TEST="$MODELING_RULES_TO_TEST Packs/$modeling_rule"
+    else
+        MODELING_RULES_TO_TEST="Packs/$modeling_rule"
+    fi
 done
 
 if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
