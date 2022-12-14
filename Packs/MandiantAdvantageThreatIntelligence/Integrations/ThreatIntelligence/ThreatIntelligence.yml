@@ -112,6 +112,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: Maximum value of 1000.  Any values higher will be capped to 1000
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
