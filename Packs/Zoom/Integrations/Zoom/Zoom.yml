@@ -82,7 +82,6 @@ script:
       arguments:
         - name: type
           required: true
-          default: true
           auto: PREDEFINED
           predefined:
             - instant
@@ -92,6 +91,10 @@ script:
           description: The type of the meeting
           defaultValue: instant
         - name: allow_multiple_devices
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
           defaultValue: true
           description: Whether to allow attendees to join a meeting from multiple devices
         - name: auto_recording
@@ -106,34 +109,63 @@ script:
 
             Note that the Cloud option is available for zoom paid customers only.
         - name: email_notification
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
           defaultValue: true
           description: Whether to send email notifications to alternative hosts and users with scheduling privileges.
         - name: encryption_type
           defaultValue: enhanced_encryption
           description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee
+          auto: PREDEFINED
+          predefined:
+            - enhanced_encryption
+            - e2ee
         - name: focus_mode
           defaultValue: true
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
           description: Enable the Focus Mode feature when the meeting starts.
         - name: host_video
+          auto: PREDEFINED
+          predefined:
+            - true
+            - false
           defaultValue: true
           description: start meetings with the host video on.
         - name: jbh_time
+          auto: PREDEFINED
+          predefined:
+            - 0
+            - 5
+            - 10
           description: >
-            If the value of the join_before_host field is true, this field indicates the time that a participant can join before the meeting's host. 
+            If the value of the join_before_host field is true, this field sets the time that a participant can join before the meeting's host. 
 
-            You can choose: 0, 5, 10, (minuts).
+            You can choose: 5 or 10 (minuts), or 0 for any time.
         - name: join_before_host
+          auto: PREDEFINED
           defaultValue: false
+          predefined:
+            - False
+            - True
           description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only.
         - name: meeting_authentication
+          auto: PREDEFINED
           defaultValue: false
+          predefined:
+            - false
+            - true
           description: If true, only authenticated users can join the meeting.
         - name: meeting_invitees
           description: >
             A list of the meeting's invitees. 
             For example : "meeting_invitees": [
             {
-                "email": "admin@demistodev.com"
+                "email": "John@Smith.com"
             }
         - name: user_id
           required: true
@@ -141,17 +173,9 @@ script:
         - name: topic
           required: true
           description: The topic of the meeting
-        - name: auto-record-meeting
-          auto: PREDEFINED
-          predefined:
-            - "yes"
-            - "no"
-          description: "Record zoom meeting? "
-          defaultValue: "no"
         - name: start-time
-          description: Meeting start time. When using a format like “yyyy-MM-dd’T'HH:mm:ss'Z’”, always use GMT time. When using a format like “yyyy-MM-dd’T'HH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
+          description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
         - name: timezone
-          defaultValue: "no"
           description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
       outputs:
         - contextPath: Zoom.Meeting.join_url

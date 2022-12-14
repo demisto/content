@@ -152,9 +152,9 @@ class Client(BaseClient):
                 'role_id': role_id
             })
 
-    def zoom_user_list(self, page_size: int = 30, user_id: str = None, status: str = "active",
+    def zoom_user_list(self, page_size: int | str = 30, user_id: str = None, status: str = "active",
                        next_page_token: str = None,
-                       role_id: str = None, limit: int = None):
+                       role_id: str = None, limit: int | str | None = None):
         args = demisto.args()
         if not user_id:
             url_suffix = 'users'
@@ -167,6 +167,7 @@ class Client(BaseClient):
 
         if limit:
             # limit = arg_to_number(args['limit'])
+            limit = arg_to_number(limit)
 
             if limit and (user_id or args.get("page_size")):
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
@@ -177,7 +178,7 @@ class Client(BaseClient):
                                             next_page_token,
                                             role_id, limit, url_suffix)
 
-    def manual_user_list_pagination(self, next_page_token, page_size, limit, status, role_id):
+    def manual_user_list_pagination(self, next_page_token: str, page_size: int, limit: int, status: str, role_id: str):
         res = []
         while limit > 0 and next_page_token != '':
             if limit < MAX_RECORDS_PER_PAGE:
@@ -204,16 +205,35 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def zoom_meeting_create(self, user_id: str, topic: str, auto_record_meeting: bool,
-                            host_video: bool, jbh_time: str,
-                            start_time: str = None, timezone: str = None, type: str = "instant",
-                            allow_multiple_devices: bool = True,
-                            auto_recording: str = "none", email_notification: bool = True,
-                            encryption_type: str = "enhanced_encryption", focus_mode: bool = True,
-                            join_before_host: bool = False,
-                            meeting_authentication: bool = False):
+    def zoom_meeting_create(self, user_id: str,
+                            topic: str,
+                            host_video: bool | str,
+                            meeting_invitees: list | str = [False],
+                            jbh_time: int | str | None = None,
+                            start_time: str = None,
+                            timezone: str = None,
+                            type: str = "instant",
+                            allow_multiple_devices: bool | str = True,
+                            auto_recording: str = "none",
+                            email_notification: bool | str = True,
+                            encryption_type: str = "enhanced_encryption",
+                            focus_mode: bool | str = True,
+                            join_before_host: bool | str = False,
+                            meeting_authentication: bool | str = False):
+
+        host_video = argToBoolean(host_video)
+        allow_multiple_devices = argToBoolean(allow_multiple_devices)
+        email_notification = argToBoolean(email_notification)
+        focus_mode = argToBoolean(focus_mode)
+        join_before_host = argToBoolean(join_before_host)
+        meeting_authentication = argToBoolean(meeting_authentication)
+        jbh_time = arg_to_number(jbh_time)
+
         if type == "instant" and (timezone or start_time):
             raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
+
+        if jbh_time and not join_before_host:
+            raise DemistoException("Collision arguments. jbh_time argument is relevant only if join_before_host is 'True'.")
 
         num_type = 1
         if type == "scheduled":
@@ -222,28 +242,33 @@ class Client(BaseClient):
             num_type = 3
         if type == "recurring meeting with fixed time":
             num_type = 8
-
-        params = {
+        json_data = {
             'type': num_type,
             'topic': topic,
+            "start_time": start_time,
+            "time_zone": timezone,
+
             'settings': {
-                'join_before_host': True,
-                'auto_recording': auto_recording}
+                "host_video": host_video,
+                "allow_multiple_devices": allow_multiple_devices,
+                'join_before_host': join_before_host,
+                'auto_recording': auto_recording,
+                "email_notification": email_notification,
+                "encryption_type": encryption_type,
+                "focus_mode": focus_mode,
+                "meeting_authentication": meeting_authentication,
+                "jbh_time": jbh_time},
+            "meeting_invitees": meeting_invitees
         }
-        if type == 'Scheduled':
-            params.update({
-                'type': 2,
-                'start_time': start_time,
-                'timezone': timezone,
-            })
         return self._http_request(
             method='POST',
             url_suffix=f"users/{user_id}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
-            json_data=params)
+            json_data=json_data)
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str = None,
-                         show_previous_occurrences: bool = True):
+                         show_previous_occurrences: bool | str = True):
+        show_previous_occurrences = argToBoolean(show_previous_occurrences)
         return self._http_request(
             method='GET',
             url_suffix=f"/meetings/{meeting_id}",
@@ -265,15 +290,15 @@ class Client(BaseClient):
                 'page_size': page_size
             })
 
-    def zoom_meeting_list(self, user_id: str, next_page_token: str = None, page_size: int = 30,
-                          limit: int = None, type: str = None):
+    def zoom_meeting_list(self, user_id: str, next_page_token: str = None, page_size: int | str = 30,
+                          limit: int | str | None = None, type: str = None):
         args = demisto.args()
         # TODO same same
         # page_size = arg_to_number(args['page_size'])
         if "page_size" in args:
             page_size = int(args["page_size"])
         if limit:
-            # limit = arg_to_number(args['limit'])
+            limit = arg_to_number(limit)
             if "limit" and "page_size" in args:
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
             else:
@@ -459,23 +484,32 @@ def zoom_user_delete_command(client: Client, user_id: str, action: str) -> Comma
     )
 
 
-def zoom_meeting_create_command(client: Client, user_id: str, topic: str, auto_record_meeting: bool,
-                                host_video: bool, jbh_time: str,
-                                start_time: str = None, timezone: str = None, type: str = "instant",
-                                allow_multiple_devices: bool = True,
-                                auto_recording: str = "none", email_notification: bool = True,
-                                encryption_type: str = "enhanced_encryption", focus_mode: bool = True,
-                                join_before_host: bool = False,
-                                meeting_authentication: bool = False) -> CommandResults:
-    raw_data = client.zoom_meeting_create(user_id, topic, auto_record_meeting,
-                                          host_video, jbh_time, start_time, timezone, type,
+def zoom_meeting_create_command(
+        client: Client,
+        user_id: str,
+        topic: str,
+        host_video: bool | str,
+        meeting_invitees: list | str = [False],
+        jbh_time: int | str | None = None,
+        start_time: str = None,
+        timezone: str = None,
+        type: str = "instant",
+        allow_multiple_devices: bool | str = True,
+        auto_recording: str = "none",
+        email_notification: bool | str = True,
+        encryption_type: str = "enhanced_encryption",
+        focus_mode: bool | str = True,
+        join_before_host: bool | str = False,
+        meeting_authentication: bool | str = False) -> CommandResults:
+    raw_data = client.zoom_meeting_create(user_id, topic, host_video, meeting_invitees, jbh_time,
+                                          start_time, timezone, type,
                                           allow_multiple_devices,
                                           auto_recording, email_notification,
                                           encryption_type, focus_mode,
                                           join_before_host,
                                           meeting_authentication)
     md = f"""Meeting created successfully.
-    Start it [here]({raw_data.get("start_BASE_URL")}) and join [here]({raw_data.get("join_BASE_URL")})."""
+    Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,

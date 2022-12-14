@@ -140,7 +140,7 @@ def test_http_request___when_raising_invalid_token_message(mocker):
         # a command that uses http_request
         client.meeting_list_basic_request("bla", "bla", 4,
                                           None, "bla")
-    except Exception as e:
+    except Exception:
         pass
     assert m.call_count == 2
     assert generate_token_mock.called
@@ -330,7 +330,7 @@ def test_meeting_get__show_previous_occurrences_is_false(mocker):
                     client_id="mockclient", client_secret="mocksecret")
 
     client.zoom_meeting_get("1234", "123", False)
-    assert http_request_mocker.call_args[1].get("params").get("show_previous_occurrences") == False
+    assert not http_request_mocker.call_args[1].get("params").get("show_previous_occurrences")
 
 
 def test_zoom_meeting_list__limit(mocker):
@@ -412,10 +412,11 @@ def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""
 
-def test_check_authentication_type_arguments__with_extra_AOuth_member(mocker):
+
+def test_check_authentication_type_arguments__with_extra_AOuth_member():
     """
         Given -
-           client
+
         When -
             creating a client with an extra authentication type argument
         Then -
@@ -428,3 +429,37 @@ def test_check_authentication_type_arguments__with_extra_AOuth_member(mocker):
     assert e.value.message == """Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""
+
+
+@freeze_time("1988-03-03T11:00:00")
+def test_get_jwt_token__encoding_format_check():
+    """
+        Given -
+
+        When -
+            creating a jwt token
+        Then -
+            Validate that the token is in the right format 
+    """
+    encoded_token = Zoom.get_jwt_token(apiKey="blabla", apiSecret="blabla")
+    expected = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJibGFibGEiLCJleHAiOjU3MzM4NzgwMH0.8GUkPXA1Dwkj55rGTBqE3chK0IaPiyRTEhCtcOOJjHk'
+    assert encoded_token == expected
+
+
+def test_zoom_user_list_command__when_limit(mocker):
+    """
+        Given -
+        a response from a client
+        When -
+            a limit argument was passed
+        Then -
+            Validate that the parsing is as expected
+    """
+    mocker.patch.object(Client, "zoom_user_list", return_value={"bla1": {"bla2": "hey"}})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    res = Zoom.zoom_user_list_command(client, page_size=0,
+                                      user_id="bla", status="active",
+                                      next_page_token=None, role_id=None, limit=7)
+    assert res == "bla"
