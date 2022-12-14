@@ -4548,10 +4548,8 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
                'publicExploit']
     vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
     vulnerabilities_response_value = vulnerabilities_response.get('value')
-    demisto.debug(vulnerabilities_response_value)
+    demisto.debug(f'Vulnerabilities Response {vulnerabilities_response_value}')
     if vulnerabilities_response_value:
-        demisto.debug(vulnerabilities_response_value)
-        demisto.debug(len(vulnerabilities_response_value))
         for cve in vulnerabilities_response_value:
             cve_id = cve.get('id')
             cve_indicator = Common.CVE(id=cve_id,
@@ -4792,8 +4790,6 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
     list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
     results_list = []
     if list_vulnerabilities_response_value:
-        demisto.debug(list_vulnerabilities_response_value)
-        demisto.debug(len(list_vulnerabilities_response_value))
         for cve in list_vulnerabilities_response_value:
             cve_id = cve.get('id')
             cve_indicator = Common.CVE(id=cve_id,
@@ -4810,7 +4806,6 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
                                                readable_output=human_readable,
                                                raw_response=cve,
                                                indicator=cve_indicator))
-        demisto.debug(len(results_list))
     return results_list
 
 
