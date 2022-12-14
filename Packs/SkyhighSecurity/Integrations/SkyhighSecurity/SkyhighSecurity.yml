@@ -9,6 +9,7 @@ configuration:
   required: true
   type: 0
 - additionalinfo: The username and password to use for the connection.
+  display: credentials
   name: credentials
   required: true
   type: 9
