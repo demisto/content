@@ -20,22 +20,33 @@
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
 
-    - section_start "Update content graph" --collapsed
+    - section_start "Create or update content graph" --collapsed
 
-    - echo "Getting the list of packs to update in content graph"
-    - PACKS_TO_UPDATE=( $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq) )
-    - echo $PACKS_TO_UPDATE
+    - |
+      echo "Trying to pull all CSV import files from bucket"
+      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+      gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/content/content_graph/*" /var/lib/neo4j/import
 
-    - echo "Pulling all CSV import files from bucket"
-    - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-    - gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/content/content_graph/*" /var/lib/neo4j/import
+    - |
+      if [[ -z "$(ls -A /var/lib/neo4j/import" ]];
+      then
+        echo "No CSV files to import, creating the content graph"
+        demisto-sdk create-content-graph
+        echo "Successfully created content graph"
+      else
+        echo "Updating the content graph"
+        echo "Getting the list of packs to update in content graph"
+        PACKS_TO_UPDATE=( $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq) )
+        echo $PACKS_TO_UPDATE
 
-    - demisto-sdk update-content-graph -p $PACKS_TO_UPDATE
-    - echo "Successfully updated content graph"
+        demisto-sdk update-content-graph -p $PACKS_TO_UPDATE
+        echo "Successfully updated content graph"
+      fi
 
-    - echo "Moving exported CSV files to artifacts"
-    - mkdir $ARTIFACTS_FOLDER/content_graph
-    - cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
+    - |
+      echo "Moving exported CSV files to artifacts"
+      mkdir $ARTIFACTS_FOLDER/content_graph
+      cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
 
     - section_end "Update content graph"
 
