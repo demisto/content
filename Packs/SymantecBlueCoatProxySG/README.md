@@ -5,7 +5,7 @@ You need to configure Bluecoat ProxySG to forward Syslog messages with the acces
 
 Go to the ProxySG software and open the "Configuration" tab [Product Doc](https://knowledge.broadcom.com/external/article/166529/sending-access-logs-to-a-syslog-server.html);
 1. At the left sidebar, go to "Access Logging" -> "Logs" -> "Logs" tab, and create a new log with the 'main' format defined for it.
-2. Next. open the "Upload Client" tab and configure your log as "Client type: Custom Client" and "Save the log file as: text file".
+2. Next, open the "Upload Client" tab and configure your log as "Client type: Custom Client" and "Save the log file as: text file".
 3. Point the Custom Client to the broker, specifying the IP address and port number.
 4. Open the "Upload Schedule" tab, make sure that "Upload the access log" option is marked with the "continuously" option.
 5. Open the Visual Policy Manager, Add a new "Web Access Layer" and create a rule with the "Modify Access Logging" action. At the object, enable logging for your new access log.
