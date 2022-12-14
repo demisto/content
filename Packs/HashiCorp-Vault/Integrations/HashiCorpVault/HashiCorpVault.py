@@ -736,6 +736,9 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     # TODO: figure out if concat_username_to_cred_name is needed in AWS ?
     # TODO: add all the config of the path to the readme and the different credentials types to the readme
+    # TODO: fix bug when getting a secret that is not in the root
+    # TODO: add a ttl parameter
+    # TODO: add a parameter to set the pull time for the secretes by using the integration context (use get_integration_context and set_integration_context)
     secrets = []
     roles_list_url = engine_path + 'aws/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))
@@ -758,7 +761,6 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         generate_credentials_url = engine_path + 'aws/' + credential_type + '/' + role
         demisto.info('generate_credentials_url: {}'.format(generate_credentials_url))
         body = {}
-        # TODO: check more about the role arn an how to use them, we must have it for not iam - done
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
         aws_credentials = send_request(generate_credentials_url, method, body=body)
@@ -767,7 +769,6 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         access_key = aws_credentials['data'].get('access_key')
         secret_key = aws_credentials['data'].get('secret_key')
         if aws_credentials['data'].get('security_token'):
-            # TODO: ask Guy if the security token is the same as the session key - done
             access_key = access_key + '@@@' + aws_credentials["data"].get("security_token")
         secrets.append({
             'user': access_key,
