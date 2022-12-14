@@ -6,6 +6,7 @@ if (serverURL.slice(-1) === '/') {
 var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
 
 getTenantAccountName = function () {
+    // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
     const urls = demistoUrls()
     const server_url = urls['server'].toString()
     // server_url example - https://account-testing-ysdkvou:443/acc_Test
@@ -76,7 +77,7 @@ var sendRequest = function(method, uri, body, raw) {
         requestUrl += '/';
     }
     if (params.use_tenant){
-        requestUrl += "/" + getTenantAccountName();
+        requestUrl += getTenantAccountName() + "/";
     }
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
