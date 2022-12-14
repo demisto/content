@@ -332,29 +332,6 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
     return command_results_list
 
 
-def parse_incident(incident: dict):
-    '''
-    1. Parses the release notes information received
-    2. Organizes the release notes so that they are easily readable
-    3. Adds source name to the incident
-    4. Deletes keys from the incident when no values were found in them
-    '''
-
-    incident['data'][0]['Source name'] = 'THREAT VAULT - RELEASE NOTES'
-
-    for key in incident['data'][0]['release_notes'].copy():
-        if key in LIST_OF_RN_KEYS:
-            if not incident['data'][0]['release_notes'][key]['new']:
-                del incident['data'][0]['release_notes'][key]
-            else:
-                incident['data'][0]['release_notes'][key]['new-md'] = tableToMarkdown(
-                    name=key,
-                    t=incident['data'][0]['release_notes'][key]['new'],
-                )
-
-    return incident
-
-
 '''
 COMMANDS
 '''
@@ -373,7 +350,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
         type_hash = get_hash_type(_hash)
         try:
             response = client.antivirus_signature_get_request(arg=type_hash, value=_hash)
-            file_info: dict = response.get('data', {}).get('fileinfo', ({}, ...))[0]
+            file_info = response.get('data', {}).get('fileinfo', ({}, ...))[0]
             dbot_score = Common.DBotScore(
                 indicator=_hash,
                 indicator_type=DBotScoreType.FILE,
@@ -393,7 +370,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
             readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
                                               removeNull=True)
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 response = {}
                 dbot_score = Common.DBotScore(
                     indicator=_hash,
@@ -445,7 +422,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
             readable_output = tableToMarkdown(name=f"CVE {cve} vulnerability reputation:", t=table_for_md,
                                               removeNull=True)
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 readable_output = f'CVE {cve} vulnerability reputation is unknown to Threat Vault.'
                 _cve = None
                 vulnerability = None
@@ -488,7 +465,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
             response = client.antivirus_signature_get_request(arg='id', value=_id)
             command_results_list.extend(parse_resp_by_type(response=response))
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 readable_output = f'{_id} reputation is unknown to Threat Vault.'
                 command_results_list.append(
                     CommandResults(
@@ -510,7 +487,7 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
         response = client.release_notes_get_request('content', version)
         data = response.get('data', ([], ...))[0]
     except Exception as err:
-        if err.res.status_code == 404:  # type:ignore
+        if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
             return CommandResults(
                 readable_output=f'{version} release note not found.'
             )
@@ -546,7 +523,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
             command_results_list.extend(parse_resp_by_type(response, True))
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 readable_output = f'There is no information about the {str(ids) if ids else str(names)}'
                 command_results_list.append(
                     CommandResults(
@@ -592,7 +569,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                 )
 
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 readable_output = f'There is no information about the {str(md5) if md5 else str(sha256)}'
                 command_results_list.append(
                     CommandResults(
@@ -644,7 +621,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
         response = client.threat_search_request(args=query)
         command_results_list.extend(parse_resp_by_type(response, True))
     except Exception as err:
-        if err.res.status_code == 404:  # type:ignore
+        if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
             readable_output = f'{cve or vendor or name} reputation is unknown to Threat Vault.'
             command_results_list.append(
                 CommandResults(
@@ -687,7 +664,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
             demisto.debug(f'Time for request fetch-incidents -> {current}')
             response = client.threat_search_request({'releaseDate': current.strftime('%Y-%m-%d')})
         except Exception as err:
-            if err.res.status_code == 404:  # type:ignore
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 current += timedelta(days=1)
                 continue
             else:
@@ -703,11 +680,14 @@ def fetch_incidents(client: Client, args: dict) -> List:
             # The API is called by the version number
             release = client.release_notes_get_request('content', number_version)
 
+            # Adds source name to the incident
+            release['data'][0]['Source name'] = 'THREAT VAULT - RELEASE NOTES'
+
             # Incident organization and arrangement
             incidents.append({
                 'name': f"ThreatVault Release {release['data'][0]['release_version']}",
                 'occurred': release['data'][0]['release_time'],
-                'rawJSON': json.dumps(parse_incident(release))
+                'rawJSON': json.dumps(release)
             })
         current += timedelta(days=1)
 

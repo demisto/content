@@ -1,9 +1,8 @@
 from CommonServerPython import *
 import pytest
-import json
 
 from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_command, threat_signature_get_command, \
-    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_incident, parse_date
+    threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_date
 
 
 class MockException(Exception):
@@ -869,25 +868,6 @@ def test_threat_search_command(mocker, args, expected_results):
     threat_search_command(client, args)
 
     assert call_request.call_args_list[0][1]['args'] == expected_results
-
-
-@pytest.mark.parametrize(
-    'incident_input',
-    [
-        (
-            'test_data/incident_test_data.json'
-        )
-    ]
-)
-def test_parse_incident(mocker, incident_input):
-
-    with open(incident_input, 'r', encoding="utf-8") as f:
-        inciden = json.load(f)
-
-    results = parse_incident(inciden)
-
-    assert 'file_type' not in results['data'][0]['release_notes']
-    assert results['data'][0]['Source name'] == 'THREAT VAULT - RELEASE NOTES'
 
 
 @pytest.mark.parametrize(
