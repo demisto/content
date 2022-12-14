@@ -1282,9 +1282,9 @@ def search_custom_iocs(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
-    :param after: A pagination token used with the limit parameter to manage pagination of results. 
-                  On your first request, don't provide an 'after' token. On subsequent requests, provide 
-                  the 'after' token from the previous response to continue from that place in the results. 
+    :param after: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
                   To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     filter_list = []
@@ -2270,9 +2270,9 @@ def search_custom_iocs_command(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
-    :param after: A pagination token used with the limit parameter to manage pagination of results. 
-                  On your first request, don't provide an 'after' token. On subsequent requests, provide 
-                  the 'after' token from the previous response to continue from that place in the results. 
+    :param after: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
                   To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     raw_res = search_custom_iocs(
