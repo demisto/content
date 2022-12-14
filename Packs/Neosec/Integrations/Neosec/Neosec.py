@@ -1,17 +1,7 @@
-"""Neosec Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-"""
 from typing import Tuple, cast
 
 import urllib3
+from requests import Response
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -127,12 +117,13 @@ class NeosecClient(BaseClient):
         items = response.get("items", [])
         return items
 
-    def patch_alert(self, alert_id: str, alert_status: str) -> None:
+    def patch_alert(self, alert_id: str, alert_status: str) -> Response:
         request_data = {"status": alert_status}
-        self._http_request(
+        return self._http_request(
             method="PATCH",
             url_suffix=f"organizations/{self.tenant_key}/alerts/{alert_id}",
             json_data=request_data,
+            resp_type='response'
         )
 
 
@@ -307,7 +298,11 @@ def fetch_incidents(
 
 
 def set_alert_status(client: NeosecClient, alert_id: str, alert_status: str) -> None:
-    client.patch_alert(alert_id, alert_status)
+    response = client.patch_alert(alert_id, alert_status)
+    if response.status_code == 200:
+        return_results("Alert {alert_id} updated successfully")
+    else:
+        return_error(f"Error updating alert {alert_id} - {response.content}")
 
 
 """ MAIN FUNCTION """
@@ -334,11 +329,12 @@ def main() -> None:
         arg_name="First fetch time",
         required=True,
     )
-    first_fetch_timestamp = (
-        int(first_fetch_time.timestamp()) if first_fetch_time else None
-    )
+
     # Using assert as a type guard (since first_fetch_time is always an int when required=True)
-    assert isinstance(first_fetch_timestamp, int)
+    if first_fetch_time:
+        first_fetch_timestamp = int(first_fetch_time.timestamp())
+    else:
+        raise DemistoException('The first fetch parameter is inavlid, make sure it\'s according to standards.')
 
     demisto.debug(f"Command being called is {command}")
     try:
