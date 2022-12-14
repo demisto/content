@@ -28,7 +28,7 @@
       gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/content/content_graph/*" /var/lib/neo4j/import
 
     - |
-      if [ -z "$(ls -A /var/lib/neo4j/import" ]; then
+      if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
         echo "No CSV files to import, creating the content graph"
         demisto-sdk create-content-graph
         echo "Successfully created content graph"
