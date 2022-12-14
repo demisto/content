@@ -53,13 +53,13 @@ Please note: The use of Username and Password is not indicative of the use of ba
 1. Create a Group in Active Directory called “Enable Client Basic Auth” and add the user you will use for the integration to the group.
 2. Create a Policy in the Microsoft Endpoint Manager for - [This can be found here](https://endpoint.microsoft.com/?ref=AdminCenter#view/Microsoft_Intune_Workflows/SecurityBaselineSummaryMenu/~/profiles/summaryName/Windows%20365%20Security%20Baseline/templateType~/10/latestTemplateId/cef15778-c3b9-4d53-a00a-042929f0aad0/latestTemplateName/Windows%20365%20Security%20Baseline/intentCount/1/publishedDateTime/10%2F21%2F2021/version/November%202021/templatesJson/%5B%7B%22id%22%3A%22cef15778-c3b9-4d53-a00a-042929f0aad0%22%2C%22templateType%22%3A10%2C%22displayName%22%3A%22Windows%20365%20Security%20Baseline%22%2C%22description%22%3A%22Windows%20365%20settings%20as%20recommended%20by%20Microsoft%22%2C%22versionInfo%22%3A%22November%202021%22%2C%22platformType%22%3A6%2C%22platformName%22%3A%22Windows%2010%20and%20later%22%2C%22isDeprecated%22%3Afalse%2C%22intentCount%22%3A1%2C%22publishedDateTime%22%3A%222021-10-21T00%3A00%3A00.000Z%22%2C%22publishedDateTimeString%22%3A%2210%2F21%2F2021%22%2C%22templateSubtype%22%3A0%2C%22sourceType%22%3A%22dcv1%22%7D%5D/baseId//type/dcv1)
 3. Search for "Basic" and you will see the Remote Management dropdown. Under this option, please enable "Client basic authentication"
-    ![cba-role-1](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/cba-role-1.png)
+    ![cba-role-1](../../doc_imgs/cba-role-1.png)
 4. Add the "Enable Client Basic Auth" group to the policy
-    ![cba-role-2](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/cba-role-2.png)
+    ![cba-role-2](../../doc_imgs/cba-role-2.png)
 5. In the Instance Configuration, click the Test button. This will likely return an error with a correlation ID. 
 6. Copy this ID and search for the correlation in the [Risky Sign-Ins portal found here](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskySignInsBlade).
 7. Since we generated this alert, we can confirm that the sign-in is safe. by clicking the option found below.
-   ![cba-role-3](https://raw.githubusercontent.com/demisto/content/master/Packs/EWS/doc_imgs/cba-role-3.png)
+   ![cba-role-3](../../doc_imgs/cba-role-3.png)
 8. Finally return to the Instance Configuration and click the Test button to confirm the integration works.
 
 *Please Note:* Microsoft requires that this connection be made from a secure connection. Disabling certificate verification is not supported at this time.
