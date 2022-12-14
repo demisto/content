@@ -24,29 +24,18 @@ configuration:
   name: port
   required: false
   type: 0
-- additionalinfo: The Generic SQL query/procedure.
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: The Generic SQL query/procedure. Only simple queries are supported, which means 'select * from table_name'. Procedures should contain condition on the fetch parameter, for example timestamp > @timestamp and order by timestamp (asc). "CREATE PROCEDURE *NAME* @timestamp DATETIME AS SELECT * FROM table_name WHERE timestamp >= @timestamp order by timestamp".
   display: Fetch events query
   name: fetchQuery
   required: true
   type: 0
-- defaultvalue: '50'
-  display: Fetch Limit (Default / Max - 50, Recommended less than 50)
-  name: fetch_limit
-  required: false
-  type: 0
-- additionalinfo: Time to start fetching.
-  display: Start Timestamp
-  name: start_timestamp
-  required: false
-  type: 0
-- additionalinfo: ID to start fetching.
-  display: Start ID
-  name: start_id
-  required: false
-  type: 0
-- additionalinfo: The name of the dynamic parameter as defined in the procedure.
-  display: Dynamic parameter's name
-  name: dynamic_parameter_name
+- additionalinfo: Need to fill here the exact name of the column to fetch (The id column or the timestamp column).
+  display: Column name for fetching
+  name: column_name
   required: false
   type: 0
 - display: Fetch incidents
@@ -58,13 +47,26 @@ configuration:
   name: dbname
   required: false
   type: 0
-- display: Username
-  name: credentials
-  required: true
-  type: 9
 - display: 'Connection Arguments (ex: arg1=val1&arg2=val2)'
   hidden: false
   name: connect_parameters
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Fetch Limit (Default / Max - 50, Recommended less than 50)
+  name: fetch_limit
+  required: false
+  type: 0
+- defaultvalue: 24 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 2 months)
+  hidden: false
+  name: start_timestamp
+  required: false
+  type: 0
+  section: Collect
+- additionalinfo: ID to start fetching.
+  display: First fetch ID
+  name: start_id
   required: false
   type: 0
 - display: Use an SSL connection

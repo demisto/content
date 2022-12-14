@@ -263,11 +263,13 @@ def get_last_run(params: dict):
     """
     last_run = demisto.getLastRun()
     demisto.debug(f"original last run: {last_run}")
+
     # for the first iteration
     if not last_run:
         # Fetch should be by timestamp or id
-        if params.get('start_timestamp'):
-            last_run = {'last_timestamp': params.get('start_timestamp'),
+        if start_interval := params.get('start_timestamp'):
+            first_fetch_datetime = dateparser.parse(start_interval, settings={'TIMEZONE': 'UTC'})
+            last_run = {'last_timestamp': first_fetch_datetime.strftime('%Y-%m-%d %H:%M:%S'),
                         'last_id': False}
         else:
             last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}
@@ -275,18 +277,17 @@ def get_last_run(params: dict):
 
 
 def create_sql_query(last_run: dict, params: dict):
-    # in case of query
-    # if timestamp := last_run.get('last_timestamp'):
-    #     # Format example 2022-11-08 09:15:32
-    #     sql_query = f"{params.get('fetchQuery')} where timestamp > '{timestamp}'"
-    # else:
-    #     sql_query = f'{params.get("fetchQuery")} where incident_id > {last_run.get("last_id")}'
-    # return sql_query
-    # in case of runStoreProcedure
-    last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get('last_id')
-    sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
-                f"{params.get('fetchQuery')} @{params.get('dynamic_parameter_name')} = '{last_timestamp_or_id}';" \
-                f"SET ROWCOUNT 0"
+    last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get(
+        'last_id')
+    # case of runStoreProcedure
+    if params.get('fetchQuery').lower().startswith('exec'):
+        sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
+                    f"{params.get('fetchQuery')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
+                    f"SET ROWCOUNT 0"
+    else:  # a simple query
+        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} > '{last_timestamp_or_id}'" \
+                    f" order by {params.get('column_name')}"
+
     return sql_query
 
 
@@ -319,20 +320,21 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
     """
     if last_run.get('last_timestamp'):
         # allow till 3 digit after the decimal point - due to limits on querying
-        before_decimal_point, after_decimal_point = table[-1].get({params.get('dynamic_parameter_name')}).split('.')
+        before_decimal_point, after_decimal_point = table[-1].get(params.get('column_name')).split('.')
         last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
         last_run['last_timestamp'] = last_timestamp
+        # last_run['last_timestamp'] = table[-1].get(params.get('column_name'))
     else:
-        # last_run['last_id'] = table[-1].get('incident_id')
-        last_run['last_id'] = table[-1].get({params.get('dynamic_parameter_name')})
+        last_run['last_id'] = table[-1].get(params.get('column_name'))
 
     return last_run
 
 
-def table_to_incidents(table: List[dict], last_run: dict) -> List[Dict[str, Any]]:
+def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[Dict[str, Any]]:
     """
 
     Args:
+        params:
         last_run:
         table:
 
@@ -340,12 +342,11 @@ def table_to_incidents(table: List[dict], last_run: dict) -> List[Dict[str, Any]
 
     """
     incidents = []
-    key_incident_unique_name = 'timestamp' if last_run.get('last_timestamp') else 'incident_id'
     for record in table:
-        timestamp = record.get('timestamp')
+        timestamp = record.get(params.get('column_name')) if last_run.get('last_timestamp') else None
         date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
         incident_context = {
-            'name': record.get(key_incident_unique_name),
+            'name': record.get(params.get('column_name')),
             'occurred': date_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(record),
         }
@@ -363,13 +364,14 @@ def fetch_incidents(client: Client, params: dict):
     last_run = get_last_run(params)
     sql_query = create_sql_query(last_run, params)
     limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
-    result, headers = client.sql_query_execute_request(sql_query, {'limit': limit_fetch})
+    result, headers = client.sql_query_execute_request(sql_query, {})
     table = convert_sqlalchemy_to_readable_table(result)
+    table = table[:limit_fetch]
+
+    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params)
 
     if table:
         last_run = update_last_run_after_fetch(table, last_run, params)
-
-    incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run)
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
