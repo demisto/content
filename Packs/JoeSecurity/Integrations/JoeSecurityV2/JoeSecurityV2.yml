@@ -561,8 +561,8 @@ script:
         required: true
     description: Retrieves URL information from Joe Security.
     outputs:
-      - contextPath: URL.Name
-        description: Name of the URL.
+      - contextPath: URL.Data
+        description: The URL data.
         type: String
       - contextPath: Joe.URL.Name
         description: Name of the URL.
@@ -1273,7 +1273,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/joe-security:1.0.0.35737
+  dockerimage: demisto/joe-security:1.0.0.40752
 fromversion: 6.8.0
 tests:
   - testplaybook- JoeSecuirtyV2
