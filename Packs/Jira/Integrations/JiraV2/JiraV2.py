@@ -806,7 +806,7 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_val = current_value + "," + new_value
+        new_val = current_value + " , " + new_value
     elif type == 'array':
         new_val = current_value + [new_value]
     else:
