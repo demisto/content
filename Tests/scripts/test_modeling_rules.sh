@@ -23,5 +23,11 @@ if [[ -z "$MODELING_RULES_TO_TEST" ]]; then
     exit 1
 fi
 
+echo "XSIAM_URL=$XSIAM_URL"
+echo "AUTH_ID=$AUTH_ID"
+echo "DEMISTO_BASE_URL=$DEMISTO_BASE_URL"
+echo "XSIAM_AUTH_ID=$XSIAM_AUTH_ID"
+echo "XSIAM_TOKEN=${XSIAM_TOKEN:(-8)}"
+
 echo "Testing Modeling Rules"
 demisto-sdk modeling-rules test --xsiam-url="$XSIAM_URL" --auth-id="$AUTH_ID" --api-key="$API_KEY" --xsiam-token="$XSIAM_TOKEN" --non-interactive $(echo "$MODELING_RULES_TO_TEST")
