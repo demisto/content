@@ -280,6 +280,37 @@ def test_fetch_incidents(mocker):
 
 
 @freeze_time('2022-05-01 12:52:29')
+def test_fetch_incidents_with_changed_fetch_limit(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The length of the results.
+    """
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=20,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    mocker.patch.object(demisto, 'getLastRun', return_value={'limit': 10})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_incidents(client)
+
+    assert set_last_run.call_args[0][0].get('limit') == 20
+
+
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents_with_attachments(mocker):
     """Unit test
     Given
