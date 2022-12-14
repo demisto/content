@@ -11,7 +11,7 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
-
+# maximun records that the api can return in one request
 MAX_RECORDS_PER_PAGE = 300
 
 
@@ -95,11 +95,11 @@ class Client(BaseClient):
                       files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0,
                       status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
                       error_handler=None, empty_valid_codes=None, **kwargs):
-        """ This is a rewrite of the classic _http_request,
-            all future functions should call this function instead of the original _http_request.
-            This is needed because the OAuth token may not behave consistently,
-            First the func will make an http request with a token,
-            and if it turns out to be invalid, the func will retry again with a new token."""
+        # This is a rewrite of the classic _http_request,
+        # all future functions should call this function instead of the original _http_request.
+        # This is needed because the OAuth token may not behave consistently,
+        # First the func will make an http request with a token,
+        # and if it turns out to be invalid, the func will retry again with a new token.
         try:
             return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
                                          data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
@@ -135,8 +135,54 @@ class Client(BaseClient):
                     'type': user_type,
                     'first_name': first_name,
                     'last_name': last_name}},
-
         )
+
+    def zoom_user_list(self, page_size: int | str = 30, user_id: str = None, status: str = "active",
+                       next_page_token: str = None,
+                       role_id: str = None, limit: int | str | None = None):
+        if not user_id:
+            url_suffix = 'users'
+        else:
+            url_suffix = f'users/{user_id}'
+
+        page_size = arg_to_number(page_size)
+        if limit:
+            limit = arg_to_number(limit)
+            # "page_size" is specific referring to demisto.args,
+            # because the error raising, i need to distinguish
+            # between a user argument and the default argument
+            args = demisto.args()
+            if ("limit" and "user_id" in args) or ("limit" and "page-size" in args):
+                # arguments collision
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
+            else:
+                # multiple requests are needed
+                return self.manual_user_list_pagination(next_page_token, page_size,
+                                                        limit, status, role_id)
+        # one request is needed
+        return self.user_list_basic_request(page_size, user_id, status,
+                                            next_page_token,
+                                            role_id, limit, url_suffix)
+
+    def manual_user_list_pagination(self, next_page_token: str, page_size: int, limit: int, status: str, role_id: str):
+        res = []
+        while limit > 0 and next_page_token != '':
+            if limit < MAX_RECORDS_PER_PAGE:
+                # i dont need the maximum
+                page_size = limit
+            else:
+                # i need the maximum
+                page_size = MAX_RECORDS_PER_PAGE
+
+            basic_request = self.user_list_basic_request(page_size, None, status,
+                                                         next_page_token,
+                                                         role_id, limit, "users")
+            next_page_token = basic_request.get("next_page_token")
+            # collect all the results together
+            res.append(basic_request)
+            # subtract what i already got
+            limit -= MAX_RECORDS_PER_PAGE
+        return res
 
     def user_list_basic_request(self, page_size: int = 30, user_id: str = None, status: str = "active",
                                 next_page_token: str = None,
@@ -151,49 +197,6 @@ class Client(BaseClient):
                 'next_page_token': next_page_token,
                 'role_id': role_id
             })
-
-    def zoom_user_list(self, page_size: int | str = 30, user_id: str = None, status: str = "active",
-                       next_page_token: str = None,
-                       role_id: str = None, limit: int | str | None = None):
-        args = demisto.args()
-        if not user_id:
-            url_suffix = 'users'
-        else:
-            url_suffix = f'users/{user_id}'
-
-        # TODO why args to number dose not worke??
-        if "page_size" in args:
-            page_size = int(args['page_size'])
-
-        if limit:
-            # limit = arg_to_number(args['limit'])
-            limit = arg_to_number(limit)
-
-            if limit and (user_id or args.get("page_size")):
-                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
-            else:
-                return self.manual_user_list_pagination(next_page_token, page_size,
-                                                        limit, status, role_id)
-        return self.user_list_basic_request(page_size, user_id, status,
-                                            next_page_token,
-                                            role_id, limit, url_suffix)
-
-    def manual_user_list_pagination(self, next_page_token: str, page_size: int, limit: int, status: str, role_id: str):
-        res = []
-        while limit > 0 and next_page_token != '':
-            if limit < MAX_RECORDS_PER_PAGE:
-                page_size = limit
-            else:
-                page_size = MAX_RECORDS_PER_PAGE
-
-            basic_request = self.user_list_basic_request(page_size, None, status,
-                                                         next_page_token,
-                                                         role_id, limit, "users")
-            next_page_token = basic_request.get("next_page_token")
-            # basic_request.pop("next_page_token")
-            res.append(basic_request)
-            limit -= MAX_RECORDS_PER_PAGE
-        return res
 
     def zoom_user_delete(self, user_id: str, action: str):
         return self._http_request(
@@ -220,7 +223,7 @@ class Client(BaseClient):
                             focus_mode: bool | str = True,
                             join_before_host: bool | str = False,
                             meeting_authentication: bool | str = False):
-
+        # converting
         host_video = argToBoolean(host_video)
         allow_multiple_devices = argToBoolean(allow_multiple_devices)
         email_notification = argToBoolean(email_notification)
@@ -230,9 +233,10 @@ class Client(BaseClient):
         jbh_time = arg_to_number(jbh_time)
 
         if type == "instant" and (timezone or start_time):
+            # arguments collision
             raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
-
         if jbh_time and not join_before_host:
+            # arguments collision
             raise DemistoException("Collision arguments. jbh_time argument is relevant only if join_before_host is 'True'.")
 
         num_type = 1
@@ -268,7 +272,9 @@ class Client(BaseClient):
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str = None,
                          show_previous_occurrences: bool | str = True):
+        # converting
         show_previous_occurrences = argToBoolean(show_previous_occurrences)
+
         return self._http_request(
             method='GET',
             url_suffix=f"/meetings/{meeting_id}",
@@ -278,8 +284,48 @@ class Client(BaseClient):
                 "show_previous_occurrences": show_previous_occurrences
             })
 
-    def meeting_list_basic_request(self, user_id: str, next_page_token: str = None, page_size: int = 30,
-                                   limit: int = None, type: str = None):
+    def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
+                          limit: int | str | None = None, type: str = None):
+        page_size = arg_to_number(page_size)
+        if limit:
+            limit = arg_to_number(limit)
+            args = demisto.args()
+            # "page_size" is specific referring to demisto.args,
+            # because the error raising, i need to distinguish
+            # between a user argument and the defult argument
+            if "limit" and "page-size" in args:
+                # arguments collision
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
+            else:
+                # multiple request are needed
+                return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,
+                                                           limit, type)
+                # one request in needed
+        return self.meeting_list_basic_request(user_id, next_page_token, page_size,
+                                               limit, type)
+
+    def manual_meeting_list_pagination(self, user_id: str, next_page_token: str | None, page_size: int,
+                                       limit: int, type: str):
+        res = []
+        while limit > 0 and next_page_token != '':
+            if limit < MAX_RECORDS_PER_PAGE:
+                # i dont need the maximum
+                page_size = limit
+            else:
+                # i need the maximum
+                page_size = MAX_RECORDS_PER_PAGE
+
+            basic_request = self.meeting_list_basic_request(user_id, next_page_token, page_size,
+                                                            limit, type)
+            next_page_token = basic_request.get("next_page_token")
+            # collect all the results together
+            res.append(basic_request)
+            # subtract what i already got
+            limit -= MAX_RECORDS_PER_PAGE
+        return res
+
+    def meeting_list_basic_request(self, user_id: str, next_page_token: str = None, page_size: int | str = 30,
+                                   limit: int | str | None = None, type: str = None):
         return self._http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
@@ -289,40 +335,6 @@ class Client(BaseClient):
                 'next_page_token': next_page_token,
                 'page_size': page_size
             })
-
-    def zoom_meeting_list(self, user_id: str, next_page_token: str = None, page_size: int | str = 30,
-                          limit: int | str | None = None, type: str = None):
-        args = demisto.args()
-        # TODO same same
-        # page_size = arg_to_number(args['page_size'])
-        if "page_size" in args:
-            page_size = int(args["page_size"])
-        if limit:
-            limit = arg_to_number(limit)
-            if "limit" and "page_size" in args:
-                raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
-            else:
-                return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,
-                                                           limit, type)
-        return self.meeting_list_basic_request(user_id, next_page_token, page_size,
-                                               limit, type)
-
-    def manual_meeting_list_pagination(self, user_id, next_page_token, page_size,
-                                       limit, type):
-        res = []
-        while limit > 0 and next_page_token != '':
-            if limit < MAX_RECORDS_PER_PAGE:
-                page_size = limit
-            else:
-                page_size = MAX_RECORDS_PER_PAGE
-
-            basic_request = self.meeting_list_basic_request(user_id, next_page_token, page_size,
-                                                            limit, type)
-            next_page_token = basic_request.get("next_page_token")
-            # basic_request.pop("next_page_token")
-            res.append(basic_request)
-            limit -= MAX_RECORDS_PER_PAGE
-        return res
 
     def zoom_recording_get(self, meeting_id: str):
         succeed = []
@@ -409,6 +421,7 @@ def test_module(
             client_id=client_id,
             client_secret=client_secret,
         )
+        # running an arbitrary command to test the connection
         client.zoom_user_list(1, None, 'active')
     except DemistoException as e:
         error_message = e.message
@@ -431,7 +444,7 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
                            status: str = "active", next_page_token: str = None,
                            role_id: str = None, limit: int = None) -> CommandResults:
     raw_data = client.zoom_user_list(page_size, user_id, status, next_page_token, role_id, limit)
-    # parse data to md
+    # parsing the data according to the different given arguments
     if limit:
         all_info = []
         for pages in range(len(raw_data)):
@@ -508,11 +521,11 @@ def zoom_meeting_create_command(
                                           encryption_type, focus_mode,
                                           join_before_host,
                                           meeting_authentication)
-    md = f"""Meeting created successfully.
+    display = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
     return CommandResults(
         outputs_prefix='Zoom.meetings',
-        readable_output=md,
+        readable_output=display,
         outputs={'Zoom.Meeting': raw_data},
         raw_response=raw_data
     )
@@ -546,6 +559,7 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
 def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str = None,
                               page_size: int = 30, limit: int = None, type: str = None) -> CommandResults:
     raw_data = client.zoom_meeting_list(user_id, next_page_token, page_size, limit, type)
+    # parsing the data according to the different given arguments
     if limit:
         all_info = []
         for pages in range(len(raw_data)):
@@ -575,6 +589,8 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
 
 
 def check_authentication_type_arguments(api_key: str, api_secret: str,
+                                        # checking if the user entered extra parameters
+                                        # at the configuration level
                                         account_id: str, client_id: str, client_secret: str):
     if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
         raise DemistoException("""Too many fields were filled.
@@ -599,6 +615,7 @@ def main():  # pragma: no cover
 
     # this is for BC, because the arguments given as <a-b>, i.e "page-number"
     args = {key.replace('-', '_'): val for key, val in args.items()}
+
     try:
         check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
         if command == 'test-module':
@@ -648,7 +665,7 @@ def main():  # pragma: no cover
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
         # TODO maybe refer to specific parts, like "e.res.status_code, e.res.text"
-        # and the error line shuld be modified to feet all kins of error
+        # and the error line shuld be modified to feet all kinds of error
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

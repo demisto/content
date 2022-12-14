@@ -350,8 +350,7 @@ script:
           type: string
         - name: page-size
           default: false
-          description: Number of users to return. Max 300.
-          defaultValue: "30"
+          description: Number of users to return. Default = 30. Max = 300.
         - name: next-page-token
           description: The next page token is used to paginate through large result sets
           type: string
