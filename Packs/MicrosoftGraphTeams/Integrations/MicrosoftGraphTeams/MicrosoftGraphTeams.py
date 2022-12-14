@@ -10,7 +10,6 @@ import traceback
 from urllib.parse import quote
 from MicrosoftApiModule import *
 import urllib3
-from bs4 import BeautifulSoup
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -158,7 +157,7 @@ class MsGraphClient:
         return self.ms_client.http_request(method='POST', url_suffix=suffix, json_data=json_data)
 
     def get_chat(self, chat_id: str, user_id: str = None) -> dict:
-        """Create a new chat for a given user
+        """retrieves an existing chat for a given user
 
         Args:
             chat_id (str):
@@ -175,7 +174,7 @@ class MsGraphClient:
         return response
 
     def update_chat(self, chat_id: str, subject: str) -> dict:
-        """Create a new chat for a given user
+        """Updates an existing chat for a given user
 
         Args:
             chat_id (str):
@@ -710,7 +709,7 @@ def main():
         'msgraph-teams-send-message': send_message_command,
     }
     command = demisto.command()
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
 
     try:
         client: MsGraphClient = MsGraphClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key,

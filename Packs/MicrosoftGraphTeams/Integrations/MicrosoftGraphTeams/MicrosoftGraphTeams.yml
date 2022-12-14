@@ -8,19 +8,19 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: Token or Tenant ID - see Detailed Instructions (?)
+- additionalinfo: Token or Tenant ID
   display: Tenant ID
   hiddenusername: true
   name: tenant_id
   required: true
   type: 4
-- additionalinfo: ID or Client ID - see Detailed Instructions (?)
+- additionalinfo: ID or Client ID
   display: Client ID
   hiddenusername: true
   name: client_id
   required: true
   type: 4
-- additionalinfo: Key or Client Secret - see Detailed Instructions (?)
+- additionalinfo: Key or Client Secret
   display: Client Secret
   hiddenusername: true
   name: secret
