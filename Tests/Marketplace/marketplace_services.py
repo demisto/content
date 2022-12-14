@@ -198,6 +198,13 @@ class Pack(object):
         """
         self._is_siem = is_siem
 
+    @property
+    def is_data_source(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_data_source
+
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
         """ setter of pack current status.
@@ -397,6 +404,10 @@ class Pack(object):
     def marketplaces(self):
         return self._marketplaces
 
+    @marketplaces.setter
+    def marketplaces(self, value):
+        self._marketplaces = value
+
     @property
     def all_levels_dependencies(self):
         return self._all_levels_dependencies
@@ -517,7 +528,7 @@ class Pack(object):
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
 
-            # this's the first non deprecated integration, and the pack is in xsiem
+            # this's the first integration in the pack, and the pack is in xsiem
             if self._single_integration and 'marketplacev2' in self.marketplaces:
 
                 # the integration is not deprecated
@@ -533,20 +544,6 @@ class Pack(object):
                 # got a second integration in the pack that's not deprecated
                 if not yaml_content.get('deprecated', False):
                     self._is_data_source = False
-
-            #     if self._has_fetch and self._is_data_source:  # already found an integration that contains isfetch or isfetchevents and concluded that the pack is data source
-            #         # make sure that this current integration is deprecated, if not set data source to false
-            #         if not yaml_content.get('deprecated', False):  # in case the current integration is not deprected, pack is not data source
-            #             self._is_data_source = False
-            #
-            #
-            # # if self._has_fetch:  #already found an integration in the pack that contains isfetch or isfetchevents
-            #
-            # if yaml_content.get('script', {}).get('isfetchevents', False) is True or \
-            #         yaml_content.get('script', {}).get('isfetch', False) is True:
-            #     if self._has_fetch:  # Already got an integration that has isfetch or isfetchevents
-            #         if not yaml_content.get('deprecated', False):  # if the second integration in the pack is not deprecated
-            #             self._is_data_source = False
 
             # already found integration in the pack that's not deprecated
             if not yaml_content.get('deprecated', False):
@@ -2397,7 +2394,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.Data_SOURCE} if self._is_data_source else set()
+        tags |= {f"marketplacev2:{PackTags.Data_SOURCE}"} if self._is_data_source else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
