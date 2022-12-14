@@ -1279,7 +1279,7 @@ def gsuite_mobile_device_list_command(client, args: Dict[str, str]) -> List[Comm
     """Retrieves a paginated list that includes company-owned mobile devices.
 
     Args:
-        client (_type_): A GSuiteClient instance to do http requests.
+        client (GSuiteClient): A GSuiteClient instance.
         args (Dict[str, str]): The arguments of the command.
 
     Returns:
@@ -1357,7 +1357,7 @@ def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[Co
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
-        client (_type_): A GSuiteClient instance to do http requests.
+        client (GSuiteClient): A GSuiteClient instance.
         args (Dict[str, str]): The arguments of the command.
 
     Returns:
