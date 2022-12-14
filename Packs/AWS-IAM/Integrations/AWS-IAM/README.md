@@ -120,6 +120,7 @@ Lists the IAM users, returns all users in the AWS account.
 | AWS.IAM.Users.Arn | string | The Amazon Resource Name \(ARN\) that identifies the user. | 
 | AWS.IAM.Users.CreateDate | date | The date and time when the user was created. | 
 | AWS.IAM.Users.Path | string | The path to the user. | 
+| AWS.IAM.Users.PasswordLastUsed | date | The date and time when the password was last used. | 
 
 
 #### Command Example
