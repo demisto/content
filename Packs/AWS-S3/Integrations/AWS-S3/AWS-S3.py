@@ -218,6 +218,26 @@ def put_public_access_block(args: Dict[str, Any], aws_client: AWSClient) -> Comm
     return CommandResults(readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket")
 
 
+def get_bucket_encryption(args: Dict[str, Any], aws_client: AWSClient) -> CommandResults:
+    client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                    role_session_name=args.get('roleSessionName'),
+                                    role_session_duration=args.get('roleSessionDuration'), )
+    kwargs = {'Bucket': args.get('bucket')}
+    if args.get('expectedBucketOwner') is not None:
+        kwargs.update({'ExpectedBucketOwner': args.get('expectedBucketOwner')})
+    try:
+        response = client.get_bucket_encryption(**kwargs)
+    except client.exceptions.ClientError as ex:
+        if ex.response.get('Error', {}).get('Code', '') != 'ServerSideEncryptionConfigurationNotFoundError':
+            raise ex
+        response = {}
+    data = {'BucketName': args.get('bucket'),
+            'ServerSideEncryptionConfiguration': response.get('ServerSideEncryptionConfiguration')}
+    human_readable = tableToMarkdown('AWS S3 Bucket Encryption', data)
+    return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.S3.Buckets',
+                          outputs_key_field='BucketName')
+
+
 def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
@@ -225,8 +245,8 @@ def main():  # pragma: no cover
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
@@ -271,7 +291,7 @@ def main():  # pragma: no cover
             download_file_command(args, aws_client)
 
         elif command == 'aws-s3-list-bucket-objects':
-            list_objects_command(args, aws_client)
+            return_results(list_objects_command(args, aws_client))
 
         elif command == 'aws-s3-upload-file':
             return_results(upload_file_command(args, aws_client))
@@ -281,6 +301,9 @@ def main():  # pragma: no cover
 
         elif command == 'aws-s3-put-public-access-block':
             return_results(put_public_access_block(args, aws_client))
+
+        elif command == 'aws-s3-get-bucket-encryption':
+            return_results(get_bucket_encryption(args, aws_client))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

@@ -5,9 +5,10 @@ import requests
 import dateparser
 from datetime import timedelta
 from typing import Any, Dict, Tuple, List, Optional, Set
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -349,7 +350,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, Union[
             latest_created_time = incident_created_time
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': (latest_created_time + timedelta(microseconds=1))  # type: ignore[operator]
+    next_run = {'last_fetch': (latest_created_time + timedelta(milliseconds=1))  # type: ignore[operator]
                 .strftime(XSOAR_DATE_FORMAT)}  # type: ignore[union-attr,operator]
 
     return next_run, incidents_result
@@ -493,9 +494,9 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """
     all_mappings = GetMappingFieldsResponse()
     incident_fields: List[dict] = client.get_incident_fields()
-
     types = client.get_incident_types()
     for incident_type_obj in types:
+        custom_fields = {}
         incident_type_name: str = incident_type_obj.get('name')  # type: ignore
         incident_type_scheme = SchemeTypeMapping(type_name=incident_type_name)
         demisto.debug(f'Collecting incident mapping for incident type - "{incident_type_name}"')
@@ -504,18 +505,28 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
             if field.get('group') == 0 and field.get('cliName') is not None and \
                     (field.get('associatedToAll') or incident_type_name in  # type: ignore
                      field.get('associatedTypes')):  # type: ignore
+                if field.get('content') or not field.get('system'):
+                    custom_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')}"
+                    continue
                 incident_type_scheme.add_field(name=field.get('cliName'),
                                                description=f"{field.get('name')} - {field.get('type')}")
-
+        if custom_fields:
+            incident_type_scheme.add_field(name='CustomFields', description=custom_fields)
         all_mappings.add_scheme_type(incident_type_scheme)
 
     default_scheme = SchemeTypeMapping(type_name="Default Mapping")
     demisto.debug('Collecting the default incident scheme')
+    custom_fields = {}
     for field in incident_fields:
         if field.get('group') == 0 and field.get('associatedToAll'):
+            if field.get('content') or not field.get('system'):
+                custom_fields[field.get('cliName')] = f"{field.get('name')} - {field.get('type')}"
+                continue
             default_scheme.add_field(name=field.get('cliName'),
                                      description=f"{field.get('name')} - {field.get('type')}")
 
+    if custom_fields:
+        default_scheme.add_field(name='CustomFields', description=custom_fields)
     all_mappings.add_scheme_type(default_scheme)
     return all_mappings
 
@@ -693,6 +704,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
             old_incident = client.get_incident(incident_id=parsed_args.remote_incident_id)
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+                if changed_key in old_incident.get('CustomFields', {}).keys():
+                    old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
 
             parsed_args.data = old_incident
 
@@ -738,8 +751,8 @@ def main() -> None:
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How much time before the first fetch to retrieve incidents
-    first_fetch_time = dateparser.parse(demisto.params().get('first_fetch', '3 days')) \
-        .strftime(XSOAR_DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch_time = arg_to_datetime(demisto.params().get('first_fetch', '3 days')).strftime(XSOAR_DATE_FORMAT)  # type: ignore
+
     proxy = demisto.params().get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     mirror_tags = set(demisto.params().get('mirror_tag', '').split(',')) \

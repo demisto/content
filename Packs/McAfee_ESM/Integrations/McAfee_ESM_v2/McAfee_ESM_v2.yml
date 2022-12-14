@@ -45,8 +45,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetchTime
   required: false
   type: 0
@@ -57,8 +56,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '0'
-  display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert
-    3)
+  display: McAfee ESM Timezone in hours (e.g if ESM timezone is +0300 => then insert 3)
   name: timezone
   required: false
   type: 0
@@ -70,24 +68,19 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This integration runs queries and receives alarms from McAfee Enterprise
-  Security Manager (ESM). Supports version 10 and above.
+description: This integration runs queries and receives alarms from McAfee Enterprise Security Manager (ESM). Supports version 10 and above.
 display: McAfee ESM v2
 name: McAfee ESM v2
 script:
   commands:
   - deprecated: false
-    description: Returns all fields that can be used in query filters, including type
-      information for each field.
+    description: Returns all fields that can be used in query filters, including type information for each field.
     execution: false
     name: esm-fetch-fields
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS,
-        LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES,
-        LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER,
-        PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
+      description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
       isArray: false
       name: timeRange
       predefined:
@@ -112,16 +105,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the query results in a JSON string, using the format EsmFilter
-        (see - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
+      description: Filters the query results in a JSON string, using the format EsmFilter (see - https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmFilter)
       isArray: false
       name: filters
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default
-        is "EVENT".
+      description: Type of query to run. Can be "EVENT", "FLOW", or "ASSETS". Default is "EVENT".
       isArray: false
       name: queryType
       predefined:
@@ -137,15 +128,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the start time for
-        the time range. For example: 2017-06-01T12:48:16.734Z'
+      description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
       isArray: false
       name: customStart
       required: false
       secret: false
     - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the end time for the
-        time range. For example: 2017-06-01T12:48:16.734Z'
+      description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
       isArray: false
       name: customEnd
       required: false
@@ -169,10 +158,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS,
-        LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES,
-        LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER,
-        PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
+      description: The time period for the search. Can be LAST_3_DAYS, LAST_2_DAYS, LAST_24_HOURS, PREVIOUS_DAY, CURRENT_DAY, LAST_HOUR, LAST_30_MINUTES, LAST_10_MINUTES, LAST_MINUTE, CUSTOM, PREVIOUS_YEAR, CURRENT_YEAR, PREVIOUS_QUARTER, CURRENT_QUARTER, PREVIOUS_MONTH, CURRENT_MONTH, PREVIOUS_WEEK, or CURRENT_WEEK.
       isArray: false
       name: timeRange
       defaultValue: CURRENT_DAY
@@ -198,23 +184,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the start time for
-        the time range. For example: 2017-06-01T12:48:16.734Z'
+      description: 'If the timeRange argument is set to CUSTOM, the start time for the time range. For example: 2017-06-01T12:48:16.734Z'
       isArray: false
       name: customStart
       required: false
       secret: false
     - default: false
-      description: 'If the timeRange argument is set to CUSTOM, the end time for the
-        time range. For example: 2017-06-01T12:48:16.734Z'
+      description: 'If the timeRange argument is set to CUSTOM, the end time for the time range. For example: 2017-06-01T12:48:16.734Z'
       isArray: false
       name: customEnd
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'User assigned to handle the triggered alarm. Use the ''ME'' option
-        to use the instance user, or use format EsmUser as given by https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser. '
+      description: 'User assigned to handle the triggered alarm. Use the ''ME'' option to use the instance user, or use format EsmUser as given by https://<esm-ip>:<esm-port>/rs/esm/help/types/EsmUser. '
       isArray: false
       name: assignedUser
       predefined:
@@ -255,8 +238,7 @@ script:
       type: number
   - arguments:
     - default: false
-      description: Filters cases that were opened before this date. In the format
-        "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.
+      description: Filters cases that were opened before this date. In the format "<number><timeunit>". For example, 1 day,30 minutes,2 weeks,6 months,1 year.
       isArray: false
       name: since
       required: false
@@ -290,8 +272,7 @@ script:
       secret: false
     - default: false
       defaultValue: Open
-      description: The status of the case. Run the esm-get-case-statuses command to
-        view all statuses. Default is Open.
+      description: The status of the case. Run the esm-get-case-statuses command to view all statuses. Default is Open.
       isArray: false
       name: status
       required: false
@@ -311,8 +292,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The organization assigned to the case. Run the esm-get-organization-list
-        command to view all organizations.
+      description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
       isArray: false
       name: organization
       required: false
@@ -375,15 +355,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The new status of the case. Run the esm-get-case-statuses command
-        to view all statuses.
+      description: The new status of the case. Run the esm-get-case-statuses command to view all statuses.
       isArray: false
       name: status
       required: false
       secret: false
     - default: false
-      description: The organization assigned to the case. Run the esm-get-organization-list
-        command to view all organizations.
+      description: The organization assigned to the case. Run the esm-get-organization-list command to view all organizations.
       isArray: false
       name: organization
       required: false
@@ -445,8 +423,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether the status will display in the case pane. Can be "True"
-        or "False". Default is "True".
+      description: Whether the status will display in the case pane. Can be "True" or "False". Default is "True".
       isArray: false
       name: show_in_case_pane
       predefined:
@@ -528,8 +505,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether the status will display in the case pane. Can be "True"
-        or "False". Default is "True".
+      description: Whether the status will display in the case pane. Can be "True" or "False". Default is "True".
       isArray: false
       name: show_in_case_pane
       predefined:
@@ -621,8 +597,7 @@ script:
     name: esm-delete-alarms
   - arguments:
     - default: true
-      description: The event for which to get the details. Run the esm-list-alarm-events
-        command to get the ID.
+      description: The event for which to get the details. Run the esm-list-alarm-events command to get the ID.
       isArray: false
       name: eventId
       required: true
@@ -691,8 +666,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The alarm for which to get the details. Run the esm-fetch-alarms
-        command to get the ID.
+      description: The alarm for which to get the details. Run the esm-fetch-alarms command to get the ID.
       isArray: false
       name: alarmId
       required: true
@@ -809,9 +783,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the new watchlist. Can be "IPAddress", "Hash", "SHA1",
-        "DSIDSigID", "Port" "MacAddress", "NormID", "AppID", "CommandID", "DomainID"
-        "HostID", "ObjectID", "Filename", or "File_Hash".
+      description: The type of the new watchlist. Can be "IPAddress", "Hash", "SHA1", "DSIDSigID", "Port" "MacAddress", "NormID", "AppID", "CommandID", "DomainID" "HostID", "ObjectID", "Filename", or "File_Hash".
       isArray: false
       name: type
       predefined:
@@ -946,7 +918,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37753
   feed: false
   isfetch: true
   longRunning: false

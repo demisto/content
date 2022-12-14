@@ -4,9 +4,8 @@ from requests_oauthlib import OAuth1
 from dateparser import parse
 from datetime import timedelta
 from CommonServerPython import *
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 BASE_URL = demisto.getParam('url').rstrip('/') + '/'
@@ -376,6 +375,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None, extra_
         context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
         context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
         context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        context_obj['Description'] = md_obj['description'] = demisto.get(element, 'fields.description')
 
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
@@ -818,7 +818,7 @@ def __get_field_type(field_id):
 
 def __add_value_by_type(type, current_value, new_value):
     if type == 'string':
-        new_val = current_value + "," + new_value
+        new_val = current_value + " , " + new_value
     elif type == 'array':
         new_val = current_value + [new_value]
     else:

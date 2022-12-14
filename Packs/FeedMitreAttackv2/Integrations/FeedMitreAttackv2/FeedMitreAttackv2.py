@@ -1,14 +1,15 @@
+import logging
+
 import demistomock as demisto
 from CommonServerPython import *
 
 from typing import List, Dict, Set, Optional
 import json
-import requests
+import urllib3
 from stix2 import TAXIICollectionSource, Filter
 from taxii2client.v20 import Server, Collection, ApiRoot
 
 ''' CONSTANT VARIABLES '''
-
 MITRE_TYPE_TO_DEMISTO_TYPE = {
     "attack-pattern": ThreatIntel.ObjectsNames.ATTACK_PATTERN,
     "course-of-action": ThreatIntel.ObjectsNames.COURSE_OF_ACTION,
@@ -17,7 +18,6 @@ MITRE_TYPE_TO_DEMISTO_TYPE = {
     "tool": ThreatIntel.ObjectsNames.TOOL,
     "relationship": "Relationship"
 }
-
 INDICATOR_TYPE_TO_SCORE = {
     "Intrusion Set": ThreatIntel.ObjectsScore.INTRUSION_SET,
     "Attack Pattern": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
@@ -25,7 +25,6 @@ INDICATOR_TYPE_TO_SCORE = {
     "Malware": ThreatIntel.ObjectsScore.MALWARE,
     "Tool": ThreatIntel.ObjectsScore.TOOL
 }
-
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'build-capabilities': ThreatIntel.KillChainPhases.BUILD_CAPABILITIES,
     'privilege-escalation': ThreatIntel.KillChainPhases.PRIVILEGE_ESCALATION,
@@ -46,7 +45,6 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'act-on-objectives': ThreatIntel.KillChainPhases.ACT_ON_OBJECTIVES,
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
-
 FILTER_OBJS = {
     "Technique": {"name": "attack-pattern", "filter": Filter("type", "=", "attack-pattern")},
     "Mitigation": {"name": "course-of-action", "filter": Filter("type", "=", "course-of-action")},
@@ -55,12 +53,14 @@ FILTER_OBJS = {
     "Tool": {"name": "tool", "filter": Filter("type", "=", "tool")},
     "relationships": {"name": "relationships", "filter": Filter("type", "=", "relationship")},
 }
-
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 
+# disable warnings coming from taxii2client - https://github.com/OTRF/ATTACK-Python-Client/issues/43#issuecomment-1016581436
+logging.getLogger("taxii2client.v20").setLevel(logging.ERROR)
+
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 class Client:
@@ -332,8 +332,7 @@ def create_relationship(item_json, id_to_name):
         'firstseenbysource': item_json.get('created')
     }
     if item_json.get('relationship_type') not in RELATIONSHIP_TYPES:
-        demisto.debug(f"Invalid relation type: {item_json.get('relationship_type')}")
-        return
+        demisto.debug(f"Unknown relationship name: {item_json.get('relationship_type')}")
 
     entity_a = id_to_name.get(item_json.get('source_ref'))
     entity_b = id_to_name.get(item_json.get('target_ref'))
@@ -536,6 +535,20 @@ def attack_pattern_reputation_command(client, args):
     return command_results
 
 
+def filter_attack_pattern_object_by_attack_id(attack_id: str, attack_pattern_object):
+    """Filter attach pattern objects by the attack id
+
+    Returns:
+        True if the external_id matches the attack_id, else False
+    """
+    external_references_list = attack_pattern_object.get('external_references', [])
+    for external_reference in external_references_list:
+        if external_reference.get('external_id', '') == attack_id:
+            return True
+
+    return False
+
+
 def get_mitre_value_from_id(client, args):
     attack_ids = argToList(args.get('attack_ids', []))
 
@@ -546,17 +559,25 @@ def get_mitre_value_from_id(client, args):
         collection_data = Collection(collection_url, verify=client.verify, proxies=client.proxies)
 
         tc_source = TAXIICollectionSource(collection_data)
-        attack_pattern_obj = tc_source.query([
-            Filter("external_references.external_id", "=", attack_id),
+        attack_pattern_objects = tc_source.query(query=[
             Filter("type", "=", "attack-pattern")
         ])
-        attack_pattern_name = attack_pattern_obj[0]['name'] if attack_pattern_obj else None
+        if attack_pattern_objects:
+            attack_pattern = list(filter(lambda attack_pattern_obj:
+                                  filter_attack_pattern_object_by_attack_id(attack_id,
+                                                                            attack_pattern_obj), attack_pattern_objects))
+            attack_pattern_name = attack_pattern[0]['name']
 
         if attack_pattern_name and len(attack_id) > 5:  # sub-technique
-            parent_name = tc_source.query([
-                Filter("external_references.external_id", "=", attack_id[:5]),
+            parent_objects = tc_source.query([
                 Filter("type", "=", "attack-pattern")
-            ])[0]['name']
+            ])
+            sub_technique_attack_id = attack_id[:5]
+            parent_object = list(filter(lambda attack_pattern_obj:
+                                 filter_attack_pattern_object_by_attack_id(sub_technique_attack_id,
+                                                                           attack_pattern_obj), parent_objects))
+            parent_name = parent_object[0]['name']
+
             attack_pattern_name = f'{parent_name}: {attack_pattern_name}'
 
         if attack_pattern_name:

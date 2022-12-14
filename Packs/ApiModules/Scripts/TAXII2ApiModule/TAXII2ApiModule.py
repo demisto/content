@@ -70,7 +70,9 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {
     "campaign": ThreatIntel.ObjectsNames.CAMPAIGN,
     "infrastructure": ThreatIntel.ObjectsNames.INFRASTRUCTURE,
     "intrusion-set": ThreatIntel.ObjectsNames.INTRUSION_SET,
-
+    "identity": FeedIndicatorType.Identity,
+    "location": FeedIndicatorType.Location,
+    "vulnerability": FeedIndicatorType.CVE,
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
@@ -110,6 +112,67 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'threat-actor': ThreatIntel.ObjectsNames.THREAT_ACTOR,
     'infrastructure': ThreatIntel.ObjectsNames.INFRASTRUCTURE,
 }
+
+# marking definitions of TLPs are constant (marking definitions of statements can vary)
+MARKING_DEFINITION_TO_TLP = {'marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9': 'WHITE',
+                             'marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da': 'GREEN',
+                             'marking-definition--f88d31f6-486f-44da-b317-01333bde0b82': 'AMBER',
+                             'marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed': 'RED'}
+
+# country codes are in ISO-2 format
+COUNTRY_CODES_TO_NAMES = {'AD': 'Andorra', 'AE': 'United Arab Emirates', 'AF': 'Afghanistan', 'AG': 'Antigua and Barbuda',
+                          'AI': 'Anguilla', 'AL': 'Albania', 'AM': 'Armenia', 'AO': 'Angola', 'AQ': 'Antarctica',
+                          'AR': 'Argentina', 'AS': 'American Samoa', 'AT': 'Austria', 'AU': 'Australia', 'AW': 'Aruba',
+                          'AX': 'Aland Islands', 'AZ': 'Azerbaijan', 'BA': 'Bosnia and Herzegovina', 'BB': 'Barbados',
+                          'BD': 'Bangladesh', 'BE': 'Belgium', 'BF': 'Burkina Faso', 'BG': 'Bulgaria', 'BH': 'Bahrain',
+                          'BI': 'Burundi', 'BJ': 'Benin', 'BL': 'Saint Barthelemy', 'BM': 'Bermuda', 'BN': 'Brunei',
+                          'BO': 'Bolivia', 'BQ': 'Bonaire, Saint Eustatius and Saba ', 'BR': 'Brazil', 'BS': 'Bahamas',
+                          'BT': 'Bhutan', 'BV': 'Bouvet Island', 'BW': 'Botswana', 'BY': 'Belarus', 'BZ': 'Belize',
+                          'CA': 'Canada', 'CC': 'Cocos Islands', 'CD': 'Democratic Republic of the Congo',
+                          'CF': 'Central African Republic', 'CG': 'Republic of the Congo', 'CH': 'Switzerland',
+                          'CI': 'Ivory Coast', 'CK': 'Cook Islands', 'CL': 'Chile', 'CM': 'Cameroon', 'CN': 'China',
+                          'CO': 'Colombia', 'CR': 'Costa Rica', 'CU': 'Cuba', 'CV': 'Cape Verde', 'CW': 'Curacao',
+                          'CX': 'Christmas Island', 'CY': 'Cyprus', 'CZ': 'Czech Republic', 'DE': 'Germany', 'DJ': 'Djibouti',
+                          'DK': 'Denmark', 'DM': 'Dominica', 'DO': 'Dominican Republic', 'DZ': 'Algeria', 'EC': 'Ecuador',
+                          'EE': 'Estonia', 'EG': 'Egypt', 'EH': 'Western Sahara', 'ER': 'Eritrea', 'ES': 'Spain',
+                          'ET': 'Ethiopia', 'FI': 'Finland', 'FJ': 'Fiji', 'FK': 'Falkland Islands', 'FM': 'Micronesia',
+                          'FO': 'Faroe Islands', 'FR': 'France', 'GA': 'Gabon', 'GB': 'United Kingdom', 'GD': 'Grenada',
+                          'GE': 'Georgia', 'GF': 'French Guiana', 'GG': 'Guernsey', 'GH': 'Ghana', 'GI': 'Gibraltar',
+                          'GL': 'Greenland', 'GM': 'Gambia', 'GN': 'Guinea', 'GP': 'Guadeloupe', 'GQ': 'Equatorial Guinea',
+                          'GR': 'Greece', 'GS': 'South Georgia and the South Sandwich Islands', 'GT': 'Guatemala', 'GU': 'Guam',
+                          'GW': 'Guinea-Bissau', 'GY': 'Guyana', 'HK': 'Hong Kong', 'HM': 'Heard Island and McDonald Islands',
+                          'HN': 'Honduras', 'HR': 'Croatia', 'HT': 'Haiti', 'HU': 'Hungary', 'ID': 'Indonesia', 'IE': 'Ireland',
+                          'IL': 'Israel', 'IM': 'Isle of Man', 'IN': 'India', 'IO': 'British Indian Ocean Territory',
+                          'IQ': 'Iraq', 'IR': 'Iran', 'IS': 'Iceland', 'IT': 'Italy', 'JE': 'Jersey', 'JM': 'Jamaica',
+                          'JO': 'Jordan', 'JP': 'Japan', 'KE': 'Kenya', 'KG': 'Kyrgyzstan', 'KH': 'Cambodia', 'KI': 'Kiribati',
+                          'KM': 'Comoros', 'KN': 'Saint Kitts and Nevis', 'KP': 'North Korea', 'KR': 'South Korea',
+                          'KW': 'Kuwait', 'KY': 'Cayman Islands', 'KZ': 'Kazakhstan', 'LA': 'Laos', 'LB': 'Lebanon',
+                          'LC': 'Saint Lucia', 'LI': 'Liechtenstein', 'LK': 'Sri Lanka', 'LR': 'Liberia', 'LS': 'Lesotho',
+                          'LT': 'Lithuania', 'LU': 'Luxembourg', 'LV': 'Latvia', 'LY': 'Libya', 'MA': 'Morocco', 'MC': 'Monaco',
+                          'MD': 'Moldova', 'ME': 'Montenegro', 'MF': 'Saint Martin', 'MG': 'Madagascar', 'MH': 'Marshall Islands',
+                          'MK': 'Macedonia', 'ML': 'Mali', 'MM': 'Myanmar', 'MN': 'Mongolia', 'MO': 'Macao',
+                          'MP': 'Northern Mariana Islands', 'MQ': 'Martinique', 'MR': 'Mauritania', 'MS': 'Montserrat',
+                          'MT': 'Malta', 'MU': 'Mauritius', 'MV': 'Maldives', 'MW': 'Malawi', 'MX': 'Mexico', 'MY': 'Malaysia',
+                          'MZ': 'Mozambique', 'NA': 'Namibia', 'NC': 'New Caledonia', 'NE': 'Niger', 'NF': 'Norfolk Island',
+                          'NG': 'Nigeria', 'NI': 'Nicaragua', 'NL': 'Netherlands', 'NO': 'Norway', 'NP': 'Nepal', 'NR': 'Nauru',
+                          'NU': 'Niue', 'NZ': 'New Zealand', 'OM': 'Oman', 'PA': 'Panama', 'PE': 'Peru', 'PF': 'French Polynesia',
+                          'PG': 'Papua New Guinea', 'PH': 'Philippines', 'PK': 'Pakistan', 'PL': 'Poland',
+                          'PM': 'Saint Pierre and Miquelon', 'PN': 'Pitcairn', 'PR': 'Puerto Rico', 'PS': 'Palestinian Territory',
+                          'PT': 'Portugal', 'PW': 'Palau', 'PY': 'Paraguay', 'QA': 'Qatar', 'RE': 'Reunion', 'RO': 'Romania',
+                          'RS': 'Serbia', 'RU': 'Russia', 'RW': 'Rwanda', 'SA': 'Saudi Arabia', 'SB': 'Solomon Islands',
+                          'SC': 'Seychelles', 'SD': 'Sudan', 'SE': 'Sweden', 'SG': 'Singapore', 'SH': 'Saint Helena',
+                          'SI': 'Slovenia', 'SJ': 'Svalbard and Jan Mayen', 'SK': 'Slovakia', 'SL': 'Sierra Leone',
+                          'SM': 'San Marino', 'SN': 'Senegal', 'SO': 'Somalia', 'SR': 'Suriname', 'SS': 'South Sudan',
+                          'ST': 'Sao Tome and Principe', 'SV': 'El Salvador', 'SX': 'Sint Maarten', 'SY': 'Syria',
+                          'SZ': 'Swaziland', 'TC': 'Turks and Caicos Islands', 'TD': 'Chad', 'TF': 'French Southern Territories',
+                          'TG': 'Togo', 'TH': 'Thailand', 'TJ': 'Tajikistan', 'TK': 'Tokelau', 'TL': 'East Timor',
+                          'TM': 'Turkmenistan', 'TN': 'Tunisia', 'TO': 'Tonga', 'TR': 'Turkey', 'TT': 'Trinidad and Tobago',
+                          'TV': 'Tuvalu', 'TW': 'Taiwan', 'TZ': 'Tanzania', 'UA': 'Ukraine', 'UG': 'Uganda',
+                          'UM': 'United States Minor Outlying Islands', 'US': 'United States', 'UY': 'Uruguay',
+                          'UZ': 'Uzbekistan', 'VA': 'Vatican', 'VC': 'Saint Vincent and the Grenadines', 'VE': 'Venezuela',
+                          'VG': 'British Virgin Islands', 'VI': 'U.S. Virgin Islands', 'VN': 'Vietnam', 'VU': 'Vanuatu',
+                          'WF': 'Wallis and Futuna', 'WS': 'Samoa', 'XK': 'Kosovo', 'YE': 'Yemen', 'YT': 'Mayotte',
+                          'ZA': 'South Africa', 'ZM': 'Zambia', 'ZW': 'Zimbabwe'}
 
 
 class Taxii2FeedClient:
@@ -241,7 +304,7 @@ class Taxii2FeedClient:
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
         except Exception as e:
-            if "406 Client Error" not in str(e):
+            if "406 Client Error" not in str(e) and "version=2.1" not in str(e):
                 raise e
             # switch to TAXII 2.1
             self.init_server(version=TAXII_VER_2_1)
@@ -388,6 +451,24 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    def set_default_fields(self, obj_to_parse):
+        fields = {
+            'stixid': obj_to_parse.get('id', ''),
+            'firstseenbysource': obj_to_parse.get('created', ''),
+            'modified': obj_to_parse.get('modified', ''),
+            'description': obj_to_parse.get('description', ''),
+        }
+
+        tlp_color = self.tlp_color
+        for object_marking in obj_to_parse.get('object_marking_refs', []):
+            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking):
+                tlp_color = tlp
+                break
+        if tlp_color:
+            fields['trafficlightprotocol'] = tlp_color
+
+        return fields
+
     def parse_indicator(self, indicator_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Parses a single indicator object
@@ -446,18 +527,14 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.ATTACK_PATTERN,
             "rawJSON": attack_pattern_obj,
         }
-        fields = {
-            'stixid': attack_pattern_obj.get('id'),
+
+        fields = self.set_default_fields(attack_pattern_obj)
+        fields.update({
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": attack_pattern_obj.get('created'),
-            "modified": attack_pattern_obj.get('modified'),
-            'description': attack_pattern_obj.get('description', ''),
             'operatingsystemrefs': attack_pattern_obj.get('x_mitre_platforms'),
             "publications": publications,
             "tags": list(self.tags),
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         attack_pattern["fields"] = fields
 
         if not is_demisto_version_ge('6.2.0'):
@@ -481,16 +558,13 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.REPORT,
             "rawJSON": report_obj,
         }
-        fields = {
-            'stixid': report_obj.get('id'),
-            'firstseenbysource': report_obj.get('created'),
+
+        fields = self.set_default_fields(report_obj)
+        fields.update({
             'published': report_obj.get('published'),
-            'description': report_obj.get('description', ''),
             "report_types": report_obj.get('report_types', []),
             "tags": list((set(report_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         report["fields"] = fields
 
         return [report]
@@ -508,11 +582,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.THREAT_ACTOR,
             "rawJSON": threat_actor_obj
         }
-        fields = {
-            'stixid': threat_actor_obj.get('id'),
-            "firstseenbysource": threat_actor_obj.get('created'),
-            "modified": threat_actor_obj.get('modified'),
-            'description': threat_actor_obj.get('description', ''),
+
+        fields = self.set_default_fields(threat_actor_obj)
+        fields.update({
             'aliases': threat_actor_obj.get("aliases", []),
             "threat_actor_types": threat_actor_obj.get('threat_actor_types', []),
             'roles': threat_actor_obj.get("roles", []),
@@ -522,9 +594,7 @@ class Taxii2FeedClient:
             "primary_motivation": threat_actor_obj.get('primary_motivation', ''),
             "secondary_motivations": threat_actor_obj.get('secondary_motivations', []),
             "tags": list((set(threat_actor_obj.get('labels', []))).union(set(self.tags))),
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         threat_actor["fields"] = fields
 
         return [threat_actor]
@@ -545,19 +615,16 @@ class Taxii2FeedClient:
             "rawJSON": infrastructure_obj
 
         }
-        fields = {
-            "stixid": infrastructure_obj.get('id'),
-            "description": infrastructure_obj.get('description', ''),
+
+        fields = self.set_default_fields(infrastructure_obj)
+        fields.update({
             "infrastructure_types": infrastructure_obj.get("infrastructure_types", []),
             "aliases": infrastructure_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
-            "firstseenbysource": infrastructure_obj.get('created'),
-            "modified": infrastructure_obj.get('modified'),
             "tags": list(set(self.tags))
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         infrastructure["fields"] = fields
+
         return [infrastructure]
 
     def parse_malware(self, malware_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -576,11 +643,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.MALWARE,
             "rawJSON": malware_obj
         }
-        fields = {
-            'stixid': malware_obj.get('id'),
-            "firstseenbysource": malware_obj.get('created'),
-            "modified": malware_obj.get('modified'),
-            "description": malware_obj.get('description', ''),
+
+        fields = self.set_default_fields(malware_obj)
+        fields.update({
             "malware_types": malware_obj.get('malware_types', []),
             "is_family": malware_obj.get('is_family', False),
             "aliases": malware_obj.get('aliases', []),
@@ -590,10 +655,9 @@ class Taxii2FeedClient:
             "capabilities": malware_obj.get('capabilities', []),
             "sample_refs": malware_obj.get('sample_refs', []),
             "tags": list((set(malware_obj.get('labels', []))).union(set(self.tags)))
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         malware["fields"] = fields
+
         return [malware]
 
     def parse_tool(self, tool_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -611,20 +675,17 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.TOOL,
             "rawJSON": tool_obj
         }
-        fields = {
-            'stixid': tool_obj.get('id'),
+
+        fields = self.set_default_fields(tool_obj)
+        fields.update({
             "killchainphases": kill_chain_phases,
-            "firstseenbysource": tool_obj.get('created'),
-            "modified": tool_obj.get('modified'),
             "tool_types": tool_obj.get("tool_types", []),
-            "description": tool_obj.get('description', ''),
             "aliases": tool_obj.get('aliases', []),
             "tool_version": tool_obj.get('tool_version', ''),
             "tags": list(set(self.tags))
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         tool["fields"] = fields
+
         return [tool]
 
     def parse_course_of_action(self, coa_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -641,18 +702,15 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.COURSE_OF_ACTION,
             "rawJSON": coa_obj,
         }
-        fields = {
-            'stixid': coa_obj.get('id'),
-            "firstseenbysource": coa_obj.get('created'),
-            "modified": coa_obj.get('modified'),
-            'description': coa_obj.get('description', ''),
+
+        fields = self.set_default_fields(coa_obj)
+        fields.update({
             "action_type": coa_obj.get('action_type', ''),
             "publications": publications,
             "tags": [tag for tag in self.tags]
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         course_of_action["fields"] = fields
+
         return [course_of_action]
 
     def parse_campaign(self, campaign_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -667,18 +725,15 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.CAMPAIGN,
             "rawJSON": campaign_obj
         }
-        fields = {
-            'stixid': campaign_obj.get('id'),
-            "firstseenbysource": campaign_obj.get('created'),
-            "modified": campaign_obj.get('modified'),
-            'description': campaign_obj.get('description', ''),
+
+        fields = self.set_default_fields(campaign_obj)
+        fields.update({
             "aliases": campaign_obj.get('aliases', []),
             "objective": campaign_obj.get('objective', ''),
             "tags": [tag for tag in self.tags],
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         campaign["fields"] = fields
+
         return [campaign]
 
     def parse_intrusion_set(self, intrusion_set_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -695,11 +750,9 @@ class Taxii2FeedClient:
             "score": ThreatIntel.ObjectsScore.INTRUSION_SET,
             "rawJSON": intrusion_set_obj
         }
-        fields = {
-            'stixid': intrusion_set_obj.get('id'),
-            "firstseenbysource": intrusion_set_obj.get('created'),
-            "modified": intrusion_set_obj.get('modified'),
-            'description': intrusion_set_obj.get('description', ''),
+
+        fields = self.set_default_fields(intrusion_set_obj)
+        fields.update({
             "aliases": intrusion_set_obj.get('aliases', []),
             "goals": intrusion_set_obj.get('goals', []),
             "resource_level": intrusion_set_obj.get('resource_level', ''),
@@ -707,14 +760,13 @@ class Taxii2FeedClient:
             "secondary_motivations": intrusion_set_obj.get('secondary_motivations', []),
             "publications": publications,
             "tags": list(self.tags),
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         intrusion_set["fields"] = fields
+
         return [intrusion_set]
 
     def parse_general_sco_indicator(
-        self, sco_object: Dict[str, Any], value_mapping: str = 'value'
+            self, sco_object: Dict[str, Any], value_mapping: str = 'value'
     ) -> List[Dict[str, Any]]:
         """
         Parses a single SCO indicator.
@@ -730,13 +782,12 @@ class Taxii2FeedClient:
             'type': STIX_2_TYPES_TO_CORTEX_TYPES.get(sco_object.get('type'))  # type: ignore[arg-type]
         }
 
-        fields = {
-            'stixid': sco_object.get('id'),
+        fields = self.set_default_fields(sco_object)
+        fields.update({
             'tags': list(set(self.tags))
-        }
-        if self.tlp_color:
-            fields['trafficlightprotocol'] = self.tlp_color
+        })
         sco_indicator['fields'] = fields
+
         return [sco_indicator]
 
     def parse_sco_autonomous_system_indicator(self, autonomous_system_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -820,6 +871,77 @@ class Taxii2FeedClient:
             }
         )
         return registry_key_indicator
+
+    def parse_identity(self, identity_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single identity object
+        :param identity_obj: identity object
+        :return: identity extracted from the identity object in cortex format
+        """
+        fields = self.set_default_fields(identity_obj)
+        fields.update({
+            'identityclass': identity_obj.get('identity_class', ''),
+            'industrysectors': identity_obj.get('sectors', []),
+            'tags': list((set(identity_obj.get('labels', []))).union(set(self.tags))),
+        })
+
+        identity = {
+            'value': identity_obj.get('name'),
+            'type': FeedIndicatorType.Identity,
+            'fields': fields,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': identity_obj
+        }
+        return [identity]
+
+    def parse_location(self, location_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single location object
+        :param location_obj: location object
+        :return: location extracted from the location object in cortex format
+        """
+        fields = self.set_default_fields(location_obj)
+        fields.update({
+            'countrycode': location_obj.get('country', ''),
+            'tags': list((set(location_obj.get('labels', []))).union(set(self.tags))),
+        })
+
+        country_name = COUNTRY_CODES_TO_NAMES.get(str(location_obj.get('country', '')).upper(), '')
+        location = {
+            'value': location_obj.get('name') or country_name,
+            'type': FeedIndicatorType.Location,
+            'fields': fields,
+            'score': Common.DBotScore.NONE,
+            'rawJSON': location_obj
+        }
+        return [location]
+
+    def parse_vulnerability(self, vulnerability_obj: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Parses a single vulnerability object
+        :param vulnerability_obj: vulnerability object
+        :return: vulnerability extracted from the vulnerability object in cortex format
+        """
+        name = ''
+        for external_reference in vulnerability_obj.get('external_references', []):
+            if external_reference.get('source_name') == 'cve':
+                name = external_reference.get('external_id')
+                break
+
+        fields = self.set_default_fields(vulnerability_obj)
+        fields.update({
+            'tags': list((set(vulnerability_obj.get('labels', []))).union(set(self.tags),
+                                                                          {name} if name else {})),
+        })
+
+        cve = {
+            'value': name,
+            'type': FeedIndicatorType.CVE,
+            'score': Common.DBotScore.NONE,
+            'fields': fields,
+            'rawJSON': vulnerability_obj
+        }
+        return [cve]
 
     def parse_relationships(self, relationships_lst: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.
@@ -918,7 +1040,10 @@ class Taxii2FeedClient:
             "file": self.parse_sco_file_indicator,
             "mutex": self.parse_sco_mutex_indicator,
             "user-account": self.parse_sco_account_indicator,
-            "windows-registry-key": self.parse_sco_windows_registry_key_indicator
+            "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
+            "identity": self.parse_identity,
+            "location": self.parse_location,
+            "vulnerability": self.parse_vulnerability
         }
         indicators = []
 
@@ -966,7 +1091,7 @@ class Taxii2FeedClient:
 
     def parse_dict_envelope(self, envelopes: Dict[str, Any],
                             parse_objects_func, limit: int = -1):
-        indicators = []
+        indicators: list = []
         relationships_list: List[Dict[str, Any]] = []
         for obj_type, envelope in envelopes.items():
             cur_limit = limit
@@ -1007,6 +1132,7 @@ class Taxii2FeedClient:
                         "Error: TAXII 2 client received the following response while requesting "
                         f"indicators: {str(envelope)}\n\nExpected output is json"
                     )
+
         if relationships_list:
             indicators.extend(self.parse_relationships(relationships_list))
         return indicators
@@ -1135,7 +1261,7 @@ class Taxii2FeedClient:
 
         fields["tags"] = tags
 
-        if self.tlp_color:
+        if self.tlp_color and not fields.get('trafficlightprotocol'):
             fields["trafficlightprotocol"] = self.tlp_color
 
         indicator["fields"] = fields

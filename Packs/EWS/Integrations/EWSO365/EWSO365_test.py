@@ -8,7 +8,7 @@ from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from freezegun import freeze_time
 
-from EWSO365 import (ExpandGroup, GetSearchableMailboxes, fetch_emails_as_incidents,
+from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
                      add_additional_headers, fetch_last_emails, find_folders,
                      get_expanded_group, get_searchable_mailboxes, handle_html,
                      handle_transient_files, parse_incident_from_item)
@@ -53,7 +53,7 @@ class TestNormalCommands:
             self.folder = ""
             self.is_public_folder = ""
             self.request_timeout = ""
-            self.max_fetch = ""
+            self.max_fetch = 50
             self.self_deployed = ""
             self.insecure = ""
             self.proxy = ""
@@ -241,7 +241,10 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
 
         def order_by(self, *args):
             # Return a list of emails
-            return messages
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in messages)
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -392,7 +395,10 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             return self
 
         def order_by(self, *args):
-            return [Message(), Message(), Message(), Message(), Message()]
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in [Message(), Message(), Message(), Message(), Message()])
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -439,7 +445,10 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 
         def order_by(self, *args):
             # Return a list of emails
-            return [Message(), Message(), Message(), Message(), Message()]
+            class MockQuerySet:
+                def __iter__(self):
+                    return (t for t in [Message(), Message(), Message(), Message(), Message()])
+            return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
@@ -533,3 +542,26 @@ def test_invalid_params(mocker, params, expected_result):
     EWSO365.log_stream = None
 
     assert "Exception: " + expected_result in demisto.error.call_args[0][0]
+
+
+@pytest.mark.parametrize(argnames='old_credentials, new_credentials, expected',
+                         argvalues=[
+                             ('old_client_secret', {'password': 'new_client_secret'}, 'new_client_secret'),
+                             ('old_client_secret', None, 'old_client_secret')])
+def test_credentials_with_old_secret(mocker, old_credentials, new_credentials, expected):
+    """
+    Given:
+      - Configuration contained credentials and old client_secret
+    When:
+      - init the MS client.
+    Then:
+      - Ensure the new credentials is taken if exist and old if new doesn't exist.
+    """
+    mocker.patch.object(EWSClient, '_EWSClient__prepare')
+    client = EWSClient(default_target_mailbox='test',
+                       credentials=new_credentials,
+                       client_secret=old_credentials,
+                       _client_id='new_client_id',
+                       _tenant_id='new_tenant_id')
+
+    assert client.ms_client.client_secret == expected

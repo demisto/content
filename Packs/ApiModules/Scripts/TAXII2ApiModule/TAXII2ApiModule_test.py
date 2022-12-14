@@ -1,3 +1,5 @@
+from taxii2client.exceptions import TAXIIServiceException
+
 from CommonServerPython import *
 from TAXII2ApiModule import Taxii2FeedClient, TAXII_VER_2_1, HEADER_USERNAME
 from taxii2client import v20, v21
@@ -390,6 +392,49 @@ class TestInitRoots:
         mock_client.init_roots()
         assert mock_client.api_root.url == self.default_api_root_url
 
+    has_none = "Unexpected Response."
+    has_version_error = "Unexpected Response. Got Content-Type: ‘application/taxii+json; charset=utf-8; version=2.1' " \
+                        "for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                        "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                        "Server use ‘from taxii2client.v21 import X'"
+    has_client_error = "Unexpected Response. 406 Client Error."
+    has_both_errors = "Unexpected Response. 406 Client Error. Got Content-Type: ‘application/taxii+json; charset=utf-8; " \
+                      "version=2.1' for Accept: ‘application/vnd.oasis.taxii+json; version=2.0' If you are trying to contact a " \
+                      "TAXII 2.0 Server use ‘from taxii2client.v20 import X' If you are trying to contact a TAXII 2.1 " \
+                      "Server use ‘from taxii2client.v21 import X'"
+
+    @pytest.mark.parametrize('error_msg, should_raise_error',
+                             [(has_none, True),
+                              (has_version_error, False),
+                              (has_client_error, False),
+                              (has_both_errors, False),
+                              ])
+    def test_error_code(self, mocker, error_msg, should_raise_error):
+        """
+        Given:
+            - Setting up a client with TAXII 2.0 server raised an error
+
+        When:
+            - Initializing roots for TAXII 2 client
+
+        Then:
+            - If the server is TAXII 2.1, error is handled and server is initialized with right version
+            - If it is a different error, it is raised
+        """
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+                                       verify=False, objects_to_fetch=[], default_api_root='federal')
+        set_api_root_mocker = mocker.patch.object(mock_client, 'set_api_root', side_effect=[TAXIIServiceException(error_msg), ''])
+
+        if should_raise_error:
+            with pytest.raises(Exception) as e:
+                mock_client.init_roots()
+            assert str(e.value) == error_msg
+            assert set_api_root_mocker.call_count == 1
+
+        else:
+            mock_client.init_roots()
+            assert set_api_root_mocker.call_count == 2
+
 
 class TestFetchingStixObjects:
     """
@@ -575,7 +620,7 @@ class TestFetchingStixObjects:
         assert mock_client.last_fetched_indicator__modified == expected_modified_result
 
 
-class TestParsingSCOIndicators:
+class TestParsingIndicators:
 
     # test examples taken from here - https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_64yvzeku5a5c
 
@@ -585,6 +630,8 @@ class TestParsingSCOIndicators:
         return Taxii2FeedClient(
             url='', collection_to_fetch='', proxies=[], verify=False, tlp_color='GREEN', objects_to_fetch=[]
         )
+
+    # Parsing SCO Indicators
 
     def test_parse_autonomous_system_indicator(self, taxii_2_client):
         """
@@ -613,8 +660,13 @@ class TestParsingSCOIndicators:
                 'rawJSON': autonomous_system_obj,
                 'type': 'ASN',
                 'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
+                    'name': 'Slime Industries',
                     'stixid': 'autonomous-system--f720c34b-98ae-597f-ade5-27dc241e8c74',
-                    'name': 'Slime Industries', 'tags': [], 'trafficlightprotocol': 'GREEN'
+                    'tags': [],
+                    'trafficlightprotocol': 'GREEN'
                 }
             }
         ]
@@ -636,8 +688,12 @@ class TestParsingSCOIndicators:
                         'score': Common.DBotScore.NONE,
                         'type': 'IP',
                         'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
                             'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
-                            'tags': [], 'trafficlightprotocol': 'GREEN'
+                            'tags': [],
+                            'trafficlightprotocol': 'GREEN'
                         }
                     }
                 ]
@@ -652,6 +708,9 @@ class TestParsingSCOIndicators:
                 [
                     {
                         'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
                             'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
                             'tags': [],
                             'trafficlightprotocol': 'GREEN'
@@ -711,7 +770,10 @@ class TestParsingSCOIndicators:
             {
                 'fields': {
                     'associatedfilenames': 'quêry.dll',
+                    'description': '',
+                    'firstseenbysource': '',
                     'md5': None,
+                    'modified': '',
                     'path': None,
                     'sha1': None,
                     'sha256': '841a8921140aba50671ebb0770fecc4ee308c4952cfeff8de154ab14eeef4649',
@@ -750,6 +812,9 @@ class TestParsingSCOIndicators:
         xsoar_expected_response = [
             {
                 'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
                     'stixid': 'mutex--eba44954-d4e4-5d3b-814c-2b17dd8de300',
                     'tags': [],
                     'trafficlightprotocol': 'GREEN'
@@ -796,6 +861,9 @@ class TestParsingSCOIndicators:
         xsoar_expected_response = [
             {
                 'fields': {
+                    'description': '',
+                    'firstseenbysource': '',
+                    'modified': '',
                     'modified_time': None,
                     'number_of_subkeys': None,
                     'registryvalue': [
@@ -822,3 +890,196 @@ class TestParsingSCOIndicators:
         ]
 
         assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
+
+    def test_parse_vulnerability(self, taxii_2_client):
+        """
+        Given:
+         - Vulnerability object.
+
+        When:
+         - Parsing the vulnerability into a format XSOAR knows to read.
+
+        Then:
+         - Make sure all the fields are being parsed correctly.
+        """
+        vulnerability_object = {'created': '2021-06-01T00:00:00.000Z',
+                                'created_by_ref': 'identity--ce222222-2a22-222b-2222-222222222222',
+                                'external_references': [{'external_id': 'CVE-1234-5', 'source_name': 'cve'},
+                                                        {'external_id': '1', 'source_name': 'other'}],
+                                'id': 'vulnerability--25222222-2a22-222b-2222-222222222222',
+                                'modified': '2021-06-01T00:00:00.000Z',
+                                'object_marking_refs': ['marking-definition--613f2e26-407d-48c7-9eca-b8e91df99dc9',
+                                                        'marking-definition--085ea65f-15af-48d8-86f0-adc7075b9457'],
+                                'spec_version': '2.1',
+                                'type': 'vulnerability',
+                                'labels': ['elevated']}
+
+        xsoar_expected_response = [
+            {
+                'fields': {
+                    'description': '',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'vulnerability--25222222-2a22-222b-2222-222222222222',
+                    'trafficlightprotocol': 'WHITE'},
+                'rawJSON': vulnerability_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'CVE',
+                'value': 'CVE-1234-5'
+            }
+        ]
+        xsoar_expected_tags = {'CVE-1234-5', 'elevated'}
+
+        parsed_response = taxii_2_client.parse_vulnerability(vulnerability_object)
+        response_tags = parsed_response[0]['fields'].pop('tags')
+
+        assert parsed_response == xsoar_expected_response
+        assert set(response_tags) == xsoar_expected_tags
+
+    # Parsing SDO Indicators
+
+    def test_parse_identity(self, taxii_2_client):
+        """
+        Given:
+         - Identity object.
+
+        When:
+         - Parsing the identity into a format XSOAR knows to read.
+
+        Then:
+         - Make sure all the fields are being parsed correctly.
+        """
+        identity_object = {'contact_information': 'test@org.com',
+                           'created': '2021-06-01T00:00:00.000Z',
+                           'created_by_ref': 'identity--b3222222-2a22-222b-2222-222222222222',
+                           'description': 'Identity to represent the government entities.',
+                           'id': 'identity--f8222222-2a22-222b-2222-222222222222',
+                           'identity_class': 'organization',
+                           'labels': ['consent-everyone'],
+                           'modified': '2021-06-01T00:00:00.000Z',
+                           'name': 'Government',
+                           'sectors': ['government-national'],
+                           'spec_version': '2.1',
+                           'type': 'identity'}
+
+        xsoar_expected_response = [
+            {
+                'fields': {
+                    'description': 'Identity to represent the government entities.',
+                    'firstseenbysource': '2021-06-01T00:00:00.000Z',
+                    'identityclass': 'organization',
+                    'industrysectors': ['government-national'],
+                    'modified': '2021-06-01T00:00:00.000Z',
+                    'stixid': 'identity--f8222222-2a22-222b-2222-222222222222',
+                    'tags': ['consent-everyone'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': identity_object,
+                'score': Common.DBotScore.NONE,
+                'type': 'Identity',
+                'value': 'Government'
+            }
+        ]
+
+        assert taxii_2_client.parse_identity(identity_object) == xsoar_expected_response
+
+    upper_case_country_object = {'administrative_area': 'US-MI',
+                                 'country': 'US',
+                                 'created': '2022-11-19T23:27:34.000Z',
+                                 'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
+                                 'id': 'location--28222222-2a22-222b-2222-222222222222',
+                                 'modified': '2022-11-19T23:27:34.000Z',
+                                 'object_marking_refs': ['marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
+                                 'spec_version': '2.1',
+                                 'type': 'location',
+                                 'labels': ['elevated']}
+    upper_case_country_response = [
+        {
+            'fields': {
+                'description': '',
+                'countrycode': 'US',
+                'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                'modified': '2022-11-19T23:27:34.000Z',
+                'stixid': 'location--28222222-2a22-222b-2222-222222222222',
+                'tags': ['elevated'],
+                'trafficlightprotocol': 'AMBER'
+            },
+            'rawJSON': upper_case_country_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'United States'
+        }
+    ]
+    lower_case_country_object = {'type': 'location',
+                                 'spec_version': '2.1',
+                                 'id': 'location--a6e9345f-5a15-4c29-8bb3-7dcc5d168d64',
+                                 'created_by_ref': 'identity--f431f809-377b-45e0-aa1c-6a4751cae5ff',
+                                 'created': '2016-04-06T20:03:00.000Z',
+                                 'modified': '2016-04-06T20:03:00.000Z',
+                                 'region': 'south-eastern-asia',
+                                 'country': 'th',
+                                 'administrative_area': 'Tak',
+                                 'postal_code': '63170'}
+    lower_case_country_response = [
+        {
+            'fields': {
+                'countrycode': 'th',
+                'description': '',
+                'firstseenbysource': '2016-04-06T20:03:00.000Z',
+                'modified': '2016-04-06T20:03:00.000Z',
+                'stixid': 'location--a6e9345f-5a15-4c29-8bb3-7dcc5d168d64',
+                'tags': [],
+                'trafficlightprotocol': 'GREEN'
+            },
+            'rawJSON': lower_case_country_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'Thailand'
+        }
+    ]
+    location_with_name_object = {'administrative_area': 'US-MI',
+                                 'country': 'US',
+                                 'name': 'United States of America',
+                                 'created': '2022-11-19T23:27:34.000Z',
+                                 'created_by_ref': 'identity--27222222-2a22-222b-2222-222222222222',
+                                 'id': 'location--28222222-2a22-222b-2222-222222222222',
+                                 'modified': '2022-11-19T23:27:34.000Z',
+                                 'object_marking_refs': ['marking-definition--f88d31f6-486f-44da-b317-01333bde0b82'],
+                                 'spec_version': '2.1',
+                                 'type': 'location',
+                                 'labels': ['elevated']}
+    location_with_name_response = [
+        {
+            'fields': {
+                'description': '',
+                'countrycode': 'US',
+                'firstseenbysource': '2022-11-19T23:27:34.000Z',
+                'modified': '2022-11-19T23:27:34.000Z',
+                'stixid': 'location--28222222-2a22-222b-2222-222222222222',
+                'tags': ['elevated'],
+                'trafficlightprotocol': 'AMBER'
+            },
+            'rawJSON': location_with_name_object,
+            'score': Common.DBotScore.NONE,
+            'type': 'Location',
+            'value': 'United States of America'
+        }
+    ]
+
+    @pytest.mark.parametrize('location_object, xsoar_expected_response',
+                             [(upper_case_country_object, upper_case_country_response),
+                              (lower_case_country_object, lower_case_country_response),
+                              (location_with_name_object, location_with_name_response),
+                              ])
+    def test_parse_location(self, taxii_2_client, location_object, xsoar_expected_response):
+        """
+        Given:
+         - Location object.
+
+        When:
+         - Parsing the location into a format XSOAR knows to read.
+
+        Then:
+         - Make sure all the fields are being parsed correctly.
+        """
+        assert taxii_2_client.parse_location(location_object) == xsoar_expected_response

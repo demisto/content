@@ -2,15 +2,17 @@
     "name": "AWS - Security Hub",
     "description": "Amazon Web Services Security Hub Service .",
     "support": "xsoar",
-    "currentVersion": "1.1.22",
+    "currentVersion": "1.1.27",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "IT Services"
+        "Cloud Services"
     ],
-    "tags": [],
+    "tags": [
+        "marketplacev2:Data Source"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

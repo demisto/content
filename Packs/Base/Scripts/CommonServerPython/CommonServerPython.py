@@ -19,6 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
+import ssl
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -39,7 +40,7 @@ def __line__():
 
 # 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
 
@@ -231,7 +232,8 @@ entryTypes = {
 
 ENDPOINT_STATUS_OPTIONS = [
     'Online',
-    'Offline'
+    'Offline',
+    'Unknown'
 ]
 
 ENDPOINT_ISISOLATED_OPTIONS = [
@@ -510,7 +512,8 @@ class FeedIndicatorType(object):
     AS = "ASN"
     MUTEX = "Mutex"
     Malware = "Malware"
-
+    Identity = "Identity"
+    Location = "Location"
 
     @staticmethod
     def is_valid_type(_type):
@@ -531,7 +534,9 @@ class FeedIndicatorType(object):
             FeedIndicatorType.URL,
             FeedIndicatorType.AS,
             FeedIndicatorType.MUTEX,
-            FeedIndicatorType.Malware
+            FeedIndicatorType.Malware,
+            FeedIndicatorType.Identity,
+            FeedIndicatorType.Location
         )
 
     @staticmethod
@@ -1409,6 +1414,7 @@ class SmartGetDict(dict):
     :rtype: ``SmartGetDict``
 
     """
+
     def get(self, key, default=None):
         res = dict.get(self, key)
         if res is not None:
@@ -1818,9 +1824,14 @@ def argToList(arg, separator=',', transform=None):
     if isinstance(arg, list):
         result = arg
     elif isinstance(arg, STRING_TYPES):
+        is_comma_separated = True
         if arg[0] == '[' and arg[-1] == ']':
-            result = json.loads(arg)
-        else:
+            try:
+                result = json.loads(arg)
+                is_comma_separated = False
+            except Exception:
+                demisto.debug('Failed to load {} as JSON, trying to split'.format(arg))
+        if is_comma_separated:
             result = [s.strip() for s in arg.split(separator)]
     else:
         result = [arg]
@@ -3771,7 +3782,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension:
+            if self.extension: 
                 file_context['Extension'] = self.extension
 
             if self.file_type:
@@ -3906,6 +3917,9 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If file has a score then create and set a DBotScore object
+
         :return: None
         :rtype: ``None``
         """
@@ -3913,7 +3927,7 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None):
+                     tags=None, traffic_light_protocol=None, dbot_score=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3935,12 +3949,10 @@ class Common(object):
 
             # XSOAR Fields
             self.relationships = relationships
-            self.dbot_score = Common.DBotScore(
-                indicator=id,
-                indicator_type=DBotScoreType.CVE,
-                integration_name=None,
-                score=Common.DBotScore.NONE
-            )
+            self.dbot_score = dbot_score if dbot_score else Common.DBotScore(indicator=id,
+                                                                             indicator_type=DBotScoreType.CVE,
+                                                                             integration_name=None,
+                                                                             score=Common.DBotScore.NONE)
 
         def to_context(self):
             cve_context = {
@@ -6358,6 +6370,8 @@ class EntityRelationship:
         CREATES = 'creates'
         DELIVERED_BY = 'delivered-by'
         DELIVERS = 'delivers'
+        DETECTS = 'detects'
+        DETECTED_BY = 'detected-by'
         DOWNLOADS = 'downloads'
         DOWNLOADS_FROM = 'downloads-from'
         DROPPED_BY = 'dropped-by'
@@ -6379,6 +6393,7 @@ class EntityRelationship:
         INJECTS_INTO = 'injects-into'
         INVESTIGATES = 'investigates'
         IS_ALSO = 'is-also'
+        LOCATED_AT = 'located-at'
         MITIGATED_BY = 'mitigated-by'
         MITIGATES = 'mitigates'
         ORIGINATED_FROM = 'originated-from'
@@ -6429,6 +6444,8 @@ class EntityRelationship:
                                'creates': 'created-by',
                                'delivered-by': 'delivers',
                                'delivers': 'delivered-by',
+                               'detects': 'detected-by',
+                               'detected-by': 'detects',
                                'downloads': 'downloaded-by',
                                'downloads-from': 'hosts',
                                'dropped-by': 'drops',
@@ -6500,8 +6517,11 @@ class EntityRelationship:
             :return: Returns the reversed relationship name
             :rtype: ``str``
             """
-
-            return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            try:
+                return EntityRelationship.Relationships.RELATIONSHIPS_NAMES[name]
+            except KeyError:
+                demisto.debug('Cannot find a reverse name for relationship name, using "related-to" instead.')
+                return EntityRelationship.Relationships.RELATED_TO
 
     def __init__(self, name, entity_a, entity_a_type, entity_b, entity_b_type,
                  reverse_name='', relationship_type='IndicatorToIndicator', entity_a_family='Indicator',
@@ -6509,12 +6529,12 @@ class EntityRelationship:
 
         # Relationship
         if not EntityRelationship.Relationships.is_valid(name):
-            raise ValueError("Invalid relationship: " + name)
+            demisto.debug("Unknown relationship name: " + name)
         self._name = name
 
         if reverse_name:
             if not EntityRelationship.Relationships.is_valid(reverse_name):
-                raise ValueError("Invalid reverse relationship: " + reverse_name)
+                demisto.debug("Unknown reverse relationship name: " + reverse_name)
             self._reverse_name = reverse_name
         else:
             self._reverse_name = EntityRelationship.Relationships.get_reverse(name)
@@ -7340,7 +7360,16 @@ class CommandRunner:
             full_errors.extend(errors)
 
         summary_md = CommandRunner.get_results_summary(full_results, full_errors)
-        command_results = [res.result for res in full_results]
+
+        command_results = []
+        for res in full_results:
+            if isinstance(res.result, dict) and res.result.get('HumanReadable'):
+                res.result['HumanReadable'] = "***{brand} ({instance})***\n{human_readable}".format(
+                    brand=res.brand,
+                    instance=res.instance,
+                    human_readable=res.result.get('HumanReadable'))
+            command_results.append(res.result)
+
         if not command_results:
             if full_errors:  # no results were given but there are errors
                 errors = ["{instance}: {msg}".format(instance=err.instance, msg=err.result) for err in full_errors]
@@ -7369,11 +7398,12 @@ class CommandRunner:
             res.args.pop('using-brand', None)
             command = {'command': res.command,
                        'args': res.args}
+            comment = res.result.get('Contents', 'No contents found, see entry.') if isinstance(res.result, dict) else None
             results_summary_table.append({'Instance': '***{brand}***: {instance}'.format(brand=res.brand,
                                                                                          instance=res.instance),
                                           'Command': command,
                                           'Result': 'Success',
-                                          'Comment': None})
+                                          'Comment': comment})
 
         for err in errors:
             # don't care about using arg in command
@@ -7521,13 +7551,14 @@ regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
-ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
+ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?$'  # noqa: E501
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
-ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
+ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
 emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
-urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
+urlRegex = r"(?i)^[\[({\"']*(?P<url>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)[:-](?:\/\/|\\\\|3A__))?(?P<host>(?P<simple_domain>(?:[\w\-_]+\[?\.\]?)+[^\W\d]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\.){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)|[1])|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?(?P<path>\/(?:[^?#\s]+\/)*[^?#\s]+)(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)[\[({\"']*$"  # noqa: E501
+domainRegex = r"(?i)(?:(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?((?:[^\\\.@\s\"',(\[:?=]+(?:\.|\[\.\]))+[a-zA-Z]{2,})(?:[_/\s\"',)\]]|[.]\s|%2F|$)"
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 md5Regex = re.compile(r'\b[0-9a-fA-F]{32}\b', regexFlags)
 sha1Regex = re.compile(r'\b[0-9a-fA-F]{40}\b', regexFlags)
@@ -7874,12 +7905,29 @@ def is_demisto_version_ge(version, build_number=''):
     :return: True if running within a Server version greater or equal than the passed version
     :rtype: ``bool``
     """
+
+    def versionzfill(v):
+        """ Split version on . and zfill. So we can compare 6.10 to 6.5 properly.
+
+        :type v: ``srt``
+        :param v: Version str to fill
+
+        :return: Version with zfill
+        :rtype: ``str``
+        """
+        vzfill = []
+        for ver in v.split("."):
+            vzfill.append(ver.zfill(8))
+        return tuple(vzfill)
+
     server_version = {}
     try:
         server_version = get_demisto_version()
-        if server_version.get('version') > version:
+        server_zfill = versionzfill(server_version.get('version'))
+        ver_zfill = versionzfill(version)
+        if server_zfill > ver_zfill:
             return True
-        elif server_version.get('version') == version:
+        elif server_zfill == ver_zfill:
             if build_number:
                 return int(server_version.get('buildNumber')) >= int(build_number)  # type: ignore[arg-type]
             return True  # No build number
@@ -8233,15 +8281,20 @@ if 'requests' in sys.modules:
                 :return: No data returned
                 :rtype: ``None``
             """
+            context = create_urllib3_context(ciphers=CIPHERS_STRING)
+
+            def __init__(self, verify=True):
+                # type: (bool) -> None
+                if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
+                    self.context.options |= 0x4
+                super().__init__()
 
             def init_poolmanager(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
             def proxy_manager_for(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
     class BaseClient(object):
@@ -8298,7 +8351,7 @@ if 'requests' in sys.modules:
             # https://bugs.python.org/issue43998
 
             if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
-                self._session.mount('https://', SSLAdapter())
+                self._session.mount('https://', SSLAdapter(verify=verify))
 
             if proxy:
                 ensure_proxy_has_http_prefix()
@@ -8389,7 +8442,7 @@ if 'requests' in sys.modules:
                 if self._verify:
                     https_adapter = http_adapter
                 elif IS_PY3 and PY_VER_MINOR >= 10:
-                    https_adapter = SSLAdapter(max_retries=retry)
+                    https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)
                 else:
                     https_adapter = http_adapter
 
@@ -8527,16 +8580,7 @@ if 'requests' in sys.modules:
                     if error_handler:
                         error_handler(res)
                     else:
-                        err_msg = 'Error in API call [{}] - {}' \
-                            .format(res.status_code, res.reason)
-                        try:
-                            # Try to parse json error response
-                            error_entry = res.json()
-                            err_msg += '\n{}'.format(json.dumps(error_entry))
-                            raise DemistoException(err_msg, res=res)
-                        except ValueError:
-                            err_msg += '\n{}'.format(res.text)
-                            raise DemistoException(err_msg, res=res)
+                        self.client_error_handler(res)
 
                 if not empty_valid_codes:
                     empty_valid_codes = [204]
@@ -8611,6 +8655,23 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+
+        def  client_error_handler(self, res):
+            """Generic handler for API call error
+            Constructs and throws a proper error for the API call response.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+            """
+            err_msg = 'Error in API call [{}] - {}'.format(res.status_code, res.reason)
+            try:
+                # Try to parse json error response
+                error_entry = res.json()
+                err_msg += '\n{}'.format(json.dumps(error_entry))
+                raise DemistoException(err_msg, res=res)
+            except ValueError:
+                err_msg += '\n{}'.format(res.text)
+                raise DemistoException(err_msg, res=res)
 
 
 def batch(iterable, batch_size=1):
@@ -10252,9 +10313,10 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
     last_run_time = last_run and 'time' in last_run and last_run['time']
     now = get_current_time(timezone)
     if not last_run_time:
-        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}) + timedelta(hours=timezone)
+        last_run_time = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) \
+            + timedelta(hours=timezone)
     else:
-        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC'})
+        last_run_time = dateparser.parse(last_run_time, settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True})
 
     if look_back > 0:
         if now - last_run_time < timedelta(minutes=look_back):
@@ -10265,7 +10327,7 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
 
 def get_current_time(time_zone=0):
     """
-    Gets the current time in a given timezone.
+    Gets the current time in a given timezone, as time awared datetime.
 
     :type time_zone: ``int``
     :param time_zone: The time zone offset in hours.
@@ -10273,7 +10335,13 @@ def get_current_time(time_zone=0):
     :return: The current time.
     :rtype: ``datetime``
     """
-    return datetime.utcnow() + timedelta(hours=time_zone)
+    now = datetime.utcnow() + timedelta(hours=time_zone)
+    try:
+        import pytz
+        return now.replace(tzinfo=pytz.UTC)
+    except ImportError:
+        demisto.debug('pytz is missing, will not return timeaware object.')
+        return now
 
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
@@ -10638,7 +10706,7 @@ class YMLMetadataCollector:
         return command_wrapper
 
 
-def send_events_to_xsiam(events, vendor, product, data_format=None):
+def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url'):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -10657,11 +10725,19 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
     :param data_format: Should only be filled in case the 'events' parameter contains a string of raw
         events in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
+    :type url_key: ``str``
+    :param url_key: The param dict key where the integration url is located at. the default is 'url'.
+
     :return: None
     :rtype: ``None``
     """
     data = events
     amount_of_events = 0
+    params = demisto.params()
+    url = params.get(url_key)
+    calling_context = demisto.callingContext.get('context', {})
+    instance_name = calling_context.get('IntegrationInstance', '')
+    collector_name = calling_context.get('IntegrationBrand', '')
 
     if not events:
         demisto.debug('send_events_to_xsiam function received no events, skipping the API call to send events to XSIAM')
@@ -10696,10 +10772,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         'format': data_format,
         'product': product,
         'vendor': vendor,
-        'content-encoding': 'gzip'
+        'content-encoding': 'gzip',
+        'collector-name': collector_name,
+        'instance-name': instance_name,
+        'final-reporting-device': url
     }
 
-    header_msg = 'Error sending new events into XSIAM. \n'
+    header_msg = 'Error sending new events into XSIAM.\n'
 
     def events_error_handler(res):
         """
@@ -10713,14 +10792,18 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
                 error += ": " + xsiam_server_err_msg
 
         except ValueError:
-            error = '\n{}'.format(res.text)
+            if res.text:
+                error = '\n{}'.format(res.text)
+            else:
+                error = "Received empty response from the server"
 
         api_call_info = (
             'Parameters used:\n'
             '\tURL: {xsiam_url}\n'
             '\tHeaders: {headers}\n\n'
+            'Response status code: {status_code}\n'
             'Error received:\n\t{error}'
-        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=4), error=error)
+        ).format(xsiam_url=xsiam_url, headers=json.dumps(headers, indent=8), status_code=res.status_code, error=error)
 
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)

@@ -1,0 +1,30 @@
+{
+  "took": 3,
+  "timed_out": false,
+  "_shards": {
+    "total": 22,
+    "successful": 22,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 5,
+      "relation": "eq"
+    },
+    "max_score": null,
+    "hits": []
+  },
+  "aggregations": {
+    "uuid": {
+      "doc_count_error_upper_bound": 0,
+      "sum_other_doc_count": 0,
+      "buckets": [
+        {
+          "key": "85658c43-56d2-453d-9042-ee6b78930b0d",
+          "doc_count": 1
+        }
+      ]
+    }
+  }
+}
