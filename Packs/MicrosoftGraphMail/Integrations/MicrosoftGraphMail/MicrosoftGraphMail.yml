@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 sectionOrder:
 - Connect
 - Collect
@@ -1349,7 +1349,7 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.38400
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: true
   longRunning: false

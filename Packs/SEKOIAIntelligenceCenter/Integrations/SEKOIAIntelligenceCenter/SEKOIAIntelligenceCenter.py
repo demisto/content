@@ -164,12 +164,14 @@ def extract_file_indicator_hashes(pattern_str: str) -> dict:
     """
     Extract hashes composing the STIX indicator pattern
     """
-    hashes = {"sha256": "", "sha1": "", "md5": ""}
+    hashes = {"sha512": "", "sha256": "", "sha1": "", "md5": ""}
 
     # Remove enclosing brackets
     pattern_str = pattern_str.strip("[]")
     stix_object_hashes = pattern_str.split("OR")
     for object_hash in stix_object_hashes:
+        if "SHA-512" in object_hash:
+            hashes["sha512"] = object_hash.split("=")[1].strip(" '")
         if "SHA-256" in object_hash:
             hashes["sha256"] = object_hash.split("=")[1].strip(" '")
         if "SHA-1" in object_hash:
@@ -280,6 +282,7 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
         md5=hashes["md5"],
         sha1=hashes["sha1"],
         sha256=hashes["sha256"],
+        sha512=hashes["sha512"],
         dbot_score=dbot_score,
         traffic_light_protocol=tlp,
     )
