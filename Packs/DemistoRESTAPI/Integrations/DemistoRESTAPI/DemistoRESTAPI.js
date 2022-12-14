@@ -24,7 +24,10 @@ getTenantAccountName = function () {
 
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
-    if (uri.slice(-1) !== '/') {
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
+    if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
     }
     requestUrl += uri;
@@ -73,11 +76,11 @@ sendMultipart = function (uri, entryID, body) {
 
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = serverURL;
+    if (params.use_tenant){
+        requestUrl += '/' + getTenantAccountName();
+    }
     if (uri.slice(0, 1) !== '/') {
         requestUrl += '/';
-    }
-    if (params.use_tenant){
-        requestUrl += getTenantAccountName() + "/";
     }
     requestUrl += uri;
     var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
