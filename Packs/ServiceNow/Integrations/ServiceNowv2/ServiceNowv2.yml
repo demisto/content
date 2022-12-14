@@ -65,7 +65,7 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -770,7 +770,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Business criticallity of the ticket.
+      description: Business criticality of the ticket.
       isArray: false
       name: business_criticality
       predefined:
@@ -1329,7 +1329,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Business criticallity of the ticket.
+      description: Business criticality of the ticket.
       isArray: false
       name: business_criticality
       predefined:
