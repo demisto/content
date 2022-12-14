@@ -19,12 +19,5 @@ Using a national cloud endpoint is supported by setting the *Server URL* paramet
 
 Please refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
 
-
-## Look-Back Parameter Notes
-* Setting the look back parameter will fetch duplicated incidents in the event that incidents that fall out during the given look-back time were already fetched.
-
-
-If you do not wish to use these commands, you may keep your integration credentials the same.
-
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail)
