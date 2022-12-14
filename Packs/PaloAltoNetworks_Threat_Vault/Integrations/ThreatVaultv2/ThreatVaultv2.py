@@ -18,6 +18,9 @@ LIST_OF_RN_KEYS = [
     'applications'
 ]
 
+HEADERS_FILE = ['FileType', 'MD5', 'SHA256', 'SHA1', 'Size', 'Status']
+HEADERS_CVE = ['ID', 'Description', 'Score', 'Published', 'Modified']
+
 DATE_REGEX = r'\d{4}-[0-9]{2}-[0-9]{2}$'
 
 
@@ -144,30 +147,38 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
     match type_:
         case 'file':
             antivirus = response.get('signatures', {}).get('antivirus', ({}, ...))[0]
-            table_for_md = {'Active': antivirus.get('status'),
-                            'CreateTime': response.get('create_time'),
-                            'Release': antivirus.get('release'),
-                            'SignatureId': antivirus.get('id'),
+            table_for_md = {'Status': antivirus.get('status'),
                             'FileType': response.get('filetype'),
                             'MD5': response.get('md5'),
                             'SHA256': response.get('sha256'),
                             'SHA1': response.get('sha1'),
+                            'Size': response.get('size'),
                             }
             if expanded:
                 table_for_md.update({
+                    'Release': antivirus.get('release'),
+                    'CreateTime': response.get('create_time'),
+                    'SignatureId': antivirus.get('id'),
                     'Family': response.get('family'),
                     'Platform': response.get('platform'),
                     'Signature Name': antivirus.get('name'),
                     'Score': antivirus.get('severity'),
                     'Description': antivirus.get('description'),
-                    'Size': response.get('size'),
                     'Wildfire verdict': response.get('wildfire_verdict'),
                 })
+
+        case 'cve':
+            table_for_md = {'ID': response.get('cve'),
+                            'Score': response.get('severity'),
+                            'Published': response.get('ori_release_time'),
+                            'Modified': response.get('latest_release_time'),
+                            'Description': response.get('description'),
+                            }
 
         case 'fileformat':
             table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
-                            'Description': response.get('Description'),
+                            'Description': response.get('description'),
                             'Category': response.get('category'),
                             'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
@@ -183,7 +194,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
         case 'vulnerability':
             table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
-                            'Description': response.get('Description'),
+                            'Description': response.get('description'),
                             'Category': response.get('category'),
                             'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
@@ -200,7 +211,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
         case 'antivirus':
             table_for_md = {'ThreatID': response.get('id'),
                             'Name': response.get('name'),
-                            'Description': response.get('Description'),
+                            'Description': response.get('description'),
                             'Subtype': response.get('subtype'),
                             'Score': response.get('severity'),
                             'Default action': response.get('default_action'),
@@ -390,7 +401,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
             table_for_md = resp_to_hr(response=file_info, type_='file', expanded=args.get('expanded', False))
 
             readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
-                                              removeNull=True)
+                                              headers=HEADERS_FILE, removeNull=True)
 
         command_results = CommandResults(
             readable_output=readable_output,
@@ -430,9 +441,9 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
                 modified=vulnerability.get('latest_release_time'),
                 description=vulnerability.get('description'),
             )
-            table_for_md = resp_to_hr(response=vulnerability, type_='vulnerability')
+            table_for_md = resp_to_hr(response=vulnerability, type_='cve')
             readable_output = tableToMarkdown(name=f"CVE {cve} vulnerability reputation:", t=table_for_md,
-                                              removeNull=True)
+                                              headers=HEADERS_CVE, removeNull=True)
 
         command_results = CommandResults(
             readable_output=readable_output,
@@ -636,7 +647,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     except Exception as err:
         if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
             response = {}
-            readable_output = f'{cve or vendor or name} reputation is unknown to Threat Vault.'
+            readable_output = 'There is no information for your search.'
             command_results_list.append(
                 CommandResults(
                     readable_output=readable_output

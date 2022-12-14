@@ -111,7 +111,7 @@ def test_commands_failure(command, demisto_args, expected_results):
         (
             threat_search_command,
             {'cve': '123'},
-            '123 reputation is unknown to Threat Vault.',
+            'There is no information for your search.',
             None
         ),
         (
@@ -256,7 +256,7 @@ RESP_TO_HR_ARGS = [
         },
         'file',
         False,
-        8
+        6
     ),
     (
         {
@@ -823,7 +823,7 @@ def test_threat_batch_search_command(mocker, args, mocking, expected_args, expec
         reliability='E - Unreliable'
     )
 
-    call_request = mocker.patch.object(client, 'threat_batch_search_request', return_value='')
+    call_request = mocker.patch.object(client, 'threat_batch_search_request', return_value='test')
     mocker.patch('ThreatVaultv2.parse_resp_by_type', return_value=mocking)
     results = threat_batch_search_command(client, args)
 
