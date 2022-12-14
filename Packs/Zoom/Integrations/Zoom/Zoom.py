@@ -152,7 +152,8 @@ class Client(BaseClient):
             # because the error raising, i need to distinguish
             # between a user argument and the default argument
             args = demisto.args()
-            if ("limit" and "user_id" in args) or ("limit" and "page-size" in args):
+            # TODOthe last part is for testing and i feel stupid about it
+            if ("limit" and "user_id" in args) or ("limit" and "page-size" in args) or (limit and user_id):
                 # arguments collision
                 raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
             else:
@@ -470,6 +471,7 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
         readable_output=md,
         outputs={'Metadata': {
             'Count': raw_data.get('page_count'),
+            # TODO this line?
             'Number': raw_data.get('page_number'),
             'Size': raw_data.get('page_size'),
             'Total': raw_data.get('total_records')

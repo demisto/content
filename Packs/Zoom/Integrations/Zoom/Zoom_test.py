@@ -445,21 +445,42 @@ def test_get_jwt_token__encoding_format_check():
     expected = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJibGFibGEiLCJleHAiOjU3MzM4NzgwMH0.8GUkPXA1Dwkj55rGTBqE3chK0IaPiyRTEhCtcOOJjHk'
     assert encoded_token == expected
 
-
-def test_zoom_user_list_command__when_limit(mocker):
+# i dont like this test:(
+def test_zoom_user_list_command__when_user_id(mocker):
     """
         Given -
         a response from a client
         When -
-            a limit argument was passed
+            a user_id argument was passed
         Then -
             Validate that the parsing is as expected
     """
-    mocker.patch.object(Client, "zoom_user_list", return_value={"bla1": {"bla2": "hey"}})
+    to_md = {'id': 'C', 'first_name': 'Ye', 'last_name': 'Ro', 'email': 'y@gmail.com', 'type': 1, 'role_name': 'Member', 'pmi': 9, 'use_pmi': False,
+             'personal_meeting_url': 'hts://us0', 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': '', 'created_at': '2022-12-01T07:40:02Z', 'last_login_time': '2022-12-14T08:14:29Z'}
+
+    mocker.patch.object(Client, "zoom_user_list", return_value=to_md)
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    res = Zoom.zoom_user_list_command(client, page_size=0,
-                                      user_id="bla", status="active",
-                                      next_page_token=None, role_id=None, limit=7)
-    assert res == "bla"
+    res = Zoom.zoom_user_list_command(client, user_id="bla")
+    assert len(res.readable_output) == 159
+
+# i dont like this test:(
+def test_zoom_meeting_list_command__when_user_id(mocker):
+    """
+        Given -
+        a response from a client
+        When -
+            a user_id argument was passed
+        Then -
+            Validate that the parsing is as expected
+    """
+    to_md = {'id': 'CTJ7hG', 'first_name': 'Ye', 'last_name': 'Ro', 'email': 'y@gmail.com', 'type': 1, 'role_name': 'Member', 'pmi': 98, 'use_pmi': False,
+             'personal_meeting_url': 'https://', 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': '', 'created_at': '2022-12-01T07:40:02Z', 'last_login_time': '2022-12-14T08:14:29Z'}
+
+    mocker.patch.object(Client, "zoom_meeting_list", return_value=to_md)
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    res = Zoom.zoom_meeting_list_command(client, user_id="bla")
+    assert len(res.readable_output) == 114
