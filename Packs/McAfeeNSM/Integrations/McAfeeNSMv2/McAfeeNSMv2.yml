@@ -1285,6 +1285,23 @@ script:
         - contextPath: NSM.Attacks.name
           description: Attack name.
           type: String
+    - name: nsm-get-domains
+      description: If a domain id is given The command returns the details of the specific domain. Else, gets all available domain.
+      arguments:
+        - name: domain_id
+          description: Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          required: false
+          isArray: false
+      outputs:
+        - contextPath: NSM.Domains.childdomains
+          description: An array of the domain children.
+          type: String
+        - contextPath: NSM.Domains.id
+          description: Domain id.
+          type: Number
+        - contextPath: NSM.Domains.name
+          description: Domain name.
+          type: String
   isfetch: false
   runonce: false
   script: '-'

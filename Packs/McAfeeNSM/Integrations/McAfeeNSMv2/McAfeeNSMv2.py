@@ -212,7 +212,8 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def get_attacks_request(self, session_str: str, attack_id: str) -> Dict:
-        """ If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI..
+        """ If an attack id is given The command returns the details of the specific attack. Else, gets all available
+        attack definitions in the Manager UI.
             Args:
                 session_str: str - The session id.
                 attack_id: str - The id of the relevant attack.
@@ -223,6 +224,21 @@ class Client(BaseClient):
             url_suffix = f'/sdkapi/attack/{attack_id}'
         else:
             url_suffix = '/sdkapi/attacks/'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def get_domains_request(self, session_str: str, domain_id: str) -> Dict:
+        """ If a domain id is given The command returns the details of the specific domain.
+            Else, gets all available domains.
+            Args:
+                session_str: str - The session id.
+                domain_id: str - The id of the relevant attack.
+            Returns:
+                A dictionary with the attack list of the specific attack details.
+        """
+        url_suffix = '/sdkapi/domain'
+        if domain_id:
+            url_suffix = f'{url_suffix}/{domain_id}'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
@@ -516,6 +532,17 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         del alert['malwareFile']
         del alert['event']
     return alert_list
+
+
+def h_r_get_domains(children: List[Dict], human_readable: List):
+    for child in children:
+        d = {
+            'ID': child.get('id'),
+            'Name': child.get('name')
+        }
+        human_readable.append(d)
+        if child.get('childdomains', []):
+            h_r_get_domains(child.get('childdomains', []), human_readable)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1180,6 +1207,44 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> Command
     )
 
 
+def get_domains_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ If a domain id is given The command returns the details for the specific domain.
+        Else, gets all available domains.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The attack details or attack list.
+    """
+    domain_id = args.get('domain_id')
+    response = client.get_domains_request(session_str, domain_id)
+    results = response.get('DomainDescriptor', {})
+    human_readable = []
+    if domain_id:
+        title = f'Domain no.{domain_id}'
+        human_readable = [{
+            'ID': domain_id,
+            'Name': results.get('name')
+        }]
+    else:
+        title = 'List of Domains'
+        children = [results]
+        h_r_get_domains(children, human_readable)
+    readable_outputs = tableToMarkdown(
+        name=title,
+        t=human_readable,
+        removeNull=True
+    )
+    return CommandResults(
+        readable_output=readable_outputs,
+        outputs_prefix='NSM.Domains',
+        outputs=results,
+        raw_response=results,
+        outputs_key_field='id'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1252,6 +1317,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-attacks':
             results = get_attacks_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-domains':
+            results = get_domains_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
