@@ -25,8 +25,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-display: Rapid7 Nexpose
+description: Vulnerability management solution to help reduce threat exposure.
+display: Rapid7 InsightVM
 name: Rapid7 Nexpose
 script:
   commands:
@@ -446,7 +446,7 @@ script:
       description: The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD.
       type: date
     - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
-      description: The CVSS score, which ranges from 0-10.
+      description: The CVSS score (ranges from 0-10).
       type: number
     - contextPath: Nexpose.Asset.Vulnerability.CVSSV3Score
       description: The CVSS3 score, which ranges from 0-10.
@@ -1585,7 +1585,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is set to 'Day'.
+      description: The interval time the schedule should repeat. This depends on the value set in `frequency`. For example, if the value of `frequency` is set to "Day" and `interval` is set to 2, then the schedule will repeat every 2 days. Required only if frequency is used.
       isArray: false
       name: interval_time
       required: false
@@ -1793,7 +1793,7 @@ script:
       description: The severity score of the vulnerability, adjusted for PCI rules and exceptions, on a scale of 0-10.
       type: number
     - contextPath: Nexpose.Vulnerability.pci.fail
-      description: Whether, if present on a host. this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise.
+      description: Whether, if present on a host, this vulnerability would cause a PCI failure. True if "status" is "Fail", false otherwise.
       type: boolean
     - contextPath: Nexpose.Vulnerability.pci.specialNotes
       description: Any special notes or remarks about the vulnerability that pertain to PCI compliance.
