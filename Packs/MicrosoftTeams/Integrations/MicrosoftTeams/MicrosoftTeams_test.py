@@ -6,6 +6,8 @@ from MicrosoftTeams import send_message
 
 entryTypes['warning'] = 11
 
+BASE_URL = "https://graph.microsoft.com/beta/groups"
+
 bot_id: str = '9bi5353b-md6a-4458-8321-e924af433amb'
 
 tenant_id: str = 'pbae9ao6-01ql-249o-5me3-4738p3e1m941'
@@ -55,8 +57,8 @@ team_members: list = [
         'name': 'Denzel Washington',
         'givenName': 'Denzel',
         'surname': 'Washington',
-        'email': 'dwashinton@email.com',
-        'userPrincipalName': 'dwashinton@email.com',
+        'email': 'DwashintoN@email.com',
+        'userPrincipalName': 'DwashintoN@email.com',
         'tenantId': tenant_id
     }
 ]
@@ -960,47 +962,49 @@ def test_get_team_aad_id(mocker, requests_mock):
     )
     assert get_team_aad_id('The-A-Team') == '7d8efdf8-0c5a-42e3-a489-5ef5c3fc7a2b'
 
+    json_response = {
+        '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+        'value': [
+            {
+                'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
+                'displayName': 'MyGreatTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            },
+            {
+                'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
+                'displayName': 'WooahTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'mailNickname': 'X1050LaunchTeam',
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            }
+        ]
+    }
     # verify non existing team raises value error
-    requests_mock.get(
-        "https://graph.microsoft.com/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')",
-        json={
-            '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
-            'value': [
-                {
-                    'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
-                    'displayName': 'MyGreatTeam',
-                    'groupTypes': [
-                        'Unified'
-                    ],
-                    'mailEnabled': True,
-                    'resourceBehaviorOptions': [],
-                    'resourceProvisioningOptions': [
-                        'Team'
-                    ],
-                    'securityEnabled': False,
-                    'visibility': 'Private'
-                },
-                {
-                    'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
-                    'displayName': 'WooahTeam',
-                    'groupTypes': [
-                        'Unified'
-                    ],
-                    'mailEnabled': True,
-                    'mailNickname': 'X1050LaunchTeam',
-                    'resourceBehaviorOptions': [],
-                    'resourceProvisioningOptions': [
-                        'Team'
-                    ],
-                    'securityEnabled': False,
-                    'visibility': 'Private'
-                }
-            ]
-        }
-    )
+    url_a = f"{BASE_URL}?$filter=displayName eq 'The-B-Team' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    requests_mock.get(url_a, json=json_response)
     with pytest.raises(ValueError) as e:
         get_team_aad_id('The-B-Team')
     assert str(e.value) == 'Could not find requested team.'
+
+    url_b = f"{BASE_URL}?$filter=displayName eq 'MyGreatTeam' and resourceProvisioningOptions/Any(x:x eq 'Team')"
+    requests_mock.get(url_b, json=json_response)
 
     # verify team ID for team which is not in integration context
     assert get_team_aad_id('MyGreatTeam') == '02bd9fd6-8f93-4758-87c3-1fb73740a315'
@@ -1464,7 +1468,7 @@ def test_direct_message_handler(mocker, requests_mock):
         'type': 'message'
     }
 
-    # verify error message raised by Demisto server is sent as message as expectec
+    # verify error message raised by Demisto server is sent as message as expected
     mocker.patch.object(
         demisto,
         'directMessage',

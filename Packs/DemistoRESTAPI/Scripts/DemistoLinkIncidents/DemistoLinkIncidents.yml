@@ -1,7 +1,9 @@
 commonfields:
   id: DemistoLinkIncidents
+  id_x2: LinkIncidents
   version: -1
 name: DemistoLinkIncidents
+name_x2: LinkIncidents
 script: ''
 type: javascript
 tags:
@@ -28,5 +30,7 @@ dependson:
   must:
   - demisto-api-post
 fromversion: 5.0.0
+marketplaces:
+- xsoar
 tests:
 - no test

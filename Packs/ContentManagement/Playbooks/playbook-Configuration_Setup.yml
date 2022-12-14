@@ -384,8 +384,8 @@ tasks:
       id: f79ad792-f32e-45e2-8801-9ffc97e1685a
       version: -1
       name: Install Marketplace Packs
-      description: Marketplace packs installer for the content management pack.
-      scriptName: MarketplacePackInstaller
+      description: Content packs installer from marketplace.
+      scriptName: ContentPackInstaller
       type: regular
       iscommand: false
       brand: ''
@@ -393,6 +393,8 @@ tasks:
       '#none#':
       - '6'
     scriptarguments:
+      install_dependencies:
+        simple: "true"
       pack_id_key:
         simple: packid
       pack_version_key:
@@ -728,10 +730,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '29':
     id: '29'
-    taskid: 7884abcb-78cc-4ee5-8055-035ec88e531d
+    taskid: 0456f874-115d-4951-8cd3-edfcd9e37e83
     type: condition
     task:
-      id: 7884abcb-78cc-4ee5-8055-035ec88e531d
+      id: 0456f874-115d-4951-8cd3-edfcd9e37e83
       version: -1
       name: What is the Source of the Custom Packs?
       description: Determines where to get the custom pack files to install.
@@ -741,6 +743,8 @@ tasks:
     nexttasks:
       '#default#':
       - '31'
+      AWS S3:
+      - '36'
       Attachments:
       - '12'
       Google Cloud Storage:
@@ -779,6 +783,16 @@ tasks:
           right:
             value:
               simple: HTTP request
+    - label: AWS S3
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.custompackssource
+            iscontext: true
+          right:
+            value:
+              simple: AWS S3
     view: |-
       {
         "position": {
@@ -821,6 +835,46 @@ tasks:
       {
         "position": {
           "x": 1472.5,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+    type: condition
+    task:
+      id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+      version: -1
+      name: If there is no source provided, then no custom packs should be installed.
+      description: Checks whether there are custom packs to install when no source is provided. In that case, the playbook will stop with an error.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: ConfigurationSetup
+                accessor: CustomPacks
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 530,
           "y": 1700
         }
       }
@@ -984,36 +1038,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
-    taskid: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
-    type: condition
+  '36':
+    id: '36'
+    taskid: ca4fcf63-517a-4902-8714-fc29a0dcdabf
+    type: regular
     task:
-      id: 4c2f3fac-7aeb-4aac-805f-81f51bc729b1
+      id: ca4fcf63-517a-4902-8714-fc29a0dcdabf
       version: -1
-      name: If there is no source provided, then no custom packs should be installed.
-      description: Checks whether there are custom packs to install when no source is provided. In that case, the playbook will stop with an error.
-      type: condition
-      iscommand: false
+      name: Download Custom Packs from AWS S3
+      description: Download a file from S3 bucket to war room.
+      script: '|||aws-s3-download-file'
+      type: regular
+      iscommand: true
       brand: ''
     nexttasks:
-      yes:
-      - '17'
+      '#none#':
+      - '12'
+    scriptarguments:
+      bucket:
+        simple: ${incident.cicds3bucketname}
+      key:
+        simple: ${ConfigurationSetup.CustomPacks.packurl}
     separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isEmpty
-          left:
-            value:
-              complex:
-                root: ConfigurationSetup
-                accessor: CustomPacks
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 530,
+          "x": 1880,
           "y": 1700
         }
       }
@@ -1030,7 +1080,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3075,
-        "width": 1802.5,
+        "width": 2210,
         "x": 50,
         "y": 50
       }

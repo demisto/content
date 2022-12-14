@@ -34,10 +34,17 @@ configuration:
   name: baseURL
   required: true
   type: 0
+- defaultvalue: '0'
+  display: DBot Score Suspicious Threshold (-100 to 100)
+  name: suspicious_threshold
+  required: false
+  additionalinfo: Make sure the Suspicous threshold is greater than the Malicious threshold.
+  type: 0  
 - defaultvalue: '-100'
   display: DBot Score Malicious Threshold (-100 to 100)
   name: dboscore_threshold
   required: false
+  additionalinfo: Make sure the Malicious threshold is less than the Suspicous threshold.
   type: 0
 description: Cisco Umbrella Investigate
 display: Cisco Umbrella Investigate
@@ -1370,8 +1377,8 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  subtype: python3
+  dockerimage: demisto/python3:3.10.6.33415
 tests:
 - Cisco Umbrella Test
 fromversion: 5.0.0

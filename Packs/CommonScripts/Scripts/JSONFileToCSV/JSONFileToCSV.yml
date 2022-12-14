@@ -1,24 +1,24 @@
 args:
 - default: false
-  description: entry id of json
+  description: Entry ID of json
   isArray: false
   name: entryid
   required: true
   secret: false
 - default: false
-  description: output csv filename
+  description: Output CSV filename
   isArray: false
   name: filename
   required: true
   secret: false
 - default: true
   defaultValue: ','
-  description: CSV Delimiter.
+  description: CSV delimiter.
   isArray: false
   name: delimiter
   required: false
   secret: false
-comment: Script to convert a JSON File waroom output to a CSV file.
+comment: Script to convert a War Room output JSON File to a CSV file.
 commonfields:
   id: JSONFileToCSV
   version: -1
@@ -47,10 +47,10 @@ script: '-'
 system: false
 timeout: 600ns
 type: python
-subtype: python2
+subtype: python3
 runonce: false
 tags: []
 tests:
 - JSONtoCSV-Test
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415

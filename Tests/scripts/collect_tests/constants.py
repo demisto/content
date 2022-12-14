@@ -1,14 +1,20 @@
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.constants import (SAMPLES_DIR,
+                                                   TESTS_AND_DOC_DIRECTORIES,
+                                                   FileType,
+                                                   MarketplaceVersions)
 
 XSOAR_SANITY_TEST_NAMES: tuple[str, ...] = (
-    'Sanity Test - Playbook with integration',
+    # Skipped until helloworld server will be fixed
+    # 'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
-    'Sanity Test - Playbook with mocked integration',
+    # 'Sanity Test - Playbook with mocked integration',
     'Sanity Test - Playbook with Unmockable Whois Integration',
 )
 SANITY_TEST_TO_PACK: dict[str, str] = {
-    # Some sanity tests (rarely) require a pack
     'Sanity Test - Playbook with Unmockable Whois Integration': 'Whois',
+    'Sanity Test - Playbook with integration': 'HelloWorld',
+    'Sanity Test - Playbook with no integration': 'HelloWorld',
+    'Sanity Test - Playbook with mocked integration': 'HelloWorld',
 }
 
 DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
@@ -17,16 +23,26 @@ DEFAULT_REPUTATION_TESTS: tuple[str, ...] = (
     'Indicators reputation-.json Test',
 )
 
-ALWAYS_INSTALLED_PACKS = (
+ALWAYS_INSTALLED_PACKS_XSOAR = (
     'Base',
     'DeveloperTools',
 )
 
+ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 = ALWAYS_INSTALLED_PACKS_XSOAR + ('CoreAlertFields',)
+
+ALWAYS_INSTALLED_PACKS_XPANSE = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2
+
+ALWAYS_INSTALLED_PACKS_MAPPING = {
+    MarketplaceVersions.XSOAR: ALWAYS_INSTALLED_PACKS_XSOAR,
+    MarketplaceVersions.MarketplaceV2: ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2,
+    MarketplaceVersions.XPANSE: ALWAYS_INSTALLED_PACKS_XPANSE,
+}
+
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 
-SKIPPED_CONTENT_ITEMS: set[str] = {
+SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK: set[str] = {
     # these are not under packs, and are not supported anymore.
-    'playbook-Jask_Test-4.0.0.yml'
+    'playbook-Jask_Test-4.0.0.yml',
     'playbook-Recorded_Future_Test_4_0.yml',
     'playbook-TestCommonPython_4_1.yml',
 }
@@ -48,6 +64,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
+    FileType.MODELING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
@@ -71,6 +88,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.CONF_JSON,
     FileType.MODELING_RULE_SCHEMA,
     FileType.LAYOUTS_CONTAINER,
+    FileType.XDRC_TEMPLATE,
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
@@ -85,4 +103,9 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
     FileType.LANDING_PAGE_SECTIONS_JSON,
+    FileType.XDRC_TEMPLATE_YML,
+    FileType.XSIAM_DASHBOARD_IMAGE,
+    FileType.XSIAM_REPORT_IMAGE,
 }
+
+NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}

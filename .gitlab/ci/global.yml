@@ -44,6 +44,14 @@
   - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
   - section_end "Create ID Set"
 
+.create-id-set-xpanse: &create-id-set-xpanse
+  - section_start "Create ID Set" --collapsed
+  - demisto-sdk create-id-set -o ./Tests/id_set.json --marketplace "xpanse" >> $ARTIFACTS_FOLDER/logs/create_id_set.log
+  - cp ./Tests/id_set.json $ARTIFACTS_FOLDER
+  - if [ -f ./all_removed_items_from_id_set.json ]; then cp ./all_removed_items_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - if [ -f ./items_removed_manually_from_id_set.json ]; then cp ./items_removed_manually_from_id_set.json $ARTIFACTS_FOLDER/logs; fi
+  - section_end "Create ID Set"
+
 .download-demisto-conf:
   - section_start "Download content-test-conf" --collapsed
   - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/download_demisto_conf.log
@@ -99,14 +107,12 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
-  - |
-    if [ -f "./.venv/bin/activate" ]; then
-      echo "found venv"
-    else
-      echo "installing venv"
-      NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-      npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
-    fi
+  - echo "Checking if pyproject.toml is consistent with poetry.lock"
+  - poetry lock --check
+  # we still need to install even if cached. if cached, `poetry` will handle it
+  - echo "installing venv"
+  - NO_HOOKS=1 .hooks/bootstrap | tee --append $ARTIFACTS_FOLDER/logs/installations.log
+  - npm ci --cache .npm --prefer-offline | tee --append $ARTIFACTS_FOLDER/logs/installations.log
   - source ./.venv/bin/activate
   - |
     if [ -n "${DEMISTO_SDK_NIGHTLY}" ]; then
@@ -151,7 +157,7 @@
     - *get_contribution_pack
     - *install_ssh_keys
     - section_start "Build Parameters"
-    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
+    - set | grep -E "^NIGHTLY=|^INSTANCE_TESTS=|^SERVER_BRANCH_NAME=|^ARTIFACT_BUILD_NUM=|^DEMISTO_SDK_NIGHTLY=|^TIME_TO_LIVE=|^CONTRIB_BRANCH=|^FORCE_PACK_UPLOAD=|^PACKS_TO_UPLOAD=|^BUCKET_UPLOAD=|^STORAGE_BASE_PATH=|^OVERRIDE_ALL_PACKS=|^GCS_MARKET_BUCKET=|^GCS_MARKET_V2_BUCKET=|^GCS_MARKET_XPANSE_BUCKET=|^SLACK_CHANNEL=|^NVM_DIR=|^NODE_VERSION=|^PATH=|^ARTIFACTS_FOLDER=|^ENV_RESULTS_PATH="
     - python --version
     - python2 --version
     - python3 --version
@@ -184,7 +190,9 @@
   stage: unittests-and-validations
   artifacts:
     reports:
-      cobertura: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/unit-tests
@@ -203,7 +211,6 @@
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
     - python3 -m pytest ./Tests/Marketplace/Tests/ -v
-    - python3 -m pytest ./Tests/scripts/utils/tests -v
     - python3 -m pytest ./Tests/tests -v
     - python3 -m pytest ./Tests/private_build/ -v
     - python3 -m pytest Utils -v
@@ -238,7 +245,7 @@
             gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
             gsutil cp "gs://$GCS_MARKET_BUCKET/content/packs/index.json" "$ARTIFACTS_FOLDER/previous_index.json"
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
-            demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
+            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
           else
             echo "Skipping, Should run on circleCi."
           fi
@@ -251,8 +258,6 @@
             fi
           else
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type html,xml --previous-coverage-report-url https://storage.googleapis.com/marketplace-dist-dev/code-coverage-reports/coverage-min.json
-            echo "Adding unit tests coverage comment to the pr"
-            python3 ./Tests/scripts/add_pr_comment.py
           fi
         fi
       fi

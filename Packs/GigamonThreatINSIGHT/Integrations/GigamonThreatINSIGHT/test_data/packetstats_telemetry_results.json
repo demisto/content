@@ -1,0 +1,45 @@
+{
+  "result_count": 25, 
+  "columns": null, 
+  "data": [
+    {
+      "timestamp": "2022-08-16T22:00:00.000Z", 
+      "sensor_id": null, 
+      "account_code": null, 
+      "interface_name": null, 
+      "tx_bytes": 105174189700, 
+      "tx_packets": 103317805, 
+      "tx_errors": 0, 
+      "rx_bytes": 898120495154, 
+      "rx_packets": 1839052116, 
+      "rx_errors": 0, 
+      "rx_bits_per_second": 1639900
+    }, 
+    {
+      "timestamp": "2022-08-16T23:00:00.000Z", 
+      "sensor_id": null, 
+      "account_code": null, 
+      "interface_name": null, 
+      "tx_bytes": 105241046718, 
+      "tx_packets": 103383993, 
+      "tx_errors": 0, 
+      "rx_bytes": 898857101268, 
+      "rx_packets": 1840621728, 
+      "rx_errors": 0, 
+      "rx_bits_per_second": 1636902
+    }, 
+    {
+      "timestamp": "2022-08-17T00:00:00.000Z", 
+      "sensor_id": null, 
+      "account_code": null,
+      "interface_name": null, 
+      "tx_bytes": 105309546795, 
+      "tx_packets": 103454162, 
+      "tx_errors": 0, 
+      "rx_bytes": 899615843421, 
+      "rx_packets": 1842217485, 
+      "rx_errors": 0, 
+      "rx_bits_per_second": 1686093
+    }
+  ]
+}

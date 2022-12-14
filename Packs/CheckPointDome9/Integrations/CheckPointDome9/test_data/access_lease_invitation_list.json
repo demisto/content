@@ -1,0 +1,15 @@
+[
+    {
+        "body": null,
+        "created": "created",
+        "expirationTime": "expirationTime",
+        "id": "id",
+        "issuerName": "issuerName",
+        "length": "length",
+        "notifyEmail": null,
+        "pivotEntity": "pivotEntity",
+        "recipientName": "recipientName",
+        "serviceName": "serviceName",
+        "targetSrl": "targetSrl"
+    }
+]

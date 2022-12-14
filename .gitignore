@@ -23,6 +23,7 @@ demistomock.ps1
 !Tests/demistomock/demistomock.py
 !Tests/demistomock/demistomock.ps1
 Tests/filter_file.txt
+Tests/filter_file_old.txt
 Tests/id_set.json
 .mypy_cache
 Scripts/*/*_unified.yml
@@ -38,6 +39,8 @@ Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
 requirements.txt
+Tests/scripts/infrastructure_tests/collect_tests.log
+Tests/scripts/collect_tests.log
 
 # Environment and reports
 .demisto-sdk-conf
@@ -46,8 +49,6 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
-
-
 
 # coverage related
 /coverage_report
@@ -58,3 +59,10 @@ Packs/**/report_pytest.json
 **/.devcontainer
 !/.devcontainer
 
+# authentication files
+*.pem
+*.crt
+*.key
+
+# neo4j
+neo4j-data

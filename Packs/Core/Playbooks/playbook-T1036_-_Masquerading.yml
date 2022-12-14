@@ -407,11 +407,8 @@ tasks:
       FileRemediation:
         complex:
           root: inputs.FileRemediation
-      HostAutoContainment:
-        complex:
-          root: inputs.HostAutoContainment
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: "False"
       Username:
@@ -532,17 +529,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: e21c1fd7-d14b-4c86-801f-24836f709ca3
+    taskid: b07d917d-3fa8-4e37-8d2a-86f26a8ecc71
     type: playbook
     task:
-      id: e21c1fd7-d14b-4c86-801f-24836f709ca3
+      id: b07d917d-3fa8-4e37-8d2a-86f26a8ecc71
       version: -1
       name: Enrichment for Verdict
       playbookName: Enrichment for Verdict
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook checks prior alert closing reasons and performs enrichment and prevalence checks on different IOC types. It then returns the information needed to establish the alert''s verdict.'
     nexttasks:
       '#none#':
       - "72"
@@ -572,7 +569,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${inputs.initiatorsha256} or hostip:${inputs.IP} or username:${inputs.User} or url:${inputs.URL}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip} or username:${alert.username} or url:${alert.url}) and alertsource:${alert.sourceBrand} and alertname:${alert.name}
       threshold:
         simple: "5"
     separatecontext: false
@@ -860,10 +857,8 @@ tasks:
           - operator: uniq
       FileRemediation:
         simple: Quarantine
-      HostAutoContainment:
-        simple: "false"
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: "False"
       Username:

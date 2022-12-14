@@ -8,7 +8,7 @@ import subprocess
 import sys
 import uuid
 import zipfile
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from datetime import datetime
 from packaging.version import Version
 from enum import IntEnum
@@ -53,6 +53,10 @@ DOCKER_HARDENING_CONFIGURATION = {
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': f'--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192##--env##no_proxy={NO_PROXY}',  # noqa: E501
     'powershell.pass.extra.keys': f'--env##no_proxy={NO_PROXY}',
+    'monitoring.pprof': 'true',
+    'enable.pprof.memory.dump': 'true',
+    'limit.memory.dump.size': '14000',
+    'memdump.debug.level': '1',
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
     'docker.run.internal.asuser': 'true'
@@ -171,7 +175,7 @@ def get_id_set(id_set_path) -> Union[dict, None]:
     return None
 
 
-class Build:
+class Build(ABC):
     # START CHANGE ON LOCAL RUN #
     content_path = f'{os.getenv("HOME")}/project' if os.getenv('CIRCLECI') else os.getenv('CI_PROJECT_DIR')
     test_pack_target = f'{os.getenv("HOME")}/project/Tests' if os.getenv(
@@ -208,6 +212,11 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+
+    @property
+    @abstractmethod
+    def marketplace_name(self) -> str:
+        pass
 
     @staticmethod
     def fetch_tests_list(tests_to_run_path: str):
@@ -265,6 +274,16 @@ class Build:
     @staticmethod
     def set_marketplace_url(servers, branch_name, ci_build_number):
         pass
+
+    def check_if_new_to_marketplace(self, diff: str) -> bool:
+        """
+        Args:
+            diff: the git diff for pack_metadata file, between master and branch
+        Returns:
+            (bool): whether new (current) marketplace was added to the pack_metadata or not
+        """
+        spaced_diff = " ".join(diff.split())
+        return (f'+ "{self.marketplace_name}"' in spaced_diff) and not (f'- "{self.marketplace_name}"' in spaced_diff)
 
     def disable_instances(self):
         for server in self.servers:
@@ -345,8 +364,7 @@ class Build:
                 if self.is_xsiam and not filtered_tests:
                     tests_for_iteration = []
                 else:
-                    tests_for_iteration = [test for test in tests
-                                           if not filtered_tests or test.get('playbookID', '') in filtered_tests]
+                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -544,6 +562,10 @@ class XSOARBuild(Build):
                                     branch_name=self.branch_name)
         return self._proxy
 
+    @property
+    def marketplace_name(self) -> str:
+        return 'xsoar'
+
     def configure_servers_and_restart(self):
         manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
         for server in self.servers:
@@ -710,17 +732,23 @@ class XSIAMBuild(Build):
         super().__init__(options)
         self.is_xsiam = True
         self.xsiam_machine = options.xsiam_machine
-        self.xsiam_servers = get_json_file(options.xsiam_servers_path)
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine, self.xsiam_servers)
-
+            self.get_xsiam_configuration(options.xsiam_machine, options.xsiam_servers_path,
+                                         options.xsiam_servers_api_keys)
         self.servers = [XSIAMServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
                                     self.xsiam_machine)]
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine, xsiam_servers):
+    def get_xsiam_configuration(xsiam_machine, xsiam_servers_path, xsiam_servers_api_keys_path):
+        xsiam_servers = get_json_file(xsiam_servers_path)
         conf = xsiam_servers.get(xsiam_machine)
-        return conf.get('api_key'), conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+        xsiam_servers_api_keys = get_json_file(xsiam_servers_api_keys_path)
+        api_key = xsiam_servers_api_keys.get(xsiam_machine)
+        return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
+
+    @property
+    def marketplace_name(self) -> str:
+        return 'marketplacev2'
 
     def configure_servers_and_restart(self):
         # No need of this step in XSIAM.
@@ -843,6 +871,7 @@ def options_handler(args=None):
     parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
     parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
     parser.add_argument('--xsiam_servers_path', help='Path to secret xsiam server metadata file.')
+    parser.add_argument('--xsiam_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -1422,8 +1451,9 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"'
              for instance_name, integration_of_instance in failed_pre_and_post])
         logging.warning(f'Integration instances that had ("Test" Button) failures '
-                        f'both before and after the content update:\n{pformat(failed_pre_and_post_string)}')
-
+                        f'both before and after the content update'
+                        f'(No need to handle ERROR messages for these "test-module" failures):'
+                        f'\n{pformat(failed_pre_and_post_string)}.')
     # fail the step if there are instances that only failed after content was updated
     if failed_only_after_update:
         failed_only_after_update_string = "\n".join(
@@ -1652,9 +1682,10 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     hidden_integrations_paths = [f'Packs/{pack_name}/Integrations' for pack_name in turned_non_hidden_packs_names]
     # extract integration names within the turned non-hidden packs.
     for hidden_integrations_path in hidden_integrations_paths:
-        pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
-        for integration_path in pack_integrations_paths:
-            hidden_integrations.append(integration_path.split("/")[-1])
+        if os.path.exists(hidden_integrations_path):
+            pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
+            for integration_path in pack_integrations_paths:
+                hidden_integrations.append(integration_path.split("/")[-1])
     hidden_integrations_names = [integration for integration in hidden_integrations if
                                  not str(integration).startswith('.')]
     return hidden_integrations_names
@@ -1684,21 +1715,47 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     return list(set(new_integrations_names)), modified_integrations_names
 
 
+def filter_new_to_marketplace_packs(build: Build, modified_pack_names: Set[str]) -> Set[str]:
+    """
+    Return a set of packs that is new to the marketplace.
+    Args:
+        build (Build): The build object.
+        modified_packs_names (Set[str]): The set of packs to install.
+    Returns:
+        (Set[str]): The set of the pack names that should not be installed.
+    """
+    first_added_to_marketplace = set()
+    for pack_name in modified_pack_names:
+        diff = run_git_diff(pack_name, build)
+        if build.check_if_new_to_marketplace(diff):
+            first_added_to_marketplace.add(pack_name)
+    return first_added_to_marketplace
+
+
 def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tuple[Set[str], Set[str]]:
     """
-    Return a set of packs to install only in the post-update.
+    Return a set of packs to install only in the post-update, and set not to install in pre-update.
     Args:
         modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
-        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
+        (Set[str]): The set of the pack names that should be installed only in post update. (non-hidden packs or packs
+                                                that new to current marketplace)
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
                                                                       build.content_path, build.server_numeric_version)
+    # packs to install used in post update
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
-    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
+
+    first_added_to_marketplace = filter_new_to_marketplace_packs(
+        build, modified_packs_names - non_hidden_packs - packs_with_higher_min_version
+    )
+
+    packs_not_to_install_in_pre_update = set().union(*[packs_with_higher_min_version,
+                                                       non_hidden_packs, first_added_to_marketplace])
+    return packs_not_to_install_in_pre_update, non_hidden_packs
 
 
 def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
@@ -1736,10 +1793,11 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Finds all the packs that should not be intalled, like turned hidden -> non-hidden packs names
-           or packs with higher min version than the server version.
+        4. Finds all the packs that should not be installed, like turned hidden -> non-hidden packs names
+           or packs with higher min version than the server version,
+           or existing packs that were added to a new marketplace.
         5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
-           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
+           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list
            This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
         6. Configures integration instances (same version as in production) for the modified packs
             and runs `test-module` (pre-update).
@@ -1765,10 +1823,12 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
-        packs_to_install = modified_packs_names - packs_not_to_install
+        packs_not_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_not_to_install(
+            modified_packs_names, build)
+        packs_to_install = modified_packs_names - packs_not_to_install_in_pre_update
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(
+            packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results

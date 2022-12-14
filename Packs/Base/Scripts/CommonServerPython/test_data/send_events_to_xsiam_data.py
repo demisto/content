@@ -42,3 +42,22 @@ events_dict = {
         "expected_data": "Some cef event 1\nSome cef event 2",
     }
 }
+
+log_error = \
+    """Error sending new events into XSIAM.
+Parameters used:
+\tURL: https://api-url
+\tHeaders: {{
+        "authorization": "TOKEN",
+        "format": "json",
+        "product": "some product",
+        "vendor": "some vendor",
+        "content-encoding": "gzip",
+        "collector-name": "test_brand",
+        "instance-name": "test_integration_instance",
+        "final-reporting-device": "www.test_url.com"
+}}
+
+Response status code: {status_code}
+Error received:
+\t{error_received}"""

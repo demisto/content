@@ -25,7 +25,7 @@ configuration:
   required: false
   additionalinfo: Defaults to 22
 script:
-  script: '-'
+  script: ''
   type: python
   commands:
   - name: sftp-listdir
@@ -47,7 +47,7 @@ script:
       description: Defaults to False where text based file content will be printed. Please specify as True to download the file in case of non-text based files.
       defaultValue: "False"
     description: Copies contents of file specified from the sftp server and prints it to the war room
-  dockerimage: demisto/netmiko:1.0.0.24037
+  dockerimage: demisto/netmiko:1.0.0.34185
   runonce: false
   subtype: python3
 fromversion: 6.2.0

@@ -1,0 +1,133 @@
+{
+    "success": true,
+    "data": {
+        "page": {
+            "currentPage": 0,
+            "currentElements": 1,
+            "totalPages": 1,
+            "totalElements": 1
+        },
+        "threats": [
+            {
+                "id": 261737,
+                "relatedSearchTags": [],
+                "feeds": [
+                    {
+                        "id": 23,
+                        "permissions": {
+                            "OWNER": false,
+                            "WRITE": false,
+                            "READ": true
+                        },
+                        "displayName": "Cofense"
+                    }
+                ],
+                "blockSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Major",
+                        "ipDetail": {
+                            "ip": "127.0.0.1",
+                            "lookupOn": 1657112848746,
+                            "latitude": 39.1472,
+                            "longitude": -94.5735,
+                            "metroCode": 616,
+                            "timeZone": "America/Chicago",
+                            "continentName": "North America",
+                            "continentCode": "NA",
+                            "countryName": "United States",
+                            "countryIsoCode": "US",
+                            "subdivisionName": "Missouri",
+                            "subdivisionIsoCode": "MO",
+                            "postalCode": "64116",
+                            "asn": 33387,
+                            "asnOrganization": "DataShack, LC",
+                            "isp": "DataShack, LC",
+                            "organization": "DataShack, LC"
+                        },
+                        "confidence": 100,
+                        "blockType": "URL",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "http://abc.dummy.com/docs/dummy/doc",
+                        "data_1": {
+                            "domain": "dummy.com"
+                        }
+                    }
+                ],
+                "campaignBrandSet": [
+                    {
+                        "totalCount": 1,
+                        "brand": {
+                            "id": 2051,
+                            "text": "None"
+                        }
+                    }
+                ],
+                "extractedStringSet": [],
+                "domainSet": [],
+                "senderEmailSet": [],
+                "executableSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "vendorDetections": [],
+                        "fileName": "Specification.exe",
+                        "type": "Attachment",
+                        "ssdeep": "dummy",
+                        "severityLevel": "Major",
+                        "md5Hex": "8e1a7d8b88096693a52173618b7b709e",
+                        "sha1Hex": "1ff3bdd7a201ea9a39c6ed061d29fd276fc83b7d",
+                        "sha224Hex": "1bba74de1264cfc6814e572f18eea1e89f11b8ed5d296922fbde64f7",
+                        "sha384Hex": "dummy",
+                        "sha512Hex": "dummy",
+                        "fileNameExtension": "exe"
+                    }
+                ],
+                "senderIpSet": [],
+                "senderNameSet": [],
+                "spamUrlSet": [],
+                "subjectSet": [
+                    {
+                        "totalCount": 1,
+                        "subject": "New Order List (PO.NO_#396201512022)"
+                    }
+                ],
+                "campaignLanguageSet": [
+                    {
+                        "languageDefinition": {
+                            "isoCode": "en",
+                            "name": "English",
+                            "nativeName": "English",
+                            "family": "Indo-European"
+                        }
+                    }
+                ],
+                "campaignScreenshotSet": [],
+                "lastPublished": 1657112815638,
+                "firstPublished": 1657112813922,
+                "label": "Finance - FormBook",
+                "executiveSummary": "Finance-themed campaign delivers FormBook.",
+                "hasReport": true,
+                "reportURL": "https://www.threathq.com/api/l/activethreatreport/261737/html",
+                "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/261737/html",
+                "threatDetailURL": "https://www.threathq.com/p42/search/default?m=261737",
+                "threatType": "MALWARE",
+                "deliveryMechanisms": [],
+                "secureEmailGatewaySet": [],
+                "malwareFamilySet": [
+                    {
+                        "familyName": "FormBook",
+                        "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                    }
+                ],
+                "naicsCodes": []
+            }
+        ]
+    }
+}

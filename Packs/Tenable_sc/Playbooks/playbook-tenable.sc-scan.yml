@@ -158,7 +158,7 @@ tasks:
       Timeout:
         simple: "60"
       dt:
-        simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending' || val.Status == 'Resuming' || val.Status == 'Pausing' || val.Status == 'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets' || val.Status == 'Initializing Scanners').ID
+        simple: TenableSC.ScanResults(val.Status == 'Running' || val.Status == 'Pending' || val.Status == 'Resuming' || val.Status == 'Pausing' || val.Status == 'Paused' || val.Status == 'Queued' || val.Status == 'Verifying targets' || val.Status == 'Initializing Scanners' || val.Status == 'Preparing').ID
     separatecontext: true
     loop:
       iscommand: false

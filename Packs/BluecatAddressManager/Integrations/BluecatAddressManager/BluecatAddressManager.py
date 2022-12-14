@@ -120,7 +120,8 @@ class Client:
         params = {
             'type': 'Configuration',
             'start': 0,
-            'count': 100
+            'count': 100,
+            'parentId': 0,
         }
         confs = self.http_request('GET', '/getEntities', params)
         if not confs:
@@ -313,7 +314,7 @@ def get_response_policies(client: Client, start: str, count: str):
     return client.http_request('GET', '/getEntities', params=params)
 
 
-def create_response_policies_result(raw_response_policies: list):
+def create_response_policies_result(raw_response_policies: dict):
     response_policies = []
     if raw_response_policies:
         hr = '## Response Policies:\n'

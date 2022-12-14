@@ -1,0 +1,64 @@
+{
+  "scripts": [
+    {
+      "myScript": {
+        "name": "myScript",
+        "file_path": "Packs/myPack/Scripts/myScript/myScript.yml",
+        "pack": "myPack",
+        "tests": [
+          "myOtherTestPlaybook"
+        ]
+      }
+    }
+  ],
+  "playbooks": [{
+    "myPlaybook": {
+      "name": "myPlaybook",
+      "file_path": "Packs/myPack/Playbooks/myPlaybook.yml",
+      "pack": "myPack"
+    }
+  }],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myPack/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myPack",
+        "marketplaces": [
+          "xsoar",
+          "marketplacev2"
+        ]
+      },
+      "Sanity Test - Playbook with Unmockable Whois Integration": {
+        "name": "Sanity Test - Playbook with Unmockable Whois Integration",
+        "file_path": "Packs/Whois/Sanity Test - Playbook with Unmockable Whois Integration.yml",
+        "pack": "Whois",
+        "marketplaces": [
+          "xsoar",
+          "marketplacev2"
+        ]
+      },
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myPack",
+        "marketplaces": [
+          "xsoar"
+        ],
+        "implementing_scripts": [
+          "myScript"
+        ]
+      }
+    }
+  ],
+  "Packs": {
+    "myPack": {
+      "name": "myPack",
+      "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+      ]
+    }
+  }
+}

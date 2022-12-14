@@ -16,6 +16,9 @@ ignore=BA101
 [file:Phishing.yml]
 ignore=BA101,BA110
 
+[file:Process_Email_-_Generic_v2.yml]
+ignore=PB118
+
 [file:incidentfield-Email_Return_Path.json]
 ignore=IF107
 
@@ -32,7 +35,7 @@ ignore=IF107
 ignore=IF107
 
 [file:incidentfield-emailauthenticitycheck.json]
-ignore=IF107
+ignore=IF107,IF116
 
 [file:incidentfield-Attachment_type.json]
 ignore=IF107
@@ -138,6 +141,9 @@ ignore=IF115
 
 [file:incidentfield-reported_email_origin.json]
 ignore=IF116
+
+[file:Process_Email_-_Generic_v2_README.md]
+ignore=RM106
 
 [known_words]
 CheckEmailAuthenticity

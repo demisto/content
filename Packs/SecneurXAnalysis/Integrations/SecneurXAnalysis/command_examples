@@ -1,0 +1,5 @@
+!snx-analysis-get-completed last_count=4 last_hours=1
+!snx-analysis-get-pending last_count=4 last_hours=1
+!snx-analysis-get-status last_count=4 last_hours=1
+!snx-analysis-submit-url URL=https://google.com
+!snx-analysis-get-quota

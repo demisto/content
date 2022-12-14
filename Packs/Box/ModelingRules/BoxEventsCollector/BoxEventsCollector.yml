@@ -1,5 +1,6 @@
-name: BoxEventCollector
-id: BoxEventCollector
 fromversion: 6.0.0
+id: BoxEventCollector
+name: BoxEventCollector
 rules: ''
 schema: ''
+toversion: 6.9.9

@@ -49,7 +49,8 @@ def get_incident_extra_data_by_status(incident_id, alerts_limit):
 ''' TESTS FUNCTIONS '''
 
 
-# Note this test will fail when run locally (in pycharm/vscode) as it assumes the machine (docker image) has UTC timezone set
+# Note this test will fail when run locally (in pycharm/vscode)
+# as it assumes the machine (docker image) has UTC timezone set
 
 @pytest.mark.parametrize(argnames='time_to_convert, expected_value',
                          argvalues=[('1322683200000', 1322683200000),
@@ -107,10 +108,21 @@ def test_get_endpoints(requests_mock):
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
+    """
+    Given:
+        The default arguments for the get endpoints command: limit = 1, page = 0, sort_order = 'asc'.
+    When:
+        Calling the get_endpoints_command function
+    Then:
+        a. Make sure the 'get_endpoints' API is not called (not to be confused with get_endpoint - see last comment
+            here: https://jira-hq.paloaltonetworks.local/browse/XSUP-15995)
+        b. Make sure the returned result as in the expected format.
+    """
     from CoreIRApiModule import get_endpoints_command, CoreClient
 
     get_endpoints_response = load_test_data('./test_data/get_all_endpoints.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/', json=get_endpoints_response)
+    requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoint/', json=get_endpoints_response)
+    get_endpoints_mock = requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/get_endpoints/')
 
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={}
@@ -121,9 +133,10 @@ def test_get_all_endpoints_using_limit(requests_mock):
         'sort_order': 'asc'
     }
     res = get_endpoints_command(client, args)
-    expected_endpoint = get_endpoints_response.get('reply')[0]
+    expected_endpoint = get_endpoints_response.get('reply').get('endpoints')
 
-    assert [expected_endpoint] == res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+    assert not get_endpoints_mock.called
+    assert res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)'] == expected_endpoint
 
 
 def test_endpoint_command(requests_mock):
@@ -369,9 +382,10 @@ def test_get_audit_agent_reports(requests_mock):
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
     assert outputs['CoreApiModule.AuditAgentReports'] == expected_outputs
-    assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
-                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'},
-                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
+    assert outputs['Endpoint(val.ID && val.ID == obj.ID && val.Vendor == obj.Vendor)'] == [
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+        {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
 
 
 def test_get_distribution_status(requests_mock):
@@ -472,8 +486,10 @@ def test_blocklist_files_command_with_more_than_one_file(requests_mock):
 
     from CoreIRApiModule import blocklist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'CoreApiModule.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
-        'multi_command_args']['hash_list']}
+    expected_command_result = {
+        'CoreApiModule.blocklist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+            test_data['multi_command_args']['hash_list']
+    }
 
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/', json=test_data['api_response'])
 
@@ -550,8 +566,10 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
 
     from CoreIRApiModule import allowlist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
-    expected_command_result = {'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data[
-        'multi_command_args']['hash_list']}
+    expected_command_result = {
+        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+        test_data['multi_command_args']['hash_list']
+    }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = CoreClient(
@@ -602,8 +620,9 @@ def test_allowlist_files_command_with_no_comment_file(requests_mock):
     from CoreIRApiModule import allowlist_files_command, CoreClient
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
-        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)': test_data['no_comment_command_args'][
-            'hash_list']}
+        'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
+            test_data['no_comment_command_args'][
+                'hash_list']}
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
     client = CoreClient(
@@ -832,7 +851,7 @@ def test_endpoint_scan_abort_command_all_endpoints(requests_mock):
     assert scan_expected_tesult == res.outputs
 
 
-def test_get_update_args_unassgning_user():
+def test_get_update_args_unassgning_user(mocker):
     """
     Given:
         -  a dict indicating changed fields (delta) with assigned_user_mail set to "None"
@@ -843,8 +862,10 @@ def test_get_update_args_unassgning_user():
         - update_args have assigned_user_mail and assigned_user_pretty_name set to None and unassign_user set to 'true'
     """
     from CoreIRApiModule import get_update_args
-    delta = {'assigned_user_mail': 'None'}
-    update_args = get_update_args(delta, 1)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    mocker.patch('CoreIRApiModule.handle_outgoing_issue_closure')
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None'}})
+    update_args = get_update_args(remote_args)
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
@@ -853,25 +874,9 @@ def test_get_update_args_unassgning_user():
 def test_get_update_args_close_incident():
     """
     Given:
-        -  a dict indicating changed fields (delta) with a change in owner
-        - the incident status - set to 1 == Active
-    When
-        - running get_update_args
-    Then
-        - update_args assigned_user_mail has the correct associated mail
-    """
-    from CoreIRApiModule import get_update_args
-    delta = {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'}
-    update_args = get_update_args(delta, 2)
-    assert update_args.get('status') == 'resolved_other'
-    assert update_args.get('resolve_comment') == 'Not Relevant'
-
-
-def test_get_update_args_owner_sync(mocker):
-    """
-    Given:
         -  a dict indicating changed fields (delta) with closeReason set to Other and a closeNotes
         - the incident status - set to 2 == Closed
+        - the current status of the remote incident are 'new'
     When
         - running get_update_args
     Then
@@ -879,11 +884,37 @@ def test_get_update_args_owner_sync(mocker):
         - the resolve_comment is the same as the closeNotes
     """
     from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'closeReason': 'Other', "closeNotes": "Not Relevant", 'closingUserId': 'admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
+    assert update_args.get('status') == 'resolved_other'
+    assert update_args.get('resolve_comment') == 'Not Relevant'
+
+
+def test_get_update_args_owner_sync(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta) with a change in owner
+        - the incident status - set to 2 == Close
+    When
+        - running get_update_args
+    Then
+        - update_args assigned_user_mail has the correct associated mail
+    """
+    from CoreIRApiModule import get_update_args
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'owner': 'username'},
+        'data': {'status': 'new'}}
+    )
     mocker.patch.object(demisto, 'params', return_value={"sync_owners": True, "mirror_direction": "Incoming"})
     mocker.patch.object(demisto, 'findUser', return_value={"email": "moo@demisto.com", 'username': 'username'})
-    delta = {'owner': 'username'}
 
-    update_args = get_update_args(delta, 1)
+    update_args = get_update_args(remote_args)
 
     assert update_args.get('assigned_user_mail') == 'moo@demisto.com'
 
@@ -927,7 +958,8 @@ def test_get_endpoint_device_control_violations_command(requests_mock):
         Given:
             - violation_id_list='100'
         When:
-            -Request for list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+            - Request for list of device control violations filtered by selected fields.
+              You can retrieve up to 100 violations.
         Then:
             - Assert the returned markdown, context data and raw response are as expected.
         """
@@ -985,7 +1017,8 @@ def test_retrieve_files_command(requests_mock):
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                           'windows_file_paths': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.readable_output == tableToMarkdown(
+        name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
     assert res.raw_response == {'action_id': 1773}
 
@@ -1016,7 +1049,8 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     res = retrieve_files_command(client, {'endpoint_ids': 'aeec6a2cc92e46fab3b6f621722e9916',
                                           'generic_file_path': 'C:\\Users\\demisto\\Desktop\\demisto.txt'})
 
-    assert res.readable_output == tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header)
+    assert res.readable_output == tableToMarkdown(
+        name='Retrieve files', t=result, headerTransform=string_to_table_header)
     assert res.outputs == retrieve_expected_result
     assert res.raw_response == {'action_id': 1773}
 
@@ -1478,8 +1512,8 @@ def test_create_account_context_with_data():
     Given:
         - get_endpoints command
     When
-        - creating the account context from the response succeeds - which means there exists both domain and user in the
-         response.
+        - creating the account context from the response succeeds - which means there exists both domain
+          and user in the response.
     Then
         - verify the context is created successfully.
     """
@@ -2262,23 +2296,36 @@ def test_get_update_args_when_getting_close_reason():
         - The status that the incident is getting to be mirrored out is "resolved_duplicate"
     """
     from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
-                                   'closingUserId': 'Admin'}, 2)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {
+            'closeReason': 'Duplicate', 'closeNote': 'Closed as Duplicate.',
+            'closingUserId': 'Admin'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
     assert update_args.get('status') == 'resolved_duplicate'
     assert update_args.get('closeNote') == 'Closed as Duplicate.'
 
 
-def test_get_update_args_when_not_getting_close_reason():
+def test_get_update_args_when_not_getting_closing_user_id():
     """
     Given:
         - delta from update_remote_system
     When
         - An incident in XSOAR was closed and update_remote_system has occurred.
     Then
-        - Because There is no change in the "closeReason" value, the status should not change.
+        - Because There is no change in the "closingUserId" value, the status should not change.
     """
     from CoreIRApiModule import get_update_args
-    update_args = get_update_args({'someChange': '1234'}, 2)
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({
+        'delta': {'someChange': '1234'},
+        'data': {'status': 'new'},
+        'status': 2}
+    )
+    update_args = get_update_args(remote_args)
     assert update_args.get('status') is None
 
 
@@ -2298,7 +2345,9 @@ def test_remove_blocklist_files_command(requests_mock):
     )
 
     remove_blocklist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/', json=remove_blocklist_files_response)
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/hash_exceptions/blocklist/remove/',
+        json=remove_blocklist_files_response)
     hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
                  "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
     res = remove_blocklist_files_command(client=client, args={
@@ -2355,7 +2404,9 @@ def test_remove_allowlist_files_command(requests_mock):
     )
 
     remove_allowlist_files_response = load_test_data('./test_data/remove_blocklist_files.json')
-    requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/', json=remove_allowlist_files_response)
+    requests_mock.post(
+        f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/remove/',
+        json=remove_allowlist_files_response)
     hash_list = ["11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a25b",
                  "e5ab4d81607668baf7d196ae65c9cf56dd138e3fe74c4bace4765324a9e1c565"]
     res = remove_allowlist_files_command(client=client, args={
@@ -2661,16 +2712,18 @@ def test_get_dynamic_analysis(requests_mock):
 
 def test_parse_get_script_execution_results():
     from CoreIRApiModule import parse_get_script_execution_results
-    results = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
-                'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
-                'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
-                'retention_date': None, 'command_executed': ['command_output']}]
+    results = [
+        {'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+         'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+         'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+         'retention_date': None, 'command_executed': ['command_output']}]
     res = parse_get_script_execution_results(results)
-    expected_res = [{'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
-                     'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
-                     'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
-                     'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
-                     'command_output': ['command_output']}]
+    expected_res = [
+        {'endpoint_name': 'endpoint_name', 'endpoint_ip_address': ['1.1.1.1'], 'endpoint_status': 'endpoint_status',
+         'domain': 'env', 'endpoint_id': 'endpoint_id', 'execution_status': 'COMPLETED_SUCCESSFULLY',
+         'standard_output': 'Running command "command_executed"', 'retrieved_files': 0, 'failed_files': 0,
+         'retention_date': None, 'command_executed': ['command_output'], 'command': 'command_executed',
+         'command_output': ['command_output']}]
     assert res == expected_res
 
 
@@ -2704,8 +2757,36 @@ class TestGetAlertByFilter:
         response = get_alerts_by_filter_command(client, args)
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
-               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', 'SEARCH_VALUE': " \
-               "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+               "'to': 2}, 'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RANGE', " \
+               "'SEARCH_VALUE': {'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
+
+    def test_get_alert_by_alert_action_status_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - Alert with action status of SCANNED
+        When
+            - Running get_alerts_by_filter command with alert_action_status="detected (scanned)"
+        Then
+            - Verify the alert in the output contains alert_action_status and alert_action_status_readable
+            - Ensure request filter contains the alert_action_status as SCANNED
+        """
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'alert_action_status': 'detected (scanned)'
+        }
+        response = get_alerts_by_filter_command(client, args)
+        assert response.outputs[0].get('internal_id', {}) == 33333
+        assert response.outputs[0].get('alert_action_status', {}) == 'SCANNED'
+        assert response.outputs[0].get('alert_action_status_readable', {}) == 'detected (scanned)'
+        assert "{'SEARCH_FIELD': 'alert_action_status', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': " \
+               "'SCANNED'" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
         """
@@ -2732,8 +2813,8 @@ class TestGetAlertByFilter:
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], 'paging': {'from': 0, " \
                "'to': 50}, 'filter': {'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-               "'second'}]}]}}}" in request_data_log.call_args[0][0]
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'second'}]}]}}}" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
         """
@@ -2761,9 +2842,9 @@ class TestGetAlertByFilter:
         response = get_alerts_by_filter_command(client, args)
         assert response.outputs[0].get('internal_id', {}) == 33333
         assert "{'AND': [{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
-               "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
-               "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
+               "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', " \
+               "'SEARCH_VALUE': 'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', " \
+               "'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
 
     @freeze_time('2022-05-26T13:00:00Z')
     def test_get_alert_by_filter_complex_custom_filter_and_timeframe(self, requests_mock, mocker):
@@ -2782,13 +2863,15 @@ class TestGetAlertByFilter:
         from datetime import datetime as dt
         from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
 
-        custom_filter = '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "CORRELATION"},' \
+        custom_filter = '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ",' \
+                        '"SEARCH_VALUE": "CORRELATION"},' \
                         '{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "IOC"}]},' \
                         '{"SEARCH_FIELD": "severity","SEARCH_TYPE": "EQ","SEARCH_VALUE": "SEV_040_HIGH"}]}'
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
         request_data_log = mocker.patch.object(demisto, 'debug')
-        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(dateparser, 'parse',
+                            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
@@ -2829,7 +2912,8 @@ class TestGetAlertByFilter:
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
         request_data_log = mocker.patch.object(demisto, 'debug')
-        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        mocker.patch.object(dateparser, 'parse',
+                            return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
         client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
@@ -2880,7 +2964,7 @@ class TestPollingCommands:
             )
             response_queue.append(
                 {
-                    "reply": {   # get script execution result response
+                    "reply": {  # get script execution result response
                         "script_name": "snippet script",
                         "error_message": "",
                         "results": [
@@ -2942,7 +3026,8 @@ class TestPollingCommands:
         while not isinstance(command_result, list) and command_result.scheduled_command:
             # if command result is a list, it means command execution finished
             assert not command_result.readable_output  # make sure that indication of polling is printed only once
-            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            # make sure no context output is being returned to war-room during polling
+            assert not command_result.outputs
             command_result = script_run_polling_command(polling_args, client)
 
         assert command_result[0].outputs == {
@@ -3015,9 +3100,8 @@ class TestPollingCommands:
         )
     ]
 )
-def test_add_or_remove_tag_endpoint_command(
-    requests_mock, args, expected_filters, func, url_suffix, expected_human_readable
-):
+def test_add_or_remove_tag_endpoint_command(requests_mock, args, expected_filters, func,
+                                            url_suffix, expected_human_readable):
     """
     Given:
       - command arguments

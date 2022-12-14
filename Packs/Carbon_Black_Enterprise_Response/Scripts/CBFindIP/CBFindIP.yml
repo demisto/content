@@ -44,7 +44,7 @@ tags:
 - enhancement
 timeout: '0'
 type: python
-subtype: python2
+subtype: python3
 runas: DBotWeakRole
 runonce: false
 tests:
@@ -52,4 +52,4 @@ tests:
 dependson:
   must: []
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.27799
+dockerimage: demisto/python3:3.10.6.33415
