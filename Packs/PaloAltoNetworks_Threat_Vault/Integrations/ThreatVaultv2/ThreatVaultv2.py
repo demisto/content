@@ -350,25 +350,6 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
         type_hash = get_hash_type(_hash)
         try:
             response = client.antivirus_signature_get_request(arg=type_hash, value=_hash)
-            file_info = response.get('data', {}).get('fileinfo', ({}, ...))[0]
-            dbot_score = Common.DBotScore(
-                indicator=_hash,
-                indicator_type=DBotScoreType.FILE,
-                integration_name=client.name,
-                score=SCORE_TABLE_FILE[file_info.get('wildfire_verdict', 'unknown')],
-                reliability=dbot_reliability
-            )
-            file = Common.File(
-                sha256=file_info.get('sha256'),
-                md5=file_info.get('md5'),
-                sha1=file_info.get('sha1'),
-                dbot_score=dbot_score
-            )
-
-            table_for_md = resp_to_hr(response=file_info, type_='file', expanded=args.get('expanded', False))
-
-            readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
-                                              removeNull=True)
         except Exception as err:
             if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
                 response = {}
@@ -390,6 +371,27 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
             else:
                 raise
 
+        if response:
+            file_info = response.get('data', {}).get('fileinfo', ({}, ...))[0]
+            dbot_score = Common.DBotScore(
+                indicator=_hash,
+                indicator_type=DBotScoreType.FILE,
+                integration_name=client.name,
+                score=SCORE_TABLE_FILE[file_info.get('wildfire_verdict', 'unknown')],
+                reliability=dbot_reliability
+            )
+            file = Common.File(
+                sha256=file_info.get('sha256'),
+                md5=file_info.get('md5'),
+                sha1=file_info.get('sha1'),
+                dbot_score=dbot_score
+            )
+
+            table_for_md = resp_to_hr(response=file_info, type_='file', expanded=args.get('expanded', False))
+
+            readable_output = tableToMarkdown(name=f"Hash {_hash} antivirus reputation:", t=table_for_md,
+                                              removeNull=True)
+
         command_results = CommandResults(
             readable_output=readable_output,
             outputs=file_info,
@@ -410,6 +412,16 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
     for cve in cves:
         try:
             response = client.antivirus_signature_get_request(arg='cve', value=cve)
+        except Exception as err:
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
+                response = {}
+                readable_output = f'CVE {cve} vulnerability reputation is unknown to Threat Vault.'
+                _cve = None
+                vulnerability = None
+            else:
+                raise
+
+        if response:
             vulnerability = response.get('data', {}).get('vulnerability', ([], ...))[0]
             _cve = Common.CVE(
                 id=vulnerability.get('cve')[0],
@@ -421,13 +433,6 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
             table_for_md = resp_to_hr(response=vulnerability, type_='vulnerability')
             readable_output = tableToMarkdown(name=f"CVE {cve} vulnerability reputation:", t=table_for_md,
                                               removeNull=True)
-        except Exception as err:
-            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
-                readable_output = f'CVE {cve} vulnerability reputation is unknown to Threat Vault.'
-                _cve = None
-                vulnerability = None
-            else:
-                raise
 
         command_results = CommandResults(
             readable_output=readable_output,
@@ -463,9 +468,9 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     for _id in ids:
         try:
             response = client.antivirus_signature_get_request(arg='id', value=_id)
-            command_results_list.extend(parse_resp_by_type(response=response))
         except Exception as err:
             if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
+                response = {}
                 readable_output = f'{_id} reputation is unknown to Threat Vault.'
                 command_results_list.append(
                     CommandResults(
@@ -474,6 +479,10 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
                 )
             else:
                 raise
+
+        if response:
+            command_results_list.extend(parse_resp_by_type(response=response))
+
     return command_results_list
 
 
@@ -485,7 +494,6 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
     version = args['version']
     try:
         response = client.release_notes_get_request('content', version)
-        data = response.get('data', ([], ...))[0]
     except Exception as err:
         if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
             return CommandResults(
@@ -494,6 +502,7 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
         else:
             raise
 
+    data = response.get('data', ([], ...))[0]
     table_for_md = resp_to_hr(response=data, type_='release_notes')
     readable_output = tableToMarkdown(name="Release notes:", t=table_for_md,
                                       removeNull=True)
@@ -521,9 +530,9 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
         type_ = 'id' if ids else 'name'
         try:
             response = client.threat_batch_search_request(arg=type_, value=ids if ids else names, type_=threat_type)
-            command_results_list.extend(parse_resp_by_type(response, True))
         except Exception as err:
             if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
+                response = {}
                 readable_output = f'There is no information about the {str(ids) if ids else str(names)}'
                 command_results_list.append(
                     CommandResults(
@@ -533,11 +542,27 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             else:
                 raise
 
+        if response:
+            command_results_list.extend(parse_resp_by_type(response, True))
+
     elif md5 or sha256:
         dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
+        type_ = 'md5' if md5 else 'sha256'
         try:
-            type_ = 'md5' if md5 else 'sha256'
             response = client.threat_batch_search_request(arg=type_, value=md5 or sha256, type_=threat_type)
+        except Exception as err:
+            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
+                response = {}
+                readable_output = f'There is no information about the {str(md5) if md5 else str(sha256)}'
+                command_results_list.append(
+                    CommandResults(
+                        readable_output=readable_output
+                    )
+                )
+            else:
+                raise
+
+        if response:
             files_info: List[dict] = response.get('data', {}).get('fileinfo', [])
             for file_info in files_info:
 
@@ -567,17 +592,6 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                         indicator=file,
                     )
                 )
-
-        except Exception as err:
-            if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
-                readable_output = f'There is no information about the {str(md5) if md5 else str(sha256)}'
-                command_results_list.append(
-                    CommandResults(
-                        readable_output=readable_output
-                    )
-                )
-            else:
-                raise
 
     return command_results_list
 
@@ -619,9 +633,9 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
 
     try:
         response = client.threat_search_request(args=query)
-        command_results_list.extend(parse_resp_by_type(response, True))
     except Exception as err:
         if err.res.status_code == 404:  # type:ignore # pylint: disable=E1101
+            response = {}
             readable_output = f'{cve or vendor or name} reputation is unknown to Threat Vault.'
             command_results_list.append(
                 CommandResults(
@@ -631,6 +645,8 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
         else:
             raise
 
+    if response:
+        command_results_list.extend(parse_resp_by_type(response, True))
     return command_results_list
 
 
@@ -754,7 +770,9 @@ def main():
             raise NotImplementedError(f'Command "{command}" was not implemented.')
 
     except Exception as err:
-        return_error(str(err), err)
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.'
+                     f'\nError:\n{str(err)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

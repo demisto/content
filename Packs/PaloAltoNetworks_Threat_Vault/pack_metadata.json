@@ -1,6 +1,6 @@
 {
     "name": "Threat Vault by Palo Alto Networks",
-    "description": "TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.",
+    "description": "Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
@@ -10,7 +10,9 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["Palo Alto Networks Products"],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [
         "logs",
