@@ -105,6 +105,8 @@ script:
     - defaultValue: '10'
       description: The maximum number of agents to return.
       name: limit
+    - description: Query params field=value pairs delimited by semicolon (e.g., activeThreats=3;gatewayIp=1.2.3.4)
+      name: params
     description: Returns all agents that match the specified criteria.
     name: sentinelone-list-agents
     outputs:
@@ -195,7 +197,6 @@ script:
     - description: A comma-separated list of site IDs by which to filter.
       isArray: true
       name: site_ids
-      required: false
     description: Creates an exclusion item that matches the specified input filter.
     name: sentinelone-create-white-list-item
     outputs:
@@ -233,10 +234,10 @@ script:
     - defaultValue: '10'
       description: The maximum number of items to return.
       name: limit
-    - defaultValue: false
+    - defaultValue: 'false'
       description: Whether to include parent information of each item. Default value is false.
       name: include_parent
-    - defaultValue: false
+    - defaultValue: 'false'
       description: Whether to include children information of each item. Default value is false.
       name: include_children
     description: Lists all exclusion items that match the specified input filter.
@@ -290,7 +291,6 @@ script:
       isArray: true
       name: content_hash
     - auto: PREDEFINED
-      default: false
       description: A comma-separated list of mitigation statuses.
       isArray: true
       name: mitigation_status
@@ -974,6 +974,8 @@ script:
     - description: 'QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3".'
       name: query_id
       required: true
+    - description: Cursor pointer to get next page of results from query
+      name: cursor
     description: Returns all Deep Visibility events that match the query.
     name: sentinelone-get-events
     outputs:
