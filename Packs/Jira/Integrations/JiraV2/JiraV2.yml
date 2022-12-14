@@ -40,7 +40,8 @@ configuration:
   name: query
   required: false
   type: 0
-- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents" is checked.
+- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
+    is checked.
   display: Issue index to start fetching incidents from
   name: idOffset
   required: false
@@ -77,7 +78,8 @@ configuration:
   name: outgoing_mirror
   required: false
   type: 8
-- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment in Jira.
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
+    in Jira.
   defaultvalue: attachment
   display: File entry tag
   hidden: false
@@ -108,7 +110,9 @@ configuration:
   required: false
   type: 4
   additionalinfo: Use the "API Token (Recommended)" parameter instead.
-description: Use the Jira integration to manage issues and create Cortex XSOAR incidents from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to existing issue incidents in Cortex XSOAR.
+description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
+  from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to
+  existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
 name: jira-v2
 script:
@@ -127,7 +131,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+      description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
+        'jira.search.views.default.max'. If you specify a value greater than
+        this number, your search results are truncated.
       isArray: false
       name: maxResults
       required: false
@@ -200,8 +207,8 @@ script:
       secret: false
     - default: false
       predefined:
-      - 'true'
-      - 'false'
+          - 'true'
+          - 'false'
       defaultValue: 'false'
       description: Whether the server is on prem and uses the REST v2 API.
       isArray: false
@@ -210,7 +217,10 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of users to fetch when searching for a matching user (default is 50). The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value greater than this number, your search results are truncated.
+      description: The maximum number of users to fetch when searching for a matching
+        user (default is 50). The maximum allowed value is dictated by the Jira property
+        'jira.search.views.default.max'. If you specify a value greater than
+        this number, your search results are truncated.
       isArray: false
       name: max_results
       required: false
@@ -285,16 +295,20 @@ script:
       description: The ticket status.
       type: Unknown
     - contextPath: File.Size
-      description: The file size (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file size (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The file SHA256 hash (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file SHA256 hash (Jira attachments are saved as files
+        in Cortex XSOAR).
       type: Unknown
     - contextPath: File.Name
-      description: The file name (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file name (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: File.SHA1
-      description: The file SHA1 hash (Jira attachments are saved as files in Cortex XSOAR).
+      description: The file SHA1 hash (Jira attachments are saved as files
+        in Cortex XSOAR).
       type: Unknown
     - contextPath: Ticket.Priority
       description: The ticket priority.
@@ -376,19 +390,22 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, provide the assignee_id argument instead.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
       secret: false
     - default: false
-      description: The account ID of the reporter. Use the jira-get-id-by-attribute command to get the user's account ID.
+      description: The account ID of the reporter. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       isArray: false
       name: reporter_id
       required: false
@@ -454,7 +471,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The attachment name to be displayed in Jira (overrides the original file name).
+      description: The attachment name to be displayed in Jira (overrides the original
+        file name).
       isArray: false
       name: attachmentName
       required: false
@@ -488,7 +506,8 @@ script:
     name: jira-issue-add-comment
   - arguments:
     - default: false
-      description: If a globalId is provided and a remote issue link exists with that globalId, the remote issue link is updated.
+      description: If a globalId is provided and a remote issue link exists with
+        that globalId, the remote issue link is updated.
       isArray: false
       name: globalId
       required: false
@@ -530,7 +549,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The application name of the linked remote application. For example "My Confluence Instance".
+      description: The application name of the linked remote application. For example "My
+        Confluence Instance".
       isArray: false
       name: applicationName
       required: false
@@ -547,7 +567,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037": "field_value"}}.'
+      description: 'The issue object (in JSON format). For example {"fields":{"customfield_10037":
+        "field_value"}}.'
       isArray: false
       name: issueJson
       required: false
@@ -583,13 +604,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, provide the assignee_id argument instead.
+      description: The name of the assignee. Relevant for Jira Server only. If you
+        are using Jira Cloud, provide the assignee_id argument instead.
       isArray: false
       name: assignee
       required: false
       secret: false
     - default: false
-      description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's account ID.
+      description: The account ID of the assignee. Use the jira-get-id-by-attribute
+        command to get the user's account ID.
       isArray: false
       name: assignee_id
       required: false
@@ -667,24 +690,24 @@ script:
     execution: false
     name: jira-append-to-field
     outputs:
-    - contextPath: Ticket.Id
-      description: The ticket ID.
-      type: Unknown
-    - contextPath: Ticket.Key
-      description: The ticket key.
-      type: Unknown
-    - contextPath: Ticket.Assignee
-      description: The user assigned to the ticket.
-      type: Unknown
-    - contextPath: Ticket.Creator
-      description: The user who created the ticket.
-      type: Unknown
-    - contextPath: Ticket.Summary
-      description: The ticket summary.
-      type: Unknown
-    - contextPath: Ticket.Status
-      description: The ticket status.
-      type: Unknown
+      - contextPath: Ticket.Id
+        description: The ticket ID.
+        type: Unknown
+      - contextPath: Ticket.Key
+        description: The ticket key.
+        type: Unknown
+      - contextPath: Ticket.Assignee
+        description: The user assigned to the ticket.
+        type: Unknown
+      - contextPath: Ticket.Creator
+        description: The user who created the ticket.
+        type: Unknown
+      - contextPath: Ticket.Summary
+        description: The ticket summary.
+        type: Unknown
+      - contextPath: Ticket.Status
+        description: The ticket status.
+        type: Unknown
   - arguments:
     - default: false
       description: The ID of the issue to edit.
@@ -704,24 +727,24 @@ script:
     execution: false
     name: jira-get-specific-field
     outputs:
-    - contextPath: Ticket.Id
-      description: The ticket ID.
-      type: Unknown
-    - contextPath: Ticket.Key
-      description: The ticket key.
-      type: Unknown
-    - contextPath: Ticket.Assignee
-      description: The user assigned to the ticket.
-      type: Unknown
-    - contextPath: Ticket.Creator
-      description: The user who created the ticket.
-      type: Unknown
-    - contextPath: Ticket.Summary
-      description: The ticket summary.
-      type: Unknown
-    - contextPath: Ticket.Status
-      description: The ticket status.
-      type: Unknown
+      - contextPath: Ticket.Id
+        description: The ticket ID.
+        type: Unknown
+      - contextPath: Ticket.Key
+        description: The ticket key.
+        type: Unknown
+      - contextPath: Ticket.Assignee
+        description: The user assigned to the ticket.
+        type: Unknown
+      - contextPath: Ticket.Creator
+        description: The user who created the ticket.
+        type: Unknown
+      - contextPath: Ticket.Summary
+        description: The ticket summary.
+        type: Unknown
+      - contextPath: Ticket.Status
+        description: The ticket status.
+        type: Unknown
   - arguments:
     - default: false
       description: The ID of the issue from which to get the comments.
@@ -771,13 +794,15 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
+        modified after the last update time.
       isArray: false
       name: lastUpdate
       required: false
       secret: false
     deprecated: false
-    description: Gets remote data from a remote incident. This method is only used for debugging and does not update the current incident.
+    description: Gets remote data from a remote incident. This method is only used
+      for debugging and does not update the current incident.
     execution: false
     name: get-remote-data
   - deprecated: false
@@ -785,7 +810,8 @@ script:
     execution: false
     name: get-mapping-fields
   - deprecated: false
-    description: Gets incident changes. This method is only used for debugging and does not update the current incident.
+    description: Gets incident changes. This method is only used for debugging 
+      and does not update the current incident.
     execution: false
     name: update-remote-system
   - arguments:
@@ -807,7 +833,9 @@ script:
       description: A list of all possible transitions.
       type: Unknown
   - deprecated: false
-    description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
+    description: Available from Cortex XSOAR version 6.1.0. This command queries for
+      incidents that were modified since the last update. This method is only used
+      for debugging.
     execution: false
     name: get-modified-remote-data
   dockerimage: demisto/oauthlib:1.0.0.40914
