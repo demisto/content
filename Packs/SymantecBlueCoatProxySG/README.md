@@ -11,6 +11,7 @@ Go to the ProxySG software and open the "Configuration" tab [Product Doc](https:
 5. Open the Visual Policy Manager, Add a new "Web Access Layer" and create a rule with the "Modify Access Logging" action. At the object, enable logging for your new access log.
    
    Make sure the log is being written by going to Statistics > Access Logging > Select "MyLog" > Start Tail.
+   
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
