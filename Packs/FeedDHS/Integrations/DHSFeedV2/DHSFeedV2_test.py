@@ -134,6 +134,32 @@ class TestFetchIndicators:
         assert len(indicators) == len(CORTEX_IOCS_1)
         assert last_run.get(mock_client.collections[1]) == 'test'
 
+    def test_chinese_char(self, mocker):
+        """
+        Scenario: Test single collection fetch that raises an InvalidJSONError because the response is "筽"
+
+        Given:
+        - collection to fetch is available and set to 'default'
+        - there is no integration context
+        - limit is -1
+        - initial interval is `1 day`
+
+        When:
+        - fetch_indicators_command is called
+
+        Then:
+        - returns an empty list of indicators
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
+        default_id = 1
+        mock_client.collections = [MockCollection(default_id, 'default')]
+
+        mock_client.collection_to_fetch = mock_client.collections[0]
+        mocker.patch.object(mock_client, 'build_iterator', side_effect=InvalidJSONError)
+        indicators, last_run = fetch_indicators_command(mock_client, -1, {}, '1 day')
+        assert indicators == []
+        assert mock_client.collection_to_fetch.id in last_run
+
 
 def test_get_collections_command():
     """
@@ -173,6 +199,7 @@ def test_command_test_module(has_collections, initial_interval_input, expected_o
     """
     mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
     mock_client.collections = [MockCollection("first id", 'first name')] if has_collections else None
+    mocker.patch.object(mock_client, 'initialise')
     mocker.patch.object(mock_client, 'build_iterator', return_value=[])
 
     result = command_test_module(mock_client, initial_interval_input)
