@@ -534,6 +534,8 @@ class TestCollector(ABC):
                 reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
             elif file_type == FileType.MODELING_RULE_XIF:
                 reason = CollectionReason.MODELING_RULE_XIF_CHANGED
+            else:  # pragma: no cover
+                raise RuntimeError(f'Unexpected file type {file_type} for changed file {changed_file_path}')
         # the modeling rule to test will be the containing directory of the modeling rule's component files
         relative_path_of_mr = PACK_MANAGER.relative_to_packs(changed_file_path)
         modeling_rule_to_test = relative_path_of_mr.parent
