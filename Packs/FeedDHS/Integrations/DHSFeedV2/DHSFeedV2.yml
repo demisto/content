@@ -100,7 +100,7 @@ configuration:
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: 'The objects to fetch, most likely indicators. Might slow down fetch time.'
+- additionalinfo: 'The objects to fetch, most likely indicators. Specifying the types of objects to fetch may slow down the fetch time.'
   display: STIX Objects To Fetch
   name: objects_to_fetch
   type: 16
@@ -205,15 +205,15 @@ script:
       - 'true'
       - 'false'
     - defaultValue: '10'
-      description: Maximum number of indicators to return. Default is 10. If you are increasing this value, make sure 'execution-timeout' argument is also increased.
+      description: Maximum number of indicators to return. Default is 10. If you are increasing this value, make sure the 'execution-timeout' argument is also increased.
       name: limit
     - defaultValue: '24 hours'
       description: Fetch only indicators that were added to the server after the given
         time. Provide a <number> and <time unit> of type minute/hour/day. For
-        example, 1 minute, 12 hour, 24 days. Limited to 48 hours.
+        example, 1 minute, 12 hours, 24 days. Limited to 48 hours.
       name: added_after
     description: Allows you to test your feed and to make sure you can fetch indicators
-      successfully. Due to API limitations this command may take a long time to run, make sure 'execution-timeout' argument is increased. See documentation for further information.
+      successfully. Due to API limitations, this command may take a long time to run. Make sure the 'execution-timeout' argument is increased. See the integration readme for further information.
     name: dhs-get-indicators
     outputs:
     - contextPath: DHS.Indicators.value
