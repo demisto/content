@@ -14,16 +14,15 @@ class GoogleSecreteManagerModule:
         try:
             return json5.loads(response.payload.data.decode("UTF-8"))
         except Exception as e:
-            logging.error(f'Secret json is malformed for: {secret_id}, got error: {e}')
+            logging.error(
+                f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
 
     def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False) -> list:
         secrets = []
         parent = f"projects/{project_id}"
-        print(f'parent: {parent}')
-
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
-            print(f'______________________{secret.name}______________________')
+            logging.log(f'Getting the secret: {secret.name}')
             if secret.name in name_filter:
                 continue
             if with_secret:
@@ -44,5 +43,4 @@ class GoogleSecreteManagerModule:
                 service_account)  # type: ignore # noqa
             return client
         except Exception as e:
-            print('EEEEEERRRRRRRRRRRROOOOOOORRRRR' + str(e))
             logging.error(f'Could not create GSM client, error: {e}')
