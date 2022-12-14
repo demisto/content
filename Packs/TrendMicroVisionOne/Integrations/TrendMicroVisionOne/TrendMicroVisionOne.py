@@ -445,15 +445,14 @@ def run_polling_command(
     """
     ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get("interval_in_seconds", 30))
-    command_results = client.status_check(args)
     action_id = args.get(ACTION_ID)
     task_id = args.get(TASKID)
-    if action_id:
+    if cmd == CHECK_TASK_STATUS:
         command_results = client.status_check(args)
-        value = "actionId"
+        value = ACTION_ID
     else:
         command_results = client.sandbox_submission_polling(args)
-        value = "task_id"
+        value = TASKID
     if command_results.outputs.get("taskStatus") not in (
         "success",
         "failed",
