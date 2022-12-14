@@ -748,7 +748,7 @@ class CLOUDBuild(Build):
 
     @staticmethod
     def get_xsiam_configuration(xsiam_machine, cloud_servers_path, cloud_servers_api_keys_path):
-        logging.info(f'get xsiam configuration')
+        logging.info('get xsiam configuration')
 
         cloud_servers = get_json_file(cloud_servers_path)
         conf = cloud_servers.get(xsiam_machine)
