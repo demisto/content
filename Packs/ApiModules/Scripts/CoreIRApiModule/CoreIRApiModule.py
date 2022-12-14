@@ -2040,7 +2040,7 @@ def blocklist_files_command(client, args):
                                         headers=['added_hashes'],
                                         headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'{args.get("prefix", "blocklist").added_hashes.fileHash(val.fileHash == obj.fileHash)': hash_list},
+                 f'{args.get("prefix", "blocklist").added_hashes.fileHash(val.fileHash == obj.fileHash)}': hash_list},
         raw_response=res
     )
 
