@@ -1,10 +1,10 @@
-Rapid7's on-premise vulnerability management solution, Nexpose, helps you reduce your threat exposure by enabling you to assess and respond to changes in your environment real time and prioritizing risk across vulnerabilities, configurations, and controls.
-This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose
+Vulnerability management solution to help reduce threat exposure.
+This integration was integrated and tested with version 6.6.103 of Rapid7 Nexpose.
 
-## Configure Rapid7 Nexpose on Cortex XSOAR
+## Configure Rapid7 InsightVM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Rapid7 Nexpose.
+2. Search for Rapid7 InsightVM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |
@@ -425,7 +425,7 @@ Returns details and possible remediations for an asset's vulnerability.
 | Nexpose.Asset.Vulnerability.Published | date | The date the vulnerability was first published or announced. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Added | date | The date the vulnerability coverage was added. The format is an ISO 8601 date, YYYY-MM-DD. | 
 | Nexpose.Asset.Vulnerability.Modified | date | The last date the vulnerability was modified. The format is an ISO 8601 date, YYYY-MM-DD. | 
-| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score (ranges from 0-10). | 
+| Nexpose.Asset.Vulnerability.CVSSScore | number | The CVSS score \(ranges from 0-10\). | 
 | Nexpose.Asset.Vulnerability.CVSSV3Score | number | The CVSS3 score, which ranges from 0-10. | 
 | Nexpose.Asset.Vulnerability.Categories | unknown | All vulnerability categories assigned to this vulnerability. | 
 | Nexpose.Asset.Vulnerability.CVES | unknown | All CVEs assigned to this vulnerability. | 
@@ -1293,7 +1293,7 @@ Retrieve information about all or a specific vulnerability.
 | Nexpose.Vulnerability.cvss.v2.exploitScore | number | The CVSS exploit score. | 
 | Nexpose.Vulnerability.cvss.v2.impactScore | number | The CVSS impact score. | 
 | Nexpose.Vulnerability.cvss.v2.integrityImpact | string | Integrity Impact \(I\) component that measures the impact to integrity of a successfully exploited vulnerability. | 
-| Nexpose.Vulnerability.cvss.v2.score | number | The CVSS score (ranges from 0-10). | 
+| Nexpose.Vulnerability.cvss.v2.score | number | The CVSS score \(ranges from 0-10\). | 
 | Nexpose.Vulnerability.cvss.v2.vector | string | The CVSS v2 vector. | 
 | Nexpose.Vulnerability.cvss.v3.attackComplexity | string | Access Complexity \(AC\) component that measures the conditions beyond the attacker's control that must exist in order to exploit the vulnerability. | 
 | Nexpose.Vulnerability.cvss.v3.attackVector | string | Attack Vector \(AV\) component that measures context by which vulnerability exploitation is possible. | 
@@ -1304,7 +1304,7 @@ Retrieve information about all or a specific vulnerability.
 | Nexpose.Vulnerability.cvss.v3.integrityImpact | string | Integrity Impact \(I\) that measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the trustworthiness and veracity of information. | 
 | Nexpose.Vulnerability.cvss.v3.privilegeRequired | string | Privileges Required \(PR\) that measures the level of privileges an attacker must possess before successfully exploiting the vulnerability. | 
 | Nexpose.Vulnerability.cvss.v3.scope | string | Scope \(S\) that measures the collection of privileges defined by a computing authority \(e.g., an application, an operating system, or a sandbox environment\) when granting access to computing resources \(e.g., files, CPU, memory, etc.\). These privileges are assigned based on some method of identification and authorization. | 
-| Nexpose.Vulnerability.cvss.v3.score | number | The CVSS score (ranges from 0-10). | 
+| Nexpose.Vulnerability.cvss.v3.score | number | The CVSS score \(ranges from 0-10\). | 
 | Nexpose.Vulnerability.cvss.v3.userInteraction | string | User Interaction \(UI\) that measures the requirement for a user, other than the attacker, to participate in the successful compromise of the vulnerable component. | 
 | Nexpose.Vulnerability.cvss.v3.vector | string | The CVSS v3 vector. | 
 | Nexpose.Vulnerability.denialOfService | boolean | Whether the vulnerability can lead to Denial of Service \(DoS\). | 
@@ -2122,7 +2122,7 @@ Returns the status of a report generation process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_id | ID of the report. | Required | 
-| instance_id | ID of the report instance. Supports a "latest" value. keyword. | Required | 
+| instance_id | ID of the report instance. Supports a "latest" value. | Required | 
 
 
 #### Context Output

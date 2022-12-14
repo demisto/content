@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: 'Checks if the Docker container running this script has been hardened according to the recommended settings at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html'
+comment: 'Checks if the Docker container running this script has been hardened according to the recommended settings at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/docker/docker-hardening-guide.html'
 enabled: true
 args:
 - name: memory
@@ -31,10 +31,18 @@ args:
 - name: cpus
   description: The number of CPUs limit to check.
   defaultValue: '1'
+- name: network_check
+  auto: PREDEFINED
+  predefined:
+  - cloud_metadata
+  - host_machine
+  - all
+  description: 'The network check to perform. cloud_metadata - check that access is blocked to cloud metadata server, host_machine - check that access is blocked to the host machine on the default gateway IP, all - perform all network tests.'
+  defaultValue: cgroup
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
