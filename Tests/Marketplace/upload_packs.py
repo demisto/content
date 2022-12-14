@@ -987,7 +987,6 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     pack.cleanup()
                 else:
                     pack.status = PackStatus.SUCCESS.name
-                    logging.info(f"pack status is successful")
 
         except Exception as e:
             logging.error(traceback.format_exc())

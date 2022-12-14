@@ -2596,7 +2596,6 @@ class Pack(object):
 
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
-            logging.debug(f'Adding BASE pack to all_level')
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
             all_levels_dependencies.append(GCPConfig.BASE_PACK)
             logging.debug(f'(2) {first_level_dependencies=}')
