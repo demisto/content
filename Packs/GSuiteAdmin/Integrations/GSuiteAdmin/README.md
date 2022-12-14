@@ -1199,3 +1199,193 @@ There is no context output for this command.
 #### Human Readable Output
 
 >User with user key user.test@domain.io deleted successfully.
+
+
+### google-mobiledevice-list
+***
+Retrieves a paginated list that includes company-owned devices.
+
+##### Required Scopes
+* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
+
+#### Base Command
+
+`gsuite-mobiledevice-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL. Possible values are: BASIC, FULL. | Optional | 
+| query | Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators. | Optional | 
+| order_by | Device property to use for sorting results. Default is STATUS. Possible values are: DEVICE_ID, EMAIL, LAST_SYNC, MODEL, NAME, OS, STATUS, TYPE. | Optional | 
+| sort_order | Whether to return results in ascending or descending order. Must be used with the order_by parameter. Default is ASCENDING. Possible values are: ASCENDING, DESCENDING. | Optional | 
+| limit | The maximum number of records to return from the collection. The default value is 50. | Optional | 
+| page_token | The token of the page. | Optional | 
+| page_size | The number of requested results per page. The default value is 50. Max allowed value is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.MobileDevices.NextPageToken | String | The token of the next page. | 
+| GSuite.MobileDevices.MobileListObjects | Object | A list of Mobile Device objects. | 
+| GSuite.MobileDevices.MobileListObjects.kind | String | The type of the API resource. | 
+| GSuite.MobileDevices.MobileListObjects.etag | String | ETag of the resource. | 
+| GSuite.MobileDevices.MobileListObjects.resourceId | String | The unique ID the API service uses to identify the mobile device. | 
+| GSuite.MobileDevices.MobileListObjects.deviceId | String | The serial number for a Google Sync mobile device. For Android and iOS devices, this is a software-generated unique identifier. | 
+| GSuite.MobileDevices.MobileListObjects.name | Object | A list of the owner's usernames. | 
+| GSuite.MobileDevices.MobileListObjects.email | Object | A list of the owner's email addresses. | 
+| GSuite.MobileDevices.MobileListObjects.model | String | The mobile device's model name. | 
+| GSuite.MobileDevices.MobileListObjects.os | String | The mobile device's operating system. | 
+| GSuite.MobileDevices.MobileListObjects.type | String | The type of mobile device. | 
+| GSuite.MobileDevices.MobileListObjects.status | String | The device's status. | 
+| GSuite.MobileDevices.MobileListObjects.hardwareId | String | The IMEI/MEID unique identifier for Android hardware. | 
+| GSuite.MobileDevices.MobileListObjects.firstSync | Date | The date and time the device was initially synchronized with the policy settings in the Admin console. | 
+| GSuite.MobileDevices.MobileListObjects.lastSync | Date | The date and time the device was last synchronized with the policy settings in the Admin console. | 
+| GSuite.MobileDevices.MobileListObjects.userAgent | String | Gives information about the device such as os version. | 
+| GSuite.MobileDevices.MobileListObjects.serialNumber | String | The device's serial number. | 
+| GSuite.MobileDevices.MobileListObjects.imei | String | The device's IMEI number. | 
+| GSuite.MobileDevices.MobileListObjects.meid | String | The device's MEID number. | 
+| GSuite.MobileDevices.MobileListObjects.wifiMacAddress | String | The device's MAC address on Wi-Fi networks. | 
+| GSuite.MobileDevices.MobileListObjects.networkOperator | String | Mobile Device mobile or network operator. | 
+| GSuite.MobileDevices.MobileListObjects.defaultLanguage | String | The default locale used on the device. | 
+| GSuite.MobileDevices.MobileListObjects.managedAccountIsOnOwnerProfile | Boolean | Boolean indicating if this account is on owner/primary profile or not. | 
+| GSuite.MobileDevices.MobileListObjects.deviceCompromisedStatus | String | The compromised device status. | 
+| GSuite.MobileDevices.MobileListObjects.buildNumber | String | The device's operating system build number. | 
+| GSuite.MobileDevices.MobileListObjects.kernelVersion | String | The device's kernel version. | 
+| GSuite.MobileDevices.MobileListObjects.basebandVersion | String | The device's baseband version. | 
+| GSuite.MobileDevices.MobileListObjects.unknownSourcesStatus | Boolean | Unknown sources enabled or disabled on device | 
+| GSuite.MobileDevices.MobileListObjects.adbStatus | Boolean | Adb \(USB debugging\) enabled or disabled on device. | 
+| GSuite.MobileDevices.MobileListObjects.developerOptionsStatus | Boolean | Developer options enabled or disabled on device. | 
+| GSuite.MobileDevices.MobileListObjects.otherAccountsInfo | Object | A list of accounts added on device. | 
+| GSuite.MobileDevices.MobileListObjects.supportsWorkProfile | Boolean | Work profile supported on device. | 
+| GSuite.MobileDevices.MobileListObjects.manufacturer | String | Mobile Device manufacturer. | 
+| GSuite.MobileDevices.MobileListObjects.releaseVersion | String | Mobile Device release version version. | 
+| GSuite.MobileDevices.MobileListObjects.securityPatchLevel | Date | Mobile Device Security patch level. | 
+| GSuite.MobileDevices.MobileListObjects.brand | String | Mobile Device Brand. | 
+| GSuite.MobileDevices.MobileListObjects.bootloaderVersion | String | Mobile Device Bootloader version. | 
+| GSuite.MobileDevices.MobileListObjects.hardware | String | Mobile Device Hardware. | 
+| GSuite.MobileDevices.MobileListObjects.encryptionStatus | String | Mobile Device Encryption Status. | 
+| GSuite.MobileDevices.MobileListObjects.devicePasswordStatus | String | Device Password Status | 
+| GSuite.MobileDevices.MobileListObjects.privilege | String | DM Agent Permission. | 
+| GSuite.MobileDevices.MobileListObjects.applications.packageName | String | The application's package name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.displayName | String | The application's display name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.versionName | String | The application's version name. | 
+| GSuite.MobileDevices.MobileListObjects.applications.versionCode | String | The application's version code. | 
+| GSuite.MobileDevices.MobileListObjects.applications.permission | Object | The list of permissions of this application. | 
+
+#### Command example
+```!gsuite-mobiledevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
+#### Context Example
+```json
+{
+    "GSuite": {
+        "MobileDevices": {
+            "MobileListObjects": [
+                {
+                    "adbStatus": false,
+                    "basebandVersion": "example_baseband_version",
+                    "bootloaderVersion": "G960FXXU2BRJ3",
+                    "brand": "samsung",
+                    "buildNumber": "example_build_number",
+                    "defaultLanguage": "English",
+                    "developerOptionsStatus": false,
+                    "deviceCompromisedStatus": "No compromise detected",
+                    "deviceId": "example_device_id",
+                    "devicePasswordStatus": "On",
+                    "email": [
+                        "example@example.com",
+                        "example@example.com"
+                    ],
+                    "encryptionStatus": "Encrypted",
+                    "etag": "example_etag",
+                    "firstSync": "2019-06-05T20:39:47.195Z",
+                    "hardware": "samsungexynos9810",
+                    "hardwareId": "357164099163035",
+                    "imei": "357164099163035",
+                    "kernelVersion": "4.9.59-14479316-QB20051937",
+                    "kind": "admin#directory#mobiledevice",
+                    "lastSync": "2019-06-06T04:53:44.556Z",
+                    "managedAccountIsOnOwnerProfile": true,
+                    "manufacturer": "samsung",
+                    "meid": "",
+                    "model": "SM-G960F",
+                    "name": [
+                        "example_name"
+                    ],
+                    "networkOperator": "",
+                    "os": "Android 8.0.0",
+                    "privilege": "Device administrator",
+                    "releaseVersion": "8.0.0",
+                    "resourceId": "example_resource_id",
+                    "securityPatchLevel": "1538377200000",
+                    "serialNumber": "example_serial_number",
+                    "status": "APPROVED",
+                    "supportsWorkProfile": true,
+                    "type": "ANDROID",
+                    "unknownSourcesStatus": true,
+                    "userAgent": "Google Apps Device Policy 12.14.01",
+                    "wifiMacAddress": ""
+                },
+                {
+                    "adbStatus": false,
+                    "basebandVersion": "example_baseband_version",
+                    "bootloaderVersion": "",
+                    "brand": "",
+                    "buildNumber": "",
+                    "defaultLanguage": "",
+                    "developerOptionsStatus": false,
+                    "deviceCompromisedStatus": "Undetected",
+                    "deviceId": "example_device_id",
+                    "devicePasswordStatus": "On",
+                    "email": [
+                        "example@example.com",
+                        "example@example.com"
+                    ],
+                    "encryptionStatus": "",
+                    "etag": "example_etag",
+                    "firstSync": "2018-11-17T16:43:09.118Z",
+                    "hardware": "",
+                    "hardwareId": "",
+                    "imei": "",
+                    "kernelVersion": "",
+                    "kind": "admin#directory#mobiledevice",
+                    "lastSync": "2018-11-18T13:58:09.109Z",
+                    "managedAccountIsOnOwnerProfile": false,
+                    "manufacturer": "",
+                    "meid": "",
+                    "model": "iPhone 11 Pro",
+                    "name": [
+                        "example_name"
+                    ],
+                    "networkOperator": "",
+                    "os": "iOS 15.4.1",
+                    "privilege": "Undetected",
+                    "releaseVersion": "",
+                    "resourceId": "example_resource_id",
+                    "securityPatchLevel": "0",
+                    "serialNumber": "example_serial_number",
+                    "status": "APPROVED",
+                    "supportsWorkProfile": false,
+                    "type": "IOS_SYNC",
+                    "unknownSourcesStatus": false,
+                    "userAgent": "",
+                    "wifiMacAddress": ""
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Google Workspace Admin - Mobile Devices List
+>2 results found
+>|Model Name|OS|Resource Id|Serial Number|Status|Type|User Names|
+>|---|---|---|---|---|---|---|
+>| SM-G960F | Android 8.0.0" | example_resource_id | example_serial_number | APPROVED | ANDROID | example_name |
+>| iPhone10,6 | iOS 15.4.1 | example_resource_id | example_serial_number | APPROVED | IOS_SYNC | example_name |

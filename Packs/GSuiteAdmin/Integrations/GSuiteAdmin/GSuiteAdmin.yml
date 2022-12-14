@@ -440,7 +440,7 @@ script:
         description: "Date and time the report was received."
       - type: List
         contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuUtilizationPercentageInfo
-        description: ""
+        description: "The CPU utilization percentage."
       - type: List
         contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo
         description: "A list of CPU temperature samples."
@@ -509,7 +509,7 @@ script:
         description: "Date and time the report was received."
       - type: List
         contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.systemRamFreeInfo
-        description: ""
+        description: "Report of free RAM memory."
       - type: List
         contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork
         description: "Contains last known network."
