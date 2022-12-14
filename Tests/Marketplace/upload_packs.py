@@ -818,17 +818,20 @@ def get_packs_summary(packs_list):
     """
 
     successful_packs = []
+    successful_uploaded_dependencies_zip_packs = []
     skipped_packs = []
     failed_packs = []
     for pack in packs_list:
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
+        if pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
+            successful_uploaded_dependencies_zip_packs.append(pack)
         elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
         else:
             failed_packs.append(pack)
 
-    return successful_packs, skipped_packs, failed_packs
+    return successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs
 
 
 def handle_private_content(public_index_folder_path, private_bucket_name, extract_destination_path, storage_client,
@@ -986,7 +989,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
                 else:
-                    pack.status = PackStatus.SUCCESS.name
+                    pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
         except Exception as e:
             logging.error(traceback.format_exc())
@@ -1297,13 +1300,13 @@ def main():
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-        updated_private_packs_ids, images_data=get_images_data(packs_list)
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, successful_uploaded_dependencies_zip_packs,
+        failed_packs, updated_private_packs_ids, images_data=get_images_data(packs_list)
     )
 
     # summary of packs status

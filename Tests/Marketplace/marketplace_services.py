@@ -3790,7 +3790,7 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
-                                                      failed_packs: list, updated_private_packs: list,
+                                                      successful_uploaded_dependencies_zip_packs: list, failed_packs: list, updated_private_packs: list,
                                                       images_data: dict = None):
     """ Write the successful and failed packs to the correct section in the packs_results.json file
 
@@ -3799,6 +3799,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
+        successful_uploaded_dependencies_zip_packs (list): The list of all packs that successfully updated their dependencies zip file.
         failed_packs (list): The list of all failed packs
         updated_private_packs (list) : The list of all private packs that were updated
         images_data (dict): A dict containing all images that were uploaded for each pack
@@ -3806,6 +3807,9 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     """
     packs_results = load_json(packs_results_file_path)
     packs_results[stage] = dict()
+
+    # union successful_packs packs and successful_uploaded_dependencies_zip_packs so they both will be stored.
+    successful_packs += successful_uploaded_dependencies_zip_packs
 
     if failed_packs:
         failed_packs_dict = {

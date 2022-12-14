@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0'
-  description: The minimum entropy value. Default is 0.
+  description: The  minimum entropy value. Default is 0.
   isArray: false
   name: minimum_entropy
   required: false

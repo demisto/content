@@ -312,6 +312,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
+    SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
     FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
@@ -345,6 +346,7 @@ SKIPPED_STATUS_CODES = {
     PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
     PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
     PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
+    PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING
 }
 
 
