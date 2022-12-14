@@ -5475,8 +5475,7 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "PhishTank V2" : "Issue 4813"
+        "LogRhythm": "The integration is deprecated"
     },
     "nightly_integrations": [
     ],
@@ -5638,8 +5637,7 @@
         "RSA Archer v2": "cannot connect to proxy",
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
-        "Cortex XDR - IR": "internal product, no need to mock",
-
+        "Cortex XDR - IR": "internal product, no need to mock"
     },
     "parallel_integrations": [
         "AWS - ACM",
