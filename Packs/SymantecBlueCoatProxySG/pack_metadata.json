@@ -1,5 +1,5 @@
 {
-    "name": "SymantecBlueCoatProxySG",
+    "name": "Symantec BlueCoat ProxySG",
     "description": "A component for on-premises deployment and web security.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
