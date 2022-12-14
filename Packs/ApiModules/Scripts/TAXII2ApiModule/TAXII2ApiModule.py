@@ -327,7 +327,7 @@ class Taxii2FeedClient:
 
         if self.default_api_root:
             if not roots_to_api.get(self.default_api_root):
-                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exists.'
+                raise DemistoException(f'The given default API root {self.default_api_root} doesn\'t exist. '
                                        f'Available API roots are {list(roots_to_api.keys())}.')
             self.api_root = roots_to_api.get(self.default_api_root)
 

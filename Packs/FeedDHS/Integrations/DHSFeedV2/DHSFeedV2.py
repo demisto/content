@@ -82,27 +82,29 @@ def command_test_module(client: Taxii2FeedClient, initial_interval: str):
     if get_datetime(MAX_FETCH_INTERVAL) > get_datetime(initial_interval):
         return 'Due to DHS API limitations, "First Fetch Time" is limited to 48 hours.'
 
-    if client.collections:
-        try:
+    try:
+        client.initialise()
+        if client.collections:
             get_indicators_command(client, {'limit': '1', 'added_after': get_limited_interval('6 hours', initial_interval)})
-        except requests.exceptions.ConnectTimeout:
-            return 'Connection Timeout Error - potential reasons might be that the \'Discovery Service URL\' parameter' \
-                   ' is incorrect or that the server is not accessible from your host.'
-        except requests.exceptions.SSLError:
-            return 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
-                   ' the instance configuration.'
-        except requests.exceptions.ProxyError:
-            return 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
-                   ' selected, try clearing the checkbox.'
-        except requests.exceptions.ConnectionError:
-            return 'Verify that the server URL parameter is correct and that you have access to the server from your host.' \
-                   ' Run the test again.'
-        except requests.HTTPError:
-            return 'HTTP error - check your certificate and key, and that you are trying to reach a valid URL and API root.' \
-                   ' Wait and run the test again.'
+        else:
+            return 'Could not connect to server'
+    except requests.exceptions.ConnectTimeout:
+        return 'Connection Timeout Error - potential reasons might be that the \'Discovery Service URL\' parameter' \
+               ' is incorrect or that the server is not accessible from your host.'
+    except requests.exceptions.SSLError:
+        return 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+               ' the instance configuration. If this doesn\'t work, verify that your certificate and key are valid  and matching.'
+    except requests.exceptions.ProxyError:
+        return 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+               ' selected, try clearing the checkbox.'
+    except requests.exceptions.ConnectionError:
+        return 'Verify that the server URL parameter is correct and that you have access to the server from your host.' \
+               ' Run the test again.'
+    except requests.HTTPError:
+        return 'HTTP error - check your certificate and key, and that you are trying to reach a valid URL and API root.' \
+               ' Wait and run the test again.'
 
-        return 'ok'
-    return 'Could not connect to server'
+    return 'ok'
 
 
 def fetch_indicators_command(client: Taxii2FeedClient, limit: int, last_run_ctx: dict,
@@ -138,8 +140,9 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
     """
     limit = arg_to_number(args.get('limit')) or 10
     raw = argToBoolean(args.get('raw', 'false'))
+    max_fetch_datetime = get_datetime(MAX_FETCH_INTERVAL)
     added_after: datetime = get_datetime(args.get('added_after', DEFAULT_FETCH_INTERVAL))
-    if get_datetime(MAX_FETCH_INTERVAL) > added_after:
+    if max_fetch_datetime > added_after:
         raise DemistoException('Due to DHS API limitations, "added_after" is limited to 48 hours.')
 
     try:
@@ -156,7 +159,7 @@ def get_indicators_command(client: Taxii2FeedClient, args: Dict[str, Any]) \
         return {'indicators': [x.get('rawJSON') for x in indicators]}
 
     return CommandResults(
-        readable_output=f'Found {len(indicators)} results added after {_ensure_datetime_to_string(added_after)}:\n'
+        readable_output=f'Found {len(indicators)} results added after {_ensure_datetime_to_string(added_after)} UTC:\n'
                         + tableToMarkdown(name='DHS Indicators', t=indicators, headers=['value', 'type'], removeNull=True),
         outputs_prefix='DHS.Indicators',
         outputs_key_field='value',
@@ -220,13 +223,13 @@ def main():  # pragma: no cover
             key=key,
             default_api_root=default_api_root
         )
-        client.initialise()
 
         start_time = time.time()
         if command == 'test-module':
             return_results(command_test_module(client, initial_interval))
 
         elif command == 'fetch-indicators':
+            client.initialise()
             last_run_indicators = demisto.getLastRun()
             indicators, last_run_indicators = fetch_indicators_command(client, limit, last_run_indicators, initial_interval)
             for iter_ in batch(indicators, batch_size=2000):
@@ -235,9 +238,11 @@ def main():  # pragma: no cover
             demisto.setLastRun(last_run_indicators)
 
         elif command == 'dhs-get-indicators':
+            client.initialise()
             return_results(get_indicators_command(client, demisto.args()))
 
         elif command == 'dhs-get-collections':
+            client.initialise()
             return_results(get_collections_command(client))
 
         else:
