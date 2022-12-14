@@ -1,8 +1,8 @@
 {
-    "name": "MergeDictArray",
-    "description": "Each entry in an array is merged into the existing array if the keyed-value matches.",
+    "name": "MergeDictArray (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",
