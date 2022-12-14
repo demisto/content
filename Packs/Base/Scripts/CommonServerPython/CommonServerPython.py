@@ -19,6 +19,7 @@ import traceback
 import types
 import urllib
 import gzip
+import ssl
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -39,7 +40,7 @@ def __line__():
 
 # 42 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 42, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
 
@@ -8280,15 +8281,20 @@ if 'requests' in sys.modules:
                 :return: No data returned
                 :rtype: ``None``
             """
+            context = create_urllib3_context(ciphers=CIPHERS_STRING)
+
+            def __init__(self, verify=True):
+                # type: (bool) -> None
+                if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
+                    self.context.options |= 0x4
+                super().__init__()
 
             def init_poolmanager(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).init_poolmanager(*args, **kwargs)
 
             def proxy_manager_for(self, *args, **kwargs):
-                context = create_urllib3_context(ciphers=CIPHERS_STRING)
-                kwargs['ssl_context'] = context
+                kwargs['ssl_context'] = self.context
                 return super(SSLAdapter, self).proxy_manager_for(*args, **kwargs)
 
     class BaseClient(object):
@@ -8345,7 +8351,7 @@ if 'requests' in sys.modules:
             # https://bugs.python.org/issue43998
 
             if IS_PY3 and PY_VER_MINOR >= 10 and not verify:
-                self._session.mount('https://', SSLAdapter())
+                self._session.mount('https://', SSLAdapter(verify=verify))
 
             if proxy:
                 ensure_proxy_has_http_prefix()
@@ -8436,7 +8442,7 @@ if 'requests' in sys.modules:
                 if self._verify:
                     https_adapter = http_adapter
                 elif IS_PY3 and PY_VER_MINOR >= 10:
-                    https_adapter = SSLAdapter(max_retries=retry)
+                    https_adapter = SSLAdapter(max_retries=retry, verify=self._verify)
                 else:
                     https_adapter = http_adapter
 

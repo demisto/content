@@ -2759,7 +2759,7 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80
         },
         {
