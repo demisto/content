@@ -4,11 +4,13 @@ commonfields:
   version: -1
 configuration:
 - display: Certificate Password
+  hidden: true
   name: certificate_password
   required: false
   type: 4
   additionalinfo: Password used to sign the certificate.
 - display: Certificate
+  hidden: true
   name: certificate
   type: 4
   required: false
@@ -28,6 +30,7 @@ configuration:
   type: 0
   required: true
 - display: Trust any certificate (not secure)
+  hidden: true
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -36,6 +39,15 @@ configuration:
   name: tenant_id
   type: 0
   required: false
+- display: Connection URI
+  name: connection_uri
+  type: 0
+  required: false
+- display: AzureADAuthorizedEndpointURI Base
+  name: azure_ad_authorized_endpoint_uri_base
+  type: 0
+  required: false
+  additionalinfo: Excluding /common or /<tenantID>
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
