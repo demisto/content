@@ -53,7 +53,7 @@ def jira_req(
     if headers and HEADERS.get('Authorization'):
         headers['Authorization'] = HEADERS.get('Authorization')
     try:
-        
+
         result = SESSION.request(
             method=method,
             url=url,
@@ -144,7 +144,7 @@ def get_custom_field_names():
     custom_id_name_mapping = {}
     HEADERS['Accept'] = "application/json"
     try:
-        jira_req(method='GET', resource_url=BASE_URL + 'rest/api/latest/field', headers=HEADERS)
+        res = jira_req(method='GET', resource_url='rest/api/latest/field', headers=HEADERS)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
@@ -172,7 +172,7 @@ def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = BASE_URL + 'rest/api/latest/search/'
+    url = 'rest/api/latest/search/'
     query_params = {
         'jql': query,
         "startAt": start_at,
