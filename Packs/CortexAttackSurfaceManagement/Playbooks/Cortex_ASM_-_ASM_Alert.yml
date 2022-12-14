@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -45,7 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -70,10 +70,10 @@ tasks:
       id: 24707a99-f5f6-4798-8a5f-174f4cbbe073
       version: -1
       name: Triage and Qualifier Stage
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "83"
@@ -138,7 +138,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "33"
+      - "96"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -281,13 +281,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 4f650db9-3c97-4973-888c-7ec59711559c
+    taskid: bf7e1dc9-4430-499e-82ab-711b0e8e6312
     type: condition
     task:
-      id: 4f650db9-3c97-4973-888c-7ec59711559c
+      id: bf7e1dc9-4430-499e-82ab-711b0e8e6312
       version: -1
       name: Service exposure still observable?
-      description: Determines if service was still observable.
+      description: Determines if service was still observable. JWILKES CHANGE
       type: condition
       iscommand: false
       brand: ""
@@ -750,101 +750,6 @@ tasks:
         "position": {
           "x": 80,
           "y": 1470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 5cf13db6-0cd0-435c-8441-81e68c7d34a3
-    type: condition
-    task:
-      id: 5cf13db6-0cd0-435c-8441-81e68c7d34a3
-      version: -1
-      name: Meets automated remediation requirements?
-      description: Determines if the alert meets the criteria for automated remediation.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "37"
-      "yes":
-      - "28"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: asmattacksurfaceruleid
-            iscontext: true
-          right:
-            value:
-              simple: RdpServer
-        - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: asmattacksurfaceruleid
-            iscontext: true
-          right:
-            value:
-              simple: InsecureOpenSSH
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: alert.asmcloud
-                accessor: Provider
-            iscontext: true
-          right:
-            value:
-              simple: AWS
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: alert
-                accessor: asmserviceowner
-            iscontext: true
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: alert.asmtags
-                accessor: Key
-            iscontext: true
-          right:
-            value:
-              simple: dev
-          ignorecase: true
-        - operator: containsString
-          left:
-            value:
-              complex:
-                root: alert.asmtags
-                accessor: Value
-            iscontext: true
-          right:
-            value:
-              simple: dev
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1110
         }
       }
     note: false
@@ -2959,11 +2864,101 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 335df595-531b-4ec8-8ea3-3fe543fe9802
+    type: condition
+    task:
+      id: 335df595-531b-4ec8-8ea3-3fe543fe9802
+      version: -1
+      name: Meets automated remediation requirements?
+      description: Determines if the alert meets the criteria for automated remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '["]'
+            iscontext: true
+          right:
+            value:
+              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                accessor: Provider
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmserviceowner
+            iscontext: true
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: alert.asmtags
+                accessor: Key
+            iscontext: true
+          right:
+            value:
+              simple: dev
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: alert.asmtags
+                accessor: Value
+            iscontext: true
+          right:
+            value:
+              simple: dev
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "28_47_yes": 0.48,
-      "33_37_#default#": 0.35,
       "48_10_ServiceNow ticket": 0.82,
       "48_60_Notification email": 0.88,
       "48_63_Manual remediation": 0.6
@@ -2982,7 +2977,7 @@ inputs:
   value:
     simple: "False"
   required: true
-  description: 'Decide whether to potential skip analyst intervention and conduct automated remediation if meeting the following criteria: issue is Insecure OpenSSH/RDP, happened on EC2 instance, service owner information found and indicators of a non-prod host. Default is "False" (don''t do automated remediation).  Set "True" to turn this feature on.'
+  description: "Decide whether to potentially skip analyst intervention and conduct automated remediation if meeting the criteria specified here: https://cortex.marketplace.pan.dev/marketplace/details/CortexAttackSurfaceManagement/ \n\nDefault is \"False\" (don't do automated remediation).  Set \"True\" to turn this feature on."
   playbookInputQuery:
 - key: OwnerNotificationSubject
   value:
@@ -3012,4 +3007,3 @@ tests:
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
-system: true
