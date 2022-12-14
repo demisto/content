@@ -1,12 +1,16 @@
 [MODEL: dataset="netbox_irm_raw"]
-alter
+filter
+    user = null
+| alter
     xdm.event.description = comments,
     xdm.event.outcome = json_extract(kind, "$.value"),
     xdm.target.resource.id = json_extract(assigned_object, "$.id"),
     xdm.target.resource.name = json_extract(assigned_object, "$.name"),
     xdm.target.resource.type = assigned_object_type;
 
-alter
+filter
+    user != null
+| alter
     xdm.event.id = request_id,
     xdm.event.description = display,
     xdm.event.operation = json_extract(action, "$.value"),

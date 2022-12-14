@@ -1,5 +1,5 @@
 {
-  "NetBox_IRM_raw": {
+  "netbox_irm_raw": {
     "comments": {
       "type": "string",
       "is_array": false
