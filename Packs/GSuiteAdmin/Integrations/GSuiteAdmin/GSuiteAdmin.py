@@ -1276,6 +1276,15 @@ def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping
 
 @logger
 def gsuite_mobile_device_list_command(client, args: Dict[str, str]) -> List[CommandResults]:
+    """Retrieves a paginated list that includes company-owned mobile devices.
+
+    Args:
+        client (_type_): A GSuiteClient instance to do http requests.
+        args (Dict[str, str]): The arguments of the command.
+
+    Returns:
+        List[CommandResults]: List of CommandResults that hold the data to return to the engine.
+    """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICES_LIST', []),
                                subject=ADMIN_EMAIL)
     query_params = mobile_device_list_create_query_parameters(args=args)
@@ -1345,6 +1354,15 @@ def chromeos_device_list_create_query_parameters(args: dict) -> dict:
 
 @logger
 def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[CommandResults]:
+    """Retrieves a paginated list that includes company-owned ChromeOS devices.
+
+    Args:
+        client (_type_): A GSuiteClient instance to do http requests.
+        args (Dict[str, str]): The arguments of the command.
+
+    Returns:
+        List[CommandResults]: List of CommandResults that hold the data to return to the engine.
+    """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICES_LIST', []),
                                subject=ADMIN_EMAIL)
     query_params = chromeos_device_list_create_query_parameters(args=args)
@@ -1399,6 +1417,18 @@ def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[Co
 
 @logger
 def gsuite_mobile_device_action_command(client, args: Dict[str, str]) -> CommandResults:
+    """Executes an action that affects a mobile device. For example, remotely wiping a device.
+
+    Args:
+        client (_type_): A GSuiteClient instance to do http requests.
+        args (Dict[str, str]): The arguments of the command.
+
+    Raises:
+        DemistoException: If customer_id or resource_id are invalid.
+
+    Returns:
+        CommandResults: CommandResults that hold the data to return to the engine.
+    """
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can map the
         # error message to a more human readable message
@@ -1420,6 +1450,18 @@ def gsuite_mobile_device_action_command(client, args: Dict[str, str]) -> Command
 
 @logger
 def gsuite_chromeos_device_action_command(client, args: Dict[str, str]) -> CommandResults:
+    """Executes an action that affects a ChromeOS Device.
+
+    Args:
+        client (_type_): A GSuiteClient instance to do http requests.
+        args (Dict[str, str]): The arguments of the command.
+
+    Raises:
+        DemistoException: If customer_id or resource_id are invalid.
+
+    Returns:
+        CommandResults: CommandResults that hold the data to return to the engine.
+    """
     try:
         # We want to catch the exception that is thrown from a bad API call, so we can map the
         # error message to a more human readable message

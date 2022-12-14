@@ -1203,7 +1203,7 @@ There is no context output for this command.
 
 ### google-mobiledevice-list
 ***
-Retrieves a paginated list that includes company-owned devices.
+Retrieves a paginated list that includes company-owned mobile devices.
 
 ##### Required Scopes
 * https://www.googleapis.com/auth/admin.directory.device.mobile.readonly

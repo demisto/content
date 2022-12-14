@@ -967,53 +967,6 @@ def test_invalid_chromeos_action_command(mocker, gsuite_client, error_message, p
     assert parsed_error_message in str(e)
 
 
-# TEST_MODULE_ERROR_CASES = [
-#     ('error', MockResponse(json_data={'error': {'message': 'Bad Request'}}), 'Please check the customer ID parameter'),
-#     ('error', MockResponse(json_data={'error': {'message': 'Not Authorized to access this resource/api'}}),
-#      'Please check the authorizations of the configured service account'),
-#     ('error', MockResponse({'error': {'message': 'Some other error'}}), 'Some other error'),
-#     ('error', MockResponse({'error': 'Some other weird error'}), "{'error': 'Some other weird error'}"),
-#     ('error_message', None, 'error_message'),
-# ]
-
-
-# @pytest.mark.parametrize('error_message, response_mock, parsed_error_message', TEST_MODULE_ERROR_CASES)
-# def test_invalid_client_connection(mocker, error_message, response_mock, parsed_error_message):
-#     """
-#     Given:
-#         - A client to use when running the test module.
-#     When:
-#         - Running test module and receiving an error message from the API.
-#     Then:
-#         - Validate that the ambiguous error message is mapped to a more human readable error message.
-#     """
-#     from GoogleWorkspaceAdmin import test_module
-#     from CommonServerPython import DemistoException
-#     mocker.patch('GoogleWorkspaceAdmin.Client._get_oauth_token', return_value='token')
-#     mocker.patch('GoogleWorkspaceAdmin.Client._http_request',
-#                  side_effect=DemistoException(message=error_message, res=response_mock))
-#     client = create_test_client(mocker=mocker)
-#     with pytest.raises(DemistoException) as e:
-#         test_module(client=client)
-#     assert parsed_error_message in str(e)
-
-
-# def test_invalid_service_account_json():
-#     """
-#     Given:
-#         - An invalid service_account_json (that holds the information about the service account).
-#     When:
-#         - Creating a client instance.
-#     Then:
-#         - Validate that an exception is thrown in response to an invalid service_account_json.
-#     """
-#     from CommonServerPython import DemistoException
-#     with pytest.raises(DemistoException) as e:
-#         Client(base_url='https://example.com/', verify=False, proxy=False,
-#                service_account_json={'wrong': 'service_account'})
-#     assert 'Please check the service account\'s json content' in str(e)
-
-
 TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
     ({'page': '3', 'page_token': 'some_token', 'limit': '25'}, ('please supply either the argument limit,'
                                                                 ' or the argument page_token, or the arguments'
@@ -1234,35 +1187,11 @@ def test_mobile_device_list_empty_response(mocker, gsuite_client, pagination_arg
         assert expected_results.get('EntryContext') == to_context.get('EntryContext')
 
 
-# MOBILE_DEVICES_ERROR_CASES = [
-#     ('error', MockResponse({'error': {'message': 'Some error'}}), 'Some error'),
-#     ('error', MockResponse({'error': 'Some other weird error'}), "{'error': 'Some other weird error'}"),
-#     ('error_message', None, 'error_message'),
-# ]
-
-
-# @pytest.mark.parametrize('error_message, response_mock, parsed_error_message', MOBILE_DEVICES_ERROR_CASES)
-# def test_invalid_mobile_device_list_command(mocker, error_message, response_mock, parsed_error_message):
-#     """
-#     Given:
-#         - A client and query parameters for the API.
-#     When:
-#         - Running the google_mobile_device_list_command command, and receiving an error from the API.
-#     Then:
-#         - Validate that the error is caught and is processed.
-#     """
-#     from GoogleWorkspaceAdmin import google_mobile_device_list_command
-#     from CommonServerPython import DemistoException
-#     args = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', 'limit': '531'}
-#     client = create_test_client(mocker=mocker)
-#     mocker.patch.object(client, 'google_mobile_device_list_request',
-#                         side_effect=DemistoException(message=error_message, res=response_mock))
-#     with pytest.raises(DemistoException) as e:
-#         google_mobile_device_list_command(client=client, customer_id='customer_id', **args)
-#     assert parsed_error_message in str(e)
-
-
 def create_pagination_result_automatic_instance(raw_responses: list[dict], response_devices_list_key: str) -> PaginationResult:
+    """
+        This will create a PaginationResult instance that reflect automatic pagination in order to check the return values of
+        functions that return PaginationResult.
+    """
     mocked_data = []
     for raw_response in raw_responses:
         mocked_data.extend(raw_response.get(response_devices_list_key, []))
@@ -1270,6 +1199,10 @@ def create_pagination_result_automatic_instance(raw_responses: list[dict], respo
 
 
 def create_pagination_result_manual_instance(raw_responses: list[dict], response_devices_list_key: str) -> PaginationResult:
+    """
+        This will create a PaginationResult instance that reflect manual pagination in order to check the return values of
+        functions that return PaginationResult.
+    """
     assert len(raw_responses) <= 1, 'The length of the mocked raw responses of a manual pagination should be at most 1.'
     mocked_data = []
     mocked_next_page_token = ''
