@@ -9,7 +9,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 def get_files(target_dir):
     item_list = os.listdir(target_dir)
-
+    print(f'item_list: {item_list}')
     file_list = list()
     for item in item_list:
         item_dir = os.path.join(target_dir, item)
