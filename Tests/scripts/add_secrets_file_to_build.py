@@ -12,7 +12,7 @@ def get_files(target_dir):
 
     file_list = list()
     for item in item_list:
-        item_dir = os.path.join(target_dir,item)
+        item_dir = os.path.join(target_dir, item)
         if os.path.isdir(item_dir):
             file_list += get_files(item_dir)
         else:
