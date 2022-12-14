@@ -43,11 +43,13 @@ configuration:
   name: connection_uri
   type: 0
   required: false
+  default: 'https://ps.compliance.protection.outlook.com/powershell-liveid/'
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
   required: false
   additionalinfo: Excluding /common or /<tenantID>
+  default: 'https://login.microsoftonline.com'
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
