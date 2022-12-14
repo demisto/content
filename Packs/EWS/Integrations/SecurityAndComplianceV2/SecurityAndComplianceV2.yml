@@ -4,17 +4,17 @@ commonfields:
   version: -1
 configuration:
 - display: Certificate Password
-  hidden: true
   name: certificate_password
   required: false
   type: 4
   additionalinfo: Password used to sign the certificate.
-- display: Certificate
   hidden: true
+- display: Certificate
   name: certificate
   type: 4
   required: false
   additionalinfo: A pfx certificate encoded in Base64.
+  hidden: true
 - display: UPN/Email
   additionalinfo: These fields are required for Delegated Access. Details regarding delegated access can be found here - https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance#delegated-authentication
   name: delegated_auth
@@ -30,11 +30,11 @@ configuration:
   type: 0
   required: true
 - display: Trust any certificate (not secure)
-  hidden: true
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
+  hidden: true
 - display: Tenant ID
   name: tenant_id
   type: 0
@@ -43,13 +43,13 @@ configuration:
   name: connection_uri
   type: 0
   required: false
-  default: 'https://ps.compliance.protection.outlook.com/powershell-liveid/'
+  defaultValue: 'https://ps.compliance.protection.outlook.com/powershell-liveid/'
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
   required: false
   additionalinfo: Excluding /common or /<tenantID>
-  default: 'https://login.microsoftonline.com'
+  defaultValue: 'https://login.microsoftonline.com'
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
 display: O365 - Security And Compliance - Content Search v2
 name: SecurityAndComplianceV2
