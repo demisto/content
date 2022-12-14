@@ -1,0 +1,17 @@
+[MODEL: dataset="netbox_irm_raw"]
+alter
+    xdm.event.description = comments,
+    xdm.event.outcome = json_extract(kind, "$.value"),
+    xdm.target.resource.id = json_extract(assigned_object, "$.id"),
+    xdm.target.resource.name = json_extract(assigned_object, "$.name"),
+    xdm.target.resource.type = assigned_object_type;
+
+alter
+    xdm.event.id = request_id,
+    xdm.event.description = display,
+    xdm.event.operation = json_extract(action, "$.value"),
+    xdm.target.resource.id = to_string(changed_object_id),
+    xdm.target.resource.name = json_extract(changed_object, "$.display"),
+    xdm.target.resource.type = changed_object_type,
+    xdm.target.resource_before.name = json_extract(prechange_data, "$.name"),
+    xdm.source.user.username = user_name;

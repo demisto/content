@@ -192,8 +192,8 @@ def main() -> None:  # pragma: no cover
         arg=params.get('first_fetch', '3 days'),
         arg_name='First fetch time',
         required=True
-    )  # type: ignore
-    first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)
+    )  # type: ignore   # datetime.datetime(2022, 1, 1, 00, 00, 00, 0)
+    first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)  # 2022-01-01T00:00:00Z
 
     demisto.debug(f'Command being called is {command}')
     try:

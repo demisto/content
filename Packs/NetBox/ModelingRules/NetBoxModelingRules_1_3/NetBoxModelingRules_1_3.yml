@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: NetBox_IRM_modeling_rule
+name: NetBox IRM Modeling Rule
+rules: ''
+schema: ''
+tags: NetBox
