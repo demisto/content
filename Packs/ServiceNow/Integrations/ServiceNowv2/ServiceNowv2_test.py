@@ -291,7 +291,7 @@ def test_fetch_incidents_with_changed_fetch_limit(mocker):
     - mock the Client's send_request.
     Then
     - run the fetch incidents command using the Client
-    Validate The length of the results.
+    Validate The number of fetch_limit in the last_run
     """
     RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
     RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
