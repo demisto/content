@@ -6,12 +6,12 @@
             "product": "bluecoatproxysg",
             "dataset": "symantec_bluecoatproxysg_raw",
             "event_data": {
-                "_raw_log": "2022-11-28 07:12:56 467 165.72.191.44 407 TCP_DENIED 383 362 CONNECT tcp ntp.msn.com 443 /DigiCertAssuredIDCA-1.crt ?assdf=sadffsdf anonymous%20logon Security server-123.local.com text/plain;%20charset=utf-8 http://google.com \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\" DENIED \"DHL_SITES_Allowed_URLs_List3;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\" X-Violations-Found 194.61.57.188"
+                "_raw_log": "2022-11-28 07:12:56 467 8.8.8.8 407 TCP_DENIED 383 362 CONNECT tcp ntp.msn.com 443 /DigiCertAssuredIDCA-1.crt ?assdf=sadffsdf anonymous%20logon Security server-123.local.com text/plain;%20charset=utf-8 http://google.com \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\" DENIED \"DHL_SITES_Allowed_URLs_List3;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\" X-Violations-Found 1.1.1.1"
             },
             "expected_values": {
                 "xdm.network.http.referrer": "http://google.com",
                 "xdm.observer.name": "server-123.local.com",
-                "xdm.source.ipv4": "165.72.191.44",
+                "xdm.source.ipv4": "8.8.8.8",
                 "xdm.alert.original_alert_id": "X-Violations-Found",
                 "xdm.network.http.url_category": "\"DHL_SITES_Allowed_URLs_List3;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\"",
                 "xdm.source.sent_bytes": "362",
@@ -20,7 +20,7 @@
                 "xdm.event.outcome": "DENIED",
                 "xdm.source.user.groups": "Security",
                 "xdm.event.outcome_reason": "TCP_DENIED",
-                "xdm.source.host.ipv4_addresses": "194.61.57.188",
+                "xdm.source.host.ipv4_addresses": "1.1.1.1",
                 "xdm.network.http.response_code": "407",
                 "xdm.network.ip_protocol": "tcp",
                 "xdm.network.http.method": "CONNECT",
