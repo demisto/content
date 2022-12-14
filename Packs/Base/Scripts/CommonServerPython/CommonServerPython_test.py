@@ -8203,6 +8203,10 @@ class TestSendEventsToXSIAMTest:
         if not IS_PY3:
             return
 
+        mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
+        mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
+                                                                    "IntegrationBrand": "test_brand"}})
+
         if isinstance(error_msg, dict):
             status_code = 401
             requests_mock.post(

@@ -810,7 +810,7 @@ script:
     description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.40261
+  dockerimage: demisto/oauthlib:1.0.0.40914
   feed: false
   isfetch: true
   ismappable: true
