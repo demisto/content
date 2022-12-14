@@ -38,7 +38,7 @@ def run(options):
             secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
         except Exception as e:
             logging.error(f'Could not save secrets file, malformed json5 format, the error is: {e}')
-    logging.log(f'saved the json file to: {options.json_path_file}')
+    logging.info(f'saved the json file to: {options.json_path_file}')
 
 
 def options_handler(args=None):

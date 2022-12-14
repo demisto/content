@@ -22,7 +22,7 @@ class GoogleSecreteManagerModule:
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
-            logging.log(f'Getting the secret: {secret.name}')
+            logging.info(f'Getting the secret: {secret.name}')
             if secret.name in name_filter:
                 continue
             if with_secret:
