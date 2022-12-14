@@ -16,10 +16,12 @@ configuration:
 - display: Client ID
   name: client_id
   required: false
+  hidden: true
   type: 0
 - display: Secret
   name: secret
   required: false
+  hidden: true
   type: 4
 - name: Reliability
   additionalinfo: Reliability of the source providing the intelligence data.
