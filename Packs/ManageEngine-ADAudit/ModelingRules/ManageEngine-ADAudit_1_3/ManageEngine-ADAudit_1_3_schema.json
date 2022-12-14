@@ -1,5 +1,5 @@
 {
-    "ManageEngine_ADAuditPlus_raw": {
+    "manageengine_adauditplus_raw": {
         "cn2": {
           "type": "string",
           "is_array": false
