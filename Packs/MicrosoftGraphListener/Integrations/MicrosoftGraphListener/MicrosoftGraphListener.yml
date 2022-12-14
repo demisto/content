@@ -72,6 +72,13 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
+  defaultvalue: 'false'
+  display: Display the entire email body
+  name: display_full_email_body
+  type: 8
+  section: Collect
+  advanced: true
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
