@@ -205,8 +205,16 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             if limit < 1 or limit > 50:
                 msg += 'Fetch Limit value should be between 1 and 50. '
 
+        if params.get('fetch_parameters') == 'ID and timestamp':
+            if not (params.get('column_name') and params.get('id_column')):
+                msg += 'Missing Column name for fetching or ID Column name (when ID and timestamp are chosen,' \
+                       ' fill in both). '
+
         if not (params.get('start_id') or params.get('start_timestamp')):
             msg += 'A starting point for fetching is missing, please enter Start ID or Start Timestamp. '
+
+        if not params.get('column_name'):
+            msg += 'Missing mandatory parameter Column name for fetching. '
 
     return msg if msg else 'ok', {}, []
 
@@ -271,23 +279,38 @@ def get_last_run(params: dict):
             first_fetch_datetime = dateparser.parse(start_interval, settings={'TIMEZONE': 'UTC'})
             last_run = {'last_timestamp': first_fetch_datetime.strftime('%Y-%m-%d %H:%M:%S'),
                         'last_id': False}
+
         else:
             last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}
+        # for the case when we get timestamp and id - need to maintain an id's set
+        last_run['ids'] = list()
     return last_run
 
 
 def create_sql_query(last_run: dict, params: dict):
     last_timestamp_or_id = last_run.get('last_timestamp') if last_run.get('last_timestamp') else last_run.get(
         'last_id')
-    # case of runStoreProcedure
+
+    demisto.debug(f'{last_timestamp_or_id=}')
+
+    # case of runStoreProcedure MSSQL
     if params.get('fetchQuery').lower().startswith('exec'):
         sql_query = f"SET ROWCOUNT {params.get('fetch_limit')};" \
                     f"{params.get('fetchQuery')} @{params.get('column_name')} = '{last_timestamp_or_id}';" \
                     f"SET ROWCOUNT 0"
-    else:  # a simple query
-        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} > '{last_timestamp_or_id}'" \
+
+    # case of runStoreProcedure MySQL
+    elif params.get('fetchQuery').lower().startswith('call'):
+        sql_query = f"{params.get('fetchQuery')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
+
+    # a simple query with ts and id, that means ts is not unique
+    elif params.get('column_name') and params.get('id_column'):
+        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} >= '{last_timestamp_or_id}'" \
                     f" order by {params.get('column_name')}"
 
+    else:  # a simple query with unique id or unique ts
+        sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} > '{last_timestamp_or_id}'" \
+                    f" order by {params.get('column_name')}"
     return sql_query
 
 
@@ -318,12 +341,22 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
     Returns:
 
     """
+    is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
     if last_run.get('last_timestamp'):
+        last_record_timestamp = table[-1].get(params.get('column_name'))
+
+        if is_timestamp_and_id:
+            new_ids_list = list()
+            for record in table:
+                if record.get(params.get('column_name')) == last_record_timestamp:
+                    new_ids_list.append(record.get(params.get('id_column')))
+            last_run['ids'] = new_ids_list
+
         # allow till 3 digit after the decimal point - due to limits on querying
-        before_decimal_point, after_decimal_point = table[-1].get(params.get('column_name')).split('.')
-        last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
-        last_run['last_timestamp'] = last_timestamp
-        # last_run['last_timestamp'] = table[-1].get(params.get('column_name'))
+        # before_decimal_point, after_decimal_point = last_record_timestamp.split('.')
+        # last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
+        # last_run['last_timestamp'] = last_timestamp
+        last_run['last_timestamp'] = table[-1].get(params.get('column_name'))
     else:
         last_run['last_id'] = table[-1].get(params.get('column_name'))
 
@@ -342,15 +375,25 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
 
     """
     incidents = []
+    is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
     for record in table:
+
         timestamp = record.get(params.get('column_name')) if last_run.get('last_timestamp') else None
         date_time = dateparser.parse(timestamp) if timestamp else datetime.now()
+
+        # for avoiding duplicate incidents
+        if is_timestamp_and_id and record.get(params.get('column_name')).startswith(last_run.get('last_timestamp')):
+            if record.get(params.get('id_column')) in last_run.get('ids'):
+                continue
+
         incident_context = {
-            'name': record.get(params.get('column_name')),
+            'name': record.get(params.get('incident_name')) if record.get('incident_name')
+            else record.get(params.get('column_name')),
             'occurred': date_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(record),
         }
         incidents.append(incident_context)
+
     return incidents
 
 

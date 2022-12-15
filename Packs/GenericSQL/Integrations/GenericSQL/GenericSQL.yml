@@ -28,20 +28,39 @@ configuration:
   name: credentials
   required: true
   type: 9
+- defaultvalue: ID and timestamp
+  display: Fetch parameters
+  hidden: false
+  name: fetch_parameters
+  options:
+  - Unique sequence ID or unique timestamp
+  - ID and timestamp
+  required: true
+  type: 15
 - additionalinfo: The Generic SQL query/procedure. Only simple queries are supported, which means 'select * from table_name'. Procedures should contain condition on the fetch parameter, for example timestamp > @timestamp and order by timestamp (asc). "CREATE PROCEDURE *NAME* @timestamp DATETIME AS SELECT * FROM table_name WHERE timestamp >= @timestamp order by timestamp".
   display: Fetch events query
   name: fetchQuery
   required: true
   type: 0
-- additionalinfo: Need to fill here the exact name of the column to fetch (The id column or the timestamp column).
+- additionalinfo: Fill here the exact column's name to fetch (id column or timestamp column).
   display: Column name for fetching
   name: column_name
+  required: true
+  type: 0
+- display: ID Column name - in case of ID and timestamp
+  name: id_column
   required: false
   type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+- display: Incident Name
+  additionalinfo: Fill here the exact column's incident name (if empty - that's the Column name for fetching).
+  hidden: false
+  name: incident_name
+  required: false
+  type: 0
 - display: Database Name
   hidden: false
   name: dbname
@@ -64,11 +83,11 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: ID to start fetching.
-  display: First fetch ID
+- display: First fetch ID - ID to start fetching
   name: start_id
   required: false
   type: 0
+  defaultvalue: '-1'
 - display: Use an SSL connection
   hidden: false
   name: ssl_connect
