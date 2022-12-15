@@ -195,12 +195,12 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_alert_details_request(self, session_str: str, alert_id: str, sensor_id: str) -> Dict:
+    def get_alert_details_request(self, session_str: str, alert_id: int, sensor_id: int) -> Dict:
         """ Retrieves the alert details.
             Args:
                 session_str: str - The session id.
-                alert_id: str - The id of the relevant alert.
-                sensor_id: str - The id of the relevant sensor.
+                alert_id: int - The id of the relevant alert.
+                sensor_id: int - The id of the relevant sensor.
             Returns:
                 A dictionary with the alert details.
         """
@@ -227,12 +227,12 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_domains_request(self, session_str: str, domain_id: str) -> Dict:
+    def get_domains_request(self, session_str: str, domain_id: int) -> Dict:
         """ If a domain id is given The command returns the details of the specific domain.
             Else, gets all available domains.
             Args:
                 session_str: str - The session id.
-                domain_id: str - The id of the relevant attack.
+                domain_id: int - The id of the relevant attack.
             Returns:
                 A dictionary with the attack list of the specific attack details.
         """
@@ -241,6 +241,22 @@ class Client(BaseClient):
             url_suffix = f'{url_suffix}/{domain_id}'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def get_sensors_request(self, session_str: str, domain_id: int) -> Dict:
+        """ If a domain id is given The command returns the details of the specific domain.
+            Else, gets all available domains.
+            Args:
+                session_str: str - The session id.
+                domain_id: int - The id of the relevant attack.
+            Returns:
+                A dictionary with the attack list of the specific attack details.
+        """
+        url_suffix = '/sdkapi/sensors'
+        params = {}
+        if domain_id:
+            params['domain'] = domain_id
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -272,7 +288,7 @@ def get_session(client: Client, user_name_n_password: str) -> str:
     return encode_to_base64(f'{session.get("session")}:{session.get("userId")}')
 
 
-def pagination(records_list: List, limit: int, page: int) -> List:
+def pagination(records_list: List, limit: int, page: int) -> List[Dict]:
     """ Returns the wanted records.
     Args:
         records_list: List - The original list of objects.
@@ -532,6 +548,17 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         del alert['malwareFile']
         del alert['event']
     return alert_list
+
+
+def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
+    for sensor in sensors_list:
+        sensor['ID'] = sensor.get('sensorId')
+        sensor['Name'] = sensor.get('name')
+        sensor['IP Address'] = sensor.get('sensorIPAddress')
+        del sensor['sensorId']
+        del sensor['name']
+        del sensor['sensorIPAddress']
+    return sensors_list
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -1126,8 +1153,8 @@ def get_alert_details_command(client: Client, args: Dict, session_str: str) -> C
         Returns:
             A CommandResult object with the alert details.
     """
-    alert_id = args.get('alert_id')
-    sensor_id = args.get('sensor_id')
+    alert_id = arg_to_number(args.get('alert_id'))
+    sensor_id = arg_to_number(args.get('sensor_id'))
     response = client.get_alert_details_request(session_str, alert_id, sensor_id)
     response['ID'] = alert_id
 
@@ -1166,7 +1193,7 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> Command
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with The attack details or attack list.
+            A CommandResult object with The attack details or attacks list.
     """
     attack_id = args.get('attack_id')
     limit = arg_to_number(args.get('limit', 50)) or 50
@@ -1215,9 +1242,11 @@ def get_domains_command(client: Client, args: Dict, session_str: str) -> Command
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with The attack details or attack list.
+            A CommandResult object with The domain details or domains list.
     """
-    domain_id = args.get('domain_id')
+    domain_id = arg_to_number(args.get('domain_id'))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
     response = client.get_domains_request(session_str, domain_id)
     results = response.get('DomainDescriptor', {})
     human_readable = []
@@ -1231,6 +1260,7 @@ def get_domains_command(client: Client, args: Dict, session_str: str) -> Command
         title = 'List of Domains'
         children = [results]
         h_r_get_domains(children, human_readable)
+    human_readable = pagination(human_readable, limit, page)
     readable_outputs = tableToMarkdown(
         name=title,
         t=human_readable,
@@ -1239,9 +1269,56 @@ def get_domains_command(client: Client, args: Dict, session_str: str) -> Command
     return CommandResults(
         readable_output=readable_outputs,
         outputs_prefix='NSM.Domains',
-        outputs=results,
-        raw_response=results,
+        outputs=human_readable,
+        raw_response=human_readable,
         outputs_key_field='id'
+    )
+
+
+def get_sensors_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Gets the list of sensors available in the specified domain. If the domain is not specified, details of all
+        the sensors in all ADs will be provided.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The relevant sensors.
+    """
+    domain_id = arg_to_number(args.get('domain_id'))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    response = client.get_sensors_request(session_str, domain_id)
+    sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page)
+    sensors_list = update_sensors_list(sensors_list)
+    human_readable = []
+    for sensor in sensors_list:
+        d = {
+            'ID': sensor.get('ID'),
+            'Name': sensor.get('Name'),
+            'Description': sensor.get('Description'),
+            'DomainID': sensor.get('DomainID'),
+            'IPSPolicyID': sensor.get('IPSPolicyID'),
+            'IP Address': sensor.get('IP Address')
+        }
+        human_readable.append(d)
+    headers = ['ID', 'Name', 'Description', 'DomainID', 'IPSPolicyID', 'IP Address']
+    if domain_id:
+        title = f'The Sensors of Domain no.{domain_id}'
+    else:
+        title = 'Sensors List'
+    readable_output = tableToMarkdown(
+        name=title,
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.Sensors',
+        outputs=sensors_list,
+        raw_response=sensors_list,
+        outputs_key_field='ID'
     )
 
 
@@ -1320,6 +1397,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-domains':
             results = get_domains_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-sensors':
+            results = get_sensors_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')

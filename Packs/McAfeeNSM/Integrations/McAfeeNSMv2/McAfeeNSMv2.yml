@@ -1292,16 +1292,36 @@ script:
           description: Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
           required: false
           isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
       outputs:
-        - contextPath: NSM.Domains.childdomains
-          description: An array of the domain children.
-          type: String
         - contextPath: NSM.Domains.id
           description: Domain id.
           type: Number
         - contextPath: NSM.Domains.name
           description: Domain name.
           type: String
+    - name: nsm-get-sensors
+      description: Gets the list of sensors available in the specified domain. If the domain is not specified, details of all the sensors in all ADs will be provided.
+      arguments:
+        - name: domain_id
+          description: Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          required: false
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
   isfetch: false
   runonce: false
   script: '-'
