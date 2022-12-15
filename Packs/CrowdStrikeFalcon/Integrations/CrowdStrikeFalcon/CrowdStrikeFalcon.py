@@ -351,6 +351,9 @@ def create_relationships(cve: dict) -> List:
 
 
 def create_dbot_Score(cve: dict, reliability: str) -> Common.DBotScore:
+    """
+        Creates DBotScore CVE indicator, for get_cve_command.
+    """
     return Common.DBotScore(indicator=cve.get('id'),
                             indicator_type=DBotScoreType.CVE,
                             integration_name=INTEGRATION_NAME,
