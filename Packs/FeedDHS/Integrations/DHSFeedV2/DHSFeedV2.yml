@@ -93,7 +93,7 @@ configuration:
   required: false
   type: 19
 - additionalinfo: 'The time interval for the first fetch (retroactive) in the following format: <number> <time
-    unit> of type minute/hour/day. For example, 1 minute, 12 hour. Limited to 48 hours.'
+    unit> of type minute/hour/day. For example, 1 minute, 12 hours. Limited to 48 hours.'
   defaultvalue: 24 hours
   display: First Fetch Time
   hidden: false
