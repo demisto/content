@@ -23,7 +23,7 @@ For detailed instructions about setting up authentication, see: [AWS Integration
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html). | False        |
     | Fetch incidents |  | False        |
     | Maximum incidents for one fetch. Hard cap of 100. | Maximum number of incidents for a single fetch. | 10           |
-    | First fetch timestamp | First fetch query \('<number> <time unit>', e.g., '7 days'. Default '3 days'.\)  | False        |
+    | First fetch timestamp | First fetch query `<number> <time unit>`, e.g., `7 days`. Default `3 days`)  | False        |
     | Incident type |  | False        |
     | Use system proxy settings |  | False        |
     | Trust any certificate (not secure) |  | False        |
