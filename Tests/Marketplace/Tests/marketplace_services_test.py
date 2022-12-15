@@ -2738,8 +2738,8 @@ class TestStoreInCircleCIArtifacts:
         successful_uploaded_dependencies = list()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, successful_uploaded_dependencies,
-            failed_packs, updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+            successful_uploaded_dependencies, failed_packs, updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
