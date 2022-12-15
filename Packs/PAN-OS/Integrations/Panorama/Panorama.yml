@@ -5631,6 +5631,9 @@ script:
       - wildfire
       - url
       - data
+      - corr
+      - system
+      - decryption
     - description: The query string by which to match criteria for the logs. This is similar to the query provided in the web interface under the Monitor tab when viewing the logs.
       name: query
     - description: |-
