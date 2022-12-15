@@ -1305,8 +1305,9 @@ def main():
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, successful_uploaded_dependencies_zip_packs,
-        failed_packs, updated_private_packs_ids, images_data=get_images_data(packs_list)
+        packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
+        images_data=get_images_data(packs_list)
     )
 
     # summary of packs status

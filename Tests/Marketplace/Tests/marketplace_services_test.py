@@ -2735,10 +2735,11 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
         updated_private_packs = self.get_updated_private_packs()
+        successful_uploaded_dependencies = list()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-            updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, successful_uploaded_dependencies,
+            failed_packs, updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2771,7 +2772,7 @@ class TestStoreInCircleCIArtifacts:
         successful_packs = self.get_successful_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list(), list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2796,7 +2797,7 @@ class TestStoreInCircleCIArtifacts:
         failed_packs = self.get_failed_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs, list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), failed_packs, list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
@@ -2821,7 +2822,7 @@ class TestStoreInCircleCIArtifacts:
         updated_private_packs = self.get_updated_private_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), updated_private_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), list(), updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
