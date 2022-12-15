@@ -470,26 +470,29 @@ def test_create_intrusion_policy_command(requests_mock, mock_client):
         expected_output_prefix=INTRUSION_POLICY_CONTEXT
     )
 
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+
 
 @pytest.mark.parametrize(
-    'args, filename',
+    'args',
     (
-        ({}, 'intrusion_policy_list_response.json'),
-        ({'limit': '6'}, 'intrusion_policy_list_response.json'),
-        ({'page_size': '3'}, 'intrusion_policy_list_response.json'),
-        ({'intrusion_policy_id': 'intrusion_policy_id'}, 'intrusion_policy_response.json')
+        ({}),
+        ({'limit': '6'}),
+        ({'page_size': '3'}),
     )
 )
-def test_get_intrusion_policy_command(requests_mock, mock_client, args, filename):
+def test_list_intrusion_policy_command(requests_mock, mock_client, args):
     """
     Scenario:
     -   Get an intrusion policy list.
-    -   Get an intrusion policy.
     Given:
     -   Nothing.
     -   limit
     -   page_size
-    -   intrusion_policy_id
     When:
     -    ciscofp-get-intrusion-policy is called.
     Then:
@@ -497,15 +500,12 @@ def test_get_intrusion_policy_command(requests_mock, mock_client, args, filename
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    if object_suffix := args.get('intrusion_policy_id', ''):
-        object_suffix = f'/{object_suffix}'
-
     method = 'GET'
-    mock_response = load_mock_response(filename)
+    mock_response = load_mock_response('intrusion_policy_list_response.json')
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies{object_suffix}',
+        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies',
         json=mock_response,
     )
 
@@ -517,6 +517,51 @@ def test_get_intrusion_policy_command(requests_mock, mock_client, args, filename
         method=method,
         expected_output_prefix=INTRUSION_POLICY_CONTEXT
     )
+
+    for output, mock_output in zip(command_results.outputs, mock_response['items']):
+        assert output['name'] == mock_output['name']
+        assert output['id'] == mock_output['id']
+        assert output['description'] == mock_output['description']
+        assert output['metadata'] == mock_output['metadata']
+
+
+def test_get_intrusion_policy_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get an intrusion policy.
+    Given:
+    -   intrusion_policy_id
+    When:
+    -    ciscofp-get-intrusion-policy is called.
+    Then:
+    -   Ensure the readable_output is correct.
+    -   Ensure the outputs_prefix is correct.
+    -   Ensure the outputs has no links.
+    """
+    args = {'intrusion_policy_id': 'intrusion_policy_id'}
+
+    method = 'GET'
+    mock_response = load_mock_response('intrusion_policy_response.json')
+
+    requests_mock.request(
+        method,
+        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies/{args["intrusion_policy_id"]}',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import list_intrusion_policy_command
+    command_results = list_intrusion_policy_command(mock_client, args)
+
+    assert_command_results(
+        command_results=command_results,
+        method=method,
+        expected_output_prefix=INTRUSION_POLICY_CONTEXT
+    )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
 
 
 def test_error_get_intrusion_policy_command(mock_client):
@@ -580,6 +625,12 @@ def test_update_intrusion_policy_command(requests_mock, mock_client):
         method=method,
         expected_output_prefix=INTRUSION_POLICY_CONTEXT
     )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
 
 
 def test_delete_intrusion_policy_command(requests_mock, mock_client):
@@ -686,26 +737,28 @@ def test_create_intrusion_rule_command(requests_mock, mock_client):
         expected_output_prefix=INTRUSION_RULE_CONTEXT
     )
 
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
+    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+
 
 @pytest.mark.parametrize(
-    'args, filename',
+    'args',
     (
-        ({'expanded_response': 'True'}, 'intrusion_rule_list_response.json'),
-        ({'limit': '6', 'expanded_response': 'False'}, 'intrusion_rule_list_response.json'),
-        ({'page_size': '3'}, 'intrusion_rule_list_response.json'),
-        ({'intrusion_rule_id': 'intrusion_rule_id'}, 'intrusion_rule_response.json')
+        ({'expanded_response': 'True'}),
+        ({'limit': '6', 'expanded_response': 'False'}),
+        ({'page_size': '3'}),
     )
 )
-def test_get_intrusion_rule_command(requests_mock, mock_client, args, filename):
+def test_list_intrusion_rule_command(requests_mock, mock_client, args):
     """
     Scenario:
     -   Get an intrusion rule list.
-    -   Get an intrusion rule.
     Given:
     -   expanded_response.
     -   limit, expanded_response
     -   page_size
-    -   intrusion_rule_id
     When:
     -    ciscofp-get-intrusion-rule is called.
     Then:
@@ -713,15 +766,12 @@ def test_get_intrusion_rule_command(requests_mock, mock_client, args, filename):
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    if object_suffix := args.get('intrusion_rule_id', ''):
-        object_suffix = f'/{object_suffix}'
-
     method = 'GET'
-    mock_response = load_mock_response(filename)
+    mock_response = load_mock_response('intrusion_rule_list_response.json')
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrules{object_suffix}',
+        f'{BASE_URL}/{SUFFIX}/object/intrusionrules',
         json=mock_response,
     )
 
@@ -733,6 +783,50 @@ def test_get_intrusion_rule_command(requests_mock, mock_client, args, filename):
         method=method,
         expected_output_prefix=INTRUSION_RULE_CONTEXT
     )
+
+    for output, mock_output in zip(command_results.outputs, mock_response['items']):
+        assert output['name'] == mock_output['name']
+        assert output['id'] == mock_output['id']
+        assert output['msg'] == mock_output['msg']
+        assert output['ruleAction'] == mock_output['ruleAction']
+
+
+def test_get_intrusion_rule_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get an intrusion rule.
+    Given:
+    -   intrusion_rule_id
+    When:
+    -    ciscofp-get-intrusion-rule is called.
+    Then:
+    -   Ensure the readable_output is correct.
+    -   Ensure the outputs_prefix is correct.
+    -   Ensure the outputs has no links.
+    """
+    args = {'intrusion_rule_id': 'intrusion_rule_id'}
+    method = 'GET'
+    mock_response = load_mock_response('intrusion_rule_response.json')
+
+    requests_mock.request(
+        method,
+        f'{BASE_URL}/{SUFFIX}/object/intrusionrules/{args["intrusion_rule_id"]}',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import list_intrusion_rule_command
+    command_results = list_intrusion_rule_command(mock_client, args)
+
+    assert_command_results(
+        command_results=command_results,
+        method=method,
+        expected_output_prefix=INTRUSION_RULE_CONTEXT
+    )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
+    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
 
 
 def test_error_get_intrusion_rule_command(mock_client):
@@ -817,6 +911,11 @@ def test_update_intrusion_rule_command(requests_mock, mock_client, args):
         expected_output_prefix=INTRUSION_RULE_CONTEXT
     )
 
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['ruleData'] == mock_response['ruleData']
+    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+
 
 @pytest.mark.parametrize(
     'args, expected_output',
@@ -883,24 +982,8 @@ def test_delete_intrusion_rule_command(requests_mock, mock_client):
     )
 
 
-@pytest.mark.parametrize(
-    'args, filename',
-    ((
-        {
-            'entry_id': 'entry_id'
-        },
-        'intrusion_rule_upload_validation_response.json'
-    ), (
-        {
-            'entry_id': 'entry_id',
-            'rule_import_mode': 'MERGE',
-            'rule_group_ids': 'rule_group_id1,rule_group_id2',
-        },
-        'intrusion_rule_upload_import_response.json'
-    ))
-)
 @mock.patch('CiscoFirepower.demisto.getFilePath', lambda x: FILE_ENTRY)
-def test_upload_intrusion_file_command(requests_mock, mock_client, args, filename):
+def test_upload_intrusion_file_validation_command(requests_mock, mock_client):
     """
     Scenario:
     -   Upload an intrusion rule file for validation.
@@ -914,7 +997,11 @@ def test_upload_intrusion_file_command(requests_mock, mock_client, args, filenam
     -   Ensure the outputs_prefix is correct.
     -   Ensure the readable_output is correct.
     """
-    mock_response = load_mock_response(filename)
+    args = {
+        'entry_id': 'entry_id'
+    }
+
+    mock_response = load_mock_response('intrusion_rule_upload_validation_response.json')
     requests_mock.post(
         f'{BASE_URL}/{SUFFIX}/object/intrusionrulesupload',
         json=mock_response,
@@ -923,12 +1010,43 @@ def test_upload_intrusion_file_command(requests_mock, mock_client, args, filenam
     from CiscoFirepower import upload_intrusion_rule_file_command
     command_results = upload_intrusion_rule_file_command(mock_client, args)
 
-    if args.get('rule_group_ids'):
-        assert command_results.outputs_prefix == '.'.join((INTEGRATION_CONTEXT_NAME, INTRUSION_RULE_UPLOAD_CONTEXT))
-        assert INTRUSION_RULE_UPLOAD_TITLE in command_results.readable_output
+    assert f'Validation for Intrusion Rules within: "{FILE_ENTRY["name"]}"' in command_results.readable_output
+    assert mock_response['error']['messages'][0]['description'] in command_results.readable_output
 
-    else:
-        assert f'Validation for Intrusion Rules within: "{FILE_ENTRY["name"]}"' in command_results.readable_output
+
+@mock.patch('CiscoFirepower.demisto.getFilePath', lambda x: FILE_ENTRY)
+def test_upload_intrusion_file_import_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Upload an intrusion rule file for import.
+    Given:
+    -   entry_id, rule_import_mode, rule_group_ids
+    When:
+    -    ciscofp-upload-intrusion-rule-file is called.
+    Then:
+    -   Ensure the outputs_prefix is correct.
+    -   Ensure the readable_output is correct.
+    """
+    args = {
+        'entry_id': 'entry_id',
+        'rule_import_mode': 'MERGE',
+        'rule_group_ids': 'rule_group_id1,rule_group_id2',
+    }
+
+    mock_response = load_mock_response('intrusion_rule_upload_import_response.json')
+    requests_mock.post(
+        f'{BASE_URL}/{SUFFIX}/object/intrusionrulesupload',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import upload_intrusion_rule_file_command
+    command_results = upload_intrusion_rule_file_command(mock_client, args)
+    print(command_results.outputs)
+    assert command_results.outputs_prefix == '.'.join((INTEGRATION_CONTEXT_NAME, INTRUSION_RULE_UPLOAD_CONTEXT))
+    assert INTRUSION_RULE_UPLOAD_TITLE in command_results.readable_output
+    assert command_results.outputs[0]['summary'] == mock_response['summary']
+    assert command_results.outputs[0]['ruleGroups'] == mock_response['ruleGroups']
+    assert command_results.outputs[0]['files'] == mock_response['files']
 
 
 @pytest.mark.parametrize(
@@ -1020,26 +1138,27 @@ def test_create_intrusion_rule_group_command(requests_mock, mock_client):
         expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
     )
 
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+
 
 @pytest.mark.parametrize(
-    'args, filename',
+    'args',
     (
-        ({'expanded_response': 'True'}, 'intrusion_rule_group_list_response.json'),
-        ({'limit': '6', 'expanded_response': 'False'}, 'intrusion_rule_group_list_response.json'),
-        ({'page_size': '3'}, 'intrusion_rule_group_list_response.json'),
-        ({'rule_group_id': 'rule_group_id'}, 'intrusion_rule_group_response.json')
+        ({'expanded_response': 'True'}),
+        ({'limit': '6', 'expanded_response': 'False'}),
+        ({'page_size': '3'}),
     )
 )
-def test_get_intrusion_rule_group_command(requests_mock, mock_client, args, filename):
+def test_list_intrusion_rule_group_command(requests_mock, mock_client, args):
     """
     Scenario:
     -   Get an intrusion rule group list.
-    -   Get an intrusion rule group.
     Given:
     -   expanded_response.
     -   limit, expanded_response
     -   page_size
-    -   rule_group_id
     When:
     -    ciscofp-get-intrusion-rule-group is called.
     Then:
@@ -1047,15 +1166,13 @@ def test_get_intrusion_rule_group_command(requests_mock, mock_client, args, file
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    if object_suffix := args.get('rule_group_id', ''):
-        object_suffix = f'/{object_suffix}'
 
     method = 'GET'
-    mock_response = load_mock_response(filename)
+    mock_response = load_mock_response('intrusion_rule_group_list_response.json')
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/object/intrusionrulegroups{object_suffix}',
+        f'{BASE_URL}/{SUFFIX}/object/intrusionrulegroups',
         json=mock_response,
     )
 
@@ -1067,6 +1184,50 @@ def test_get_intrusion_rule_group_command(requests_mock, mock_client, args, file
         method=method,
         expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
     )
+
+    for output, mock_output in zip(command_results.outputs, mock_response['items']):
+        assert output['name'] == mock_output['name']
+        assert output['id'] == mock_output['id']
+        assert output['description'] == mock_output['description']
+        assert output['childGroups'] == mock_output['childGroups']
+
+
+def test_get_intrusion_rule_group_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Get an intrusion rule group.
+    Given:
+    -   rule_group_id
+    When:
+    -    ciscofp-get-intrusion-rule-group is called.
+    Then:
+    -   Ensure the readable_output is correct.
+    -   Ensure the outputs_prefix is correct.
+    -   Ensure the outputs has no links.
+    """
+    args = {'rule_group_id': 'rule_group_id'}
+
+    method = 'GET'
+    mock_response = load_mock_response('intrusion_rule_group_response.json')
+
+    requests_mock.request(
+        method,
+        f'{BASE_URL}/{SUFFIX}/object/intrusionrulegroups/{args["rule_group_id"]}',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import list_intrusion_rule_group_command
+    command_results = list_intrusion_rule_group_command(mock_client, args)
+
+    assert_command_results(
+        command_results=command_results,
+        method=method,
+        expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
+    )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
 
 
 def test_error_get_intrusion_rule_group_command(mock_client):
@@ -1128,6 +1289,10 @@ def test_update_intrusion_rule_group_command(requests_mock, mock_client):
         method=method,
         expected_output_prefix=INTRUSION_RULE_GROUP_CONTEXT
     )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
 
 
 def test_delete_intrusion_rule_group_command(requests_mock, mock_client):
@@ -1203,17 +1368,22 @@ def test_create_network_analysis_policy_command(requests_mock, mock_client):
         expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
     )
 
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
+
 
 @pytest.mark.parametrize(
-    'args, filename',
+    'args',
     (
-        ({'expanded_response': 'True'}, 'network_analysis_list_response.json'),
-        ({'limit': '6', 'expanded_response': 'False'}, 'network_analysis_list_response.json'),
-        ({'page_size': '3'}, 'network_analysis_list_response.json'),
-        ({'network_analysis_policy_id': 'network_analysis_policy_id'}, 'network_analysis_response.json')
+        ({'expanded_response': 'True'}),
+        ({'limit': '6', 'expanded_response': 'False'}),
+        ({'page_size': '3'}),
     )
 )
-def test_get_network_analysis_policy_command(requests_mock, mock_client, args, filename):
+def test_list_network_analysis_policy_command(requests_mock, mock_client, args):
     """
     Scenario:
     -   Create an network analysis policy list.
@@ -1230,15 +1400,12 @@ def test_get_network_analysis_policy_command(requests_mock, mock_client, args, f
     -   Ensure the outputs_prefix is correct.
     -   Ensure the outputs has no links.
     """
-    if object_suffix := args.get('network_analysis_policy_id', ''):
-        object_suffix = f'/{object_suffix}'
-
     method = 'GET'
-    mock_response = load_mock_response(filename)
+    mock_response = load_mock_response('network_analysis_list_response.json')
 
     requests_mock.request(
         method,
-        f'{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies{object_suffix}',
+        f'{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies',
         json=mock_response,
     )
 
@@ -1250,6 +1417,51 @@ def test_get_network_analysis_policy_command(requests_mock, mock_client, args, f
         method=method,
         expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
     )
+
+    for output, mock_output in zip(command_results.outputs, mock_response['items']):
+        assert output['name'] == mock_output['name']
+        assert output['id'] == mock_output['id']
+        assert output['description'] == mock_output['description']
+        assert output['metadata'] == mock_output['metadata']
+
+
+def test_get_network_analysis_policy_command(requests_mock, mock_client):
+    """
+    Scenario:
+    -   Create an network analysis policy.
+    Given:
+    -   network_analysis_policy_id
+    When:
+    -    ciscofp-get-network-analysis-policy is called.
+    Then:
+    -   Ensure the readable_output is correct.
+    -   Ensure the outputs_prefix is correct.
+    -   Ensure the outputs has no links.
+    """
+    args = {'network_analysis_policy_id': 'network_analysis_policy_id'}
+    method = 'GET'
+    mock_response = load_mock_response('network_analysis_response.json')
+
+    requests_mock.request(
+        method,
+        f'{BASE_URL}/{SUFFIX}/policy/networkanalysispolicies/{args["network_analysis_policy_id"]}',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import list_network_analysis_policy_command
+    command_results = list_network_analysis_policy_command(mock_client, args)
+
+    assert_command_results(
+        command_results=command_results,
+        method=method,
+        expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
+    )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
 
 
 def test_error_get_network_analysis_policy_command(mock_client):
@@ -1314,6 +1526,12 @@ def test_update_network_analysis_policy_command(requests_mock, mock_client):
         method=method,
         expected_output_prefix=NETWORK_ANALYSIS_POLICY_CONTEXT
     )
+
+    assert command_results.outputs[0]['name'] == mock_response['name']
+    assert command_results.outputs[0]['id'] == mock_response['id']
+    assert command_results.outputs[0]['description'] == mock_response['description']
+    assert command_results.outputs[0]['basePolicy'] == mock_response['basePolicy']
+    assert command_results.outputs[0]['metadata'] == mock_response['metadata']
 
 
 def test_delete_network_analysis_policy_command(requests_mock, mock_client):
