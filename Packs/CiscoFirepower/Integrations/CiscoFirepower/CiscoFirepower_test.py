@@ -582,17 +582,42 @@ def test_update_intrusion_policy_command(requests_mock, mock_client):
     )
 
 
-@pytest.mark.parametrize(
-    'filename, status_code',
-    (
-        ('intrusion_policy_response.json', HTTPStatus.OK),
-        ('intrusion_policy_delete_fail.json', HTTPStatus.NOT_FOUND),
-    )
-)
-def test_delete_intrusion_policy_command(requests_mock, mock_client, filename, status_code):
+def test_delete_intrusion_policy_command(requests_mock, mock_client):
     """
     Scenario:
     -   Delete an intrusion policy.
+    Given:
+    -   intrusion_policy_id
+    When:
+    -    ciscofp-delete-intrusion-policy is called.
+    Then:
+    -   Ensure the readable_output is correct.
+    """
+    args = {
+        'intrusion_policy_id': 'intrusion_policy_id'
+    }
+
+    method = 'DELETE'
+    mock_response = load_mock_response('intrusion_policy_response.json')
+
+    requests_mock.request(
+        method,
+        f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies/{args["intrusion_policy_id"]}',
+        json=mock_response,
+    )
+
+    from CiscoFirepower import delete_intrusion_policy_command
+    command_results = delete_intrusion_policy_command(mock_client, args)
+
+    assert_command_results(
+        command_results=command_results,
+        method=method
+    )
+
+
+def test_delete_intrusion_policy_error_command(requests_mock, mock_client):
+    """
+    Scenario:
     -   Delete an intrusion policy that doesn't exist.
     Given:
     -   intrusion_policy_id
@@ -606,30 +631,20 @@ def test_delete_intrusion_policy_command(requests_mock, mock_client, filename, s
     }
 
     method = 'DELETE'
-    mock_response = load_mock_response(filename)
+    mock_response = load_mock_response('intrusion_policy_delete_fail.json')
 
     requests_mock.request(
         method,
         f'{BASE_URL}/{SUFFIX}/policy/intrusionpolicies/{args["intrusion_policy_id"]}',
         json=mock_response,
-        status_code=status_code
+        status_code=HTTPStatus.NOT_FOUND,
     )
 
     from CiscoFirepower import delete_intrusion_policy_command
     command_results = delete_intrusion_policy_command(mock_client, args)
 
-    if status_code == HTTPStatus.OK:
-        assert_command_results(
-            command_results=command_results,
-            method=method
-        )
-
-    elif status_code == HTTPStatus.NOT_FOUND:
-        assert command_results.readable_output == \
-            f'The Intrusion Policy ID: "{args["intrusion_policy_id"]}" does not exist.'
-
-    else:
-        assert False
+    assert command_results.readable_output == \
+        f'The Intrusion Policy ID: "{args["intrusion_policy_id"]}" does not exist.'
 
 
 ''' Intrusion Rule CRUD '''  # pylint: disable=pointless-string-statement
