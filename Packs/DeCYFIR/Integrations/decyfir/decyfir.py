@@ -120,14 +120,22 @@ class Client(BaseClient):
             return IncidentSeverity.UNKNOWN
 
     def request_decyfir_api(self, url_path, category, category_type, api_param_query) -> str:
-        response = requests.get(f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query)
-        if response.status_code == 200:
-            if len(response.text) > 0:
-                return json.dumps(response.json())
+        try:
+            response = self._http_request(
+                full_url=f"{url_path}" + f"/{category}?" + f"type={category_type}" + api_param_query,
+                resp_type='response',
+                method='GET')
+
+            if response.status_code == 200:
+                if len(response.content) > 0:
+                    return json.dumps(response.json())
+                else:
+                    return response.text
             else:
-                return ""
-        else:
-            return ""
+                return ''
+        except Exception as e:
+            demisto.error(e.__cause__)
+            return ''
 
     def get_decyfir_data(self, after_val: int, decyfir_api_key: str, incident_type: str, max_fetch) -> str:
         endpoint_env = f"{PROD_API_PATH}"
@@ -138,49 +146,43 @@ class Client(BaseClient):
 
         return_data = {}
         incident_types = []
-        if not incident_type:
-            if incident_type.__eq__(LABEL_ATTACK_SURFACE):
-                incident_types.append(LABEL_ATTACK_SURFACE)
-            if incident_type.__eq__(LABEL_DIGITAL_RISK_IM_IN):
-                incident_types.append(LABEL_DIGITAL_RISK_IM_IN)
-            if incident_type.__eq__(LABEL_DIGITAL_RISK_S_PE):
-                incident_types.append(LABEL_DIGITAL_RISK_S_PE)
-            if incident_type.__eq__(LABEL_DIGITAL_RISK_DB_WM):
-                incident_types.append(LABEL_DIGITAL_RISK_DB_WM)
+        if incident_type:
+            incident_types.append(incident_type)
         else:
             incident_types.append(LABEL_ATTACK_SURFACE)
             incident_types.append(LABEL_DIGITAL_RISK_IM_IN)
             incident_types.append(LABEL_DIGITAL_RISK_S_PE)
             incident_types.append(LABEL_DIGITAL_RISK_DB_WM)
 
-        for type_ in incident_types:
-            if type_.__eq__(LABEL_ATTACK_SURFACE):
-                for cat_type in VAR_ATTACK_SURFACES_SUB_TYPES:
-                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                     VAR_ATTACK_SURFACE,
-                                                                     cat_type,
-                                                                     api_param_query)
+        if incident_types:
+            for type_ in incident_types:
+                if type_ == LABEL_ATTACK_SURFACE:
+                    for cat_type in VAR_ATTACK_SURFACES_SUB_TYPES:
+                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                         VAR_ATTACK_SURFACE,
+                                                                         cat_type,
+                                                                         api_param_query)
 
-            if type_.__eq__(LABEL_DIGITAL_RISK_IM_IN):
-                for cat_type in VAR_IMPERSONATION_AND_INFRINGEMENT_SUB_TYPE:
-                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                     VAR_IMPERSONATION_AND_INFRINGEMENT,
-                                                                     cat_type,
-                                                                     api_param_query)
+                if type_ == LABEL_DIGITAL_RISK_IM_IN:
+                    for cat_type in VAR_IMPERSONATION_AND_INFRINGEMENT_SUB_TYPE:
+                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                         VAR_IMPERSONATION_AND_INFRINGEMENT,
+                                                                         cat_type,
+                                                                         api_param_query)
 
-            if type_.__eq__(LABEL_DIGITAL_RISK_DB_WM):
-                for cat_type in VAR_DATA_BREACH_AND_WEB_MONITORING_SUB_TYPES:
-                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                     VAR_DATA_BREACH_AND_WEB_MONITORING,
-                                                                     cat_type,
-                                                                     api_param_query)
+                if type_ == LABEL_DIGITAL_RISK_DB_WM:
+                    for cat_type in VAR_DATA_BREACH_AND_WEB_MONITORING_SUB_TYPES:
+                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                         VAR_DATA_BREACH_AND_WEB_MONITORING,
+                                                                         cat_type,
+                                                                         api_param_query)
 
-            if type_.__eq__(LABEL_DIGITAL_RISK_S_PE):
-                for cat_type in VAR_SOCIAL_AND_PUBLIC_EXPOSURE_SUB_TYPES:
-                    return_data[cat_type] = self.request_decyfir_api(endpoint_env,
-                                                                     VAR_SOCIAL_AND_PUBLIC_EXPOSURE,
-                                                                     cat_type,
-                                                                     api_param_query)
+                if type_ == LABEL_DIGITAL_RISK_S_PE:
+                    for cat_type in VAR_SOCIAL_AND_PUBLIC_EXPOSURE_SUB_TYPES:
+                        return_data[cat_type] = self.request_decyfir_api(endpoint_env,
+                                                                         VAR_SOCIAL_AND_PUBLIC_EXPOSURE,
+                                                                         cat_type,
+                                                                         api_param_query)
 
         return json.dumps(return_data)
 
@@ -270,7 +272,7 @@ class Client(BaseClient):
             return_error(str(e))
             return []
 
-    def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents: json):
+    def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
             json_val = json.loads(decyfir_alerts_incidents)
             return_data = []
@@ -389,8 +391,10 @@ class Client(BaseClient):
 # commands
 # This is the call made when pressing the integration Test button.
 def test_module(client, decyfir_api_key):
-    response = requests.get(
-        f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" + "&size=1" + "&key=" + f"{decyfir_api_key}+")
+    response = client._http_request(
+        full_url=f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" + "&size=1" + "&key=" + f"{decyfir_api_key}",
+        method='GET',
+        resp_type='response')
 
     if response.status_code == 200:
         return 'ok'
