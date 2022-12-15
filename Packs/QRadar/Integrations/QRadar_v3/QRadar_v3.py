@@ -80,6 +80,8 @@ MIRROR_DIRECTION: Dict[str, Optional[str]] = {
 }
 MIRRORED_OFFENSES_QUERIED_CTX_KEY = 'mirrored_offenses_queried'
 MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
+MIRRORED_OFFENSES_FETCHED_CTX_KEY = 'mirrored_offenses_fetched'
+
 LAST_MIRROR_KEY = 'last_mirror_update'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
@@ -747,6 +749,7 @@ def get_remote_events(client: Client,
     changed_ids_ctx = []
     offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
+    offenses_fetched = context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {})
 
     events: list[dict] = []
     status = QueryStatus.ERROR.value
@@ -781,6 +784,10 @@ def get_remote_events(client: Client,
         if status == QueryStatus.SUCCESS.value:
             del offenses_queried[offense_id]
             changed_ids_ctx.append(offense_id)
+
+    if status == QueryStatus.SUCCESS.value:
+        offenses_fetched[offense_id] = get_num_events(events)
+        context_data.update({MIRRORED_OFFENSES_FETCHED_CTX_KEY: offenses_fetched})
 
     context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
     context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
@@ -818,11 +825,12 @@ def insert_to_updated_context(context_data: dict,
     new_context_data = updated_context_data.copy()
     if should_force_update:
         return context_data, version
+
     if should_add_reset_key:
         new_context_data[RESET_KEY] = True
     for id_ in offense_ids:
         # Those are "trusted ids" from the changed context_data, we will keep the data (either update or delete it)
-        for key in {MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY}:
+        for key in (MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, MIRRORED_OFFENSES_FETCHED_CTX_KEY):
             if id_ in context_data[key]:
                 new_context_data[key][id_] = context_data[key][id_]
             else:
@@ -3428,20 +3436,26 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         })
 
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
-        events, status = get_remote_events(client,
-                                           offense_id,
-                                           context_data,
-                                           context_version,
-                                           events_columns,
-                                           events_limit,
-                                           fetch_mode,
-                                           )
-        print_context_data_stats(context_data, f"Get Remote Data events End for id {offense_id}")
-        if status != QueryStatus.SUCCESS.value:
-            # we raise an exception because we don't want to change the offense until all events are fetched.
-            print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
-            raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
-        offense['events'] = events
+        if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
+                int(num_events) > (events_limit := params.get('events_limit', DEFAULT_EVENTS_LIMIT)):
+            print_debug_msg(f'Events were already fetched {num_events} for offense {offense_id}, '
+                            f'and are more than the events limit, {events_limit}. '
+                            f'Not fetching events again.')
+        else:
+            events, status = get_remote_events(client,
+                                               offense_id,
+                                               context_data,
+                                               context_version,
+                                               events_columns,
+                                               events_limit,
+                                               fetch_mode,
+                                               )
+            print_context_data_stats(context_data, f"Get Remote Data events End for id {offense_id}")
+            if status != QueryStatus.SUCCESS.value:
+                # we raise an exception because we don't want to change the offense until all events are fetched.
+                print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
+                raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
+            offense['events'] = events
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
@@ -3977,6 +3991,7 @@ def migrate_integration_ctx(ctx: dict) -> dict:
             LAST_MIRROR_KEY: last_update,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses,
             MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+            MIRRORED_OFFENSES_FETCHED_CTX_KEY: {},
             'samples': []}
 
 
