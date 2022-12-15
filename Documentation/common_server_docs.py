@@ -11,9 +11,9 @@ from Tests.scripts.utils.log_util import install_logging
 
 # temp handling of unifier import
 try:
-    from demisto_sdk.commands.unify.yml_unifier import YmlUnifier
-except:  # noqa
     from demisto_sdk.commands.unify.integration_script_unifier import IntegrationScriptUnifier as YmlUnifier
+except:  # noqa
+    from demisto_sdk.commands.prepare_content.integration_script_unifier import IntegrationScriptUnifier as YmlUnifier
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/..')

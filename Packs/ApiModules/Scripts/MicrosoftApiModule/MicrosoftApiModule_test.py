@@ -394,6 +394,7 @@ def test_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(demisto, 'command', return_value='testing_command')
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
     client.http_request(method='GET', url_suffix='test_id')
     retry_results: ScheduledCommand = demisto.results.call_args[0][0]
@@ -431,6 +432,7 @@ def test_fail_on_retry_on_rate_limit(requests_mock, mocker):
     mocker.patch.object(demisto, 'args', return_value={'ran_once_flag': True})
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
 
     try:
         client.http_request(method='GET', url_suffix='test_id')
@@ -478,7 +480,7 @@ def test_create_api_metrics(mocker, response, result):
     mocker.patch.object(demisto, 'results')
     mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
     mocker.patch('MicrosoftApiModule.is_demisto_version_ge', return_value=True)
-
+    mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'msgraph'}]}})
     client = retry_on_rate_limit_client(True)
     client.create_api_metrics(response)
 
