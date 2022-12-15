@@ -13,9 +13,9 @@ from vmware.vapi.vsphere.client import create_vsphere_client
 
 SOUT = sys.stdout
 DEBUGGING = False
-if is_debug_mode:
+if argToBoolean(demisto.args().get('run_on_debug', False)):
     DEBUGGING = True
-    demisto.is_debug = False
+    # demisto.is_debug = False
 
 
 def parse_params(params):

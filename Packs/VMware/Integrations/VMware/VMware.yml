@@ -35,6 +35,13 @@ name: VMware
 script:
   commands:
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: ip
       description: A comma-separated list of IPs to filter VMs by.
       required: false
