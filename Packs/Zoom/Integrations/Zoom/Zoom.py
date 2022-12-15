@@ -12,7 +12,7 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 # maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 300
+MAX_RECORDS_PER_PAGE = 2
 
 
 '''CLIENT CLASS'''
@@ -153,17 +153,19 @@ class Client(BaseClient):
             # between a user argument and the default argument
             args = demisto.args()
             # TODOthe last part is for testing and i feel stupid about it
-            if ("limit" and "user_id" in args) or ("limit" and "page-size" in args) or (limit and user_id):
+            # if ("limit" and "user_id" in args) or ("limit" and "page-size" in args) or (limit and user_id):
+            if "limit" in args and ("page-size" in args or "next_page_token" in args):
                 # arguments collision
-                raise DemistoException("Too money arguments. if you choose a limit, don't enter a user_id or page_size")
+                raise DemistoException("""Too money arguments. if you choose a limit,
+                                       don't enter a user_id or page_size or next_page_token""")
             else:
                 # multiple requests are needed
                 return self.manual_user_list_pagination(next_page_token, page_size,
                                                         limit, status, role_id)
         # one request is needed
-        return self.user_list_basic_request(page_size, user_id, status,
+        return self.user_list_basic_request(page_size, status,
                                             next_page_token,
-                                            role_id, limit, url_suffix)
+                                            role_id, url_suffix)
 
     def manual_user_list_pagination(self, next_page_token: str, page_size: int, limit: int, status: str, role_id: str):
         res = []
@@ -175,9 +177,9 @@ class Client(BaseClient):
                 # i need the maximum
                 page_size = MAX_RECORDS_PER_PAGE
 
-            basic_request = self.user_list_basic_request(page_size, None, status,
+            basic_request = self.user_list_basic_request(page_size, status,
                                                          next_page_token,
-                                                         role_id, limit, "users")
+                                                         role_id, url_suffix="users")
             next_page_token = basic_request.get("next_page_token")
             # collect all the results together
             res.append(basic_request)
@@ -185,9 +187,9 @@ class Client(BaseClient):
             limit -= MAX_RECORDS_PER_PAGE
         return res
 
-    def user_list_basic_request(self, page_size: int = 30, user_id: str = None, status: str = "active",
+    def user_list_basic_request(self, page_size: int = 30, status: str = "active",
                                 next_page_token: str = None,
-                                role_id: str = None, limit: int = None, url_suffix: str = None):
+                                role_id: str = None, url_suffix: str = None):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -303,7 +305,7 @@ class Client(BaseClient):
                                                            limit, type)
                 # one request in needed
         return self.meeting_list_basic_request(user_id, next_page_token, page_size,
-                                               limit, type)
+                                               type)
 
     def manual_meeting_list_pagination(self, user_id: str, next_page_token: str | None, page_size: int,
                                        limit: int, type: str):
@@ -317,7 +319,7 @@ class Client(BaseClient):
                 page_size = MAX_RECORDS_PER_PAGE
 
             basic_request = self.meeting_list_basic_request(user_id, next_page_token, page_size,
-                                                            limit, type)
+                                                            type)
             next_page_token = basic_request.get("next_page_token")
             # collect all the results together
             res.append(basic_request)
@@ -326,7 +328,7 @@ class Client(BaseClient):
         return res
 
     def meeting_list_basic_request(self, user_id: str, next_page_token: str = None, page_size: int | str = 30,
-                                   limit: int | str | None = None, type: str = None):
+                                   type: str = None):
         return self._http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
