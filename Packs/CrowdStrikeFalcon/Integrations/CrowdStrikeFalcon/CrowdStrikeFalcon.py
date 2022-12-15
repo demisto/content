@@ -350,6 +350,14 @@ def create_relationships(cve: dict) -> List:
     return relationships_list
 
 
+def create_dbot_Score(cve: dict, reliability: str) -> Common.DBotScore:
+    return Common.DBotScore(indicator=cve.get('id'),
+                            indicator_type=DBotScoreType.CVE,
+                            integration_name=INTEGRATION_NAME,
+                            score=Common.DBotScore.NONE,
+                            reliability=reliability)
+
+
 def create_publications(cve: dict) -> list:
     """
         Creates publications list from CVE, while using get_cve_command.
@@ -4054,6 +4062,7 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     raw_cve = [res_element.get('cve') for res_element in http_response.get('resources', [])]
     for cve in raw_cve:
         relationships_list = create_relationships(cve)
+        cve_dbot_score = create_dbot_Score(cve=cve, reliability=args.get('Reliability', 'A+ - 3rd party enrichment'))
         cve_indicator = Common.CVE(id=cve.get('id'),
                                    cvss='',
                                    published=cve.get('published_date'),
@@ -4061,6 +4070,7 @@ def get_cve_command(args: dict) -> list[CommandResults]:
                                    description=cve.get('description'),
                                    cvss_score=cve.get('base_score'),
                                    cvss_vector=cve.get('vector'),
+                                   dbot_score=cve_dbot_score,
                                    publications=create_publications(cve),
                                    relationships=relationships_list)
         cve_human_readable = {'ID': cve.get('id'),
