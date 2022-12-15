@@ -4290,7 +4290,7 @@ def update_network_analysis_policy_command(client: Client, args: Dict[str, Any])
     update_arguments = (name, basepolicy_id, description, inspection_mode)
 
     if not any(update_arguments):
-        raise ValueError(f'Please enter one of the update arguments: {update_arguments}')
+        raise ValueError('Please enter one of the update arguments: name, basepolicy_id, description, inspection_mode')
 
     if not all(update_arguments):
         previous_data = client.get_network_analysis_policy(
