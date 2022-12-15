@@ -444,7 +444,7 @@ def fetch_incidents(client, alerts_states_to_retrieve, label_name_to_retrieve, l
 
     alerts_states_suffix = state_params_suffix(alerts_states)
     if label_name_to_retrieve:
-        label_name_suffix = f"&&labelName={urllib.parse.quote(label_name_to_retrieve)}"
+        label_name_suffix = f"&labelName={urllib.parse.quote(label_name_to_retrieve)}"
     incidents = []
 
     while True:
