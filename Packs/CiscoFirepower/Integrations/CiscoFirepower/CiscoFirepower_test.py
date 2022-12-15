@@ -380,9 +380,7 @@ def assert_command_results(command_results: CommandResults, method: str, expecte
         'DELETE': 'Deleted',
     }
 
-    if not command_results.readable_output:
-        assert False
-
+    assert command_results.readable_output
     assert message_by_method[method] in command_results.readable_output
 
     if method != 'DELETE':
