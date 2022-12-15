@@ -1919,10 +1919,9 @@ def prepare_context_for_events(offenses_with_metadata):
     ctx, version = get_integration_context_with_version()
     changed_offense_ids = []
     for offense, is_success in offenses_with_metadata:
-        offense_id = str(offense['id'])
         if not is_success:
             ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
-            changed_offense_ids.append(offense_id)
+            changed_offense_ids.append(str(offense['id']))
     safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
 
 
@@ -3538,6 +3537,7 @@ def add_modified_remote_offenses(client: Client,
 
         for offense_id in offense_ids_to_search:
             if current_concurrent_searches >= MAX_SEARCHES_QUEUE:
+                print_debug_msg(f'Reached maximum concurrent searches ({MAX_SEARCHES_QUEUE}), will try again later.')
                 break
             current_concurrent_searches += 1
             search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
