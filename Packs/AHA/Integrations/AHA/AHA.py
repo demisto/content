@@ -180,7 +180,7 @@ def test_module(client: Client) -> str:
 
 
 def get(client: Client,
-        get_type: AHA_TYPE,
+        aha_type: AHA_TYPE,
         from_date: str,
         aha_object_name: str = '',
         fields: List = [],
@@ -188,21 +188,21 @@ def get(client: Client,
         per_page: str = '30') -> CommandResults:
     message: List = []
     fields_list = DEFAULT_FIELDS + fields
-    if get_type == AHA_TYPE.FEATURES:
+    if aha_type == AHA_TYPE.FEATURES:
         fields_list.extend(FEATURE_FIELDS)
     req_fields = ','.join(fields_list)
-    response = client.get(aha_type=get_type, name=aha_object_name, fields=req_fields,
+    response = client.get(aha_type=aha_type, name=aha_object_name, fields=req_fields,
                           from_date=from_date, page=page, per_page=per_page)
     if response:
-        if get_type.get_type_plural() in response:
-            message = parse_multiple_objects(response[get_type.get_type_plural()], fields_list)
+        if aha_type.get_type_plural() in response:
+            message = parse_multiple_objects(response[aha_type.get_type_plural()], fields_list)
         else:
-            message = parse_single_object(response[get_type.get_type_singular()], fields_list)
-        human_readable = tableToMarkdown(f'Aha! get {get_type.get_type_plural()}',
+            message = parse_single_object(response[aha_type.get_type_singular()], fields_list)
+        human_readable = tableToMarkdown(f'Aha! get {aha_type.get_type_plural()}',
                                          message,
                                          removeNull=True)
     return CommandResults(
-        outputs_prefix=f'AHA.{get_type.get_type_for_outputs()}',
+        outputs_prefix=f'AHA.{aha_type.get_type_for_outputs()}',
         outputs_key_field='id',
         outputs=message,
         raw_response=response,
@@ -213,7 +213,7 @@ def get(client: Client,
 def edit(client: Client,
          aha_type: AHA_TYPE,
          aha_object_name: str,
-         fields: Dict) -> CommandResults:
+         fields: Dict = {}) -> CommandResults:
     message: List = []
     response = client.edit(aha_object_name=aha_object_name, aha_type=aha_type, fields=fields)
     if response:
@@ -258,31 +258,20 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'aha-get-features':
-            from_date = args.get('from_date', '2020-01-01')
-            feature_name = args.get('feature_name', '')
-            fields = argToList(args.get('fields', ''))
-            page = args.get('page', '1')
-            per_page = args.get('per_page', '30')
-            command_result = get(client, AHA_TYPE.FEATURES, from_date=from_date, aha_object_name=feature_name,
-                                 fields=fields, page=page, per_page=per_page)
+            args['aha_type'] = AHA_TYPE.FEATURES
+            command_result = get(client, **args)
             return_results(command_result)
         elif command == 'aha-edit-feature':
-            feature_name = args.get('feature_name', '')
-            edit_fields = json.loads(args.get('fields', {}))
-            command_result = edit(client, aha_type=AHA_TYPE.FEATURES, aha_object_name=feature_name, fields=edit_fields)
+            args['aha_type'] = AHA_TYPE.FEATURES
+            command_result = edit(client, **args)
             return_results(command_result)
         elif command == 'aha-get-ideas':
-            from_date = args.get('from_date', '2020-01-01')
-            idea_name = args.get('idea_name', '')
-            fields = argToList(args.get('fields', ''))
-            page = args.get('page', '1')
-            per_page = args.get('per_page', '30')
-            command_result = get(client, AHA_TYPE.IDEAS, from_date=from_date, aha_object_name=idea_name,
-                                 fields=fields, page=page, per_page=per_page)
+            args['aha_type'] = AHA_TYPE.IDEAS
+            command_result = get(client=client, **args)
             return_results(command_result)
         elif command == 'aha-edit-idea':
-            idea_name = args.get('idea_name', '')
-            command_result = edit(client, AHA_TYPE.IDEAS, aha_object_name=idea_name, fields={})
+            args['aha_type'] = AHA_TYPE.IDEAS
+            command_result = edit(client, **args)
             return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')

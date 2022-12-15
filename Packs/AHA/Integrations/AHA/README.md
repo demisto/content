@@ -32,7 +32,7 @@ Lists all features from service, unless a specific feature is specified.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | from_date | Show features created after this date. Default is 2020-01-01. | Optional | 
-| feature_name | The name of a specific feature to retrieve. | Optional | 
+| aha_object_name | The name of a specific feature to retrieve. | Optional | 
 | fields | A comma-separated list of fields to include in the Aha! service response. Default is name,reference_num,id,created_at. | Optional | 
 | page | The specific results page to retrieve. Default is 1. | Optional | 
 | per_page | The maximum number of results per page. Default is 30. | Optional | 
@@ -51,7 +51,7 @@ Lists all features from service, unless a specific feature is specified.
 
 #### Command example
 ```!aha-get-features```
-```!aha-get-features feature_name=DEMO-10 fields=workflow_status```
+```!aha-get-features aha_object_name=DEMO-10 fields=workflow_status```
 ```!aha-get-features fields=workflow_status page=2 per_page=30```
 
 ### aha-edit-feature
@@ -66,7 +66,7 @@ You can edit any of the following fields in a feature: Name, Status and Descript
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feature_name | The name of the feature to edit. | Required | 
+| aha_object_name | The name of the feature to edit. | Required | 
 | fields | Fields in JSON format to edit in a feature. Possible fields are name, description and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "description": "desc", "status" : "Closed"}. | Required | 
 
 
@@ -82,7 +82,7 @@ You can edit any of the following fields in a feature: Name, Status and Descript
 | AHA.Feature.created_at | Date | The feature creation date. | 
 
 #### Command example
-```!aha-edit-feature feature_name=DEMO-10 fields=`{"name":"the_new_name", "description":"the_new_desc", "status":"Closed"}```
+```!aha-edit-feature aha_object_name=DEMO-10 fields=`{"name":"the_new_name", "description":"the_new_desc", "status":"Closed"}```
 
 ### aha-get-ideas
 ***
@@ -97,7 +97,7 @@ Lists all ideas from service, unless a specific idea is specified.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | from_date | Show ideas created after this date. Default is 2020-01-01. | Optional | 
-| idea_name | The name of a specific idea to retrieve. | Optional | 
+| aha_object_name | The name of a specific idea to retrieve. | Optional | 
 | fields | A comma-separated list of fields to include in the Aha! service response. Default is name,reference_num,id,created_at. | Optional | 
 | page | The specific results page to retrieve. Default is 1. | Optional | 
 | per_page | The maximum number of results per page. Default is 30. | Optional | 
@@ -116,8 +116,8 @@ Lists all ideas from service, unless a specific idea is specified.
 
 #### Command example
 ```!aha-get-ideas```
-```!aha-get-ideas idea_name=DEMO-I-2895```
-```!aha-get-ideas idea_name=DEMO-I-2895 fields=workflow_status```
+```!aha-get-ideas aha_object_name=DEMO-I-2895```
+```!aha-get-ideas aha_object_name=DEMO-I-2895 fields=workflow_status```
 
 ### aha-edit-idea
 ***
@@ -131,7 +131,7 @@ Edit an idea status to Shipped.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| idea_name | The name of the idea to edit. | Required | 
+| aha_object_name | The name of the idea to edit. | Required | 
 
 
 #### Context Output
@@ -146,4 +146,4 @@ Edit an idea status to Shipped.
 | AHA.Idea.created_at | Date | The idea creation date. | 
 
 #### Command example
-```!aha-edit-idea idea_name=DEMO-I-2895```
+```!aha-edit-idea aha_object_name=DEMO-I-2895```
