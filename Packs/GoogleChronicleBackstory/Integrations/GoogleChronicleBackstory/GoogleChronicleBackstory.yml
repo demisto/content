@@ -3963,7 +3963,7 @@ script:
     - contextPath: GoogleChronicleBackstory.ReferenceList.createTime
       description: Time when the list was created.
       type: Date
-  dockerimage: demisto/googleapi-python3:1.0.0.33018
+  dockerimage: demisto/googleapi-python3:1.0.0.41311
   feed: false
   isfetch: true
   longRunning: false
