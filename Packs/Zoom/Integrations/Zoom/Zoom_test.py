@@ -139,7 +139,7 @@ def test_http_request___when_raising_invalid_token_message(mocker):
                         client_id="mockclient", client_secret="mocksecret")
         # a command that uses http_request
         client.meeting_list_basic_request("bla", "bla", 4,
-                                          None, "bla")
+                                          "bla")
     except Exception:
         pass
     assert m.call_count == 2
@@ -201,7 +201,8 @@ def test_zoom_user_list__limit_and_page_size(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     with pytest.raises(DemistoException) as e:
         client.zoom_user_list(limit=50, user_id="fdghdf")
-    assert e.value.message == "Too money arguments. if you choose a limit, don't enter a user_id or page_size"
+    assert e.value.message == """Too money arguments. if you choose a limit,
+                                       don't enter a user_id or page_size or next_page_token"""
 
 
 def test_zoom_user_list__user_id(mocker):
@@ -221,7 +222,7 @@ def test_zoom_user_list__user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
 
     client.zoom_user_list(user_id="bla@bla.com")
-    assert basic_request_mocker.call_args[0][6] == "users/bla@bla.com"
+    assert basic_request_mocker.call_args[0][4] == "users/bla@bla.com"
 
 
 def test_manual_user_list_pagination__small_limit(mocker):
@@ -446,6 +447,8 @@ def test_get_jwt_token__encoding_format_check():
     assert encoded_token == expected
 
 # i dont like this test:(
+
+
 def test_zoom_user_list_command__when_user_id(mocker):
     """
         Given -
@@ -466,6 +469,8 @@ def test_zoom_user_list_command__when_user_id(mocker):
     assert len(res.readable_output) == 159
 
 # i dont like this test:(
+
+
 def test_zoom_meeting_list_command__when_user_id(mocker):
     """
         Given -

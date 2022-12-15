@@ -173,7 +173,7 @@ script:
         - name: topic
           required: true
           description: The topic of the meeting
-        - name: start-time
+        - name: start_time
           description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
         - name: timezone
           description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
@@ -237,7 +237,7 @@ script:
             - pending
           description: Which status of users to list
           defaultValue: active
-        - name: page-size
+        - name: page_size
           description: Number of users to return. Max 300. The default is 30.
           type: int
         - name: next_page_token
@@ -348,10 +348,10 @@ script:
           required: true
           description: The user ID
           type: string
-        - name: page-size
+        - name: page_size
           default: false
           description: Number of users to return. Default = 30. Max = 300.
-        - name: next-page-token
+        - name: next_page_token
           description: The next page token is used to paginate through large result sets
           type: string
         - name: limit

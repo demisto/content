@@ -12,7 +12,7 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 # maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 2
+MAX_RECORDS_PER_PAGE = 300
 
 
 '''CLIENT CLASS'''
@@ -152,18 +152,16 @@ class Client(BaseClient):
             # because the error raising, i need to distinguish
             # between a user argument and the default argument
             args = demisto.args()
-            # TODOthe last part is for testing and i feel stupid about it
-            # if ("limit" and "user_id" in args) or ("limit" and "page-size" in args) or (limit and user_id):
-            if "limit" in args and ("page-size" in args or "next_page_token" in args):
+            if limit and ("page_size" in args or next_page_token or user_id):
                 # arguments collision
                 raise DemistoException("""Too money arguments. if you choose a limit,
                                        don't enter a user_id or page_size or next_page_token""")
             else:
                 # multiple requests are needed
-                return self.manual_user_list_pagination(next_page_token, page_size,
-                                                        limit, status, role_id)
+                return self.manual_user_list_pagination(next_page_token, page_size,  # type: ignore[arg-type]
+                                                        limit, status, role_id)     # type: ignore[arg-type]
         # one request is needed
-        return self.user_list_basic_request(page_size, status,
+        return self.user_list_basic_request(page_size, status,                      # type: ignore[arg-type]
                                             next_page_token,
                                             role_id, url_suffix)
 
@@ -296,15 +294,15 @@ class Client(BaseClient):
             # "page_size" is specific referring to demisto.args,
             # because the error raising, i need to distinguish
             # between a user argument and the defult argument
-            if "limit" and "page-size" in args:
+            if limit and ("page_size" in args or next_page_token):
                 # arguments collision
-                raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size")
+                raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size or next_page_token")
             else:
                 # multiple request are needed
-                return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,
-                                                           limit, type)
+                return self.manual_meeting_list_pagination(user_id, next_page_token, page_size,  # type: ignore[arg-type]
+                                                           limit, type)                          # type: ignore[arg-type]
                 # one request in needed
-        return self.meeting_list_basic_request(user_id, next_page_token, page_size,
+        return self.meeting_list_basic_request(user_id, next_page_token, page_size,               # type: ignore[arg-type]
                                                type)
 
     def manual_meeting_list_pagination(self, user_id: str, next_page_token: str | None, page_size: int,
@@ -617,7 +615,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     command = demisto.command()
 
-    # this is for BC, because the arguments given as <a-b>, i.e "page-number"
+    # this is for BC, because the arguments given as <a-b>, i.e "user-list"
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
