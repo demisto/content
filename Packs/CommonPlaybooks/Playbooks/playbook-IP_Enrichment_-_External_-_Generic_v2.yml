@@ -775,7 +775,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.ApproveEnrichment
+              simple: inputs.UseReputationCommand
             iscontext: true
           right:
             value:
@@ -843,10 +843,10 @@ inputs:
   required: true
   description: Whether to convert the IP address to a hostname using a DNS query (True/False).
   playbookInputQuery:
-- key: ApproveEnrichment
+- key: UseReputationCommand
   value:
     simple: "False"
-  required: false
+  required: true
   description: |-
     Define if you would like to use the !IP command.
     Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
