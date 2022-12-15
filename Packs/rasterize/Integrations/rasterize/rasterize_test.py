@@ -209,7 +209,7 @@ TEST_DATA = [
     (
         'test_data/test_pw_mathias.pdf',
         '*',
-        3,
+        1,
         'mathias',
     )
 ]
