@@ -1205,7 +1205,7 @@ There is no context output for this command.
 ***
 Retrieves a paginated list that includes company-owned mobile devices.
 
-##### Required Scopes
+##### Required Permissions
 * https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
 
 #### Base Command

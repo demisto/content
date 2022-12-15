@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES, PaginationResult
+from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -142,6 +142,34 @@ def test_gsuite_mobile_update_command_failure(mocker_http_request, gsuite_client
     from GSuiteAdmin import mobile_update_command
     with pytest.raises(Exception, match='UPDATE_ERROR'):
         mobile_update_command(gsuite_client, {})
+
+
+MOBILE_ACTION_ERROR_CASES = [
+    ('Internal error encountered', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
+    ('Bad Request', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
+    ('Some other error', 'Some other error'),
+]
+
+
+@pytest.mark.parametrize('error_message, parsed_error_message', MOBILE_ACTION_ERROR_CASES)
+def test_invalid_gsuite_mobile_update_command_command(mocker, gsuite_client, error_message, parsed_error_message):
+    """
+    Given:
+        - A client, a resource id, and an action to execute on the mobile device.
+    When:
+        - Running the gsuite_mobile_update_command command, and receiving an error from the API.
+    Then:
+        - Validate that the ambiguous error message is mapped to a more human readable error message.
+    """
+    from GSuiteAdmin import mobile_update_command
+    from CommonServerPython import DemistoException
+    mocker.patch(MOCKER_HTTP_METHOD,
+                 side_effect=DemistoException(message=error_message))
+    with pytest.raises(DemistoException) as e:
+        mobile_update_command(client=gsuite_client,
+                              args={'customer_id': 'customer_id', 'resource_id': 'wrong_resource_id',
+                                    'action': 'some_action'})
+    assert parsed_error_message in str(e)
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -912,34 +940,6 @@ class MockResponse:
 #     return Client(base_url='https://example.com/', verify=False, proxy=False, service_account_json={})
 
 
-MOBILE_ACTION_ERROR_CASES = [
-    ('Internal error encountered', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
-    ('Bad Request', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
-    ('Some other error', 'Some other error'),
-]
-
-
-@pytest.mark.parametrize('error_message, parsed_error_message', MOBILE_ACTION_ERROR_CASES)
-def test_invalid_mobile_action_command(mocker, gsuite_client, error_message, parsed_error_message):
-    """
-    Given:
-        - A client, a resource id, and an action to execute on the mobile device.
-    When:
-        - Running the google_mobile_device_action_command command, and receiving an error from the API.
-    Then:
-        - Validate that the ambiguous error message is mapped to a more human readable error message.
-    """
-    from GSuiteAdmin import gsuite_mobile_device_action_command
-    from CommonServerPython import DemistoException
-    mocker.patch(MOCKER_HTTP_METHOD,
-                 side_effect=DemistoException(message=error_message))
-    with pytest.raises(DemistoException) as e:
-        gsuite_mobile_device_action_command(client=gsuite_client,
-                                            args={'customer_id': 'customer_id', 'resource_id': 'wrong_resource_id',
-                                                  'action': 'some_action'})
-    assert parsed_error_message in str(e)
-
-
 CHROMEOS_ACTION_ERROR_CASES = [
     ('Delinquent account', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
     ('Some other error', 'Some other error'),
@@ -968,9 +968,9 @@ def test_invalid_chromeos_action_command(mocker, gsuite_client, error_message, p
 
 
 TEST_DATA_INVALID_PAGINATION_ARGUMENTS = [
-    ({'page': '3', 'page_token': 'some_token', 'limit': '25'}, ('please supply either the argument limit,'
-                                                                ' or the argument page_token, or the arguments'
-                                                                ' page_token and page_size together')),
+    ({'page_size': '3', 'page_token': 'some_token', 'limit': '25'}, ('please supply either the argument limit,'
+                                                                     ' or the argument page_token, or the arguments'
+                                                                     ' page_token and page_size together')),
     ({'limit': '0'}, 'The limit argument can\'t be negative or equal to zero'),
     ({'limit': '-78'}, 'The limit argument can\'t be negative or equal to zero'),
     ({'page_token': 'some_token', 'page_size': '101'}, 'The maximum page size is')
@@ -988,31 +988,33 @@ def test_invalid_pagination_arguments(args, error_message):
         - Validate that an exception is thrown in response to invalid pagination arguments.
     """
     from GSuiteAdmin import prepare_pagination_arguments
-    from CommonServerPython import DemistoException
+    from CommonServerPython import DemistoException, arg_to_number
     with pytest.raises(DemistoException) as e:
-        prepare_pagination_arguments(args=args)
+        prepare_pagination_arguments(page_size=arg_to_number(args.get('page_size', '')),
+                                     page_token=args.get('page_toke', ''),
+                                     limit=arg_to_number(args.get('limit', '')))
     assert error_message in str(e)
 
 
-def test_mobile_device_action(mocker, gsuite_client):
-    """
-    Given:
-        - A client, a resource id (that identifies a mobile device), and an action that affects the mobile device
-    When:
-        - The command google-mobiledevice-action is run with a correct action argument
-    Then:
-        - A CommandResults is returned that marks the command as successful
-    """
-    from GSuiteAdmin import gsuite_mobile_device_action_command
-    from CommonServerPython import CommandResults
-    expected_command_result = CommandResults(
-        readable_output=HR_MESSAGES.get('MOBILE_DEVICE_ACTION_SUCCESS', '').format('resource_id'),
-    )
-    mocker.patch(MOCKER_HTTP_METHOD, return_value={})
-    command_result = gsuite_mobile_device_action_command(client=gsuite_client,
-                                                         args={'customer_id': 'customer_id', 'resource_id': 'resource_id',
-                                                               'action': 'correct_action'})
-    assert command_result.to_context() == expected_command_result.to_context()
+# def test_mobile_device_action(mocker, gsuite_client):
+#     """
+#     Given:
+#         - A client, a resource id (that identifies a mobile device), and an action that affects the mobile device
+#     When:
+#         - The command google-mobiledevice-action is run with a correct action argument
+#     Then:
+#         - A CommandResults is returned that marks the command as successful
+#     """
+#     from GSuiteAdmin import gsuite_mobile_device_action_command
+#     from CommonServerPython import CommandResults
+#     expected_command_result = CommandResults(
+#         readable_output=HR_MESSAGES.get('MOBILE_DEVICE_ACTION_SUCCESS', '').format('resource_id'),
+#     )
+#     mocker.patch(MOCKER_HTTP_METHOD, return_value={})
+#     command_result = gsuite_mobile_device_action_command(client=gsuite_client,
+#                                                          args={'customer_id': 'customer_id', 'resource_id': 'resource_id',
+#                                                                'action': 'correct_action'})
+#     assert command_result.to_context() == expected_command_result.to_context()
 
 
 def test_chromeos_device_action(mocker, gsuite_client):
@@ -1059,14 +1061,14 @@ def test_mobile_device_list_automatic_pagination_result_instance(mocker, gsuite_
         - Validate the content of the PaginationResult instance.
     """
     from GSuiteAdmin import MobileDevicesConfig, device_list_automatic_pagination, mobile_device_list_request
-    from functools import partial
     query_params = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', **pagination_args}
     raw_responses = util_load_json(raw_results_file)
     expected_pagination_result_instance = create_pagination_result_automatic_instance(
         raw_responses=raw_responses,
         response_devices_list_key=MobileDevicesConfig.response_devices_list_key)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
-    pagination_result = device_list_automatic_pagination(api_request=partial(mobile_device_list_request, client=gsuite_client),
+    pagination_result = device_list_automatic_pagination(request_by_device_type=mobile_device_list_request,
+                                                         client=gsuite_client,
                                                          customer_id='customer_id',
                                                          query_params=query_params,
                                                          response_devices_list_key=MobileDevicesConfig.response_devices_list_key,
@@ -1120,14 +1122,14 @@ def test_mobile_device_list_manual_pagination_result_instance(mocker, gsuite_cli
         - Validate the content of the PaginationResult instance.
     """
     from GSuiteAdmin import MobileDevicesConfig, device_list_manual_pagination, mobile_device_list_request
-    from functools import partial
     query_params = {'projection': 'full', 'order_by': 'name', 'sort_order': 'descending', **pagination_args}
     raw_responses = util_load_json(raw_results_file)
     expected_pagination_result_instance = create_pagination_result_manual_instance(
         raw_responses=raw_responses,
         response_devices_list_key=MobileDevicesConfig.response_devices_list_key)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
-    pagination_result = device_list_manual_pagination(api_request=partial(mobile_device_list_request, client=gsuite_client),
+    pagination_result = device_list_manual_pagination(request_by_device_type=mobile_device_list_request,
+                                                      client=gsuite_client,
                                                       customer_id='customer_id',
                                                       query_params=query_params,
                                                       response_devices_list_key=MobileDevicesConfig.response_devices_list_key,
@@ -1187,7 +1189,7 @@ def test_mobile_device_list_empty_response(mocker, gsuite_client, pagination_arg
         assert expected_results.get('EntryContext') == to_context.get('EntryContext')
 
 
-def create_pagination_result_automatic_instance(raw_responses: list[dict], response_devices_list_key: str) -> PaginationResult:
+def create_pagination_result_automatic_instance(raw_responses: list[dict], response_devices_list_key: str) -> dict:
     """
         This will create a PaginationResult instance that reflect automatic pagination in order to check the return values of
         functions that return PaginationResult.
@@ -1195,10 +1197,10 @@ def create_pagination_result_automatic_instance(raw_responses: list[dict], respo
     mocked_data = []
     for raw_response in raw_responses:
         mocked_data.extend(raw_response.get(response_devices_list_key, []))
-    return PaginationResult(data=mocked_data, raw_response=raw_responses)
+    return {'data': mocked_data, 'raw_response': raw_responses}
 
 
-def create_pagination_result_manual_instance(raw_responses: list[dict], response_devices_list_key: str) -> PaginationResult:
+def create_pagination_result_manual_instance(raw_responses: list[dict], response_devices_list_key: str) -> dict:
     """
         This will create a PaginationResult instance that reflect manual pagination in order to check the return values of
         functions that return PaginationResult.
@@ -1209,4 +1211,4 @@ def create_pagination_result_manual_instance(raw_responses: list[dict], response
     for raw_response in raw_responses:
         mocked_data.extend(raw_response.get(response_devices_list_key, []))
         mocked_next_page_token = raw_response.get('nextPageToken', '')
-    return PaginationResult(data=mocked_data, raw_response=raw_responses, next_page_token=mocked_next_page_token)
+    return {'data': mocked_data, 'raw_response': raw_responses, 'next_page_token': mocked_next_page_token}

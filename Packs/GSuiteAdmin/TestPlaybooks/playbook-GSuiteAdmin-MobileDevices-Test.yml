@@ -3,7 +3,7 @@ version: -1
 name: GSuiteAdmin-MobileDevices-Test
 description: |-
   This playbook uses the G Suite Admin integration and tests the scenarios
-  of the various commands like gsuite-mobiledevice-list, and gsuite-mobiledevice-action.
+  of the various commands like gsuite-mobiledevice-list, and gsuite-mobile-update.
 
 starttaskid: "0"
 tasks:
@@ -428,7 +428,7 @@ tasks:
       version: -1
       name: PerformActionOnMobileDevice
       description: Executes an action that affects a mobile device. For example, remotely wiping a device.
-      script: GSuiteAdmin|||gsuite-mobiledevice-action
+      script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
       brand: GSuiteAdmin
@@ -592,7 +592,7 @@ tasks:
       version: -1
       name: RevertMobileDeviceStatus
       description: Executes an action that affects a mobile device. For example, remotely wiping a device.
-      script: GSuiteAdmin|||gsuite-mobiledevice-action
+      script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
       brand: GSuiteAdmin
