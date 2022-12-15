@@ -35,11 +35,12 @@ class Client(BaseClient):
         """
         Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
         Args:
-            limit: int, the limit of the results to return per log_type.
-            prev_id: dict of previous ids that was fetched fot each log_type.
-            ordering: bool, The oldest data will be returned if is True, otherwise the opposite.
+            url_suffix: str, The API endpoint to request.
+            limit: int, the limit of the results to return.
+            prev_id: int, The id of the first event to fetch.
+            ordering: str, The ordering of the results to return.
         Returns:
-            dict: A dict containing the next_run
+            int: The id of the next event to fetch.
             list: A list containing the events
         """
         next_id = prev_id
@@ -68,12 +69,12 @@ class Client(BaseClient):
 
     def get_first_fetch_id(self, url_suffix, params):
         """
-        Sets the first fetch ids for log type.
+        Sets the first fetch id for log type.
         Args:
             url_suffix: str, the log type to fetch.
-            params: dict, the time parameters to fetch.
+            params: dict, the params to send to the API.
         Returns:
-            int: The first fetch id for the log type.
+            int: The first id to fetch.
         """
         first_log = self.http_request(url_suffix=url_suffix, params={'ordering': 'id', 'limit': 1} | params)
         try:
@@ -137,11 +138,10 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int
     Args:
         client (Client): NetBox client to use.
         max_fetch (int): The maximum number of events to fetch per log type.
-        last_run (dict): A dict with a keys containing the latest events ids we got from last fetch for each log type.
+        last_run (dict): A dict with a keys containing the first event id to fetch for each log type.
         first_fetch_time (str): In case of first fetch, fetch events from this date.
-            milliseconds on when to start fetching events.
     Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
+        dict: Next run dictionary containing the ids of the next events to fetch.
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
