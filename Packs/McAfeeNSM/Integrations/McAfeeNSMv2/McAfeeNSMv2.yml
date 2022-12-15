@@ -1255,7 +1255,7 @@ script:
           description: Parent domain comments.
           type: Unknown
     - name: nsm-get-attacks
-      description: If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI.
+      description: If an attack id is given The command returns the details for the specific attack. Else, gets all available attack definitions in the Manager UI. This command can take a few minutes. If you have a timeout error, then increase the timeout by using the parameter "execution-timeout".
       arguments:
         - name: attack_id
           required: false
@@ -1386,6 +1386,37 @@ script:
         - contextPath: NSM.Sensorss.isStackMember
           description: Is stack member.
           type: Boolean
+    - name: nsm-get-ips-policies
+      description: Gets all the IPS Policies defined in the specific domain.
+      arguments:
+        - name: domain_id
+          description: Specific domain id. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
+          required: true
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
+      outputs:
+        - contextPath: NSM.IPSPolicies.IsEditable
+          description: Is the ips policy editable.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DomainId
+          description: Id of Domain to which this policy belongs to.
+          type: Number
+        - contextPath: NSM.IPSPolicies.VisibleToChild
+          description: Policy visible to Child Domain.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ID
+          description: IPS policy id.
+          type: Number
+        - contextPath: NSM.IPSPolicies.Name
+          description: IPS policy name.
+          type: String
   isfetch: false
   runonce: false
   script: '-'

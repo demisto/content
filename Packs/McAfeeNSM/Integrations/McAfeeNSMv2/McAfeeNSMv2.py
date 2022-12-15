@@ -247,9 +247,9 @@ class Client(BaseClient):
             Else, gets all available domains.
             Args:
                 session_str: str - The session id.
-                domain_id: int - The id of the relevant attack.
+                domain_id: int - The id of the relevant domain.
             Returns:
-                A dictionary with the attack list of the specific attack details.
+                A dictionary with the domains list of the specific domain details.
         """
         url_suffix = '/sdkapi/sensors'
         params = {}
@@ -257,6 +257,18 @@ class Client(BaseClient):
             params['domain'] = domain_id
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
+
+    def get_ips_policies_request(self, session_str: str, domain_id: int) -> Dict:
+        """ Gets all the IPS Policies defined in the specific domain.
+            Args:
+                session_str: str - The session id.
+                domain_id: int - The id of the relevant domain.
+            Returns:
+                A dictionary with ips policies list of the specific domain details.
+        """
+        url_suffix = f'/sdkapi/domain/{domain_id}/ipspolicies'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -553,7 +565,7 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
 def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
     """ Add entries to the sensors_list and update it in order not to break backward.
         Args:
-            sensors_list: List[Dict] - a list of the alerts that returned from the API.
+            sensors_list: List[Dict] - a list of the sensors that returned from the API.
         Returns:
             Returns the updated sensors list.
     """
@@ -570,7 +582,7 @@ def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
 def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
     """ Add entries to the attacks_list and update it in order not to break backward.
         Args:
-            attacks_list: List[Dict] - a list of the alerts that returned from the API.
+            attacks_list: List[Dict] - a list of the attacks that returned from the API.
         Returns:
             Returns the updated attack list.
     """
@@ -584,6 +596,21 @@ def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
         del attack['DosDirection']
         del attack['UiCategory']
     return attacks_list
+
+
+def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
+    """ Add entries to the policies_list and update it in order not to break backward.
+        Args:
+            policies_list: List[Dict] - a list of the alerts that returned from the API.
+        Returns:
+            Returns the updated ips policies list.
+    """
+    for policy in policies_list:
+        policy['ID'] = policy.get('policyId')
+        policy['Name'] = policy.get('name')
+        del policy['policyId']
+        del policy['name']
+    return policies_list
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -1348,6 +1375,47 @@ def get_sensors_command(client: Client, args: Dict, session_str: str) -> Command
     )
 
 
+def get_ips_policies_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Gets all the IPS Policies defined in the specific domain.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The relevant ips policies.
+    """
+    domain_id = arg_to_number(args.get('domain_id'))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    response = client.get_ips_policies_request(session_str, domain_id)
+    policies_list = pagination(response.get('PolicyDescriptorDetailsList', [Dict]), limit, page)
+    policies_list = update_policies_list_entries(policies_list)
+    human_readable = []
+    for policy in policies_list:
+        d = {
+            'ID': policy.get('ID'),
+            'Name': policy.get('Name'),
+            'DomainID': policy.get('DomainID'),
+            'IsEditable': policy.get('IsEditable'),
+            'VisibleToChildren': policy.get('VisibleToChildren')
+        }
+        human_readable.append(d)
+    headers = ['ID', 'Name', 'DomainID', 'IsEditable', 'VisibleToChildren']
+    readable_output = tableToMarkdown(
+        name=f'IPS Policies List of Domain no.{domain_id}',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.IPSPolicies',
+        outputs=policies_list,
+        raw_response=policies_list,
+        outputs_key_field='ID'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1426,6 +1494,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-sensors':
             results = get_sensors_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-ips-policies':
+            results = get_ips_policies_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
