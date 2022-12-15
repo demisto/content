@@ -12,6 +12,60 @@ configuration:
   name: credentials
   required: true
   type: 9
+- defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
+    cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
+    malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
+  display: 
+  name: incident_type
+  options:
+  - generic
+  - abnormalAuth
+  - accountManipulation
+  - accountTampering
+  - ueba
+  - bruteForce
+  - compromisedCredentials
+  - cryptomining
+  - dataAccessAbuse
+  - dataExfiltration
+  - dlp
+  - departedEmployee
+  - dataDestruction
+  - evasion
+  - lateralMovement
+  - alertTriage
+  - malware
+  - phishing
+  - privilegeAbuse
+  - physicalSecurity
+  - privilegeEscalation
+  - privilegedActivity
+  - ransomware
+  - workforceProtection
+  required: false
+  type: 16
+- defaultvalue: low,medium,high,critical
+  display: 
+  name: priority
+  options:
+  - low
+  - medium
+  - high
+  - critical
+  required: false
+  type: 16
+- defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
+  display: 
+  name: status
+  options:
+  - closed
+  - closedFalsePositive
+  - inprogress
+  - new
+  - pending
+  - resolved
+  required: false
+  type: 16
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -2031,8 +2085,6 @@ script:
       description: The sequence event type.
       type: String
   dockerimage: demisto/python3:3.10.8.37753
-  dockerimage: demisto/python3:3.10.8.39276
-  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false

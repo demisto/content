@@ -2032,6 +2032,26 @@ def list_incidents(client: Client, args: Dict[str, str]):
     return human_readable, entry_context, raw_response
 
 
+def fetch_incidents(client: Client, args: Dict[str, str]):
+
+    query = args.get('query')
+    incident_type = args.get('incident_type')
+    priority = args.get('priority')
+    status = args.get('status')
+
+
+    q = assign_params(
+        incidentType=incident_type,
+        priority=priority,
+        status=status
+    )
+
+    resp = client.get_incidents()
+    incidents: List[dict] = resp.get('incidents', [])
+
+    pass
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
