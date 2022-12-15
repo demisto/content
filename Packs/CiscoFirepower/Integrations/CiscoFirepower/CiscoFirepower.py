@@ -138,9 +138,11 @@ def pagination(
             if all((is_manual, is_automatic)):
                 raise ValueError('page or page_size can not be entered with limit.')
 
+            remaining_items: int
+
             # Automatic Pagination
             if is_automatic:
-                remaining_items = limit
+                remaining_items = limit  # type: ignore[assignment] # limit cannot be None in this case.
                 offset = None
 
             # Manual Pagination
@@ -159,9 +161,11 @@ def pagination(
             # API only supports limit parameter.
             if not has_offset:
                 if has_limit:
+                    limit = (offset or 0) + remaining_items
+
                     raw_response = func(
                         self,
-                        limit=remaining_items if remaining_items <= api_limit else api_limit,  # type: ignore[operator]
+                        limit=min(limit, api_limit),
                         *args,
                         **kwarg
                     )
@@ -178,12 +182,12 @@ def pagination(
                 if items_key_path:
                     items = dict_safe_get(items, items_key_path)
 
-                if is_automatic:
-                    items = items[:remaining_items]
-
-                else:  # is_manual
-                    stop = page * remaining_items  # type: ignore[operator]
+                if is_manual:
+                    stop = page * remaining_items  # type: ignore[operator] # page cannot be None in this case.
                     items = items[offset:stop]
+
+                else:  # is_automatic or no pagination.
+                    items = items[:remaining_items]
 
                 return items, raw_response
 
@@ -191,10 +195,10 @@ def pagination(
             raw_responses: list[dict[str, Any]] = []
 
             # Keep calling the API until the required amount of items have been met.
-            while remaining_items > 0:  # type: ignore[operator]
+            while remaining_items > 0:
                 raw_response = func(
                     self,
-                    limit=remaining_items if remaining_items <= api_limit else api_limit,  # type: ignore[operator]
+                    limit=min(remaining_items, api_limit),
                     offset=offset,
                     *args,
                     **kwarg
@@ -213,7 +217,7 @@ def pagination(
 
                 # Calculate the offset and limit for the next run.
                 received_items = len(raw_item)
-                remaining_items -= received_items  # type: ignore[operator]
+                remaining_items -= received_items
                 offset = (offset or 0) + received_items
 
             return raw_items, raw_responses
