@@ -12955,7 +12955,7 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
         entries (list): a list of all the incidents entries for all the specified queries
     """    
     entries = []
-    parsed_queries = {}
+    parsed_queries: Dict = {}
     if queries:
         parsed_queries = parse_queries(queries)
         demisto.debug(f'Parsed queries:\n{str(queries)}')
@@ -12973,8 +12973,8 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
                     entries.extend(response_entries)
                     
     # TODO: check where duplicates are coming from
-    unique_entries = remove_duplicate_entries(entries)
-    return unique_entries
+    # unique_entries = remove_duplicate_entries(entries)
+    return entries
 
 
 def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
@@ -12992,7 +12992,10 @@ def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_d
         if time_generated := entry.get("time_generated"):
             time_generated = dateparser.parse(time_generated, settings={'TIMEZONE': 'UTC'})
             if time_generated > fetch_start_datetime:
+                demisto.debug(f'{time_generated=}, {fetch_start_datetime=}')
+                demisto.debug(f'entry added - {entry.get("seqno")}')
                 filterd_incident_entries.append(entry)
+    demisto.debug(f'filterd_incident_entries len: {len(filterd_incident_entries)}')
     return filterd_incident_entries
 
 def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime, last_fetch_incidents: Optional[Set[str]]):
@@ -13014,7 +13017,7 @@ def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_da
     if not filterd_incident_entries:
         return fetch_start_datetime, filterd_incident_entries
     
-    # filter out any incident entries that were already in the last fetch (this can happen when time interval is very short)
+    # filter out any incident entries that were already in the last fetch
     if last_fetch_incidents:
         filterd_incident_entries = [entry for entry in filterd_incident_entries if entry.get("seqno","") not in last_fetch_incidents]
         demisto.debug(f'incident entries filterd by last fetch incidets set. {len(filterd_incident_entries)} entries remain.')
@@ -13028,7 +13031,7 @@ def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_da
     last_fatch_datetime = dateparser.parse(last_fetch_plain, settings={'TIMEZONE': 'UTC'})
     
     # convert incedent entries to incident context
-    incidents: list[dict[str,Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
+    incidents: list[dict[str,Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in filterd_incident_entries]
     demisto.debug(f'incidents list created with {len(incidents)} new incidents.')
     
     return last_fatch_datetime, incidents
