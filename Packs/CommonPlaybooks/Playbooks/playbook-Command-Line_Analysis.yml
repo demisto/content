@@ -1573,7 +1573,7 @@ view: |-
 inputs:
 - key: Commandline
   value: {}
-  required: true
+  required: false
   description: The command line.
   playbookInputQuery:
 outputs:
