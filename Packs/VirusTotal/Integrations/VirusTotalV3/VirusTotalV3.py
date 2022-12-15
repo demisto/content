@@ -1033,8 +1033,8 @@ class ScoreCalculator:
             base_score,
             [
                 client.get_domain_communicating_files,
-                client.get_url_downloaded_files,
-                client.get_url_referrer_files
+                client.get_domain_downloaded_files,
+                client.get_domain_referrer_files
             ]
         )
 
