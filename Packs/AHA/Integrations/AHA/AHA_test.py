@@ -113,7 +113,7 @@ def test_getFeatures(mocker):
             - Asserts get a list of expected length with all features.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
+    results = get(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
     assert len(results.outputs) == 3
     assert len(results.outputs[0].get('ideas')) == 1
     assert results.outputs[0].get('ideas')[0] == 'DEMO-I-299'
@@ -127,14 +127,14 @@ def test_getIdeas(mocker):
             - Asserts get a list of expected length with all ideas.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_ideas.json'))
-    results = get(client=client, get_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
+    results = get(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
     assert len(results.outputs) == 4
 
 
-@pytest.mark.parametrize('file_path, get_type, from_date',
+@pytest.mark.parametrize('file_path, aha_type, from_date',
                          [('test_data/empty_feature_result.json', AHA_TYPE.FEATURES, '3000-01-01'),
                           ('test_data/empty_idea_result.json', AHA_TYPE.IDEAS, '3000-01-01')])
-def test_getFeaturesFromDate(mocker, file_path, get_type, from_date):
+def test_getFeaturesFromDate(mocker, file_path, aha_type, from_date):
     """
         When:
             - Requesting all features with created date of the future
@@ -142,7 +142,7 @@ def test_getFeaturesFromDate(mocker, file_path, get_type, from_date):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json(file_path))
-    results = get(client=client, get_type=get_type, from_date=from_date)
+    results = get(client=client, aha_type=aha_type, from_date=from_date)
     assert len(results.outputs) == 0
 
 
@@ -154,7 +154,7 @@ def test_getAFeature(mocker):
             - Returns the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get(client=client, get_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
+    result = get(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-10'
 
@@ -167,7 +167,7 @@ def test_getAnIdea(mocker):
             - Returns the requested idea
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_idea.json'))
-    result = get(client=client, get_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
+    result = get(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-I-2895'
 
