@@ -44,6 +44,7 @@ configuration:
   type: 0
   required: false
   defaultvalue: https://ps.compliance.protection.outlook.com/powershell-liveid/
+  additionalinfo: Please refer to the documentation for a list of known endpoints.
 - display: AzureADAuthorizedEndpointURI Base
   name: azure_ad_authorized_endpoint_uri_base
   type: 0
