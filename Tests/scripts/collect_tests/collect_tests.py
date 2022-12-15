@@ -526,9 +526,10 @@ class TestCollector(ABC):
             else (pack.version_range | content_item_range)
 
         if not reason:
-            reason = CollectionReason.MODELING_RULE_CHANGED
             file_type = find_type(changed_file_path.as_posix())
-            if file_type == FileType.MODELING_RULE_SCHEMA:
+            if file_type == FileType.MODELING_RULE:
+                reason = CollectionReason.MODELING_RULE_CHANGED
+            elif file_type == FileType.MODELING_RULE_SCHEMA:
                 reason = CollectionReason.MODELING_RULE_SCHEMA_CHANGED
             elif file_type == FileType.MODELING_RULE_TEST_DATA:
                 reason = CollectionReason.MODELING_RULE_TEST_DATA_CHANGED
