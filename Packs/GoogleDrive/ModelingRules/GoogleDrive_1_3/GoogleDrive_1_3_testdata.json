@@ -1,0 +1,57 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "d03cf4ca-9f66-44b7-b9b9-9a8efe6ff55a",
+            "vendor": "google",
+            "product": "drive",
+            "dataset": "google_drive_raw",
+            "event_data": {
+                "Event": {
+                    "kind": "admin#reports#activity",
+                    "id": {
+                        "time": "2022-08-23T07:21:49.386Z",
+                        "uniqueQualifier": "-000",
+                        "applicationName": "drive",
+                        "customerId": "customer123"
+                    },
+                    "etag": "\"a1a1a1a1a\"",
+                    "actor": {
+                        "email": "test@siemteam.com",
+                        "profileId": "123456"
+                    },
+                    "ipAddress": "8.8.8.8",
+                    "events":
+                        [
+                            {
+                                "type": "access",
+                                "name": "trash",
+                                "parameters":
+                                    [
+                                        {"name": "primary_event", "boolValue": true},
+                                        {"name": "billable", "boolValue": true},
+                                        {"name": "doc_id", "value": "a2a2a2a2aaa"},
+                                        {"name": "doc_type", "value": "txt"},
+                                        {"name": "is_encrypted", "boolValue": false },
+                                        {"name": "doc_title", "value": "test.txt"},
+                                        {"name": "visibility", "value": "private"},
+                                        {"name": "originating_app_id", "value": "654321"},
+                                        {"name": "actor_is_collaborator_account", "boolValue": false },
+                                        {"name": "owner", "value": "test@siemteam.com"},
+                                        {"name": "owner_is_shared_drive", "boolValue": false },
+                                        {"name": "owner_is_team_drive", "boolValue": false }
+                                    ]
+                            }
+                        ]
+                }
+            },
+            "expected_values": {
+                "xdm.target.file.filename": "test.txt",
+                "xdm.target.file.file_type": "txt",
+                "xdm.event.operation": "operation",
+                "xdm.source.ipv4": "8.8.8.8",
+                "xdm.source.user.username": "test@siemteam.com",
+                "xdm.event.operation_sub_type": "trash"
+            }
+        }
+    ]
+}

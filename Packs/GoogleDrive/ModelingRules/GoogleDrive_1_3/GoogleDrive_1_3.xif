@@ -1,4 +1,4 @@
-[Model: dataset = google_drive_raw]
+[MODEL: dataset = google_drive_raw]
 alter operation = json_extract_scalar(events, "$.0.type"), 
     operation_sub_type = json_extract_scalar(events ,"$.0.name"),
     event_parameters = json_extract(events ,"$.0.parameters")
