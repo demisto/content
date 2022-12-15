@@ -1599,17 +1599,3 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
     res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     assert res.outputs == expected_outputs
-
-
-@pytest.mark.parametrize('fetch_query', ['search `notable`', 'search `notable` | sort 0 _time'])
-def test_query_contained_sort_by_time(mocker, fetch_query):
-    """
-    Given: - search query
-    When: - run the build_fetch_query in fetch
-    Then: - validate the query contained the sort by time
-    """
-    from SplunkPy import build_fetch_query
-
-    query = build_fetch_query({'fetchQuery': fetch_query})
-
-    assert query.count('| sort 0 _time') == 1

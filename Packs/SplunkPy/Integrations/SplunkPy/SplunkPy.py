@@ -315,9 +315,6 @@ def build_fetch_query(dem_params):
             field_trimmed = field.strip()
             fetch_query = fetch_query + ' | eval ' + field_trimmed + '=' + field_trimmed
 
-    if 'sort 0 _time' not in fetch_query:
-        fetch_query = fetch_query + ' | sort 0 _time'
-        demisto.debug('sort not found. adding the " | sort 0 _time" to sort results by time')
     return fetch_query
 
 
@@ -353,6 +350,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
     incidents = []
     notables = []
     incident_ids_to_add = []
+    num_of_dropped = 0
     for item in reader:
         extensive_log('[SplunkPy] Incident data before parsing to notable: {}'.format(item))
         notable_incident = Notable(data=item)
@@ -366,6 +364,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             notables.append(notable_incident)
             extensive_log('[SplunkPy] - Fetched incident {} to be created.'.format(item.get('event_id', incident_id)))
         else:
+            num_of_dropped += 1
             extensive_log('[SplunkPy] - Dropped incident {} due to duplication.'.format(item.get('event_id', incident_id)))
 
     current_epoch_time = int(time.time())
@@ -378,9 +377,8 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
                   'removing old IDs: {}'.format(len(last_run_fetched_ids)))
     extensive_log('[SplunkPy] SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
 
-    debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.'.format(occured_start_time, latest_time, fetch_query, len(incidents))
-    extensive_log(debug_message)
+    demisto.debug('SplunkPy - total number of new incidents found is: {}'.format(len(incidents)))
+    demisto.debug('SplunkPy - total number of dropped incidents is: {}'.format(num_of_dropped))
 
     if not enrich_notables:
         demisto.incidents(incidents)
@@ -392,6 +390,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
+    # we didn't get any new incident so the next run earliest time will be the latest_time from this iteration
     if len(incidents) == 0:
         next_run_earliest_time = latest_time
         extensive_log('[SplunkPy] SplunkPy - Next run earliest time with no incidents found: {}'.format(next_run_earliest_time))
@@ -401,6 +400,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
         }
+    # we get less then "limit" notables - so no need to use offset and next_run_earliest_time will be the latest_incident_time
     elif len(incidents) < FETCH_LIMIT:
         latest_incident_fetched_time = get_latest_incident_time(incidents)
         next_run_earliest_time = get_next_start_time(latest_incident_fetched_time, now)
@@ -411,6 +411,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
         }
+    # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
         extensive_log('[SplunkPy] SplunkPy - '
                       'Next run time with too many incidents:  {}'.format(occured_start_time))
@@ -420,6 +421,7 @@ def fetch_notables(service, mapper, cache_object=None, enrich_notables=False):
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
+
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
 

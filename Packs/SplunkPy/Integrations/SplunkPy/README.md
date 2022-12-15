@@ -79,7 +79,7 @@ where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** fro
 #### How to configure
 1. Configure the integration to fetch incidents.
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
-3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro **and the results are sorted by time**. See the default query as an example.  
+3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
 
@@ -150,7 +150,7 @@ To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for SplunkPy and select your integration instance.
 3. Enable **Fetches incidents**.
-4. You can go to the *Fetch events query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro **and the results are sorted by time.** See the default query as an example.
+4. You can go to the *Fetch events query* parameter and select the query to fetch the notables from Splunk. Make sure to provide a query which uses the \`notable\` macro, See the default query as an example.
 4. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
     - Incoming - Any changes in Splunk notables (notable's status, status_label, urgency, comments, and owner) will be reflected in XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents (notable's status (not status_label), urgency, comments, and owner) will be reflected in Splunk notables.
@@ -170,7 +170,7 @@ Users who wish to enrich or mirror fetched notables and have already used the in
 2. Will need to change the *Fetch events query* integration parameter to the following query (or a fetch query of their own that uses the \`notable\` macro): 
 
 ```
-search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken | sort 0 _time
+search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
 ```
 
 ### Mapping fetched incidents using Select Schema
