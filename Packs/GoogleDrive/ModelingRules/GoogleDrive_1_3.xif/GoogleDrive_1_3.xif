@@ -1,0 +1,17 @@
+[Model: dataset = google_drive_raw]
+alter operation = json_extract_scalar(events, "$.0.type"), 
+    operation_sub_type = json_extract_scalar(events ,"$.0.name"),
+    event_parameters = json_extract(events ,"$.0.parameters")
+// change parameters type
+| alter event_parameters = to_json_string(event_parameters )
+| alter event_parameters = replace(event_parameters ,"\\"","\"")
+// 
+| alter doc_type = arrayindex( regextract(event_parameters, "\"name\":\"doc_type\",\"value\"\:\"([^\"]+)\"") ,0),
+    doc_title = arrayindex( regextract(event_parameters, "\"name\":\"doc_title\",\"value\"\:\"([^\"]+)\"") ,0),
+    owner = arrayindex( regextract(event_parameters, "\"name\":\"owner\",\"value\"\:\"([^\"]+)\"") ,0)
+| alter xdm.source.ipv4 = ipAddress, 
+    xdm.event.operation = operation, 
+    xdm.event.operation_sub_type = operation_sub_type,
+    xdm.target.file.file_type = doc_type,
+    xdm.target.file.filename = doc_title,
+    xdm.source.user.username = owner;
