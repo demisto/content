@@ -1,2 +1,4 @@
 [file:README.md]
 ignore=RM112
+[file:MergeDictArray.yml]
+ignore=CJ105
