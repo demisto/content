@@ -1,4 +1,4 @@
-[INGEST:vendor="google", product="drive", target_dataset="google_drive_raw"]
+[INGEST:vendor="google", product="drive", target_dataset="google_drive_raw", no_hit = keep]
 alter tmp_event_time_string = json_extract_scalar(id  ,"$.time")
 | alter tmp_time1 = arrayindex(split(tmp_event_time_string ,"."),0)
 | alter tmp_time2 = arrayindex(regextract(arrayindex(split(tmp_event_time_string ,"."),1),"(\d+)"),0)
