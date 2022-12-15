@@ -32,7 +32,7 @@ def get_user_granted_permissions_mock_response(*args, **kwargs):
 
 def test_get_user_granted_permissions(mocker):
     """Test for get_user_granted_permissions."""
-    mocker.patch("EclecticIQ.Client._http_request", get_user_granted_permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client._http_request", get_user_granted_permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     response = client.get_user_granted_permissions()
     assert isinstance(response, str)
@@ -49,7 +49,7 @@ def permissions_mock_response(*args, **kwargs):
 
 def test_permissions_scenario(mocker):
     """Test for get_user_granted_permissions."""
-    mocker.patch("EclecticIQ.Client._http_request", permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client._http_request", permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     response = client.get_user_granted_permissions()
     assert isinstance(response, dict)
@@ -67,7 +67,7 @@ def get_platform_permissions_mock_response(*args, **kwargs):
 
 def test_get_platform_permissions(mocker):
     """Test for get_platform_permissions."""
-    mocker.patch("EclecticIQ.Client._http_request", get_platform_permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client._http_request", get_platform_permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     response = client.get_platform_permissions()
     assert isinstance(response, dict)
@@ -83,7 +83,7 @@ def platform_permissions_mock_response(*args, **kwargs):
 
 def test_permissions(mocker):
     """Test for get_platform_permissions."""
-    mocker.patch("EclecticIQ.Client._http_request", permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client._http_request", permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     response = client.get_platform_permissions()
     assert isinstance(response, dict)
@@ -117,7 +117,7 @@ def get_observable_by_id_mock_response(*args, **kwargs):
 def test_get_observable_by_id(mocker):
     """Test for get_observable_by_id."""
     mocker.patch(
-        "EclecticIQ.Client._http_request",
+        "EclecticIQV2.Client._http_request",
         get_observable_by_id_mock_response
     )
     client = Client(Base_url, api_key, proxy)
@@ -160,7 +160,7 @@ def observable_mock_response(*args, **kwargs):
 def test_observable(mocker):
     """Test for observable."""
     mocker.patch(
-        "EclecticIQ.Client._http_request",
+        "EclecticIQV2.Client._http_request",
         observable_mock_response
     )
     client = Client(Base_url, api_key, proxy)
@@ -206,7 +206,7 @@ def lookup_obs_mock_response(*args, **kwargs):
 def test_lookup_obs(mocker):
     """Test for lookup_obs."""
     mocker.patch(
-        "EclecticIQ.Client._http_request", lookup_obs_mock_response)
+        "EclecticIQV2.Client._http_request", lookup_obs_mock_response)
     client = Client(Base_url, api_key, proxy)
     response = client.lookup_obs(type_eiq="ipv4", value="001.001.001.001")
     assert isinstance(response, dict)
@@ -223,13 +223,13 @@ def sighting_mock_response(*args, **kwargs):
             "data": {
                 "confidence": "medium",
                 "description": "test_desc",
-                "type": "eclecticiq-sighting",
+                "type": "EclecticIQV2-sighting",
                         "timestamp": "2022-03-10T05:37:42Z",
                         "title": "title1",
                         "security_control": {
                             "type": "information-source",
                             "identity": {
-                                "name": "EclecticIQ Platform App for cortex XSOAR",
+                                "name": "EclecticIQV2 Platform App for cortex XSOAR",
                                 "type": "identity"
                             },
                             "time": {
@@ -250,7 +250,7 @@ def sighting_mock_response(*args, **kwargs):
 def test_sighting(mocker):
     """Test for sighting."""
     mocker.patch(
-        "EclecticIQ.Client._http_request",
+        "EclecticIQV2.Client._http_request",
         sighting_mock_response
     )
     client = Client(Base_url, api_key, proxy)
@@ -260,7 +260,7 @@ def test_sighting(mocker):
     # print(response)
     assert response['data']['data']['confidence'] == 'medium'
     assert response['data']['data']['description'] == 'test_desc'
-    assert response['data']['data']['type'] == 'eclecticiq-sighting'
+    assert response['data']['data']['type'] == 'EclecticIQV2-sighting'
     assert response["data"]["meta"]["tags"] == ['XSOAR Alert']
     assert response["data"]["data"]["security_control"]["type"] == 'information-source'
     assert response["data"]["data"]["timestamp"] == '2022-03-10T05:37:42Z'
@@ -275,7 +275,7 @@ def fetch_entity_mock_response(*args, **kwargs):
             "data": {
                 "confidence": "medium",
                 "description": "test_desc",
-                "id": "{https://example.com}eclecticiq-sighting-fe5e61a4-5f1c-11ed-8eb2-067b5e23fb5e",
+                "id": "{https://example.com}EclecticIQV2-sighting-fe5e61a4-5f1c-11ed-8eb2-067b5e23fb5e",
                 "timestamp": "2022-03-10T05:37:42+00:00",
                 "title": "title1"
             },
@@ -307,7 +307,7 @@ def fetch_entity_mock_response(*args, **kwargs):
             "sources": [
                 "https://example//sources/9a479225-37d1"
             ],
-            "type": "eclecticiq-sighting"
+            "type": "EclecticIQV2-sighting"
         }
     }
     return return_value
@@ -318,7 +318,7 @@ def fetch_entity_mock_response(*args, **kwargs):
 def test_fetch_entity(mocker):
     """Test for fetch_entity."""
     mocker.patch(
-        "EclecticIQ.Client._http_request",
+        "EclecticIQV2.Client._http_request",
         fetch_entity_mock_response
     )
     client = Client(Base_url, api_key, proxy)
@@ -342,7 +342,7 @@ def get_platform_permission_ids_mock_response(*args, **kwargs):
 def test_get_platform_permission_ids(mocker):
     """Test for get_platform_permission_ids."""
     mocker.patch(
-        "EclecticIQ.get_platform_permission_ids",
+        "EclecticIQV2.get_platform_permission_ids",
         get_platform_permission_ids_mock_response
     )
     response = get_platform_permission_ids(permissions_data=[{'id': 33, 'name': 'modify entities'}, {
@@ -365,7 +365,7 @@ def authenticate_user_mock_positive_response(*args, **kwargs):
 
 def test_authenticate_user_positive_response(mocker):
     """Test for authenticate_user."""
-    mocker.patch("EclecticIQ.authenticate_user", authenticate_user_mock_positive_response)
+    mocker.patch("EclecticIQV2.authenticate_user", authenticate_user_mock_positive_response)
     response = authenticate_user(ids_of_user="[33]", ids_required_for_user="[33, 59, 66, 78]")
     assert isinstance(response, tuple)
 # Mock function for authenticate_user_positive_response
@@ -379,7 +379,7 @@ def authenticate_user_mock_negative_response(*args, **kwargs):
 # Test cases for authenticate_user_negative_response
 def test_authenticate_user_negative_response(mocker):
     """Test for authenticate_user."""
-    mocker.patch("EclecticIQ.authenticate_user", authenticate_user_mock_negative_response)
+    mocker.patch("EclecticIQV2.authenticate_user", authenticate_user_mock_negative_response)
     response = authenticate_user(ids_of_user="[90]", ids_required_for_user="[9]")
     assert isinstance(response, tuple)
 
@@ -396,7 +396,7 @@ def get_permission_name_from_id_mock_response(*args, **kwargs):
 def test_get_permission_name_from_id(mocker):
     """Test for get_permission_name_from_id."""
     mocker.patch(
-        "EclecticIQ.get_permission_name_from_id",
+        "EclecticIQV2.get_permission_name_from_id",
         get_permission_name_from_id_mock_response
     )
     response = get_permission_name_from_id(permission_data=({'id': 33, 'name': 'modify entities'}, {
@@ -419,7 +419,7 @@ def maliciousness_to_dbotscore_mock_response(*args, **kwargs):
 def test_maliciousness_to_dbotscore(mocker):
     """Test for maliciousness_to_dbotscore."""
     mocker.patch(
-        "EclecticIQ.maliciousness_to_dbotscore",
+        "EclecticIQV2.maliciousness_to_dbotscore",
         maliciousness_to_dbotscore_mock_response
     )
     response = maliciousness_to_dbotscore(maliciousness="high")
@@ -439,7 +439,7 @@ def prepare_observable_data_mock_response(*args, **kwargs):
 def test_prepare_observable_data(mocker):
     """Test for prepare_observable_data."""
     mocker.patch(
-        "EclecticIQ.prepare_observable_data",
+        "EclecticIQV2.prepare_observable_data",
         prepare_observable_data_mock_response
     )
     response = prepare_observable_data(data={
@@ -495,11 +495,11 @@ def prepare_entity_data_mock_response(*args, **kwargs):
 
 def test_prepare_entity_data(mocker):
     """Test for  prepare_entity_data."""
-    mocker.patch("EclecticIQ.prepare_entity_data", prepare_entity_data_mock_response)
+    mocker.patch("EclecticIQV2.prepare_entity_data", prepare_entity_data_mock_response)
     response = prepare_entity_data(data={
         "data": {
             "confidence": "medium",
-            "description": "EclecticIQ",
+            "description": "EclecticIQV2",
             "title": "testcase",
             "tags": "XSOAR Alert",
             "producer": {
@@ -538,7 +538,7 @@ def test_prepare_entity_data(mocker):
 
 def test_prepare_entity_data_scenario(mocker):
     """Test for  prepare_entity_data."""
-    mocker.patch("EclecticIQ.prepare_entity_data", prepare_entity_data_mock_response)
+    mocker.patch("EclecticIQV2.prepare_entity_data", prepare_entity_data_mock_response)
     response = prepare_entity_data(data={
         "data": {
             "severity": "medium"},
@@ -581,7 +581,7 @@ def validate_type_mock_response(*args, **kwargs):
 
 def test_validate_type(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="hash-sha512", value="3b7fc7cc370707c1df045c35342f3d64ea7076abd84f8a8c046a7cca2b85901|\
         689f3cf4bdc1f5fc232a60456cb9d2f48702bf8f8f1064f9bcc7d70edad9f860e")
     assert isinstance(response, bool)
@@ -591,7 +591,7 @@ def test_validate_type(mocker):
 def test_validate_scenario_1(mocker):
     """Test for validate_type."""
     mocker.patch(
-        "EclecticIQ.validate_type",
+        "EclecticIQV2.validate_type",
         validate_type_mock_response
     )
     response = validate_type(
@@ -603,7 +603,7 @@ def test_validate_scenario_1(mocker):
 
 def test_validate_scenario_2(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="hash-sha256", value="ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad")
     assert isinstance(response, bool)
 # Test case for validate_type scenario-3
@@ -611,7 +611,7 @@ def test_validate_scenario_2(mocker):
 
 def test_validate_scenario_3(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="hash-md5", value="e5dadf6524624f79c3127e247f04b541")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -4
@@ -619,7 +619,7 @@ def test_validate_scenario_3(mocker):
 
 def test_validate_scenario_4(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="domain", value="abcd1.com")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -5
@@ -627,7 +627,7 @@ def test_validate_scenario_4(mocker):
 
 def test_validate_scenario_5(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="uri", value="https://bzxhc.com")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -6
@@ -635,7 +635,7 @@ def test_validate_scenario_5(mocker):
 
 def test_validate_scenario_6(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="email", value="cchj@gmail.com")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -7
@@ -643,7 +643,7 @@ def test_validate_scenario_6(mocker):
 
 def test_validate_scenario_7(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_type_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
     response = validate_type(s_type="ipv6", value=" 2001:0db8:85a3:0000:0000:8a2e:0370:7334")
     assert isinstance(response, bool)
 # mock response for validation function
@@ -657,7 +657,7 @@ def validate_mock_response(*args, **kwargs):
 
 def test_validate_scenario_8(mocker):
     """Test for validate_type."""
-    mocker.patch("EclecticIQ.validate_type", validate_mock_response)
+    mocker.patch("EclecticIQV2.validate_type", validate_mock_response)
     response = validate_type(s_type="file", value="2001:0000:0000:FEFB")
     assert isinstance(response, bool)
 
@@ -665,11 +665,11 @@ def test_validate_scenario_8(mocker):
 # # Test case for data_ingestion
 def test_data_ingestion(mocker):
     """Test case for data_ingestion"""
-    mocker.patch("EclecticIQ.Client.get_user_granted_permissions", user_permissions_mock_response)
-    mocker.patch("EclecticIQ.Client.get_platform_permissions", get_platform_permissions_mock_response)
-    mocker.patch("EclecticIQ.get_platform_permission_ids", get_platform_permission_ids_mock_response)
-    mocker.patch("EclecticIQ.authenticate_user", authenticate_user_mock_positive_response)
-    mocker.patch("EclecticIQ.get_permission_name_from_id", get_permission_name_from_id_mock_response)
+    mocker.patch("EclecticIQV2.Client.get_user_granted_permissions", user_permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client.get_platform_permissions", get_platform_permissions_mock_response)
+    mocker.patch("EclecticIQV2.get_platform_permission_ids", get_platform_permission_ids_mock_response)
+    mocker.patch("EclecticIQV2.authenticate_user", authenticate_user_mock_positive_response)
+    mocker.patch("EclecticIQV2.get_permission_name_from_id", get_permission_name_from_id_mock_response)
     client = Client(Base_url, api_key, proxy)
     result = data_ingestion(client)
     assert isinstance(result, str)
@@ -686,7 +686,7 @@ def user_permissions_mock_response(*args, **kwargs):
 
 def test_data_ingestion_scenario(mocker):
     """Test case for data_ingestion"""
-    mocker.patch("EclecticIQ.Client.get_user_granted_permissions", user_permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client.get_user_granted_permissions", user_permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     with pytest.raises(Exception)as e_info:
         data_ingestion(client)
@@ -703,7 +703,7 @@ def platform_mock_response(*args, **kwargs):
 
 def test_data_ingestion_scenario_1(mocker):
     """Test case for data_ingestion"""
-    mocker.patch("EclecticIQ.Client.get_user_granted_permissions", user_permissions_mock_response)
+    mocker.patch("EclecticIQV2.Client.get_user_granted_permissions", user_permissions_mock_response)
     client = Client(Base_url, api_key, proxy)
     result = data_ingestion(client)
     assert isinstance(result, str)
@@ -718,7 +718,7 @@ def get_entity_mock_response(*args, **kwargs):
             "data": {
                 "confidence": "medium",
                 "description": "sighting",
-                "id": "{https://example.com}eclecticiq-sighting-71b48da2-5bff-11ed-ac3f-067b5e23fb5e",
+                "id": "{https://example.com}EclecticIQV2-sighting-71b48da2-5bff-11ed-ac3f-067b5e23fb5e",
                 "timestamp": "2022-11-04T05:13:39+00:00",
                 "title": "EIQ"
             },
@@ -747,7 +747,7 @@ def get_entity_mock_response(*args, **kwargs):
             "sources": [
                 "https://example//sources/9a479225-37d1"
             ],
-            "type": "eclecticiq-sighting"
+            "type": "EclecticIQV2-sighting"
         }
     }
     return return_value
@@ -756,10 +756,10 @@ def get_entity_mock_response(*args, **kwargs):
 
 def test_get_entity_data(mocker):
     """Test for get_entity_data."""
-    mocker.patch("EclecticIQ.Client.fetch_entity", fetch_entity_mock_response)
-    mocker.patch("EclecticIQ.Client.get_observable_by_id", get_observable_by_id_mock_response)
-    mocker.patch("EclecticIQ.prepare_observable_data", prepare_observable_data_mock_response)
-    mocker.patch("EclecticIQ.prepare_entity_data", prepare_entity_data_mock_response)
+    mocker.patch("EclecticIQV2.Client.fetch_entity", fetch_entity_mock_response)
+    mocker.patch("EclecticIQV2.Client.get_observable_by_id", get_observable_by_id_mock_response)
+    mocker.patch("EclecticIQV2.prepare_observable_data", prepare_observable_data_mock_response)
+    mocker.patch("EclecticIQV2.prepare_entity_data", prepare_entity_data_mock_response)
     client = Client("https://example/", api_key, proxy)
     response = get_entity_data(client, data_item={
         "created_at": "2022-11-09T04:25:49.960811+00:00",
@@ -788,10 +788,10 @@ def test_get_entity_data(mocker):
 
 def test_lookup_observables(mocker):
     """Test for lookup observables function."""
-    mocker.patch("EclecticIQ.Client.lookup_obs", lookup_obs_mock_response)
-    mocker.patch("EclecticIQ.Client.fetch_entity", fetch_entity_mock_response)
-    mocker.patch("EclecticIQ.get_entity_data", get_entity_mock_response)
-    mocker.patch("EclecticIQ.maliciousness_to_dbotscore", maliciousness_to_dbotscore_mock_response)
+    mocker.patch("EclecticIQV2.Client.lookup_obs", lookup_obs_mock_response)
+    mocker.patch("EclecticIQV2.Client.fetch_entity", fetch_entity_mock_response)
+    mocker.patch("EclecticIQV2.get_entity_data", get_entity_mock_response)
+    mocker.patch("EclecticIQV2.maliciousness_to_dbotscore", maliciousness_to_dbotscore_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001"}
     result = lookup_observables(client, args)
@@ -804,10 +804,10 @@ def test_lookup_observables(mocker):
 
 def test_lookup_observables_scenario(mocker):
     """Test for lookup observables function."""
-    mocker.patch("EclecticIQ.Client.lookup_obs", lookup_obs_mock_response)
-    mocker.patch("EclecticIQ.Client.fetch_entity", fetch_entity_mock_response)
-    mocker.patch("EclecticIQ.maliciousness_to_dbotscore", maliciousness_to_dbotscore_mock_response)
-    mocker.patch("EclecticIQ.get_entity_data", get_entity_mock_response)
+    mocker.patch("EclecticIQV2.Client.lookup_obs", lookup_obs_mock_response)
+    mocker.patch("EclecticIQV2.Client.fetch_entity", fetch_entity_mock_response)
+    mocker.patch("EclecticIQV2.maliciousness_to_dbotscore", maliciousness_to_dbotscore_mock_response)
+    mocker.patch("EclecticIQV2.get_entity_data", get_entity_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "24.161"}
     with pytest.raises(ValueError) as e_info:
@@ -825,7 +825,7 @@ def lookup_observables_scenario_mock_response(*args, **kwargs):
 
 def test_lookup_observables_scenario_1(mocker):
     """Test for lookup observables function."""
-    mocker.patch("EclecticIQ.Client.lookup_obs", lookup_observables_scenario_mock_response)
+    mocker.patch("EclecticIQV2.Client.lookup_obs", lookup_observables_scenario_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001"}
     result = lookup_observables(client, args)
@@ -836,7 +836,7 @@ def test_lookup_observables_scenario_1(mocker):
 
 def test_create_sighting(mocker):
     """Test for create sighting function."""
-    mocker.patch("EclecticIQ.Client.sighting", sighting_mock_response)
+    mocker.patch("EclecticIQV2.Client.sighting", sighting_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001", "title": "EIQ", "tags": "cortex alert",
             "description": "sighting", "confidence_level": "medium"}
@@ -850,7 +850,7 @@ def test_create_sighting(mocker):
 
 def test_create_sighting_scenario(mocker):
     """Test for create sighting function."""
-    mocker.patch("EclecticIQ.Client.sighting", sighting_mock_response)
+    mocker.patch("EclecticIQV2.Client.sighting", sighting_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "1124.161", "title": "EIQ", "tags": "cortex alert",
             "description": "sighting", "confidence_level": "medium"}
@@ -864,7 +864,7 @@ def test_create_sighting_scenario(mocker):
 
 def test_create_observable(mocker):
     """Test for create observable function."""
-    mocker.patch("EclecticIQ.Client.observable", observable_mock_response)
+    mocker.patch("EclecticIQV2.Client.observable", observable_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001", "maliciousness": "safe"}
     result = create_observable(client, args)
@@ -877,7 +877,7 @@ def test_create_observable(mocker):
 
 def test_create_observable_scenario(mocker):
     """Test for create observable function."""
-    mocker.patch("EclecticIQ.Client.observable", observable_mock_response)
+    mocker.patch("EclecticIQV2.Client.observable", observable_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "2175.161", "maliciousness": "safe"}
     with pytest.raises(ValueError) as e_info:
@@ -894,7 +894,7 @@ def test_main(mocker):
             'apikey': api_key,
         }
     )
-    mocker.patch('EclecticIQ.lookup_observables', return_value={'name': 'test'})
+    mocker.patch('EclecticIQV2.lookup_observables', return_value={'name': 'test'})
     mocker.patch.object(demisto, 'command', return_value='create_sighting')
     mocker.patch.object(demisto, 'command', return_value='create_observable')
     mocker.patch.object(
@@ -917,11 +917,11 @@ def test_main_scenario(mocker):
             'proxy': proxy
         }
     )
-    mocker.patch('EclecticIQ.data_ingestion', return_value="ok")
+    mocker.patch('EclecticIQV2.data_ingestion', return_value="ok")
     mocker.patch.object(demisto, 'command', return_value='create_sighting')
     mocker.patch.object(demisto, 'command', return_value='create_observable')
     mocker.patch.object(demisto, 'command', return_value='lookup_observables')
-    mocker.patch('EclecticIQ.Client.lookup_obs', return_value={
+    mocker.patch('EclecticIQV2.Client.lookup_obs', return_value={
         "count": 1,
         "data": [
             {
@@ -945,14 +945,14 @@ def test_main_scenario(mocker):
         "offset": 0,
         "total_count": 1
     }, autospec=True)
-    mocker.patch("EclecticIQ.Client.fetch_entity", return_value={
+    mocker.patch("EclecticIQV2.Client.fetch_entity", return_value={
         "data": {
             "attachments": [],
             "created_at": "2022-11-08T04:22:45.250875+00:00",
             "data": {
                 "confidence": "medium",
                 "description": "test_desc",
-                "id": "{https://example.com}eclecticiq-sighting-fe5e61a4-5f1c-11ed-8eb2-067b5e23fb5e",
+                "id": "{https://example.com}EclecticIQV2-sighting-fe5e61a4-5f1c-11ed-8eb2-067b5e23fb5e",
                 "timestamp": "2022-03-10T05:37:42+00:00",
                 "title": "title1"
             },
@@ -984,10 +984,10 @@ def test_main_scenario(mocker):
             "sources": [
                 "https://example//sources/9a479225-37d1"
             ],
-            "type": "eclecticiq-sighting"
+            "type": "EclecticIQV2-sighting"
         }
     })
-    mocker.patch("EclecticIQ.Client.get_observable_by_id", return_value={
+    mocker.patch("EclecticIQV2.Client.get_observable_by_id", return_value={
         "data": {
             "created_at": "2022-08-24T10:02:04.609448+00:00",
             "entities": [
@@ -1022,22 +1022,22 @@ def test_main_scenario_1(mocker):
             'proxy': proxy
         }
     )
-    mocker.patch('EclecticIQ.data_ingestion', return_value="test")
+    mocker.patch('EclecticIQV2.data_ingestion', return_value="test")
     mocker.patch.object(demisto, 'command', return_value='lookup_observables')
     mocker.patch.object(demisto, 'command', return_value='create_observable')
     mocker.patch.object(demisto, 'command', return_value='create_sighting')
-    mocker.patch('EclecticIQ.Client.sighting', return_value={
+    mocker.patch('EclecticIQV2.Client.sighting', return_value={
         "data": {
             "data": {
                 "confidence": "medium",
                 "description": "test_desc",
-                "type": "eclecticiq-sighting",
+                "type": "EclecticIQV2-sighting",
                         "timestamp": "2022-03-10T05:37:42Z",
                         "title": "title1",
                         "security_control": {
                             "type": "information-source",
                             "identity": {
-                                "name": "EclecticIQ Platform App for cortex XSOAR",
+                                "name": "EclecticIQV2 Platform App for cortex XSOAR",
                                 "type": "identity"
                             },
                             "time": {
@@ -1069,11 +1069,11 @@ def test_main_scenario_2(mocker):
             'proxy': proxy
         }
     )
-    mocker.patch('EclecticIQ.data_ingestion', return_value="test")
+    mocker.patch('EclecticIQV2.data_ingestion', return_value="test")
     mocker.patch.object(demisto, 'command', return_value='lookup_observables')
     mocker.patch.object(demisto, 'command', return_value='create_sighting')
     mocker.patch.object(demisto, 'command', return_value='create_observable')
-    mocker.patch('EclecticIQ.Client.observable', return_value={
+    mocker.patch('EclecticIQV2.Client.observable', return_value={
         "count": 1,
         "data": [
             {
