@@ -3782,6 +3782,8 @@ def delete_intrusion_policy_command(client: Client, args: Dict[str, Any]) -> Com
                 readable_output=f'The Intrusion Policy ID: "{intrusion_policy_id}" does not exist.'
             )
 
+        raise
+
     readable_output = get_readable_output(
         response=raw_response,
         header_by_keys=INTRUSION_POLICY_HEADERS_BY_KEYS,
