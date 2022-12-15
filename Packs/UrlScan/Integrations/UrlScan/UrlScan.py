@@ -391,6 +391,12 @@ def format_results(client, uuid, use_url_as_name):
             for ip in scan_lists.get('ips'):
                 feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
+    if 'links' in scan_data:
+        links = []
+        for o in scan_data['links']:
+            if 'href' in o:
+                links.append(o['href'])
+        cont['links'] = links
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
