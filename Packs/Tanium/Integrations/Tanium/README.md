@@ -1773,6 +1773,51 @@
     ]
 }</pre>
 <p> </p>
+
+
+### tn-get-all-sensors
+***
+Gets all sensors
+
+
+#### Base Command
+
+`tn-get-all-sensors`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### tn-get-action
+***
+Get detailed information about a given action.
+
+
+#### Base Command
+
+`tn-get-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of action of retrieve. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Tanium.Actions.name | string | Name of the actions | 
+| Tanium.Actions.id | number | ID of the action | 
+| Tanium.Actions.status | string | Status of the action - Closed, Pending, etc. | 
+| Tanium.Actions.start_time | date | Time when the action started running | 
+| Tanium.Actions.approver.name | string | Name of Tanium user who approved the action | 
+| Tanium.Actions.creation_time | date | Time when the action was created | 
+| Tanium.Actions.package_spec.command | string | The command that is issued by the action | 
+| Tanium.Actions.package_spec.name | string | Name of the package that was deployed | 
+
 <h2>Debug Commands</h2>
 <h3 id="h_95205013124651536234522127">1. Request the server to parse question text</h3>
 <hr>
