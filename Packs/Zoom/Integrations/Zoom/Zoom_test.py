@@ -489,3 +489,51 @@ def test_zoom_meeting_list_command__when_user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     res = Zoom.zoom_meeting_list_command(client, user_id="bla")
     assert len(res.readable_output) == 114
+
+
+def test_remove_None_values_from_dict():
+    from Zoom import remove_None_values_from_dict
+    """
+        Given -
+        a nested dict
+        When -
+            some values == None
+        Then -
+            Validate that the keys with value None are removed
+    """
+    dict_input = {
+        "settings": {
+            "allow_multiple_devices": "tuyytu",
+            "auto_recording": "dyj",
+            "encryption_type": "jy",
+            "focus_mode": False,
+            "host_video": None,
+            "jbh_time": "jdfd",
+            "join_before_host": "join_before_host",
+            "meeting_authentication": "meeting_authentication",
+            "meeting_invitees": "meeting_invitees",
+            "waiting_room": False
+        },
+        "start_time": "start_time",
+        "timezone": None,
+        "type": "num_type",
+        "topic": False
+    }
+    dict_expected_output = {
+        "settings": {
+            "allow_multiple_devices": "tuyytu",
+            "auto_recording": "dyj",
+            "encryption_type": "jy",
+            "focus_mode": False,
+            "jbh_time": "jdfd",
+            "join_before_host": "join_before_host",
+            "meeting_authentication": "meeting_authentication",
+            "meeting_invitees": "meeting_invitees",
+            "waiting_room": False
+        },
+        "start_time": "start_time",
+        "type": "num_type",
+        "topic": False
+    }
+
+    assert remove_None_values_from_dict(dict_input) == dict_expected_output
