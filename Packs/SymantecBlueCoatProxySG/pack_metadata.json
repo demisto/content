@@ -1,20 +1,18 @@
 {
-    "name": "Cisco Firepower",
-    "description": "Use the CiscoFirepower integration for unified management of firewalls, application control",
+    "name": "Symantec BlueCoat ProxySG",
+    "description": "A component for on-premises deployment and web security.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-03-30T09:36:20Z",
     "categories": [
-        "Network Security"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar",
         "marketplacev2"
     ]
 }
