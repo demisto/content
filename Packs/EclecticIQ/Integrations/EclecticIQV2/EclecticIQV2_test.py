@@ -1,6 +1,6 @@
 import pytest
 import demistomock as demisto
-from Integrations.EclecticIQV2.EclecticIQV2 import (
+from EclecticIQV2 import (
     Client,
     lookup_observables,
     create_sighting,
