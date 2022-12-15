@@ -1,2 +1,2 @@
 Use thie integration to collect events automatically from NetBox.
-or manually using the netbox-get-events command.
+You can also use the `netbox-get-events` command to manually collect events.
