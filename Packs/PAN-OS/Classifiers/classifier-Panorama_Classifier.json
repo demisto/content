@@ -1,0 +1,44 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "Unclassified",
+	"definitionId": "",
+	"description": "Classifies incoming PAN-OS Log incidents.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "Panorama Classifier",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"CORRELATION": "PAN-OS Correlation Log Incident",
+		"DATA": "PAN-OS Data Log Incident",
+		"DECRYPTION": "PAN-OS Decryption Log Incident",
+		"SYSTEM": "PAN-OS System Log Incident",
+		"THERAT": "PAN-OS Threat Log Incident",
+		"THREAT": "Threat",
+		"TRAFFIC": "PAN-OS Traffic Log Incident",
+		"URL": "PAN-OS URL Log Incident",
+		"WILDFIRE": "PAN-OS Wildfire Submissions Log Incident"
+	},
+	"locked": false,
+	"logicalVersion": 5,
+	"mapping": null,
+	"name": "Panorama Classifier",
+	"nameRaw": "Panorama Classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "type"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
