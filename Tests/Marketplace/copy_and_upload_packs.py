@@ -445,12 +445,12 @@ def main():
     copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
-        list(pc_successful_private_packs_dict)
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, list(pc_successful_private_packs_dict)
     )
 
     # verify that the successful from Prepare content and are the ones that were copied

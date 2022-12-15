@@ -813,7 +813,7 @@ def get_packs_summary(packs_list):
     Args:
         packs_list (list): The full packs list
 
-    Returns: 3 lists of packs - successful_packs, skipped_packs & failed_packs
+    Returns: 4 lists of packs - successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs & failed_packs
 
     """
 
@@ -822,6 +822,7 @@ def get_packs_summary(packs_list):
     skipped_packs = []
     failed_packs = []
     for pack in packs_list:
+        logging.info(f"&&&&&& PACK status {pack.status}")
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
         if pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
