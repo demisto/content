@@ -66,3 +66,6 @@ Packs/**/report_pytest.json
 
 # neo4j
 neo4j-data
+
+# MicroSocks (Potentially harmful)
+Packs/Whois/Integrations/Whois/test_data/microsocks
