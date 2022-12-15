@@ -14,11 +14,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,6 +33,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: b4aa1085-8811-46ac-85da-a2370218c324
@@ -41,15 +42,14 @@ tasks:
       id: b4aa1085-8811-46ac-85da-a2370218c324
       version: -1
       name: Fetch from instance
-      scriptName: FetchFromInstance
       type: regular
       iscommand: false
       brand: ""
+      scriptName: FetchFromInstance
     scriptarguments:
       brand_name:
         simple: CrowdstrikeFalcon
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -64,6 +64,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 968654aa-6826-485b-813f-cc0768de8200
@@ -85,7 +86,6 @@ tasks:
       filter:
         simple: created_timestamp:>'2020-03-05T15:25:00Z'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -100,6 +100,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 365a47bd-a87f-476a-8415-61e3d55935ce
@@ -130,7 +131,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -145,6 +145,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 3927bfb5-38bd-436d-8927-51b8a44dbb77
@@ -164,7 +165,6 @@ tasks:
       behavior_id:
         simple: "10197"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -179,6 +179,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 6060732b-ae0f-41ae-8cb1-c21a442f1d21
@@ -207,7 +208,6 @@ tasks:
           right:
             value:
               simple: suspicious_activity
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -222,6 +222,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 1f74a31b-60bc-4f7e-8b3c-100a75a88c82
@@ -241,7 +242,6 @@ tasks:
       ids:
         simple: c1a4575cd124419db5ed3c1e8ddc2c04,15dbb9d8f06b45fe9f61eb46e829d986
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -256,6 +256,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: f04761d9-b214-4827-8563-ecb9ac519743
@@ -286,7 +287,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -301,6 +301,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 77d22cbb-b97e-499b-83aa-f58c3c86e94d
@@ -323,7 +324,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -338,6 +338,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 935adba7-4ed3-4868-8592-46668a4dd614
@@ -358,7 +359,6 @@ tasks:
       types:
         simple: md5
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -373,6 +373,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: d3e7dcab-9a4f-4aa1-82f6-db06b31bb6ea
@@ -396,7 +397,6 @@ tasks:
             value:
               simple: CrowdStrike.IOC
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -411,6 +411,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: e3e9373f-853d-4664-872c-65bc275b3064
@@ -445,7 +446,6 @@ tasks:
       value:
         simple: example.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -460,6 +460,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 9bb3ed6f-b083-492b-8096-2c6213934b7a
@@ -502,7 +503,6 @@ tasks:
           right:
             value:
               simple: Demisto playbook
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -517,6 +517,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: ac984ab5-54dd-4061-8694-5a7dfebebffa
@@ -543,7 +544,6 @@ tasks:
       severity:
         simple: medium
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -558,6 +558,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: 326b22aa-e45b-416f-8140-e07f1f4c32b0
@@ -600,7 +601,6 @@ tasks:
           right:
             value:
               simple: medium
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -615,6 +615,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: a0621b23-24b0-49ef-802f-4051aa608d8b
@@ -635,7 +636,6 @@ tasks:
       ioc_id:
         simple: ${CrowdStrike.IOC.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -650,6 +650,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: ccd5fca3-bcc1-4467-83bc-2873bb085246
@@ -670,7 +671,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -685,6 +685,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 2711e1d9-d6e3-4fe7-862b-049a757f306f
@@ -693,8 +694,7 @@ tasks:
       id: 2711e1d9-d6e3-4fe7-862b-049a757f306f
       version: -1
       name: Get just created test IOC
-      description: Gets the full definition of one or more indicators that you are
-        watching.
+      description: Gets the full definition of one or more indicators that you are watching.
       script: '|||cs-falcon-get-custom-ioc'
       type: regular
       iscommand: true
@@ -708,7 +708,6 @@ tasks:
       value:
         simple: example.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -723,6 +722,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: f30bf1df-2bea-45b5-81c0-b835d26ca799
@@ -765,7 +765,6 @@ tasks:
           right:
             value:
               simple: Demisto playbook
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -780,6 +779,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: eb55200e-8d93-4575-84e1-c750a22630bd
@@ -802,7 +802,6 @@ tasks:
       value:
         simple: ynet.co.il
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -817,6 +816,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: 8bd59546-abd9-4be0-8bab-8df57f2d8266
@@ -867,7 +867,6 @@ tasks:
           right:
             value:
               simple: ynet.co.il
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -882,6 +881,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 8e1f1686-73d9-4c5a-877e-bbd444d250fd
@@ -908,7 +908,6 @@ tasks:
       timeout:
         simple: "400"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -923,6 +922,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 4bb55aa4-7dd7-4f09-8c0c-5188dabaad82
@@ -949,7 +949,6 @@ tasks:
           right:
             value:
               simple: Bye
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -964,6 +963,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 326b6e97-5100-4a30-8cf1-56ccdde310f0
@@ -983,7 +983,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -998,6 +997,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
     taskid: 90ba0bfe-d2bb-48ee-8ce6-efb3c08957b8
@@ -1022,7 +1022,6 @@ tasks:
       name:
         simple: test_tes
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1037,6 +1036,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 39d33211-998d-4505-8802-bf20341da196
@@ -1101,7 +1101,6 @@ tasks:
             value:
               simple: CrowdStrike.HostGroup.modified_timestamp
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1116,6 +1115,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: e227d721-e9ef-4399-87cf-3668db6d4461
@@ -1140,7 +1140,6 @@ tasks:
       name:
         simple: test_test
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1155,6 +1154,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: 50ce135f-9071-46f4-82da-44f56f269a18
@@ -1222,7 +1222,6 @@ tasks:
           right:
             value:
               simple: test_test
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1237,6 +1236,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
     taskid: bdef55c1-5248-4f2a-860e-df10392d33cf
@@ -1254,7 +1254,6 @@ tasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1269,6 +1268,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "33":
     id: "33"
     taskid: 86bee1da-f3fc-4d3a-8761-7c79073036c8
@@ -1332,7 +1332,6 @@ tasks:
             value:
               simple: CrowdStrike.Device.Status
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1347,6 +1346,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "34":
     id: "34"
     taskid: 176a5555-af1c-4847-80e0-72110679e77d
@@ -1369,7 +1369,6 @@ tasks:
       host_ids:
         simple: ${CrowdStrike.Device.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1384,6 +1383,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "35":
     id: "35"
     taskid: eb305551-c6e5-47d7-80b2-52ae48d4e624
@@ -1442,7 +1442,6 @@ tasks:
             value:
               simple: CrowdStrike.HostGroup.modified_timestamp
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1457,6 +1456,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "36":
     id: "36"
     taskid: 295a45d8-ca38-4874-8188-904c4703dcfe
@@ -1479,7 +1479,6 @@ tasks:
       host_ids:
         simple: ${CrowdStrike.Device.ID}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1494,6 +1493,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "37":
     id: "37"
     taskid: 3a70d2ad-253e-414b-82f2-330f5e3a22e7
@@ -1514,7 +1514,6 @@ tasks:
       key:
         simple: CrowdStrike.Device
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1529,6 +1528,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "38":
     id: "38"
     taskid: 425b30ef-0b41-4bdb-8b1c-cf94c5b72dad
@@ -1549,7 +1549,6 @@ tasks:
       host_group_id:
         simple: ${CrowdStrike.HostGroup.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1564,6 +1563,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "39":
     id: "39"
     taskid: cc3b28de-c0e8-4577-80ae-7635fdd4a4ab
@@ -1627,7 +1627,6 @@ tasks:
             value:
               simple: CrowdStrike.Device
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1642,6 +1641,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "40":
     id: "40"
     taskid: d3a68804-a978-4da5-82d3-15e41607560d
@@ -1659,7 +1659,6 @@ tasks:
       '#none#':
       - "41"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1674,6 +1673,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "41":
     id: "41"
     taskid: dcdc7ab7-efc2-46a3-8b46-3ff104dec6cf
@@ -1696,7 +1696,6 @@ tasks:
       status:
         simple: New
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1711,6 +1710,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "42":
     id: "42"
     taskid: 6726a5c6-b102-413b-8b5e-1317cc0146e0
@@ -1722,8 +1722,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1738,6 +1738,7 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "43":
     id: "43"
     taskid: b5b569cc-dde9-4e3f-848f-9d9517620d55
@@ -1759,7 +1760,6 @@ tasks:
       limit:
         simple: "100"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1774,6 +1774,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "44":
     id: "44"
     taskid: 6c69eb2a-9517-4932-8c44-25ebde3ecfe5
@@ -1805,7 +1806,6 @@ tasks:
                   simple: test_tes
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1820,6 +1820,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "45":
     id: "45"
     taskid: b117a332-9f10-46f5-82eb-83d5d0057ef3
@@ -1840,7 +1841,6 @@ tasks:
       key:
         simple: CrowdStrike.HostGroup
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1855,6 +1855,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "46":
     id: "46"
     taskid: 64a7de0c-1ce3-4c20-848b-dc095e0fca29
@@ -1872,7 +1873,6 @@ tasks:
       '#none#':
       - "47"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1887,6 +1887,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "47":
     id: "47"
     taskid: 91bbb5f0-e577-490b-8647-75a02e29986e
@@ -1954,7 +1955,6 @@ tasks:
             value:
               simple: CrowdStrike.HostGroup.modified_timestamp
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1969,6 +1969,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "48":
     id: "48"
     taskid: 88cf8eaa-ef96-4803-8fe5-a7705ff5f71e
@@ -2000,7 +2001,6 @@ tasks:
                   simple: test_test
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2015,6 +2015,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "49":
     id: "49"
     taskid: fc83c6af-a308-4874-88a0-57fcfb987fd3
@@ -2035,7 +2036,6 @@ tasks:
       key:
         simple: CrowdStrike.HostGroup
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2050,6 +2050,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "50":
     id: "50"
     taskid: 7afff75e-8546-496b-8d98-2400ad7b1fae
@@ -2067,7 +2068,6 @@ tasks:
       '#none#':
       - "51"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2082,6 +2082,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "51":
     id: "51"
     taskid: 939fede0-e572-4afd-8e4e-9655fca30c4f
@@ -2115,7 +2116,6 @@ tasks:
                       value:
                         simple: test_test
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2130,6 +2130,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "52":
     id: "52"
     taskid: bbceb014-9cd0-4172-8d29-0dbf691cd16d
@@ -2165,7 +2166,6 @@ tasks:
                       value:
                         simple: test_tes
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2180,6 +2180,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "53":
     id: "53"
     taskid: 365bac66-e070-4265-84dc-e49b299712c8
@@ -2211,7 +2212,6 @@ tasks:
                   simple: test_test
           accessor: id
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2226,6 +2226,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "54":
     id: "54"
     taskid: 48c4a0f6-252e-4e30-88b5-d528c47275fa
@@ -2261,7 +2262,6 @@ tasks:
                       value:
                         simple: test_test
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2276,6 +2276,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "55":
     id: "55"
     taskid: d3c8c270-b2cf-48c0-874e-bf09c7dabc92
@@ -2287,11 +2288,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2306,6 +2307,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "56":
     id: "56"
     taskid: 60d18761-1a10-4ae4-8ca6-a5324e66b998
@@ -2326,7 +2328,6 @@ tasks:
       key:
         simple: CrowdStrike.Incidents
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2341,6 +2342,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "57":
     id: "57"
     taskid: 0067fac3-ddc7-4135-867e-0640b8149d24
@@ -2358,7 +2360,6 @@ tasks:
       '#none#':
       - "58"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2373,6 +2374,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "58":
     id: "58"
     taskid: 5cbf316a-5f94-4b7b-899a-5697c5bbc27c
@@ -2399,7 +2401,6 @@ tasks:
           right:
             value:
               simple: "20"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2414,6 +2415,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "60":
     id: "60"
     taskid: 4286f58d-cc9e-4174-8fa5-e1351d53d95b
@@ -2433,7 +2435,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2448,6 +2449,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "61":
     id: "61"
     taskid: 997968aa-a6cf-4bc1-8034-4f39a2ae5a0f
@@ -2467,7 +2469,6 @@ tasks:
       filter:
         simple: created_timestamp:>'2020-03-05T15:25:00Z'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2482,6 +2483,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "62":
     id: "62"
     taskid: 436fff28-341c-47d5-8774-b45672ab1a61
@@ -2507,7 +2509,6 @@ tasks:
                 root: CrowdStrike.Detection
                 accessor: Device
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2522,6 +2523,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "63":
     id: "63"
     taskid: 58713a2d-720a-4824-8b31-45c1b4c2f9ef
@@ -2533,11 +2535,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "64"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2552,6 +2554,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "64":
     id: "64"
     taskid: 69e47d88-779c-427e-8720-de509056bf62
@@ -2560,8 +2563,7 @@ tasks:
       id: 69e47d88-779c-427e-8720-de509056bf62
       version: -1
       name: RTR Get List Processes
-      description: Executes an RTR active-responder ps command to get a list of active
-        processes across the given host.
+      description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
       script: '|||cs-falcon-rtr-list-processes'
       type: regular
       iscommand: true
@@ -2573,7 +2575,6 @@ tasks:
       host_id:
         simple: 15dbb9d8f06b45fe9f61eb46e829d986
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2588,6 +2589,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "65":
     id: "65"
     taskid: 1d3a5865-388b-43e8-8281-a6ef476fbe12
@@ -2596,8 +2598,7 @@ tasks:
       id: 1d3a5865-388b-43e8-8281-a6ef476fbe12
       version: -1
       name: RTR Get List Netstat
-      description: Executes an RTR active-responder netstat command to get a list
-        of network status and protocol statistics across the given host.
+      description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
       script: '|||cs-falcon-rtr-list-network-stats'
       type: regular
       iscommand: true
@@ -2609,7 +2610,6 @@ tasks:
       host_id:
         simple: 15dbb9d8f06b45fe9f61eb46e829d986
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2624,6 +2624,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "66":
     id: "66"
     taskid: 0c6a413b-1c0b-4c93-8676-d78e7640c578
@@ -2632,8 +2633,7 @@ tasks:
       id: 0c6a413b-1c0b-4c93-8676-d78e7640c578
       version: -1
       name: RTR Read Registry
-      description: Executes an RTR active-responder read registry keys command across
-        the given hosts. This command is valid only for Windows hosts.
+      description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
       script: '|||cs-falcon-rtr-read-registry'
       type: regular
       iscommand: true
@@ -2647,7 +2647,6 @@ tasks:
       registry_keys:
         simple: HKEY_USERS
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2662,6 +2661,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "67":
     id: "67"
     taskid: da65dbef-402e-4028-8c4e-13c8eaa71753
@@ -2670,9 +2670,7 @@ tasks:
       id: da65dbef-402e-4028-8c4e-13c8eaa71753
       version: -1
       name: RTR Get List Scheduled Tasks
-      description: Executes an RTR active-responder netstat command to get a list
-        of scheduled tasks across the given host. This command is valid only for Windows
-        hosts.
+      description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
       script: '|||cs-falcon-rtr-list-scheduled-tasks'
       type: regular
       iscommand: true
@@ -2684,7 +2682,6 @@ tasks:
       host_ids:
         simple: 15dbb9d8f06b45fe9f61eb46e829d986
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2699,6 +2696,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "68":
     id: "68"
     taskid: 03dd784c-a0cd-436a-89c1-3d4f2a9522c8
@@ -2707,9 +2705,7 @@ tasks:
       id: 03dd784c-a0cd-436a-89c1-3d4f2a9522c8
       version: -1
       name: cs-falcon-spotlight-search-vulnerability
-      description: Retrieve vulnerability details according to the selected filter.
-        Each request requires at least one filter parameter. Supported with CrowdStrike
-        Spotlight license.
+      description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
       script: '|||cs-falcon-spotlight-search-vulnerability'
       type: regular
       iscommand: true
@@ -2788,8 +2784,7 @@ tasks:
       id: af1e2d64-6a9f-4969-8ffa-397badbef5e2
       version: -1
       name: cs-falcon-spotlight-list-host-by-vulnerability
-      description: Retrieve vulnerability details for a specific ID and host. Supported
-        with CrowdStrike Spotlight license.
+      description: Retrieve vulnerability details for a specific ID and host. Supported with CrowdStrike Spotlight license.
       script: '|||cs-falcon-spotlight-list-host-by-vulnerability'
       type: regular
       iscommand: true
@@ -2870,3 +2865,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: Crowd strike test playbook
