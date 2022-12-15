@@ -1041,7 +1041,7 @@ def test_upload_intrusion_file_import_command(requests_mock, mock_client):
 
     from CiscoFirepower import upload_intrusion_rule_file_command
     command_results = upload_intrusion_rule_file_command(mock_client, args)
-    print(command_results.outputs)
+
     assert command_results.outputs_prefix == '.'.join((INTEGRATION_CONTEXT_NAME, INTRUSION_RULE_UPLOAD_CONTEXT))
     assert INTRUSION_RULE_UPLOAD_TITLE in command_results.readable_output
     assert command_results.outputs[0]['summary'] == mock_response['summary']
