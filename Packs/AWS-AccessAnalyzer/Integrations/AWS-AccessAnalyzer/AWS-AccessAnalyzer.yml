@@ -48,13 +48,20 @@ configuration:
   required: false
   type: 13
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -418,7 +425,7 @@ script:
     description: Updates findings with the new values provided in the request.
     execution: false
     name: aws-access-analyzer-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.19032
+  dockerimage: demisto/boto3py3:1.0.0.41082
   isfetch: true
   longRunning: false
   longRunningPort: false
