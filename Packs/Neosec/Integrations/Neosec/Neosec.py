@@ -297,12 +297,12 @@ def fetch_incidents(
     return next_run, incidents
 
 
-def set_alert_status(client: NeosecClient, alert_id: str, alert_status: str) -> None:
+def set_alert_status(client: NeosecClient, alert_id: str, alert_status: str) -> str:
     response = client.patch_alert(alert_id, alert_status)
     if response.status_code == 200:
-        return_results("Alert {alert_id} updated successfully")
+        return f"Alert {alert_id} updated successfully"
     else:
-        return_error(f"Error updating alert {alert_id} - {response.content}")
+        raise DemistoException(f"Error updating alert {alert_id} - {response.text}")
 
 
 """ MAIN FUNCTION """
@@ -343,7 +343,7 @@ def main() -> None:
         if (is_tokenized and not neosec_node_url) or (
                 not is_tokenized and neosec_node_url
         ):
-            return_error(
+            raise DemistoException(
                 f"Invalid input: De-Tokenized Alerts(is_tokenized={is_tokenized}) "
                 f"and Neosec Node URL({neosec_node_url}) is not matched"
             )
@@ -399,7 +399,7 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == "neosec-alert-status-set":
-            set_alert_status(client, args.get("alert_id"), args.get("alert_status"))
+            return_results(set_alert_status(client, args.get("alert_id"), args.get("alert_status")))
 
     # Log exceptions and return errors
     except Exception as e:
