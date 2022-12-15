@@ -108,13 +108,6 @@ script:
             The automatic recording settings. 
 
             Note that the Cloud option is available for zoom paid customers only.
-        - name: email_notification
-          auto: PREDEFINED
-          predefined:
-            - true
-            - false
-          defaultValue: true
-          description: Whether to send email notifications to alternative hosts and users with scheduling privileges.
         - name: encryption_type
           defaultValue: enhanced_encryption
           description: The type of end-to-end (E2EE) encryption, enhanced_encryption or e2ee

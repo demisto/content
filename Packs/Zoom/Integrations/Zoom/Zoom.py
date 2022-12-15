@@ -211,15 +211,14 @@ class Client(BaseClient):
 
     def zoom_meeting_create(self, user_id: str,
                             topic: str,
-                            host_video: bool | str,
-                            meeting_invitees: list | str = [False],
+                            host_video: bool | str = True,
                             jbh_time: int | str | None = None,
+                            meeting_invitees: list | str | None = None,
                             start_time: str = None,
                             timezone: str = None,
                             type: str = "instant",
                             allow_multiple_devices: bool | str = True,
                             auto_recording: str = "none",
-                            email_notification: bool | str = True,
                             encryption_type: str = "enhanced_encryption",
                             focus_mode: bool | str = True,
                             join_before_host: bool | str = False,
@@ -227,7 +226,6 @@ class Client(BaseClient):
         # converting
         host_video = argToBoolean(host_video)
         allow_multiple_devices = argToBoolean(allow_multiple_devices)
-        email_notification = argToBoolean(email_notification)
         focus_mode = argToBoolean(focus_mode)
         join_before_host = argToBoolean(join_before_host)
         meeting_authentication = argToBoolean(meeting_authentication)
@@ -247,29 +245,30 @@ class Client(BaseClient):
             num_type = 3
         if type == "recurring meeting with fixed time":
             num_type = 8
-        json_data = {
-            'type': num_type,
-            'topic': topic,
-            "start_time": start_time,
-            "time_zone": timezone,
-
-            'settings': {
-                "host_video": host_video,
+        json_all_data = {
+            "settings": {
                 "allow_multiple_devices": allow_multiple_devices,
-                'join_before_host': join_before_host,
-                'auto_recording': auto_recording,
-                "email_notification": email_notification,
+                "auto_recording": auto_recording,
                 "encryption_type": encryption_type,
                 "focus_mode": focus_mode,
+                "host_video": host_video,
+                "jbh_time": jbh_time,
+                "join_before_host": join_before_host,
                 "meeting_authentication": meeting_authentication,
-                "jbh_time": jbh_time},
-            "meeting_invitees": meeting_invitees
+                "meeting_invitees": meeting_invitees,
+                "waiting_room": False
+            },
+            "start_time": start_time,
+            "timezone": timezone,
+            "type": num_type,
+            "topic": topic,
         }
         return self._http_request(
             method='POST',
             url_suffix=f"users/{user_id}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
-            json_data=json_data)
+            # remove all keys with val of None
+            json_data=remove_None_values_from_dict(json_all_data))
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str = None,
                          show_previous_occurrences: bool | str = True):
@@ -438,6 +437,28 @@ def test_module(
     return 'ok'
 
 
+# def only_relevant_arguments(dict) -> dict:
+#     # remove all the keys with value of None
+#     new_dict = {k: v for k, v in dict.items() if v != None}
+#     return new_dict
+
+def remove_None_values_from_dict(dict_to_reduce: Dict[str, Any]):
+    """
+    Removes empty values from given dict and from the nested dicts in it.
+    """
+    reduced_dict = {}
+    for key, value in dict_to_reduce.items():
+        if value != None:
+            if isinstance(value, dict):
+                reduced_nested_dict = remove_None_values_from_dict(value)
+                if reduced_nested_dict:
+                    reduced_dict[key] = reduced_nested_dict
+            else:
+                reduced_dict[key] = value
+
+    return reduced_dict
+
+
 '''FORMATTING FUNCTIONS'''
 
 
@@ -500,26 +521,25 @@ def zoom_user_delete_command(client: Client, user_id: str, action: str) -> Comma
 
 
 def zoom_meeting_create_command(
-        client: Client,
-        user_id: str,
+    client: Client,
+    user_id: str,
         topic: str,
-        host_video: bool | str,
-        meeting_invitees: list | str = [False],
+        host_video: bool | str = True,
         jbh_time: int | str | None = None,
+        meeting_invitees: list | str | None = None,
         start_time: str = None,
         timezone: str = None,
         type: str = "instant",
         allow_multiple_devices: bool | str = True,
         auto_recording: str = "none",
-        email_notification: bool | str = True,
         encryption_type: str = "enhanced_encryption",
         focus_mode: bool | str = True,
         join_before_host: bool | str = False,
         meeting_authentication: bool | str = False) -> CommandResults:
-    raw_data = client.zoom_meeting_create(user_id, topic, host_video, meeting_invitees, jbh_time,
+    raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time, meeting_invitees,
                                           start_time, timezone, type,
                                           allow_multiple_devices,
-                                          auto_recording, email_notification,
+                                          auto_recording,
                                           encryption_type, focus_mode,
                                           join_before_host,
                                           meeting_authentication)
