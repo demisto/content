@@ -12935,12 +12935,10 @@ def parse_queries(queries: str) -> dict:
 def remove_duplicate_entries(entries: list[Dict[Any,Any]]) -> list[Dict[Any,Any]]:
     if not entries: 
         return entries
-    unique_entries = []
-    # for i in range(len(entries)):
-    #     if entries[i] not in entries[i + 1:]:
-    #         unique_entries.append(entries[i])
-    # for entry in entries:
-    #     if entry.get('seqno') in entries
+    unique_entries: list = []
+    for entry in entries:
+        if entry in entries:
+            unique_entries.append(entry)
     return unique_entries
     
 
@@ -12960,7 +12958,7 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
     parsed_queries = {}
     if queries:
         parsed_queries = parse_queries(queries)
-        demisto.debug(f'Parse queries:\n{str(queries)}')
+        demisto.debug(f'Parsed queries:\n{str(queries)}')
         
     # perform queary for each log_type chosen in 'Log Type' parameter list
     if log_types and parsed_queries:
@@ -12975,8 +12973,8 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
                     entries.extend(response_entries)
                     
     # TODO: check where duplicates are coming from
-    # unique_entries = remove_duplicate_entries(entries)
-    return entries
+    unique_entries = remove_duplicate_entries(entries)
+    return unique_entries
 
 
 def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
