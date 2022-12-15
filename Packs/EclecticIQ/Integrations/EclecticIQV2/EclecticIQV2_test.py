@@ -44,7 +44,7 @@ def test_maliciousness_to_dbotscore_with_bad_args():
         maliciousness_to_dbotscore('safe', 'YUP')
 =======
 import demistomock as demisto
-from Integrations.EclecticIQV2.EclecticIQV2 import (
+from EclecticIQV2 import (
     Client,
     lookup_observables,
     create_sighting,
