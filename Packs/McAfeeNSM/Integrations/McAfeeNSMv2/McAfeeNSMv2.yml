@@ -1270,19 +1270,19 @@ script:
           isArray: false
           description: The specific result page to display. The default is 1.
       outputs:
-        - contextPath: NSM.Attacks.DosDirection
+        - contextPath: NSM.Attacks.Direction
           description: Attack direction.
           type: Unknown
         - contextPath: NSM.Attacks.Severity
           description: Attack severity.
           type: Number
-        - contextPath: NSM.Attacks.UiCategory
+        - contextPath: NSM.Attacks.Category
           description: Attack category.
           type: String
-        - contextPath: NSM.Attacks.attackId
+        - contextPath: NSM.Attacks.ID
           description: Attack id.
           type: String
-        - contextPath: NSM.Attacks.name
+        - contextPath: NSM.Attacks.Name
           description: Attack name.
           type: String
     - name: nsm-get-domains
@@ -1322,6 +1322,70 @@ script:
           required: false
           isArray: false
           description: The specific result page to display. The default is 1.
+      outputs:
+        - contextPath: NSM.Sensors.ID
+          description: Sensor Id.
+          type: Number
+        - contextPath: NSM.Sensors.Name
+          description: Name of the Sensor.
+          type: String
+        - contextPath: NSM.Sensors.model
+          description: Sensor Model.
+          type: String
+        - contextPath: NSM.Sensors.Description
+          description: Sensor Description.
+          type: String
+        - contextPath: NSM.Sensors.DomainID
+          description: Id of Domain to which this sensor belongs to
+          type: Number
+        - contextPath: NSM.Sensors.isFailOver
+          description: Is the sensor fail over
+          type: Boolean
+        - contextPath: NSM.Sensors.isNTBA
+          description: Is NTBA.
+          type: Boolean
+        - contextPath: NSM.Sensors.isLoadBalancer
+          description: Is the sensor load balancer.
+          type: Boolean
+        - contextPath: NSM.Sensors.SerialNumber
+          description: The sensor serial number.
+          type: Unknown
+        - contextPath: NSM.Sensors.SigsetVersion
+          description: Signature set version number applied to the Sensor.
+          type: String
+        - contextPath: NSM.Sensors.DATVersion
+          description: DAT version of the sensor.
+          type: String
+        - contextPath: NSM.Sensors.SoftwareVersion
+          description: Sensor Software version.
+          type: String
+        - contextPath: NSM.Sensors.LastSignatureUpdateTs
+          description: Last Configuration download timestamp.
+          type: Date
+        - contextPath: NSM.Sensors.IPSPolicyID
+          description: IPS policy id applied to the sensor.
+          type: Number
+        - contextPath: NSM.Sensors.ReconPolicyID
+          description: Recon policy id applied to the sensor.
+          type: Number
+        - contextPath: NSM.Sensors.LastModTs
+          description: Last modified timestamp.
+          type: Unknown
+        - contextPath: NSM.Sensors.IP Address
+          description: Sensor IP Address.
+          type: String
+        - contextPath: NSM.Sensors.nsmVersion
+          description: NSM Version.
+          type: String
+        - contextPath: NSM.Sensors.capacity
+          description: Sensor capacity.
+          type: String
+        - contextPath: NSM.Sensors.isStack
+          description: Is stack.
+          type: Boolean
+        - contextPath: NSM.Sensorss.isStackMember
+          description: Is stack member.
+          type: Boolean
   isfetch: false
   runonce: false
   script: '-'

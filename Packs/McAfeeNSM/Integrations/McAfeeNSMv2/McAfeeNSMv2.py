@@ -518,7 +518,7 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
 
 
 def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
-    """ Add entries to the alert_list and update what needed in order not to break backward.
+    """ Add entries to the alert_list and update what is needed in order not to break backward.
         Args:
             alert_list: List[Dict] - a list of the alerts that returned from the API.
         Returns:
@@ -551,6 +551,12 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
 
 
 def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
+    """ Add entries to the sensors_list and update it in order not to break backward.
+        Args:
+            sensors_list: List[Dict] - a list of the alerts that returned from the API.
+        Returns:
+            Returns the updated sensors list.
+    """
     for sensor in sensors_list:
         sensor['ID'] = sensor.get('sensorId')
         sensor['Name'] = sensor.get('name')
@@ -559,6 +565,25 @@ def update_sensors_list(sensors_list: List[Dict]) -> List[Dict]:
         del sensor['name']
         del sensor['sensorIPAddress']
     return sensors_list
+
+
+def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
+    """ Add entries to the attacks_list and update it in order not to break backward.
+        Args:
+            attacks_list: List[Dict] - a list of the alerts that returned from the API.
+        Returns:
+            Returns the updated attack list.
+    """
+    for attack in attacks_list:
+        attack['ID'] = attack.get('attackId')
+        attack['Name'] = attack.get('name')
+        attack['Direction'] = attack.get('DosDirection')
+        attack['Category'] = attack.get('UiCategory')
+        del attack['attackId']
+        del attack['name']
+        del attack['DosDirection']
+        del attack['UiCategory']
+    return attacks_list
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -1209,13 +1234,14 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> Command
         title = f'Attack no.{attack_id}'
         attacks_list = [response.get('AttackDescriptor', {})]
     human_readable = []
+    attacks_list = update_attacks_list_entries(attacks_list)
     for attack in attacks_list:
         d = {
-            'ID': attack.get('attackId'),
-            'Name': attack.get('name'),
-            'Direction': attack.get('DosDirection'),
+            'ID': attack.get('ID'),
+            'Name': attack.get('Name'),
+            'Direction': attack.get('Direction'),
             'Severity': attack.get('Severity'),
-            'Category': attack.get('UiCategory')
+            'Category': attack.get('Category')
         }
         human_readable.append(d)
     headers = ['ID', 'Name', 'Direction', 'Severity', 'Category']
