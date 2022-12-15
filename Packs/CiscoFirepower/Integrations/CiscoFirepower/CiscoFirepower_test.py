@@ -387,7 +387,7 @@ def assert_command_results(command_results: CommandResults, method: str, expecte
         context_prefix = '.'.join((INTEGRATION_CONTEXT_NAME, expected_output_prefix))
 
         assert command_results.outputs_prefix == context_prefix
-        assert_output_has_no_links(command_results.outputs)  # type: ignore # outputs is Optional[object]
+        assert_output_has_no_links(command_results.outputs)  # type: ignore[arg-type] # outputs is Optional[object]
 
 
 def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
