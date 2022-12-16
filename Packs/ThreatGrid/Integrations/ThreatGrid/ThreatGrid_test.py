@@ -14,8 +14,7 @@ PARAMS = {
     'disregard_quota': True,
 }
 
-Submit_url_params = {
-    'api_key': 'API_KEY',
+Submit_url_input = {
     'url': 'www.example.com'
 }
 
@@ -97,16 +96,16 @@ def test_submit_urls(mocker, requests_mock):
     Then
         ensure limit was made
     """
-    mocker.patch.object(demisto, 'params', return_value=Submit_url_params)
+    mocker.patch.object(demisto, 'args', return_value=Submit_url_input)
     from ThreatGrid import submit_urls
-    params = demisto.params
+    args = demisto.args
     # Load assertions and mocked request data
-    testing_url = Submit_url_params.get('url')
+    testing_url = Submit_url_input.get('url')
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
     requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}', json=mock_response)
 
-    res = submit_urls(params=params)
+    res = submit_urls(args)
     assert res.outputs == expected_results
 
 
