@@ -190,8 +190,8 @@ class Client(BaseClient):
                               severity: int, details: str, record_id: str) -> Dict[str, Any]:
 
         # incident_owner = "Administrator"
-        occurred_date: Optional[datetime] = dateparser.parse(date_val)
-        occurred = occurred_date.strftime(DATE_FORMAT)
+        occurred_date = dateparser.parse(date_val)
+        occurred = occurred_date.strftime(DATE_FORMAT) if isinstance(occurred_date, datetime) else None
 
         return_data = {
             "type": "" + f"{alert_type}",
@@ -410,8 +410,8 @@ def test_module(client, decyfir_api_key):
 def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
     try:
 
-        start_fetch: Union[datetime, None] = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
-        start_fetch_timestamp_val: float =  start_fetch.timestamp()
+        start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch_timestamp_val: float = start_fetch.timestamp()
 
         start_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
