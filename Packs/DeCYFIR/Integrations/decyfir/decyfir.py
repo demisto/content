@@ -190,10 +190,13 @@ class Client(BaseClient):
                               severity: int, details: str, record_id: str) -> Dict[str, Any]:
 
         # incident_owner = "Administrator"
+        occurred_date: datetime = dateparser.parse(date_val)
+        occurred = occurred_date.strftime(DATE_FORMAT)
+
         return_data = {
             "type": "" + f"{alert_type}",
             "name": name,
-            "occurred": dateparser.parse(date_val).strftime(DATE_FORMAT),
+            "occurred": occurred,
             # "owner": incident_owner,
             "severity": severity,
             "details": details,
@@ -221,7 +224,7 @@ class Client(BaseClient):
 
         return return_data
 
-    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List:
+    def prepare_incidents_for_attack_surface(self, json_data, alert_type: str, alert_subtype: str) -> List[dict]:
         try:
             incidents_json = []
             for json_ in json.loads(json_data):
@@ -275,7 +278,7 @@ class Client(BaseClient):
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
         try:
             json_val = json.loads(decyfir_alerts_incidents)
-            return_data = []
+            return_data: List[dict] = []
 
             # Attack Surface
             # Open Ports
@@ -407,7 +410,7 @@ def test_module(client, decyfir_api_key):
 def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
     try:
 
-        start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch: datetime = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
 
         start_fetch_timestamp: int = int(start_fetch.timestamp() * 1000)
 
