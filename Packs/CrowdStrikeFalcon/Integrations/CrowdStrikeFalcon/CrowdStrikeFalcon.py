@@ -2286,7 +2286,9 @@ def search_custom_iocs_command(
         after=after,
     )
     iocs = raw_res.get('resources')
-    pagination_token = raw_res['meta']['pagination'].get('after')
+    meta = raw_res.get('meta')
+    if meta:
+        pagination_token = meta['pagination'].get('after')
     if not iocs:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
