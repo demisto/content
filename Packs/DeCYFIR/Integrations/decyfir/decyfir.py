@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union, Optional
 
 ''' IMPORTS '''
 
@@ -410,9 +410,10 @@ def test_module(client, decyfir_api_key):
 def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
     try:
 
-        start_fetch: Optional[datetime] = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch: Union[datetime, None] = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
+        start_fetch_timestamp_val: float =  start_fetch.timestamp()
 
-        start_fetch_timestamp: int = int(start_fetch.timestamp() * 1000)
+        start_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
         # To get the DeCYFIR data in JSON format
         json_decyfir_data = client.get_decyfir_data(after_val=start_fetch_timestamp,
