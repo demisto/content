@@ -1638,10 +1638,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
     execution_metrics = ExecutionMetrics()
     for url in urls:
         try:
-            raw_response = client.url(
-                url, relationships
-            )
-            demisto.results(raw_response)
+            raw_response = client.url(url, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
                 result = CommandResults(readable_output=f'Quota exceeded for url: {url}')
