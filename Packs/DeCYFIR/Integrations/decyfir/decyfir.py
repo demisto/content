@@ -1,13 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Dict, List
 
 ''' IMPORTS '''
 
 import urllib3
 import json
-import requests
 import dateparser
 
 # Disable insecure warnings
@@ -394,8 +393,10 @@ class Client(BaseClient):
 # commands
 # This is the call made when pressing the integration Test button.
 def test_module(client, decyfir_api_key):
+    url = f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" \
+          + "&size=1" + "&key=" + f"{decyfir_api_key}"
     response = client._http_request(
-        full_url=f"{PROD_API_PATH}" + f"/{VAR_ATTACK_SURFACE}?" + f"type={VAR_OPEN_PORTS}" + "&size=1" + "&key=" + f"{decyfir_api_key}",
+        full_url=url,
         method='GET',
         resp_type='response')
 
@@ -409,9 +410,8 @@ def test_module(client, decyfir_api_key):
 
 def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_type, max_fetch):
     try:
-
         start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
-        start_fetch_timestamp_val: float =   start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
+        start_fetch_timestamp_val: float = start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
 
         start_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
@@ -478,7 +478,7 @@ def main():
             demisto.setLastRun(next_run)
 
         else:
-            raise NotImplementedError(f'DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
+            raise NotImplementedError('DeCYFIR error: ' + f'command {demisto.command()} is not implemented')
 
     # Log exceptions
     except Exception as e:
