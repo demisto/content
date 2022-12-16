@@ -1638,10 +1638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: c1f4f324-1a91-426a-89e4-4d273bb579c4
+    taskid: c01bd4eb-f5b2-4b45-8de5-ff00e2de6940
     type: regular
     task:
-      id: c1f4f324-1a91-426a-89e4-4d273bb579c4
+      id: c01bd4eb-f5b2-4b45-8de5-ff00e2de6940
       version: -1
       name: Send email
       description: Send an email to the service owner with alert information.
@@ -1653,16 +1653,6 @@ tasks:
       '#none#':
       - "62"
     scriptarguments:
-      body:
-        complex:
-          root: inputs.OwnerNotificationBody
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: ${RemediationGuidance}
       subject:
         complex:
           root: inputs.OwnerNotificationSubject
@@ -1676,6 +1666,17 @@ tasks:
               delimiter:
                 value:
                   simple: ','
+      htmlBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: RemediationGuidance
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2548,17 +2549,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: 543713f0-5c42-41d4-8faf-c5af4c573b78
+    taskid: c7fb4c88-d795-46bc-86ad-40d02a95448f
     type: playbook
     task:
-      id: 543713f0-5c42-41d4-8faf-c5af4c573b78
+      id: c7fb4c88-d795-46bc-86ad-40d02a95448f
       version: -1
       name: Cortex ASM - Remediation Guidance
       playbookName: Cortex ASM - Remediation Guidance
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).'
     nexttasks:
       '#none#':
       - "94"
@@ -2578,19 +2579,35 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      IssueTypeID:
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '["]'
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "92":
     id: "92"
-    taskid: 45552518-2ec6-4167-8c45-10febdd946f9
+    taskid: 08c36cc3-5d5f-4fbd-8a15-4c12bd066283
     type: playbook
     task:
-      id: 45552518-2ec6-4167-8c45-10febdd946f9
+      id: 08c36cc3-5d5f-4fbd-8a15-4c12bd066283
       version: -1
       name: Cortex ASM - Remediation Guidance
       playbookName: Cortex ASM - Remediation Guidance
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'This playbook pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).'
     nexttasks:
       '#none#':
       - "55"
@@ -2599,6 +2616,12 @@ tasks:
         complex:
           root: alert
           accessor: asmattacksurfaceruleid
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '["]'
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2988,9 +3011,9 @@ inputs:
 - key: OwnerNotificationBody
   value:
     simple: |+
-      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}
-
+      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br><br>
       Description: ${alert.details}
+      <br><br>
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
@@ -3007,4 +3030,3 @@ tests:
 fromversion: 6.5.0
 contentitemexportablefields:
   contentitemfields: {}
-system: true
