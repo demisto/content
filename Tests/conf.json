@@ -3928,6 +3928,13 @@
             ]
         },
         {
+            "playbookID": "Google Chronicle Backstory Stream Test Rule",
+            "fromversion": "5.0.0",
+            "integrations": [
+                "Google Chronicle Backstory"
+            ]
+        },
+        {
             "playbookID": "McAfee ESM v2 - Test",
             "fromversion": "5.0.0",
             "instance_names": "v11.1.3",
