@@ -95,14 +95,13 @@ def test_submit_urls(mocker):
     from ThreatGrid import submit_urls
     params = demisto.params
     # Load assertions and mocked request data
+    testing_url = Submit_url_params.get('url')
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
-    requests_mock.post(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
-                      f'?relationships={url_relationships}', json=mock_response)
+    requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}', json=mock_response)
 
     res = submit_urls(params=params)
-    assert len(res) == 1
-
+    assert res.outputs == expected_results
 
 
 def test_get_with_limit_fail(mocker):
