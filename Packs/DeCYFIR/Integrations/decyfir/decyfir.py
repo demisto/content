@@ -411,7 +411,7 @@ def fetch_incidents(client, last_run, first_fetch, decyfir_api_key, incident_typ
     try:
 
         start_fetch = dateparser.parse(last_run.get("last_fetch")) if last_run else dateparser.parse(first_fetch)
-        start_fetch_timestamp_val: float = start_fetch.timestamp()
+        start_fetch_timestamp_val: float =   start_fetch.timestamp() if isinstance(start_fetch, datetime) else 0.0
 
         start_fetch_timestamp: int = int(start_fetch_timestamp_val * 1000)
 
