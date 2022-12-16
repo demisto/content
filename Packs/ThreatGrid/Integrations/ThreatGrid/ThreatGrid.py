@@ -935,32 +935,33 @@ def search_urls():
     })
 
 
-def submit_urls():
+def submit_urls(args):
     """
     Submit urls for analysis
     """
     params = {
         'api_key': API_KEY,
-        'url': demisto.args().get('url')
+        'url': args.get('url')
     }
+    markdown = ''
     r = req('POST', SUB_API + 'samples', params=params)
     res = r.json()['data']
-    return_results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.URLs': res},
-        'HumanReadable': tableToMarkdown('ThreatGrid - URL Submission', res),
-        'ContentsFormat': formats['json'],
-        'Contents': res
-    })
+    markdown += tableToMarkdown('Threat Grid - URL Submission', res)
+    results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='Threatgrid.SearchResult',
+            outputs_key_field='Info',
+            outputs=res
+            )
+    return_results(results)
 
 
-def advanced_search():
+def advanced_search(args):
     """
     Search Submissions, URLs, Samples with with query
     """
     final_results = []
-    results = {}
-    body = demisto.args().get('query')
+    body = args.get('query')
     r = req('POST', USER_API + 'search', body=body)
     markdown = ''
     if r.json()['data']['sample']:
@@ -972,7 +973,7 @@ def advanced_search():
             outputs_prefix='Threatgrid.SearchResult',
             outputs_key_field='Info',
             outputs=final_results
-        )
+            )
         return_results(results)
     else:
         return_results(CommandResults(readable_output='No results found'))
@@ -1151,6 +1152,7 @@ def get_analysis_process():
 
 
 def main():
+    args = demisto.args()
     if demisto.command() == 'test-module':
         req('GET', USER_API + 'session/whoami')
         demisto.results('ok')
@@ -1199,9 +1201,9 @@ def main():
     elif demisto.command() == 'threat-grid-search-urls':
         search_urls()
     elif demisto.command() == 'threat-grid-advanced-search':
-        advanced_search()
+        advanced_search(args)
     elif demisto.command() == 'threat-grid-submit-urls':
-        submit_urls()
+        submit_urls(args)
     elif demisto.command() == 'threat-grid-search-submissions':
         search_submissions()
     elif demisto.command() == 'threat-grid-get-specific-feed':

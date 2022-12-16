@@ -12,6 +12,12 @@ PARAMS = {
     'disregard_quota': True,
 }
 
+Submit_url_params = {
+    'api_key': 'API_KEY',
+    'url': 'www.example.com'
+}
+
+
 LIST_MOCK = [
     {
         'Country': 'IL',
@@ -56,6 +62,7 @@ DICT_MOCK = {
 }
 
 
+
 def test_get_with_limit_dict(mocker):
     """
     Given:
@@ -73,6 +80,29 @@ def test_get_with_limit_dict(mocker):
     res = get_with_limit('mock_obj', 'mock_path', 1)
     assert len(res) == 1
     assert len(res.get('Country'))
+
+
+def test_submit_urls(mocker):
+    """
+    Given:
+        demisto context
+    When:
+        Executing get_with_limit function
+    Then
+        ensure limit was made
+    """
+    mocker.patch.object(demisto, 'params', return_value=Submit_url_params)
+    from ThreatGrid import submit_urls
+    params = demisto.params
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/submit_url.json')
+    expected_results = util_load_json('test_data/submit_url_results.json')
+    requests_mock.post(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
+                      f'?relationships={url_relationships}', json=mock_response)
+
+    res = submit_urls(params=params)
+    assert len(res) == 1
+
 
 
 def test_get_with_limit_fail(mocker):
