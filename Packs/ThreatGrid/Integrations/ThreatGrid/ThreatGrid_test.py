@@ -88,7 +88,7 @@ def test_get_with_limit_dict(mocker):
     assert len(res.get('Country'))
 
 
-def test_submit_urls(mocker):
+def test_submit_urls(mocker, requests_mock):
     """
     Given:
         demisto context
