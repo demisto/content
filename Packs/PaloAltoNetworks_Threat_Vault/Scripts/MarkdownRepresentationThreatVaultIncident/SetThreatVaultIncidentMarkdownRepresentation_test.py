@@ -92,8 +92,8 @@ def test_json_to_md(incident_fields, expected_results):
         (
             {'CustomFields':
                 {
-                    'threatvaultbypaloaltonetworksspywarenew': 'test',
-                    'threatvaultbypaloaltonetworksfiletypenew': 'test',
+                    'threatvaultbypaloaltonetworksspyware': 'test',
+                    'threatvaultbypaloaltonetworksfiletype': 'test',
                     'some_key': 'test'
                 }
              },
