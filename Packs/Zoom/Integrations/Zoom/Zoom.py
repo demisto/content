@@ -213,7 +213,6 @@ class Client(BaseClient):
                             topic: str,
                             host_video: bool | str = True,
                             jbh_time: int | str | None = None,
-                            meeting_invitees: list | str | None = None,
                             start_time: str = None,
                             timezone: str = None,
                             type: str = "instant",
@@ -222,21 +221,30 @@ class Client(BaseClient):
                             encryption_type: str = "enhanced_encryption",
                             focus_mode: bool | str = True,
                             join_before_host: bool | str = False,
-                            meeting_authentication: bool | str = False):
+                            meeting_authentication: bool | str = False,
+                            waiting_room: bool | str = False):
+
         # converting
         host_video = argToBoolean(host_video)
         allow_multiple_devices = argToBoolean(allow_multiple_devices)
         focus_mode = argToBoolean(focus_mode)
         join_before_host = argToBoolean(join_before_host)
         meeting_authentication = argToBoolean(meeting_authentication)
-        jbh_time = arg_to_number(jbh_time)
+        waiting_room = argToBoolean(waiting_room)
 
+        # argument checing
         if type == "instant" and (timezone or start_time):
             # arguments collision
             raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
         if jbh_time and not join_before_host:
             # arguments collision
-            raise DemistoException("Collision arguments. jbh_time argument is relevant only if join_before_host is 'True'.")
+            raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
+        if waiting_room and join_before_host:
+            # arguments collision
+            raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
+
+        # converting separately after the argument checking, because 0 as an int is equaled to  false
+        jbh_time = arg_to_number(jbh_time)
 
         num_type = 1
         if type == "scheduled":
@@ -255,8 +263,7 @@ class Client(BaseClient):
                 "jbh_time": jbh_time,
                 "join_before_host": join_before_host,
                 "meeting_authentication": meeting_authentication,
-                "meeting_invitees": meeting_invitees,
-                "waiting_room": False
+                "waiting_room": waiting_room
             },
             "start_time": start_time,
             "timezone": timezone,
@@ -444,7 +451,7 @@ def test_module(
 
 def remove_None_values_from_dict(dict_to_reduce: Dict[str, Any]):
     """
-    Removes empty values from given dict and from the nested dicts in it.
+    Removes None values (but not False values) from a given dict and from the nested dicts in it.
     """
     reduced_dict = {}
     for key, value in dict_to_reduce.items():
@@ -526,7 +533,6 @@ def zoom_meeting_create_command(
         topic: str,
         host_video: bool | str = True,
         jbh_time: int | str | None = None,
-        meeting_invitees: list | str | None = None,
         start_time: str = None,
         timezone: str = None,
         type: str = "instant",
@@ -535,19 +541,25 @@ def zoom_meeting_create_command(
         encryption_type: str = "enhanced_encryption",
         focus_mode: bool | str = True,
         join_before_host: bool | str = False,
-        meeting_authentication: bool | str = False) -> CommandResults:
-    raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time, meeting_invitees,
+        meeting_authentication: bool | str = False,
+        waiting_room: bool | str = False) -> CommandResults:
+    raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time,
                                           start_time, timezone, type,
                                           allow_multiple_devices,
                                           auto_recording,
                                           encryption_type, focus_mode,
                                           join_before_host,
-                                          meeting_authentication)
-    display = f"""Meeting created successfully.
+                                          meeting_authentication,
+                                          waiting_room)
+    md = f"""Meeting created successfully.
     Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
+    md += "\n" + tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                                 'type', 'status', 'start_time', 'duration',
+                                                                 'timezone', 'created_at', 'start_url', 'join_url',
+                                                                 ])
     return CommandResults(
         outputs_prefix='Zoom.meetings',
-        readable_output=display,
+        readable_output=md,
         outputs={'Zoom.Meeting': raw_data},
         raw_response=raw_data
     )
