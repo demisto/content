@@ -11,11 +11,12 @@ from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
 
-SOUT = sys.stdout
+
+VMWARE_DEBUGGER = []
 DEBUGGING = False
 if argToBoolean(demisto.args().get('run_on_debug', False)):
+    VMWARE_DEBUGGER.append(f"the command being called is {demisto.command()} with the following arguments: {demisto.args()}")
     DEBUGGING = True
-    # demisto.is_debug = False
 
 
 def parse_params(params):
@@ -814,10 +815,7 @@ def test_module(si):
 
 def write_to_debug_log(msg):
     if DEBUGGING:
-        temp = sys.stdout
-        sys.stdout = SOUT
-        demisto.info(msg)
-        sys.stdout = temp
+        VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
 
 
 def main():  # pragma: no cover
@@ -879,9 +877,9 @@ def main():  # pragma: no cover
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-    sys.stdout = SOUT
+    sys.stdout = sys.__stdout__
     if DEBUGGING:
-        results = fileResult("vmware_debug_log.txt", sys.stdout.read())
+        results = fileResult("vmware_debug_log.txt", ("\n").join(VMWARE_DEBUGGER))
         demisto.results(results)
     demisto.results(res)
 
