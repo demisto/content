@@ -48,7 +48,7 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=suffix, params={arg: value})
 
     def release_notes_get_request(self, type_: str, version: str) -> dict:
- 
+
         suffix = "release-notes"
         return self._http_request(
             method="GET", url_suffix=suffix, params={"type": type_, "version": version}
@@ -75,16 +75,16 @@ HELP FUNCTIONS
 
 
 def validate_arguments_search_command(
-    cve: str,
-    vendor: str,
-    name: str,
-    from_release_date: str,
-    to_release_date: str,
-    from_release_version: str,
-    to_release_version: str,
-    release_date: str,
-    release_version: str,
-    type_: str,
+    cve: str | None,
+    vendor: str | None,
+    name: str | None,
+    from_release_date: str | None,
+    to_release_date: str | None,
+    from_release_version: str | None,
+    to_release_version: str | None,
+    release_date: str | None,
+    release_version: str | None,
+    type_: str | None,
 ) -> None:
 
     if sum(1 for x in (cve, vendor, name) if x) > 1:
@@ -178,7 +178,7 @@ def resp_to_hr(response: dict, type_: str, expanded: bool = False) -> dict:
 
     match type_:
         case "file":
-            antivirus = response.get("signatures", {}).get("antivirus", ({}, ))[0]
+            antivirus = response.get("signatures", {}).get("antivirus", ({},))[0]
             table_for_md = {
                 "Status": antivirus.get("status"),
                 "FileType": response.get("filetype"),
@@ -317,7 +317,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             antiviruses = response.get("data", {}).get("antivirus", [])
         else:
-            antiviruses = [response.get("data", {}).get("antivirus", ([], ))[0]]
+            antiviruses = [response.get("data", {}).get("antivirus", ([],))[0]]
 
         for antivirus in antiviruses:
             table_for_md = resp_to_hr(response=antivirus, type_="antivirus")
@@ -330,7 +330,9 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                 CommandResults(
                     outputs_prefix="ThreatVault.Antivirus",
                     outputs_key_field="id",
-                    outputs=antivirus if expanded else response.get("data", {}).get("antivirus", []),
+                    outputs=antivirus
+                    if expanded
+                    else response.get("data", {}).get("antivirus", []),
                     readable_output=readable_output,
                 )
             )
@@ -339,7 +341,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             spywares = response.get("data", {}).get("spyware", [])
         else:
-            spywares = [response.get("data", {}).get("spyware", ([], ))[0]]
+            spywares = [response.get("data", {}).get("spyware", ([],))[0]]
 
         for spyware in spywares:
             table_for_md = resp_to_hr(response=spyware, type_="spyware")
@@ -352,7 +354,9 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                 CommandResults(
                     outputs_prefix="ThreatVault.Spyware",
                     outputs_key_field="id",
-                    outputs=spyware if expanded else response.get("data", {}).get("spyware", []),
+                    outputs=spyware
+                    if expanded
+                    else response.get("data", {}).get("spyware", []),
                     readable_output=readable_output,
                 )
             )
@@ -361,9 +365,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             vulnerabilities = response.get("data", {}).get("vulnerability", [])
         else:
-            vulnerabilities = [
-                response.get("data", {}).get("vulnerability", ([], ))[0]
-            ]
+            vulnerabilities = [response.get("data", {}).get("vulnerability", ([],))[0]]
 
         for vulnerability in vulnerabilities:
             table_for_md = resp_to_hr(response=vulnerability, type_="vulnerability")
@@ -376,7 +378,9 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                 CommandResults(
                     outputs_prefix="ThreatVault.Vulnerability",
                     outputs_key_field="id",
-                    outputs=vulnerability if expanded else response.get("data", {}).get("vulnerability", []),
+                    outputs=vulnerability
+                    if expanded
+                    else response.get("data", {}).get("vulnerability", []),
                     readable_output=readable_output,
                 )
             )
@@ -385,7 +389,7 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
         if expanded:
             fileformats = response.get("data", {}).get("fileformat", [])
         else:
-            fileformats = [response.get("data", {}).get("fileformat", ([], ))[0]]
+            fileformats = [response.get("data", {}).get("fileformat", ([],))[0]]
 
         for fileformat in fileformats:
             table_for_md = resp_to_hr(response=fileformat, type_="fileformat")
@@ -398,7 +402,9 @@ def parse_resp_by_type(response: dict, expanded: bool = False) -> List[CommandRe
                 CommandResults(
                     outputs_prefix="ThreatVault.Fileformat",
                     outputs_key_field="id",
-                    outputs=fileformat if expanded else response.get("data", {}).get("fileformat", []),
+                    outputs=fileformat
+                    if expanded
+                    else response.get("data", {}).get("fileformat", []),
                     readable_output=readable_output,
                 )
             )
@@ -428,7 +434,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
             response = client.antivirus_signature_get_request(
                 arg=type_hash, value=_hash
             )
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 response = {}
                 dbot_score = Common.DBotScore(
@@ -452,7 +458,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 raise
 
         if response:
-            file_info = response.get("data", {}).get("fileinfo", ({}, ))[0]
+            file_info = response.get("data", {}).get("fileinfo", ({},))[0]
             dbot_score = Common.DBotScore(
                 indicator=_hash,
                 indicator_type=DBotScoreType.FILE,
@@ -498,7 +504,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
     for cve in cves:
         try:
             response = client.antivirus_signature_get_request(arg="cve", value=cve)
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 response = {}
                 readable_output = (
@@ -510,7 +516,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
                 raise
 
         if response:
-            vulnerability = response.get("data", {}).get("vulnerability", ({}, ))[0]
+            vulnerability = response.get("data", {}).get("vulnerability", ({},))[0]
             _cve = Common.CVE(
                 id=vulnerability.get("cve")[0],
                 cvss=vulnerability.get("severity"),
@@ -545,7 +551,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     args["expanded"] = True
     ids = argToList(args.get("signature_id"))
 
-    if not any((ids, args['file'])):
+    if not any((ids, args["file"])):
         raise ValueError(
             "One of following arguments is required: signature_id, sha256, md5"
         )
@@ -562,7 +568,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
     for _id in ids:
         try:
             response = client.antivirus_signature_get_request(arg="id", value=_id)
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 response = {}
                 readable_output = f"{_id} reputation is unknown to Threat Vault."
@@ -586,13 +592,15 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
     version = args["version"]
     try:
         response = client.release_notes_get_request("content", version)
-    except requests.HTTPError as err:
+    except DemistoException as err:
         if err.res.status_code == 404:
-            return CommandResults(readable_output=f"release note {version} was not found.")
+            return CommandResults(
+                readable_output=f"Release note {version} was not found."
+            )
         else:
             raise
 
-    data = response.get("data", ({}, ))[0]
+    data = response.get("data", ({},))[0]
     table_for_md = resp_to_hr(response=data, type_="release_notes")
     readable_output = tableToMarkdown(
         name="Release notes:", t=table_for_md, removeNull=True
@@ -627,7 +635,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             response = client.threat_batch_search_request(
                 arg=type_, value=ids if ids else names, type_=threat_type
             )
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(ids) if ids else str(names)}"
@@ -649,7 +657,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
             response = client.threat_batch_search_request(
                 arg=type_, value=md5 or sha256, type_=threat_type
             )
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(md5) if md5 else str(sha256)}"
@@ -748,7 +756,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
 
     try:
         response = client.threat_search_request(args=query)
-    except requests.HTTPError as err:
+    except DemistoException as err:
         if err.res.status_code == 404:
             response = {}
             readable_output = "There is no information for your search."
@@ -774,7 +782,9 @@ def fetch_incidents(client: Client, args: dict) -> List:
     last_run = demisto.getLastRun()
     first_fetch = args.get("first_fetch", "3 Days")
     if not last_run.get("scound_fetch"):
-        if first_fetch.strip().split(" ")[1].lower() not in frozenset(('days', 'month', 'months', 'year', 'years')):  # only these are allowed
+        if first_fetch.strip().split(" ")[1].lower() not in frozenset(
+            ("days", "month", "months", "year", "years")
+        ):  # only these are allowed
             raise ValueError(
                 "The unit of date_range is invalid. Must be days, months or years."
             )
@@ -793,19 +803,13 @@ def fetch_incidents(client: Client, args: dict) -> List:
             response = client.threat_search_request(
                 {"releaseDate": current.strftime("%Y-%m-%d")}
             )
-        except requests.HTTPError as err:
+        except DemistoException as err:
             if err.res.status_code == 404:
                 current += timedelta(days=1)
                 continue
             else:
                 raise
 
-        except Exception as err:
-            if 'Error in API call [404] - Not Found' in str(err):
-                current += timedelta(days=1)
-                continue
-            else:
-                raise
         if keys_of_resp := tuple(
             {"spyware", "vulnerability", "fileformat", "antivirus"}.intersection(
                 response["data"].keys()

@@ -5,12 +5,6 @@ from ThreatVaultv2 import Client, threat_batch_search_command, release_note_get_
     threat_search_command, file_command, cve_command, pagination, parse_resp_by_type, resp_to_hr, parse_date
 
 
-class MockException(Exception):
-    class MockStatus:
-        status_code = 404
-    res = MockStatus()
-
-
 @pytest.mark.parametrize(
     'command, demisto_args, expected_results',
     [
@@ -105,7 +99,7 @@ def test_commands_failure(command, demisto_args, expected_results):
         (
             release_note_get_command,
             {'type': '123456', 'version': '2222'},
-            '2222 release note not found.',
+            'Release note 2222 was not found.',
             None
         ),
         (
@@ -138,10 +132,14 @@ def test_commands_with_not_found(mocker, cmd, demisto_args, expected_readable_ou
         reliability='E - Unreliable'
     )
 
-    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=MockException())
-    mocker.patch.object(client, 'release_notes_get_request', side_effect=MockException())
-    mocker.patch.object(client, 'threat_search_request', side_effect=MockException())
-    mocker.patch.object(client, 'threat_batch_search_request', side_effect=MockException())
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    mocker.patch.object(client, 'antivirus_signature_get_request', side_effect=DemistoException(message='test', res=MockException(404)))
+    mocker.patch.object(client, 'release_notes_get_request', side_effect=DemistoException(message='test', res=MockException(404)))
+    mocker.patch.object(client, 'threat_search_request', side_effect=DemistoException(message='test', res=MockException(404)))
+    mocker.patch.object(client, 'threat_batch_search_request', side_effect=DemistoException(message='test', res=MockException(404)))
 
     results = cmd(client, demisto_args)
 
@@ -385,7 +383,7 @@ FILE_COMMAND_ARGS = [
         {
             'sha256': ['xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'],
             'md5': ['test'],
-            'readable_output': ['### Hash xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx antivirus reputation:']
+            'readable_output': ['### Antivirus Reputation for hash: xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx']
         }
     ),
     (
@@ -435,7 +433,7 @@ FILE_COMMAND_ARGS = [
         {
             'sha256': ['test'],
             'md5': ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'],
-            'readable_output': ['### Hash xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx antivirus reputation:']
+            'readable_output': ['### Antivirus Reputation for hash: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx']
         }
     ),
     (
@@ -530,8 +528,8 @@ FILE_COMMAND_ARGS = [
             'sha256': ['test', 'xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'],
             'md5': ['xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'test'],
             'readable_output': [
-                '### Hash xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx antivirus reputation:',
-                '### Hash xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx antivirus reputation:'
+                '### Antivirus Reputation for hash: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                '### Antivirus Reputation for hash: xxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxxzzzzaaaaxxxx'
             ]
         }
     )
@@ -595,7 +593,7 @@ CVE_COMMAND_ARGS = [
         }],
         {
             'id': ['CVE-2011-1272'],
-            'readable_output': ['CVE CVE-2011-1272 vulnerability reputation:']
+            'readable_output': ['CVE Vulnerability Reputation: CVE-2011-1272']
         }
     ),
     (
@@ -671,8 +669,8 @@ CVE_COMMAND_ARGS = [
         {
             'id': ['CVE-2011-1272', 'CVE-2011-1272'],
             'readable_output': [
-                'CVE CVE-2011-1272 vulnerability reputation:',
-                'CVE CVE-2011-1272 vulnerability reputation:'
+                'CVE Vulnerability Reputation: CVE-2011-1272',
+                'CVE Vulnerability Reputation: CVE-2011-1272'
             ]
         }
     )
