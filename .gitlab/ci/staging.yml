@@ -21,7 +21,7 @@
     - !reference [.create-release-notes-and-common-docs]
     
     - section_start "Create content graph" --collapsed
-    - demisto-sdk create-content-graph -o $ARTIFACTS_FOLDER/content-graph.dump
+    - demisto-sdk create-content-graph
     - section_end "Create content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
