@@ -1,7 +1,7 @@
 commonfields:
-  id: MarkdownRepresentationThreatVaultIncident
+  id: SetThreatVaultIncidentMarkdownRepresentation
   version: -1
-name: MarkdownRepresentationThreatVaultIncident
+name: SetThreatVaultIncidentMarkdownRepresentation
 script: ''
 type: python
 tags:

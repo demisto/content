@@ -1,10 +1,10 @@
 {
-    "id": "incident_threatvaultbypaloaltonetworksspywarenew",
+    "id": "incident_threatvaultbypaloaltonetworksspyware",
     "version": -1,
     "modified": "2022-12-13T15:19:04.462140547Z",
-    "name": "Threat Vault by Palo Alto Networks Spyware (new)",
+    "name": "Threat Vault by Palo Alto Networks Spyware",
     "ownerOnly": false,
-    "cliName": "threatvaultbypaloaltonetworksspywarenew",
+    "cliName": "threatvaultbypaloaltonetworksspyware",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

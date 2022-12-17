@@ -341,7 +341,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "More information",
-                        "query": "MarkdownRepresentationThreatVaultIncident",
+                        "query": "SetThreatVaultIncidentMarkdownRepresentation",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

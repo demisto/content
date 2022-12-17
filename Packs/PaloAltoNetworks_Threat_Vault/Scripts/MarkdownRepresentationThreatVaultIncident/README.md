@@ -19,7 +19,7 @@ There are no outputs for this script.
 
 ## Script Examples
 ### Example command
-```!MarkdownRepresentationThreatVaultIncident```
+```!SetThreatVaultIncidentMarkdownRepresentation```
 ### Context Example
 ```json
 {"Spyware": 
