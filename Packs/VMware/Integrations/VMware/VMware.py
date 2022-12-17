@@ -835,7 +835,6 @@ def use_demisto_info(msg):
 
 def main():  # pragma: no cover
     sys.stdout = StringIO()
-    write_to_debug_log("writing something here")
     res = []
     si = None
     try:
