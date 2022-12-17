@@ -15,7 +15,8 @@ from vmware.vapi.vsphere.client import create_vsphere_client
 VMWARE_DEBUGGER = []
 DEBUGGING = False
 if argToBoolean(demisto.args().get('run_on_debug', False)):
-    VMWARE_DEBUGGER.append(f"the command being called is {demisto.command()} with the following arguments: {demisto.args()}")
+    VMWARE_DEBUGGER.append(DebugLogger().collect_start_debug_info())
+    VMWARE_DEBUGGER.append(f"The command being called is {demisto.command()} with the following arguments: {demisto.args()}")
     DEBUGGING = True
 
 
@@ -816,6 +817,20 @@ def test_module(si):
 def write_to_debug_log(msg):
     if DEBUGGING:
         VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
+
+     
+def use_demisto_deubg(msg):
+    temp = sys.stdout
+    sys.stdout = sys.__stdout__
+    demisto.debug(msg)
+    sys.stdout = temp
+
+
+def use_demisto_info(msg):
+    temp = sys.stdout
+    sys.stdout = sys.__stdout__
+    demisto.info(msg)
+    sys.stdout = temp
 
 
 def main():  # pragma: no cover

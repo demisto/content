@@ -121,6 +121,13 @@ script:
       description: If true, the VM was deleted.
       type: Boolean
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to be powered on.
       name: vm-uuid
       required: true
@@ -142,6 +149,13 @@ script:
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
       type: String
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to be powered on.
       name: vm-uuid
       required: true
@@ -163,6 +177,13 @@ script:
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
       type: String
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
       required: true
@@ -184,6 +205,13 @@ script:
       description: VM state (i.e., poweredOn, poweredOff, suspended, HardRebooted).
       type: String
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to be suspended.
       name: vm-uuid
       required: true
@@ -205,6 +233,13 @@ script:
       description: VM state (i.e,. poweredOn, poweredOff, suspended, HardRebooted).
       type: String
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to reboot.
       name: vm-uuid
       required: true
@@ -213,6 +248,13 @@ script:
     name: vmware-soft-reboot
     outputs: []
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to take snapshot of.
       name: vm-uuid
       required: true
@@ -239,6 +281,13 @@ script:
     name: vmware-create-snapshot
     outputs: []
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: Snapshot name to revert to.
       name: snapshot-name
       required: true
@@ -263,6 +312,13 @@ script:
       description: Name of the snapshot reverted to.
       type: String
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to get events of.
       name: vm-uuid
       required: true
@@ -315,6 +371,13 @@ script:
       description: The user name of the user who triggered the event.
       type: Date
   - arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - description: VM UUID of virtual machine to change NIC state.
       name: vm-uuid
       required: true
@@ -349,6 +412,13 @@ script:
     description: Lists all virtual storage objects attached to the tag.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: category
       description: The category to which the tag belongs.
       required: true
@@ -373,6 +443,13 @@ script:
       rather than cloning an existing one.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: name
       description: Display name of the virtual machine.
       required: true
@@ -447,6 +524,13 @@ script:
       used as a template, this method corresponds to the deploy command.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: uuid
       description: The UUID of the VM to clone.
       required: true
@@ -527,6 +611,13 @@ script:
     description: Relocates a virtual machine to a specified location.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: datastore
       description: The datastore where the virtual machine should be located. If not
         specified, the current datastore is used.
@@ -572,6 +663,13 @@ script:
       its parent folder (if any).
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: uuid
       description: The UUID of the VM to delete.
       required: true
@@ -587,6 +685,13 @@ script:
     description: Adds an existing virtual machine to the folder.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: path
       description: A datastore path to the virtual machine.
       required: true
@@ -619,12 +724,19 @@ script:
       any of the virtual machine's files on disk.
     deprecated: false
     arguments:
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: wether to run on debug mode or not.
+      name: run_on_debug
+      predefined:
+      - "true"
+      - "false"
     - name: uuid
       description: The UUID of the VM to remove.
       required: true
       isArray: true
     outputs: []
-  dockerimage: demisto/vmware:2.0.0.39940
+  dockerimage: demisto/vmware:2.0.0.40991
   runonce: false
   script: ""
   subtype: python3

@@ -8025,6 +8025,12 @@ class DebugLogger(object):
         """
         Utility function to log start of debug mode logging
         """
+        self.int_logger.write(self.collect_start_debug_info())
+
+    def collect_start_debug_info(self):
+        """
+        Utility function to create the message for the log start of debug mode logging
+        """
         msg = "debug-mode started.\n#### http client print found: {}.\n#### Env {}.".format(self.http_client_print is not None,
                                                                                             os.environ)
         if hasattr(demisto, 'params'):
@@ -8043,7 +8049,7 @@ class DebugLogger(object):
                                        sm.get('start_date'),
                                        sm.get('end_date')
                                        )
-        self.int_logger.write(msg)
+        return msg
 
 
 _requests_logger = None
