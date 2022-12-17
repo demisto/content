@@ -1,6 +1,4 @@
-Vectra API is available for administrators and developers to integrate Vectra's breach detection data
-into their applications. Vectra provides access to security event data, platform
-configuration, and health information via URI paths.
-
-Tested with API version 2.1. 
-c_score and t_score fields changed to Certainty and Threat accordingly (range: 0-100)
+***How to debug the integration:***
+Due to issues with the imported VMWare packages using the regular **debug-mode=true** and **demisto.info** / **demisto.debug** causes a timeout.
+- If you wish to generate a debug-log (similar to the one generated when running **debug-mode=true**), run the command with the argument **run_on_debug=true** and use the **write_to_debug_log** method to write to the logs.
+- If you wish to write to the log-bundle using the **demisto.debug** and **demisto.info** methods, configure the instance to run on debug-level and use the methods **use_demisto_deubg** and **use_demisto_info** with the relevant message.
