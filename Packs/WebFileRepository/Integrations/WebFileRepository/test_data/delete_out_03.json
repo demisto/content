@@ -1,0 +1,34 @@
+{
+  "/b.dat": {
+    "last-modified": 1669044167,
+    "data-id": "fec96279-e127-4d17-bbce-b82bd2ecd23b",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/c.dat": {
+    "last-modified": 1669044167,
+    "data-id": "39b07866-d77c-4dc5-9aba-8833816e2fdc",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/y/g.dat": {
+    "last-modified": 1669044167,
+    "data-id": "08597087-62d7-42e0-955a-8aaada2e8f46",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/z.dat": {
+    "last-modified": 1669044167,
+    "data-id": "1d62a08a-ffa9-426e-8b35-966ccca6acbf",
+    "size": 7198,
+    "data-type": "gzip+base85",
+    "saved-size": 99
+  },
+  "08597087-62d7-42e0-955a-8aaada2e8f46": "XJ=;",
+  "1d62a08a-ffa9-426e-8b35-966ccca6acbf": "ABzYG$CrC!0{?VvaB^aCb8~lSVgT*TF%19!2m`R61jAE56C50^fF>7q;_-Mq9*@W4@pwEQkH_Qjcsw4D$K&yMo<9Y|90s!<8~^|",
+  "39b07866-d77c-4dc5-9aba-8833816e2fdc": "V`F0",
+  "fec96279-e127-4d17-bbce-b82bd2ecd23b": "Vq#("
+}

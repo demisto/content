@@ -26,6 +26,7 @@ from bottle import BaseRequest, HTTPResponse
 from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPBasicAuth, HTTPDigestAuth
 
+
 """
 The resource archive includes the following files provided by DataTables (https://datatables.net/).
  - datatables.min.css
@@ -2483,7 +2484,7 @@ HTML_MAIN = r'''
       $(document).ready(function () {
         let table = $("#filelist").DataTable({
           ajax: {
-            url: window.location.search ? window.location.search + '&q=ls' : '?q=ls',
+            url: location.search ? location.search + '&q=ls' : '?q=ls',
             type: 'GET',
           },
           orderFixed: [1, 'asc'],
@@ -2565,7 +2566,7 @@ HTML_MAIN = r'''
               enabled: true,
               action: function(e, dt, node, config) {
                 e.preventDefault();
-                window.location.href = '?q=archive-all&_=' + Date.now();
+                location.href = '?q=archive-all&_=' + Date.now();
               }
             },
           ],
@@ -2606,10 +2607,16 @@ HTML_MAIN = r'''
                     iname: 'fi_unknown.png'
                   }
                 };
+                let path = row.path;
+                if (location.pathname.endsWith('/')) {
+                    path = path.replace(/^\/*/, '');
+                } else {
+                    path = location.pathname.substr(location.pathname.lastIndexOf('/') + 1) + path;
+                }
                 let attr = attrs[row.type in attrs ? row.type : 0];
                 let href = ['P', 'D'].includes(row.type) ?
                            '?dir=' + encodeURIComponent(row.path) :
-                           encodeURIComponent(row.path.replace(/^\/*/, ''));
+                           encodeURIComponent(path);
                 return '<div>' +
                        '<img src="?q=resource&name=' + encodeURIComponent(attr.iname) +
                        '" style="float:left;margin-right:8px" alt="' + row.type + '">' +

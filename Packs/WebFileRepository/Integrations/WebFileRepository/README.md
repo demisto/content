@@ -25,6 +25,24 @@ This is helpful to make your environment ready for testing purpose for your play
     | The maximum sandbox repository size |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+## How to Access the File Management UI
+
+### Access the File Management UI by URL and Port (HTTP)
+In a web browser, go to **`http://<cortex-xsoar-server-address>:<listen_port>`**.
+
+### Access the File Management UI by Instance Name (HTTPS)
+
+To access the File Management UI by instance name, make sure ***Instance execute external*** is enabled. 
+
+1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the `instance.execute.external.<instance_name>` key is set to `true`. If this key does not exist, click **+ Add Server Configuration** and add the `instance.execute.external.<instance_name>` and set the value to `true`. See [this documentation](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+3. In a web browser, go to `https://<cortex-xsoar-address>/instance/execute/<instance_name>/`.
+
+   In Multi Tenant environments, go to `https://<cortex-xsoar-address>/acc_<account name>/instance/execute/<instance_name>/`
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

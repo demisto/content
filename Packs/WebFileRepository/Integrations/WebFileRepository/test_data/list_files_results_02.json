@@ -1,0 +1,66 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": [{
+            "type": "F",
+            "name": "a.dat",
+            "path": "/a.dat",
+            "base": "/",
+            "size": 3,
+            "storage-usage": 146,
+            "sandbox-usage": -1,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "b.dat",
+            "path": "/b.dat",
+            "base": "/",
+            "size": 3,
+            "storage-usage": 146,
+            "sandbox-usage": -1,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "c.dat",
+            "path": "/c.dat",
+            "base": "/",
+            "size": 3,
+            "storage-usage": 146,
+            "sandbox-usage": -1,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "z.dat",
+            "path": "/z.dat",
+            "base": "/",
+            "size": 7198,
+            "storage-usage": 146,
+            "sandbox-usage": -1,
+            "last-modified": 1669044167
+        }
+    ],
+    "EntryContext": {
+        "WebFileRepository.Files": [{
+                "Name": "a.dat",
+                "Path": "/a.dat",
+                "Size": 3,
+                "LastModified": "2022-11-21T15:22:47+00:00"
+            }, {
+                "Name": "b.dat",
+                "Path": "/b.dat",
+                "Size": 3,
+                "LastModified": "2022-11-21T15:22:47+00:00"
+            }, {
+                "Name": "c.dat",
+                "Path": "/c.dat",
+                "Size": 3,
+                "LastModified": "2022-11-21T15:22:47+00:00"
+            }, {
+                "Name": "z.dat",
+                "Path": "/z.dat",
+                "Size": 7198,
+                "LastModified": "2022-11-21T15:22:47+00:00"
+            }
+        ]
+    }
+}
