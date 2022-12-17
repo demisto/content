@@ -818,7 +818,7 @@ def write_to_debug_log(msg):
     if DEBUGGING:
         VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
 
-     
+
 def use_demisto_deubg(msg):
     temp = sys.stdout
     sys.stdout = sys.__stdout__
