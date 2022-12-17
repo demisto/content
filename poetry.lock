@@ -527,8 +527,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "852c895b2c5d0e7b64cc0485e4d566347ff15e8f"
-resolved_reference = "852c895b2c5d0e7b64cc0485e4d566347ff15e8f"
+reference = "9d4c97708ae57ffa612deb77566b4d8916054200"
+resolved_reference = "9d4c97708ae57ffa612deb77566b4d8916054200"
 
 [[package]]
 name = "deprecated"
@@ -1269,7 +1269,7 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pipenv"
-version = "2022.11.30"
+version = "2022.12.17"
 description = "Python Development Workflow for Humans."
 category = "dev"
 optional = false
@@ -2394,7 +2394,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "307d85e471bbe72cc7d3e296cd365ccda75833a6ef2710c265f4cd9037d964e3"
+content-hash = "c6da8c556c85297fa5590bdb041e164e86755f8be8bf45cffe37d3c33d39d4ad"
 
 [metadata.files]
 aiohttp = [
@@ -3394,8 +3394,8 @@ pexpect = [
     {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
 ]
 pipenv = [
-    {file = "pipenv-2022.11.30-py3-none-any.whl", hash = "sha256:2d9d0c97e6ac356f3aeefda7322f36e017ea0b8ab3542cd23ced25e6f1546872"},
-    {file = "pipenv-2022.11.30.tar.gz", hash = "sha256:7fd8aa14d0e63fa3f82b4d35ded0dc070df1b18731434173ced50fc4298163da"},
+    {file = "pipenv-2022.12.17-py3-none-any.whl", hash = "sha256:2573211d3c9f5adba774572de85bbedfbc586516960e860bafcb299004c0ae81"},
+    {file = "pipenv-2022.12.17.tar.gz", hash = "sha256:7fdeca8c2feb143e46bd5f50a45643e274c0813c3471f845a1cfb301f96aab4e"},
 ]
 pkgutil-resolve-name = [
     {file = "pkgutil_resolve_name-1.3.10-py3-none-any.whl", hash = "sha256:ca27cc078d25c5ad71a9de0a7a330146c4e014c2462d9af19c6b828280649c5e"},
