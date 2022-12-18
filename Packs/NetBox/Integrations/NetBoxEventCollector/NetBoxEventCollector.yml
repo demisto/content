@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://www.example.com
-  display: Server URL (e.g. https://www.example.com)
+  display: Server URL (e.g., https://www.example.com)
   name: url
   required: true
   type: 0
@@ -32,7 +32,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the NetBox event collector integration for XSIAM.
+description: This is the NetBox event collector integration for Cortex XSIAM.
 display: 'NetBox Event Collector'
 name: NetBox Event Collector
 script:
@@ -48,7 +48,7 @@ script:
       - 'false'
       required: true
     - default: false
-      description: Maximum results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: limit
       required: false
