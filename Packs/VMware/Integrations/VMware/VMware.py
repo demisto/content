@@ -814,19 +814,19 @@ def test_module(si):
     return 'ok'
 
 
-def write_to_debug_log(msg):
+def write_to_debug_log(msg):  # pragma: no cover
     if DEBUGGING:
         VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
 
 
-def use_demisto_deubg(msg):
+def use_demisto_deubg(msg):  # pragma: no cover
     temp = sys.stdout
     sys.stdout = sys.__stdout__
     demisto.debug(msg)
     sys.stdout = temp
 
 
-def use_demisto_info(msg):
+def use_demisto_info(msg):  # pragma: no cover
     temp = sys.stdout
     sys.stdout = sys.__stdout__
     demisto.info(msg)
