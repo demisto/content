@@ -528,34 +528,27 @@ class Pack(object):
                 self._is_feed = True
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
-            logging.info(f"marketplaces are: {self.marketplaces}")
-            marketplaces = yaml_content.get('marketplaces', ["xsoar", "marketplacev2"])
             # this's the first integration in the pack, and the pack is in xsiem
-            if self._single_integration and 'marketplacev2' in marketplaces:
-
-                logging.info("found single integration in xsiem")
+            if self._single_integration and 'marketplacev2' in self.marketplaces:
 
                 # the integration is not deprecated
                 if not yaml_content.get('deprecated', False):
 
-                    logging.info("integration not deprecated")
-
                     # the integration contains isfetch or isfetchevents
                     if yaml_content.get('script', {}).get('isfetchevents', False) or \
                             yaml_content.get('script', {}).get('isfetch', False) is True:
-                        logging.info(f"set data source to true in {yaml_content.get('name')}")
+                        logging.info(f"{yaml_content.get('name')} is a Data Source potential")
                         self._is_data_source = True
-            # already has the pack as data surce
+            # already has the pack as data source
             elif not self._single_integration and self._is_data_source:
 
                 # got a second integration in the pack that's not deprecated
                 if not yaml_content.get('deprecated', False):
-                    logging.info("got a second integration in the pack that's not deprecated")
+                    logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
                     self._is_data_source = False
 
             # already found integration in the pack that's not deprecated
             if not yaml_content.get('deprecated', False):
-                logging.info("already found integration in the pack that's not deprecated")
                 self._single_integration = False
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):

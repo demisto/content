@@ -531,7 +531,7 @@ class TestHelperFunctions:
                                  ({'id': 'some-id', 'script': {'isfetch': True}}, 'Integration',
                                   ['xsoar'], False, False, False),
                                  ({'id': 'some-id', 'deprecated': True, 'script': {'isfetch': True}}, 'Integration',
-                                  ['xsoar', 'marketplacev2'], False, True, False)
+                                  ['xsoar', 'marketplacev2'], False, False, False)
                              ])
     def test_add_pack_type_tags(self, yaml_context, yaml_type, marketplaces,
                                 is_actually_feed, is_actually_siem, is_actually_data_source):
