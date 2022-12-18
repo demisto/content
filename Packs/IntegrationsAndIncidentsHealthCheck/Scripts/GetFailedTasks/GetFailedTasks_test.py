@@ -18,6 +18,7 @@ def test_get_failed_tasks(mocker, rest_api_instacne):
     mocker.patch.object(demisto, 'executeCommand', side_effect=mock_execute_command)
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=INTERNAL_TASKS_RESULT)
     mocker.patch.object(demisto, 'results')
+    mocker.patch('GetFailedTasks.get_tenant_name', return_value='test')
 
     main()
 
@@ -108,6 +109,7 @@ def test_get_incident_data_using_rest_api_instance(mocker):
             - Validates that get_incident_tasks_using_rest_api_instance was called.
     """
     mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_rest_api_instance', return_value=[])
+    mocker.patch('GetFailedTasks.get_tenant_name', return_value='test')
     result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1], 'instance_mock')
     assert mock_res.call_count == 1
     assert result[0] == []
@@ -144,6 +146,7 @@ def test_get_incident_data_internal_http_request_fail(mocker):
     """
     internal_request_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_internal_request', side_effect=ValueError)
     mocker.patch('GetFailedTasks.get_rest_api_instance_to_use', return_value='instance_mock')
+    mocker.patch('GetFailedTasks.get_tenant_name', return_value='test')
     api_instanc_mock_res = mocker.patch('GetFailedTasks.get_incident_tasks_using_rest_api_instance', return_value=[])
 
     result = get_incident_data(INCIDENTS_RESULT[0].get('Contents').get('data')[1])
