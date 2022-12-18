@@ -88,7 +88,6 @@ IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 MESSAGE_QUEUE: Queue
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -1016,8 +1015,9 @@ def start_listening():
         demisto.info("Created background task")
 
         # Create the message listeners
-        message_consumers = [threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT), daemon=True) for i
-                             in range(3)]
+        message_consumers = [
+            threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT), daemon=True) for i
+            in range(3)]
         for message_consumer in message_consumers:
             message_consumer.start()
             demisto.info("Created consumer task")
@@ -1028,7 +1028,6 @@ def start_listening():
         socket_client = threading.Thread(target=socket_client_loop)
         socket_client.start()
         demisto.info("Started Client")
-
 
         # Join socket_client to loop
         socket_client.join()
@@ -1260,12 +1259,12 @@ def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text:
     if '{response}' in entitlement_reply and action_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
     send_slack_request_sync(client=CLIENT, method='chat.update',
-                           body={
-                               'channel': channel,
-                               'ts': message_ts,
-                               'text': entitlement_reply,
-                               'blocks': []
-                           })
+                            body={
+                                'channel': channel,
+                                'ts': message_ts,
+                                'text': entitlement_reply,
+                                'blocks': []
+                            })
 
 
 def is_dm(channel: str) -> bool:
@@ -1477,41 +1476,45 @@ def consume_and_process_message(queue: Queue, i: int):
                 entitlement_string = json.loads(entitlement_json)
                 entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
                 action_text = actions[0].get('text').get('text')
-                incident_id = answer_question(action_text, entitlement_string, user.get('profile', {}).get('email'))  # type: ignore
-                if state and DEMISTO_API_KEY:
-                    string_safe_state = json.dumps(state)
-                    body = {
-                        "data": "!Set",
-                        "args": {
-                            "value": {
-                                "simple": string_safe_state
+                incident_id = answer_question(action_text, entitlement_string,
+                                              user.get('profile', {}).get('email'))  # type: ignore
+                try:
+                    if state and DEMISTO_API_KEY:
+                        string_safe_state = json.dumps(state)
+                        body = {
+                            "data": "!Set",
+                            "args": {
+                                "value": {
+                                    "simple": string_safe_state
+                                },
+                                "key": {
+                                    "simple": "SlackBlockState"
+                                }
                             },
-                            "key": {
-                                "simple": "SlackBlockState"
-                            }
-                        },
-                        "investigationId": str(incident_id)
-                    }
-                    headers = {
-                        'Authorization': f'{DEMISTO_API_KEY}',
-                        'Content-Type': 'application/json',
-                        'accept': 'application/json'
-                    }
+                            "investigationId": str(incident_id)
+                        }
+                        headers = {
+                            'Authorization': f'{DEMISTO_API_KEY}',
+                            'Content-Type': 'application/json',
+                            'accept': 'application/json'
+                        }
 
-                    _body = json.dumps(body)
-                    try:
-                        response = requests.request("POST",  # type: ignore
-                                                    f"{DEMISTO_URL}/entry/execute/sync",
-                                                    headers=headers,
-                                                    data=_body,
-                                                    verify=VERIFY_CERT
-                                                    )
-                        response.raise_for_status()  # type: ignore
-                    except requests.exceptions.ConnectionError as err:
-                        err_message = f'Error submitting context command to server. Check your API Key: {err}'
-                        demisto.updateModuleHealth(err_message)
-                if state and not DEMISTO_API_KEY:
-                    demisto.debug("A state was found in the message, but no API key was configured.")
+                        _body = json.dumps(body)
+                        try:
+                            response = requests.request("POST",  # type: ignore
+                                                        f"{DEMISTO_URL}/entry/execute/sync",
+                                                        headers=headers,
+                                                        data=_body,
+                                                        verify=VERIFY_CERT
+                                                        )
+                            response.raise_for_status()  # type: ignore
+                        except requests.exceptions.ConnectionError as err:
+                            err_message = f'Error submitting context command to server. Check your API Key: {err}'
+                            demisto.updateModuleHealth(err_message)
+                    if state and not DEMISTO_API_KEY:
+                        demisto.debug("A state was found in the message, but no API key was configured.")
+                except Exception as e:
+                    demisto.debug(f"A state was not processed correctly. - {e}")
 
             # If a thread_id is found in the payload, we will check if it is a reply to a SlackAsk task. Currently threads
             # are not mirrored
@@ -1803,7 +1806,8 @@ def slack_send():
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
                  or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
-        demisto.debug(f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
+        demisto.debug(
+            f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
@@ -2533,6 +2537,28 @@ def long_running_main():
         demisto.error(f"The Loop has failed to run {str(e)}")
 
 
+def fetch_incidents():
+    """
+    Used to offload processing into a background task
+    This will run every 15 seconds. For fetch intervals of 1 minute, this should execute 4 times.
+    """
+    interval = 0
+    while interval < 3:
+        try:
+            if MIRRORING_ENABLED:
+                check_for_mirrors()
+            check_for_unanswered_questions()
+            if EXTENSIVE_LOGGING:
+                stats, _ = slack_get_integration_context_statistics()
+                demisto.debug(f'Integration Context Stats\n_____________\n{stats}')
+            interval += 1
+            time.sleep(15)
+        except Exception as e:
+            demisto.error(f'An error occurred: {e}')
+    # In every case we will return no incidents since this integration does not actually create any.
+    demisto.createIncidents(incidents=[])
+
+
 def init_globals(command_name: str = ''):
     """
     Initializes global variables according to the integration parameters
@@ -2635,7 +2661,40 @@ def slack_get_integration_context():
         'ContentsFormat': EntryFormat.MARKDOWN,
         'Contents': readable_stats,
     })
-    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+    return_results(
+        fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+
+
+def slack_import_integration_context():
+    entry_id = demisto.args().get('entry_id', None)
+    if isinstance(entry_id, list):
+        entry_id = entry_id[0]
+    res = demisto.getFilePath(id=entry_id)
+    # Check to see if valid file entryid was provided as input
+    if res[0]['Type'] == entryTypes['error']:
+        demisto.results({
+            'Type': entryTypes['error'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Failed to get the file path for entry: ' + entry_id + ' the error message was ' + res[0][
+                'Contents']
+        })
+
+    file_path = res[0]['Contents']['path']
+    with open(file_path) as data_file:
+        data = json.load(data_file)
+        new_context = dict()
+        for k, v in data.items():
+            if '{' in v:
+                new_context.update({k: json.loads(v)})
+            else:
+                new_context.update({k: v.replace('"', '')})
+    set_to_integration_context_with_retries(new_context, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': 'Integration context has been updated',
+        'HumanReadable': 'Integration context has been updated'
+    })
 
 
 def slack_get_integration_context_statistics():
@@ -2685,7 +2744,9 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message
+        'slack-pin-message': pin_message,
+        'slack-import-integration-context': slack_import_integration_context,
+        'fetch-incidents': fetch_incidents
     }
 
     command_name: str = demisto.command()
