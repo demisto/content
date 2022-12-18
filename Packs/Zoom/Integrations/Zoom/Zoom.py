@@ -219,7 +219,6 @@ class Client(BaseClient):
                             allow_multiple_devices: bool | str = True,
                             auto_recording: str = "none",
                             encryption_type: str = "enhanced_encryption",
-                            focus_mode: bool | str = True,
                             join_before_host: bool | str = False,
                             meeting_authentication: bool | str = False,
                             waiting_room: bool | str = False):
@@ -227,7 +226,6 @@ class Client(BaseClient):
         # converting
         host_video = argToBoolean(host_video)
         allow_multiple_devices = argToBoolean(allow_multiple_devices)
-        focus_mode = argToBoolean(focus_mode)
         join_before_host = argToBoolean(join_before_host)
         meeting_authentication = argToBoolean(meeting_authentication)
         waiting_room = argToBoolean(waiting_room)
@@ -255,7 +253,7 @@ class Client(BaseClient):
             num_type = 3
         elif type == "recurring meeting with fixed time":
             num_type = 8
-            # end_time = start_time[8] 
+            # end_time = start_time[8]
             # json_all_data = {"recurrence": {
             #     "end_date_time": "2022-04-02T15:59:00Z",
             #     "end_times": 7,
@@ -272,7 +270,6 @@ class Client(BaseClient):
                 "allow_multiple_devices": allow_multiple_devices,
                 "auto_recording": auto_recording,
                 "encryption_type": encryption_type,
-                "focus_mode": focus_mode,
                 "host_video": host_video,
                 "jbh_time": jbh_time,
                 "join_before_host": join_before_host,
@@ -553,7 +550,6 @@ def zoom_meeting_create_command(
         allow_multiple_devices: bool | str = True,
         auto_recording: str = "none",
         encryption_type: str = "enhanced_encryption",
-        focus_mode: bool | str = True,
         join_before_host: bool | str = False,
         meeting_authentication: bool | str = False,
         waiting_room: bool | str = False) -> CommandResults:
@@ -561,7 +557,7 @@ def zoom_meeting_create_command(
                                           start_time, timezone, type,
                                           allow_multiple_devices,
                                           auto_recording,
-                                          encryption_type, focus_mode,
+                                          encryption_type,
                                           join_before_host,
                                           meeting_authentication,
                                           waiting_room)

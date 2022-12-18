@@ -115,13 +115,6 @@ script:
           predefined:
             - enhanced_encryption
             - e2ee
-        - name: focus_mode
-          defaultValue: true
-          auto: PREDEFINED
-          predefined:
-            - true
-            - false
-          description: Enable the Focus Mode feature when the meeting starts.
         - name: host_video
           auto: PREDEFINED
           predefined:
