@@ -86,7 +86,7 @@ script:
       description: The feature creation date.
       type: Date
   - name: aha-edit-feature
-    description: "You can edit the following fields in a feature: Name and Status."
+    description: "Close the specified Aha! feature, Optional edit the name of Aha! feature."
     deprecated: false
     arguments:
     - name: feature_name
@@ -94,9 +94,9 @@ script:
       required: true
       isArray: false
       defaultValue: ""
-    - name: fields
-      description: 'Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}'
-      required: true
+    - name: name
+      description: 'Set a new name to AHa! feature.'
+      required: false
       isArray: false
       defaultValue: ""
     outputs:

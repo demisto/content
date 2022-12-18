@@ -175,13 +175,13 @@ def test_getAnIdea(mocker):
 def test_editFeatureField(mocker):
     """
         When:
-            - Requesting to update fields in a feature.
+            - Requesting to update name in a feature.
         Then:
-            - Return the feature with updated fields.
+            - Return the feature with updated fields status changed to Closed and new name.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
     result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
-                  fields={'name': 'DEMO-10', 'description': 'new description', 'status': 'Closed'})
+                          name="DEMO-10")
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == 'Demo-10'
@@ -197,7 +197,7 @@ def test_editIdeaStatus(mocker):
             - Return the idea with an updated field.
     """
     client = mock_client(mocker, util_load_json('test_data/update_idea_status.json'))
-    result = edit_command(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895', fields={})
+    result = edit_command(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895')
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == '[Test] Mirroring'
@@ -208,15 +208,13 @@ def test_editIdeaStatus(mocker):
 def test_editSpecificFeatureField(mocker):
     """
         When:
-            - Requesting to update a specific field in a feautre.
+            - Requesting to update a specific field in a feature.
         Then:
             - Return the feature with only the specific field updated.
     """
-    new_description = 'change just description'
     client = mock_client(mocker, util_load_json('test_data/update_feature_field.json'))
-    result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10', fields={'description': new_description})
+    result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10', name="new name")
     assert len(result.outputs) == 1
     output = result.outputs[0]
-    assert output.get('name') == 'Demo-10'
-    assert output.get('description') == new_description
+    assert output.get('name') == 'new name'
     assert output.get('workflow_status') == 'Closed'
