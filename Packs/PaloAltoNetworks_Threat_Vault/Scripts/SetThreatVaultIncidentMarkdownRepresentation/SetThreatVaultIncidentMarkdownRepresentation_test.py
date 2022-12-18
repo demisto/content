@@ -104,7 +104,7 @@ def test_json_to_md(incident_fields, expected_results):
 )
 def test_read_context_from_threat_vault_incident(mocker, incident, expected_results):
 
-    mocker.patch('MarkdownRepresentationThreatVaultIncident.demisto.incident', return_value=incident)
+    mocker.patch('SetThreatVaultIncidentMarkdownRepresentation.demisto.incident', return_value=incident)
 
     results = read_context_from_threat_vault_incident()
     assert results == expected_results
