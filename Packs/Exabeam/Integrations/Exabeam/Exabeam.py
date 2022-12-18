@@ -5,7 +5,7 @@ from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
 import urllib3
-
+from pytz import utc
 from dateutil import parser
 
 # disable insecure warnings
@@ -1142,6 +1142,12 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
+def format_fetch_start_time_to_timestamp(start_time: Optional[str], end_time: Optional[str]) -> tuple[int, int]:
+
+    return (int(dateparser.parse(start_time).replace(tzinfo=utc).timestamp() * 1000.0),
+            int(dateparser.parse(end_time).replace(tzinfo=utc).timestamp() * 1000.0))
+
+
 ''' COMMANDS '''
 
 
@@ -2043,13 +2049,15 @@ def list_incidents(client: Client, args: Dict[str, str]):
 
 def fetch_incidents(client: Client, args: Dict[str, str]):
 
-    now = str(datetime.utcnow().timestamp() * 1000.0).split('.')[0]
     last_run = demisto.getLastRun()
-    if from_ := last_run.get('last_time_fetch'):
-        from_as_milisecound = from_
-    else:
-        from_as_milisecound = str(parse_date_range(args.get('first_fetch'))[0].timestamp()).split('.')[0]
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=args.get('first_fetch', ''),
+        look_back=1,
+        date_format='%Y-%m-%dT%H:%M:%S.%fZ',
+    )
 
+    start_time_as_milisecound, end_time_as_milisecound = format_fetch_start_time_to_timestamp(start_time, end_time)
     # query = args.get('query')
     incident_type = args.get('incident_type')
     priority = args.get('priority')
@@ -2059,7 +2067,7 @@ def fetch_incidents(client: Client, args: Dict[str, str]):
         incidentType=incident_type,
         priority=priority,
         status=status,
-        startedDate=[from_as_milisecound, now],
+        startedDate=[start_time_as_milisecound, end_time_as_milisecound],
         offset=0,
         length=50,
         sortBy='createdAt'
@@ -2068,7 +2076,7 @@ def fetch_incidents(client: Client, args: Dict[str, str]):
     resp = client.get_incidents(q)
     incidents: List[dict] = resp.get('incidents', [])
 
-    demisto.setLastRun({'last_time_fetch': now})
+    demisto.setLastRun({'last_time_fetch': end_time_as_milisecound})
     demisto.incidents(incidents)
 
 
@@ -2156,5 +2164,10 @@ def main():
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    main()
-    # print(str(parse_date_range('3 days')[0].timestamp() * 1000).split('.')[0])
+    # main()
+    a, b = get_fetch_run_time_range({'time': '1671370552772'}, '', 0, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+    print(a, b)
+    a = parse(a).replace(tzinfo=utc).timestamp() * 1000.0
+    b = parse(b).replace(tzinfo=utc).timestamp() * 1000.0
+    print(int(a), int(b))
+    # print(dateparser.parse(str(datetime.fromtimestamp(1671368323675 / 1000.0)), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) + timedelta(hours=0))
