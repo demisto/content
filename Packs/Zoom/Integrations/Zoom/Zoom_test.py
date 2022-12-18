@@ -298,23 +298,96 @@ def test_zoom_user_create__Corporate_user_type(mocker):
     assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 3
 
 
-# def test_zoom_meeting_create__instant_meeting(mocker):
-#     """
-#        Given -
-#           client
-#        When -
-#            asking for a instant meeting
-#        Then -
-#            Validate that the right type is sent in the http_request
-#     """
-#     mocker.patch.object(Client, "generate_oauth_token")
-#     http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
-#     client = Client(base_url='https://test.com', account_id="mockaccount",
-#                     client_id="mockclient", client_secret="mocksecret")
+def test_zoom_meeting_create__instant_meeting(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a instant meeting
+       Then -
+           Validate that the right type is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
 
-#     client.zoom_meeting_create("instant", "nonsense", "mock@moker.com", "bla", "bla", "None")
-#     assert http_request_mocker.call_args[1].get("json_data").get("user_info").get("type") == 1
+    client.zoom_meeting_create(type="instant", topic="nonsense", user_id="mock@moker.com")
+    assert http_request_mocker.call_args[1]["json_data"].get("type") == 1
 
+
+def test_zoom_meeting_create__scheduled_meeting(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a scheduled meeting
+       Then -
+           Validate that the right type is sent in the http_request
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    client.zoom_meeting_create(type="scheduled", topic="nonsense", user_id="mock@moker.com")
+    assert http_request_mocker.call_args[1]["json_data"].get("type") == 2
+
+
+def test_zoom_meeting_create__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a meeting with join_before_host_and_waiting_room
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    with pytest.raises(DemistoException) as e:
+        client.zoom_meeting_create(type="scheduled", topic="nonsense", user_id="mock@moker.com",
+                                   waiting_room=True, join_before_host=True)
+    assert e.value.message == "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
+
+
+def test_zoom_meeting_create__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a meeting with jbh_time ant not  join_before_host
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    with pytest.raises(DemistoException) as e:
+        client.zoom_meeting_create(type="scheduled", topic="nonsense", user_id="mock@moker.com",
+                                   jbh_time=5, join_before_host=False)
+    assert e.value.message == "Collision arguments. jbh_time argument can be used only if join_before_host is 'True'."
+
+def test_zoom_meeting_create__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a meeting with instant type ant start_time
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    with pytest.raises(DemistoException) as e:
+        client.zoom_meeting_create(type="instant", topic="nonsense", user_id="mock@moker.com",
+                                   start_time="2022-10-04T15:59:00Z")
+    assert e.value.message == "Too money arguments. start_time and timezone are for scheduled meetings only."
 
 def test_meeting_get__show_previous_occurrences_is_false(mocker):
     """

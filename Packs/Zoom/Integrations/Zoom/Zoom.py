@@ -246,14 +246,28 @@ class Client(BaseClient):
         # converting separately after the argument checking, because 0 as an int is equaled to  false
         jbh_time = arg_to_number(jbh_time)
 
+        json_all_data = {}
+
         num_type = 1
         if type == "scheduled":
             num_type = 2
-        if type == "recurring meeting with no fixed time":
+        elif type == "recurring meeting with no fixed time":
             num_type = 3
-        if type == "recurring meeting with fixed time":
+        elif type == "recurring meeting with fixed time":
             num_type = 8
-        json_all_data = {
+            # end_time = start_time[8] 
+            # json_all_data = {"recurrence": {
+            #     "end_date_time": "2022-04-02T15:59:00Z",
+            #     "end_times": 7,
+            #     "monthly_day": 1,
+            #     "monthly_week": 1,
+            #     "monthly_week_day": 1,
+            #     "repeat_interval": 1,
+            #     "type": 1,
+            #     "weekly_days": "1"
+            # }, }
+
+        json_all_data.update({
             "settings": {
                 "allow_multiple_devices": allow_multiple_devices,
                 "auto_recording": auto_recording,
@@ -269,7 +283,7 @@ class Client(BaseClient):
             "timezone": timezone,
             "type": num_type,
             "topic": topic,
-        }
+        })
         return self._http_request(
             method='POST',
             url_suffix=f"users/{user_id}/meetings",
