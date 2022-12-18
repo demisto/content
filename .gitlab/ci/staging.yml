@@ -15,7 +15,7 @@
   allow_failure: true
   script:
     - pip3 uninstall -y demisto-sdk
-    - pip3 install git+https://github.com/demisto/demisto-sdk@e8f48ca69c57f8bec4281d510acdc9616a3f93c1
+    - pip3 install git+https://github.com/demisto/demisto-sdk@master
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
@@ -25,7 +25,8 @@
     - |
       echo "Trying to pull all CSV import files from bucket"
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-      gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/*" /var/lib/neo4j/import
+      # gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/*" /var/lib/neo4j/import
+      # TODO: uncomment line above after finish updating upload flow with graph
 
     - |
       if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
