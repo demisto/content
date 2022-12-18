@@ -63,8 +63,8 @@ CONFIG_PARAMETERS = [
 ]
 
 
-@pytest.mark.parametrize('config, total_indicators, indicator_with_few_tags', CONFIG_PARAMETERS)
-def test_json_feed_with_config(config, total_indicators, indicator_with_few_tags):
+@pytest.mark.parametrize('config, total_indicators, indicator_with_several_tags', CONFIG_PARAMETERS)
+def test_json_feed_with_config(config, total_indicators, indicator_with_several_tags):
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
 
@@ -81,7 +81,7 @@ def test_json_feed_with_config(config, total_indicators, indicator_with_few_tags
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                                  auto_detect=False)
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == total_indicators
-        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_few_tags
+        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_several_tags
 
 
 def test_json_feed_with_config_mapping():
