@@ -77,9 +77,10 @@ class Client(BaseClient):
             int: The first id to fetch.
         """
         first_log = self.http_request(url_suffix=url_suffix, params={'ordering': 'id', 'limit': 1} | params)
-        try:
-            next_run = first_log.get('results', [{}])[0].get('id')
-        except IndexError:
+
+        if first_log.get('results'):
+            next_run = first_log.get('results')[0].get('id')
+        else:
             next_run = None
 
         return next_run

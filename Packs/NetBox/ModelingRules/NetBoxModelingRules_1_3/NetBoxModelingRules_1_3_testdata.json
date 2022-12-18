@@ -29,7 +29,7 @@
                 "last_updated": "2022-12-07T08:19:57.807055Z"},
                 "expected_values": {
                     "xdm.event.description": "## test",
-                    "xdm.target.resource.id": 4,
+                    "xdm.target.resource.id": "4",
                     "xdm.target.resource.type": "dcim.device",
                     "xdm.target.resource.name": "test3",
                     "xdm.event.outcome": "info"
