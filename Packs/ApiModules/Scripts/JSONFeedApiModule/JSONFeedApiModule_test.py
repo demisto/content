@@ -1,3 +1,5 @@
+import pytest
+
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
 import requests_mock
@@ -54,22 +56,55 @@ def test_json_feed_with_config():
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
-def test_json_feed_with_config_mapping():
+@pytest.mark.parametrize('config, total_indicators, indicator_with_few_tags', [
+    (
+        {
+            'AMAZON': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='AMAZON']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service'],
+                'mapping': {
+                    'region': 'Region'
+                }
+            }
+        },
+        1117,
+        0
+    ),
+    (
+        {
+            'AMAZON': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='AMAZON']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service'],
+                'mapping': {
+                    'region': 'Region',
+                    'service': 'service'
+                }
+            },
+            'CLOUDFRONT': {
+                'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
+                'extractor': "prefixes[?service=='CLOUDFRONT']",
+                'indicator': 'ip_prefix',
+                'indicator_type': FeedIndicatorType.CIDR,
+                'fields': ['region', 'service'],
+                'mapping': {
+                    'region': 'Region',
+                    'service': 'service'
+                }
+            }
+        },
+        1148,
+        36
+    )
+])
+def test_json_feed_with_config_mapping(config, total_indicators, indicator_with_few_tags):
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
-
-    feed_name_to_config = {
-        'AMAZON': {
-            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
-            'extractor': "prefixes[?service=='AMAZON']",
-            'indicator': 'ip_prefix',
-            'indicator_type': FeedIndicatorType.CIDR,
-            'fields': ['region', 'service'],
-            'mapping': {
-                'region': 'Region'
-            }
-        }
-    }
 
     with requests_mock.Mocker() as m:
         m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges)
@@ -77,17 +112,18 @@ def test_json_feed_with_config_mapping():
         client = Client(
             url='https://ip-ranges.amazonaws.com/ip-ranges.json',
             credentials={'username': 'test', 'password': 'test'},
-            feed_name_to_config=feed_name_to_config,
+            feed_name_to_config=config,
             insecure=True
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
                                                  auto_detect=False)
-        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == total_indicators
         indicator = indicators[0]
         custom_fields = indicator['fields']
         assert 'Region' in custom_fields
         assert 'region' in indicator['rawJSON']
+        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_few_tags
 
 
 FLAT_LIST_OF_INDICATORS = '''{
@@ -137,6 +173,33 @@ def test_post_of_indicators_with_no_json_object():
     with requests_mock.Mocker() as m:
         matcher = m.post('https://api.github.com/meta', json=json.loads(FLAT_LIST_OF_INDICATORS),
                          request_headers={'content-type': 'application/x-www-form-urlencoded'})
+
+        client = Client(
+            url='https://api.github.com/meta',
+            feed_name_to_config=feed_name_to_config,
+            insecure=True, data='test=1'
+        )
+
+        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
+        assert matcher.last_request.text == 'test=1'
+        assert len(indicators) == 3
+        assert indicators[0].get('value') == '1.1.1.1'
+        assert indicators[0].get('type') == 'IP'
+        assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
+
+
+def test_indicators_with_more_than_one_tag():
+    feed_name_to_config = {
+        'https://api.github.com/meta': {
+            'url': 'https://api.github.com/meta',
+            'extractor': '[hooks,api,web,pages,git,importer,packages,dependabot,actions][]',
+            'rawjson_include_indicator_type': False
+        }
+    }
+
+    with requests_mock.Mocker() as m:
+        with open('test_data/github_meta.json', 'r') as f:
+            matcher = m.post('https://api.github.com/meta', json=json.load(f))
 
         client = Client(
             url='https://api.github.com/meta',
