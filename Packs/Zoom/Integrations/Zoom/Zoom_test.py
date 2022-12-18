@@ -239,9 +239,28 @@ def test_manual_user_list_pagination__small_limit(mocker):
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     limit = 5
-    client.manual_user_list_pagination(next_page_token=None, page_size=1, limit=limit,
-                                       status="all", role_id=None)
+    client.manual_user_list_pagination(next_page_token="None", page_size=1, limit=limit,
+                                       status="all", role_id="None")
     assert basic_request_mocker.call_args[0][0] == limit
+
+
+def test_manual_user_list_pagination__large_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            limit >  MAX_RECORDS_PER_PAGE
+        Then -
+            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300) % limit
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    basic_request_mocker = mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    limit = 2000
+    client.manual_user_list_pagination(next_page_token="None", page_size=1, limit=limit,
+                                       status="all", role_id="None")
+    assert basic_request_mocker.call_args[0][0] == 200
 
 
 def test_zoom_user_create__basic_user_type(mocker):
@@ -371,6 +390,7 @@ def test_zoom_meeting_create__too_meny_arguments(mocker):
                                    jbh_time=5, join_before_host=False)
     assert e.value.message == "Collision arguments. jbh_time argument can be used only if join_before_host is 'True'."
 
+
 def test_zoom_meeting_create__too_meny_arguments(mocker):
     """
        Given -
@@ -388,6 +408,7 @@ def test_zoom_meeting_create__too_meny_arguments(mocker):
         client.zoom_meeting_create(type="instant", topic="nonsense", user_id="mock@moker.com",
                                    start_time="2022-10-04T15:59:00Z")
     assert e.value.message == "Too money arguments. start_time and timezone are for scheduled meetings only."
+
 
 def test_meeting_get__show_previous_occurrences_is_false(mocker):
     """
@@ -467,6 +488,25 @@ def test_manual_meeting_list_pagination__small_limit(mocker):
     client.manual_meeting_list_pagination(user_id='mock@moker.com', next_page_token=None, page_size=1, limit=limit,
                                           type=None)
     assert basic_request_mocker.call_args[0][2] == limit
+
+
+def test_manual_meeting_list_pagination__large_limit(mocker):
+    """
+        Given -
+           client
+        When -
+            limit >  MAX_RECORDS_PER_PAGE
+        Then -
+            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300) % limit
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    basic_request_mocker = mocker.patch.object(Client, "meeting_list_basic_request", return_value={"next_page_token": "mockmock"})
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    limit = 2000
+    client.manual_meeting_list_pagination(user_id='mock@moker.com', next_page_token=None, page_size=1, limit=limit,
+                                          type="mock")
+    assert basic_request_mocker.call_args[0][2] == 200
 
 
 def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
