@@ -912,7 +912,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             first_fetch_datetime = dateparser.parse(FETCH_TIME)
             first_fetch_ews_datetime = EWSDateTime.from_datetime(tz.localize(first_fetch_datetime))
             qs = qs.filter(datetime_received__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+    qs = qs.filter().only(*map(lambda x: x.name if x.name.lower() != 'mime_content' else None, Message.FIELDS))
     qs = qs.filter().order_by('datetime_received')
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
