@@ -15,7 +15,7 @@
   allow_failure: true
   script:
     - pip3 uninstall -y demisto-sdk
-    - pip3 install git+https://github.com/demisto/demisto-sdk@master
+    - pip3 install git+https://github.com/demisto/demisto-sdk@fab63536a4a6c0b686f44f843907f4cb9431f22a
 
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
