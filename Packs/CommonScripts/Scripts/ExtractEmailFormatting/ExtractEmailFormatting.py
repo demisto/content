@@ -28,7 +28,7 @@ def extract_email(email_address: str) -> str:
 
     try:
         return re.findall(email_format, email_address)[0]
-   
+
     except IndexError:
         return ''
 
