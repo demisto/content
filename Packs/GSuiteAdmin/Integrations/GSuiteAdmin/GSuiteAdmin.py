@@ -1540,7 +1540,7 @@ def main() -> None:
 
         # prepare client class object
         gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url='https://www.googleapis.com/', verify=verify_certificate, proxy=proxy,
+                                     base_url='https://admin.googleapis.com/', verify=verify_certificate, proxy=proxy,
                                      headers=headers)
         # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
