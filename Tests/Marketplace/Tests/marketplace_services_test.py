@@ -538,7 +538,7 @@ class TestHelperFunctions:
         """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
-        dummy_pack.marketplaces(marketplaces)
+        dummy_pack._marketplaces = marketplaces
         dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
         assert dummy_pack.is_siem == is_actually_siem
