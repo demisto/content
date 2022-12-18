@@ -159,7 +159,7 @@ def delete_files():
         os.remove(yml_path)
 
 
-def test_commit_content_item_gitlab(mocker):
+def test_commit_new_content_item_gitlab(mocker):
     """
     Given:
         - A branch name and a content file.
@@ -173,7 +173,7 @@ def test_commit_content_item_gitlab(mocker):
         'commit_message': f'Added {content_file.file_name}',
         'file_content': f'{content_file.file_text}',
         'file_path': f'{content_file.path_to_file}/{content_file.file_name}'}
-    request = mocker.patch.object(demisto, 'executeCommand')
-    mocker.patch('CommitFiles.get_file_sha', return_value=None)
+    # request = mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch.object(demisto, 'executeCommand')
+    mocker.patch('CommitFiles.execute_command', return_value=(True, expected_args))
     commit_content_item_gitlab(branch_name, content_file, [], [])
-    request.assert_called_with('gitlab-file-create', expected_args)
