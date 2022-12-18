@@ -23,7 +23,7 @@ def create_dependencies(content_dto: ContentDTO, output: Path):
     for pack in content_dto.packs:
         dependencies = pack.depends_on
         first_level_dependencies = {}
-        all_level_dependencies = []
+        all_level_dependencies = {}
         for dependency in dependencies:
             if dependency.mandatorily:
                 all_level_dependencies[dependency.content_item.object_id] = {
