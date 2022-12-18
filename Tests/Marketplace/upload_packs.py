@@ -825,7 +825,7 @@ def get_packs_summary(packs_list):
         logging.info(f"&&&&&& PACK status {pack.status}")
         if pack.status == PackStatus.SUCCESS.name:
             successful_packs.append(pack)
-        if pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
+        elif pack.status == PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name:
             successful_uploaded_dependencies_zip_packs.append(pack)
         elif pack.status in SKIPPED_STATUS_CODES:
             skipped_packs.append(pack)
