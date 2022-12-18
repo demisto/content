@@ -522,14 +522,16 @@ class Pack(object):
         Returns:
             Doesn't return
         """
+        logging.info("adding pack type tags")
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
-
+            logging.info(f"marketplaces are: {self.marketplaces}")
+            marketplaces = yaml_content.get('marketplaces', ["xsoar", "marketplacev2"])
             # this's the first integration in the pack, and the pack is in xsiem
-            if self._single_integration and 'marketplacev2' in self.marketplaces:
+            if self._single_integration and 'marketplacev2' in marketplaces:
 
                 logging.info("found single integration in xsiem")
 
