@@ -225,7 +225,7 @@ class Client(BaseClient):
         else:
             url_suffix = '/sdkapi/attacks/'
         self.headers['NSM-SDK-API'] = session_str
-        return self._http_request(method='GET', url_suffix=url_suffix)
+        return self._http_request(method='GET', url_suffix=url_suffix, timeout=5000)
 
     def get_domains_request(self, session_str: str, domain_id: int) -> Dict:
         """ If a domain id is given The command returns the details of the specific domain.
@@ -267,6 +267,18 @@ class Client(BaseClient):
                 A dictionary with ips policies list of the specific domain details.
         """
         url_suffix = f'/sdkapi/domain/{domain_id}/ipspolicies'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
+    def get_ips_policy_details_request(self, session_str: str, policy_id: int) -> Dict:
+        """ Gets the policy details for the specific IPS policy.
+            Args:
+                session_str: str - The session id.
+                policy_id: int - The id of the relevant ips policy.
+            Returns:
+                A dictionary with the ips policy details.
+        """
+        url_suffix = f'/sdkapi/ipspolicy/{policy_id}'
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
@@ -590,18 +602,17 @@ def update_attacks_list_entries(attacks_list: list[Dict]) -> list[Dict]:
         attack['ID'] = attack.get('attackId')
         attack['Name'] = attack.get('name')
         attack['Direction'] = attack.get('DosDirection')
-        attack['Category'] = attack.get('UiCategory')
+        attack['Category'] = attack.get('description', {}).get('attackCategory')
         del attack['attackId']
         del attack['name']
         del attack['DosDirection']
-        del attack['UiCategory']
     return attacks_list
 
 
 def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
     """ Add entries to the policies_list and update it in order not to break backward.
         Args:
-            policies_list: List[Dict] - a list of the alerts that returned from the API.
+            policies_list: List[Dict] - a list of the ips policies that returned from the API.
         Returns:
             Returns the updated ips policies list.
     """
@@ -611,6 +622,29 @@ def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
         del policy['policyId']
         del policy['name']
     return policies_list
+
+
+def update_ips_policy_entries(policy_details: Dict, policy_id: int) -> Dict:
+    """ update the entries to the policy_details in order not to break backward.
+        Args:
+            policy_details: Dict - the details of the specific ips policy.
+            policy_id: int - The id of the current policy.
+        Returns:
+            Returns the updated ips policies list.
+    """
+    policy_details['ID'] = policy_id
+    policy_details['Name'] = policy_details.get('PolicyName')
+    policy_details['CreatedTime'] = policy_details.get('Timestamp')
+    policy_details['VisibleToChildren'] = policy_details.get('IsVisibleToChildren')
+    policy_details['Version'] = policy_details.get('VersionNum')
+    policy_details['ExploitAttacks'] = policy_details.get('AttackCategory', {}).get('ExpolitAttackList')
+    del policy_details['PolicyName']
+    del policy_details['Timestamp']
+    del policy_details['IsVisibleToChildren']
+    del policy_details['VersionNum']
+    attack_category = policy_details.get('AttackCategory', {})
+    del attack_category['ExpolitAttackList']
+    return policy_details
 
 
 def h_r_get_domains(children: List[Dict], human_readable: List):
@@ -1237,7 +1271,7 @@ def get_alert_details_command(client: Client, args: Dict, session_str: str) -> C
     )
 
 
-def get_attacks_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_attacks_command(client: Client, args: Dict, session_str: str) -> List[CommandResults]:
     """ If an attack id is given The command returns the details for the specific attack.
         Else, gets all available attack definitions in the Manager UI.
         Args:
@@ -1248,15 +1282,15 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> Command
             A CommandResult object with The attack details or attacks list.
     """
     attack_id = args.get('attack_id')
-    limit = arg_to_number(args.get('limit', 50)) or 50
-    page = arg_to_number(args.get('page', 1)) or 1
     if attack_id:
         if not re.match('^0x[0-9A-Fa-f]{8}$', attack_id):
             raise Exception('Error! Attack ID must be formated as 32-bit hexadecimal number. for example: 0x1234BEEF')
+
     response = client.get_attacks_request(session_str, attack_id)
+
     if not attack_id:
         title = 'Attacks List'
-        attacks_list = pagination(response.get('AttackDescriptorDetailsList'), limit, page)
+        attacks_list = response.get('AttackDescriptorDetailsList', [])
     else:
         title = f'Attack no.{attack_id}'
         attacks_list = [response.get('AttackDescriptor', {})]
@@ -1278,13 +1312,18 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> Command
         removeNull=True,
         headers=headers
     )
-    return CommandResults(
+    file_ = None
+    if not attack_id:
+        file_ = fileResult(filename='get-attacks-file-result', data=readable_outputs,
+                           file_type=entryTypes['entryInfoFile'])
+
+    return [CommandResults(
         readable_output=readable_outputs,
         outputs_prefix='NSM.Attacks',
         outputs=attacks_list,
         raw_response=attacks_list,
         outputs_key_field='attackId'
-    )
+    ), file_]
 
 
 def get_domains_command(client: Client, args: Dict, session_str: str) -> CommandResults:
@@ -1416,6 +1455,46 @@ def get_ips_policies_command(client: Client, args: Dict, session_str: str) -> Co
     )
 
 
+def get_ips_policy_details_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ gets the policy details for the specific IPS policy.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The relevant ips policy details.
+    """
+    policy_id = arg_to_number(args.get('policy_id'))
+    response = client.get_ips_policy_details_request(session_str, policy_id)
+    policy_details = update_ips_policy_entries(response.get('PolicyDescriptor'), policy_id)
+    human_readable = {
+        'ID': policy_details.get('ID'),
+        'Name': policy_details.get('Name'),
+        'Description': policy_details.get('Description'),
+        'CreatedTime': policy_details.get('CreatedTime'),
+        'IsEditable': policy_details.get('IsEditable'),
+        'VisibleToChildren': policy_details.get('VisibleToChildren'),
+        'Version': policy_details.get('Version'),
+        'InboundRuleSet': policy_details.get('InboundRuleSet'),
+        'OutboundRuleSet': policy_details.get('OutboundRuleSet'),
+    }
+    headers = ['ID', 'Name', 'Description', 'CreatedTime', 'IsEditable', 'VisibleToChildren',
+               'Version', 'InboundRuleSet', 'OutboundRuleSet']
+    readable_output = tableToMarkdown(
+        name=f'IPS Policy no.{policy_id} Details',
+        t=human_readable,
+        removeNull=True,
+        headers=headers
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.IPSPolicies',
+        outputs=policy_details,
+        raw_response=policy_details,
+        outputs_key_field='ID'
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1497,6 +1576,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-ips-policies':
             results = get_ips_policies_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-get-ips-policy-details':
+            results = get_ips_policy_details_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')

@@ -1261,14 +1261,6 @@ script:
           required: false
           description: The id of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack id.
           isArray: false
-        - name: limit
-          required: false
-          isArray: false
-          description: The maximum number of projects to return. The default value is 50.
-        - name: page
-          required: false
-          isArray: false
-          description: The specific result page to display. The default is 1.
       outputs:
         - contextPath: NSM.Attacks.Direction
           description: Attack direction.
@@ -1276,15 +1268,84 @@ script:
         - contextPath: NSM.Attacks.Severity
           description: Attack severity.
           type: Number
-        - contextPath: NSM.Attacks.Category
-          description: Attack category.
-          type: String
         - contextPath: NSM.Attacks.ID
           description: Attack id.
           type: String
         - contextPath: NSM.Attacks.Name
           description: Attack name.
           type: String
+        - contextPath: NSM.Attacks.Category
+          description: Attack category
+          type: String
+        - contextPath: NSM.Attacks.description.definition
+          description: Attack Defination
+          type: String
+        - contextPath: NSM.Attacks.description.btp
+          description: BTP.
+          type: String
+        - contextPath: NSM.Attacks.description.rfSB
+          description: RFSB.
+          type: String
+        - contextPath: NSM.Attacks.description.protectionCategory
+          description: Protection Category.
+          type: String
+        - contextPath: NSM.Attacks.description.target
+          description: Attack target.
+          type: String
+        - contextPath: NSM.Attacks.description.httpResponseAttack
+          description: HTTP Response Attack.
+          type: String
+        - contextPath: NSM.Attacks.description.priority
+          description: Attack priority.
+          type: String
+        - contextPath: NSM.Attacks.description.protocols
+          description: Attack protocols.
+          type: String
+        - contextPath: NSM.Attacks.description.attackCategory
+          description: Attack Category.
+          type: String
+        - contextPath: NSM.Attacks.description.attackSubCategory
+          description: Attack Sub Category.
+          type: String
+        - contextPath: NSM.Attacks.description.snortEngine
+          description: Attack snort engine.
+          type: String
+        - contextPath: NSM.Attacks.description.versionAdded
+          description: When the attack version was added.
+          type: String
+        - contextPath: NSM.Attacks.description.versionUpdated
+          description: When the attack version was updated.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.nspId
+          description: Attack nsp Id.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.cveId
+          description: Attack CVE id.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.microsoftId
+          description: Attack microsoft Id.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.bugtraqId
+          description: Attack bugtraq Id.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.certId
+          description: Attack cert Id.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.arachNidsId
+          description: arachNidsId.
+          type: String
+        - contextPath: NSM.Attacks.description.reference.additionInfo
+          description: Additional Info.
+          type: Unknown
+        - contextPath: NSM.Attacks.description.comments.comments
+          description: Comments.
+          type: String
+        - contextPath: NSM.Attacks.description.comments.availabeToChildDomains
+          description: Is the attack availabe To Child Domains.
+          type: Boolean
+        - contextPath: NSM.Attacks.description.comments.parentDomainComments
+          description: Parent Domain Comments.
+          type: Unknown
     - name: nsm-get-domains
       description: If a domain id is given The command returns the details of the specific domain. Else, gets all available domain.
       arguments:
@@ -1417,6 +1478,227 @@ script:
         - contextPath: NSM.IPSPolicies.Name
           description: IPS policy name.
           type: String
+    - name: nsm-get-ips-policy-details
+      description: Gets all the IPS Policies defined in the specific domain.
+      arguments:
+        - name: policy_id
+          description: Specific ips policy id. To get the policy_id use !nsm-get-ips-policies command.
+          required: true
+          isArray: false
+      outputs:
+        - contextPath: NSM.IPSPolicies.ID
+          description: IPS Policy ID.
+          type: number
+        - contextPath: NSM.IPSPolicies.Name
+          description: IPS Policy name.
+          type: String
+        - contextPath: NSM.IPSPolicies.Description
+          description: IPS Policy description.
+          type: String
+        - contextPath: NSM.IPSPolicies.VisibleToChildren
+          description: Is the IPS Policy visible to child domains.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.InboundRuleSet
+          description: Inbound Policy Rule set.
+          type: String
+        - contextPath: NSM.IPSPolicies.OutboundRuleSet
+          description: Outbound Policy Rule set.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.attackName
+          description: Attack Name.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.nspId
+          description: NSP ID of the attack.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.severity
+          description: Attack Severity, number between 0 & 9.
+          type: Number
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.isSeverityCustomized
+          description: Is attack severity customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.isEnabled
+          description: Is attack enabled
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.isAlertCustomized
+          description: Is alert customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.isRecommendedForSmartBlocking
+          description: Is attack recommended for smart blocking.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.TCPReset
+          description: TCP Reset option, can be “DISABLED” / “SOURCE” / “DESTINATION” / “BOTH” string isTCPResetCustomized.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isTcpResetCustomized
+          description: Is TCP Reset Customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isICMPSend
+          description: Send ICMP Host Unreachable to Source.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isICMPSendCustomized
+          description: Send ICMP Host Unreachable to Source customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.mcAfeeNACNotification
+          description: NAC Notification configured, can be “DISABLED” / “ALL_HOSTS” / “MCAFEE_NAC_UNMANAGED_HOSTS”.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isMcAfeeNACNotificationEnabled
+          description: Is NAC Notification Enabled.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isQuarantineCustomized
+          description: Is Quarantine customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isRemediateEnabled
+          description: Is Remediate Enabled.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.blockingOption
+          description: Blocking option configured, can be “DISABLE” / “ENABLE” / “ENABLE_SMART_BLOCKING”.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isBlockingOptionCustomized
+          description: Is Blocking option customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isCapturedPrior
+          description: Should application data be captured prior to attack.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isCapturedPriorCustomized
+          description: Should application data be captured prior to attack customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.action
+          description: Action to be taken on attack, can be “DO_NOTHING” / “SEND_ALERT_AND_LOG_PACKETS” / “SEND_ALERT_ONLY”.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isLogCustomized
+          description: Is Logging customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.flow
+          description: Customixe flow, can be “SINGLE_FLOW” / “FORENSIC_ANALYSIS”.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isFlowCustomized
+          description: Customize flow type.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.isNbytesCustomized
+          description: Is logging N Bytes in each packet customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.numberOfBytesInEachPacket
+          description: Number of Bytes to be logged in each packet.
+          type: Unknown
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.loggingDuration
+          description: Packet Logging Duration.
+          type: Unknown
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.AttackResponse.TimeStamp
+          description: TimeStamp.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isEmail
+          description: Is Notification configured through Email.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isPager
+          description: Is Notification configured through Pager.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isScript
+          description: Is Notification configured through Script.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isAutoAck
+          description: Is Notification configured through Auto Ack.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isSnmp
+          description: Is Notification configured through Snmp
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isSyslog
+          description: Is Notification configured through Syslog.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isEmailCustomized
+          description: Is Notification through Email customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isPagerCustomized
+          description: Is Notification through Pager customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isScriptCustomized
+          description: Is Notification through Script customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isAutoAckCustomized
+          description: Is Notification through Auto Ack customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isSnmpCustomized
+          description: Is Notification through Snmp customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.notification.isSyslogCustomized
+          description: Is Notification through Syslog customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.protocolList
+          description: List of Protocols.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.benignTriggerProbability
+          description: Attack Benign Trigger Probability.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.target
+          description: Attack target, can be "Server" or "Client".
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.blockingType
+          description: Blocking Type, can be "Attack Packet".
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.subCategory
+          description: Attack Sub Category.
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.direction
+          description: Attack Direction, can be "INBOUND" / "OUTBOUND" / "BOTH".
+          type: String
+        - contextPath: NSM.IPSPolicies.ExpolitAttack.isAttackCustomized
+          description: Is attack customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.attackName
+          description: Attack Name.
+          type: String
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.nspId
+          description: NSP ID of the attack.
+          type: String
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.isSeverityCustomized
+          description: Is attack severity customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.severity
+          description: Attack Severity, number between 0 & 9.
+          type: Number
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.isBlockingSettingCustomized
+          description: Is Blocking customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.isDropPacket
+          description: Drop DoS Attack packets of this attack type when detected.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.IsAlertCustomized
+          description: Is alert customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.isSendAlertToManager
+          description: Is Alert Notification to be sent to Manager configured.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.timeStamp
+          description: TimeStamp.
+          type: String
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.direction
+          description: Attack Direction, can be "INBOUND" / "OUTBOUND" / "BOTH".
+          type: String
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.notification
+          description: Notification to be sent via.
+          type: Unknown
+        - contextPath: NSM.IPSPolicies.DosPolicy.LearningAttack.isAttackCustomized
+          description: Is DoS Learning Attack Customized.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.DosPolicy.ThresholdAttack
+          description: List of Threshold Attacks
+          type: String
+        - contextPath: NSM.IPSPolicies.DosPolicy.TimeStamp
+          description: TimeStamp.
+          type: Date
+        - contextPath: NSM.IPSPolicies.DosResponseSensitivityLevel
+          description: Dos Response Sensitivity Level.
+          type: Number
+        - contextPath: NSM.IPSPolicies.IsEditable
+          description: Is Policy Editable.
+          type: Boolean
+        - contextPath: NSM.IPSPolicies.CreatedTime
+          description: When the IPS Policy was created.
+          type: Date
+        - contextPath: NSM.IPSPolicies.Version
+          description: Policy version number.
+          type: Number
+        - contextPath: NSM.IPSPolicies.IsLightWeightPolicy
+          description: Is Light Weight Policy configured.
+          type: Boolean
   isfetch: false
   runonce: false
   script: '-'
