@@ -34,6 +34,7 @@ This script is used in the following playbooks and scripts.
 ---
 There are no outputs for this script.
 
-## Troubleshooting
-Multi tenant environments should be configured with Cortex Rest API instances when using this automation.
-In order for the automation script to be able to retrieve the failed tasks, the API key configured in the Cortex REST API integration, need to be of a user with *Read* permissions to the queried incident.
+### Troubleshooting
+Multi tenant environments should be configured with Cortex Rest API instance when using this automation and 
+make sure *Use tenant* parameter (in Cortex Rest API integration) is checked to make sure that API calls are made to the current tenant
+instead of the master tenant.
