@@ -46,7 +46,7 @@ script:
       required: false
       isArray: false
       defaultValue: "2020-01-01"
-    - name: aha_object_name
+    - name: feature_name
       description: The name of a specific feature to retrieve. 
       required: false
       isArray: false
@@ -86,16 +86,16 @@ script:
       description: The feature creation date.
       type: Date
   - name: aha-edit-feature
-    description: "You can edit any of the following fields in a feature: Name, Status and Description."
+    description: "You can edit the following fields in a feature: Name and Status."
     deprecated: false
     arguments:
-    - name: aha_object_name
+    - name: feature_name
       description: The name of the feature to edit.
       required: true
       isArray: false
       defaultValue: ""
     - name: fields
-      description: 'Fields in JSON format to edit in a feature. Possible fields are name, description and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "description": "desc", "status" : "Closed"}'
+      description: 'Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}'
       required: true
       isArray: false
       defaultValue: ""
@@ -112,9 +112,6 @@ script:
     - contextPath: AHA.Feature.workflow_status
       description: The feature status description.
       type: String
-    - contextPath: AHA.Feature.description
-      description: The feature description.
-      type: String
     - contextPath: AHA.Feature.created_at
       description: The feature creation date.
       type: Date
@@ -127,7 +124,7 @@ script:
       required: false
       isArray: false
       defaultValue: "2020-01-01"
-    - name: aha_object_name
+    - name: idea_name
       description: The name of a specific idea to retrieve.
       required: false
       isArray: false
@@ -170,7 +167,7 @@ script:
     description: "Edit an idea status to Shipped."
     deprecated: false
     arguments:
-    - name: aha_object_name
+    - name: idea_name
       description: The name of the idea to edit.
       required: true
       isArray: false

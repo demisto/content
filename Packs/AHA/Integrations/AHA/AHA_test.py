@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import pytest
 from CommonServerPython import *  # noqa: F401
-from AHA import Client, get, edit
+from AHA import Client, get_command, edit_command
 from AHA import AHA_TYPE
 import io
 
@@ -113,7 +113,7 @@ def test_getFeatures(mocker):
             - Asserts get a list of expected length with all features.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_features.json'))
-    results = get(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
+    results = get_command(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2022-01-01')
     assert len(results.outputs) == 3
     assert len(results.outputs[0].get('ideas')) == 1
     assert results.outputs[0].get('ideas')[0] == 'DEMO-I-299'
@@ -127,7 +127,7 @@ def test_getIdeas(mocker):
             - Asserts get a list of expected length with all ideas.
     """
     client = mock_client(mocker, util_load_json('test_data/get_all_ideas.json'))
-    results = get(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
+    results = get_command(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2022-01-01')
     assert len(results.outputs) == 4
 
 
@@ -142,7 +142,7 @@ def test_getFeaturesFromDate(mocker, file_path, aha_type, from_date):
             - Return en empty list
     """
     client = mock_client(mocker, util_load_json(file_path))
-    results = get(client=client, aha_type=aha_type, from_date=from_date)
+    results = get_command(client=client, aha_type=aha_type, from_date=from_date)
     assert len(results.outputs) == 0
 
 
@@ -154,7 +154,7 @@ def test_getAFeature(mocker):
             - Returns the requested feature
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_feature.json'))
-    result = get(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
+    result = get_command(client=client, aha_type=AHA_TYPE.FEATURES, from_date='2020-01-01', aha_object_name='DEMO-10')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-10'
 
@@ -167,7 +167,7 @@ def test_getAnIdea(mocker):
             - Returns the requested idea
     """
     client = mock_client(mocker, util_load_json('test_data/get_specific_idea.json'))
-    result = get(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
+    result = get_command(client=client, aha_type=AHA_TYPE.IDEAS, from_date='2020-01-01', aha_object_name='DEMO-I-2895')
     assert len(result.outputs) == 1
     assert result.outputs[0]['reference_num'] == 'DEMO-I-2895'
 
@@ -180,7 +180,7 @@ def test_editFeatureField(mocker):
             - Return the feature with updated fields.
     """
     client = mock_client(mocker, util_load_json('test_data/update_feature_fields.json'))
-    result = edit(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
+    result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10',
                   fields={'name': 'DEMO-10', 'description': 'new description', 'status': 'Closed'})
     assert len(result.outputs) == 1
     output = result.outputs[0]
@@ -197,7 +197,7 @@ def test_editIdeaStatus(mocker):
             - Return the idea with an updated field.
     """
     client = mock_client(mocker, util_load_json('test_data/update_idea_status.json'))
-    result = edit(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895', fields={})
+    result = edit_command(client=client, aha_type=AHA_TYPE.IDEAS, aha_object_name='DEMO-I-2895', fields={})
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == '[Test] Mirroring'
@@ -214,7 +214,7 @@ def test_editSpecificFeatureField(mocker):
     """
     new_description = 'change just description'
     client = mock_client(mocker, util_load_json('test_data/update_feature_field.json'))
-    result = edit(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10', fields={'description': new_description})
+    result = edit_command(client=client, aha_type=AHA_TYPE.FEATURES, aha_object_name='DEMO-10', fields={'description': new_description})
     assert len(result.outputs) == 1
     output = result.outputs[0]
     assert output.get('name') == 'Demo-10'

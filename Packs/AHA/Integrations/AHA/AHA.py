@@ -179,15 +179,15 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get(client: Client,
-        aha_type: AHA_TYPE,
-        from_date: str,
-        aha_object_name: str = '',
-        fields: List = [],
-        page: str = '1',
-        per_page: str = '30') -> CommandResults:
+def get_command(client: Client,
+                aha_type: AHA_TYPE,
+                from_date: str,
+                aha_object_name: str = '',
+                fields: str = '',
+                page: str = '1',
+                per_page: str = '30') -> CommandResults:
     message: List = []
-    fields_list = DEFAULT_FIELDS + fields
+    fields_list: List = DEFAULT_FIELDS + fields.split(',')
     if aha_type == AHA_TYPE.FEATURES:
         fields_list.extend(FEATURE_FIELDS)
     req_fields = ','.join(fields_list)
@@ -210,12 +210,16 @@ def get(client: Client,
     )
 
 
-def edit(client: Client,
-         aha_type: AHA_TYPE,
-         aha_object_name: str,
-         fields: Dict = {}) -> CommandResults:
+def edit_command(client: Client,
+                 aha_type: AHA_TYPE,
+                 aha_object_name: str,
+                 fields: str = '') -> CommandResults:
     message: List = []
-    response = client.edit(aha_object_name=aha_object_name, aha_type=aha_type, fields=fields)
+    try:
+        fieldsDict = eval(fields)
+    except Exception:
+        fieldsDict = {}
+    response = client.edit(aha_object_name=aha_object_name, aha_type=aha_type, fields=fieldsDict)
     if response:
         message = parse_single_object(response[aha_type.get_type_singular()], fields=EDIT_FIELDS)
         human_readable = tableToMarkdown(f'Aha! edit {aha_type.get_type_singular()}',
@@ -258,20 +262,20 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
         elif command == 'aha-get-features':
-            args['aha_type'] = AHA_TYPE.FEATURES
-            command_result = get(client, **args)
+            command_result = get_command(client, aha_type=AHA_TYPE.FEATURES,
+                                         aha_object_name=args.pop('feature_name', ''), **args)
             return_results(command_result)
         elif command == 'aha-edit-feature':
-            args['aha_type'] = AHA_TYPE.FEATURES
-            command_result = edit(client, **args)
+            command_result = edit_command(client, aha_type=AHA_TYPE.FEATURES,
+                                          aha_object_name=args.pop('feature_name', ''), **args)
             return_results(command_result)
         elif command == 'aha-get-ideas':
-            args['aha_type'] = AHA_TYPE.IDEAS
-            command_result = get(client=client, **args)
+            command_result = get_command(client=client, aha_type=AHA_TYPE.IDEAS,
+                                         aha_object_name=args.pop('idea_name', ''), **args)
             return_results(command_result)
         elif command == 'aha-edit-idea':
-            args['aha_type'] = AHA_TYPE.IDEAS
-            command_result = edit(client, **args)
+            command_result = edit_command(client, aha_type=AHA_TYPE.IDEAS,
+                                          aha_object_name=args.pop('idea_name', ''), **args)
             return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
