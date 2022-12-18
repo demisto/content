@@ -4042,7 +4042,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                         'ou': vulnerability.get('host_info', {}).get('ou'),
                         'Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
                         'Site Name': vulnerability.get('host_info', {}).get('site_name')})
-    human_readable = tableToMarkdown('List Vulnerabilities for ost info', outputs, removeNull=True, headers=headers)
+    human_readable = tableToMarkdown('List Vulnerabilities For Host', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response,
                           readable_output=human_readable, outputs=vulnerability_response.get('resources'),
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
