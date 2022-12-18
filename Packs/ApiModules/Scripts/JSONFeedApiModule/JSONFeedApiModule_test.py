@@ -27,36 +27,7 @@ def test_json_feed_no_config():
         assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
 
 
-def test_json_feed_with_config():
-    with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
-        ip_ranges = json.load(ip_ranges_json)
-
-    feed_name_to_config = {
-        'AMAZON': {
-            'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
-            'extractor': "prefixes[?service=='AMAZON']",
-            'indicator': 'ip_prefix',
-            'indicator_type': FeedIndicatorType.CIDR,
-            'fields': ['region', 'service']
-        }
-    }
-
-    with requests_mock.Mocker() as m:
-        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges)
-
-        client = Client(
-            url='https://ip-ranges.amazonaws.com/ip-ranges.json',
-            credentials={'username': 'test', 'password': 'test'},
-            feed_name_to_config=feed_name_to_config,
-            insecure=True
-        )
-
-        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
-                                                 auto_detect=False)
-        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == 1117
-
-
-@pytest.mark.parametrize('config, total_indicators, indicator_with_few_tags', [
+CONFIG_PARAMETERS = [
     (
         {
             'AMAZON': {
@@ -64,10 +35,7 @@ def test_json_feed_with_config():
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
                 'indicator_type': FeedIndicatorType.CIDR,
-                'fields': ['region', 'service'],
-                'mapping': {
-                    'region': 'Region'
-                }
+                'fields': ['region', 'service']
             }
         },
         1117,
@@ -80,28 +48,43 @@ def test_json_feed_with_config():
                 'extractor': "prefixes[?service=='AMAZON']",
                 'indicator': 'ip_prefix',
                 'indicator_type': FeedIndicatorType.CIDR,
-                'fields': ['region', 'service'],
-                'mapping': {
-                    'region': 'Region',
-                    'service': 'service'
-                }
+                'fields': ['region', 'service']
             },
             'CLOUDFRONT': {
                 'url': 'https://ip-ranges.amazonaws.com/ip-ranges.json',
                 'extractor': "prefixes[?service=='CLOUDFRONT']",
                 'indicator': 'ip_prefix',
                 'indicator_type': FeedIndicatorType.CIDR,
-                'fields': ['region', 'service'],
-                'mapping': {
-                    'region': 'Region',
-                    'service': 'service'
-                }
+                'fields': ['region', 'service']
             }
         },
         1148,
         36
     )
-])
+]
+
+
+@pytest.mark.parametrize('config, total_indicators, indicator_with_few_tags', CONFIG_PARAMETERS)
+def test_json_feed_with_config(config, total_indicators, indicator_with_few_tags):
+    with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
+        ip_ranges = json.load(ip_ranges_json)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://ip-ranges.amazonaws.com/ip-ranges.json', json=ip_ranges)
+
+        client = Client(
+            url='https://ip-ranges.amazonaws.com/ip-ranges.json',
+            credentials={'username': 'test', 'password': 'test'},
+            feed_name_to_config=config,
+            insecure=True
+        )
+
+        indicators, _ = fetch_indicators_command(client=client, indicator_type='CIDR', feedTags=['test'],
+                                                 auto_detect=False)
+        assert len(jmespath.search(expression="[].rawJSON.service", data=indicators)) == total_indicators
+        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_few_tags
+
+
 def test_json_feed_with_config_mapping(config, total_indicators, indicator_with_few_tags):
     with open('test_data/amazon_ip_ranges.json') as ip_ranges_json:
         ip_ranges = json.load(ip_ranges_json)
@@ -123,7 +106,6 @@ def test_json_feed_with_config_mapping(config, total_indicators, indicator_with_
         custom_fields = indicator['fields']
         assert 'Region' in custom_fields
         assert 'region' in indicator['rawJSON']
-        assert len([i for i in indicators if ',' in i.get('rawJSON').get('service', '')]) == indicator_with_few_tags
 
 
 FLAT_LIST_OF_INDICATORS = '''{
