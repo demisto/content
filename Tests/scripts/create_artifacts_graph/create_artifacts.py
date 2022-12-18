@@ -25,7 +25,8 @@ def create_dependencies(content_dto: ContentDTO, output: Path):
         first_level_dependencies = {}
         all_level_dependencies = []
         for dependency in dependencies:
-            all_level_dependencies.append(dependency.content_item.object_id)
+            if dependency.mandatorily:
+                all_level_dependencies.append(dependency.content_item.object_id)
             if dependency.is_direct:
                 first_level_dependencies[dependency.content_item.object_id] = {
                     "display_name": dependency.content_item.name,
@@ -55,6 +56,7 @@ def main():
         # use default timer to measure time
         logger.info("Marshalling content graph")
         start_time = default_timer()
+
         content_dto: ContentDTO = interface.marshal_graph(args.marketplace, all_level_dependencies=True)
         logger.info(f'Finished marshalling content graph. Total time took: {default_timer() - start_time} seconds')
         logger.info("Creating content artifacts zips")
