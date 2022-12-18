@@ -7,7 +7,6 @@ filter
     xdm.target.resource.id = to_string(json_extract(assigned_object, "$.id")),
     xdm.target.resource.name = json_extract_scalar(assigned_object, "$.name"),
     xdm.target.resource.type = assigned_object_type;
-
 filter
     user != null
 | alter
