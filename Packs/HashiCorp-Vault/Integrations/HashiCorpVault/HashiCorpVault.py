@@ -607,7 +607,8 @@ def fetch_credentials():
     concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
-    engines_to_fetch_from = [{'path': '', 'version': '1', 'type': 'AWS'}]
+    engines_to_fetch_from = [{'path': '', 'version': '2', 'type': 'AWS'}]
+    # engines_to_fetch_from = [{'path': 'secret', 'version': '2', 'type': 'KV'}]
     # for engine_type in ENGINES:
     # engines_to_fetch = list(
     #     filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
@@ -736,9 +737,10 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     # TODO: figure out if concat_username_to_cred_name is needed in AWS ?
     # TODO: add all the config of the path to the readme and the different credentials types to the readme
-    # TODO: fix bug when getting a secret that is not in the root
-    # TODO: add a ttl parameter
-    # TODO: add a parameter to set the pull time for the secretes by using the integration context (use get_integration_context and set_integration_context)
+    # TODO: fix bug when getting a secret that is not in the root ??????????? or is it ok with the folder ????????
+    # TODO: add a ttl parameter - v is needed ????????
+    # TODO: add a parameter to set the pull time for the secretes by using the integration context (use get_integration_context and set_integration_context) - vvvvvv
+    # TODO: add a parameter if the user wants to use recursion in get secrets???????
     secrets = []
     roles_list_url = engine_path + 'aws/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))
@@ -763,6 +765,8 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         body = {}
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
+        #     max value 43200
+        body['ttl'] = demisto.params().get('ttl', '43200') + 's'
         aws_credentials = send_request(generate_credentials_url, method, body=body)
         if not aws_credentials or 'data' not in aws_credentials:
             return []
@@ -805,7 +809,20 @@ try:
     if demisto.command() == 'test-module':
         demisto.results('ok')
     elif demisto.command() == 'fetch-credentials':
-        fetch_credentials()
+        context = demisto.getIntegrationContext()
+        get_credentials = False
+        if 'credentials_last_fetch' in integ_context:
+            last = datetime(integ_context['credentials_last_fetch'])
+            now = datetime.now()
+            diff = (now - last).total_seconds() / 60
+            if diff >= int(demisto.params().get('credentialsFetchInterval')):
+                get_credentials = True
+        else:
+            get_credentials = True
+        if get_credentials:
+            fetch_credentials()
+            integ_context['credentials_last_fetch'] = now
+            demisto.setIntegrationContext(integ_context)
     elif demisto.command() == 'hashicorp-list-secrets-engines':
         list_secrets_engines_command()
     elif demisto.command() == 'hashicorp-list-secrets':

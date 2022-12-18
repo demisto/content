@@ -31,6 +31,17 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- additionalinfo: The time until we delete the generated user in AWS(seconds, max value=43200,only available for AWS engine).
+  display: Time To keep Generated secret
+  name: ttl
+  defaultvalue: "3600"
+  type: 0
+  required: false
+- defaultvalue: '1'
+  display: Credwentials Fetch Interval
+  name: credentialsFetchInterval
+  required: false
+  type: 19
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
