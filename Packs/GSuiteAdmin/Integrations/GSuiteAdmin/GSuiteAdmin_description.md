@@ -7,6 +7,8 @@ Provide at least one of the scopes mentioned for each command.
 ### Commands and its scopes
 * gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
+* gsuite-user-get
+	* https://www.googleapis.com/auth/admin.directory.user
 * gsuite-mobile-update 
 	* https://www.googleapis.com/auth/admin.directory.device.mobile.action
 * gsuite-mobile-delete 
@@ -29,6 +31,8 @@ Provide at least one of the scopes mentioned for each command.
 	*  https://www.googleapis.com/auth/admin.datatransfer   		
 	* https://www.googleapis.com/auth/admin.datatransfer.readonly   
 * gsuite-group-create 
+	* https://www.googleapis.com/auth/admin.directory.group 
+* gsuite-group-get
 	* https://www.googleapis.com/auth/admin.directory.group 
 * gsuite-role-create 
 	*  https://www.googleapis.com/auth/admin.directory.rolemanagement 

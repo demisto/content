@@ -1,10 +1,7 @@
-id: GSuiteAdmin-MobileDevices-Test
-version: -1
-name: GSuiteAdmin-MobileDevices-Test
-description: |-
-  This playbook uses the G Suite Admin integration and tests the scenarios
-  of the various commands like gsuite-mobiledevice-list, and gsuite-mobile-update.
-
+id: a4fa210a-7b9c-4059-8df1-555d24b8881c
+version: 16
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-GSuiteAdmin-MobileDevices-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -17,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -128,7 +124,8 @@ tasks:
       id: f578b65b-ccdb-4948-87ae-88cecb6586b9
       version: -1
       name: CheckContentAutoMobileDevices
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -319,7 +316,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -378,10 +374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5a9f856d-c28a-447a-8c9a-3a6f03b8e77f
+    taskid: a1d4d878-b163-48f0-8f2f-9b463a4e4fa9
     type: regular
     task:
-      id: 5a9f856d-c28a-447a-8c9a-3a6f03b8e77f
+      id: a1d4d878-b163-48f0-8f2f-9b463a4e4fa9
       version: -1
       name: GetMobileDeviceToPerformAction
       description: Retrieves a paginated list that includes company-owned mobile devices.
@@ -421,13 +417,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5cde2292-597d-419b-8ba5-bb94f0bdb5c7
+    taskid: 90e552a8-37c1-434f-8901-250f55cc99c7
     type: regular
     task:
-      id: 5cde2292-597d-419b-8ba5-bb94f0bdb5c7
+      id: 90e552a8-37c1-434f-8901-250f55cc99c7
       version: -1
       name: PerformActionOnMobileDevice
-      description: Executes an action that affects a mobile device. For example, remotely wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -549,7 +546,8 @@ tasks:
       id: 44d92f99-3364-41a8-8416-64df93f1f3b5
       version: -1
       name: CheckMobileDeviceStatusAfterAction
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -585,13 +583,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 7580c732-4df2-4416-8623-60201b0348c0
+    taskid: 9039fb72-5631-45ce-841b-c07d55054319
     type: regular
     task:
-      id: 7580c732-4df2-4416-8623-60201b0348c0
+      id: 9039fb72-5631-45ce-841b-c07d55054319
       version: -1
       name: RevertMobileDeviceStatus
-      description: Executes an action that affects a mobile device. For example, remotely wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -624,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c0734a2a-51e4-4ebb-8b8e-29a10138583e
+    taskid: aa671d18-efa0-4279-83f9-2b1e6b7b16fb
     type: regular
     task:
-      id: c0734a2a-51e4-4ebb-8b8e-29a10138583e
+      id: aa671d18-efa0-4279-83f9-2b1e6b7b16fb
       version: -1
       name: GetMobileDevices-ManualPagination-NextPageToken
       description: Retrieves a paginated list that includes company-owned mobile devices.
@@ -646,7 +645,11 @@ tasks:
       page_size:
         simple: ${inputs.page_size}
       page_token:
-        simple: ${GSuite.MobileDevices.NextPageToken}
+        complex:
+          root: GSuite.MobileDevices
+          accessor: NextPageToken
+          transformers:
+          - operator: LastArrayElement
       projection:
         simple: FULL
       sort_order:
@@ -727,26 +730,25 @@ inputs:
     simple: "5"
   required: false
   description: The max mobile devices to return
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: page_size
   value:
     simple: "3"
   required: false
   description: The page size
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: mobile_device_id
   value:
     simple: 311fc9cb34adecd6
   required: false
   description: The mobile device id to perform the action command on it.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: customer_id
   value:
     simple: C02f0zfqw
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 sourceplaybookid: b6efece6-051a-43f3-8858-fd4bbdae29df
 quiet: true
-fromversion: 6.5.0

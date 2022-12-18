@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: GSuiteAdmin
+  id: GSuiteAdmin_Test
   version: -1
 configuration:
 - display: User's Service Account JSON
@@ -11,6 +11,7 @@ configuration:
   name: admin_email
   required: false
   type: 0
+  additionalinfo: An admin email is required for the Test validation to run, if not configured, then each command can receive an admin_email argument as optional.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -21,7 +22,7 @@ configuration:
   type: 8
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin
-name: GSuiteAdmin
+name: GSuiteAdmin_Test
 script:
   commands:
   - arguments:

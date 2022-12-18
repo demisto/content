@@ -26,7 +26,6 @@ MESSAGES: Dict[str, str] = {
     'DATATRANSFER_TRANSFER_PARAM_FORMAT_ERROR': 'application_transfer_params argument not in expected format. Please '
                                                 'provide a comma separated string of format "key1:val;key2:val1,val2"',
     'INVALID_ADMIN_EMAIL': 'Invalid value of argument/parameter Admin Email.',
-    # New Error Messages
     'INVALID_RESOURCE_CUSTOMER_ID_ERROR': 'Please check the resource_id and the customer_id arguments.',
     'INVALID_RESOURCE_ID_ERROR': 'Please check the resource_id argument.',
     'INVALID_ORG_UNIT_PATH': 'Please insert a valid organization unit path (org_unit_path)',
@@ -59,7 +58,6 @@ HR_MESSAGES: Dict[str, str] = {
     'USER_DELETE': 'User with user key {} deleted successfully.',
     'USER_UPDATE': 'Updated User Details',
     'USER_GET': 'Retrieved details for user {}',
-    # New HR messages
     'MOBILE_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - Mobile Devices List',
     'CHROMEOS_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeOS Devices List',
     'CHROMEOS_DEVICE_ACTION_SUCCESS': 'ChromeOS device with resource id - {} updated.',
@@ -78,7 +76,6 @@ URL_SUFFIX: Dict[str, str] = {
     'TOKEN_REVOKE': 'admin/directory/v1/users/{}/tokens/{}',
     'CUSTOM_USER_SCHEMA': 'admin/directory/v1/customer/{}/schemas',
     'DATA_TRANSFER_CREATE': 'admin/datatransfer/v1/transfers',
-    # New URL suffixes
     'MOBILE_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/mobile',
     'CHROMEOS_DEVICE_ACTION': 'admin/directory/v1/customer/{}/devices/chromeos/{}/action',
     'CHROMEOS_DEVICES_LIST': 'admin/directory/v1/customer/{}/devices/chromeos',
@@ -101,7 +98,6 @@ COMMAND_SCOPES: Dict[str, List[str]] = {
                        'https://www.googleapis.com/auth/admin.directory.user'],
     'ROLE_ASSIGNMENT': ['https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly',
                         *SCOPES['ROLE_MANAGEMENT']],
-    # New command scopes
     'MOBILE_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.mobile.readonly'],
     'CHROMEOS_DEVICE_ACTION': ['https://www.googleapis.com/auth/admin.directory.device.chromeos'],
     'CHROMEOS_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'],
@@ -529,7 +525,10 @@ def test_module(client) -> str:
         if ADMIN_EMAIL:
             client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
         else:
-            return_results("Please insert Admin Email parameter for the test to run")
+            # return_results("Please insert Admin Email parameter for the test to run")
+            return_results(('In order for the test_module to run, an admin_email is required, '
+                            'if it is not configured, then each command can receive an admin_email '
+                            'argument as an optional argument.'))
     return 'ok'
 
 
@@ -1428,39 +1427,6 @@ def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[Co
         raise DemistoException(error_message)
 
 
-# @logger
-# def gsuite_mobile_device_action_command(client, args: Dict[str, str]) -> CommandResults:
-#     """Executes an action that affects a mobile device. For example, remotely wiping a device.
-
-#     Args:
-#         client (_type_): A GSuiteClient instance to do http requests.
-#         args (Dict[str, str]): The arguments of the command.
-
-#     Raises:
-#         DemistoException: If customer_id or resource_id are invalid.
-
-#     Returns:
-#         CommandResults: CommandResults that hold the data to return to the engine.
-#     """
-#     try:
-#         # We want to catch the exception that is thrown from a bad API call, so we can map the
-#         # error message to a more human readable message
-#         client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICE_ACTION', []),
-#                                    subject=ADMIN_EMAIL)
-#         mobile_device_action_request(client=client, **args)
-
-#     except DemistoException as e:
-#         error_message = str(e)
-#         if('Internal error encountered' in error_message or 'Bad Request' in error_message):
-#             raise DemistoException(MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', ''))
-#         raise DemistoException(error_message)
-
-#     command_results = CommandResults(
-#         readable_output=HR_MESSAGES.get('MOBILE_DEVICE_ACTION_SUCCESS', '').format(args.get('resource_id')),
-#     )
-#     return command_results
-
-
 @logger
 def gsuite_chromeos_device_action_command(client, args: Dict[str, str]) -> CommandResults:
     """Executes an action that affects a ChromeOS Device.
@@ -1518,7 +1484,6 @@ def main() -> None:
         'gsuite-datatransfer-request-create': datatransfer_request_create_command,
         'gsuite-user-delete': user_delete_command,
         'gsuite-user-update': user_update_command,
-        # New Commands
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
         'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command

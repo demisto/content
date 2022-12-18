@@ -62,7 +62,7 @@ This integration was integrated and tested majorly with G Suite Basic edition.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | user_service_account_json | User's Service Account JSON | True |
-| admin_email | Admin Email | False |
+| admin_email | An admin email is required for the Test validation to run, if not configured, then each command can receive an admin_email argument as optional | False |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
 
@@ -76,6 +76,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Takes an action that affects a mobile device. For example, remotely wiping a device.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.mobile.action`
 
 #### Base Command
 
@@ -107,6 +109,10 @@ There is no context output for this command.
 ***
 Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of devices connected to the domain. If the device still has a valid login/authentication, it will be added back on it's next successful sync.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.readonly`
+`https://www.googleapis.com/auth/admin.directory.user `
+`https://www.googleapis.com/auth/cloud-platform `
 
 #### Base Command
 
@@ -137,6 +143,9 @@ There is no context output for this command.
 ***
 Adds an alias.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.alias`
+`https://www.googleapis.com/auth/admin.directory.user `
 
 #### Base Command
 
@@ -186,6 +195,8 @@ Adds an alias.
 ***
 Creates a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -296,6 +307,8 @@ Creates a user.
 ***
 Creates a group with a group name and its description.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.group`
 
 #### Base Command
 
@@ -358,6 +371,9 @@ Creates a group with a group name and its description.
 ***
 Retrieves a paginated list of all role assignments.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly`
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -436,6 +452,8 @@ Retrieves a paginated list of all role assignments.
 ***
 Creates a role assignment.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -496,6 +514,8 @@ Creates a role assignment.
 ***
 Creates a new role.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.rolemanagement`
 
 #### Base Command
 
@@ -566,6 +586,8 @@ admin_email=admin@domain.com
 ***
 Delete all access tokens issued by a user for an application.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user.security`
 
 #### Base Command
 
@@ -596,6 +618,9 @@ There is no context output for this command.
 ***
 Lists the transfers for a customer by source user, destination user, or status.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.datatransfer`
+`https://www.googleapis.com/auth/admin.datatransfer.readonly`
 
 #### Base Command
 
@@ -714,6 +739,8 @@ Lists the transfers for a customer by source user, destination user, or status.
 Creates a custom user schema to add custom fields to user profiles.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
@@ -799,6 +826,8 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 Updates a custom user schema.
 Note: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.userschema`
 
 #### Base Command
 
@@ -887,6 +916,8 @@ Note: If all three applications_raw_json, applications_raw_json_entry_id and app
 the higher precedence will be in order of applications_raw_json, applications_raw_json_entry_id, 
 and application_id respectively.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.datatransfer`
 
 #### Base Command
 
@@ -966,6 +997,8 @@ and application_id respectively.
 ***
 Updates a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -1177,6 +1210,8 @@ Updates a user.
 ***
 Deletes a user.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -1204,6 +1239,8 @@ There is no context output for this command.
 ***
 Retreive a group's details given a group key.
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.group`
 
 #### Base Command
 
@@ -1265,6 +1302,8 @@ Retreive a group's details given a group key.
 ***
 Retrieve a user's details given a user key
 
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
 
 #### Base Command
 
@@ -1471,7 +1510,7 @@ Retrieve a user's details given a user key
 Retrieves a paginated list that includes company-owned mobile devices.
 
 ##### Required Permissions
-* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
+`https://www.googleapis.com/auth/admin.directory.device.mobile.readonly`
 
 #### Base Command
 
@@ -1654,3 +1693,161 @@ Retrieves a paginated list that includes company-owned mobile devices.
 >|---|---|---|---|---|---|---|
 >| SM-G960F | Android 8.0.0" | example_resource_id | example_serial_number | APPROVED | ANDROID | example_name |
 >| iPhone10,6 | iOS 15.4.1 | example_resource_id | example_serial_number | APPROVED | IOS_SYNC | example_name |
+
+
+### gsuite-chromeosdevice-list
+***
+Retrieves a paginated list of company-owned ChromeOS devices.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly`
+
+#### Base Command
+
+`gsuite-chromeosdevice-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user). Possible values are: BASIC, FULL. | Optional | 
+| query | Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators. | Optional | 
+| order_by | Device property to use for sorting results. Possible values are: ANNOTATED_LOCATION, ANNOTATED_USER, LAST_SYNC, NOTES, SERIAL_NUMBER, STATUS. | Optional | 
+| sort_order | Whether to return results in ascending or descending order. Must be used with the order_by parameter. Possible values are: ASCENDING, DESCENDING. | Optional | 
+| org_unit_path | The full path of the organizational unit (without the leading /) or its unique ID. | Optional | 
+| include_child_org_units | Whether to return devices from all child organizational units. If this is set to true, 'org_unit_path' must be provided. Possible values are: yes, no. | Optional | 
+| limit | The maximum number of records to return from the collection. The default value is 50. | Optional | 
+| page | The page number. | Optional | 
+| page_size | The number of requested results per page. The default value is 50. Max allowed value is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.ChromeOSDevices.NextPageToken | String | The token of the next page. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices | List | A list of Chrome OS Device objects. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceId | String | The unique ID of the Chrome device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.serialNumber | String | The Chrome device serial number entered when the device was enabled. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.status | String | Status of the device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.lastSync | String | The date and time the device was last synchronized with the policy settings in the Admin console. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.supportEndDate | String | The final date the device will be supported. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedUser | String | The user of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedLocation | String | The address or location of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.notes | String | Notes about this device added by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.model | String | The device's model information. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.meid | String | The Mobile Equipment Identifier \(MEID\) or the International Mobile Equipment Identity \(IMEI\) for the 3G mobile card in a mobile device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.orderNumber | String | The device's order number. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.willAutoRenew | Boolean | Determines if the device will auto renew its support after the support end date. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osVersion | String | The Chrome device's operating system version. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.platformVersion | String | The Chrome device's platform version. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.firmwareVersion | String | The Chrome device's firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.macAddress | String | The device's wireless MAC address. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.bootMode | String | The boot mode for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.lastEnrollmentTime | String | The date and time the device was last enrolled. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.kind | String | The type of resource. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers | List | A list of recent device users, in descending order, by last login time. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.type | String | The type of the user. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.email | String | The user's email address. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges | List | A list of active time ranges. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.activeTime | Integer | Duration of usage in milliseconds. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.date | Integer | Date of usage. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress | String | The device's MAC address on the ethernet network interface. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedAssetId | String | The asset identifier as noted by an administrator or specified during enrollment. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.etag | String | ETag of the resource. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports | List | Reports of disk space and other info about mounted/connected volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo | List | Disk volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.volumeId | String | Volume id. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageTotal | String | Total disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageFree | String | Free disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamTotal | String | Total RAM on the device in bytes. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports | List | Reports of CPU utilization and temperature. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuUtilizationPercentageInfo | List | The CPU utilization percentage. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo | List | A list of CPU temperature samples. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.temperature | Integer | Temperature in Celsius degrees. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.label | String | CPU label. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo | List | Information regarding CPU specs in the device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.model | String | The CPU model name. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.architecture | String | The CPU architecture. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.maxClockSpeedKhz | Integer | The max CPU clock speed in kHz. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus | List | Information for the Logical CPUs. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.maxScalingFrequencyKhz | Integer | Maximum frequency the CPU is allowed to run at, by policy. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.currentScalingFrequencyKhz | Integer | Current frequency the CPU is running at. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.idleDuration | String | Idle time since last boot. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates | List | C-States indicate the power consumption state of the CPU. For more information look at documentation published by the CPU maker. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.displayName | String | Name of the state. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.sessionDuration | String | Time spent in the state since the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles | List | A list of device files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports | List | Reports of amounts of available RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.systemRamFreeInfo | List | Report of free RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork | List | Contains last known network. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.ipAddress | String | The IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.wanIpAddress | String | The WAN IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.autoUpdateExpiration | String | The timestamp after which the device will stop receiving Chrome updates or support. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress0 | String | MAC address used by the Chromebook's internal ethernet port, and for onboard network \(ethernet\) interface. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.dockMacAddress | String | Built-in MAC address for the docking station that the device connected to. Factory sets Media access control address \(MAC address\) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.manufactureDate | String | The date the device was manufactured in yyyy-mm-dd format. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitPath | String | The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo | Object | Trusted Platform Module \(TPM\). | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.family | String | TPM family, using the TPM 2.0 style encoding. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.specLevel | String | TPM specification level. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.manufacturer | String | TPM manufacturer code. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.tpmModel | String | TPM model number. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.firmwareVersion | String | TPM firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.vendorSpecific | String | Vendor-specific information such as Vendor ID. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles | List | A list of screenshot files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitId | String | The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus | Object | The status of the OS updates for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.state | String | The update state of an OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetOsVersion | String | New platform version of the OS image being downloaded and applied. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetKioskAppVersion | String | New required platform version from the pending updated kiosk app. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateTime | String | Date and time of the last successful OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateCheckTime | String | Date and time of the last update check. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.rebootTime | String | Date and time of the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSDevices.firstEnrollmentTime | String | Date and time for the first time the device was enrolled. | 
+
+#### Command example
+```!gsuite-chromeosdevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
+
+
+### gsuite-chromeosdevice-action
+***
+Executes an action that affects a ChromeOS Device. This includes de-provisioning, disabling, and re-enabling devices.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromeos`
+
+#### Base Command
+
+`gsuite-chromeosdevice-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
+| resource_id | The unique ID of the device. | Required | 
+| action | The action to be performed on the ChromeOS device. Possible values are: deprovision, disable, reenable, pre_provisioned_disable, pre_provisioned_reenable. | Required | 
+| deprovision_reason | Reason for deprovision. This field is required only when the action used is deprovision. Possible values are: different_model_replacement, retiring_device, same_model_replacement, upgrade_transfer. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-chromeosdevice-action resource_id=RESOURCE_ID  action=admin_account_wipe customer_id=my_customer admin_email=admin@domain.io```
+
+#### Human Readable Output
+> ChromeOS device with resource id - RESOURCE_ID updated.
