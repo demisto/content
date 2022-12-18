@@ -1508,10 +1508,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 4ec10400-3cab-406c-80f6-801f56a55dbf
+    taskid: 3ad3290a-a154-43e7-8a7e-67e1609b0e7b
     type: regular
     task:
-      id: 4ec10400-3cab-406c-80f6-801f56a55dbf
+      id: 3ad3290a-a154-43e7-8a7e-67e1609b0e7b
       version: -1
       name: Get list software
       description: Retrieves the organization software inventory.
@@ -1523,6 +1523,8 @@ tasks:
       '#none#':
       - "60"
     scriptarguments:
+      id:
+        simple: microsoft-_-powershell
       vendor:
         simple: microsoft
     separatecontext: false
