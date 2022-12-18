@@ -74,6 +74,14 @@
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_device_code",
+            "is_mockable": false,
+            "timeout": 700
+        },
+        {
+            "integrations": "Microsoft Teams Management",
+            "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
             "timeout": 700
         },
@@ -2372,6 +2380,13 @@
             "has_api": false
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
             "playbookID": "Docker Hardening Test",
             "fromversion": "5.0.0",
             "runnable_on_docker_only": true
@@ -2744,7 +2759,7 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80
         },
         {
@@ -4226,17 +4241,6 @@
             ]
         },
         {
-            "playbookID": "Microsoft Graph Security Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft Graph"
-            ],
-            "instance_names": [
-                "ms_graph_security_prod",
-                "ms_graph_security_dev"
-            ]
-        },
-        {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
@@ -4774,6 +4778,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
                 "Microsoft Teams"
