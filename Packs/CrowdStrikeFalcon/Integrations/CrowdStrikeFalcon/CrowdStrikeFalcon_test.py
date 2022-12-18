@@ -4282,7 +4282,7 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
             }
         ]
     }
-    expected_hr = '### List Vulnerabilities for ost info\n'\
+    expected_hr = '### List Vulnerabilities For Host\n'\
                   '|CVE ID|hostname|os Version|Product Type Desc|Local IP|\n' \
                   '|---|---|---|---|---|\n' \
                   '| CVE-2013-3900 | host | os_ver_example | Server | ip_addr |\n'
