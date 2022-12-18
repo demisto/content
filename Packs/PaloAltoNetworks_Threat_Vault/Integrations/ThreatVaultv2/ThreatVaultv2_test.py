@@ -191,6 +191,7 @@ def test_commands_with_not_found(
     if expected_indicator:
         assert isinstance(results[0].indicator, expected_indicator)
     if isinstance(results, list):
+        assert len(results) == 1
         assert results[0].readable_output == expected_readable_output
     else:
         assert results.readable_output == expected_readable_output
@@ -203,6 +204,8 @@ def test_commands_with_not_found(
 def test_pagination(page, page_size, limit, expected_result):
 
     results = pagination(page, page_size, limit)
+
+    assert len(results) == 2
     assert results[0] == expected_result[0]
     assert results[1] == expected_result[1]
 
@@ -272,99 +275,90 @@ def test_parse_resp_by_type(mocker, resp, expanded, expected_results):
 RESP_TO_HR_ARGS = [
     (
         {
-            "vulnerability": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "id": "test",
+            "name": "test",
+            "description": "test",
         },
         "vulnerability",
         False,
         14,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
     ),
     (
         {
-            "fileformat": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "id": "test",
+            "name": "test",
+            "description": "test",
         },
         "fileformat",
         False,
         13,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
     ),
     (
         {
-            "file": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "signatures": {"antivirus": [{"status": "test"}]},
+            "filetype": "test",
+            "size": "test",
         },
         "file",
         False,
         6,
+        (("Status", "test"), ("FileType", "test"), ("Size", "test")),
     ),
     (
         {
-            "file": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "signatures": {
+                "antivirus": [
+                    {
+                        "id": "test",
+                        "name": "test",
+                        "description": "test",
+                    }
+                ]
+            },
         },
         "file",
         True,
         15,
+        (("SignatureId", "test"), ("Description", "test"), ("Signature Name", "test")),
     ),
     (
         {
-            "antivirus": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "id": "test",
+            "name": "test",
+            "description": "test",
         },
         "antivirus",
         False,
         9,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
     ),
     (
         {
-            "spyware": [
-                {
-                    "id": "test",
-                    "name": "test",
-                    "description": "test",
-                }
-            ]
+            "id": "test",
+            "name": "test",
+            "description": "test",
         },
         "spyware",
         False,
         12,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
     ),
     (
         {
-            "release_notes": {
-                "id": "test",
-                "name": "test",
-                "description": "test",
-            }
+            "release_version": "test",
+            "content_version": "test",
+            "release_notes": {"spyware": {"disabled": "test"}},
         },
         "release_notes",
         False,
         14,
+        (
+            ("Release version", "test"),
+            ("Content version", "test"),
+            ("Disabled Spyware", "test"),
+        ),
     ),
     (
         {
@@ -379,15 +373,21 @@ RESP_TO_HR_ARGS = [
         "test",
         False,
         0,
+        (),
     ),
 ]
 
 
-@pytest.mark.parametrize("resp, type_, expanded, expected", RESP_TO_HR_ARGS)
-def test_resp_to_hr(resp, type_, expanded, expected):
+@pytest.mark.parametrize(
+    "resp, type_, expanded, expected, expected_content", RESP_TO_HR_ARGS
+)
+def test_resp_to_hr(resp, type_, expanded, expected, expected_content):
 
     result = resp_to_hr(resp, type_, expanded)
     assert len(result.keys()) == expected
+    for key, value in expected_content:
+        assert key in result
+        assert result[key] == value
 
 
 FILE_COMMAND_ARGS = [
