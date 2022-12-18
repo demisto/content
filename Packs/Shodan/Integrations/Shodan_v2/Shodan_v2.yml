@@ -172,6 +172,9 @@ script:
     - contextPath: IP.Hostname
       description: The hostname of the IP address.
       type: Unknown
+    - contextPath: IP.Relationships
+      description: The relationships between the ip and it's CVEs.
+      type: Unknown
     - contextPath: Shodan.IP.Tags
       description: The tags associated with the IP address.
       type: String
@@ -208,6 +211,9 @@ script:
     - contextPath: Shodan.IP.Address
       description: The IP address of the host as a string.
       type: String
+    - contextPath: Shodan.IP.Vulnerabilities
+      description: A list of Vulnerabilities.
+      type: Unknown
     - contextPath: DBotScore.Indicator
       description: The indicator value.
       type: String
@@ -456,7 +462,7 @@ script:
       by the specified triggers.
     execution: false
     name: shodan-network-alert-remove-service-from-whitelist
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.8.37233
   feed: false
   isfetch: false
   longRunning: false

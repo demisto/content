@@ -8,14 +8,15 @@ from pathlib import Path
 from typing import Iterable, Optional, Sequence, Union
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
-from demisto_sdk.commands.common.tools import find_type, str2bool
+from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
-    ALWAYS_INSTALLED_PACKS_XSOAR, DEFAULT_MARKETPLACE_WHEN_MISSING,
+    DEFAULT_MARKETPLACE_WHEN_MISSING,
     DEFAULT_REPUTATION_TESTS, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
     ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
-    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES, ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2)
+    SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
+    ALWAYS_INSTALLED_PACKS_MAPPING)
 from Tests.scripts.collect_tests.exceptions import (
     DeprecatedPackException, IncompatibleMarketplaceException,
     InvalidTestException, NonDictException, NonXsoarSupportedPackException,
@@ -272,8 +273,7 @@ class TestCollector(ABC):
 
     @property
     def _always_installed_packs(self) -> Optional[CollectionResult]:
-        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2 if \
-            self.marketplace == MarketplaceVersions.MarketplaceV2 else ALWAYS_INSTALLED_PACKS_XSOAR
+        always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
         return CollectionResult.union(tuple(
             CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
@@ -287,6 +287,8 @@ class TestCollector(ABC):
                 return tuple(self.conf['test_marketplacev2'])
             case MarketplaceVersions.XSOAR:
                 return XSOAR_SANITY_TEST_NAMES
+            case MarketplaceVersions.XPANSE:
+                return ()  # none at the moment
             case _:
                 raise RuntimeError(f'unexpected marketplace value {self.marketplace.value}')
 
@@ -400,6 +402,7 @@ class TestCollector(ABC):
         self._validate_path(path)
         if is_integration:
             self.__validate_skipped_integration(id_, path)
+            self.__validate_deprecated_integration(path)
         pack_marketplaces = PACK_MANAGER.get_pack_metadata(pack_id).marketplaces
         self.__validate_marketplace_compatibility(marketplaces or pack_marketplaces or (), path)
         self.__validate_support_level_is_xsoar(pack_id, version_range)
@@ -476,6 +479,12 @@ class TestCollector(ABC):
         if id_ in self.conf.skipped_integrations:
             raise NothingToCollectException(path, 'integration is skipped')
 
+    @staticmethod
+    def __validate_deprecated_integration(path: Path):
+        if path.suffix == '.yml':
+            if get_yaml(path).get('deprecated'):
+                raise NothingToCollectException(path, 'integration is deprecated')
+
     def __validate_triggering_sanity_test(self, path: Path):
         if path in PATHS.files_triggering_sanity_tests:
             self.trigger_sanity_tests = True
@@ -489,6 +498,9 @@ class TestCollector(ABC):
         if set(PACK_MANAGER.relative_to_packs(path).parts).intersection(NON_CONTENT_FOLDERS):
             raise NothingToCollectException(path, 'file under test_data, samples or documentation folder,'
                                                   ' (not triggering sanity tests)')
+
+        if path.name.casefold().endswith('_testdata.json') and 'ModelingRules' in path.parts:
+            raise NothingToCollectException(path, 'modeling rule testdata file does not yet support test collection')
 
     @staticmethod
     def __validate_support_level_is_xsoar(pack_id: str, content_item_range: Optional[VersionRange]) -> None:
@@ -507,14 +519,15 @@ class TestCollector(ABC):
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
-                if content_item_marketplaces != (self.marketplace,):
-                    # marketplacev2 must be the only value in order to be collected
+                # For XSIAM machines we collect tests that have not xsoar marketplace.
+                # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
+                # will run on xsiam machines only.
+                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
+                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-
-            case MarketplaceVersions.XSOAR:
+            case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE:
                 if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, self.marketplace)
-
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
@@ -1029,6 +1042,15 @@ def output(result: Optional[CollectionResult]):
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
 
 
+class XPANSENightlyTestCollector(NightlyTestCollector):
+    def __init__(self, graph: bool = False):
+        super().__init__(MarketplaceVersions.XPANSE, graph=graph)
+
+    def _collect(self) -> Optional[CollectionResult]:
+        logger.info('tests are not currently supported for XPANSE, returning nothing.')
+        return None
+
+
 if __name__ == '__main__':
     logger.info('TestCollector v20221108')
     sys.path.append(str(PATHS.content_path))
@@ -1066,6 +1088,8 @@ if __name__ == '__main__':
                 collector = XSOARNightlyTestCollector(graph=graph)
             case True, MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
+            case True, MarketplaceVersions.XPANSE:
+                collector = XPANSENightlyTestCollector(graph=graph)
             case _:
                 raise ValueError(f"unexpected values of {marketplace=} and/or {nightly=}")
 
