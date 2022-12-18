@@ -1,7 +1,6 @@
-import pytest
-
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
+import pytest
 import requests_mock
 import demistomock as demisto
 
@@ -168,33 +167,6 @@ def test_post_of_indicators_with_no_json_object():
     with requests_mock.Mocker() as m:
         matcher = m.post('https://api.github.com/meta', json=json.loads(FLAT_LIST_OF_INDICATORS),
                          request_headers={'content-type': 'application/x-www-form-urlencoded'})
-
-        client = Client(
-            url='https://api.github.com/meta',
-            feed_name_to_config=feed_name_to_config,
-            insecure=True, data='test=1'
-        )
-
-        indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
-        assert matcher.last_request.text == 'test=1'
-        assert len(indicators) == 3
-        assert indicators[0].get('value') == '1.1.1.1'
-        assert indicators[0].get('type') == 'IP'
-        assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
-
-
-def test_indicators_with_more_than_one_tag():
-    feed_name_to_config = {
-        'https://api.github.com/meta': {
-            'url': 'https://api.github.com/meta',
-            'extractor': '[hooks,api,web,pages,git,importer,packages,dependabot,actions][]',
-            'rawjson_include_indicator_type': False
-        }
-    }
-
-    with requests_mock.Mocker() as m:
-        with open('test_data/github_meta.json', 'r') as f:
-            matcher = m.post('https://api.github.com/meta', json=json.load(f))
 
         client = Client(
             url='https://api.github.com/meta',
