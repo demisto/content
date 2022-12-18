@@ -250,7 +250,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 indicators_values_indexes[indicator_value] = len(indicators_values)
                 indicators_values.add(indicator_value)
             else:
-                service = indicators[indicators_values_indexes[indicator_value]].get('rawJSON').get('service', '')
+                service = indicators[indicators_values_indexes[indicator_value]].get('rawJSON', {}).get('service', '')
                 if service and service != service_name:
                     service_name += f', {service}'
                 indicators[indicators_values_indexes[indicator_value]]['rawJSON']['service'] = service_name
