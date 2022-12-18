@@ -103,9 +103,9 @@ script:
         To get the ID of a folder, use the msgraph-list-drive-content command.
       name: parent_id
       required: true
-    - description: The name of the file to upload.
+    - description: The name of the file to upload. Default is file name as provided to the entry ID entry_id.
       name: file_name
-      required: true
+      required: false
     - description: The Cortex XSOAR entry ID of the file.
       name: entry_id
       required: true
@@ -609,7 +609,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.27257
+  dockerimage: demisto/python_pancloud:1.0.0.40922
   runonce: false
   script: ''
   subtype: python3
