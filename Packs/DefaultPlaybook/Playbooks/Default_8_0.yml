@@ -1,17 +1,15 @@
 id: playbook0
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
-name: Default
+name: Default_8_0
 description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 08854949-08a5-4873-8f01-b3935c78675f
+    taskid: db98e62f-f84e-4e37-8763-8b5785481abb
     type: start
     task:
-      id: 08854949-08a5-4873-8f01-b3935c78675f
+      id: db98e62f-f84e-4e37-8763-8b5785481abb
       version: -1
       name: ""
       iscommand: false
@@ -19,88 +17,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: a61fc142-58cb-4ac1-825b-7a58d85e9a11
-    type: condition
-    task:
-      id: a61fc142-58cb-4ac1-825b-7a58d85e9a11
-      version: -1
-      name: Should indicators be extracted and enriched?
-      description: Checks whether the Enrich playbook input is set to True.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.Enrich
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 09e4583d-597f-4955-897c-5bb5f24f4f57
-    type: title
-    task:
-      id: 09e4583d-597f-4955-897c-5bb5f24f4f57
-      version: -1
-      name: Enrich indicators
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "9"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 402.5,
-          "y": 390
+          "x": 52.5,
+          "y": 100
         }
       }
     note: false
@@ -112,27 +35,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+    taskid: eced4207-cad6-4ae5-8fc8-0dfb42281a9c
     type: condition
     task:
-      id: 4a2366db-81b0-41b5-8c8f-41b09e83a215
+      id: eced4207-cad6-4ae5-8fc8-0dfb42281a9c
       version: -1
-      name: Manually review the incident.
+      name: Review the incident. Is remediation required?
       description: Manually review and investigate this incident.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "No":
-      - "12"
       "Yes":
+      - "35"
+      '#default#':
       - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1055
+          "x": 52.5,
+          "y": 4120
         }
       }
     note: false
@@ -144,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
+    taskid: 55b84855-04b2-476e-84d1-8ea9d12e3599
     type: regular
     task:
-      id: 9ed78579-2deb-4871-8c5c-f6118f6e1ac2
+      id: 55b84855-04b2-476e-84d1-8ea9d12e3599
       version: -1
       name: Close Investigation
       description: Closes the current incident.
@@ -166,44 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 354e53b0-0132-44d6-895e-0f6e0a248cd9
-    type: regular
-    task:
-      id: 354e53b0-0132-44d6-895e-0f6e0a248cd9
-      version: -1
-      name: Extract indicators from incident
-      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      text:
-        complex:
-          root: incident
-    reputationcalc: 2
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 402.5,
-          "y": 520
+          "x": 52.5,
+          "y": 4620
         }
       }
     note: false
@@ -215,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e6df7983-dd60-487d-8fce-70f7f5766175
+    taskid: e2e56035-56b8-4548-8fb5-a8a5d8ca207b
     type: playbook
     task:
-      id: e6df7983-dd60-487d-8fce-70f7f5766175
+      id: e2e56035-56b8-4548-8fb5-a8a5d8ca207b
       version: -1
       name: Entity Enrichment - Generic v2
       playbookName: Entity Enrichment - Generic v2
@@ -233,8 +120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 402.5,
-          "y": 690
+          "x": 52.5,
+          "y": 3790
         }
       }
     note: false
@@ -246,17 +133,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: dfb3f612-e38a-43c1-8214-310a8e18524e
+    taskid: 5664491c-1ca5-4873-8323-311b47818fb6
     type: playbook
     task:
-      id: dfb3f612-e38a-43c1-8214-310a8e18524e
+      id: 5664491c-1ca5-4873-8323-311b47818fb6
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+        - Microsoft Headers
     nexttasks:
       '#none#':
       - "7"
@@ -264,8 +158,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 402.5,
-          "y": 860
+          "x": 52.5,
+          "y": 3960
         }
       }
     note: false
@@ -275,12 +169,45 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      CriticalEndpoints:
+        simple: admin,prod
+      CriticalGroups:
+        simple: admins,administrators
+      CriticalUsers:
+        simple: admin,administrator
+      DBotScore:
+        complex:
+          root: DBotScore
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+      MicrosoftHeadersSeverityCheck:
+        simple: ${Email.MicrosoftHeadersSeverityCheck}
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "12":
     id: "12"
-    taskid: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+    taskid: 85593651-8f0b-47ed-8963-2ce608ca8601
     type: title
     task:
-      id: de6f9320-320d-4bd6-820f-b612a7a0c2c7
+      id: 85593651-8f0b-47ed-8963-2ce608ca8601
       version: -1
       name: Done
       type: title
@@ -291,8 +218,1167 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 52.5,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a1b08df2-bf25-4b7c-82ce-e6481a796ba6
+    type: playbook
+    task:
+      id: a1b08df2-bf25-4b7c-82ce-e6481a796ba6
+      version: -1
+      name: Dedup - Generic v4
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
+      playbookName: Dedup - Generic v4
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      CloseSimilar:
+        simple: "0.9"
+      closeReason:
+        simple: Closed by Dedup Playbook within inc ${incident.id}
+      fromDate:
+        simple: 1 months ago
+      handleSimilar:
+        simple: Link and Close
+      limit:
+        simple: "200"
+      method:
+        simple: Fields and Indicators
+      minimunIncidentSimilarity:
+        simple: "0.2"
+      query:
+        simple: -status:closed -category:job
+      showIncidentSimilarityForAllFields:
+        simple: "True"
+      similarTextField:
+        simple: details,alertname,sourcebrand,type
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1a6c0e52-5f6c-414c-8abc-7e8d4e1ee3f8
+    type: playbook
+    task:
+      id: 1a6c0e52-5f6c-414c-8abc-7e8d4e1ee3f8
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      description: |-
+        This playbook extracts indicators from a file.
+        Supported file types:
+        - CSV
+        - PDF
+        - TXT
+        - HTM, HTML
+        - DOC, DOCX
+        - PPT
+        - PPTX
+        - RTF
+        - XLS
+        - XLSX
+        - XML
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 97f1bdfa-5fba-4681-8a5b-3290cf76baa3
+    type: playbook
+    task:
+      id: 97f1bdfa-5fba-4681-8a5b-3290cf76baa3
+      version: -1
+      name: PCAP Analysis
+      description: 'This playbook leverages all of the PCAP miner and PCAP file extractor sub playbook capabilities, including: * Search for specific values in a PCAP file * Parse and enrich detected indicators such as IP addresses, URLs, email addresses and domains found by the search . * Carve (extract) files found in the http, smb and other protocols and perform enrichment and detonation.'
+      playbookName: PCAP Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      AutoDetonateFiles:
+        simple: "True"
+      ExtractedFilesLimit:
+        simple: "5"
+      FilterType:
+        simple: inclusive
+      PcapFileEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapfile.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: cap
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pcapng
+          accessor: EntryID
+      QueryOperator:
+        simple: and
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+      RunFileCarving:
+        simple: "true"
+      RunParsingAndEnrichment:
+        simple: "true"
+      WhichIndicatorTypeToEnrich:
+        simple: ip,url,email
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
           "x": 50,
-          "y": 1430
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6bb67c68-dad3-4d90-83e9-9cac3e143f62
+    type: title
+    task:
+      id: 6bb67c68-dad3-4d90-83e9-9cac3e143f62
+      version: -1
+      name: File Collection
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e28f0c48-9161-4454-81c8-091e99d43be4
+    type: playbook
+    task:
+      id: e28f0c48-9161-4454-81c8-091e99d43be4
+      version: -1
+      name: Get File Sample By Hash - Generic v3
+      description: |-
+        This playbook returns a file sample correlating to a hash in the War Room using the following sub-playbooks:
+        - Get binary file by MD5 hash from Carbon Black telemetry data - VMware Carbon Black EDR v2.
+        - Get the threat (file) attached to a specific SHA256 hash - Cylance Protect v2.
+      playbookName: Get File Sample By Hash - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 027cdd66-63af-488a-80cf-e1927afa910c
+    type: playbook
+    task:
+      id: 027cdd66-63af-488a-80cf-e1927afa910c
+      version: -1
+      name: Get File Sample From Path - Generic V3
+      description: |
+        This playbook returns a file sample from a specified path and host that you input in the following playbooks:
+        1) PS Remote Get File Sample From Path.
+        2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+      playbookName: Get File Sample From Path - Generic V3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      Agent_ID:
+        complex:
+          root: incident
+          accessor: agentid
+      Host:
+        complex:
+          root: incident
+          accessor: sourcehostname
+      Path:
+        complex:
+          root: incident
+          accessor: filepath
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a22c5bca-b5cb-499d-8351-ed21c24acea1
+    type: title
+    task:
+      id: a22c5bca-b5cb-499d-8351-ed21c24acea1
+      version: -1
+      name: Detection & Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 62c5aaa8-6677-4b31-8e48-a91c545e75bc
+    type: regular
+    task:
+      id: 62c5aaa8-6677-4b31-8e48-a91c545e75bc
+      version: -1
+      name: Extract email artifacts and attachments
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+      scriptName: ParseEmailFilesV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      entryid:
+        simple: ${reportedemailentryid}
+      nesting_level_to_return:
+        simple: All files
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 3d124adb-1635-4174-8d56-43cbb918febb
+    type: condition
+    task:
+      id: 3d124adb-1635-4174-8d56-43cbb918febb
+      version: -1
+      name: Is there an email file?
+      description: Identifies whether the incident includes an email message attached as an EML or MSG file and returns the answer to playbook. Also saves the identified entry ID to context for use for later. Commonly used in automated playbooks that handle phishing reports sent to a special phishing mailbox set up by the security team.
+      scriptName: IdentifyAttachedEmail
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "20"
+    scriptarguments:
+      entryid:
+        simple: ${File.EntryID}
+    reputationcalc: 1
+    results:
+    - reportedemailentryid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 594b2598-7afe-401a-832e-fbd2848a8e15
+    type: condition
+    task:
+      id: 594b2598-7afe-401a-832e-fbd2848a8e15
+      version: -1
+      name: Is there a file?
+      description: Checks whether a file exists in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 667bbeb1-5e8d-43e5-8ad4-87f2fd195d6f
+    type: playbook
+    task:
+      id: 667bbeb1-5e8d-43e5-8ad4-87f2fd195d6f
+      version: -1
+      name: Detonate File - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: File
+          accessor: EntryID
+      File:
+        complex:
+          root: File
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 7d8d98a1-c763-4a0f-8561-73ac07398598
+    type: title
+    task:
+      id: 7d8d98a1-c763-4a0f-8561-73ac07398598
+      version: -1
+      name: '[SLA] (not supported in XSIAM?)'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8d2becf5-e853-428f-81a2-c4c8bd502682
+    type: title
+    task:
+      id: 8d2becf5-e853-428f-81a2-c4c8bd502682
+      version: -1
+      name: No file exists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7006c813-c0ea-4425-87f9-d4b48da2ea18
+    type: playbook
+    task:
+      id: 7006c813-c0ea-4425-87f9-d4b48da2ea18
+      version: -1
+      name: Detonate URL - Generic
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 5a121cd4-77f0-429b-844e-6c3fc0be8215
+    type: title
+    task:
+      id: 5a121cd4-77f0-429b-844e-6c3fc0be8215
+      version: -1
+      name: Dynamic Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4b5af373-0916-497b-8fc4-6cbbd03ad064
+    type: condition
+    task:
+      id: 4b5af373-0916-497b-8fc4-6cbbd03ad064
+      version: -1
+      name: Is there a zipped file?
+      description: 'Checked whether there is a zipped file in the incident. The following extensions are checked: 7z, gzip, tar, zip.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 7z
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: gzip
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: tar
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: zip
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 824a2ec7-bd10-47f2-8b63-56e716bd7972
+    type: regular
+    task:
+      id: 824a2ec7-bd10-47f2-8b63-56e716bd7972
+      version: -1
+      name: Unzip file
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      entryID:
+        complex:
+          root: ZipFile
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ef500551-77b3-4950-8456-5c11a3168ee7
+    type: title
+    task:
+      id: ef500551-77b3-4950-8456-5c11a3168ee7
+      version: -1
+      name: Analyze File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ddb3dfb8-ad81-4efb-8f32-80e35d58abd3
+    type: regular
+    task:
+      id: ddb3dfb8-ad81-4efb-8f32-80e35d58abd3
+      version: -1
+      name: Save zip file in a separate key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      key:
+        simple: ZipFile
+      value:
+        complex:
+          root: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 65eee51f-7edd-4fcf-8256-5fc28fdb222a
+    type: regular
+    task:
+      id: 65eee51f-7edd-4fcf-8256-5fc28fdb222a
+      version: -1
+      name: Remove the zip file from the File context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      key:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 61b4c284-3123-4c20-8dfb-71daadfaddae
+    type: title
+    task:
+      id: 61b4c284-3123-4c20-8dfb-71daadfaddae
+      version: -1
+      name: Zip Extraction
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e5431dff-a42b-4ff0-87df-07e155321014
+    type: playbook
+    task:
+      id: e5431dff-a42b-4ff0-87df-07e155321014
+      version: -1
+      name: Search Endpoints By Hash - Generic V2
+      description: Hunt using available tools
+      playbookName: Search Endpoints By Hash - Generic V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e1253688-ddf8-4479-81cf-9b0608e23e74
+    type: title
+    task:
+      id: e1253688-ddf8-4479-81cf-9b0608e23e74
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 4290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3a14edc9-b374-4638-845c-dcbf763b9c1c
+    type: playbook
+    task:
+      id: 3a14edc9-b374-4638-845c-dcbf763b9c1c
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 4440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 150c94f2-5539-4d54-8c17-634a89c83e99
+    type: playbook
+    task:
+      id: 150c94f2-5539-4d54-8c17-634a89c83e99
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: incident
+          accessor: cmdline
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.commandline
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -520,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 412c4501-9ec7-4809-8129-d6a71cd160da
+    type: title
+    task:
+      id: 412c4501-9ec7-4809-8129-d6a71cd160da
+      version: -1
+      name: Find affected endpoints
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f4cdd022-3978-4ab4-8441-0970e2ec3b8d
+    type: condition
+    task:
+      id: f4cdd022-3978-4ab4-8441-0970e2ec3b8d
+      version: -1
+      name: Should extract indicators manually (Auto-extract is off)?
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extracted is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ExtractIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 1cd8124d-07fd-4ed8-8a0e-e8351c59076e
+    type: regular
+    task:
+      id: 1cd8124d-07fd-4ed8-8a0e-e8351c59076e
+      version: -1
+      name: Extract indicators from incident
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
         }
       }
     note: false
@@ -305,27 +1391,30 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_7_#default#": 0.18,
-      "7_12_No": 0.65,
-      "7_8_Yes": 0.71
+      "21_14_no": 0.58,
+      "21_20_yes": 0.36,
+      "28_33_yes": 0.53,
+      "28_38_#default#": 0.3,
+      "39_16_#default#": 0.23,
+      "7_35_Yes": 0.21
     },
     "paper": {
       "dimensions": {
-        "height": 1445,
-        "width": 732.5,
-        "x": 50,
-        "y": 50
+        "height": 4775,
+        "width": 2560,
+        "x": -520,
+        "y": 100
       }
     }
   }
 inputs:
-- key: Enrich
+- key: ExtractIndicators
   value:
     simple: "True"
   required: false
-  description: Determines whether to enrich all indicators in the incident.
+  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
   playbookInputQuery:
 outputs: []
 tests:
-  - Default - Test
+- No tests (auto formatted)
 fromversion: 8.0.0
