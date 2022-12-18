@@ -6,17 +6,17 @@
             "product": "bluecoatproxysg",
             "dataset": "symantec_bluecoatproxysg_raw",
             "event_data": {
-                "_raw_log": "2022-11-28 07:12:56 467 8.8.8.8 407 TCP_DENIED 383 362 CONNECT tcp ntp.msn.com 443 /DigiCertAssuredIDCA-1.crt ?assdf=sadffsdf anonymous%20logon Security server-123.local.com text/plain;%20charset=utf-8 http://google.com \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\" DENIED \"DHL_SITES_Allowed_URLs_List3;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\" X-Violations-Found 1.1.1.1"
+                "_raw_log": "2022-11-28 07:12:56 467 8.8.8.8 407 TCP_DENIED 383 362 CONNECT tcp remote.msn.com 443 /DigiCertAssuredIDCA-1.crt ?assdf=sadffsdf anonymous%20logon Security server-123.local.com text/plain;%20charset=utf-8 http://google.com \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\" DENIED \"Allowed_URLS;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\" X-Violations-Found 1.1.1.1"
             },
             "expected_values": {
                 "xdm.network.http.referrer": "http://google.com",
                 "xdm.observer.name": "server-123.local.com",
                 "xdm.source.ipv4": "8.8.8.8",
                 "xdm.alert.original_alert_id": "X-Violations-Found",
-                "xdm.network.http.url_category": "\"DHL_SITES_Allowed_URLs_List3;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\"",
+                "xdm.network.http.url_category": "\"Allowed_URLS;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\"",
                 "xdm.source.sent_bytes": "362",
                 "xdm.source.user_agent": "\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\"",
-                "xdm.source.host.hostname": "ntp.msn.com",
+                "xdm.source.host.hostname": "remote.msn.com",
                 "xdm.event.outcome": "DENIED",
                 "xdm.source.user.groups": "Security",
                 "xdm.event.outcome_reason": "TCP_DENIED",
