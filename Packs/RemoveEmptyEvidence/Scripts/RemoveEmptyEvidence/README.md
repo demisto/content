@@ -21,6 +21,6 @@ if the provided string is found within the evidence- it will be removed.
 There are no outputs for this script.
 
 ### Troubleshooting
-Multi tenant environments should be configured with Cortex Rest API instance when using this automation and 
-make sure *Use tenant* parameter (in Cortex Rest API integration) is checked to make sure that API calls are made to the current tenant
-instead of the master tenant.
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+to ensure that API calls are made to the current tenant instead of the master tenant.

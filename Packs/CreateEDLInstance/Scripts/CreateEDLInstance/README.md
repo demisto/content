@@ -26,6 +26,6 @@ Use this automation to create an EDL instance on XSOAR.
 | Testing | 8008 | EDL_PORT_LIST | tags:block and type:IP |
 
 ### Troubleshooting
-Multi tenant environments should be configured with Cortex Rest API instance when using this automation and 
-make sure *Use tenant* parameter (in Cortex Rest API integration) is checked to make sure that API calls are made to the current tenant
-instead of the master tenant.
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+to ensure that API calls are made to the current tenant instead of the master tenant.
