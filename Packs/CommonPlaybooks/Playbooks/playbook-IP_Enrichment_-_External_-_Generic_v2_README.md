@@ -48,4 +48,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![IP Enrichment - External - Generic v2](../doc_files/IP_Enrichment_-_External_-_Generic_v2.png)
+![IP_Enrichment_-_External_-_Generic_v2.png](../doc_files/IP_Enrichment_-_External_-_Generic_v2.png)
