@@ -1,4 +1,4 @@
-This is the NetBox event collector integration for XSIAM.
+This is the NetBox event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 3.0 and above of NetBox API. 
 
 ## Configure NetBox Event Collector on Cortex XSIAM
@@ -9,7 +9,7 @@ This integration was integrated and tested with version 3.0 and above of NetBox 
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://www.example.com) | True |
+    | Server URL (e.g., https://www.example.com) | True |
     | API Key | True |
     | First fetch time | False |
     | The maximum number of alerts per fetch | False |
@@ -18,7 +18,7 @@ This integration was integrated and tested with version 3.0 and above of NetBox 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### netbox-get-events
 ***
@@ -33,7 +33,7 @@ Gets events from NetBox.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
+| limit | Maximum number of results to return. | Optional | 
 
 
 #### Context Output
