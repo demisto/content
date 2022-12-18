@@ -2364,6 +2364,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     is_custom_close = False
     close_custom_state = params.get('close_custom_state', None)
 
+    state_test = parsed_args.data['state']
+    demisto.debug(f'parsed_args data state before = {state_test}')
     if parsed_args.incident_changed:
         demisto.debug(f'Incident changed: {parsed_args.incident_changed}')
         if parsed_args.inc_status == IncidentStatus.DONE:
@@ -2374,7 +2376,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 parsed_args.data['state'] = '7'  # Closing incident ticket.
             elif closure_case == 'resolved' and ticket_type == INCIDENT:
                 parsed_args.data['state'] = '6'  # resolving incident ticket.
-            if closure_case and close_custom_state:  # Closing by custom state
+            if close_custom_state:  # Closing by custom state
                 demisto.debug(f'Closing by custom state = {close_custom_state}')
                 is_custom_close = True
                 parsed_args.data['state'] = close_custom_state
