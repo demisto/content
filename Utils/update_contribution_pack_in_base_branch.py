@@ -37,7 +37,8 @@ def get_pr_files(pr_number: str) -> Iterable[str]:
 
     page = 1
     while True:
-        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files')
+        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
+                                params={'page': str(page)})
         response.raise_for_status()
         files = response.json()
         if not files:
