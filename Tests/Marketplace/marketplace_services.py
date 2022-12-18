@@ -510,6 +510,7 @@ class Pack(object):
 
     def is_data_source_pack(self, yaml_content):
 
+        is_data_source = self._is_data_source
         # this's the first integration in the pack, and the pack is in xsiem
         if self._single_integration and 'marketplacev2' in self.marketplaces:
 
@@ -520,18 +521,16 @@ class Pack(object):
                 if yaml_content.get('script', {}).get('isfetchevents', False) or \
                         yaml_content.get('script', {}).get('isfetch', False) is True:
                     logging.info(f"{yaml_content.get('name')} is a Data Source potential")
-                    self._is_data_source = True
+                    is_data_source = True
         # already has the pack as data source
-        elif not self._single_integration and self._is_data_source:
+        elif not self._single_integration and is_data_source:
 
             # got a second integration in the pack that's not deprecated
             if not yaml_content.get('deprecated', False):
                 logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-                self._is_data_source = False
+                is_data_source = False
 
-        # already found integration in the pack that's not deprecated
-        if not yaml_content.get('deprecated', False):
-            self._single_integration = False
+        return is_data_source
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
@@ -550,7 +549,11 @@ class Pack(object):
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
 
-            self.is_data_source_pack(yaml_content)
+            self._is_data_source = self.is_data_source_pack(yaml_content)
+
+            # already found integration in the pack that's not deprecated
+            if not yaml_content.get('deprecated', False):
+                self._single_integration = False
 
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
