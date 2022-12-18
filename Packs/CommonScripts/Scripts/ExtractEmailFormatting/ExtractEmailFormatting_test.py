@@ -48,11 +48,11 @@ ARGS = {
 }
 
 EXPECTED_RESULTS = [
-    'xsoar@test.org.de',  # disable-secrets-detection
-    '',
-    'xsoar@test.uk',  # disable-secrets-detection
-    '',
-    'xsoar@xsoar.co.il',  # disable-secrets-detection
+    ['xsoar@test.org.de'],  # disable-secrets-detection
+    [],
+    ['xsoar@test.uk'],  # disable-secrets-detection
+    [],
+    ['xsoar@xsoar.co.il'],  # disable-secrets-detection
 ]
 
 
@@ -75,7 +75,7 @@ def test_main(mocker):
 def test_main_invalid_emails(mocker):
     """Verifies that no input returns an empty string.
        Given
-       - Empty string as an input to the fprmatter.
+       - Empty string as an input to the formatter.
        When
        - An empty string is passed to formatter by the user.
        Then
