@@ -12942,7 +12942,7 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
         max_fetch (int): Max incidents per fetch parameter
 
     Returns:
-        entries (list): a list of all the incidents entries for all the specified queries
+        (List[str], List[Dict[str,Any]]): a tuple of list of queries log types and a list of all the incidents entries for all the specified queries
     """    
     entries = []
     parsed_queries: Dict = {}
@@ -12960,7 +12960,7 @@ def fetch_incidents_request(queries: str, log_types: list, max_fetch: int):
                 if query := parsed_queries.get(log_type):
                     response_entries = get_query_entries(log_type, query, max_fetch)
                     entries.extend(response_entries)
-    return entries
+    return list(parsed_queries.keys()), entries
 
 
 def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
@@ -12982,7 +12982,7 @@ def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_d
     demisto.debug(f'filterd_incident_entries len: {len(filterd_incident_entries)}')
     return filterd_incident_entries
 
-def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime):
+def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_datetime: datetime, log_types: List[str]):
     """parses and filters raw incident entries into basic context incidents.
     
     Args:
@@ -13004,6 +13004,7 @@ def parse_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_da
     if not filterd_incident_entries:
         return fetch_start_datetime, filterd_incident_entries
 
+    # calaulate last fetch time for each log type query
     last_fetch_plain = max({entry.get("time_generated") for entry in filterd_incident_entries})
     demisto.debug(f'last fetch time: {last_fetch_plain}')
     last_fatch_datetime = dateparser.parse(last_fetch_plain, settings={'TIMEZONE': 'UTC'})
@@ -13051,15 +13052,12 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: l
     last_fetch = last_run.get("last_fetch", "")
 
     fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
-    
     demisto.debug(f'last fetch was at: {last_fetch}, time to fetch from: {fetch_start_datetime}.')
 
-    incident_entries = fetch_incidents_request(queries, log_types, max_fetch)
-    
+    log_types, incident_entries = fetch_incidents_request(queries, log_types, max_fetch)
     demisto.debug(f'{len(incident_entries)} incident entries found.')
     
-    last_fetch, incidents = parse_incident_entries(incident_entries, fetch_start_datetime)
-
+    last_fetch_dict, incidents = parse_incident_entries(incident_entries, fetch_start_datetime, log_types)
     demisto.debug(f'fetch incidents cycle finished with {len(incidents)} new incidents, latest fetch time is: {str(last_fetch)}')
 
     return last_fetch, incidents
