@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 sectionOrder:
 - Connect
 - Collect
@@ -503,10 +503,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the attachment.
+      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       isArray: false
       name: attachment_id
-      required: true
+      required: false
       secret: false
     - deprecated: true
       description: flag for rate limit retry
@@ -1349,7 +1349,7 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: true
   longRunning: false

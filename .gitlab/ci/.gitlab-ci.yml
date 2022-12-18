@@ -1,6 +1,6 @@
 
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.36840
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.41253
   artifacts:
     expire_in: 30 days
     paths:
@@ -22,7 +22,7 @@ variables:
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
   STORAGE_BASE_PATH: ""
-  SLACK_CHANNEL: "dmst-build"
+  SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
   ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
