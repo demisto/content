@@ -2045,11 +2045,9 @@ def fetch_incidents(client: Client, args: Dict[str, str]):
 
     now = str(datetime.utcnow().timestamp() * 1000.0).split('.')[0]
     last_run = demisto.getLastRun()
-    if from_ := last_run.get('time'):
-        print('israel2')
+    if from_ := last_run.get('last_time_fetch'):
         from_as_milisecound = from_
     else:
-        print('israel3')
         from_as_milisecound = str(parse_date_range(args.get('first_fetch'))[0].timestamp()).split('.')[0]
 
     # query = args.get('query')
@@ -2070,7 +2068,7 @@ def fetch_incidents(client: Client, args: Dict[str, str]):
     resp = client.get_incidents(q)
     incidents: List[dict] = resp.get('incidents', [])
 
-    demisto.setLastRun({'time': now})
+    demisto.setLastRun({'last_time_fetch': now})
     demisto.incidents(incidents)
 
 
@@ -2127,17 +2125,15 @@ def main():
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
-        'fetch-incidents': fetch_incidents
+        'fetch-incidents': fetch_incidents,
     }
 
     try:
-        print('israel')
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
                         password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
-            print('israel1')
             commands[command](client, demisto.args())
         elif command == 'test-module':
             return_outputs(*commands[command](client, demisto.args(), demisto.params()))
