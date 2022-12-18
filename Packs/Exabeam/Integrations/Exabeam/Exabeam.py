@@ -21,6 +21,7 @@ class Client(BaseClient):
     """
     Client to use in the Exabeam integration. Overrides BaseClient
     """
+
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
                  proxy: bool, headers):
         super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxy)
@@ -700,7 +701,7 @@ class Client(BaseClient):
     def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None):
         params = self.build_incident_response_query_params(incident_type, priority, query, status, limit, page_number,
                                                            page_size)
-        return self._http_request('GET', url_suffix=f'/ir/api/incident/list',
+        return self._http_request('GET', url_suffix='/ir/api/incident/list',
                                   params=params)
 
     def build_incident_response_query_params(self, incident_type, priority, query,
@@ -725,29 +726,41 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
                                   headers=headers)
 
+    def get_incidents(self, query: Dict[str, str]):
+        headers = {**self._headers, 'EXA_USERNAME': 'demisto'}
+        return self._http_request(
+            'POST',
+            url_suffix='/ir/api/incidents/search',
+            headers=headers,
+            json_data=query,
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
 def format_single_incident(incident, is_fetch=False):
     incident_fields = incident.get('fields')
-    formatted_incident =  {'incidentId': incident.get('incidentId'),
-            'name': incident.get('name'),
-            'fields': {
-                'startedDate': convert_unix_to_date(incident_fields.get('startedDate', None)),
-                'closedDate': convert_unix_to_date(incident_fields.get('closedDate', None)),
-                'createdAt': convert_unix_to_date(incident_fields.get('createdAt', None)),
-                'owner': incident_fields.get('owner'),
-                'status': incident_fields.get('status'),
-                'incidentType': incident_fields.get('incidentType'),
-                'source': incident_fields.get('source'),
-                'priority': incident_fields.get('priority'),
-                'queue': incident_fields.get('queue'),
-                'description': incident_fields.get('description')
-            }}
+    formatted_incident = {'incidentId': incident.get('incidentId'),
+                          'name': incident.get('name'),
+                          'fields': {
+        'startedDate': convert_unix_to_date(incident_fields.get('startedDate', None)),
+        'closedDate': convert_unix_to_date(incident_fields.get('closedDate', None)),
+        'createdAt': convert_unix_to_date(incident_fields.get('createdAt', None)),
+        'owner': incident_fields.get('owner'),
+        'status': incident_fields.get('status'),
+        'incidentType': incident_fields.get('incidentType'),
+        'source': incident_fields.get('source'),
+        'priority': incident_fields.get('priority'),
+        'queue': incident_fields.get('queue'),
+        'description': incident_fields.get('description')
+    }}
 
     if is_fetch:
         formatted_incident['rawJSON'] = json.dumps(incident)
 
     return formatted_incident
+
 
 def get_query_params_str(params: dict, array_type_params: dict) -> str:
     """ Used for API queries that include array type parameters. Passing them in a dictionary won't work
@@ -1141,14 +1154,10 @@ def test_module(client: Client, args: Dict[str, str], params):
     Returns:
         ok if successful
     """
-    if params.get('isFetch'):
-        client.get_list_incidents(None, None, None, status='new', limit=1)
-        demisto.results('ok')
-        return '', None, None
-    else:
-        client.test_module_request()
-        demisto.results('ok')
-        return '', None, None
+
+    client.test_module_request()
+    demisto.results('ok')
+    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -2034,22 +2043,35 @@ def list_incidents(client: Client, args: Dict[str, str]):
 
 def fetch_incidents(client: Client, args: Dict[str, str]):
 
-    query = args.get('query')
+    now = str(datetime.utcnow().timestamp() * 1000.0).split('.')[0]
+    last_run = demisto.getLastRun()
+    if from_ := last_run.get('time'):
+        print('israel2')
+        from_as_milisecound = from_
+    else:
+        print('israel3')
+        from_as_milisecound = str(parse_date_range(args.get('first_fetch'))[0].timestamp()).split('.')[0]
+
+    # query = args.get('query')
     incident_type = args.get('incident_type')
     priority = args.get('priority')
     status = args.get('status')
 
-
     q = assign_params(
         incidentType=incident_type,
         priority=priority,
-        status=status
+        status=status,
+        startedDate=[from_as_milisecound, now],
+        offset=0,
+        length=50,
+        sortBy='createdAt'
     )
 
-    resp = client.get_incidents()
+    resp = client.get_incidents(q)
     incidents: List[dict] = resp.get('incidents', [])
 
-    pass
+    demisto.setLastRun({'time': now})
+    demisto.incidents(incidents)
 
 
 def main():
@@ -2105,15 +2127,17 @@ def main():
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
-        'fetch-incidents': fetch_ir_as_incidents
+        'fetch-incidents': fetch_incidents
     }
 
     try:
+        print('israel')
         client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
                         password=password, proxy=proxy, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
+            print('israel1')
             commands[command](client, demisto.args())
         elif command == 'test-module':
             return_outputs(*commands[command](client, demisto.args(), demisto.params()))
@@ -2137,3 +2161,4 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+    # print(str(parse_date_range('3 days')[0].timestamp() * 1000).split('.')[0])
