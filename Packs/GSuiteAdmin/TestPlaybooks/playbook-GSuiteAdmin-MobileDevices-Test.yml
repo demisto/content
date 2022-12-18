@@ -1,7 +1,9 @@
-id: a4fa210a-7b9c-4059-8df1-555d24b8881c
-version: 16
-vcShouldKeepItemLegacyProdMachine: false
+id: playbook-GSuiteAdmin-MobileDevices-Test
+version: -1
 name: playbook-GSuiteAdmin-MobileDevices-Test
+description: |-
+  This playbook uses the G Suite Admin integration and tests the scenarios
+  of the various commands like gsuite-mobiledevice-list, and gsuite-mobiledevice-action.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -124,8 +127,7 @@ tasks:
       id: f578b65b-ccdb-4948-87ae-88cecb6586b9
       version: -1
       name: CheckContentAutoMobileDevices
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -316,6 +318,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -423,8 +426,7 @@ tasks:
       id: 90e552a8-37c1-434f-8901-250f55cc99c7
       version: -1
       name: PerformActionOnMobileDevice
-      description: Takes an action that affects a mobile device. For example, remotely
-        wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -546,8 +548,7 @@ tasks:
       id: 44d92f99-3364-41a8-8416-64df93f1f3b5
       version: -1
       name: CheckMobileDeviceStatusAfterAction
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -589,8 +590,7 @@ tasks:
       id: 9039fb72-5631-45ce-841b-c07d55054319
       version: -1
       name: RevertMobileDeviceStatus
-      description: Takes an action that affects a mobile device. For example, remotely
-        wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -730,25 +730,26 @@ inputs:
     simple: "5"
   required: false
   description: The max mobile devices to return
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: page_size
   value:
     simple: "3"
   required: false
   description: The page size
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: mobile_device_id
   value:
     simple: 311fc9cb34adecd6
   required: false
   description: The mobile device id to perform the action command on it.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: customer_id
   value:
     simple: C02f0zfqw
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 sourceplaybookid: b6efece6-051a-43f3-8858-fd4bbdae29df
 quiet: true
+fromversion: 6.5.0
