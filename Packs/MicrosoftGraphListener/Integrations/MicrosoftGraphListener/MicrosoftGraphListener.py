@@ -689,17 +689,29 @@ class MsGraphClient:
                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
+
             attachment_type = attachment.get('@odata.type', '')
             attachment_name = attachment.get('name', 'untitled_attachment')
+            demisto.debug(f"[TEST] {attachment_name=}, {attachment_type=}\n{attachment=}")
+            try:
+                attachment_name = base64.b64decode(attachment_name)
+                demisto.debug(f"[TEST] attachment_name after decoding - {attachment_name}")
+            except:
+                demisto.debug(f"Could not decode the {attachment_name=}")
+                pass
+                
             if attachment_type == self.FILE_ATTACHMENT:
                 try:
+                    demisto.debug(f"[TEST] attachment content before decoding = {attachment.get('contentBytes', '')}")
                     attachment_content = base64.b64decode(attachment.get('contentBytes', ''))
+                    demisto.debug(f"[TEST] attachment content after decoding = {attachment_content}")
                 except Exception as e:  # skip the uploading file step
                     demisto.info(f"MS-Graph-Listener: failed in decoding base64 file attachment with error {str(e)}")
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
                 attachment_content = self._get_attachment_mime(message_id, attachment_id, overwrite_rate_limit_retry)
+                demisto.debug(f"[TEST] attachment content mime = {attachment_content}")
                 attachment_name = f'{attachment_name}.eml'
             else:
                 # skip attachments that are not of the previous types (type referenceAttachment)
@@ -707,6 +719,7 @@ class MsGraphClient:
             # upload the item/file attachment to War Room
             upload_file(attachment_name, attachment_content, attachment_results)
 
+        demisto.debug(f"[TEST] Final attachment results = {attachment_results}")
         return attachment_results
 
     def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
