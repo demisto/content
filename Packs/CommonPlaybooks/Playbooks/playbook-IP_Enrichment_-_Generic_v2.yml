@@ -203,6 +203,13 @@ inputs:
   value:
     complex:
       root: inputs.ResolveIP
+      transformers:
+        - operator: SetIfEmpty
+          args:
+            applyIfEmpty: { }
+            defaultValue:
+              value:
+                simple: "False"
   required: true
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
 - key: UseReputationCommand
