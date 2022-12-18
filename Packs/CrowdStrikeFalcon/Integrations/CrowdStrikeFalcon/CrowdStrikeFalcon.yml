@@ -28,7 +28,7 @@ configuration:
   name: Reliability
   required: false
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data.
+  additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -2542,7 +2542,7 @@ script:
       name: cve_id
       isArray: true
       required: false
-    - description: Severity of the CVE. Possible values CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE.
+    - description: Severity of the CVE. The possible values- CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE.
       name: cve_severity
       isArray: true
       required: false
@@ -2550,11 +2550,11 @@ script:
       name: tags
       isArray: true
       required: false
-    - description: Status of a vulnerability. This filter supports multiple values and negation(open, closed, reopen, expired)
+    - description: Status of a vulnerability. This filter supports multiple values and negation. The possible values are- open, closed, reopen, expired.
       name: status
       isArray: true
       required: false
-    - description: Operating system platform. This filter supports negation.
+    - description: Operating system platform. This filter supports negation. The possible values are- Windows, Mac, Linux
       name: platform_name
       required: false
     - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
@@ -2565,13 +2565,17 @@ script:
       name: host_type
       isArray: true
       required: false
-    - description: Filter for vulnerabilities based on the number of days since a host last connected to Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back.
+    - description: Filter for vulnerabilities based on the number of days since a host last connected to Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10
       name: last_seen_within
       required: false
-    - description: Indicates if the vulnerability is suppressed by a suppression rule or not
+    - auto: PREDEFINED
+      description: Indicates if the vulnerability is suppressed by a suppression rule or not
       name: is_suppressed
       isArray: true
       required: false
+      predefined:
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: Display remediation information type of data to be returned for each vulnerability entity.
       defaultValue: 'True'

@@ -4203,10 +4203,10 @@ ARGS_vulnerability = [
          ]
          },
         '### List Vulnerabilities\n' \
-        '|CVE ID|CVE Severity|CVE Base Score|CVE Published Date|CVE Impact Score|CVE Exploitability Score|\n' \
-        '|---|---|---|---|---|---|\n' \
-        '| cveid1 | LOW | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
-        '| idcve4 |  |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
+        '|---|---|---|---|---|---|---|\n' \
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
 
     )
 ]
@@ -4282,8 +4282,8 @@ def test_cs_falcon_spotlight_search_vulnerability_host_by_command(mocker):
             }
         ]
     }
-    expected_hr = '### List Vulnerabilities\n'\
-                  '|CVE ID|Host Info hostname|Host Info os Version|Host Info Product Type Desc|Host Info Local IP|\n' \
+    expected_hr = '### List Vulnerabilities for ost info\n'\
+                  '|CVE ID|hostname|os Version|Product Type Desc|Local IP|\n' \
                   '|---|---|---|---|---|\n' \
                   '| CVE-2013-3900 | host | os_ver_example | Server | ip_addr |\n'
     args = {'cve_ids': 'CVE-2013-3900', 'limit': 1}

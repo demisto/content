@@ -3961,17 +3961,24 @@ Gets the detections for a specific incident.
 # Spotlight
 
 ### Using Spotlight APIs
-The Spotlight API features 7 endpoints. Use these endpoints to find and get detailed info about vulnerabilities in your environment and integrate Spotlight into your organization's other ticketing or risk management tools. Vulnerabilities are known security risks in an operating system, application, hardware, firmware, or other part of a computing stack. Spotlight tracks vulnerabilities by industry-standard frameworks like Common Vulnerabilities and Exposures (CVE). Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
+Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
 For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
 
 ### Required API client scope
 To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope. For more info, see API clients.
-Validating API data
-The Falcon sensor continuously monitors hosts for any changes and reports them as they occur. Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
+
+### Validating API data
+The Falcon sensor continuously monitors hosts for any changes and reports them as they occur.
+Depending on the timing of requests, Spotlight APIs can return values that are different from those shown by the Falcon console or an external source.
 There are other factors that can cause differences between API responses and other data sources.
 
 ### API query syntax
 If an API query doesn’t exactly match the query used on the Spotlight Vulnerabilities page, the values might differ.
+
+### Expired vulnerabilities in Spotlight APIs
+If a host is deleted or inactive for 45 days, the status of vulnerabilities on that host changes to expired. Expired vulnerabilities are removed from Spotlight after 3 days. 
+Expired vulnerabilities are only visible in API responses and are not included in reports or the Falcon console.
+An external data source might not use the same data retention policy, which can lead to discrepancies with Spotlight APIs. For more info, see Data retention in Spotlight [/documentation/43/falcon-spotlight-overview#data-retention-in-spotlight] .
 
 ### The following commands uses the Spotlight API:
 

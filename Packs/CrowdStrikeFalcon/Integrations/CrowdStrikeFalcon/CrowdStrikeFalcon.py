@@ -3926,38 +3926,34 @@ def build_url_filter(values: list[str] | str | None):
 
 def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_id: list[str] | None,
                                                      cve_severity: list[str] | None, tags: list[str] | None,
-                                                     status: list[str] | None, platform_name: list[str] | None,
+                                                     status: list[str] | None, platform_name: str | None,
                                                      host_group: list[str] | None, host_type: list[str] | None,
                                                      last_seen_within: str | None, is_suppressed: str | None, filter_: str,
                                                      remediation: bool | None, evaluation_logic: bool | None,
-                                                     host_info: bool | None, limit: str | None,
-                                                     filter_operator='AND') -> dict:
+                                                     host_info: bool | None, limit: str | None) -> dict:
     input_arg_dict = {'aid': aid,
                       'cve.id': cve_id,
-                      'cve.severity': cve_severity,
                       'host_info.tags': tags,
                       'status': status,
-                      'host_info.platform_name': platform_name,
                       'host_info.groups': host_group,
-                      'host_info.product_type_desc': host_type,
                       'last_seen_within': last_seen_within,
                       'suppression_info.is_suppressed': is_suppressed}
+    input_arg_dict['cve.severity'] = [severity.upper() for severity in cve_severity] if cve_severity else None
+    input_arg_dict['host_info.platform_name'] = platform_name.capitalize() if platform_name else None
+    input_arg_dict['host_info.product_type_desc'] = [host_type_.capitalize() for host_type_ in host_type] if host_type else None
     remove_nulls_from_dictionary(input_arg_dict)
-    op = ',' if filter_operator == 'OR' else '%2B'
-    url_filter = filter_.replace('+', op)
-    if not any((input_arg_dict, url_filter)):
-        raise DemistoException('Please add a at least one filter argument')
-    if cve_severity:
-        input_arg_dict['cve.severity'] = [severity.upper() for severity in cve_severity]
     # In Falcon Query Language, '+' (after decode '%2B) stands for AND and ',' for OR
     # (https://falcon.crowdstrike.com/documentation/45/falcon-query-language-fql)
+    url_filter = filter_.replace('+', '%2B')
+    if not any((input_arg_dict, url_filter)):
+        raise DemistoException('Please add a at least one filter argument')
     for key, arg in input_arg_dict.items():
         if url_filter:
             url_filter += '%2B'
         if isinstance(arg, list):
             url_filter += f'{key}:[\'' + "','".join(arg) + '\']'
         else:
-            url_filter = f"{url_filter}{op}{key}:'{arg}'"  # All args should be a list. this is a fallback
+            url_filter += f"{key}:'{arg}'"  # All args should be a list. this is a fallback
     url_facet = '&facet=cve'
     for argument, url_value in (
         ('remediation', remediation),
@@ -3966,7 +3962,6 @@ def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_
     ):
         if argToBoolean(url_value):
             url_facet += f"&facet={argument}"
-
     # The url is hardcoded since facet is a parameter that can have serval values, therefore we can't use a dict
     suffix_url = f'/spotlight/combined/vulnerabilities/v1?filter={url_filter}{url_facet}&limit={limit}'
     return http_request('GET', suffix_url)
@@ -4006,17 +4001,18 @@ def cs_falcon_spotlight_search_vulnerability_command(args: dict) -> CommandResul
                                                                               args.get('display_evaluation_logic_info'),
                                                                               args.get('display_host_info'),
                                                                               args.get('limit'))
-    headers = ['CVE ID', 'CVE Severity', 'CVE Base Score', 'CVE Published Date', 'CVE Impact Score',
-               'CVE Exploitability Score', 'CVE Vector']
+    headers = ['ID', 'Severity', 'Status', 'Base Score', 'Published Date', 'Impact Score',
+               'Exploitability Score', 'Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources', {}):
-        outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
-                        'CVE Severity': vulnerability.get('cve', {}).get('severity'),
-                        'CVE Base Score': vulnerability.get('cve', {}).get('base_score'),
-                        'CVE Published Date': vulnerability.get('cve', {}).get('published_date'),
-                        'CVE Impact Score': vulnerability.get('cve', {}).get('impact_score'),
-                        'CVE Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
-                        'CVE Vector': vulnerability.get('cve', {}).get('vector')
+        outputs.append({'ID': vulnerability.get('cve', {}).get('id'),
+                        'Severity': vulnerability.get('cve', {}).get('severity'),
+                        'Status': vulnerability.get('status'),
+                        'Base Score': vulnerability.get('cve', {}).get('base_score'),
+                        'Published Date': vulnerability.get('cve', {}).get('published_date'),
+                        'Impact Score': vulnerability.get('cve', {}).get('impact_score'),
+                        'Exploitability Score': vulnerability.get('cve', {}).get('exploitability_score'),
+                        'Vector': vulnerability.get('cve', {}).get('vector')
                         })
     human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response,
@@ -4033,20 +4029,20 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
     cve_ids = args.get('cve_ids')
     limit = args.get('limit', '50')
     vulnerability_response = cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids, limit)
-    headers = ['CVE ID', 'Host Info hostname', 'Host Info os Version', 'Host Info Product Type Desc',
-               'Host Info Local IP', 'Host Info ou', 'Host Info Machine Domain', 'Host Info Site Name',
+    headers = ['CVE ID', 'hostname', 'os Version', 'Product Type Desc',
+               'Local IP', 'ou', 'Machine Domain', 'Site Name',
                'CVE Exploitability Score', 'CVE Vector']
     outputs = []
     for vulnerability in vulnerability_response.get('resources', {}):
         outputs.append({'CVE ID': vulnerability.get('cve', {}).get('id'),
-                        'Host Info hostname': vulnerability.get('host_info', {}).get('hostname'),
-                        'Host Info os Version': vulnerability.get('host_info', {}).get('os_version'),
-                        'Host Info Product Type Desc': vulnerability.get('host_info', {}).get('product_type_desc'),
-                        'Host Info Local IP': vulnerability.get('host_info', {}).get('local_ip'),
-                        'Host Info ou': vulnerability.get('host_info', {}).get('ou'),
-                        'Host Info Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
-                        'Host Info Site Name': vulnerability.get('host_info', {}).get('site_name')})
-    human_readable = tableToMarkdown('List Vulnerabilities', outputs, removeNull=True, headers=headers)
+                        'hostname': vulnerability.get('host_info', {}).get('hostname'),
+                        'os Version': vulnerability.get('host_info', {}).get('os_version'),
+                        'Product Type Desc': vulnerability.get('host_info', {}).get('product_type_desc'),
+                        'Local IP': vulnerability.get('host_info', {}).get('local_ip'),
+                        'ou': vulnerability.get('host_info', {}).get('ou'),
+                        'Machine Domain': vulnerability.get('host_info', {}).get('machine_domain'),
+                        'Site Name': vulnerability.get('host_info', {}).get('site_name')})
+    human_readable = tableToMarkdown('List Vulnerabilities for ost info', outputs, removeNull=True, headers=headers)
     return CommandResults(raw_response=vulnerability_response,
                           readable_output=human_readable, outputs=vulnerability_response.get('resources'),
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
