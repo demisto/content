@@ -25,7 +25,7 @@
     - |
       echo "Trying to pull all CSV import files from bucket"
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-      gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/content/content_graph/*" /var/lib/neo4j/import
+      gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/*" /var/lib/neo4j/import
 
     - |
       if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
