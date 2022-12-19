@@ -255,3 +255,85 @@ def test_get_asset_internet_exposure_command(requests_mock):
     assert response.outputs == EXTERNAL_EXPOSURE_RESULTS
     assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
+
+
+def test_list_alerts_command(requests_mock):
+    """Tests list_alerts_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate list_alerts_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'list_alerts_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, list_alerts_command
+
+    from test_data.raw_response import LIST_ALERTS_RESPONSE
+    from test_data.expected_results import LIST_ALERTS_RESULTS
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
+                       json=LIST_ALERTS_RESPONSE)
+
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False,
+        auth=None)
+    args = {
+        'limit': '2',
+        'severity': 'high',
+        'sort_by_creation_time': 'asc'
+    }
+
+    response = list_alerts_command(client, args)
+
+    assert response.outputs == LIST_ALERTS_RESULTS
+    assert response.outputs_prefix == 'ASM.Alerts'
+    assert response.outputs_key_field == 'alert_id'
+
+# # CONTINUE WORKING HERE
+#     def test_fetch_incidents(requests_mock):
+#     """Tests fetch_incidents function.
+
+#         Given:
+#             - requests_mock instance to generate the appropriate fetch_incidents( API response,
+#               loaded from a local JSON file.
+#         When:
+#             - Running the 'fetch_incidents' command.
+#         Then:
+#             - Checks the output of the command function with the expected output.
+#     """
+#     from CortexXpanse import Client, fetch_incidents
+
+#     from test_data.raw_response import LIST_ALERTS_RESPONSE
+#     from test_data.expected_results import LIST_ALERTS_RESULTS
+#     requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
+#                        json=LIST_ALERTS_RESPONSE)
+
+#     client = Client(
+#         base_url='https://test.com/api/webapp/public_api/v1',
+#         verify=True,
+#         headers={
+#             "HOST": "test.com",
+#             "Authorizatio": "THISISAFAKEKEY",
+#             "Content-Type": "application/json"
+#         },
+#         proxy=False,
+#         auth=None)
+#     args = {
+#         'limit': '2',
+#         'severity': 'high',
+#         'sort_by_creation_time': 'asc'
+#     }
+
+#     response = list_alerts_command(client, args)
+
+#     assert response.outputs == LIST_ALERTS_RESULTS
+#     assert response.outputs_prefix == 'ASM.Alerts'
+#     assert response.outputs_key_field == 'alert_id'
