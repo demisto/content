@@ -26,7 +26,7 @@ import json
 import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
-
+import re
 import requests
 import urllib3
 from urllib.parse import urlparse
@@ -49,6 +49,7 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
+QUERY_PARAMETER_PATTERN = r'.+:\(.+\)'
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -12829,6 +12830,8 @@ def pan_os_delete_application_group_command(args):
 
 # EDITING: fetch commands 
 
+""" Fetch Incidents """
+
 def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> Optional[datetime]:
     """calculate the current time at which any new incidents should begin in UTC format.
 
@@ -12843,6 +12846,8 @@ def calculate_fetch_start_datetime(last_fetch: str, first_fetch: str) -> Optiona
         datetime: datetime object in UTC foramt
     """    
     first_fetch_datetime = dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})
+    if first_fetch_datetime is None:
+        raise DemistoException(f'Could not parse {first_fetch}.')
     if not last_fetch:
         return first_fetch_datetime
 
@@ -12926,6 +12931,8 @@ def parse_queries(queries: str) -> Optional[dict[str,str]]:
         parsed_queries = {}
         queries_list = queries.split(',')
         for query_pair in queries_list:
+            if not re.search(QUERY_PARAMETER_PATTERN, query_pair):
+                raise DemistoException('Query parameter pattern is invalid.')
             query_pair_list = query_pair.split(':',1)
             if len(query_pair_list) == 2:
                 log_type, query = query_pair_list[0], query_pair_list[1]
@@ -12975,11 +12982,11 @@ def filter_incident_entries(incident_entries: List[Dict[str,Any]], fetch_start_d
     """filter list of incident entries by removing all entries that accoured before 'fetch_start_datetime' value.
 
     Args:
-        incident_entries (list[dict[str,Any]]): list of dictioneries representing incident entries
+        incident_entries (List[Dict[str,Any]]): list of dictioneries representing incident entries
         fetch_start_datetime (datetime): the minimum start time allowed for the incident
 
     Returns:
-        list[dict[str,Any]]: filterd list of dictioneries representing incident entries
+        List[Dict[str,Any]]: filterd list of dictioneries representing incident entries
     """
     filterd_incident_entries = []
     for entry in incident_entries:
@@ -13051,7 +13058,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str,str], first_fetch: s
         first_fetch (str): first fetch parameter
 
     Returns:
-        Dict[str,datetime]: log_type:datetime key,value pair dictionary
+        Dict[str,datetime]: (log_type:datetime) key,value pair dictionary
     """    
     fetch_start_datetime_dict = {}
     
@@ -13111,8 +13118,8 @@ def main():
 
         if command == 'test-module':
             panorama_test()
-                    
-        # EDITING: Fatch incidents
+
+        # Fetch incidents
         elif command == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
             last_run = demisto.getLastRun()

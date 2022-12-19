@@ -10,6 +10,7 @@ from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+import dateparser
 
 integration_firewall_params = {
     'port': '443',
@@ -5849,3 +5850,167 @@ def test_pan_os_create_address_main_flow_error(args):
 
     with pytest.raises(DemistoException):
         panorama_create_address_command(args)
+
+
+# EDITING: fetch incidents helper functions UT's
+
+""" FETCH INCIDENTS HELPER FUNCTIONS """
+
+
+case_first_fetch = ('', '2022/01/01 12:00', dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
+case_last_fetch_time_bigger = ('2022/01/01 12:00', '2022/01/01 11:00', dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
+case_first_fetch_time_bigger = ('2022/01/01 11:00', '2022/01/01 12:00', dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
+test_calculate_fetch_start_datetime_args = [case_first_fetch, case_last_fetch_time_bigger, case_first_fetch_time_bigger]
+
+
+
+@pytest.mark.parametrize('last_fetch, first_fetch, expected_result', test_calculate_fetch_start_datetime_args)
+def test_calculate_fetch_start_datetime(last_fetch, first_fetch, expected_result):
+    """
+    Given:
+    - last run time
+    - First fetch timestamp paramter
+
+    When:
+    - calculate_fetch_start_datetime function is called
+
+    Then:
+    - assert that the returned datetime object in UTC foramt is valid
+    """
+    from Panorama import calculate_fetch_start_datetime
+    assert calculate_fetch_start_datetime(last_fetch, first_fetch) == expected_result
+
+
+def test_calculate_fetch_start_datetime_error(mocker):
+    """
+    Given:
+    - invalid last run time or First fetch timestamp paramter 
+
+    When:
+    - calculate_fetch_start_datetime function is called
+
+    Then:
+    - raise DemistoExeption with an informative message
+    """
+    from Panorama import calculate_fetch_start_datetime
+    mocker.patch.object(dateparser, 'parse', return_value=None)
+    with pytest.raises(DemistoException, match='Could not parse example.'):
+        calculate_fetch_start_datetime('example', 'example')
+
+
+case_empty_queries: tuple[str, dict] = ('', {})
+case_valid_queries = ('Log_name:(query example)', {'Log_name': '(query example)'})
+case_not_capitalized_log_name = ('log_name:(query example)', {'Log_name': '(query example)'})
+test_parse_queries_args = (case_empty_queries, case_valid_queries, case_not_capitalized_log_name)
+
+
+@pytest.mark.parametrize('queries, expected_result', test_parse_queries_args)
+def test_parse_queries(queries, expected_result):
+    """
+    Given:
+    - valid queries paramter
+
+    When:
+    - parse_queries function is called
+
+    Then:
+    - assert that the returned queries parameter transformed into a python dictionary is valid
+    """
+    from Panorama import parse_queries
+    assert parse_queries(queries) == expected_result   
+
+
+test_parse_queries_error_args = [(':(query example)'), ('Log_name:'), (':'), ('Log_name:query example)'), ('Log_name:(query example'), ('Log_name:query example')]
+
+
+@pytest.mark.parametrize('queries', test_parse_queries_error_args)
+def test_parse_queries_error(queries):
+    """
+    Given:
+    - invalid queries paramter
+
+    When:
+    - parse_queries function is called
+
+    Then:
+    - raise DemistoExeption with an informative message
+    """
+    from Panorama import parse_queries
+    with pytest.raises(DemistoException, match='Query parameter pattern is invalid.'):
+        parse_queries(queries)
+
+
+def test_filter_incident_entries():
+    """
+    Given:
+    - list of dictioneries representing incident entries
+    - the minimum start time allowed for the incident
+
+    When:
+    - filter_incident_entries function is called
+
+    Then:
+    - assert that the returned filterd list of dictioneries representing incident entries is valid
+    """
+    from Panorama import filter_incident_entries
+    assert filter_incident_entries([{'time_generated': '2022/01/01 11:00'}, {'time_generated': '2022/01/01 12:00'}, {'time_generated': '2022/01/01 13:00'}], dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})) == [{'time_generated': '2022/01/01 13:00'}]
+
+
+def test_incident_entry_to_incident_context():
+    """
+    Given:
+    - raw incident entry represented by a dictionary
+
+    When:
+    - incident_entry_to_incident_context function is called
+
+    Then:
+    - assert that the returned context formatted incident entry is valid
+    """
+    from Panorama import incident_entry_to_incident_context, DATE_FORMAT
+    raw_entry = {'seqno': '1', 'time_generated': '2022/01/01 12:00', 'type': 'TYPE'}
+    if occured := dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}):
+        context_entry = {
+            'name': '1',
+            'occurred': occured.strftime(DATE_FORMAT),
+            'rawJSON': json.dumps(raw_entry),
+            'type': 'TYPE'
+        }
+    assert incident_entry_to_incident_context(raw_entry) == context_entry  
+
+
+def test_get_fetch_start_datetime_dict():
+    """
+    Given:
+    - last fetch dictionary
+    - first fetch parameter
+
+    When:
+     - get_fetch_start_datetime_dict function is called
+
+    Then:
+    - assert that the returned (log_type,datetime) key,value pair dictionary is valid
+    """
+    from Panorama import get_fetch_start_datetime_dict
+    assert get_fetch_start_datetime_dict({'log_name': '2022/01/01 13:00'}, '2022/01/01 12:00') == {'log_name': dateparser.parse('2022/01/01 13:00', settings={'TIMEZONE': 'UTC'})}
+
+
+""" FETCH INCIDENTS FLOWS """
+
+FETCH_INCIDENTS_PARAMS = {
+    'first_detch': '24 hours',
+    'queries': "decryption:(receive_time geq '2021/01/22 08:00:00'),Threat:(receive_time geq '2021/01/22 08:00:00')",
+    'log_types': ['All'],
+    'max_fetch': 10,
+}
+
+
+def test_first_fetch_flow(mocker):
+    from Panorama import main
+    last_run_args: dict[str, str] = {}
+    mocker.patch.object(demisto, 'params', return_value=FETCH_INCIDENTS_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value={})
+    mocker.patch.object(demisto, 'getLastRun', return_value=last_run_args)
+    mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    
+    main()
