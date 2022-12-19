@@ -145,9 +145,15 @@ class Email(object):
         Returns:
             A dict with all relevant fields for an incident
         """
+        date = self.date
+        if not date:
+            demisto.info(f'Could not identify date for mail with ID {self.id}. Setting its date to be now.')
+            date = datetime.now(timezone.utc).isoformat()
+        else:
+            date = self.date.isoformat()
         return {
             'labels': self._generate_labels(),
-            'occurred': self.date.isoformat(),
+            'occurred': date,
             'created': datetime.now(timezone.utc).isoformat(),
             'details': self.text or self.html,
             'name': self.subject,
@@ -328,9 +334,6 @@ def fetch_mails(client: IMAPClient,
         if int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
-        elif email_message_object.date is None:
-            demisto.error(f"Skipping email with ID {email_message_object.message_id},"
-                          f" it doesn't include a date field that shows when was it received.")
         else:
             demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
                           f'uid_to_fetch_from: {uid_to_fetch_from}')
@@ -440,7 +443,7 @@ def list_emails(client: IMAPClient,
                                       permitted_from_domains=permitted_from_domains,
                                       limit=_limit)
     results = [{'Subject': email.subject,
-                'Date': email.date.isoformat(),
+                'Date': email.date.isoformat() if email.date else datetime.now(timezone.utc).isoformat(),
                 'To': email.to,
                 'From': email.from_,
                 'ID': email.id} for email in mails_fetched]

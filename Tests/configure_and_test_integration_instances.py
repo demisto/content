@@ -1451,8 +1451,9 @@ def report_tests_status(preupdate_fails, postupdate_fails, preupdate_success, po
             [f'Integration: "{integration_of_instance}", Instance: "{instance_name}"'
              for instance_name, integration_of_instance in failed_pre_and_post])
         logging.warning(f'Integration instances that had ("Test" Button) failures '
-                        f'both before and after the content update:\n{pformat(failed_pre_and_post_string)}')
-
+                        f'both before and after the content update'
+                        f'(No need to handle ERROR messages for these "test-module" failures):'
+                        f'\n{pformat(failed_pre_and_post_string)}.')
     # fail the step if there are instances that only failed after content was updated
     if failed_only_after_update:
         failed_only_after_update_string = "\n".join(

@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 sectionOrder:
 - Connect
 - Collect
@@ -61,6 +61,12 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Maximum number of emails to pull per fetch
+  name: fetch_limit
+  required: false
+  type: 0
+  defaultvalue: "50"
+  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -2242,7 +2248,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.37530
+  dockerimage: demisto/google-api-py3:1.0.0.41312
   isfetch: true
   longRunning: false
   longRunningPort: false
