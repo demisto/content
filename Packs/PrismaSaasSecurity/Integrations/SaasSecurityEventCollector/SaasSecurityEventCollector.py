@@ -14,7 +14,6 @@ MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
 
-MAX_EVENTS_SAMPLES = 10
 
 ''' CLIENT CLASS '''
 
