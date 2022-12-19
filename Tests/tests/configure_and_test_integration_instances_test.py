@@ -228,7 +228,7 @@ CHANGED_MARKETPLACE_PACKS = [
 +         "xsoar",
 +        "marketplacev2"
      ]
- }""", 'XSIAM', {'pack_name'}),
+ }""", 'CLOUD', {'pack_name'}),
     ("""
      "dependencies": {},
      "marketplaces": [
