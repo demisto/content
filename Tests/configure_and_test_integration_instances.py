@@ -1857,7 +1857,7 @@ def main():
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         if not os.getenv('BUCKET_UPLOAD'):  # Don't need to upload test playbooks in upload flow
-            build.create_and_upload_test_pack(packs=build.pack_ids_to_install)
+            build.create_and_upload_test_pack(packs_to_install=build.pack_ids_to_install)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
                                       new_integrations_names, build)
         if not success or not installed_content_packs_successfully:
