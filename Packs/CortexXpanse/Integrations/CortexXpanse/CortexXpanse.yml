@@ -41,9 +41,9 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- defaultvalue: 3 days
+- defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
+  name: first_fetch
   required: false
   type: 0
 - additionalinfo: 'The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alerts whose status was changed to a filtered status after its creation time will not be fetched.'
@@ -418,8 +418,8 @@ script:
       type: Unknown
     - contextPath: ASM.Alerts.detection_timestamp
       description: Date the alert was created.
-      type: Date    
-  dockerimage: demisto/python3:3.10.8.37753
+      type: Date
+  dockerimage: demisto/python3:3.10.9.40422
   isFetchSamples: true
   isfetch: true
   runonce: false

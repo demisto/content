@@ -11,6 +11,7 @@ DEFAULT_SEARCH_LIMIT = 100
 MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
+
 class Client(BaseClient):
     """
     Client class to interact with the service API.
@@ -161,7 +162,7 @@ def format_asm_id(formatted_response: List[dict]) -> List[dict]:
     return formatted_response
 
 
-def convert_to_demisto_severity(severity: str) -> int:
+def convert_to_demisto_severity(severity: str) -> float:
     """
     Maps Xpander severity to Cortex XSOAR severity.
     Converts the Xpander alert severity level ('informational', 'low', 'medium', 'high', 'critical') to Cortex XSOAR incident
@@ -228,7 +229,7 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                          'sort_by_severity. Can\'t provide both')
 
     # starts with param to only look for ASM alerts.  Can add others if defined.
-    search_params = [{"field":"alert_source","operator":"in","value":["ASM"]}]
+    search_params = [{"field": "alert_source", "operator": "in", "value": ["ASM"]}]
     if alert_id_list:
         alert_id_ints = [int(i) for i in alert_id_list]
         search_params.append({"field": "alert_id_list", "operator": "in", "value": alert_id_ints})
@@ -246,8 +247,8 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'operator': 'gte',
             'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
         })
-    
-    request_data = {"request_data": {"filters": search_params, 'search_from': search_from,'search_to': search_to}}
+
+    request_data = {"request_data": {"filters": search_params, 'search_from': search_from, 'search_to': search_to}}
     if sort_by_creation_time:
         request_data['sort'] = {
             'field': 'creation_time',
@@ -524,21 +525,24 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
     else:
         last_fetch = int(last_fetch)
     demisto.debug(f'JWILKES LASTRUN2: {last_fetch}')
-    
+
     latest_created_time = cast(int, last_fetch)
     incidents = []
-    
-    filters = [{'field': 'alert_source', 'operator': 'in', 'value': ['ASM']}, {'field': 'creation_time', 'operator': 'gte', 'value': last_fetch + 1}]
+
+    # Changed from 'last_fetch' to 'latest_created time' because they are the same and fixed type error.
+    filters = [{'field': 'alert_source', 'operator': 'in', 'value': ['ASM']}, {
+        'field': 'creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
     if severity:
         filters.append({"field": "severity", "operator": "in", "value": severity})
         demisto.debug(f'JWILKES RAW: {severity}')
-    request_data = {'request_data': {'filters': filters, 'search_from': 0, 'search_to': max_fetch}, 'sort': {'field': 'creation_time', 'keyword': 'asc'}}
+    request_data = {'request_data': {'filters': filters, 'search_from': 0,
+                                     'search_to': max_fetch}, 'sort': {'field': 'creation_time', 'keyword': 'asc'}}
 
     raw = client.list_alerts_request(request_data)
-    
+
     items = raw.get('reply', {}).get('alerts')
     for item in items:
-    #for item in items.outputs:
+        # for item in items.outputs:
         incident_created_time = item['detection_timestamp']
         incident = {
             'name': item['name'],
@@ -547,7 +551,6 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
             'rawJSON': json.dumps(item),
             'severity': convert_to_demisto_severity(item.get('severity', 'Low'))
         }
-        #demisto.debug(f'JWILKES NAME: {incident_created_time,latest_created_time}')
 
         incidents.append(incident)
 
@@ -557,6 +560,7 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
 
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
+
 
 def test_module(client: Client) -> None:
     """
@@ -597,7 +601,7 @@ def main() -> None:
             arg_name='First fetch time',
             required=True
         )
-        first_fetch_timestamp = int(first_fetch_time.timestamp())*1000 if first_fetch_time else None
+        first_fetch_timestamp = int(first_fetch_time.timestamp()) * 1000 if first_fetch_time else None
         severity = params.get('severity')
         max_fetch = int(params.get('max_fetch', 10))
         creds = params.get('credentials', {})
