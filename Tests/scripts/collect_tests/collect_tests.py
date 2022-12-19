@@ -396,6 +396,7 @@ class TestCollector(ABC):
             reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
+            only_to_install=True,
         )
 
     def __validate_compatibility(

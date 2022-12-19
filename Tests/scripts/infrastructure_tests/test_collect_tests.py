@@ -234,7 +234,7 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
     'mocked_packs_files_were_moved_from,expected_packs_to_upload',
     # (0) change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
     ((MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, XSOAR_BRANCH_ARGS,
-      ('.gitlab/helper_functions.sh',), (), None),
+      ('.gitlab/helper_functions.sh',), (), ()),
 
      # (1) Empty content folder: expecting XSIAM collector to not collect anything
      (MockerCases.empty, (), (), None, XSIAM_BRANCH_ARGS, (), (), None),
