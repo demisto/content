@@ -3848,8 +3848,8 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                 } for pack in successful_uploaded_dependencies_zip_packs
             }
         }
-        packs_results[stage].update(successful_uploaded_dependencies_zip_packs)
-        logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs}")
+        packs_results[stage].update(successful_uploaded_dependencies_zip_packs_dict)
+        logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs_dict}")
 
     if updated_private_packs:
         successful_private_packs_dict: dict = {
