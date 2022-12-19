@@ -30,6 +30,37 @@
             "tesseract"
          ],
          "docker_ref": "demisto/py3-native:8.1.0.40949"
+      },
+      "latest":{
+         "supported_docker_images":[
+            "python3",
+            "python3-deb",
+            "python3-ubi",
+            "py3-tools",
+            "py3-tools-ubi",
+            "crypto",
+            "readpdf",
+            "parse-emails",
+            "docxpy",
+            "sklearn",
+            "pandas",
+            "ippysocks-py3",
+            "oauthlib",
+            "unzip",
+            "py3ews",
+            "taxii2",
+            "pan-os-python",
+            "slackv3",
+            "google-api-py3",
+            "boto3py3",
+            "pyjwt3",
+            "joe-security",
+            "slack",
+            "office-utils",
+            "chromium",
+            "tesseract"
+         ],
+         "docker_ref": "demisto/py3-native:8.1.0.41528"
       }
    },
    "ignored_content_items":[
