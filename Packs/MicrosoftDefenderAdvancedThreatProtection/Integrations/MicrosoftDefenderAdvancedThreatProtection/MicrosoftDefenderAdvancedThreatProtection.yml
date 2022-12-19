@@ -4547,6 +4547,7 @@ script:
       description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       isArray: false
       name: id
+      required: true
       secret: false
     deprecated: false
     description: Retrieves missing KBs (security updates) by software ID.
@@ -4789,7 +4790,7 @@ script:
       name: cvss
       secret: false
     - default: false
-      description: 'Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical".'
+      description: 'A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical".'
       isArray: true
       name: severity
       secret: false

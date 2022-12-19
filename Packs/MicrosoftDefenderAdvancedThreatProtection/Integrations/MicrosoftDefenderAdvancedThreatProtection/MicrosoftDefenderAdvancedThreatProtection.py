@@ -4568,7 +4568,7 @@ def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> li
                                                indicator=cve_indicator))
     else:
         results_list.append(
-            CommandResults(readable_output=f'**{INTEGRATION_NAME} no vulnerabilities were found for software: {software_id}.**'))
+            CommandResults(readable_output=f'No vulnerabilities were found for software: {software_id}.'))
     return results_list
 
 
@@ -4725,7 +4725,7 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> lis
                                                indicator=cve_indicator))
     else:
         results_list.append(
-            CommandResults(readable_output=f'**{INTEGRATION_NAME} no vulnerabilities were found for machine: {machine_id}.**'))
+            CommandResults(readable_output=f'No vulnerabilities were found for machine: {machine_id}.'))
     return results_list
 
 
@@ -4814,7 +4814,7 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
                                                indicator=cve_indicator))
     else:
         results_list.append(
-            CommandResults(readable_output=f'**{INTEGRATION_NAME} no vulnerabilities were found.**'))
+            CommandResults(readable_output='No vulnerabilities were found.'))
     return results_list
 
 

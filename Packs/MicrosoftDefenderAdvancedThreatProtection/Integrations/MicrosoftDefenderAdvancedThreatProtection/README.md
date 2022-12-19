@@ -6294,7 +6294,7 @@ Retrieves a list of all the vulnerabilities affecting the organization per softw
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Required |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -6439,7 +6439,7 @@ Retrieves a list of all vulnerabilities.
 | description | Vulnerability description. | Optional |
 | published_on | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
 | cvss | CVSS v3 score. | Optional |
-| severity | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
+| severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
 | updated_on | Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
 | limit | Maximum number of results to retrieve. Default is 25. | Optional |
 | offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
@@ -6516,7 +6516,7 @@ Retrieves missing KBs (security updates) by software ID.
  
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Required |
  
  
 #### Context Output
