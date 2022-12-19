@@ -16,6 +16,7 @@ import io
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
 from typing import Tuple
+
 yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
@@ -187,6 +188,23 @@ def compare(
     return message
 
 
+def compare_content_packs(
+    content_packs_id_set: Path,
+    content_packs_graph: Path,
+    output_path: Path,
+    message: list[str],
+):
+    ZipFile(content_packs_id_set).extractall(output_path / "id_set")
+    ZipFile(content_packs_graph).extractall(output_path / "graph")
+    list_files_id_set = list(Path(content_packs_id_set.with_suffix("")).rglob("*"))
+    missing = [
+        path
+        for path in list_files_id_set
+        if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
+    ]
+    message.append(f"Missing files in graph: {missing}")
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", help="artifacts of the build")
@@ -209,10 +227,16 @@ def main():
     collected_packs_id_set = artifacts / "content_packs_to_install.txt"
     collected_packs_graph = artifacts / "content_packs_to_install-graph.txt"
 
+    content_packs_id_set = artifacts / "content_packs.zip"
+    content_packs_graph = artifacts / "content_packs-graph.zip"
+
     message = [
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
+
+    compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
+
     if not zip_graph.exists():
         message.append("No packs were uploaded for id_set")
     if not zip_id_set.exists():

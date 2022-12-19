@@ -107,6 +107,9 @@
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
+    - section_start "change content_packs.zip name to compare afterwards"
+    - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_graph.zip
+
 
 graph-prepare-testing-bucket-xsoar:
   variables:
