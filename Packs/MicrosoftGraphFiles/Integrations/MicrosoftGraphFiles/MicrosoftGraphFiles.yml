@@ -616,4 +616,5 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- test_MsGraphFiles
+- test_MsGraphFiles dev
+- test_MsGraphFiles prod
