@@ -74,4 +74,4 @@ dockerimage: demisto/python3:3.10.8.37753
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- IAMInitOktaUser - Test

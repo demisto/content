@@ -4968,6 +4968,11 @@
             "memory_threshold": 90
         },
         {
+            "playbookID": "IAMInitOktaUser - Test",
+            "integrations": ["Okta v2","EWSO365"],
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "OpsGenieV3",
             "playbookID": "OpsGenieV3TestPlaybook",
             "fromversion": "6.2.0"
