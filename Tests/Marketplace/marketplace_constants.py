@@ -46,6 +46,7 @@ class BucketUploadFlow(object):
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
+    SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS = "successful_uploaded_dependencies_zip_packs"
     SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
@@ -346,7 +347,6 @@ SKIPPED_STATUS_CODES = {
     PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
     PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
     PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
-    PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 }
 
 

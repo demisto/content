@@ -3792,7 +3792,8 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
                                                       successful_uploaded_dependencies_zip_packs: list, failed_packs: list,
                                                       updated_private_packs: list, images_data: dict = None):
-    """ Write the successful and failed packs to the correct section in the packs_results.json file
+    """ Write the successful, successful_uploaded_dependencies_zip_packs and failed packs to the correct section in the
+        packs_results.json file
 
     Args:
         packs_results_file_path (str): The path to the pack_results.json file
@@ -3808,9 +3809,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     """
     packs_results = load_json(packs_results_file_path)
     packs_results[stage] = dict()
-
-    # union successful_packs packs and successful_uploaded_dependencies_zip_packs so they both will be stored.
-    successful_packs += successful_uploaded_dependencies_zip_packs
 
     if failed_packs:
         failed_packs_dict = {
@@ -3838,6 +3836,20 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         }
         packs_results[stage].update(successful_packs_dict)
         logging.debug(f"Successful packs {successful_packs_dict}")
+
+    if successful_uploaded_dependencies_zip_packs:
+        successful_uploaded_dependencies_zip_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: pack.status,
+                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
+                    else "False",
+                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                } for pack in successful_uploaded_dependencies_zip_packs
+            }
+        }
+        packs_results[stage].update(successful_uploaded_dependencies_zip_packs)
+        logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs}")
 
     if updated_private_packs:
         successful_private_packs_dict: dict = {
