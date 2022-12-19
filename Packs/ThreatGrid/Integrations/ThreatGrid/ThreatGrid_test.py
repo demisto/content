@@ -108,8 +108,9 @@ def test_submit_urls(mocker):
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
     mocker.patch.object(submit_urls, 'req', mock_req)
+    args = Submit_url_input
 
-    res = submit_urls(Submit_url_input)
+    res = submit_urls(args, req=mock_req)
     assert res.outputs == expected_results
 
 def test_advanced_seach(mocker, requests_mock):
