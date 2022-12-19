@@ -4577,6 +4577,7 @@ script:
     - default: false
       description: Software ID. Use the !microsoft-atp-list-software command to get the ID.
       isArray: false
+      required: true
       name: id
       secret: false
     deprecated: false
