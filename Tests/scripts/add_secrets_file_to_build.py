@@ -1,26 +1,10 @@
 import argparse
 import json5
-import os
-import os.path
-
 from Tests.scripts.utils.GoogleSecretManagerModule import GoogleSecreteManagerModule
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def get_files(target_dir):
-    item_list = os.listdir(target_dir)
-    file_list = list()
-    for item in item_list:
-        item_dir = os.path.join(target_dir, item)
-        if os.path.isdir(item_dir):
-            file_list += get_files(item_dir)
-        else:
-            file_list.append(item_dir)
-    return file_list
-
-
 def run(options):
-    get_files(options.ar)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True)
     secret_file = {
@@ -43,7 +27,6 @@ def options_handler(args=None):
     parser.add_argument('-u', '--user', help='the user for Demisto.')
     parser.add_argument('-p', '--password', help='The password for Demisto.')
     parser.add_argument('-sf', '--json_path_file', help='Path to the secret json file.')
-    parser.add_argument('-a', '--ar', help='Test.')
     # disable-secrets-detection-start
     parser.add_argument('-sa', '--service_account',
                         help=("Path to gcloud service account, for circleCI usage. "

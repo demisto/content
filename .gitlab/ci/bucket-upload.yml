@@ -107,9 +107,6 @@ prepare-testing-bucket-xpanse-upload-flow:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - echo "T_T" >> $ARTIFACTS_FOLDER/testKKK.txt
-    - ls >> $ARTIFACTS_FOLDER/lsKKK.txt
-    - echo "b1"
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID" -a "$ARTIFACTS_FOLDER"  >> $ARTIFACTS_FOLDER/logs/get_secrets_from_gsm.log
     - section_end "Download configuration"
     - !reference [.open-ssh-tunnel]
@@ -175,9 +172,6 @@ install-packs-in-server-master:
     - section_start "Download configuration"
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - echo "T_T" >> $ARTIFACTS_FOLDER/testKKK.txt
-    - ls >> $ARTIFACTS_FOLDER/lsKKK.txt
-    - echo "b2"
     - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" -gpid "$GSM_PROJECT_ID" -a "$ARTIFACTS_FOLDER" >> $ARTIFACTS_FOLDER/logs/get_secrets_from_gsm.log
     - section_end "Download configuration"
 
