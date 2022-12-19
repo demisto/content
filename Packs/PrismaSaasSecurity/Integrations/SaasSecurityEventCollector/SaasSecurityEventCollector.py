@@ -223,7 +223,7 @@ def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = N
     return events, None
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     client_id: str = params.get('credentials', {}).get('identifier', '')
     client_secret: str = params.get('credentials', {}).get('password', '')
