@@ -403,6 +403,7 @@ script:
         and unexpired meetings will appear."
   dockerimage: demisto/pyjwt3:1.0.0.38747
   runonce: false
+  script: "-"
   subtype: python3
 fromversion: 6.5.0
 tests:
