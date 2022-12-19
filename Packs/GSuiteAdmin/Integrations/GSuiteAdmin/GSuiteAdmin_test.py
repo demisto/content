@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import demistomock as demisto
-from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES
+from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES, Client
 
 with open('test_data/service_account_json.txt') as f:
     TEST_JSON = f.read()
@@ -16,7 +16,7 @@ def gsuite_client():
     headers = {
         'Content-Type': 'application/json'
     }
-    return GSuiteClient(GSuiteClient.safe_load_non_strict_json(TEST_JSON), verify=False, proxy=False, headers=headers)
+    return Client(GSuiteClient.safe_load_non_strict_json(TEST_JSON), verify=False, proxy=False, headers=headers)
 
 
 def test_main(mocker):

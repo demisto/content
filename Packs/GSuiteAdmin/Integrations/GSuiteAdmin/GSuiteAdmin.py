@@ -6,6 +6,7 @@ import urllib3
 import hashlib
 import copy
 from typing import List, Dict, Any, Callable, NamedTuple
+from GSuiteApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -115,7 +116,6 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'DATA_TRANSFER_REQUEST_CREATE': 'GSuite.DataTransfer',
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
-    # New Output prefixes
     'MOBILE_DEVICES_LIST': 'GSuite.MobileDevices',
     'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices'
 }
@@ -144,7 +144,24 @@ ChromeOSDevicesConfig = DevicesCommandConfig(table_headers=['Serial Number', 'Us
                                              outputs_prefix=OUTPUT_PREFIX.get('CHROMEOS_DEVICES_LIST', ''),
                                              )
 
-ADMIN_EMAIL = None
+
+class Client(GSuiteClient):
+    '''
+        This class is in charge of calling the set_authorized_http function of the GSuiteClient with the required scopes
+        and subject (admin_email, which can be as a command argument or integration parameter)
+    '''
+
+    def __init__(self, service_account_dict: Dict[str, Any], proxy: bool, verify: bool, headers: Optional[Dict[str, str]] = None,
+                 base_url: str = '', admin_email: str = ''):
+        super().__init__(service_account_dict=service_account_dict,
+                         base_url=base_url, verify=verify, proxy=proxy,
+                         headers=headers)
+        self.admin_email = admin_email
+
+    def set_authorized_http(self, scopes: List[str], subject: Optional[str] = None, timeout: int = 60) -> None:
+        if not subject:
+            subject = self.admin_email
+        super().set_authorized_http(scopes=scopes, subject=subject, timeout=timeout)
 
 
 def prepare_output_user_alias_add(alias: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -510,7 +527,7 @@ def is_email_valid(email: str) -> bool:
 
 
 @logger
-def test_module(client) -> str:
+def test_module(client: Client) -> str:
     """
     Performs test connectivity by valid http response
 
@@ -521,9 +538,9 @@ def test_module(client) -> str:
     """
 
     with GSuiteClient.http_exception_handler():
-        client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
-        if ADMIN_EMAIL:
-            client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{ADMIN_EMAIL}", method='GET')
+        client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
+        if client.admin_email:
+            client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{client.admin_email}", method='GET')
         else:
             # return_results("Please insert Admin Email parameter for the test to run")
             return_results(('In order for the test_module to run, an admin_email is required, '
@@ -533,7 +550,7 @@ def test_module(client) -> str:
 
 
 @logger
-def mobile_update_command(client, args: Dict[str, str]) -> CommandResults:
+def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Takes an action that affects a mobile device. For example, remotely wiping a device.
 
@@ -542,7 +559,7 @@ def mobile_update_command(client, args: Dict[str, str]) -> CommandResults:
     :return: CommandResults which returns detailed results to war room and sets the context data.
     """
 
-    client.set_authorized_http(scopes=COMMAND_SCOPES['MOBILE_UPDATE'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=COMMAND_SCOPES['MOBILE_UPDATE'])
     args.pop('admin_email', '')
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     try:
@@ -559,7 +576,7 @@ def mobile_update_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def mobile_delete_command(client, args: Dict[str, str]) -> CommandResults:
+def mobile_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of
     devices connected to the domain. If the device still has a valid login/authentication, it will be added back on
@@ -569,7 +586,7 @@ def mobile_delete_command(client, args: Dict[str, str]) -> CommandResults:
     :param args: command arguments
     :return: CommandResults which returns detailed results to war room and sets the context data.
     """
-    client.set_authorized_http(scopes=SCOPES['DEVICE_MOBILE'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DEVICE_MOBILE'])
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     client.http_request(
         url_suffix=URL_SUFFIX['MOBILE_DELETE'].format(urllib.parse.quote(args.pop('customer_id', '')), resource_id),
@@ -579,7 +596,7 @@ def mobile_delete_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def user_create_command(client, args: Dict[str, str]) -> CommandResults:
+def user_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Creates a user.
 
@@ -589,7 +606,7 @@ def user_create_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
     prepared_args = prepare_args_for_user(args)
-    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
 
     response = client.http_request(url_suffix=URL_SUFFIX['USER'], body=prepared_args, method='POST')
 
@@ -613,7 +630,7 @@ def user_create_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def role_assignment_list_command(client, args: Dict[str, Any]) -> CommandResults:
+def role_assignment_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Prints all admin role assignments in the G Suite instance.
 
@@ -623,7 +640,7 @@ def role_assignment_list_command(client, args: Dict[str, Any]) -> CommandResults
     :return: CommandResults object with context and human-readable.
     """
     arguments = prepare_args_for_role_assignment_list(args)
-    client.set_authorized_http(scopes=COMMAND_SCOPES['ROLE_ASSIGNMENT'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=COMMAND_SCOPES['ROLE_ASSIGNMENT'])
     response = client.http_request(
         url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(args.get('customer_id', ''))),
         params=arguments)
@@ -649,7 +666,7 @@ def role_assignment_list_command(client, args: Dict[str, Any]) -> CommandResults
 
 
 @logger
-def role_assignment_create_command(client, args: Dict[str, Any]) -> CommandResults:
+def role_assignment_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Assigns a role to the customer.
 
@@ -660,7 +677,7 @@ def role_assignment_create_command(client, args: Dict[str, Any]) -> CommandResul
     """
     arguments = prepare_args_for_role_assignment_create(args)
 
-    client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
     response = client.http_request(
         url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(args.get('customer_id', ''))),
         body=arguments, method='POST')
@@ -683,7 +700,7 @@ def role_assignment_create_command(client, args: Dict[str, Any]) -> CommandResul
 
 
 @logger
-def user_alias_add_command(client, args: Dict[str, Any]) -> CommandResults:
+def user_alias_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Adds an alias.
 
@@ -695,12 +712,12 @@ def user_alias_add_command(client, args: Dict[str, Any]) -> CommandResults:
     user_key = args.get('user_key', '')
     user_key = urllib.parse.quote(user_key)  # type: ignore
     alias = args.get('alias', '')
-    admin_email = ADMIN_EMAIL
+    # admin_email = ADMIN_EMAIL
 
     body = {'alias': alias}
     body = GSuiteClient.remove_empty_entities(body)
 
-    client.set_authorized_http(scopes=COMMAND_SCOPES['USER_ALIAS_ADD'], subject=admin_email)
+    client.set_authorized_http(scopes=COMMAND_SCOPES['USER_ALIAS_ADD'])
     response = client.http_request(url_suffix=URL_SUFFIX['USER_ALIAS'].format(user_key), body=body, method='POST')
 
     outputs = prepare_output_user_alias_add(response)
@@ -717,7 +734,7 @@ def user_alias_add_command(client, args: Dict[str, Any]) -> CommandResults:
 
 
 @logger
-def group_create_command(client, args: Dict[str, str]) -> CommandResults:
+def group_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Creates a group with a group name and its description.
 
@@ -726,7 +743,7 @@ def group_create_command(client, args: Dict[str, str]) -> CommandResults:
 
     :return: CommandResults.
     """
-    client.set_authorized_http(scopes=SCOPES['GROUP'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['GROUP'])
     args.pop('admin_email', '')
     args = {key.replace('group_', ''): value for (key, value) in args.items()}
 
@@ -750,7 +767,7 @@ def group_create_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def group_get_command(client, args: Dict[str, str]) -> CommandResults:
+def group_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Get a group information with a group key
 
@@ -759,7 +776,7 @@ def group_get_command(client, args: Dict[str, str]) -> CommandResults:
 
     :return: CommandResults.
     """
-    client.set_authorized_http(scopes=SCOPES['GROUP'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['GROUP'])
     group_key_suffix = URL_SUFFIX['GROUP_GET'].format(args.pop('group', ''))
 
     response = client.http_request(
@@ -783,7 +800,7 @@ def group_get_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def role_create_command(client, args: Dict[str, str]) -> CommandResults:
+def role_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Creates a role with a role name and its description.
 
@@ -793,7 +810,7 @@ def role_create_command(client, args: Dict[str, str]) -> CommandResults:
     :return: CommandResults.
     """
 
-    client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
 
     params = {
         'rolePrivileges': get_privileges_list_from_string(args.pop('role_privileges', '')),
@@ -827,7 +844,7 @@ def role_create_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def token_revoke_command(client, args: Dict[str, str]) -> CommandResults:
+def token_revoke_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Delete all access tokens issued by a user for an application.
 
@@ -837,7 +854,7 @@ def token_revoke_command(client, args: Dict[str, str]) -> CommandResults:
     :return: CommandResults.
     """
 
-    client.set_authorized_http(scopes=SCOPES['USER_SECURITY'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['USER_SECURITY'])
 
     user_key = urllib.parse.quote(args.get('user_key', ''))
     client_id = urllib.parse.quote(args.get('client_id', ''))
@@ -848,7 +865,7 @@ def token_revoke_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def datatransfer_list_command(client, args: Dict[str, str]) -> CommandResults:
+def datatransfer_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Lists the transfers for a customer by source user, destination user, or status.
 
@@ -858,7 +875,7 @@ def datatransfer_list_command(client, args: Dict[str, str]) -> CommandResults:
     :return: CommandResults.
     """
     params = prepare_args_for_datatransfer_list(args)
-    client.set_authorized_http(scopes=COMMAND_SCOPES['DATA_TRANSFER_LIST'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=COMMAND_SCOPES['DATA_TRANSFER_LIST'])
     response = client.http_request(url_suffix=URL_SUFFIX['DATA_TRANSFER'], params=params)
 
     # Context
@@ -876,7 +893,7 @@ def datatransfer_list_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def custom_user_schema_create_command(client, args: Dict[str, Any]) -> CommandResults:
+def custom_user_schema_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Creates a custom user schema to add custom fields to user profiles.
 
@@ -886,7 +903,7 @@ def custom_user_schema_create_command(client, args: Dict[str, Any]) -> CommandRe
     :return: CommandResults object with context and human-readable.
     """
     body = prepare_args_for_custom_user_schema(args)
-    client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'])
     response = client.http_request(method='POST',
                                    url_suffix=URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(
                                        urllib.parse.quote(args.get('customer_id', ''))),
@@ -919,7 +936,7 @@ def custom_user_schema_create_command(client, args: Dict[str, Any]) -> CommandRe
 
 
 @logger
-def custom_user_schema_update_command(client, args: Dict[str, Any]) -> CommandResults:
+def custom_user_schema_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     Updates a custom user schema.
 
@@ -939,7 +956,7 @@ def custom_user_schema_update_command(client, args: Dict[str, Any]) -> CommandRe
     url_suffix = f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(args.get('customer_id', '')))}" \
                  f"/{urllib.parse.quote(schema_key)}"
 
-    client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'])
     response = client.http_request(method='PUT',
                                    url_suffix=url_suffix,
                                    body=body)
@@ -974,7 +991,7 @@ def custom_user_schema_update_command(client, args: Dict[str, Any]) -> CommandRe
 
 
 @logger
-def datatransfer_request_create_command(client, args: Dict[str, str]) -> CommandResults:
+def datatransfer_request_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Inserts a data transfer request.
 
@@ -998,7 +1015,7 @@ def datatransfer_request_create_command(client, args: Dict[str, str]) -> Command
     if app_payload.get('applicationDataTransfers'):
         request_payload['applicationDataTransfers'] = app_payload['applicationDataTransfers']
 
-    client.set_authorized_http(scopes=SCOPES['DATA_TRANSFER'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DATA_TRANSFER'])
 
     response = client.http_request(url_suffix=URL_SUFFIX['DATA_TRANSFER_CREATE'], body=request_payload, method='POST')
 
@@ -1025,7 +1042,7 @@ def datatransfer_request_create_command(client, args: Dict[str, str]) -> Command
 
 
 @logger
-def user_delete_command(client, args: Dict[str, str]) -> CommandResults:
+def user_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     Deletes a user.
 
@@ -1034,7 +1051,7 @@ def user_delete_command(client, args: Dict[str, str]) -> CommandResults:
 
     :return: CommandResults.
     """
-    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
     user_key = args.get('user_key', '')
     url_suffix = f"{URL_SUFFIX['USER']}/{urllib.parse.quote(user_key)}"
     client.http_request(url_suffix=url_suffix, method='DELETE')
@@ -1043,7 +1060,7 @@ def user_delete_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def user_update_command(client, args: Dict[str, str]) -> CommandResults:
+def user_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     updates a user.
 
@@ -1053,7 +1070,7 @@ def user_update_command(client, args: Dict[str, str]) -> CommandResults:
     :return: Command Result.
     """
     prepared_args = prepare_args_for_user(args)
-    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
     user_key = args.get('user_key', '')
     url_suffix = f"{URL_SUFFIX['USER']}/{urllib.parse.quote(user_key)}"
     response = client.http_request(url_suffix=url_suffix, body=prepared_args, method='PUT')
@@ -1078,8 +1095,8 @@ def user_update_command(client, args: Dict[str, str]) -> CommandResults:
                           readable_output=readable_output)
 
 
-@logger
-def user_get_command(client, args: Dict[str, str]) -> CommandResults:
+@ logger
+def user_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     get a user details based on user key.
 
@@ -1088,7 +1105,7 @@ def user_get_command(client, args: Dict[str, str]) -> CommandResults:
 
     :return: Command Result.
     """
-    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'], subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
     user_key = args.get('user', '')
     url_suffix = urljoin(URL_SUFFIX['USER'], urllib.parse.quote(user_key))
     response = client.http_request(url_suffix=url_suffix, method='GET')
@@ -1115,21 +1132,21 @@ def user_get_command(client, args: Dict[str, str]) -> CommandResults:
 
 
 # New Commands Implementation
-def mobile_device_list_request(client, customer_id: str, query_params: dict = {}):
+def mobile_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
     response = client.http_request(
         url_suffix=URL_SUFFIX.get('MOBILE_DEVICES_LIST', '').format(urllib.parse.quote(customer_id)),
         params=query_params)
     return response
 
 
-def chromeos_device_list_request(client, customer_id: str, query_params: dict = {}):
+def chromeos_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
     response = client.http_request(
         url_suffix=URL_SUFFIX.get('CHROMEOS_DEVICES_LIST', '').format(urllib.parse.quote(customer_id)),
         params=query_params)
     return response
 
 
-def chromeos_device_action_request(client, customer_id: str, resource_id: str, action: str,
+def chromeos_device_action_request(client: Client, customer_id: str, resource_id: str, action: str,
                                    deprovision_reason: str = ''):
     json_body = {'action': action}
     if action == 'deprovision':
@@ -1260,8 +1277,8 @@ def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping
     return human_readable
 
 
-@logger
-def gsuite_mobile_device_list_command(client, args: Dict[str, str]) -> List[CommandResults]:
+@ logger
+def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
     """Retrieves a paginated list that includes company-owned mobile devices.
 
     Args:
@@ -1271,8 +1288,7 @@ def gsuite_mobile_device_list_command(client, args: Dict[str, str]) -> List[Comm
     Returns:
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
-    client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICES_LIST', []),
-                               subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICES_LIST', []))
     query_params = mobile_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                               query=args.get('query', ''),
                                                               order_by=args.get('order_by', 'status'),
@@ -1349,8 +1365,8 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
     return query_params
 
 
-@logger
-def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[CommandResults]:
+@ logger
+def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> list[CommandResults]:
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
@@ -1360,8 +1376,7 @@ def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[Co
     Returns:
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
-    client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICES_LIST', []),
-                               subject=ADMIN_EMAIL)
+    client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICES_LIST', []))
     query_params = chromeos_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                                 query=args.get('query', ''),
                                                                 include_child_org_units=argToBoolean(args.get(
@@ -1427,8 +1442,8 @@ def gsuite_chromeos_device_list_command(client, args: Dict[str, str]) -> list[Co
         raise DemistoException(error_message)
 
 
-@logger
-def gsuite_chromeos_device_action_command(client, args: Dict[str, str]) -> CommandResults:
+@ logger
+def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Executes an action that affects a ChromeOS Device.
 
     Args:
@@ -1442,8 +1457,7 @@ def gsuite_chromeos_device_action_command(client, args: Dict[str, str]) -> Comma
         CommandResults: CommandResults that hold the data to return to the engine.
     """
     try:
-        client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICE_ACTION', []),
-                                   subject=ADMIN_EMAIL)
+        client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICE_ACTION', []))
         chromeos_device_action_request(client=client, customer_id=args.get('customer_id', ''),
                                        resource_id=args.get('resource_id', ''),
                                        action=args.get('action', ''),
@@ -1493,7 +1507,6 @@ def main() -> None:
     demisto.info(f'Command being called is {command}')
 
     try:
-        global ADMIN_EMAIL
         params = demisto.params()
         service_account_dict = GSuiteClient.safe_load_non_strict_json(params.get('user_service_account_json'))
         verify_certificate = not params.get('insecure', False)
@@ -1503,26 +1516,26 @@ def main() -> None:
             'Content-Type': 'application/json'
         }
 
-        # prepare client class object
-        gsuite_client = GSuiteClient(service_account_dict,
-                                     base_url='https://admin.googleapis.com/', verify=verify_certificate, proxy=proxy,
-                                     headers=headers)
-        # Trim the arguments
         args = GSuiteClient.strip_dict(demisto.args())
 
-        ADMIN_EMAIL = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
+        admin_email = args.get('admin_email') if args.get('admin_email') else params.get('admin_email')
 
-        # Validation of ADMIN_EMAIL
-        if ADMIN_EMAIL and not is_email_valid(ADMIN_EMAIL):
+        if admin_email and not is_email_valid(admin_email):
             raise ValueError(MESSAGES['INVALID_ADMIN_EMAIL'])
+
+        # prepare client class object
+        client = Client(service_account_dict=service_account_dict, base_url='https://admin.googleapis.com/',
+                        verify=verify_certificate, proxy=proxy, headers=headers,
+                        admin_email=admin_email
+                        )
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_module(gsuite_client)
+            result = test_module(client)
             demisto.results(result)
 
         elif command in commands:
-            return_results(commands[command](gsuite_client, args))
+            return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
         # Log exceptions
@@ -1530,8 +1543,6 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Error: {str(e)}')
 
-
-from GSuiteApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
