@@ -6,32 +6,31 @@ from typing import Dict, List, Tuple
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'NetBox'
-PRODUCT = 'IRM'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+VENDOR = "NetBox"
+PRODUCT = "IRM"
 
-LOG_TYPES = ['journal-entries', 'object-changes']
-DEFAULT_LIMIT = '1000'
+LOG_TYPES = ["journal-entries", "object-changes"]
+DEFAULT_LIMIT = "1000"
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
     """
     Client class to interact with the service API
     """
+
     def http_request(self, url_suffix=None, full_url=None, params=None):
         return self._http_request(
-            method='GET',
-            url_suffix=url_suffix,
-            full_url=full_url,
-            params=params
+            method="GET", url_suffix=url_suffix, full_url=full_url, params=params
         )
 
-    def search_events(self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ''
-                      ) -> Tuple[int, List[Dict[str, Any]]]:
+    def search_events(
+        self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ""
+    ) -> Tuple[int, List[Dict[str, Any]]]:
         """
         Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
         Args:
@@ -48,22 +47,24 @@ class Client(BaseClient):
 
         next_page = True
         params = {
-            'limit': limit,
-            'ordering': ordering,
-            'id__gte': next_id,
+            "limit": limit,
+            "ordering": ordering,
+            "id__gte": next_id,
         }
 
         while next_page and len(results) < limit:
-            full_url = next_page if type(next_page) == str else ''
-            response = self.http_request(url_suffix=url_suffix, full_url=full_url, params=params)
+            full_url = next_page if type(next_page) == str else ""
+            response = self.http_request(
+                url_suffix=url_suffix, full_url=full_url, params=params
+            )
 
-            results += response.get('results', [])
+            results += response.get("results", [])
 
-            next_page = response.get('next')
+            next_page = response.get("next")
             params = {}
 
             if results:
-                next_id = results[-1]['id'] + 1
+                next_id = results[-1]["id"] + 1
 
         return next_id, results[:limit]
 
@@ -76,10 +77,12 @@ class Client(BaseClient):
         Returns:
             int: The first id to fetch.
         """
-        first_log = self.http_request(url_suffix=url_suffix, params={'ordering': 'id', 'limit': 1} | params)
+        first_log = self.http_request(
+            url_suffix=url_suffix, params={"ordering": "id", "limit": 1} | params
+        )
 
-        if first_log.get('results'):
-            next_run = first_log.get('results')[0].get('id')
+        if first_log.get("results"):
+            next_run = first_log.get("results")[0].get("id")
         else:
             next_run = None
 
@@ -102,15 +105,17 @@ def test_module_command(client: Client) -> str:
         client.search_events(url_suffix=LOG_TYPES[0], limit=1)
 
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
 
-    return 'ok'
+    return "ok"
 
 
-def get_events_command(client: Client, limit: int) -> Tuple[List[Dict[str, Any]], CommandResults]:
+def get_events_command(
+    client: Client, limit: int
+) -> Tuple[List[Dict[str, Any]], CommandResults]:
     """
     Gets all the events from the NetBox API for each log type.
     Args:
@@ -121,20 +126,21 @@ def get_events_command(client: Client, limit: int) -> Tuple[List[Dict[str, Any]]
         CommandResults: A CommandResults object that contains the events in a table format.
     """
     events: List[Dict] = []
-    hr = ''
+    hr = ""
     for log_type in LOG_TYPES:
         _, events_ = client.search_events(url_suffix=log_type, limit=limit)
         if events_:
-            hr += tableToMarkdown(name=f'{log_type} Events', t=events_)
+            hr += tableToMarkdown(name=f"{log_type} Events", t=events_)
             events += events_
         else:
-            hr = f'No events found for {log_type}.'
+            hr = f"No events found for {log_type}."
 
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int],
-                         first_fetch_time: str) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
+def fetch_events_command(
+    client: Client, max_fetch: int, last_run: Dict[str, int], first_fetch_time: str
+) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
     """
     Args:
         client (Client): NetBox client to use.
@@ -146,12 +152,15 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int
         list: List of events that will be created in XSIAM.
     """
     # In the first fetch, get the ids for the first fetch time
-    params = {'journal-entries': {'created_after': first_fetch_time},
-              'object-changes': {'time_after': first_fetch_time}}
+    params = {
+        "journal-entries": {"created_after": first_fetch_time},
+        "object-changes": {"time_after": first_fetch_time},
+    }
     for log_type in LOG_TYPES:
         if last_run.get(log_type) is None:
-            last_run[log_type] = client.get_first_fetch_id(url_suffix=log_type,
-                                                           params=params[log_type])
+            last_run[log_type] = client.get_first_fetch_id(
+                url_suffix=log_type, params=params[log_type]
+            )
 
     next_run = last_run.copy()
     events = []
@@ -159,20 +168,26 @@ def fetch_events_command(client: Client, max_fetch: int, last_run: Dict[str, int
     for log_type in LOG_TYPES:
         if last_run[log_type] is None:
             continue
-        next_run[log_type], events_ = client.search_events(url_suffix=log_type,
-                                                           limit=max_fetch,
-                                                           ordering='id',
-                                                           prev_id=last_run[log_type])
+        next_run[log_type], events_ = client.search_events(
+            url_suffix=log_type,
+            limit=max_fetch,
+            ordering="id",
+            prev_id=last_run[log_type],
+        )
         events += events_
 
-    demisto.info(f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.')
+    demisto.info(
+        f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.'
+    )
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    demisto.info(f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.')
+    demisto.info(
+        f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.'
+    )
     return next_run, events
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
@@ -183,40 +198,39 @@ def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('credentials', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/extras')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    api_key = params.get("credentials", {}).get("password")
+    base_url = urljoin(params.get("url"), "/api/extras")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time: datetime = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
+        arg=params.get("first_fetch", "3 days"),
+        arg_name="First fetch time",
+        required=True,
     )  # type: ignore   # datetime.datetime(2022, 1, 1, 00, 00, 00, 0)
-    first_fetch_time_strftime = first_fetch_time.strftime(DATE_FORMAT)  # 2022-01-01T00:00:00Z
+    first_fetch_time_strftime = first_fetch_time.strftime(
+        DATE_FORMAT
+    )  # 2022-01-01T00:00:00Z
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        headers = {
-            'Authorization': f'Token {api_key}'
-        }
+        headers = {"Authorization": f"Token {api_key}"}
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
+        )
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module_command(client)
             return_results(result)
 
-        elif command in ('netbox-get-events', 'fetch-events'):
-            if command == 'netbox-get-events':
-                should_push_events = argToBoolean(args.get('should_push_events'))
-                events, results = get_events_command(client,
-                                                     limit=arg_to_number(args.get('limit', DEFAULT_LIMIT)))  # type: ignore
+        elif command in ("netbox-get-events", "fetch-events"):
+            if command == "netbox-get-events":
+                should_push_events = argToBoolean(args.get("should_push_events"))
+                events, results = get_events_command(
+                    client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))
+                )  # type: ignore
                 return_results(results)
 
             else:  # command == 'fetch-events':
@@ -224,26 +238,22 @@ def main() -> None:  # pragma: no cover
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events_command(
                     client=client,
-                    max_fetch=arg_to_number(params.get('max_fetch', DEFAULT_LIMIT)),  # type: ignore
+                    max_fetch=arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)),  # type: ignore
                     last_run=last_run,
-                    first_fetch_time=first_fetch_time_strftime
+                    first_fetch_time=first_fetch_time_strftime,
                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
 
             if should_push_events:
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
