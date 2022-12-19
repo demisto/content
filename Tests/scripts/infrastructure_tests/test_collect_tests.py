@@ -144,7 +144,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
         assert False, f'should have collected something: {expected_tests=}, {expected_packs=}, {expected_machines=}'
 
     if expected_tests is not None:
-        assert set([t.get('id') for t in collected.tests]) == set(expected_tests)
+        assert collected.tests == set(expected_tests)
 
     assert collected.packs_to_install == set(expected_packs or ()) | set(ALWAYS_INSTALLED_PACKS)
     assert collected.packs_to_upload == set(expected_packs_to_upload or ())
