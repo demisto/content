@@ -300,6 +300,43 @@ class TestFetchEvents:
         assert send_events_mocker.called
         assert send_events_mocker.call_args.kwargs.get('events') == expected_events.get('events')
 
+    @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
+    def test_main_flow_fetch_events_saved_in_integration_context(self, mocker, max_fetch, queue, expected_events):
+        """
+        Given
+           - a queue of responses to fetch events.
+           - max fetch limit
+           - integration parameters
+
+        When
+           - executing main to fetch events.
+           - send_events_to_xsiam raised an exception
+
+        Then
+           - make sure all the events are saved in the integration context in such case.
+        """
+        import SaasSecurityEventCollector
+
+        mocker.patch.object(Client, 'http_request', side_effect=queue)
+        mocker.patch.object(
+            SaasSecurityEventCollector, 'send_events_to_xsiam', side_effect=Exception('error')
+        )
+        set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
+
+        mocker.patch.object(demisto, 'params', return_value={
+            "url": "https://test.com/",
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": max_fetch
+        })
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        with pytest.raises(Exception):
+            SaasSecurityEventCollector.main()
+
+        assert expected_events == set_last_run_mock.call_args.args[0]
+
 
 @pytest.mark.parametrize(
     'time_mock, token_initiate_time, token_expiration_seconds, expected_result', [
