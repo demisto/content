@@ -56,16 +56,16 @@ args:
   name: searchresultslabel
 - description: 'A comma seperated list of fields to return to the context, (default: id,name,type,severity,status,owner,created,closed)'
   name: add_fields_to_context
-comment: "Searches Cortex XSOAR Incidents. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
+comment: "Searches Cortex XSOAR Incidents and returnrs the most relevant fields. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
 commonfields:
-  id: SearchForIncidents
+  id: SearchIncidentsSummary
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.8.39276
 enabled: true
-name: SearchForIncidents
+name: SearchIncidentsSummary
 outputs:
 - contextPath: foundIncidents.id
   description: A list of incident IDs returned from the query.
