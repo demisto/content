@@ -3811,14 +3811,6 @@
             ]
         },
         {
-            "playbookID": "test_MsGraphFiles",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft_Graph_Files"
-            ],
-            "instance_names": "ms_graph_files_dev"
-        },
-        {
             "playbookID": "AlphaVantage Test Playbook",
             "fromversion": "6.0.0",
             "integrations": [
