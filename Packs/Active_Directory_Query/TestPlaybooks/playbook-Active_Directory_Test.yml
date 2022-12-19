@@ -1,19 +1,19 @@
 id: Active Directory Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Active Directory Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 98173511-e67f-4db8-8cd5-11f19154b9d6
+    taskid: 01127031-1ba7-476a-8609-baa1e6b7095a
     type: start
     task:
-      id: 98173511-e67f-4db8-8cd5-11f19154b9d6
+      id: 01127031-1ba7-476a-8609-baa1e6b7095a
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -30,12 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: b0ead6ce-eb4d-4f6d-8335-767c24d307d6
+    taskid: f3151061-b5bc-4e15-863d-8bbae48e996e
     type: regular
     task:
-      id: b0ead6ce-eb4d-4f6d-8335-767c24d307d6
+      id: f3151061-b5bc-4e15-863d-8bbae48e996e
       version: -1
       name: Add new user named jack
       script: Active Directory Query v2|||ad-create-user
@@ -48,15 +51,12 @@ tasks:
     scriptarguments:
       custom-attributes:
         simple: '{"company": "test"}'
-      description: {}
       display-name:
         simple: Samurai Jack
       email:
         simple: jack@AssasinsForRent.com
       password:
         simple: ${NEW_PASSWORD}
-      telephone-number: {}
-      title: {}
       user-dn:
         simple: cn=jack${RandomString},dc=demisto,dc=ninja
       username:
@@ -66,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1810
+          "y": 2235
         }
       }
     note: false
@@ -74,12 +74,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 0766028e-d626-48db-88e5-ed2d8202afba
+    taskid: d6bb7888-165b-4422-8e7d-b578205102ab
     type: regular
     task:
-      id: 0766028e-d626-48db-88e5-ed2d8202afba
+      id: d6bb7888-165b-4422-8e7d-b578205102ab
       version: -1
       name: Add user to group 'Users'
       script: Active Directory Query v2|||ad-add-to-group
@@ -91,8 +94,6 @@ tasks:
       - "7"
       - "12"
     scriptarguments:
-      base-dn: {}
-      computer-name: {}
       group-cn:
         simple: Users
       username:
@@ -102,7 +103,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2555
+          "y": 3080
         }
       }
     note: false
@@ -110,12 +111,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 2968f7b8-9b0f-4609-80fd-950b942bd065
+    taskid: ae984889-364d-47fe-837b-f879caa6cfe1
     type: regular
     task:
-      id: 2968f7b8-9b0f-4609-80fd-950b942bd065
+      id: ae984889-364d-47fe-837b-f879caa6cfe1
       version: -1
       name: Update the user's display name
       script: Active Directory Query v2|||ad-update-contact
@@ -137,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2410
+          "y": 2905
         }
       }
     note: false
@@ -145,12 +149,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b1699c6b-5c82-4836-830e-f97e9f0ea9ce
+    taskid: 997146e7-22d0-4f95-816b-adb2bfa8bc00
     type: regular
     task:
-      id: b1699c6b-5c82-4836-830e-f97e9f0ea9ce
+      id: 997146e7-22d0-4f95-816b-adb2bfa8bc00
       version: -1
       name: Get information on the new user
       script: Active Directory Query v2|||ad-get-user
@@ -162,22 +169,14 @@ tasks:
       - "6"
       - "30"
     scriptarguments:
-      attributes: {}
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      email: {}
-      limit: {}
       name:
         simple: jack${RandomString}
-      user-account-control-out: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1970
+          "y": 2410
         }
       }
     note: false
@@ -185,12 +184,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 10edd9bc-10b1-4e7b-80b2-867fddcb3453
+    taskid: 7ec207e9-d895-46bc-81d3-745810a298cb
     type: condition
     task:
-      id: 10edd9bc-10b1-4e7b-80b2-867fddcb3453
+      id: 7ec207e9-d895-46bc-81d3-745810a298cb
       version: -1
       name: Verify new user display name is as set in 'ad-create-user'
       type: condition
@@ -215,7 +217,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2585
         }
       }
     note: false
@@ -223,12 +225,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f6d510f3-98d3-4323-84ba-d16401718260
+    taskid: 91dae1da-5e11-454a-896b-2711d3893013
     type: regular
     task:
-      id: f6d510f3-98d3-4323-84ba-d16401718260
+      id: 91dae1da-5e11-454a-896b-2711d3893013
       version: -1
       name: Get information on the new user
       script: Active Directory Query v2|||ad-get-user
@@ -239,22 +244,14 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      attributes: {}
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      email: {}
-      limit: {}
       name:
         simple: jack${RandomString}
-      user-account-control-out: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 3605
+          "y": 4130
         }
       }
     note: false
@@ -262,17 +259,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0e55a791-30e9-4e24-85ff-035b68eef66f
+    taskid: 38c8a3a6-7197-486f-8cb3-879479227f73
     type: title
     task:
-      id: 0e55a791-30e9-4e24-85ff-035b68eef66f
+      id: 38c8a3a6-7197-486f-8cb3-879479227f73
       version: -1
       name: Create a new Active Directory user
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -281,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1380
+          "y": 1740
         }
       }
     note: false
@@ -289,17 +290,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a7a23ea9-3974-4625-8d7e-28dde1f2cbf5
+    taskid: b4885a48-1607-4f9c-8b67-883de55f74dc
     type: title
     task:
-      id: a7a23ea9-3974-4625-8d7e-28dde1f2cbf5
+      id: b4885a48-1607-4f9c-8b67-883de55f74dc
       version: -1
       name: Modify user attributes
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -308,7 +313,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2285
+          "y": 2760
         }
       }
     note: false
@@ -316,12 +321,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: dd77fd88-fe5b-4ddc-8016-0aabc9dc6e3a
+    taskid: 8b21542c-9fe5-494b-8b97-b95a33ea8743
     type: regular
     task:
-      id: dd77fd88-fe5b-4ddc-8016-0aabc9dc6e3a
+      id: 8b21542c-9fe5-494b-8b97-b95a33ea8743
       version: -1
       name: Get group 'Users' members
       script: Active Directory Query v2|||ad-get-group-members
@@ -332,7 +340,6 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      attributes: {}
       group-dn:
         simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
@@ -342,7 +349,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 3255
         }
       }
     note: false
@@ -350,12 +357,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 8c5c3933-40e9-46e7-8dbf-7d7839770f3a
+    taskid: bc713c9a-bf6d-4b50-81ad-303d0949bff5
     type: condition
     task:
-      id: 8c5c3933-40e9-46e7-8dbf-7d7839770f3a
+      id: bc713c9a-bf6d-4b50-81ad-303d0949bff5
       version: -1
       name: Verify 'jack' is listed as a member
       type: condition
@@ -389,7 +399,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3080
+          "y": 3605
         }
       }
     note: false
@@ -397,12 +407,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c54a2aac-df2a-41fd-8f94-67726b549d92
+    taskid: d6ebb74c-2627-4cef-8bf6-56a29755256d
     type: regular
     task:
-      id: c54a2aac-df2a-41fd-8f94-67726b549d92
+      id: d6ebb74c-2627-4cef-8bf6-56a29755256d
       version: -1
       name: Remove jack from 'Users' group
       script: Active Directory Query v2|||ad-remove-from-group
@@ -413,8 +426,6 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      base-dn: {}
-      computer-name: {}
       group-cn:
         simple: Users
       username:
@@ -424,7 +435,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3255
+          "y": 3780
         }
       }
     note: false
@@ -432,12 +443,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4f2e0260-a494-4256-818d-85392ea5f1c1
+    taskid: aca5f616-eb0e-414a-8fec-d6bf435057a6
     type: condition
     task:
-      id: 4f2e0260-a494-4256-818d-85392ea5f1c1
+      id: aca5f616-eb0e-414a-8fec-d6bf435057a6
       version: -1
       name: Verify 'jack' is not listed as a member
       type: condition
@@ -470,7 +484,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3780
+          "y": 4305
         }
       }
     note: false
@@ -478,12 +492,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bc71c960-6d15-4592-89c0-26e8d087f445
+    taskid: 836cc804-8499-4095-86f2-1e38ade1acc2
     type: regular
     task:
-      id: bc71c960-6d15-4592-89c0-26e8d087f445
+      id: 836cc804-8499-4095-86f2-1e38ade1acc2
       version: -1
       name: Delete jack
       script: Active Directory Query v2|||ad-delete-user
@@ -492,13 +509,13 @@ tasks:
       brand: Active Directory Query v2
     scriptarguments:
       user-dn:
-        simple: cn=jack${RandomString},dc=demisto,dc=ninja
+        simple: cn=jack${RandomString},ou=Xsoar Test,dc=demisto,dc=ninja
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4800
+          "y": 5500
         }
       }
     note: false
@@ -506,12 +523,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 81db78a7-e2c5-457f-8fe8-b31e73b876ec
+    taskid: 1c8522b9-5db8-4ec7-8f80-f9beef81ed9a
     type: regular
     task:
-      id: 81db78a7-e2c5-457f-8fe8-b31e73b876ec
+      id: 1c8522b9-5db8-4ec7-8f80-f9beef81ed9a
       version: -1
       name: Delete all context
       scriptName: DeleteContext
@@ -524,10 +544,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -541,12 +557,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ff0d8605-976f-4681-8228-1f3c207f5ebf
+    taskid: 0054b194-5541-4c3a-8a3a-a903f5025003
     type: condition
     task:
-      id: ff0d8605-976f-4681-8228-1f3c207f5ebf
+      id: 0054b194-5541-4c3a-8a3a-a903f5025003
       version: -1
       name: Verify the user diaplay name was updated
       type: condition
@@ -571,7 +590,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3780
+          "y": 4305
         }
       }
     note: false
@@ -579,12 +598,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 73ccadeb-1816-4a86-802b-ec30367c9cfc
+    taskid: 23910f8b-2c8e-4177-87f9-b7accd161946
     type: regular
     task:
-      id: 73ccadeb-1816-4a86-802b-ec30367c9cfc
+      id: 23910f8b-2c8e-4177-87f9-b7accd161946
       version: -1
       name: Delete 'Groups' context
       scriptName: DeleteContext
@@ -595,18 +617,14 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      all: {}
-      index: {}
       key:
         simple: ActiveDirectory.Groups
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3430
+          "y": 3955
         }
       }
     note: false
@@ -614,12 +632,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: a18b3649-c228-4979-8f7e-eaf76755eafb
+    taskid: a13c05f3-2a96-4087-871f-7c95aa5d7f07
     type: regular
     task:
-      id: a18b3649-c228-4979-8f7e-eaf76755eafb
+      id: a13c05f3-2a96-4087-871f-7c95aa5d7f07
       version: -1
       name: Get group 'Users' members
       script: Active Directory Query v2|||ad-get-group-members
@@ -630,7 +651,6 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      attributes: {}
       group-dn:
         simple: CN=Users,CN=Builtin,DC=demisto,DC=ninja
       member-type:
@@ -640,7 +660,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3605
+          "y": 4130
         }
       }
     note: false
@@ -648,17 +668,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: e7facc36-8b42-4f30-8503-d6df8d0b9764
+    taskid: d8ead3b1-a5c2-42ea-87a7-c9d65ad56c2c
     type: title
     task:
-      id: e7facc36-8b42-4f30-8503-d6df8d0b9764
+      id: d8ead3b1-a5c2-42ea-87a7-c9d65ad56c2c
       version: -1
       name: Test enable\disable user account - tests for command success only
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -667,7 +691,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3955
+          "y": 4480
         }
       }
     note: false
@@ -675,12 +699,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: c60f9e03-8c93-4a65-80a1-314f682d069d
+    taskid: efd25556-ada9-4a5b-8e60-ad9c3e586682
     type: regular
     task:
-      id: c60f9e03-8c93-4a65-80a1-314f682d069d
+      id: efd25556-ada9-4a5b-8e60-ad9c3e586682
       version: -1
       name: Disable new user account
       script: Active Directory Query v2|||ad-disable-account
@@ -691,7 +718,6 @@ tasks:
       '#none#':
       - "23"
     scriptarguments:
-      base-dn: {}
       username:
         simple: jack${RandomString}
     separatecontext: false
@@ -699,7 +725,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4100
+          "y": 4625
         }
       }
     note: false
@@ -707,12 +733,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 20638a3c-aa38-4ff2-8cb6-ca5d17baaf7a
+    taskid: ebfc3388-30e3-4a90-8b4e-0e7c931b0eb1
     type: regular
     task:
-      id: 20638a3c-aa38-4ff2-8cb6-ca5d17baaf7a
+      id: ebfc3388-30e3-4a90-8b4e-0e7c931b0eb1
       version: -1
       name: Enable account
       script: Active Directory Query v2|||ad-enable-account
@@ -723,7 +752,6 @@ tasks:
       '#none#':
       - "31"
     scriptarguments:
-      base-dn: {}
       username:
         simple: jack${RandomString}
     separatecontext: false
@@ -731,7 +759,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4275
+          "y": 4800
         }
       }
     note: false
@@ -739,12 +767,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 70dad0c0-d0a3-4632-8fb2-7e6033231dee
+    taskid: 7c6f4a65-31c8-4ed1-8857-e2b46fb78bb2
     type: regular
     task:
-      id: 70dad0c0-d0a3-4632-8fb2-7e6033231dee
+      id: 7c6f4a65-31c8-4ed1-8857-e2b46fb78bb2
       version: -1
       name: Run search command
       script: '|||ad-search'
@@ -755,21 +786,16 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      attributes: {}
-      base-dn: {}
-      context-ouptut: {}
-      context-output: {}
       filter:
         simple: (&(objectCategory=person)(objectClass=user)(!(cn=andy)))
       size-limit:
         simple: "603"
-      time-limit: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 515
+          "y": 865
         }
       }
     note: false
@@ -777,17 +803,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: c7d8b958-2b0f-4e61-8232-09ed7773ce13
+    taskid: 5a9af65b-f08b-4875-8f10-9bca9aa7a01f
     type: title
     task:
-      id: c7d8b958-2b0f-4e61-8232-09ed7773ce13
+      id: 5a9af65b-f08b-4875-8f10-9bca9aa7a01f
       version: -1
       name: Search in Active Directory
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -804,12 +834,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 4f6cef6a-54e9-46ff-8f76-ab8fbcd178ab
+    taskid: b2121936-70b9-4e41-8b3a-d844722451a6
     type: condition
     task:
-      id: 4f6cef6a-54e9-46ff-8f76-ab8fbcd178ab
+      id: b2121936-70b9-4e41-8b3a-d844722451a6
       version: -1
       name: Verify results from search exist
       type: condition
@@ -833,7 +866,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 690
+          "y": 1040
         }
       }
     note: false
@@ -841,12 +874,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 9d6744eb-56a4-44c4-84fe-02b12841c44a
+    taskid: b89d0f14-a97c-48aa-865c-770a5808213c
     type: regular
     task:
-      id: 9d6744eb-56a4-44c4-84fe-02b12841c44a
+      id: b89d0f14-a97c-48aa-865c-770a5808213c
       version: -1
       name: Run search command with no output
       script: '|||ad-search'
@@ -857,8 +893,6 @@ tasks:
       '#none#':
       - "29"
     scriptarguments:
-      attributes: {}
-      base-dn: {}
       context-ouptut:
         simple: "no"
       context-output:
@@ -867,13 +901,12 @@ tasks:
         simple: (&(objectCategory=person)(objectClass=user)(cn=jack))
       size-limit:
         simple: "5"
-      time-limit: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1040
+          "y": 1390
         }
       }
     note: false
@@ -881,12 +914,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: e7daa5ce-8659-49c8-8074-b79bc8e56ccb
+    taskid: 1fb2b9d1-1ada-48cd-8a1d-609246daba89
     type: regular
     task:
-      id: e7daa5ce-8659-49c8-8074-b79bc8e56ccb
+      id: 1fb2b9d1-1ada-48cd-8a1d-609246daba89
       version: -1
       name: Delete all context
       scriptName: DeleteContext
@@ -899,16 +935,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 1215
         }
       }
     note: false
@@ -916,12 +948,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: e2bf735f-f786-4141-8358-76e3cfb3258c
+    taskid: 6cffbfb2-5f30-4a8c-808f-20822465738e
     type: condition
     task:
-      id: e2bf735f-f786-4141-8358-76e3cfb3258c
+      id: 6cffbfb2-5f30-4a8c-808f-20822465738e
       version: -1
       name: Verify results from search don't exist
       type: condition
@@ -945,7 +980,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1215
+          "y": 1565
         }
       }
     note: false
@@ -953,12 +988,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: b05f13bd-3dbf-45ca-8ee0-23b8100fcbfc
+    taskid: 78ccf789-1b0b-424d-84f8-8c421426183f
     type: condition
     task:
-      id: b05f13bd-3dbf-45ca-8ee0-23b8100fcbfc
+      id: 78ccf789-1b0b-424d-84f8-8c421426183f
       version: -1
       name: Make sure user email shows in context
       description: |-
@@ -995,7 +1033,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2120
+          "y": 2585
         }
       }
     note: false
@@ -1003,17 +1041,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 93cbb9dc-1c75-4bee-8c48-c76b4b1ec111
+    taskid: 36a5c232-88aa-459c-8c32-cb42f5219da3
     type: regular
     task:
-      id: 93cbb9dc-1c75-4bee-8c48-c76b4b1ec111
+      id: 36a5c232-88aa-459c-8c32-cb42f5219da3
       version: -1
       name: Get user PwdLastSet attribute
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -1024,21 +1063,14 @@ tasks:
     scriptarguments:
       attributes:
         simple: PwdLastSet
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      email: {}
-      limit: {}
       name:
         simple: jack${RandomString}
-      user-account-control-out: {}
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 4450
+          "y": 4975
         }
       }
     note: false
@@ -1046,12 +1078,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 9b049f09-c00d-4b72-8569-69d3822d2763
+    taskid: 23f64c1d-347d-4af9-848e-5531d4c49d5c
     type: condition
     task:
-      id: 9b049f09-c00d-4b72-8569-69d3822d2763
+      id: 23f64c1d-347d-4af9-848e-5531d4c49d5c
       version: -1
       name: Verify PwdLastSet is in Account outputs
       type: condition
@@ -1059,7 +1094,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "38"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1073,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4625
+          "y": 5150
         }
       }
     note: false
@@ -1081,12 +1116,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: d64fbfad-417e-4be1-8123-31abaa0e773c
+    taskid: 8e4cc81c-4c4b-48e7-831f-c283907225bf
     type: regular
     task:
-      id: d64fbfad-417e-4be1-8123-31abaa0e773c
+      id: 8e4cc81c-4c4b-48e7-831f-c283907225bf
       version: -1
       name: Generate Random String
       description: Generates random string
@@ -1113,7 +1151,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1505
+          "y": 1885
         }
       }
     note: false
@@ -1121,12 +1159,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: c5c70552-fb3e-4e83-899a-eeb46afeefd3
+    taskid: 0d978a11-d7aa-4a64-8e71-96c0635f8472
     type: regular
     task:
-      id: c5c70552-fb3e-4e83-899a-eeb46afeefd3
+      id: 0d978a11-d7aa-4a64-8e71-96c0635f8472
       version: -1
       name: Setting Jack new dn
       description: Sets a value into the context with the given context key
@@ -1138,10 +1179,8 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      append: {}
       key:
         simple: JackNewDN
-      stringify: {}
       value:
         simple: CN=jack${RandomString},DC=demisto,DC=ninja
     separatecontext: false
@@ -1149,7 +1188,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 3430
         }
       }
     note: false
@@ -1157,17 +1196,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: e82cf3f1-b333-4fc8-8b80-2fd57ab9aa3c
+    taskid: e3859635-a8f3-4739-825a-77a5fea04bf4
     type: regular
     task:
-      id: e82cf3f1-b333-4fc8-8b80-2fd57ab9aa3c
+      id: e3859635-a8f3-4739-825a-77a5fea04bf4
       version: -1
       name: Run get computer command
-      description: Retrieves detailed information about a computer account. The computer
-        can be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filters are provided, all computers are returned.
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -1178,15 +1218,11 @@ tasks:
     scriptarguments:
       attributes:
         simple: '*'
-      custom-field-data: {}
-      custom-field-type: {}
-      dn: {}
-      name: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 800,
+          "x": 265,
           "y": 515
         }
       }
@@ -1195,12 +1231,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: bdceeb06-3504-4ad4-8f40-fd40f77200b6
+    taskid: c96a02c2-b013-4b3b-88e3-8a08a5883985
     type: condition
     task:
-      id: bdceeb06-3504-4ad4-8f40-fd40f77200b6
+      id: c96a02c2-b013-4b3b-88e3-8a08a5883985
       version: -1
       name: Verify results from get computer exist
       type: condition
@@ -1223,8 +1262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 730
+          "x": 265,
+          "y": 690
         }
       }
     note: false
@@ -1232,24 +1271,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f7148799-6a81-4fb3-83f2-6bf3fe94426a
+    taskid: 7a4b765b-8be0-4957-8004-3c3ae1981557
     type: regular
     task:
-      id: f7148799-6a81-4fb3-83f2-6bf3fe94426a
+      id: 7a4b765b-8be0-4957-8004-3c3ae1981557
       version: -1
       name: GeneratePassword
-      description: "This function generates a password and allows various parameters
-        to customize the properties of the password depending on the use case (e.g.
-        password complexity requirements).  The default behavior is to generate a
-        password of  *random length* including all four character classes (upper,
-        lower, digits, symbols) with at least five and at most ten characters per
-        class. \n\nThe min_* values all default to 0. This means that if the command
-        is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that
-        a password of length zero could be generated. It is therefore recommended
-        to always include a min_* parameter that matches. \n\nThe debug parameter
-        will print certain properties of the command into the WarRoom for easy diagnostics."
+      description: "This function generates a password and allows various parameters to customize the properties of the password depending on the use case (e.g. password complexity requirements).  The default behavior is to generate a password of  *random length* including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. \n\nThe min_* values all default to 0. This means that if the command is executed in this way:\n!GeneratePassword max_lcase=10\nIt is possible that a password of length zero could be generated. It is therefore recommended to always include a min_* parameter that matches. \n\nThe debug parameter will print certain properties of the command into the WarRoom for easy diagnostics."
       scriptName: GeneratePassword
       type: regular
       iscommand: false
@@ -1258,7 +1291,6 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
-      debug: {}
       max_digits:
         simple: "4"
       max_lcase:
@@ -1280,7 +1312,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1660
+          "y": 2060
         }
       }
     note: false
@@ -1288,13 +1320,53 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 7ef6a1cd-562b-4cef-886d-3b58dca2ba59
+    type: regular
+    task:
+      id: 7ef6a1cd-562b-4cef-886d-3b58dca2ba59
+      version: -1
+      name: Modify User Organization Unit
+      description: Modifies the user organizational unit within a domain.
+      script: '|||ad-modify-user-ou'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      full-superior-dn:
+        simple: OU=Xsoar Test,DC=demisto,DC=ninja
+      user-name:
+        simple: jack${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4845,
-        "width": 1130,
+        "height": 5545,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -1303,3 +1375,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''
