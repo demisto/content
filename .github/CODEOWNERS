@@ -39,7 +39,7 @@
 
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
-/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
+/Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders @Shellyber
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
 /Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
 /Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
