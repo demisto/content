@@ -18,6 +18,10 @@ Submit_url_input = {
     'url': 'www.example.com'
 }
 
+Search_query_input = {
+    'query': '{\r\n\\\"query\\\": \\\"query get_sample($q_json:\r\nString) {sample(, q_json: $q_json,limit: 3) {submitted_at id submitted_file_type status threat_score state login url}}\\\",\\\"variables\\\": {\\\"q_json\\\": \\\"{\\\\\\\"op\\\\\\\": \\\\\\\"and\\\\\\\",\\\\\\\"clauses\\\\\\\": [{\\\\\\\"op\\\\\\\": \\\\\\\"attr\\\\\\\",\\\\\\\"attr\\\\\\\": \\\\\\\"submitted_file_name\\\\\\\",\\\\\\\"comp_op\\\\\\\": \\\\\\\"eq\\\\\\\",\\\\\\\"value\\\\\\\": \\\\\\\"www.example.com_.url\\\\\\\"}]}\\\"}}'
+}
+
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
@@ -88,24 +92,33 @@ def test_get_with_limit_dict(mocker):
 
 
 def test_submit_urls(mocker, requests_mock):
-    """
-    Given:
-        demisto context
-    When:
-        Executing get_with_limit function
-    Then
-        ensure limit was made
-    """
-    mocker.patch.object(demisto, 'args', return_value=Submit_url_input)
+
+    mocker.patch.object(demisto, 'args', return_value=Search_query_input)
     from ThreatGrid import submit_urls
     args = demisto.args
     # Load assertions and mocked request data
     testing_url = Submit_url_input.get('url')
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
-    mocker.patch.object(submit_urls, 'req', return_value=mock_response)
+    # mocker.patch.object(submit_urls, 'req', return_value=mock_response)
+    requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}',
+                      json=mock_response)
 
     res = submit_urls(args)
+    assert res.outputs == expected_results
+
+def test_advanced_seach(mocker, requests_mock):
+
+    mocker.patch.object(demisto, 'args', return_value=Submit_url_input)
+    from ThreatGrid import advanced_search
+    args = demisto.args
+    # Load assertions and mocked request data
+    testing_url = Submit_url_input.get('url')
+    mock_response = util_load_json('test_data/advanced_search.json')
+    expected_results = util_load_json('test_data/advanced_search_results.json')
+    mocker.patch.object(advanced_search, 'req', return_value=mock_response)
+
+    res = advanced_search(args)
     assert res.outputs == expected_results
 
 
