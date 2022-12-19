@@ -1301,6 +1301,7 @@ def main():
 
     # get the lists of packs divided by their status
     successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    logging.debug(f"**DEBUG** successful_uploaded_dependencies_zip_packs in upload{successful_uploaded_dependencies_zip_packs}")
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)

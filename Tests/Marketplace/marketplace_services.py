@@ -3809,6 +3809,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
     """
     packs_results = load_json(packs_results_file_path)
     packs_results[stage] = dict()
+    logging.debug(f"**DEBUG** successful_uploaded_dependencies_zip_packs in services {successful_uploaded_dependencies_zip_packs}")
 
     if failed_packs:
         failed_packs_dict = {
@@ -3838,6 +3839,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful packs {successful_packs_dict}")
 
     if successful_uploaded_dependencies_zip_packs:
+        logging.info(f"**DEBUG** inside if")
         successful_uploaded_dependencies_zip_packs_dict = {
             BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
                 pack.name: {
@@ -3848,6 +3850,8 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                 } for pack in successful_uploaded_dependencies_zip_packs
             }
         }
+        logging.debug(f"**DEBUG** inside if")
+
         packs_results[stage].update(successful_uploaded_dependencies_zip_packs_dict)
         logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs_dict}")
 
