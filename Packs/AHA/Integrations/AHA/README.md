@@ -49,9 +49,14 @@ Lists all features from service, unless a specific feature is specified.
 | AHA.Feature.description | String | The feature description. | 
 | AHA.Feature.created_at | Date | The feature creation date. | 
 
+#### Command example
+```!aha-get-features```
+```!aha-get-features feature_name=DEMO-10 fields=workflow_status```
+```!aha-get-features fields=workflow_status page=2 per_page=30```
+
 ### aha-edit-feature
 ***
-Close the specified Aha! feature, Optional edit the name of Aha! feature.
+You can edit the following fields in a feature: Name and Description.
 
 
 #### Base Command
@@ -62,7 +67,7 @@ Close the specified Aha! feature, Optional edit the name of Aha! feature.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | feature_name | The name of the feature to edit. | Required | 
-| name | Set a new name to AHa! feature. | Optional | 
+| fields | Fields in JSON format to edit in a feature. Possible fields are name and status. Status should match Aha values under workflow_status. Example:" {"name": "name", "status" : "Closed"}. | Required | 
 
 
 #### Context Output
@@ -73,7 +78,11 @@ Close the specified Aha! feature, Optional edit the name of Aha! feature.
 | AHA.Feature.name | String | The feature name. | 
 | AHA.Feature.reference_num | String | The feature reference number. | 
 | AHA.Feature.workflow_status | String | The feature status description. | 
+| AHA.Feature.description | String | The feature description. | 
 | AHA.Feature.created_at | Date | The feature creation date. | 
+
+#### Command example
+```!aha-edit-feature feature_name=DEMO-10 fields=`{"name":"the_new_name", "status":"Closed"}```
 
 ### aha-get-ideas
 ***
@@ -105,6 +114,11 @@ Lists all ideas from service, unless a specific idea is specified.
 | AHA.Idea.description | String | The idea description. | 
 | AHA.Idea.created_at | Date | The idea creation date. | 
 
+#### Command example
+```!aha-get-ideas```
+```!aha-get-ideas idea_name=DEMO-I-2895```
+```!aha-get-ideas idea_name=DEMO-I-2895 fields=workflow_status```
+
 ### aha-edit-idea
 ***
 Edit an idea status to Shipped.
@@ -130,3 +144,6 @@ Edit an idea status to Shipped.
 | AHA.Idea.workflow_status | String | The idea status description. | 
 | AHA.Idea.description | String | The idea description. | 
 | AHA.Idea.created_at | Date | The idea creation date. | 
+
+#### Command example
+```!aha-edit-idea idea_name=DEMO-I-2895```

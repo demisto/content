@@ -13,9 +13,9 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # py
 REPLACE = 'replace'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX_PATTERN = f'/products/{REPLACE}/'
-EDIT_FIELDS = 'id,reference_num,name,description,workflow_status,created_at'
-DEFAULT_FIELDS = 'reference_num,name,id,created_at'
-FEATURE_FIELDS = 'ideas'
+EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 'created_at']
+DEFAULT_FIELDS = ['reference_num', 'name', 'id', 'created_at']
+FEATURE_FIELDS = ['ideas']
 
 ''' AHA ENUM'''
 
@@ -93,29 +93,33 @@ class Client(BaseClient):
                                   url_suffix=f'{self.url}{aha_type.get_url_suffix()}{name}',
                                   headers=headers, params=params, resp_type='json')
 
-    def edit(self, aha_object_name: str, aha_type: AHA_TYPE, name: str) -> Dict:
+    def edit(self, aha_object_name: str, aha_type: AHA_TYPE, fields: Dict) -> Dict:
         """
         Updates fields in a feature/idea from AHA
         Args:
             aha_object_name: str idea to update
             aha_type: determine what to edit ideas or features using AHA_TYPE Enum.
-            name: name / title of Aha feature to edit.
+            fields: Dict fields to update
         """
-        payload = build_edit_idea_req_payload() if aha_type == AHA_TYPE.IDEAS else build_edit_feature_req_payload(name=name)
+        payload = build_edit_idea_req_payload() if aha_type == AHA_TYPE.IDEAS else build_edit_feature_req_payload(fields=fields)
         demisto.debug(f'Edit {aha_type.get_type_singular()} payload: {payload}')
-        url_suffix = f'{self.url}{aha_type.get_url_suffix()}{aha_object_name}?fields={EDIT_FIELDS}'
+        fields = ','.join(EDIT_FIELDS)
+        url_suffix = f'{self.url}{aha_type.get_url_suffix()}{aha_object_name}?fields={fields}'
         return self._http_request(method='PUT', url_suffix=url_suffix, resp_type='json', json_data=payload)
 
 
 ''' HELPER FUNCTIONS'''
 
 
-def build_edit_feature_req_payload(name: str):
+def build_edit_feature_req_payload(fields: Dict):
     payload: Dict = {'feature': {}}
-    feature = payload.get('feature', {})
-    if name:
-        feature['name'] = name
-    feature['workflow_status'] = {'name': 'Closed'}
+    for field in fields:
+        feature = payload.get('feature', {})
+        if field == 'status':
+            workflow_status = {'name': fields[field]}
+            feature['workflow_status'] = workflow_status
+        else:
+            feature[field] = fields[field]
     return payload
 
 
@@ -142,7 +146,7 @@ def parse_multiple_objects(aha_objects: dict, fields: List) -> List:
     return res_list
 
 
-def parse_single_object(aha_object: dict, fields: List = argToList(DEFAULT_FIELDS)) -> List:
+def parse_single_object(aha_object: dict, fields: List = DEFAULT_FIELDS) -> List:
     ret_dict = {}
     for curr in fields:
         if curr == 'description':
@@ -183,16 +187,17 @@ def get_command(client: Client,
                 page: str = '1',
                 per_page: str = '30') -> CommandResults:
     message: List = []
-    req_fields: str = DEFAULT_FIELDS + ',' + fields
+    fields_list: List = DEFAULT_FIELDS + argToList(fields)
     if aha_type == AHA_TYPE.FEATURES:
-        req_fields = req_fields + ',' + FEATURE_FIELDS
+        fields_list.extend(FEATURE_FIELDS)
+    req_fields = ','.join(fields_list)
     response = client.get(aha_type=aha_type, name=aha_object_name, fields=req_fields,
                           from_date=from_date, page=page, per_page=per_page)
     if response:
         if aha_type.get_type_plural() in response:
-            message = parse_multiple_objects(response[aha_type.get_type_plural()], argToList(req_fields))
+            message = parse_multiple_objects(response[aha_type.get_type_plural()], fields_list)
         else:
-            message = parse_single_object(response[aha_type.get_type_singular()], argToList(req_fields))
+            message = parse_single_object(response[aha_type.get_type_singular()], fields_list)
         human_readable = tableToMarkdown(f'Aha! get {aha_type.get_type_plural()}',
                                          message,
                                          removeNull=True)
@@ -208,11 +213,12 @@ def get_command(client: Client,
 def edit_command(client: Client,
                  aha_type: AHA_TYPE,
                  aha_object_name: str,
-                 name: str = '') -> CommandResults:
+                 fields: str = '{}') -> CommandResults:
     message: List = []
-    response = client.edit(aha_object_name=aha_object_name, aha_type=aha_type, name=name)
+    fieldsDict = json.loads(fields)
+    response = client.edit(aha_object_name=aha_object_name, aha_type=aha_type, fields=fieldsDict)
     if response:
-        message = parse_single_object(response[aha_type.get_type_singular()], fields=argToList(EDIT_FIELDS))
+        message = parse_single_object(response[aha_type.get_type_singular()], fields=EDIT_FIELDS)
         human_readable = tableToMarkdown(f'Aha! edit {aha_type.get_type_singular()}',
                                          message,
                                          removeNull=True)
