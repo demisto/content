@@ -6110,7 +6110,7 @@ Retrieves the organization software inventory.
 | name | Software name. | Optional |
 | vendor | Software publisher name. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
  
  
 #### Context Output
@@ -6121,14 +6121,14 @@ Retrieves the organization software inventory.
 | MicrosoftATP.Software.name | String | Software name. |
 | MicrosoftATP.Software.vendor | String | Software publisher name. |
 | MicrosoftATP.Software.weaknesses | Number | Number of discovered vulnerabilities. |
-| MicrosoftATP.Software.publicExploit | Boolean | Public exploit exists for some of the vulnerabilities. |
-| MicrosoftATP.Software.activeAlert | Boolean | Active alert is associated with this software. |
+| MicrosoftATP.Software.publicExploit | Boolean | Whether a public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.Software.activeAlert | Boolean | Whether an active alert is associated with this software. |
 | MicrosoftATP.Software.exposedMachines | Number | Number of exposed devices. |
-| MicrosoftATP.Software.installedMachines | Number | installed machines |
+| MicrosoftATP.Software.installedMachines | Number | The number of installed machines. |
 | MicrosoftATP.Software.impactScore | Number | Exposure score impact of this software. |
-| MicrosoftATP.Software.isNormalized | Boolean | is Normalized |
-| MicrosoftATP.Software.category | String | Software category |
-| MicrosoftATP.Software.distributions | String | Software distributions |
+| MicrosoftATP.Software.isNormalized | Boolean | Whether the software is normalized. |
+| MicrosoftATP.Software.category | String | Software category. |
+| MicrosoftATP.Software.distributions | String | Software distributions. |
  
 #### Command example
 ```!microsoft-atp-list-software id=some_id```
@@ -6175,7 +6175,7 @@ Retrieves a list of your organization's software version distribution.
  
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
  
  
 #### Context Output
@@ -6183,8 +6183,8 @@ Retrieves a list of your organization's software version distribution.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.SoftwareVersion.version | String | Version number |
-| MicrosoftATP.SoftwareVersion.installations | Number | Installations number |
-| MicrosoftATP.SoftwareVersion.vulnerabilities | Number | Number of vulnerabilities |
+| MicrosoftATP.SoftwareVersion.installations | Number | Installations number. |
+| MicrosoftATP.SoftwareVersion.vulnerabilities | Number | Number of vulnerabilities. |
  
 #### Command example
 ```!microsoft-atp-list-software-version-distribution id=some_id```
@@ -6230,7 +6230,7 @@ Retrieve a list of device references that has this software installed.
  
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
  
  
 #### Context Output
@@ -6240,7 +6240,7 @@ Retrieve a list of device references that has this software installed.
 | MicrosoftATP.SoftwareMachine.id | String | Machine identity. |
 | MicrosoftATP.SoftwareMachine.computerDnsName | String | Machine fully qualified name. |
 | MicrosoftATP.SoftwareMachine.osPlatform | String | Operating system platform. |
-| MicrosoftATP.SoftwareMachine.rbacGroupName | String | Machine group Name. |
+| MicrosoftATP.SoftwareMachine.rbacGroupName | String | Machine group name. |
 | MicrosoftATP.SoftwareMachine.rbacGroupId | Number | Machine group ID. |
  
 #### Command example
@@ -6294,23 +6294,23 @@ Retrieves a list of all the vulnerabilities affecting the organization per softw
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID, use the !microsoft-atp-list-software command, in order to get the ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.SoftwareCVE.id | String | Vulnerability ID. |
 | MicrosoftATP.SoftwareCVE.name | String | Vulnerability title. |
 | MicrosoftATP.SoftwareCVE.description | String | Vulnerability description. |
-| MicrosoftATP.SoftwareCVE.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical" |
+| MicrosoftATP.SoftwareCVE.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical" |
 | MicrosoftATP.SoftwareCVE.cvssV3 | Number | CVSS v3 score. |
 | MicrosoftATP.SoftwareCVE.exposedMachines | Number | Number of exposed devices. |
 | MicrosoftATP.SoftwareCVE.publishedOn | Date | Date when vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
 | MicrosoftATP.SoftwareCVE.updatedOn | Date | Date when vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
-| MicrosoftATP.SoftwareCVE.publicExploit | Boolean | Public exploit exists for some of the vulnerabilities. |
-| MicrosoftATP.SoftwareCVE.exploitVerified | Boolean | Public exploit exists. |
-| MicrosoftATP.SoftwareCVE.exploitInKit | Boolean | Exploit is part of an exploit kit. |
-| MicrosoftATP.SoftwareCVE.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local" |
-| MicrosoftATP.SoftwareCVE.exploitUris | String | Exploit source URLs |
+| MicrosoftATP.SoftwareCVE.publicExploit | Boolean | Whether a public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.SoftwareCVE.exploitVerified | Boolean | Whether a public exploit exists. |
+| MicrosoftATP.SoftwareCVE.exploitInKit | Boolean | Whether the exploit is part of an exploit kit. |
+| MicrosoftATP.SoftwareCVE.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local". |
+| MicrosoftATP.SoftwareCVE.exploitUris | String | Exploit source URLs. |
 #### Command example
 ```!microsoft-atp-list-vulnerabilities-by-software id=some_software```
 #### Context Example
@@ -6373,12 +6373,12 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 | machine_id | A comma-separated list of machine IDs used for getting the vulnerabilities. | Optional |
 | software_id | A comma-separated list of software IDs used for getting the vulnerabilities. | Optional |
 | cve_id | A comma-separated list of CVE IDs used for getting the vulnerabilities. | Optional |
-| product_name | A comma-separated list of product name used for getting the vulnerabilities. | Optional |
-| product_version | A comma-separated list of product version used for getting the vulnerabilities. | Optional |
-| severity | A comma-separated list of vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
-| product_vendor | A comma-separated list of product vendor used for getting the vulnerabilities. | Optional |
+| product_name | A comma-separated list of product names used for getting the vulnerabilities. | Optional |
+| product_version | A comma-separated list of product versions used for getting the vulnerabilities. | Optional |
+| severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
+| product_vendor | A comma-separated list of product vendors used for getting the vulnerabilities. | Optional |
 | limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -6387,9 +6387,9 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 | MicrosoftATP.MachineCVE.machineId | String | Machine ID. |
 | MicrosoftATP.MachineCVE.fixingKbId | Unknown | Fixing Kb ID. |
 | MicrosoftATP.MachineCVE.productName | String | Product name. |
-| MicrosoftATP.MachineCVE.productVendor | String | Name of Product vendor. |
+| MicrosoftATP.MachineCVE.productVendor | String | Name of the product vendor. |
 | MicrosoftATP.MachineCVE.productVersion | String | Product version. |
-| MicrosoftATP.MachineCVE.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". |
+| MicrosoftATP.MachineCVE.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". |
 #### Command example
 ```!microsoft-atp-list-vulnerabilities-by-machine cve_id=CVE-1111-1111```
 #### Context Example
@@ -6437,27 +6437,27 @@ Retrieves a list of all vulnerabilities.
 | id | Vulnerability ID. | Optional |
 | name | Vulnerability title. | Optional |
 | description | Vulnerability description. | Optional |
-| published_on | Date when vulnerability was published. | Optional |
+| published_on | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
 | cvss | CVSS v3 score. | Optional |
-| severity | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
-| updated_on | Date when vulnerability was updated. | Optional |
-| limit | Maximum number of results to retrieve. Default is 50. | Optional |
-| offset | The number of items in the queried collection that are to be skipped and not included in the result.  Default is 0. | Optional |
+| severity | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
+| updated_on | Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
+| limit | Maximum number of results to retrieve. Default is 25. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Vulnerability.id | String | Vulnerability ID. |
 | MicrosoftATP.Vulnerability.name | String | Vulnerability title. |
 | MicrosoftATP.Vulnerability.description | String | Vulnerability description. |
-| MicrosoftATP.Vulnerability.severity | String | Vulnerability Severity. Possible values are: "Low", "Medium", "High", "Critical". |
+| MicrosoftATP.Vulnerability.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". |
 | MicrosoftATP.Vulnerability.cvssV3 | Number | CVSS v3 score. |
 | MicrosoftATP.Vulnerability.exposedMachines | Number | Number of exposed devices. |
-| MicrosoftATP.Vulnerability.publishedOn | Date | Date when vulnerability was published. |
-| MicrosoftATP.Vulnerability.updatedOn | Date | Date when vulnerability was updated. |
-| MicrosoftATP.Vulnerability.publicExploit | Boolean | Public exploit exists. |
-| MicrosoftATP.Vulnerability.exploitVerified | Boolean | Exploit is verified to work. |
-| MicrosoftATP.Vulnerability.exploitInKit | Boolean | Exploit is part of an exploit kit. |
-| MicrosoftATP.Vulnerability.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local" |
+| MicrosoftATP.Vulnerability.publishedOn | Date | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
+| MicrosoftATP.Vulnerability.updatedOn | Date | Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
+| MicrosoftATP.Vulnerability.publicExploit | Boolean | Whether the public exploit exists. |
+| MicrosoftATP.Vulnerability.exploitVerified | Boolean | Whether the exploit is verified to work. |
+| MicrosoftATP.Vulnerability.exploitInKit | Boolean | Whether the exploit is part of an exploit kit. |
+| MicrosoftATP.Vulnerability.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local". |
 | MicrosoftATP.Vulnerability.exploitUris | String | Exploit source URLs. |
 #### Command example
 ```!microsoft-atp-list-vulnerabilities id="CVE-1111-1111"```
@@ -6516,7 +6516,7 @@ Retrieves missing KBs (security updates) by software ID.
  
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Software ID. | Optional |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
  
  
 #### Context Output
@@ -6526,10 +6526,10 @@ Retrieves missing KBs (security updates) by software ID.
 | MicMicrosoftATP.SoftwareKB.id | String | Software ID. |
 | MicMicrosoftATP.SoftwareKB.name | String | Software name. |
 | MicMicrosoftATP.SoftwareKB.osBuild | Number | The operating system build number. |
-| MicMicrosoftATP.SoftwareKB.productsNames | String | Product Names. |
-| MicMicrosoftATP.SoftwareKB.url | String | url. |
+| MicMicrosoftATP.SoftwareKB.productsNames | String | Product names. |
+| MicMicrosoftATP.SoftwareKB.url | String | URL. |
 | MicMicrosoftATP.SoftwareKB.machineMissedOn | Number | Machine missed on. |
-| MicMicrosoftATP.SoftwareKB.cveAddressed | Number | Cve addressed. |
+| MicMicrosoftATP.SoftwareKB.cveAddressed | Number | CVE addressed. |
  
 #### Command example
 ```!microsoft-atp-list-missing-kb-by-software id=some_id```
