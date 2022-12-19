@@ -1175,8 +1175,8 @@ script:
       - expiration_timestamp.desc
     - description: The offset to begin the list from. For example, start from the 10th record and return the list.
       name: offset
-    - description: A pagination token used with the limit parameter to manage pagination of results.
-      name: after
+    - description: A pagination token used with the limit parameter to manage pagination of results. Use instead of offset.
+      name: next_page_token
     description: Returns a list of your uploaded IOCs that match the search criteria.
     name: cs-falcon-search-custom-iocs
     outputs:
@@ -1216,7 +1216,7 @@ script:
     - contextPath: CrowdStrike.IOC.ModifiedBy
       description: The identity of the user/process who last updated the IOC.
       type: string
-    - contextPath: CrowdStrike.after
+    - contextPath: CrowdStrike.NextPageToken
       description: A pagination token used with the limit parameter to manage pagination of results
   - arguments:
     - auto: PREDEFINED
