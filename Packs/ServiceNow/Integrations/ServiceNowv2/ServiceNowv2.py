@@ -499,7 +499,7 @@ def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     return dic_fields
 
 
-def split_notes(raw_notes, note_type, time_info, client=None):
+def split_notes(raw_notes, note_type, time_info):
     notes: List = []
     notes_split = raw_notes.split('\n\n')
     retrieved_last_note = False
@@ -518,7 +518,7 @@ def split_notes(raw_notes, note_type, time_info, client=None):
 
         # convert note creation time to UTC
         try:
-            display_date_format = get_date_format(client)
+            display_date_format = time_info.get('display_date_format')
             created_on_UTC = datetime.strptime(created_on, display_date_format) + time_info.get('timezone_offset')
         except ValueError as e:
             raise Exception(f'Failed to convert {created_on} to a datetime object. Error: {e}')
@@ -539,28 +539,25 @@ def split_notes(raw_notes, note_type, time_info, client=None):
     return notes
 
 
-def convert_to_notes_result(full_response, client, time_filter=None):
+def convert_to_notes_result(full_response, time_info):
     """
     Converts the response of a ticket to the response format when making a query for notes only.
     """
     if not full_response or 'result' not in full_response or not full_response.get('result'):
         return []
 
-    time_info = {}
-    timezone_offset = get_timezone_offset(full_response, client)
+    timezone_offset = get_timezone_offset(full_response, time_info.get('display_date_format'))
     time_info['timezone_offset'] = timezone_offset
-    if time_filter:
-        time_info['filter'] = time_filter
 
     all_notes = []
     raw_comments = full_response.get('result', {}).get('comments', {}).get('display_value', '')
     if raw_comments:
-        comments = split_notes(raw_comments, 'comments', time_info=time_info, client=client)
+        comments = split_notes(raw_comments, 'comments', time_info=time_info)
         all_notes.extend(comments)
 
     raw_work_notes = full_response.get('result', {}).get('work_notes', {}).get('display_value', '')
     if raw_work_notes:
-        work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info, client=client)
+        work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info)
         all_notes.extend(work_notes)
 
     return {'result': all_notes}
@@ -575,7 +572,7 @@ class Client(BaseClient):
                  password: str, verify: bool, fetch_time: str, sysparm_query: str,
                  sysparm_limit: int, timestamp_field: str, ticket_type: str, get_attachments: bool,
                  incident_name: str, oauth_params: dict = None, version: str = None, look_back: int = 0,
-                 use_display_value: bool = False):
+                 use_display_value: bool = False, display_date_format: str = ''):
         """
 
         Args:
@@ -616,7 +613,10 @@ class Client(BaseClient):
         self.sys_param_offset = 0
         self.look_back = look_back
         self.use_display_value = use_display_value
-        self.display_date_format = ''
+        self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
+        if self.use_display_value:
+            assert self.display_date_format, 'A display date format must be selected in the instance configuration when ' \
+                                             'using the `Use Display Value` option.'
 
         if self.use_oauth:  # if user selected the `Use OAuth` checkbox, OAuth2 authentication should be used
             self.snow_client: ServiceNowClient = ServiceNowClient(credentials=oauth_params.get('credentials', {}),
@@ -1458,11 +1458,17 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
 
     if use_display_value:  # make query using sysparm_display_value=all (requires less permissions)
+        try:
+            display_date_format = client.display_date_format
+        except:
+            return_error('A display date format must be selected in the instance configuration when retrieving notes '
+                         'using the display value option.')
+        # self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'all'}
         full_result = client.send_request(path, 'GET', params=query_params)
-        result = convert_to_notes_result(full_result, client=client)
+        result = convert_to_notes_result(full_result, time_info={'display_date_format': display_date_format})
     else:
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
         result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
@@ -2295,57 +2301,12 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     return ticket
 
 
-def get_date_format(client: Client):
-    """
-    Get the date format as it appears in SNOW UI. First, tries to retrieve the date format for the user configured in the XSOAR
-    instance if available, otherwise, returns the date format of the SNOW instance (not user specific).
-    """
-    if not client:
-        return DATE_FORMAT
-
-    if client.display_date_format:
-        return client.display_date_format
-
-    try:
-        # First, try to get the date format for the current user:
-        if not client.use_oauth:  # when using OAuth we don't know the username of the client.
-            path = 'table/sys_user'
-            query_params = {'user_name': client._username, 'sysparm_fields': 'date_format'}
-            response = client.send_request(path, 'GET', params=query_params)
-            date_format = response.get('result', [{}])[0].get('date_format')
-            if date_format:
-                date_format_str = DATE_FORMAT_OPTIONS.get(date_format)
-                if not date_format_str:
-                    raise Exception(f'The returned date format:{date_format} is not supported.')
-                client.display_date_format = date_format_str
-                return date_format_str
-
-        # If retrieving the date format of the user did not succeed, try to return the system date format.
-        path = 'table/sys_properties'
-        query_params = {'sysparm_fields': 'value,name', 'name': 'glide.sys.date_format'}
-        response = client.send_request(path, 'GET', params=query_params)
-        date_format = response.get('result', [{}])[0].get('value')
-        if date_format:
-            date_format_str = DATE_FORMAT_OPTIONS.get(date_format)
-            if not date_format_str:
-                raise Exception(f'The returned date format:{date_format} is not supported.')
-            client.display_date_format = date_format_str
-            return date_format_str
-    except Exception as e:
-        demisto.debug(f'Failed to find the date format of the ServiceNow instance. Using default date format: {DATE_FORMAT}\n'
-                      f'Error: {e}')
-
-    # If retrieving the date format of the system did not succeed as well, return the default date format
-    return DATE_FORMAT
-
-
-def get_timezone_offset(full_response, client):
+def get_timezone_offset(full_response, display_date_format):
     """
     Receives the full response of a ticket query from SNOW and computes the timezone offset between the timezone of the
     instance and UTC.
     """
     try:
-        display_date_format = get_date_format(client)
         local_time = full_response.get('result', {}).get('sys_created_on', {}).get('display_value', '')
         local_time = datetime.strptime(local_time, display_date_format)
     except Exception as e:
@@ -2430,7 +2391,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
 
         full_result = client.send_request(path, 'GET', params=query_params)
         try:
-            comments_result = convert_to_notes_result(full_result, client=client, time_filter=datetime.fromtimestamp(last_update))
+            comments_result = convert_to_notes_result(full_result, time_info={'display_date_format': client.display_date_format,
+                                                                              'filter': datetime.fromtimestamp(last_update)})
         except Exception as e:
             demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
             comments_result = {'result': []}
@@ -2920,6 +2882,7 @@ def main():
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
     use_display_value = argToBoolean(params.get('use_display_value', False))
+    display_date_format = params.get('display_date_format', '')
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (
@@ -2938,7 +2901,8 @@ def main():
                         username=username, password=password, verify=verify, fetch_time=fetch_time,
                         sysparm_query=sysparm_query, sysparm_limit=sysparm_limit, use_display_value=use_display_value,
                         timestamp_field=timestamp_field, ticket_type=ticket_type, get_attachments=get_attachments,
-                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back)
+                        incident_name=incident_name, oauth_params=oauth_params, version=version, look_back=look_back,
+                        display_date_format=display_date_format)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any], bool]]] = {
             'test-module': test_module,
             'servicenow-oauth-test': oauth_test_module,

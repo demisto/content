@@ -16,7 +16,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, get_date_format
+    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -175,7 +175,7 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, client=None) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, time_info={'display_date_format': DATE_FORMAT}) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -183,13 +183,16 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, client=None,
-                                   time_filter=datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+                                   time_info={'display_date_format': DATE_FORMAT,
+                                              'filter': datetime.strptime('2022-11-21 21:44:37',
+                                                                          DATE_FORMAT)}) == expected_result
 
     ticket_response = {'result': []}
-    assert convert_to_notes_result(ticket_response, client=None) == []
+    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
 
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, client=None) == {'result': []}
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
+                                   time_info={'display_date_format': DATE_FORMAT}) == {'result': []}
 
 
 def test_split_notes():
@@ -212,7 +215,8 @@ def test_split_notes():
                 'Cortex XSOAR\n\n2022-11-21 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
 
     time_info = {'timezone_offset': timedelta(minutes=0),
-                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT}
     notes = split_notes(raw_notes, 'comments', time_info)
     expected_notes = [{'sys_created_on': '2022-11-21 22:50:34',
                        'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
@@ -226,8 +230,11 @@ def test_split_notes():
                        }]
     assert notes == expected_notes
 
+    raw_notes = '21/11/2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n21/11/2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
     time_info = {'timezone_offset': timedelta(minutes=-60),
-                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('dd/MM/yyyy')}
     notes = split_notes(raw_notes, 'comments', time_info)
     expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
                        'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
@@ -236,8 +243,11 @@ def test_split_notes():
                        }]
     assert notes == expected_notes
 
+    raw_notes = '11-21-2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n11-21-2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
     time_info = {'timezone_offset': timedelta(minutes=-120),
-                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT)}
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('MM-dd-yyyy')}
     notes = split_notes(raw_notes, 'comments', time_info)
     assert len(notes) == 0
 
@@ -253,37 +263,23 @@ def test_get_timezone_offset():
     """
     full_response = {
         'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
-    offset = get_timezone_offset(full_response, client=None)
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT)
     assert offset == timedelta(minutes=480)
 
     full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-07 15:47:34', 'value': '2022-12-07 13:47:34'}}}
-    offset = get_timezone_offset(full_response, client=None)
+        'result': {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('MM-dd-yyyy'))
     assert offset == timedelta(minutes=-120)
 
     full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-06 23:38:52', 'value': '2022-12-07 09:38:52'}}}
-    offset = get_timezone_offset(full_response, client=None)
+        'result': {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
 
     full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-07 0:38:52', 'value': '2022-12-06 19:38:52'}}}
-    offset = get_timezone_offset(full_response, client=None)
+        'result': {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
-
-
-@pytest.mark.parametrize('response, expected_date_format', [
-    ({'result': [{'date_format': 'dd/MM/yyyy'}]}, '%d/%m/%Y %H:%M:%S'),
-    ({'result': [{'date_format': 'MM-dd-yyyy'}]}, '%m-%d-%Y %H:%M:%S'),
-    ({'result': [{'date_format': 'dd-MM-yyyy'}]}, '%d-%m-%Y %H:%M:%S'),
-    ({'result': [{'date_format': 'dd.MM.yyyy'}]}, '%d.%m.%Y %H:%M:%S'),
-    ({'result': [{'date_format': 'yyyy-MM-dd'}]}, '%Y-%m-%d %H:%M:%S')])
-def test_get_date_format(response, expected_date_format, mocker):
-    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
-                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
-                    'ticket_type', 'get_attachments', 'incident_name')
-    mocker.patch.object(client, 'send_request', return_value=response)
-    assert get_date_format(client) == expected_date_format
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
@@ -305,9 +301,9 @@ def test_get_date_format(response, expected_date_format, mocker):
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true'}, RESPONSE_COMMENTS_DISPLAY_VALUE,
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT}, RESPONSE_COMMENTS_DISPLAY_VALUE,
      EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true'}, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT}, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
      {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
@@ -351,7 +347,7 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     """
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
-                    'ticket_type', 'get_attachments', 'incident_name')
+                    'ticket_type', 'get_attachments', 'incident_name', display_date_format='yyyy-MM-dd')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
