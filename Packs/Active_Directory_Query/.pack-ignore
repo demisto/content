@@ -12,3 +12,7 @@ ignore=BA101
 
 [file:IAMInitADUser.yml]
 ignore=CJ105
+
+[known_words]
+LDAP
+TLS

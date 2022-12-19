@@ -315,6 +315,133 @@ def test_list_emails(mocker):
     assert 'qwe' in list_mails_command_results.readable_output
 
 
+def test_list_emails_raw_response_contains_list(mocker):
+    from MicrosoftGraphListener import list_mails_command
+    RAW_RESPONSE = [
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('mailbox%40company.com')/messages",
+            "value":
+                [
+                    {
+                        "@odata.etag": "W/\"ABCDEF/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
+                    },
+                    {
+                        "@odata.etag": "W/\"KAHSKD/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
+                    }
+                ],
+                '@odata.nextLink': 'https://graph.microsoft.com/v1.0/users/avishai@demistodev.onmicrosoft.com'
+        }]
+    client = self_deployed_client()
+    mocker.patch.object(client, 'list_mails', return_value=RAW_RESPONSE)
+
+    list_mails_command_results = list_mails_command(client, {})
+    assert '2 mails received' in list_mails_command_results.readable_output
+    assert 'john.doe@company.com' in list_mails_command_results.readable_output
+    assert 'qwe' in list_mails_command_results.readable_output
+
+
 def test_list_attachments(mocker):
     from MicrosoftGraphListener import list_attachments_command
     RAW_RESPONSE = {

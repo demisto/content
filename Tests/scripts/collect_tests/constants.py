@@ -64,6 +64,7 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.REPORT,
     FileType.PARSING_RULE,
     FileType.MODELING_RULE,
+    FileType.MODELING_RULE_XIF,
     FileType.CORRELATION_RULE,
     FileType.XSIAM_DASHBOARD,
     FileType.XSIAM_REPORT,
