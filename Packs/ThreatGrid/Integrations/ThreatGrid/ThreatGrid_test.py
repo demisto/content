@@ -91,19 +91,23 @@ def test_get_with_limit_dict(mocker):
     assert len(res.get('Country'))
 
 
-def test_submit_urls(mocker, requests_mock):
-    class MockResponse:
-                def __init__(self, json_data, status_code):
-                    self.json_data = json_data
-                    self.status_code = status_code
+def test_submit_urls(mocker):
 
-                def json(self):
-                    return self.json_data
+    def mock_req(*args, **kwargs):
+        class MockResponse:
+            def __init__(self, json_data, status_code):
+                self.json_data = json_data
+                self.status_code = status_code
+
+            def json(self):
+                return self.json_data
+
+        return MockResponse(mock_response, 200)
 
     from ThreatGrid import submit_urls
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
-    submit_urls.req = MockResponse(mock_response, 200)
+    mocker.patch.object(submit_urls, 'req', mock_req)
 
     res = submit_urls(Submit_url_input)
     assert res.outputs == expected_results
