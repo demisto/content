@@ -29,8 +29,14 @@ def main():
     try:
         # Generate a random password
         if pwd_generation_script == DEFAULT_PWD_GENERATION_SCRIPT:
-            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {"min_lcase": min_lcase, "max_lcase": max_lcase, "min_ucase": min_ucase,
-                                                                                          "max_ucase": max_ucase, "min_digits": min_digits, "max_digits": max_digits, "min_symbols": min_symbols, "max_symbols": max_symbols})
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {"min_lcase": min_lcase,
+                                                                                          "max_lcase": max_lcase,
+                                                                                          "min_ucase": min_ucase,
+                                                                                          "max_ucase": max_ucase,
+                                                                                          "min_digits": min_digits,
+                                                                                          "max_digits": max_digits,
+                                                                                          "min_symbols": min_symbols,
+                                                                                          "max_symbols": max_symbols})
         else:
             pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
         if is_error(pwd_generation_script_output):
@@ -44,7 +50,8 @@ def main():
                 password = password_output
             else:
                 raise Exception(f'Could not parse the generated password from {pwd_generation_script} outputs. '
-                                f'Please make sure the output of the script is a string, or a dictionary containing a key named NEW_PASSWORD.')
+                                f'Please make sure the output of the script is a string, or a dictionary containing '
+                                f'a key named NEW_PASSWORD.')
 
             # Set args for setting the new passsword
             okta_set_pwd_args = {
