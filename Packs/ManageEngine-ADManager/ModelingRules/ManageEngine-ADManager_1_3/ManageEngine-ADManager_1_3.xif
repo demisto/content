@@ -1,7 +1,7 @@
 [MODEL: dataset="manageengine_admanager_raw"]
 filter _raw_log ~= "\<\d+\>"
 |alter observername=arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}\s([a-zA-Z0-9\-\_\s\.]+)\s"),0),
-status = arrayindex(regextract(_raw_log ,"Status\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
+status = arrayindex(regextract(_raw_log ,"Status\=([a-zA-Z0-9\-\_\s\.]+)\]?"),0),
 operation = arrayindex(regextract(_raw_log ,"Task\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 action= arrayindex(regextract(_raw_log ,"ACTION\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 domainName=arrayindex(regextract(_raw_log ,"Domain Name\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
@@ -20,7 +20,7 @@ xdm.source.user.last_name=sourceUserLastName;
 filter _raw_log !~= "\<\d+\>"
 |alter description=arrayindex(regextract(_raw_log,"^([A-Za-z\_\-0-9\:\,\'\s\.\"]+)\]"),0),
 observername=arrayindex(regextract(_raw_log ,"\d{2}\:\d{2}\:\d{2}\s([a-zA-Z0-9\-\_\s\.]+)\s"),0),
-status = arrayindex(regextract(_raw_log ,"Status\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
+status = arrayindex(regextract(_raw_log ,"Status\=([a-zA-Z0-9\-\_\s\.]+)\]?"),0),
 operation = arrayindex(regextract(_raw_log ,"Task\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 action= arrayindex(regextract(_raw_log ,"ACTION\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
 domainName=arrayindex(regextract(_raw_log ,"Domain Name\=([a-zA-Z0-9\-\_\s\.]+)\]"),0),
