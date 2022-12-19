@@ -257,11 +257,19 @@ def main():
     print("\n".join(message))
     if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip").exists():
         slack_client = WebClient(token=slack_token)
-        slack_client.files_upload(
-            file=str(diff_output),
-            channels="dmst-graph-tests",
-            initial_comment="\n".join(message),
-        )
+        try:
+            slack_client.files_upload(
+                file=str(diff_output),
+                channels="dmst-graph-tests",
+                initial_comment="\n".join(message),
+            )
+        except Exception as e:
+            print(f"could not upload file to slack: {e}")
+            slack_client.chat_postMessage(
+                channels="dmst-graph-tests",
+                text="Could not upload diff file to slack\n"
+                     f"Job URL: {os.getenv('CI_JOB_URL')}",
+            )
 
 
 if __name__ == "__main__":
