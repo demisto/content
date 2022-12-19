@@ -1458,17 +1458,13 @@ def get_ticket_notes_command(client: Client, args: dict) -> Tuple[str, Dict, Dic
     use_display_value = argToBoolean(args.get('use_display_value', client.use_display_value))
 
     if use_display_value:  # make query using sysparm_display_value=all (requires less permissions)
-        try:
-            display_date_format = client.display_date_format
-        except:
-            return_error('A display date format must be selected in the instance configuration when retrieving notes '
-                         'using the display value option.')
-        # self.display_date_format = DATE_FORMAT_OPTIONS.get(display_date_format)
+        assert client.display_date_format, 'A display date format must be selected in the instance configuration when' \
+                                           ' retrieving notes using the display value option.'
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'all'}
         full_result = client.send_request(path, 'GET', params=query_params)
-        result = convert_to_notes_result(full_result, time_info={'display_date_format': display_date_format})
+        result = convert_to_notes_result(full_result, time_info={'display_date_format': client.display_date_format})
     else:
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
         result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)

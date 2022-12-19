@@ -175,7 +175,8 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE, time_info={'display_date_format': DATE_FORMAT}) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+                                   time_info={'display_date_format': DATE_FORMAT}) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -301,10 +302,10 @@ def test_get_timezone_offset():
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
     (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT}, RESPONSE_COMMENTS_DISPLAY_VALUE,
-     EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT}, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
-     {}, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
+     RESPONSE_COMMENTS_DISPLAY_VALUE, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
+    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
+     RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
