@@ -6377,7 +6377,7 @@ Retrieves a list of all the vulnerabilities affecting the organization per machi
 | product_version | A comma-separated list of product versions used for getting the vulnerabilities. | Optional |
 | severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
 | product_vendor | A comma-separated list of product vendors used for getting the vulnerabilities. | Optional |
-| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| limit | Maximum number of results to retrieve. Default is 25. | Optional |
 | offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
 #### Context Output
 | **Path** | **Type** | **Description** |
