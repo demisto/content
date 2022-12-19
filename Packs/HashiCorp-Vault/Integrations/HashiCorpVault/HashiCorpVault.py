@@ -130,7 +130,7 @@ def list_secrets_engines_command():
         'Type': v.get('type'),
         'Description': v.get('description'),
         'Accessor': v.get('accessor')
-    } for k, v in res.get('data', {}).iteritems()]
+    } for k, v in res.get('data', {}).items()]
 
     headers = ['Path', 'Type', 'Description', 'Accessor']
 
@@ -183,7 +183,7 @@ def list_secrets(engine_path, version, folder=None):
     path = engine_path
 
     if version == '2':
-        path += '/metadata'
+        path = urljoin(path, 'metadata')
         if folder:
             path += os.path.join('/', folder)
 
@@ -221,7 +221,7 @@ def get_secret_metadata_command():
         'Created': v['created_time'],
         'Deleted': v['deletion_time'],
         'Destroyed': v['destroyed']
-    } for k, v in data.get('versions', {}).iteritems()]
+    } for k, v in data.get('versions', {}).items()]
 
     hr = tableToMarkdown('Secret metadata', mapped_secret, headers=secret_headers, removeNull=True)
     if mapped_versions:
@@ -344,7 +344,7 @@ def get_policy_command():
 
     rules = hcl.loads(res['rules'])
 
-    mapped_rules = [{'Path': k, 'Capabilities': v['capabilities']} for k, v in rules.get('path', {}).iteritems()]
+    mapped_rules = [{'Path': k, 'Capabilities': v['capabilities']} for k, v in rules.get('path', {}).items()]
 
     mapped_policy = {
         'Name': res['name'],
@@ -603,20 +603,17 @@ def configure_engine(engine_path, engine_type, version, folder=None):
 def fetch_credentials():
     credentials = []
     engines_to_fetch_from = []
-    ENGINES = argToList(demisto.params().get('engines', []))
+    engines = argToList(demisto.params().get('engines', []))
     identifier = demisto.args().get('identifier')
     concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
-    if len(ENGINES) == 0:
+    if len(engines) == 0:
         return_error('No secrets engines specified')
-    # engines_to_fetch_from = [{'path': '', 'version': '2', 'type': 'AWS'}]
-    engines_to_fetch_from = [{'path': 'secret', 'version': '2', 'type': 'KV'}]
-    # for engine_type in ENGINES:
-    # engines_to_fetch = list(
-    #     filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
-    # engines_to_fetch_from += engines_to_fetch
+    for engine_type in engines:
+        engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
+        engines_to_fetch_from += engines_to_fetch
 
-    # if len(engines_to_fetch_from) == 0:
-    #     return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
+    if len(engines_to_fetch_from) == 0:
+        return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
     for engine in engines_to_fetch_from:
         if engine['type'] == 'KV':
@@ -630,7 +627,6 @@ def fetch_credentials():
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            demisto.info('---------enter the aws function path:: {}'.format(engine["path"]))
             credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name)
 
     if identifier:
@@ -654,7 +650,7 @@ def get_kv1_secrets(engine_path, concat_username_to_cred_name=False):
 
     for secret in res['data'].get('keys', []):
         secret_data = get_kv1_secret(engine_path, secret)
-        for k, v in secret_data.get('data', {}).iteritems():
+        for k, v in secret_data.get('data', {}).items():
             if concat_username_to_cred_name:
                 name = '{0}_{1}'.format(secret, k)
             else:
@@ -681,17 +677,20 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
         return []
 
     for secret in res['data'].get('keys', []):
-        if str(secret).endswith('/') and not secret.replace == folder:
+        if str(secret).endswith('/') and not secret.replace('/', '') == folder:
+            demisto.debug('Could not get secrets from path: {}'.format(secret))
+            continue
 
         secret_data = get_kv2_secret(engine_path, secret, folder)
-        for k, v in secret_data.get('data', {}).get('data', {}).iteritems():
+        secret_info = secret_data.get('data', {}).get('data', {})
+        for k in secret_data.get('data', {}).get('data', {}):
             if concat_username_to_cred_name:
                 name = '{0}_{1}'.format(secret, k)
             else:
                 name = secret
             secrets.append({
                 'user': k,
-                'password': v,
+                'password': secret_info[k],
                 'name': name
             })
 
@@ -723,7 +722,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 
     for secret in res['data'].get('keys', []):
         secret_data = get_ch_secret(engine_path, secret)
-        for k, v in secret_data.get('data', {}).iteritems():
+        for k, v in secret_data.get('data', {}).items():
             if concat_username_to_cred_name:
                 name = '{0}_{1}'.format(secret, k)
             else:
@@ -740,18 +739,16 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     # TODO: figure out if concat_username_to_cred_name is needed in AWS ?
     # TODO: add all the config of the path to the readme and the different credentials types to the readme
-    # TODO: fix bug when getting a secret that is not in the root ??????????? or is it ok with the folder ????????
-    # TODO: add a ttl parameter - v is needed ????????
-    # TODO: add a parameter to set the pull time for the secretes by using the integration context (use get_integration_context and set_integration_context) - vvvvvv
+    # TODO: check tht the old commands still works or if they work with the aws path
     secrets = []
-    roles_list_url = engine_path + 'aws/roles?list=true'
+    roles_list_url = engine_path + '/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))
     res = send_request(roles_list_url, 'get')
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
         demisto.info('***********: {}'.format(role))
-        role_url = engine_path + 'aws/roles/' + role
+        role_url = engine_path + '/roles/' + role
         demisto.info('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
         credential_type = role_data['data'].get('credential_type')
@@ -762,13 +759,13 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         else:
             method = 'GET'
             credential_type = 'creds'
-        generate_credentials_url = engine_path + 'aws/' + credential_type + '/' + role
+        generate_credentials_url = engine_path + '/' + credential_type + '/' + role
         demisto.info('generate_credentials_url: {}'.format(generate_credentials_url))
         body = {}
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
         #     max value 43200
-        body['ttl'] = demisto.params().get('ttl', '43200') + 's'
+        body['ttl'] = demisto.params().get('ttl', '3600') + 's'
         aws_credentials = send_request(generate_credentials_url, method, body=body)
         if not aws_credentials or 'data' not in aws_credentials:
             return []
@@ -813,17 +810,17 @@ try:
     elif demisto.command() == 'fetch-credentials':
         context = demisto.getIntegrationContext()
         get_credentials = False
+        now = datetime.now()
         if 'credentials_last_fetch' in integ_context:
-            last = datetime(integ_context['credentials_last_fetch'])
-            now = datetime.now()
-            diff = (now - last).total_seconds() / 60
+            last = datetime.fromtimestamp(integ_context['credentials_last_fetch'])
+            diff = (now - last).seconds
             if diff >= int(demisto.params().get('credentialsFetchInterval')):
                 get_credentials = True
         else:
             get_credentials = True
         if get_credentials:
             fetch_credentials()
-            integ_context['credentials_last_fetch'] = now
+            integ_context['credentials_last_fetch'] = now.timestamp()
             demisto.setIntegrationContext(integ_context)
     elif demisto.command() == 'hashicorp-list-secrets-engines':
         list_secrets_engines_command()
@@ -856,6 +853,4 @@ try:
     elif demisto.command() == 'hashicorp-reset-configuration':
         reset_config_command()
 except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    return_error(e.message)
+    return_error(f'An error occurred: {e}')
