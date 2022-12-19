@@ -1,6 +1,5 @@
 id: Indicators reputation-.json Test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Indicators-reputation-Test
 description: Test our repution*.json regexes in misc folder
 starttaskid: "0"
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -45,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "67"
@@ -119,8 +120,7 @@ tasks:
       key:
         simple: valid_emails
       value:
-        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com",
-          "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
+        simple: '"support@threatx.com", "foo@test.com", "5c530c1b.1c69fb81.bd826.0eff@mx.google.com", "woo@demisto.com", "this.is@email.format", "test[@]test.com", "1c69fb81.bd826.0eff[@]mx.google.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -282,10 +282,7 @@ tasks:
       key:
         simple: invalid_emails
       value:
-        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith
-          <email@example.com>", "email.example.com", "email@example@example.com",
-          ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com",
-          "email[@]test[@]example.com"'
+        simple: '"go.microsoft.com", "#@%^%#$@#$@#.com" "@example.com", "Joe Smith <email@example.com>", "email.example.com", "email@example@example.com", ".email@example.com", "あいうえお@example.com", "#[@]%^%#$[@]#.com" "[@]test.com", "email[@]test[@]example.com"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -470,6 +467,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -500,6 +498,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -539,10 +538,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com",
-          "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/",
-          "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com",
-          "testing[.]com",  "見.香港"'
+        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "test.com", "www.xn--t1e2s3t4.com", "subtest.test.com", "ötest.com", "www.teöst.com", "testing[.]com",  "見.香港"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1061,8 +1057,7 @@ tasks:
       key:
         simple: invalid_ips
       value:
-        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256",
-          "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
+        simple: '"000.0000.00.00", "912.456.123.123", "2.2.1.", "256.1.1.1", "1.1.1.256", "00.0.0.0", "1111.1.1.1", "1[.1[.]"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1223,6 +1218,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1521,6 +1517,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "73"
@@ -1661,8 +1658,7 @@ tasks:
       key:
         simple: invalid_ipv6s
       value:
-        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::",
-          "tag::event"'
+        simple: '"2001:0db8:0000:0000:0000:ff00:0042:83292", "2a01:111:f406:1805::", "tag::event"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1783,6 +1779,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -2260,6 +2257,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2296,8 +2294,7 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329",
-          "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
+        simple: '"2001:db8:85a3:8d3:1319:8a2e:370:7348", "2001:db8::ff00:42:8329", "1a:2b::4c:5:6:7:8", "1a:2b::4c:5abc"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2503,3 +2500,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
