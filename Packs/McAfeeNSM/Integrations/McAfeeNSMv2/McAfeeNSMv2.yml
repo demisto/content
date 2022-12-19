@@ -1699,6 +1699,60 @@ script:
         - contextPath: NSM.IPSPolicies.IsLightWeightPolicy
           description: Is Light Weight Policy configured.
           type: Boolean
+    - name: nsm-update-alerts
+      description: Update state or assignee of alerts. It is required to provide at least one of them.
+      arguments:
+        - name: state
+          auto: PREDEFINED
+          predefined:
+            - ANY
+            - Acknowledged
+            - Unacknowledged
+          description: Alert State
+          defaultValue: ANY
+          required: false
+          isArray: false
+        - name: time_period
+          auto: PREDEFINED
+          predefined:
+            - LAST_5_MINUTES
+            - LAST_1_HOUR
+            - LAST_6_HOURS
+            - LAST_12_HOURS
+            - LAST_24_HOURS
+            - LAST_7_DAYS
+            - LAST_14_DAYS
+            - CUSTOM
+          description: Time Period
+          required: false
+          isArray: false
+        - name: start_time
+          description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.
+          required: false
+          isArray: false
+        - name: end_time
+          description: End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.
+          required: false
+          isArray: false
+        - name: new_state
+          auto: PREDEFINED
+          predefined:
+            - Acknowledged
+            - Unacknowledged
+            - Any
+          description: The new alert state.
+          required: false
+          isArray: false
+        - name: new_assignee
+          description: The new assignee.
+          required: false
+          isArray: false
+        - name: search
+          description: Search string in alert details.
+        - name: filter
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"'
+          required: false
+          isArray: false
   isfetch: false
   runonce: false
   script: '-'

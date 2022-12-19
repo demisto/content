@@ -282,6 +282,37 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def update_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
+                              search: str, filter_arg: str, body: Dict) -> Dict:
+        """ Updates all relevant alerts.
+            Args:
+                session_str: str - The session id.
+                time_period: str - The time period of the alert.
+                start_time: str - The start time of the alert.
+                end_time: str - The end time of the alert.
+                state: str - The state of the alert.
+                search: str - Search string in alert details.
+                filter_arg: str - Filter alert by fields.
+                body: Dict - The body of the request.
+            Returns:
+                A dictionary with the request status.
+        """
+        params = {}
+        if time_period:
+            params['timeperiod'] = time_period
+            if time_period == 'CUSTOM':
+                params['starttime'] = start_time
+                params['endtime'] = end_time
+        if state:
+            params['alertstate'] = state
+        if search:
+            params['search'] = search
+        if filter_arg:
+            params['filter'] = filter_arg
+        url_suffix = '/sdkapi/alerts'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='PUT', url_suffix=url_suffix, params=params, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1192,6 +1223,15 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     search = args.get('search')
     filter_arg = args.get('filter')
     domain_id = args.get('domain_id')
+    if args.get('new_state'):
+        state = args.get('new_state')
+
+    if (start_time and not end_time) or (not start_time and end_time):
+        raise Exception('If you provide one of the time parameters, you must provide the other as well.')
+    if (start_time or end_time) and time_period != 'CUSTOM':
+        raise Exception('If you provided a start time or end time, you must assign the time_period parameter with the '
+                        'value "CUSTOM"')
+
     response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg,
                                          domain_id)
     total_alerts_count = response.get('totalAlertsCount')
@@ -1215,8 +1255,12 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
 
     headers = ['ID', 'Name', 'Event Time', 'Severity', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP',
                'Target IP']
+    if args.get('new_state'):
+        title = f'Updated Alerts list. Showing {limit} of {total_alerts_count}'
+    else:
+        title = f'Alerts list. Showing {limit} of {total_alerts_count}'
     readable_output = tableToMarkdown(
-        name=f'Alerts list. Showing {limit} of {total_alerts_count}',
+        name=title,
         t=human_readable,
         removeNull=True,
         headers=headers
@@ -1495,6 +1539,44 @@ def get_ips_policy_details_command(client: Client, args: Dict, session_str: str)
     )
 
 
+def update_alerts_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Updates all the relevant alerts.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with The list of the changed alerts.
+    """
+    state = args.get('state')
+    time_period = args.get('time_period')
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    new_state = args.get('new_state')
+    new_assignee = args.get('new_assignee')
+    search = args.get('search')
+    filter_arg = args.get('filter')
+
+    if not new_state and not new_assignee:
+        raise Exception('Error! You must specify a new alert state or a new assignee')
+    if (start_time and not end_time) or (not start_time and end_time):
+        raise Exception('If you provide one of the time parameters, you must provide the other as well')
+    if (start_time or end_time) and time_period != 'CUSTOM':
+        raise Exception('If you provided a start time or end time, you must assign the time_period parameter with the '
+                        'value "CUSTOM"')
+
+    body = {
+        'alertState': new_state,
+        'assignTo': new_assignee
+    }
+
+    response = client.update_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg, body)
+
+    if response.get('status') != 1:
+        raise Exception('Error! Failed to update alerts.')
+    return get_alerts_command(client, args, session_str)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1579,6 +1661,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-get-ips-policy-details':
             results = get_ips_policy_details_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-update-alerts':
+            results = update_alerts_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')
