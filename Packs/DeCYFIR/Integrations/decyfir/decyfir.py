@@ -440,16 +440,17 @@ def main():
     """
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
-    decyfir_api_key: str = demisto.params().get('decyfir_api_key')
-    incident_type: str = demisto.params().get('incidentType')
-    max_fetch: str = demisto.params().get('max_fetch')
-    verify_certificate = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    base_url = urljoin(params['url'], '/api/v1/suffix')
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
+    decyfir_api_key: str = params.get('decyfir_api_key')
+    incident_type: str = params.get('incidentType')
+    max_fetch: str = params.get('max_fetch')
+    verify_certificate = not params.get('insecure', False)
     # How much time before the first fetch to retrieve incidents
-    first_fetch = demisto.params().get('first_fetch', '30 days').strip()
-    proxy = demisto.params().get('proxy', False)
+    first_fetch = params.get('first_fetch', '30 days').strip()
+    proxy = params.get('proxy', False)
 
     LOG(f'Command being called is {demisto.command()}')
     try:
