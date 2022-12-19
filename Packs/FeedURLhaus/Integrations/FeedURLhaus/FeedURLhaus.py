@@ -31,7 +31,7 @@ def main():  # pragma: no cover
         params['url'] = chosen_urls
         feed_main('URLhaus Feed', params, 'urlhaus-')
     except Exception as e:
-        return_error(f'Failed toKKK execute {demisto.command()} command. Error: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

@@ -1410,7 +1410,7 @@ def pull_request_comment_create_command(client: Client, args: Dict) -> CommandRe
     outputs = response
     if partial_response:
         outputs = comment_partial_result(response, 'pr')
-    return CommandResults(readable_output='The comment was created successfullyTTTTTTTTT',
+    return CommandResults(readable_output='The comment was created successfully',
                           outputs_prefix='Bitbucket.PullRequestComment',
                           outputs=outputs,
                           raw_response=response,
