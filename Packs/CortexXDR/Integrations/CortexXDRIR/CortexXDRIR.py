@@ -1448,7 +1448,15 @@ def main():  # pragma: no cover
         elif command == 'xdr-blocklist-files':
             return_results(blocklist_files_command(client, args))
 
+        elif command == 'xdr-blacklist-files':
+            args['prefix'] = 'blacklist'
+            return_results(blocklist_files_command(client, args))
+
         elif command == 'xdr-allowlist-files':
+            return_results(allowlist_files_command(client, args))
+
+        elif command == 'xdr-whitelist-files':
+            args['prefix'] = 'whitelist'
             return_results(allowlist_files_command(client, args))
 
         elif command == 'xdr-remove-blocklist-files':
