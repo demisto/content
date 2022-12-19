@@ -82,6 +82,7 @@ CTI
 SCC
 IPinfo
 QRadarFullSearch
+Commandline
 ServiceNow
 OAuth
 Qualys
