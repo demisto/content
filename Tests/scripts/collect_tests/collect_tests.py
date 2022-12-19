@@ -144,7 +144,6 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            
             if only_to_upload == only_to_install:
                 self.packs_to_install = {pack}
                 self.packs_to_upload = {pack}
@@ -282,7 +281,8 @@ class TestCollector(ABC):
                 reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
                 id_set=self.id_set,
-                is_sanity=True
+                is_sanity=True,
+                only_to_install=True,
             )
             for test in self._sanity_test_names
         ))
@@ -477,11 +477,12 @@ class TestCollector(ABC):
         except IncompatibleMarketplaceException:
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
-                
+
             # collect only to upload if:
             # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
             # 2. allow_incompatible_marketplace=False, if True, then should be also to install
-            if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and not allow_incompatible_marketplace:
+            if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and \
+                    not allow_incompatible_marketplace:
                 collect_only_to_upload = True
 
             # sometimes, we want to install or upload packs that are not compatible (e.g. both marketplaces)
@@ -918,14 +919,14 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
             new_pack = find_pack_folder(new_path).name
         except NotUnderPackException:
             new_pack = None
-            logger.warning(f'')
+            logger.warning('')
 
         if old_pack != new_pack:  # file moved between packs
             logger.info(f'file {old_path.name} was moved '
                         f'from pack {old_pack}, adding it, to make sure it still installs properly')
     else:
         # Since new_path is None we understand the item was deleted
-        logger.info(f'file {old_path.name} was deleted ' # changing log
+        logger.info(f'file {old_path.name} was deleted '  # changing log
                     f'from pack {old_pack}, adding it, to make sure it still installs properly')
 
     return old_pack
@@ -1042,7 +1043,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 reason_description='XSIAM Nightly sanity',
                 conf=self.conf,
                 id_set=self.id_set,
-                is_sanity=True
+                is_sanity=True,
+                only_to_install=True
             )
             for test in self.conf['test_marketplacev2']
         ))
@@ -1082,7 +1084,7 @@ def output(result: Optional[CollectionResult]):
     machine_str = ', '.join(sorted(map(str, machines)))
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
-    logger.info(f'collected {len(packs_to_install)} packs:\n{packs_to_install_str}')
+    logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 

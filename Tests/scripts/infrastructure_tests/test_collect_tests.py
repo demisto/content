@@ -340,17 +340,19 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
       ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
        'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), (), None),
 
-     # (27) Packs for XSOAR & XSIAM will collected only for upload - test dependency and always install packs will collected only to install
-     (MockerCases.R, None, ('bothMarketplacesPackOnlyXSIAMIntegration', 'myXSIAMOnlyPack', 'CoreAlertFields'), None, XSIAM_BRANCH_ARGS,
+     # (27) Packs for XSOAR & XSIAM will be collected only for upload,
+     # test dependency and always install packs will collected only to install
+     (MockerCases.R, None, ('bothMarketplacesPackOnlyXSIAMIntegration', 'myXSIAMOnlyPack', 'CoreAlertFields'), None,
+      XSIAM_BRANCH_ARGS,
       ('Packs/bothMarketplacesPack/pack_metadata.json',
        'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'), (),
       ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
-     
+
      # (28) Only packs with changes in XSAOR items will be collected to install and to upload.
      (MockerCases.R, None, ('bothMarketplacesPack',), None, XSOAR_BRANCH_ARGS,
       ('Packs/bothMarketplacesPack/pack_metadata.json',
-       'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'), (), None)
-
+       'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'),
+      (), None)
      ))
 def test_branch(
         monkeypatch,

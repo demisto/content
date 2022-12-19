@@ -543,7 +543,7 @@ class Build(ABC):
             packs_to_install (list): The packs to install list from the artifacts.
         """
         create_test_pack(packs_to_install)
-        
+
         for server in self.servers:
             upload_zipped_packs(client=server.client,
                                 host=server.name if server.name else server.internal_ip,
@@ -1534,7 +1534,7 @@ def create_test_pack(packs: list = []):
 
 def test_files(content_path, packs_to_install: list = []):
     packs_root = f'{content_path}/Packs'
-    
+
     # if is given a list of packs to install then collect the test playbook only for those packs (in commit/push build)
     if packs_to_install:
         packs = filter(lambda x: x.is_dir() and x.name in packs_to_install, os.scandir(packs_root))
