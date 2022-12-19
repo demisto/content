@@ -71,14 +71,8 @@ AVOID_DOCKER_IMAGE_VALIDATION = {
 }
 ID_SET_PATH = './artifacts/id_set.json'
 XSOAR_BUILD_TYPE = "XSOAR"
-XSIAM_BUILD_TYPE = "XSIAM"
+CLOUD_BUILD_TYPE = "CLOUD"
 MARKETPLACE_TEST_BUCKET = 'marketplace-ci-build/content/builds'
-# MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsiam'
-# MARKETPLACE_XSIAM_BUCKETS = 'marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng'
-
-# ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/xsoar"
-# ARTIFACTS_FOLDER_MPV2 = "/builds/xsoar/content/artifacts/marketplacev2"
-
 
 SET_SERVER_KEYS = True
 
@@ -195,7 +189,7 @@ class Build(ABC):
     def __init__(self, options):
         self._proxy = None
         self.is_cloud = False
-        self.xsiam_machine = None
+        self.cloud_machine = None
         self.servers = []
         self.server_numeric_version = ''
         self.git_sha1 = options.git_sha1
@@ -337,7 +331,7 @@ class Build(ABC):
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
-                hostname = self.xsiam_machine if self.is_cloud else ''
+                hostname = self.cloud_machine if self.is_cloud else ''
                 _, flag = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
                 if not flag:
                     raise Exception('Failed to search and install packs.')
@@ -365,7 +359,7 @@ class Build(ABC):
                 logging.debug('Not running instance tests in nightly flow')
                 tests_for_iteration = []
             else:
-                # if not filtered_tests in XSIAM, we not running tests at all
+                # if not filtered_tests in cloud, we not running tests at all
                 if self.is_cloud and not filtered_tests:
                     tests_for_iteration = []
                 else:
@@ -736,24 +730,24 @@ class CLOUDBuild(Build):
         SET_SERVER_KEYS = False
         super().__init__(options)
         self.is_cloud = True
-        self.xsiam_machine = options.xsiam_machine
+        self.cloud_machine = options.cloud_machine
         self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id =\
-            self.get_xsiam_configuration(options.xsiam_machine, options.cloud_servers_path,
+            self.get_cloud_configuration(options.cloud_machine, options.cloud_servers_path,
                                          options.cloud_servers_api_keys)
         self.servers = [CLOUDServer(self.api_key, self.server_numeric_version, self.base_url, self.xdr_auth_id,
-                                    self.xsiam_machine)]
+                                    self.cloud_machine)]
         self.marketplace_tag_name = options.marketplace_name
         self.artifacts_folder = options.artifacts_folder
         self.marketplace_buckets = options.marketplace_buckets
 
     @staticmethod
-    def get_xsiam_configuration(xsiam_machine, cloud_servers_path, cloud_servers_api_keys_path):
-        logging.info('get xsiam configuration')
+    def get_cloud_configuration(cloud_machine, cloud_servers_path, cloud_servers_api_keys_path):
+        logging.info('get cloud configuration')
 
         cloud_servers = get_json_file(cloud_servers_path)
-        conf = cloud_servers.get(xsiam_machine)
+        conf = cloud_servers.get(cloud_machine)
         cloud_servers_api_keys = get_json_file(cloud_servers_api_keys_path)
-        api_key = cloud_servers_api_keys.get(xsiam_machine)
+        api_key = cloud_servers_api_keys.get(cloud_machine)
         return api_key, conf.get('demisto_version'), conf.get('base_url'), conf.get('x-xdr-auth-id')
 
     @property
@@ -761,11 +755,11 @@ class CLOUDBuild(Build):
         return self.marketplace_tag_name
 
     def configure_servers_and_restart(self):
-        # No need of this step in XSIAM.
+        # No need of this step in cloud.
         pass
 
     def test_integration_with_mock(self, instance: dict, pre_update: bool):
-        # No need of this step in XSIAM.
+        # No need of this step in CLOUD.
         pass
 
     def install_nightly_pack(self):
@@ -777,7 +771,7 @@ class CLOUDBuild(Build):
         self.install_packs()
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_nightly_test_pack()
-        # uploads test_pack.zip to all servers (we have only one xsiam server)
+        # uploads test_pack.zip to all servers (we have only one cloud server)
         for server in self.servers:
             upload_zipped_packs(client=server.client,
                                 host=server.name,
@@ -831,10 +825,10 @@ class CLOUDBuild(Build):
         return modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre
 
     def set_marketplace_url(self, servers, branch_name, ci_build_number):
-        logging.info('Copying custom build bucket to xsiam_instance_bucket.')
+        logging.info('Copying custom build bucket to cloud_instance_bucket.')
         marketplace_name = self.marketplace_name
         from_bucket = f'{MARKETPLACE_TEST_BUCKET}/{branch_name}/{ci_build_number}/{marketplace_name}/content'
-        output_file = f'{self.artifacts_folder}/Copy_custom_bucket_to_xsiam_machine.log'
+        output_file = f'{self.artifacts_folder}/Copy_custom_bucket_to_cloud_machine.log'
         for server in servers:
             to_bucket = f'{self.marketplace_buckets}/{server.name}'
             cmd = f'gsutil -m cp -r gs://{from_bucket} gs://{to_bucket}/'
@@ -842,7 +836,7 @@ class CLOUDBuild(Build):
                 subprocess.run(cmd.split(), stdout=outfile, stderr=outfile)
             try:
                 # We are syncing marketplace since we are copying custom bucket to existing bucket and if new packs
-                # was added, they will not appear on XSIAM marketplace without sync.
+                # was added, they will not appear on cloud marketplace without sync.
                 _ = demisto_client.generic_request_func(
                     self=server.client, method='POST',
                     path='/contentpacks/marketplace/sync')
@@ -878,10 +872,10 @@ def options_handler(args=None):
                         default='./artifacts/filter_file.txt')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.',
                         default='./artifacts/content_packs_to_install.txt')
-    parser.add_argument('--build_object_type', help='Build type running: XSOAR or XSIAM')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--cloud_servers_path', help='Path to secret xsiam server metadata file.')
-    parser.add_argument('--cloud_servers_api_keys', help='Path to file with XSIAM Servers api keys.')
+    parser.add_argument('--build_object_type', help='Build type running: XSOAR or CLOUD')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to file with cloud Servers api keys.')
     parser.add_argument('--marketplace_name', help='the name of the marketplace to use.')
     parser.add_argument('--artifacts_folder', help='the artifacts folder to use.')
     parser.add_argument('--marketplace_buckets', help='the path to the marketplace buckets.')
@@ -1677,7 +1671,7 @@ def create_build_object() -> Build:
     logging.info(f'Build type: {options.build_object_type}')
     if options.build_object_type == XSOAR_BUILD_TYPE:
         return XSOARBuild(options)
-    elif options.build_object_type == XSIAM_BUILD_TYPE:
+    elif options.build_object_type == CLOUD_BUILD_TYPE:
         return CLOUDBuild(options)
     else:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
@@ -1823,7 +1817,7 @@ def main():
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
         3. Upload all test playbooks that currently in master.
-        4. In XSOAR:Install all existing packs, in XSIAM: install only requested packs.
+        4. In XSOAR:Install all existing packs, in cloud: install only requested packs.
     """
     install_logging('Install_Content_And_Configure_Integrations_On_Server.log', logger=logging)
     build = create_build_object()

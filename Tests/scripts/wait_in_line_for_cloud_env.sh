@@ -1,5 +1,5 @@
 #! /bin/bash
-# Script that locks XSIAM machines for testing.
+# Script that locks cloud machines for testing.
 # We lock one machine for each job. The lock identifier contains $CI_JOB_ID.
 # We release the lock after the job ends. Other jobs check that the job's status that locking the machine is not `running`.
 # If there is a lock for some machine, and its job status is not running, the lock is removed.
@@ -218,7 +218,7 @@ function poll_for_env() {
 
 touch queue
 touch ChosenMachine
-touch XSIAMEnvVariables
+touch CLOUDEnvVariables
 
 # copy TestMachines locally for faster perf
 gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file from bucket. 3 machines names.
@@ -308,7 +308,7 @@ do
 	fi
 done
 
-export XSIAM_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
+export CLOUD_CHOSEN_MACHINE_ID=`cat ChosenMachine`	# ChosenMachine it is the file with free machine. machine name will be written there.
 # export vars to file
-echo -e "export XSIAM_CHOSEN_MACHINE_ID=$XSIAM_CHOSEN_MACHINE_ID" >>  XSIAMEnvVariables
+echo -e "export CLOUD_CHOSEN_MACHINE_ID=$CLOUD_CHOSEN_MACHINE_ID" >>  CLOUDEnvVariables
 

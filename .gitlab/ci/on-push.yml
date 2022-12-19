@@ -382,16 +382,11 @@ slack-notify-nightly-build:
   extends:
     - .default-job-settings
     - .push-rule
-#  needs: []
   stage: run-instances
   script:
     - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-#    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "$ARTIFACTS_FOLDER/filter_file.txt"
-#    - echo -e "Sanity Test - Playbook with integration\nSanity Test - Playbook with no integration\nSanity Test - Playbook with Unmockable Integration\nSanity Test - Playbook with mocked integration\n" > "/builds/xsoar/content/artifacts/filter_file.txt"
-#    - echo -e "Base\nDeveloperTools\nHelloWorld\nGmail" > "$ARTIFACTS_FOLDER/content_packs_to_install.txt"
-#    - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_start "Are there tests to run?" --collapsed
     - |
       if ! [[ -s $ARTIFACTS_FOLDER/content_packs_to_install.txt || -s $ARTIFACTS_FOLDER/filter_file.txt ]]; then
@@ -401,19 +396,19 @@ slack-notify-nightly-build:
       fi
     - section_end "Are there tests to run?"
 
-    - section_start "Lock XSIAM Machine" --collapsed
+    - section_start "Lock Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - source CLOUDEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
 
-    - section_start "Clean XSIAM Machine" --collapsed
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+    - section_start "Clean Machine" --collapsed
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - section_end "Clean Machine"
 
     - section_start "Install Packs and run Test-Module"
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
@@ -432,13 +427,13 @@ slack-notify-nightly-build:
       fi
     - section_end "Run Tests"
 
-    - section_start "XSIAM Machine information"
-    - ./Tests/scripts/print_xsiam_machine_details.sh
-    - section_end "XSIAM Machine information"
+    - section_start "Cloud Machine information"
+    - ./Tests/scripts/print_cloud_machine_details.sh
+    - section_end "Cloud Machine information"
 
     - section_start "After script" --collapsed
     - |
-      if ! [ -z "$XSIAM_CHOSEN_MACHINE_ID" ]
+      if ! [ -z "$CLOUD_CHOSEN_MACHINE_ID" ]
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
@@ -480,7 +475,7 @@ xsiam_server_ga:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
-    SERVER_TYPE: "XSIAM"
+    SERVER_TYPE: "CLOUD"
     MARKETPLACE_NAME: "marketplacev2"
   needs: ["prepare-testing-bucket-mpv2"]
 
@@ -503,6 +498,6 @@ xsoar_ng_server_ga:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSIAM"
+    SERVER_TYPE: "CLOUD"
     MARKETPLACE_NAME: "xsoar"
   needs: ["create-instances"]

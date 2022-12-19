@@ -77,7 +77,7 @@ def uninstall_all_packs(client: demisto_client, hostname):
     """ Lists all installed packs and uninstalling them.
     Args:
         client (demisto_client): The client to connect to.
-        hostname (str): xsiam hostname
+        hostname (str): cloud hostname
 
     Returns (list, bool):
         A flag that indicates if the operation succeeded or not.
@@ -171,7 +171,7 @@ def options_handler():
 
     """
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
     parser.add_argument('--cloud_servers_path', help='Path to secret cloud server metadata file.')
     parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
 
@@ -187,10 +187,10 @@ def main():
     os.environ.pop('DEMISTO_USERNAME', None)
 
     options = options_handler()
-    host = options.xsiam_machine
+    host = options.cloud_machine
     logging.info(f'Starting cleanup for CLOUD server {host}')
 
-    api_key, _, base_url, xdr_auth_id = CLOUDBuild.get_xsiam_configuration(options.xsiam_machine,
+    api_key, _, base_url, xdr_auth_id = CLOUDBuild.get_cloud_configuration(options.cloud_machine,
                                                                            options.cloud_servers_path,
                                                                            options.cloud_servers_api_keys)
 

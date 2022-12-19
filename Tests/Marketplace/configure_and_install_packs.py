@@ -25,12 +25,12 @@ def options_handler():
     parser.add_argument('--service_account', help="Path to gcloud service account", required=True)
     parser.add_argument('-e', '--extract_path', help=f'Full path of folder to extract the {GCPConfig.INDEX_NAME}.zip '
                                                      f'to', required=True)
-    parser.add_argument('--xsiam_machine', help='XSIAM machine to use, if it is XSIAM build.')
-    parser.add_argument('--xsiam_servers_path', help='Path to the secret xsiam server metadata file.')
+    parser.add_argument('--cloud_machine', help='cloud machine to use, if it is cloud build.')
+    parser.add_argument('--cloud_servers_path', help='Path to the secret cloud server metadata file.')
     parser.add_argument('-pl', '--pack_ids_to_install', help='Path to the packs to install file.')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         type=str2bool, default=False, required=True)
-    parser.add_argument('--xsiam_servers_api_keys', help='Path to the file with XSIAM Servers api keys.')
+    parser.add_argument('--cloud_servers_api_keys', help='Path to the file with cloud Servers api keys.')
     options = parser.parse_args()
     # disable-secrets-detection-end
 
@@ -153,20 +153,20 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
         build_number(str): number of the current build flow
     """
     logging.info('Retrieving the credentials for Cortex XSIAM server')
-    xsiam_machine = options.xsiam_machine
-    api_key, server_numeric_version, base_url, xdr_auth_id = CLOUDBuild.get_xsiam_configuration(
-        xsiam_machine,
-        options.xsiam_servers_path,
-        options.xsiam_servers_api_keys)
+    cloud_machine = options.cloud_machine
+    api_key, server_numeric_version, base_url, xdr_auth_id = CLOUDBuild.get_cloud_configuration(
+        cloud_machine,
+        options.cloud_servers_path,
+        options.cloud_servers_api_keys)
     # Configure the Server
-    server = CLOUDServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
+    server = CLOUDServer(api_key, server_numeric_version, base_url, xdr_auth_id, cloud_machine)
     CLOUDBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
     # extract pack_ids from the content_packs_to_install.txt
     pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
     # Acquire the server's host and install new uploaded content packs
     install_packs_from_content_packs_to_install_path([server], pack_ids, server.name)
-    logging.success(f'Finished installing all content packs in {xsiam_machine}')
+    logging.success(f'Finished installing all content packs in {cloud_machine}')
 
 
 def main():

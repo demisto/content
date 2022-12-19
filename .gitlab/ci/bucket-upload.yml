@@ -171,18 +171,18 @@ install-packs-in-server-master:
     - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
     - section_end "Download configuration"
 
-    - section_start "Lock XSIAM Machine"
+    - section_start "Lock Machine"
     - echo "Authenticating GCP"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
     - echo "Auth done successfully"
-    - ./Tests/scripts/wait_in_line_for_xsiam_env.sh
-    - source XSIAMEnvVariables
-    - echo "XSIAM chosen_machine_id is $XSIAM_CHOSEN_MACHINE_ID"
-    - section_end "Lock XSIAM Machine"
+    - ./Tests/scripts/wait_in_line_for_cloud_env.sh
+    - source CLOUDEnvVariables
+    - echo "CLOUD chosen_machine_id is $CLOUD_CHOSEN_MACHINE_ID"
+    - section_end "Lock Machine"
 
-    - section_start "Clean XSIAM Machine"
-    - ./Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh
-    - section_end "Clean XSIAM Machine"
+    - section_start "Clean Machine"
+    - ./Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh
+    - section_end "Clean Machine"
 
     - section_start "Get Instance Variables"
     - echo INSTANCE_ROLE="$INSTANCE_ROLE"
