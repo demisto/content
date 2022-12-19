@@ -2072,7 +2072,7 @@ def fetch_incidents(client: Client) -> list:
     last_run = update_last_run_object(
         last_run=last_run,
         incidents=incidents,
-        fetch_limit=fetch_limit,
+        fetch_limit=client.sys_param_limit,
         start_fetch_time=start_snow_time,
         end_fetch_time=end_snow_time,
         look_back=client.look_back,
