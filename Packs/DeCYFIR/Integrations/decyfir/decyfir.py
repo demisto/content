@@ -384,9 +384,7 @@ class Client(BaseClient):
 
             return return_data
         except Exception as e:
-            demisto.error(traceback.format_exc())
-            return_error(str(e))
-            return []
+           raise DemistoException(str(e))
 
 
 # commands
