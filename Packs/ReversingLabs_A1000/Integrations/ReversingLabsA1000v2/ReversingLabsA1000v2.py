@@ -14,7 +14,9 @@ NUM_OF_RETRIES = demisto.params().get('num_of_retries')
 def classification_to_score(classification):
     score_dict = {
         "UNKNOWN": 0,
+        "UNCLASSIFIED": 0,
         "KNOWN": 1,
+        "GOODWARE": 1,
         "SUSPICIOUS": 2,
         "MALICIOUS": 3
     }
@@ -142,6 +144,7 @@ def a1000_report_output(response_json):
         readable_output=markdown,
         indicator=common_file
     )
+
     return command_results
 
 
@@ -395,6 +398,7 @@ def get_classification_output(response_json):
             indicator=common_file,
             readable_output=markdown
         )
+
         return command_results
 
 
