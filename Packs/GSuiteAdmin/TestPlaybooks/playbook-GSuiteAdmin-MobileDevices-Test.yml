@@ -16,7 +16,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -127,7 +126,8 @@ tasks:
       id: f578b65b-ccdb-4948-87ae-88cecb6586b9
       version: -1
       name: CheckContentAutoMobileDevices
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -318,7 +318,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -426,7 +425,8 @@ tasks:
       id: 90e552a8-37c1-434f-8901-250f55cc99c7
       version: -1
       name: PerformActionOnMobileDevice
-      description: Takes an action that affects a mobile device. For example, remotely wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -548,7 +548,8 @@ tasks:
       id: 44d92f99-3364-41a8-8416-64df93f1f3b5
       version: -1
       name: CheckMobileDeviceStatusAfterAction
-      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -590,7 +591,8 @@ tasks:
       id: 9039fb72-5631-45ce-841b-c07d55054319
       version: -1
       name: RevertMobileDeviceStatus
-      description: Takes an action that affects a mobile device. For example, remotely wiping a device.
+      description: Takes an action that affects a mobile device. For example, remotely
+        wiping a device.
       script: GSuiteAdmin|||gsuite-mobile-update
       type: regular
       iscommand: true
@@ -623,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: aa671d18-efa0-4279-83f9-2b1e6b7b16fb
+    taskid: ed0aa70b-19e9-47f9-808a-3222a098491e
     type: regular
     task:
-      id: aa671d18-efa0-4279-83f9-2b1e6b7b16fb
+      id: ed0aa70b-19e9-47f9-808a-3222a098491e
       version: -1
       name: GetMobileDevices-ManualPagination-NextPageToken
       description: Retrieves a paginated list that includes company-owned mobile devices.
@@ -646,10 +648,8 @@ tasks:
         simple: ${inputs.page_size}
       page_token:
         complex:
-          root: GSuite.MobileDevices
+          root: GSuite.MobileDevices.PageToken
           accessor: NextPageToken
-          transformers:
-          - operator: LastArrayElement
       projection:
         simple: FULL
       sort_order:
@@ -730,25 +730,25 @@ inputs:
     simple: "5"
   required: false
   description: The max mobile devices to return
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: page_size
   value:
     simple: "3"
   required: false
   description: The page size
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: mobile_device_id
   value:
     simple: 311fc9cb34adecd6
   required: false
   description: The mobile device id to perform the action command on it.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: customer_id
   value:
     simple: C02f0zfqw
   required: false
   description: ""
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 sourceplaybookid: b6efece6-051a-43f3-8858-fd4bbdae29df
 quiet: true

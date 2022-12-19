@@ -1534,7 +1534,7 @@ Retrieves a paginated list that includes company-owned mobile devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.MobileDevices.NextPageToken | String | The token of the next page. | 
+| GSuite.MobileDevices.PageToken.NextPageToken | String | The token of the next page. | 
 | GSuite.MobileDevices.MobileListObjects | Object | A list of Mobile Device objects. | 
 | GSuite.MobileDevices.MobileListObjects.kind | String | The type of the API resource. | 
 | GSuite.MobileDevices.MobileListObjects.etag | String | ETag of the resource. | 
@@ -1726,7 +1726,7 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.ChromeOSDevices.NextPageToken | String | The token of the next page. | 
+| GSuite.ChromeOSDevices.PageToken.NextPageToken | String | The token of the next page. | 
 | GSuite.ChromeOSDevices.ChromeOSDevices | List | A list of Chrome OS Device objects. | 
 | GSuite.ChromeOSDevices.ChromeOSDevices.deviceId | String | The unique ID of the Chrome device. | 
 | GSuite.ChromeOSDevices.ChromeOSDevices.serialNumber | String | The Chrome device serial number entered when the device was enabled. | 

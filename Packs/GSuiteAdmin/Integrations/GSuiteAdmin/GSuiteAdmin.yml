@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: GSuiteAdmin
+  id: GSuiteAdmin_Test
   version: -1
 configuration:
 - display: User's Service Account JSON
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin
-name: GSuiteAdmin
+name: GSuiteAdmin_Test
 script:
   commands:
   - arguments:
@@ -87,9 +87,9 @@ script:
     name: gsuite-mobiledevice-list
     outputs:
     - type: String
-      contextPath: GSuite.MobileDevices.NextPageToken
+      contextPath: GSuite.MobileDevices.PageToken.NextPageToken
       description: "The token of the next page."
-    - type: List
+    - type: Object
       contextPath: GSuite.MobileDevices.MobileListObjects
       description: "A list of Mobile Device objects."
     - type: String
@@ -295,7 +295,7 @@ script:
     description: "Retrieves a paginated list of company-owned ChromeOS devices."
     name: gsuite-chromeosdevice-list
     outputs:
-    - contextPath: GSuite.ChromeOSDevices.NextPageToken
+    - contextPath: GSuite.ChromeOSDevices.PageToken.NextPageToken
       description: "The token of the next page."
       type: String
     - contextPath: GSuite.ChromeOSDevices.ChromeOSDevices

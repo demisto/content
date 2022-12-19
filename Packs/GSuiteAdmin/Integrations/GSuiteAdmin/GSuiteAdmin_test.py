@@ -1094,10 +1094,9 @@ def test_mobile_device_list_automatic_pagination(mocker, gsuite_client, raw_resu
     expected_command_results = util_load_json(parsed_results_file)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
     command_results = gsuite_mobile_device_list_command(client=gsuite_client, args=args)
-    for results, expected_results in zip(command_results, expected_command_results):
-        to_context = results.to_context()
-        assert expected_results.get('HumanReadable') == to_context.get('HumanReadable')
-        assert expected_results.get('EntryContext') == to_context.get('EntryContext')
+    to_context = command_results.to_context()
+    assert to_context.get('HumanReadable') == expected_command_results.get('HumanReadable')
+    assert to_context.get('EntryContext') == expected_command_results.get('EntryContext')
 
 
 TEST_DATA_MANUAL_PAGINATION_FILES_CASES = [
@@ -1155,10 +1154,9 @@ def test_mobile_device_list_manual_pagination(mocker, gsuite_client, raw_results
     expected_command_results = util_load_json(parsed_results_file)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
     command_results = gsuite_mobile_device_list_command(client=gsuite_client, args=args)
-    for results, expected_results in zip(command_results, expected_command_results):
-        to_context = results.to_context()
-        assert expected_results.get('HumanReadable') == to_context.get('HumanReadable')
-        assert expected_results.get('EntryContext') == to_context.get('EntryContext')
+    to_context = command_results.to_context()
+    assert to_context.get('HumanReadable') == expected_command_results.get('HumanReadable')
+    assert to_context.get('EntryContext') == expected_command_results.get('EntryContext')
 
 
 TEST_PAGINATION_ARGS_CASES = [
@@ -1183,10 +1181,9 @@ def test_mobile_device_list_empty_response(mocker, gsuite_client, pagination_arg
     expected_command_results = util_load_json('test_data/mobile_devices_list/parsed_no_results_found.json')
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=raw_responses)
     command_results = gsuite_mobile_device_list_command(client=gsuite_client, args=args)
-    for results, expected_results in zip(command_results, expected_command_results):
-        to_context = results.to_context()
-        assert expected_results.get('HumanReadable') == to_context.get('HumanReadable')
-        assert expected_results.get('EntryContext') == to_context.get('EntryContext')
+    to_context = command_results.to_context()
+    assert to_context.get('HumanReadable') == expected_command_results.get('HumanReadable')
+    assert to_context.get('EntryContext') == expected_command_results.get('EntryContext')
 
 
 def create_pagination_result_automatic_instance(raw_responses: list[dict], response_devices_list_key: str) -> dict:

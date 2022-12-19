@@ -1278,7 +1278,7 @@ def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping
 
 
 @ logger
-def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> List[CommandResults]:
+def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Retrieves a paginated list that includes company-owned mobile devices.
 
     Args:
@@ -1322,25 +1322,20 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> L
         num_of_devices = len(context_data)
         markdown = tableToMarkdown(MobileDevicesConfig.table_title, human_readable,
                                    metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
-    command_results = [
-        CommandResults(
-            outputs_prefix=f'{MobileDevicesConfig.outputs_prefix}.{MobileDevicesConfig.cd_devices_list_key}',
-            readable_output=markdown,
-            outputs_key_field='resourceId',
-            outputs=context_data,
-            raw_response=raw_response,
-        )
-    ]
+    outputs: Dict[str, Any] = {}
+    if context_data:
+        outputs[(f'{MobileDevicesConfig.outputs_prefix}.'
+                 'MobileListObjects(val.resourceId && val.resourceId == obj.resourceId)')] = context_data
+    if next_page_token:
+        markdown += f'### Next Page Token:\n{next_page_token}'
+        outputs[f'{MobileDevicesConfig.outputs_prefix}.PageToken(val.NextPageToken)'] = {'NextPageToken': next_page_token}
 
-    if(next_page_token):
-        command_results.append(
-            CommandResults(
-                outputs_prefix=f'{MobileDevicesConfig.outputs_prefix}.NextPageToken',
-                readable_output=f'### Next Page Token: {next_page_token}',
-                outputs_key_field='',
-                outputs=next_page_token,
-            )
-        )
+    command_results = CommandResults(
+        readable_output=markdown,
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
     return command_results
 
 
@@ -1366,7 +1361,7 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
 
 
 @ logger
-def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> list[CommandResults]:
+def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
@@ -1415,25 +1410,20 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
             num_of_devices = len(context_data)
             markdown = tableToMarkdown(ChromeOSDevicesConfig.table_title, human_readable,
                                        metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
-        command_results = [
-            CommandResults(
-                outputs_prefix=f'{ChromeOSDevicesConfig.outputs_prefix}.{ChromeOSDevicesConfig.cd_devices_list_key}',
-                readable_output=markdown,
-                outputs_key_field='deviceId',
-                outputs=context_data,
-                raw_response=raw_response,
-            )
-        ]
+        outputs: Dict[str, Any] = {}
+        if context_data:
+            outputs[(f'{ChromeOSDevicesConfig.outputs_prefix}.'
+                     'ChromeOSListObjects(val.resourceId && val.resourceId == obj.resourceId)')] = context_data
 
-        if(next_page_token):
-            command_results.append(
-                CommandResults(
-                    outputs_prefix=f'{ChromeOSDevicesConfig.outputs_prefix}.NextPageToken',
-                    readable_output=f'### Next Page Token: {next_page_token}',
-                    outputs_key_field='',
-                    outputs=next_page_token,
-                )
-            )
+        if next_page_token:
+            markdown += f'### Next Page Token:\n{next_page_token}'
+            outputs[f'{ChromeOSDevicesConfig.outputs_prefix}.PageToken(val.NextPageToken)'] = {'NextPageToken': next_page_token}
+
+        command_results = CommandResults(
+            readable_output=markdown,
+            outputs=outputs,
+            raw_response=raw_response,
+        )
         return command_results
     except DemistoException as e:
         error_message = str(e)
