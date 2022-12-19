@@ -1011,10 +1011,8 @@ def option_handler():
                         required=False)
     parser.add_argument('-d', '--pack_dependencies', help="Full path to pack dependencies json file.", required=False)
     parser.add_argument('-p', '--pack_names',
-                        help=("Target packs to upload to gcs. Optional values are: `All`, "
-                              "`Modified` or csv list of packs "
-                              "Default is set to `All`"),
-                        required=False, default="All")
+                        help=("Target packs to upload to gcs."),
+                        required=True)
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False)
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
@@ -1206,7 +1204,7 @@ def main():
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs or pack.is_modified,
+                                                                override_all_packs,
                                                                 storage_base_path)
 
         if not task_status:
