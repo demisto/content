@@ -935,7 +935,7 @@ def search_urls():
     })
 
 
-def submit_urls(args):
+def submit_urls(args, req=req):
     """
     Submit urls for analysis
     """
