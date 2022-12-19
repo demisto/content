@@ -3,7 +3,7 @@ QUERY_ISSUE_RESULT = {'Ticket(val.Id == obj.Id)':
         {
             'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
             'Creator': 'jon doe(email)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
-            'Created': '2019-05-04T00:44:31.743+0300', 'Description': 'hello', 'LastSeen': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'Description': 'hello', 'Labels': ['test', 'debug'], 'LastSeen': None,
             'LastUpdate': '2019-05-15T21:24:07.222+0300'
         }
     ]
@@ -13,7 +13,7 @@ QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS = {'Ticket(val.Id == obj.Id)':
         {
             'Id': '12652', 'Key': 'VIK-3', 'Summary': 'JiraTestMohitM', 'Status': 'To Do', 'Assignee': 'null(null)',
             'Creator': 'jon doe(email)', 'Priority': 'High', 'ProjectName': 'VikTest', 'DueDate': None,
-            'Created': '2019-05-04T00:44:31.743+0300', 'Description': 'hello', 'LastSeen': None,
+            'Created': '2019-05-04T00:44:31.743+0300', 'Description': 'hello', 'Labels': ['test', 'debug'], 'LastSeen': None,
             'LastUpdate': '2019-05-15T21:24:07.222+0300', 'Owner': 'John Doe'
         }
     ]
@@ -23,7 +23,8 @@ GET_ISSUE_OUTPUTS_RESULT = {'Ticket(val.Id == obj.Id)':
         {
             'Id': '19141', 'Key': 'VIK-238', 'Summary': 'test master1', 'Status': 'To Do', 'Assignee': 'null(null)',
             'Creator': 'jon doe(email)', 'Priority': 'Medium', 'ProjectName': 'VikTest', 'DueDate': None,
-            'Created': '2021-04-04T12:25:48.114+0300', 'Description': 'changeing again again\n\nagain gain', 'LastSeen': None,
+            'Created': '2021-04-04T12:25:48.114+0300', 'Description': 'changing again again\n\nagain gain',
+            'Labels': [], 'LastSeen': None,
             'LastUpdate': '2021-04-04T12:49:43.546+0300', 'attachment': 'entry_artifact_5@317.json'
         }
     ]
@@ -34,7 +35,7 @@ GET_ISSUE_OUTPUTS_RESULT_WITH_APPEND = {'Ticket(val.Id == obj.Id)':
             'Id': '19141', 'Key': 'VIK-238', 'Summary': 'test master1', 'Status': 'To Do', 'Assignee': 'null(null)',
             'Creator': 'jon doe(email)', 'Priority': 'Medium', 'ProjectName': 'VikTest', 'DueDate': None,
             'Created': '2021-04-04T12:25:48.114+0300', 'LastSeen': None, 'LastUpdate': '2021-04-04T12:49:43.546+0300',
-            'attachment': 'entry_artifact_5@317.json', 'labels':['New']
+            'attachment': 'entry_artifact_5@317.json', 'labels': ['New']
         }
     ]
 }
