@@ -20,13 +20,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    """
-
     def sighting(self, value: str, description: str,
                  title: str, tags: str, type_eiq: str, confidence_level: str) -> Dict[str, Any]:
         """Create the sighting using the '/entities' API endpoint
@@ -253,16 +246,6 @@ def data_ingestion(client: Client) -> Any:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``Any``
     """
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
     try:
         permissions_of_user = client.get_user_granted_permissions()
     except Exception:
@@ -612,10 +595,11 @@ def main() -> None:
     :return:
     :rtype:
     """
-    api_key = demisto.params().get('apikey')
-    base_url = demisto.params().get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    api_key = params.get('apikey')
+    base_url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         headers = {

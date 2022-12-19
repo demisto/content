@@ -16,9 +16,6 @@ Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 ### Prerequisites
 * EIQ will provide access to APIs 
 
-### Installation of Cortex XSOAR
-* For downloading the Cortex XSOAR follow the documentaion [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-install-guide/system-requirements-intro/cortex-xsoar-system-requirements].
-
 ## Working
 The user needs to perform the following after Cortex XSOAR installation.
 #### Steps to upload the Integration
@@ -173,13 +170,13 @@ Gets the reputation of an email observable.
 
 ### Command example
 ```http
-  email email=cchj@gmail.com
+  email email=example@example.com
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - cchj@gmail.com
+#### EclecticIQ observable reputation - example@example.com
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`medium`	|   Splunk created Sighting.  |{'type': 'email', 'value': 'cchj@gmail.com', 'classification': 'unknown'}|   |   |	2022-07-26T18:00:58.623610+00:00| Sighting of : cchj@gmail.com|
+|`medium`	|   Splunk created Sighting.  |{'type': 'email', 'value': 'example@example.com', 'classification': 'unknown'}|   |   |	2022-07-26T18:00:58.623610+00:00| Sighting of : example@example.com|
 
 ## 1.4 Get the reputation of a domain observable
 Gets the reputation of a domain observable.
@@ -377,14 +374,14 @@ Gets the reputation of uri observable.
 
 ### Command example
 ```http
-  uri uri=https://bzxhc.com
+  uri uri=https://examples.com
 ```
 ##### Human Readable Output
-#### EclecticIQ observable reputation - https://bzxhc.com
+#### EclecticIQ observable reputation - https://examples.com
 
 |confidence	|description|	observables|	source_name|	tags	|threat_start_time|title| 
 |:--------     |:-------     |------|------|---------|--------|------|
-|`unknown`	|    |{'type': 'uri', 'value': 'https://bzxhc.com', 'classification': 'medium'}|   |   |2022-08-29T10:36:18.733576+00:00| |
+|`unknown`	|    |{'type': 'uri', 'value': 'https://examples.com', 'classification': 'medium'}|   |   |2022-08-29T10:36:18.733576+00:00| |
 
 ### Create Observable
 * To create observables, the user has to execute the create observables command in the CLI

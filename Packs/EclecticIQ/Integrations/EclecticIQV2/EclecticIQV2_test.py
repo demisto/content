@@ -18,7 +18,7 @@ from EclecticIQV2 import (
 )
 api_key = "test_api_key"
 proxy = "False"
-Base_url = "https://excsxe.com"
+Base_url = "https://example.com"
 verify = "False"
 # Mock function for get_user_granted_permissions
 
@@ -628,7 +628,7 @@ def test_validate_scenario_4(mocker):
 def test_validate_scenario_5(mocker):
     """Test for validate_type."""
     mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
-    response = validate_type(s_type="uri", value="https://bzxhc.com")
+    response = validate_type(s_type="uri", value="https://examples.com")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -6
 
@@ -636,7 +636,7 @@ def test_validate_scenario_5(mocker):
 def test_validate_scenario_6(mocker):
     """Test for validate_type."""
     mocker.patch("EclecticIQV2.validate_type", validate_type_mock_response)
-    response = validate_type(s_type="email", value="cchj@gmail.com")
+    response = validate_type(s_type="email", value="example@example.com")
     assert isinstance(response, bool)
 # Test case for validate_type scenario -7
 
