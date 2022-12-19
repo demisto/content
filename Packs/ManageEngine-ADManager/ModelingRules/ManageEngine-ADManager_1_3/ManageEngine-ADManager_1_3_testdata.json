@@ -18,7 +18,10 @@
                 "xdm.event.type": "User Management",
                 "xdm.observer.vendor": "manageengine",
                 "xdm.event.outcome": "Successfully updated the user properties.",
-                "xdm.observer.name": "Bonanaza-admanager01"
+                "xdm.observer.name": "Bonanaza-admanager01",
+                "xdm.target.user.username": null,
+                "xdm.target.location.country": null,
+                "xdm.target.location.city":null
             }
         }
     ]
