@@ -36,7 +36,7 @@ INDICATOR_MAPPING_NAMES = {
     'EmailAddress': FeedIndicatorType.Email,
     'File': FeedIndicatorType.File,
     'Host': FeedIndicatorType.Host,
-    'Mutex': FeedIndicatorType.MUTEX,
+    # 'Mutex': FeedIndicatorType.MUTEX,
     'Registry Key': FeedIndicatorType.Registry,
     'URL': FeedIndicatorType.URL,
     'Attack Pattern': ThreatIntel.ObjectsNames.ATTACK_PATTERN,
@@ -47,7 +47,7 @@ INDICATOR_MAPPING_NAMES = {
     'Report': ThreatIntel.ObjectsNames.REPORT,
     'Tool': ThreatIntel.ObjectsNames.TOOL,
     'Vulnerability': FeedIndicatorType.CVE,
-    'ASN': FeedIndicatorType.AS,
+    # 'ASN': FeedIndicatorType.AS,
 }
 
 TC_INDICATOR_TO_XSOAR_INDICATOR = {
@@ -466,8 +466,6 @@ def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dic
                 break
     except Exception as e:
         demisto.debug(f'Got an error in the fetch loop: {str(e)}')
-        if e.res.status_code == 400:
-            raise e
 
     return indicators, groups
 
@@ -495,7 +493,7 @@ def build_url_with_query_params(params, endpoint, last_run):
         tql = ''
     url = f'/api/v3/{endpoint}{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url
+        # replacing only the first occurrence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     return url
@@ -592,7 +590,7 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
 
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url
+        # replacing only the first occurrence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     demisto.debug("URL: " + url)
