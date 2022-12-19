@@ -148,10 +148,10 @@ class MicrosoftClient(BaseClient):
 
     def is_command_executed_from_integration(self):
         ctx = demisto.callingContext.get('context', {})
-        executed_command = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+        executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
 
-        if isinstance(executed_command, list) and len(executed_command) > 0:
-            return executed_command[0].get('moduleBrand') != 'Scripts'
+        if executed_commands:
+            return executed_commands[0].get('moduleBrand', "") != 'Scripts'
 
         return True
 
