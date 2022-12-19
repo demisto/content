@@ -2261,7 +2261,7 @@ def search_custom_iocs_command(
         sort: Optional[str] = None,
         offset: Optional[str] = None,
         next_page_token: Optional[str] = None,
-) -> dict:
+) -> List[dict]:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
@@ -2304,7 +2304,7 @@ def search_custom_iocs_command(
     entry_objects_list.append(create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.NextPageToken': pagination_token},
-        hr=tableToMarkdown('Pagination Info', pagination_token , headers=['Next Page Token']),
+        hr=tableToMarkdown('Pagination Info', pagination_token, headers=['Next Page Token']),
     ))
     return entry_objects_list
 
