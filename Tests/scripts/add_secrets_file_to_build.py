@@ -9,7 +9,6 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 def get_files(target_dir):
     item_list = os.listdir(target_dir)
-    print(f'item_list: {item_list}')
     file_list = list()
     for item in item_list:
         item_dir = os.path.join(target_dir, item)
@@ -21,10 +20,7 @@ def get_files(target_dir):
 
 
 def run(options):
-    print(options.ar)
-    print('_________________________________________________________________')
     get_files(options.ar)
-    print('_________________________________________________________________')
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True)
     secret_file = {
