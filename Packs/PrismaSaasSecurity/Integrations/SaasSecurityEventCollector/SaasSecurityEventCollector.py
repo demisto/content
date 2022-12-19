@@ -3,7 +3,7 @@ import urllib3
 import time
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from typing import Dict, Tuple, Generator
+from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
