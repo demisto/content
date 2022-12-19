@@ -98,6 +98,7 @@ def send_request(path, method='get', body=None, params=None, headers=None):
     params = params if params is not None else {}
 
     url = '{}/{}'.format(SERVER_URL, path)
+    url = urljoin(SERVER_URL, path)
 
     headers = headers if headers is not None else get_headers()
     res = requests.request(method, url, headers=headers, data=json.dumps(body), params=params, verify=VERIFY_SSL)
@@ -607,8 +608,8 @@ def fetch_credentials():
     concat_username_to_cred_name = argToBoolean(demisto.params().get('concat_username_to_cred_name') or 'false')
     if len(ENGINES) == 0:
         return_error('No secrets engines specified')
-    engines_to_fetch_from = [{'path': '', 'version': '2', 'type': 'AWS'}]
-    # engines_to_fetch_from = [{'path': 'secret', 'version': '2', 'type': 'KV'}]
+    # engines_to_fetch_from = [{'path': '', 'version': '2', 'type': 'AWS'}]
+    engines_to_fetch_from = [{'path': 'secret', 'version': '2', 'type': 'KV'}]
     # for engine_type in ENGINES:
     # engines_to_fetch = list(
     #     filter(lambda e: e['type'] == engine_type, [{'path': 'secret', 'version': '2', 'type': 'KV'}]))
@@ -680,6 +681,8 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
         return []
 
     for secret in res['data'].get('keys', []):
+        if str(secret).endswith('/') and not secret.replace == folder:
+
         secret_data = get_kv2_secret(engine_path, secret, folder)
         for k, v in secret_data.get('data', {}).get('data', {}).iteritems():
             if concat_username_to_cred_name:
@@ -696,7 +699,7 @@ def get_kv2_secrets(engine_path, concat_username_to_cred_name=False, folder=None
 
 
 def get_kv2_secret(engine_path, secret, folder=None):
-    path = engine_path + 'data/'
+    path = urljoin(engine_path, 'data/')
     if folder:
         path += os.path.join(folder)
     path += secret
@@ -740,7 +743,6 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     # TODO: fix bug when getting a secret that is not in the root ??????????? or is it ok with the folder ????????
     # TODO: add a ttl parameter - v is needed ????????
     # TODO: add a parameter to set the pull time for the secretes by using the integration context (use get_integration_context and set_integration_context) - vvvvvv
-    # TODO: add a parameter if the user wants to use recursion in get secrets???????
     secrets = []
     roles_list_url = engine_path + 'aws/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))

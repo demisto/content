@@ -38,7 +38,7 @@ configuration:
   type: 0
   required: false
 - defaultvalue: '1'
-  display: Credwentials Fetch Interval
+  display: Credentials Fetch Interval
   name: credentialsFetchInterval
   required: false
   type: 19
