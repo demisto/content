@@ -8,30 +8,38 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: ""
   displaypassword: API Key
   name: credentials
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: '1000'
   display: The maximum number of alerts per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: This is the NetBox event collector integration for Cortex XSIAM.
 display: 'NetBox Event Collector'
 name: NetBox Event Collector

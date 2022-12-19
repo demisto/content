@@ -229,8 +229,8 @@ def main() -> None:  # pragma: no cover
             if command == "netbox-get-events":
                 should_push_events = argToBoolean(args.get("should_push_events"))
                 events, results = get_events_command(
-                    client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))
-                )  # type: ignore
+                    client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
+                )
                 return_results(results)
 
             else:  # command == 'fetch-events':
