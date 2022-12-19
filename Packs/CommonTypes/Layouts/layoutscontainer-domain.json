@@ -69,7 +69,6 @@
                         "moved": false,
                         "name": "Related Incidents",
                         "name_x2": "Related Alerts",
-                        "name_x2": "Related Alerts",
                         "readOnly": true,
                         "static": false,
                         "type": "relatedIncidents",
