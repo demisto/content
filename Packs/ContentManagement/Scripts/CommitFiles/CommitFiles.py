@@ -13,6 +13,7 @@ from demisto_sdk.commands.common.tools import find_type
 PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
               '**Pack:** {}\n' \
+              '**Branch:** {}\n' \
               '**Link to incident in Cortex XSOAR:** {}\n\n' \
               '{}\n\n' \
               '---'
