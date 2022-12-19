@@ -313,6 +313,18 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='PUT', url_suffix=url_suffix, params=params, json_data=body)
 
+    def list_pcap_file_request(self, session_str: str, sensor_id: int) -> Dict:
+        """ Retrieves the list of captured PCAP files.
+            Args:
+                session_str: str - The session id.
+                sensor_id: int - the relevant sensor id.
+            Returns:
+                A dictionary with a list of PCAP file names.
+        """
+        url_suffix = f'/sdkapi/sensor/{sensor_id}/packetcapturepcapfiles'
+        self.headers['NSM-SDK-API'] = session_str
+        return self._http_request(method='GET', url_suffix=url_suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1546,7 +1558,7 @@ def update_alerts_command(client: Client, args: Dict, session_str: str) -> Comma
             args: Dict - The function arguments.
             session_str: str - The session string for authentication.
         Returns:
-            A CommandResult object with The list of the changed alerts.
+            A CommandResult object with the list of the changed alerts.
     """
     state = args.get('state')
     time_period = args.get('time_period')
@@ -1575,6 +1587,39 @@ def update_alerts_command(client: Client, args: Dict, session_str: str) -> Comma
     if response.get('status') != 1:
         raise Exception('Error! Failed to update alerts.')
     return get_alerts_command(client, args, session_str)
+
+
+def list_pcap_file_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+    """ Retrieves the list of captured PCAP files.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a list of captured PCAP files.
+    """
+    sensor_id = arg_to_number(args.get('sensor_id'))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
+    response = client.list_pcap_file_request(session_str, sensor_id)
+    files_list = pagination(response.get('files', []), limit, page)
+    human_readable = []
+    for file_name in files_list:
+        d = {
+            'FileName': file_name
+        }
+        human_readable.append(d)
+    readable_output = tableToMarkdown(
+        name='PCAP files List',
+        t=human_readable,
+        removeNull=True
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='NSM.PcapFile',
+        outputs=files_list,
+        raw_response=files_list
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -1664,6 +1709,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-update-alerts':
             results = update_alerts_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-list-pcap-file':
+            results = list_pcap_file_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')

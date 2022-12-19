@@ -1753,6 +1753,218 @@ script:
           description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"'
           required: false
           isArray: false
+      outputs:
+        - contextPath: NSM.Alerts.ID
+          description: Alert ID.
+          type: number
+        - contextPath: NSM.Alerts.name
+          description: Alert Name.
+          type: String
+        - contextPath: NSM.Alerts.uniqueAlertId
+          description: Unique alert id.
+          type: String
+        - contextPath: NSM.Alerts.alertState
+          description: Alert State (Acknowledged,Unacknowledged).
+          type: String
+        - contextPath: NSM.Alerts.Assignee
+          description: Alert Assignee.
+          type: String
+        - contextPath: NSM.Alerts.CreatedTime
+          description: Alert Creation Time.
+          type: String
+        - contextPath: NSM.Alerts.attackSeverity
+          description: Alert Severity
+          type: String
+        - contextPath: NSM.Alerts.Event.time
+          description: The creation time of the event who triggered the alert.
+          type: Date
+        - contextPath: NSM.Alerts.Event.direction
+          description: The direction of the event (Outbound, Inbound)
+          type: String
+        - contextPath: NSM.Alerts.Event.result
+          description: The result of the event.
+          type: String
+        - contextPath: NSM.Alerts.Event.attackCount
+          description: Attack count.
+          type: Number
+        - contextPath: NSM.Alerts.Event.relevance
+          description: The event relevance.
+          type: String
+        - contextPath: NSM.Alerts.Event.alertId
+          description: Alert ID.
+          type: String
+        - contextPath: NSM.Alerts.Event.domain
+          description: The domain.
+          type: String
+        - contextPath: NSM.Alerts.Event.interface
+          description: The event's interface.
+          type: String
+        - contextPath: NSM.Alerts.Event.device
+          description: The relevant device.
+          type: String
+        - contextPath: NSM.Alerts.Attack.nspId
+          description: nsp ID.
+          type: String
+        - contextPath: NSM.Alerts.Attack.btp
+          description: Benign Trigger Probability.
+          type: String
+        - contextPath: NSM.Alerts.Attack.attackCategory
+          description: The attack category.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.ipAddrs
+          description: The attacker IP address.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.port
+          description: The port.
+          type: Number
+        - contextPath: NSM.Alerts.Attacker.hostName
+          description: The attacker host name.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.country
+          description: The attacker country.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.os
+          description: The attacker os.
+          type: Unknown
+        - contextPath: NSM.Alerts.Attacker.vmName
+          description: The attacker vm name.
+          type: Unknown
+        - contextPath: NSM.Alerts.Attacker.proxyIP
+          description: The attacker proxyIP.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.user
+          description: The user.
+          type: Unknown
+        - contextPath: NSM.Alerts.Attacker.risk
+          description: Attacker risk.
+          type: String
+        - contextPath: NSM.Alerts.Attacker.networkObject
+          description: The attacker network object.
+          type: Unknown
+        - contextPath: NSM.Alerts.Target.ipAddrs
+          description: The target IP address.
+          type: String
+        - contextPath: NSM.Alerts.Target.port
+          description: The target port.
+          type: Number
+        - contextPath: NSM.Alerts.Target.hostName
+          description: The target hostName.
+          type: String
+        - contextPath: NSM.Alerts.Target.country
+          description: The target country.
+          type: String
+        - contextPath: NSM.Alerts.Target.os
+          description: The target os.
+          type: Unknown
+        - contextPath: NSM.Alerts.Target.vmName
+          description: The target vm Name.
+          type: Unknown
+        - contextPath: NSM.Alerts.Target.proxyIP
+          description: The target proxyIP.
+          type: String
+        - contextPath: NSM.Alerts.Target.user
+          description: The target user.
+          type: Unknown
+        - contextPath: NSM.Alerts.Target.risk
+          description: The target risk.
+          type: String
+        - contextPath: NSM.Alerts.Target.networkObject
+          description: The target network object.
+          type: Unknown
+        - contextPath: NSM.Alerts.MalwareFile.fileName
+          description: The name of the MalwareFile.
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.fileHash
+          description: The file hash of the MalwareFile.
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.fileSHA1Hash
+          description: The MalwareFile SHA1Hash.
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.fileSHA256Hash
+          description: The fileSHA256Hash of the Malware file.
+          type: Unknown
+        - contextPath: NSM.Alerts.MalwareFile.malwareName
+          description: The name of the malware.
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.malwareConfidence
+          description: Malware Confidence
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.engine
+          description: Malware File engine.
+          type: String
+        - contextPath: NSM.Alerts.MalwareFile.engineId
+          description: Malware File engine ID.
+          type: Number
+        - contextPath: NSM.Alerts.MalwareFile.size
+          description: The Malware File size.
+          type: Unknown
+        - contextPath: NSM.Alerts.MalwareFile.description
+          description: Malware File description.
+          type: Unknown
+        - contextPath: NSM.Alerts.MalwareFile.additionalReference
+          description: Malware File additional Reference.
+          type: Unknown
+        - contextPath: NSM.Alerts.MalwareFile.cveId
+          description: Malware File CVE ID.
+          type: Unknown
+        - contextPath: NSM.Alerts.endpointExcutable.name
+          description: Endpoint Excutable name.
+          type: String
+        - contextPath: NSM.Alerts.endpointExcutable.hash
+          description: Endpoint Excutable hash.
+          type: String
+        - contextPath: NSM.Alerts.endpointExcutable.malwareConfidence
+          description: Endpoint Excutable malware Confidence.
+          type: String
+        - contextPath: NSM.Alerts.detection.managerId
+          description: manager Id.
+          type: Number
+        - contextPath: NSM.Alerts.detection.manager
+          description: The detection manager.
+          type: Unknown
+        - contextPath: NSM.Alerts.detection.domain
+          description: detection domain.
+          type: String
+        - contextPath: NSM.Alerts.detection.device
+          description: detection device.
+          type: String
+        - contextPath: NSM.Alerts.detection.deviceId
+          description: detection device ID.
+          type: String
+        - contextPath: NSM.Alerts.detection.interface
+          description: detection interface.
+          type: String
+        - contextPath: NSM.Alerts.Application
+          description: The Application assosiated to the alert.
+          type: String
+        - contextPath: NSM.Alerts.layer7Data
+          description: Layer 7 information
+          type: String
+        - contextPath: NSM.Alerts.EventResult
+          description: Event Result
+          type: String
+        - contextPath: NSM.Alerts.SensorID
+          description: Sensor ID.
+          type: String
+    - name: nsm-list-pcap-file
+      description: Retrieves the list of captured PCAP files.
+      arguments:
+        - name: sensor_id
+          required: true
+          description: The id of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
+          isArray: false
+        - name: limit
+          required: false
+          isArray: false
+          description: The maximum number of projects to return. The default value is 50.
+        - name: page
+          required: false
+          isArray: false
+          description: The specific result page to display. The default is 1.
+      outputs:
+        - contextPath: NSM.PcapFile
+          description: Pcap File Name.
+          type: string
   isfetch: false
   runonce: false
   script: '-'
