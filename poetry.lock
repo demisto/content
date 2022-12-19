@@ -209,17 +209,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "bs4"
-version = "0.0.1"
-description = "Dummy package for Beautiful Soup"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-beautifulsoup4 = "*"
-
-[[package]]
 name = "cachetools"
 version = "5.2.0"
 description = "Extensible memoizing collections and decorators"
@@ -440,7 +429,7 @@ develop = false
 [package.dependencies]
 autopep8 = "^1.6.0"
 bandit = "^1.7.4"
-bs4 = "^0.0.1"
+beautifulsoup4 = "^4.11.1"
 chardet = ">=4,<6"
 click = "^8.0.0"
 colorama = "^0.4.4"
@@ -482,7 +471,7 @@ prettytable = "^3.2.0"
 pydantic = "^1.9.2"
 pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = "^1.26.0"
+PyPDF2 = "^1.28.6"
 pyspellchecker = "^0.6.3"
 pytest-freezegun = "^0.4.2"
 python-dotenv = "^0.20.0"
@@ -527,8 +516,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "34fdcd36ce9dd9b535a68460f16cf63f88ef0dfd"
-resolved_reference = "34fdcd36ce9dd9b535a68460f16cf63f88ef0dfd"
+reference = "fa31686ce541f6b01683eb01030c3b6e1d5c9074"
+resolved_reference = "fa31686ce541f6b01683eb01030c3b6e1d5c9074"
 
 [[package]]
 name = "deprecated"
@@ -1269,7 +1258,7 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pipenv"
-version = "2022.12.17"
+version = "2022.12.19"
 description = "Python Development Workflow for Humans."
 category = "dev"
 optional = false
@@ -2145,7 +2134,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-pytz"
-version = "2022.6.0.1"
+version = "2022.7.0.0"
 description = "Typing stubs for pytz"
 category = "dev"
 optional = false
@@ -2394,7 +2383,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "525d0df2338b3c9a96b2412150bfbbea989b74b090ba82832d40aea8723ce6e9"
+content-hash = "b60d283e2166cb8fdb1cfc6d623c9951dd3c1e5d95a5c765a132b56c86019d9b"
 
 [metadata.files]
 aiohttp = [
@@ -2579,9 +2568,6 @@ botocore = [
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
     {file = "bracex-2.3.post1.tar.gz", hash = "sha256:e7b23fc8b2cd06d3dec0692baabecb249dda94e06a617901ff03a6c56fd71693"},
-]
-bs4 = [
-    {file = "bs4-0.0.1.tar.gz", hash = "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"},
 ]
 cachetools = [
     {file = "cachetools-5.2.0-py3-none-any.whl", hash = "sha256:f9f17d2aec496a9aa6b76f53e3b614c965223c061982d434d160f930c698a9db"},
@@ -3389,8 +3375,8 @@ pexpect = [
     {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
 ]
 pipenv = [
-    {file = "pipenv-2022.12.17-py3-none-any.whl", hash = "sha256:2573211d3c9f5adba774572de85bbedfbc586516960e860bafcb299004c0ae81"},
-    {file = "pipenv-2022.12.17.tar.gz", hash = "sha256:7fdeca8c2feb143e46bd5f50a45643e274c0813c3471f845a1cfb301f96aab4e"},
+    {file = "pipenv-2022.12.19-py3-none-any.whl", hash = "sha256:eed9c479d918a809deec23a4136f2b66091f035c849012acca3a9898d5f0938f"},
+    {file = "pipenv-2022.12.19.tar.gz", hash = "sha256:56a0e9305912293a8205e23b836b4abb9bca912fd5ef131214cdcdbc1861a1cc"},
 ]
 pkgutil-resolve-name = [
     {file = "pkgutil_resolve_name-1.3.10-py3-none-any.whl", hash = "sha256:ca27cc078d25c5ad71a9de0a7a330146c4e014c2462d9af19c6b828280649c5e"},
@@ -4005,8 +3991,8 @@ types-python-dateutil = [
     {file = "types_python_dateutil-2.8.19.5-py3-none-any.whl", hash = "sha256:253c267e71cac148003db200cb3fc572ab0e2f994b34a4c1de5d3f550f0ad5b2"},
 ]
 types-pytz = [
-    {file = "types-pytz-2022.6.0.1.tar.gz", hash = "sha256:d078196374d1277e9f9984d49373ea043cf2c64d5d5c491fbc86c258557bd46f"},
-    {file = "types_pytz-2022.6.0.1-py3-none-any.whl", hash = "sha256:bea605ce5d5a5d52a8e1afd7656c9b42476e18a0f888de6be91587355313ddf4"},
+    {file = "types-pytz-2022.7.0.0.tar.gz", hash = "sha256:4f20c2953b3a3a0587e94489ec4c9e02c3d3aedb9ba5cd7e796e12f4cfa7027e"},
+    {file = "types_pytz-2022.7.0.0-py3-none-any.whl", hash = "sha256:1509f182f686ab76e9a8234f22b00b8f50d239974db0cf924b7ae8674bb31a6f"},
 ]
 types-pyvmomi = [
     {file = "types-pyvmomi-8.0.0.0.tar.gz", hash = "sha256:927833225cd3d3c30b32ae82b59f628a9e284ea6b507f79abb9e4d848dad739a"},
