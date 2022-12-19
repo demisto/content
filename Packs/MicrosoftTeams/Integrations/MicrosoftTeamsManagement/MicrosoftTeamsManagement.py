@@ -1,4 +1,5 @@
 import demistomock as demisto
+from MicrosoftApiModule import *  # noqa: E402
 from CommonServerPython import *
 from CommonServerUserPython import *
 
@@ -7,10 +8,14 @@ from typing import Dict, Optional
 import urllib3
 
 urllib3.disable_warnings()
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Client Credentials': CLIENT_CREDENTIALS}
+SCOPE_BY_CONNECTION = {'Device Code': 'offline_access Group.ReadWrite.All TeamMember.ReadWrite.All Team.ReadBasic.All',
+                       'Client Credentials': 'https://graph.microsoft.com/.default'}
 
 
 class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool,
+                 connection_type: str, tenant_id: str, enc_key: str,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
@@ -18,17 +23,25 @@ class Client:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.ms_client = MicrosoftClient(
+        token_retrieval_url = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token' \
+                              if 'Client' not in connection_type \
+                              else None
+
+        client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
+            token_retrieval_url=token_retrieval_url,
+            grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url='https://graph.microsoft.com',
             verify=verify,
             proxy=proxy,
-            scope='offline_access Group.ReadWrite.All TeamMember.ReadWrite.All Team.ReadBasic.All',
-            azure_ad_endpoint=azure_ad_endpoint
+            scope=SCOPE_BY_CONNECTION[connection_type],
+            azure_ad_endpoint=azure_ad_endpoint,
+            tenant_id=tenant_id,
+            enc_key=enc_key
         )
+        self.ms_client = MicrosoftClient(**client_args)
+        self.connection_type = connection_type
 
     @logger
     def create_team_request(
@@ -570,6 +583,27 @@ def reset_auth() -> CommandResults:
     )
 
 
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication for client credentials only.
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+    :type client: ``Client``
+    :param Client: client to use
+    :return: 'ok' if test passed.
+    :rtype: ``str``
+    """
+    # This should validate all the inputs given in the integration configuration panel,
+    # either manually or by using an API that uses them.
+    if 'Client' not in client.connection_type:
+        raise DemistoException(
+            "Test module is avilable for Client Credentials only."
+            " For other authentication types use the msgraph-apps-auth-start command")
+
+    test_connection(client)
+    return "ok"
+
+
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
@@ -582,10 +616,13 @@ def main() -> None:
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            enc_key=(params.get('credentials', {})).get('password'),
+            tenant_id=params.get('tenant_id'),
+            connection_type=params.get('authentication_type', 'Device Code')
         )
         if command == 'test-module':
-            return_results('The test module is not functional, run the microsoft-teams-auth-start command instead.')
+            return_results(test_module(client))
         elif command == 'microsoft-teams-auth-start':
             return_results(start_auth(client))
         elif command == 'microsoft-teams-auth-complete':
@@ -628,9 +665,6 @@ def main() -> None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

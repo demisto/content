@@ -270,7 +270,7 @@ There is no context output for this command.
 
 ### armis-search-devices
 ***
-Searches devices by identifiers.
+Search devices by identifiers.
 
 
 #### Base Command
@@ -280,14 +280,14 @@ Searches devices by identifiers.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the device. | Optional | 
+| name | The name of the device to search for. | Optional | 
 | device_id | The ID of the device to search for. | Optional | 
 | mac_address | The MAC address of the device to search for. | Optional | 
 | ip_address | The IP address of the device to search for. | Optional | 
-| device_type | The device type to search for. | Optional | 
+| device_type | A comma-separated list of device types by which to filter the results. for example "Routers", "Laptops", "IP Cameras" (there are many device types. for a full list access your Armis instance). | Optional | 
 | time_frame | The time frame of the device to search for. | Optional | 
 | max_results | The maximum number of results to get. Default is 50. | Optional | 
-| risk_level | A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High".' | Optional | 
+| risk_level | A comma-separated list of device risk levels by which to filter the results. Possible values: "Low", "Medium", and "High". | Optional | 
 
 
 #### Context Output
@@ -316,62 +316,133 @@ Searches devices by identifiers.
 | Armis.Device.user | String | The user of the device. | 
 | Armis.Device.visibility | String | The visibility of the device. | 
 
-
-#### Command Example
-```!armis-search-devices device_id=165722```
-
+#### Command example
+```!armis-search-devices device_id=2172```
 #### Context Example
 ```json
 {
     "Armis": {
         "Device": {
             "accessSwitch": null,
-            "category": "Displays",
+            "boundaries": "Corporate",
+            "category": "Computers",
+            "customProperties": {},
             "dataSources": [
                 {
-                    "firstSeen": "2020-10-15T07:02:24+00:00",
-                    "lastSeen": "2021-03-11T18:12:43.196158+00:00",
-                    "name": "Meraki",
+                    "firstSeen": "2022-08-11T07:54:32.167939+00:00",
+                    "lastSeen": "2022-11-28T14:56:36.198248+00:00",
+                    "name": "Active Directory",
                     "types": [
-                        "WLC"
+                        "Asset & System Management",
+                        "Identity Provider"
                     ]
                 },
                 {
-                    "firstSeen": "2020-10-15T07:03:04.312438+00:00",
-                    "lastSeen": "2021-03-11T06:55:25.602145+00:00",
+                    "firstSeen": "2021-08-15T07:37:58.891683+00:00",
+                    "lastSeen": "2022-11-28T21:02:20.208248+00:00",
+                    "name": "CrowdStrike",
+                    "types": [
+                        "Agent Based",
+                        "Endpoint Protection"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-07-09T07:50:51.190248+00:00",
+                    "lastSeen": "2022-11-28T20:02:52.190248+00:00",
+                    "name": "MBAM (BitLocker)",
+                    "types": [
+                        "Asset & System Management"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-11-16T13:55:23.190248+00:00",
+                    "lastSeen": "2022-11-28T21:30:45.190248+00:00",
+                    "name": "Palo Alto Networks GlobalProtect",
+                    "types": [
+                        "Firewall"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-07-12T12:55:47.190248+00:00",
+                    "lastSeen": "2022-11-28T23:42:41.190248+00:00",
+                    "name": "Qualys",
+                    "types": [
+                        "Vulnerability Management"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-07-09T07:50:51.190248+00:00",
+                    "lastSeen": "2022-11-28T20:02:52.190248+00:00",
+                    "name": "SCCM",
+                    "types": [
+                        "Asset & System Management",
+                        "Patch Management"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-07-22T06:36:52.190248+00:00",
+                    "lastSeen": "2022-07-22T06:40:36.190248+00:00",
+                    "name": "ServiceNow",
+                    "types": [
+                        "Asset & System Management"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-11-21T17:00:00.360310+00:00",
+                    "lastSeen": "2022-11-28T22:23:35.190248+00:00",
                     "name": "Traffic Inspection",
                     "types": [
                         "Traffic Inspection",
                         "Data Analysis"
                     ]
+                },
+                {
+                    "firstSeen": "2022-06-13T07:10:57.686241+00:00",
+                    "lastSeen": "2022-11-22T00:59:54.686241+00:00",
+                    "name": "User",
+                    "types": [
+                        "Data Upload"
+                    ]
+                },
+                {
+                    "firstSeen": "2022-11-15T10:05:08.190248+00:00",
+                    "lastSeen": "2022-11-28T21:30:45.190248+00:00",
+                    "name": "Aruba WLC",
+                    "types": [
+                        "WLC"
+                    ]
                 }
             ],
-            "firstSeen": "2020-10-15T06:53:45+00:00",
-            "id": 165722,
-            "ipAddress": "10.82.0.76",
-            "ipv6": null,
-            "lastSeen": "2021-03-11T18:12:29.706176+00:00",
-            "macAddress": "8c:79:f5:17:1f:c4",
-            "manufacturer": "Samsung Electronics",
-            "model": "Smart TV",
-            "name": "samsung",
-            "operatingSystem": "Tizen",
-            "operatingSystemVersion": "5.0",
-            "riskLevel": 8,
+            "firstSeen": "2022-11-21T16:59:58.360310+00:00",
+            "id": 2172,
+            "ipAddress": "10.77.27.183",
+            "ipv6": "fe80::647b:ba0f:9628:6014",
+            "lastSeen": "2022-11-29T18:42:50.190248+00:00",
+            "macAddress": "50:76:AF:D3:3F:AB",
+            "manufacturer": "Lenovo",
+            "model": "ThinkPad X1 Yoga 3rd Gen",
+            "name": "000000731194pc.corporate.acme.com",
+            "operatingSystem": "Windows",
+            "operatingSystemVersion": "10",
+            "purdueLevel": 4,
+            "riskLevel": 5,
             "sensor": {
-                "name": "win-wap-trg-Downstairs",
-                "type": "Access Point"
+                "name": "PALO_ALTO-IDF04-SW01:Gig1/0/44 Enterprise",
+                "type": "Access Switch"
             },
             "site": {
-                "location": "13 Permas Way, Truganina, Vic 3029",
-                "name": "Winslow Truganina"
+                "location": "Palo Alto",
+                "name": "Palo Alto Enterprise"
             },
             "tags": [
-                "MERAKI_NETWORK=Winslow Truganina",
-                "Corporate"
+                "Corporate",
+                "ServiceNow",
+                "SCCM"
             ],
-            "type": "TVs",
-            "user": "",
+            "type": "Laptops",
+            "userIds": [
+                12
+            ],
             "visibility": "Full"
         }
     }
@@ -380,10 +451,10 @@ Searches devices by identifiers.
 
 #### Human Readable Output
 
->### Devices
->|Risk Level|Name|Type|Ip Address|Tags|Id|
->|---|---|---|---|---|---|
->| 8 | samsung | TVs | 10.82.0.76 | MERAKI_NETWORK=Winslow Truganina,<br/>Corporate | 165722 |
+### Devices
+>|Risk Level|Id|Name|Type|Ip Address|Ipv 6|Mac Address|Operating System|Operating System Version|Manufacturer|Model|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 | 2172 | 000000731194pc.corporate.acme.com | Laptops | 10.77.27.183 | fe80::647b:ba0f:9628:6014 | 50:76:AF:D3:3F:AB | Windows | 10 | Lenovo | ThinkPad X1 Yoga 3rd Gen | Corporate,<br>ServiceNow,<br>SCCM |
 
 
 ### armis-search-devices-by-aql
@@ -503,4 +574,3 @@ Searches devices with a custom AQL search string.
 >|Risk Level|Name|Type|Ip Address|Tags|Id|
 >|---|---|---|---|---|---|
 >| 10 | wc-shoretel.winslow.local | Servers | 10.0.100.10 | MERAKI_NETWORK=Winslow Campbellfield | 74745 |
-
