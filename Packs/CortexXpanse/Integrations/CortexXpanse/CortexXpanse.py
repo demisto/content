@@ -33,7 +33,6 @@ class Client(BaseClient):
             dict: dict containing list of external services.
         """
         headers = self._headers
-        demisto.debug(f'JWILKES QUERY: {request_data}')
 
         response = self._http_request('POST', '/alerts/get_alerts_multi_events/',
                                       json_data=request_data, headers=headers)
@@ -248,17 +247,14 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
         })
 
-    request_data = {"request_data": {"filters": search_params, 'search_from': search_from, 'search_to': search_to}}
     if sort_by_creation_time:
-        request_data['sort'] = {
-            'field': 'creation_time',
-            'keyword': sort_by_creation_time
-        }
+        request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
+                       'search_to': search_to, "sort": {"field": "creation_time", "keyword": sort_by_creation_time}}}
     elif sort_by_severity:
-        request_data['sort'] = {
-            'field': 'severity',
-            'keyword': sort_by_severity
-        }
+        request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
+                'search_to': search_to, "sort": {"field": "severity", "keyword": sort_by_severity}}}
+    else:
+        request_data = {"request_data": {"filters": search_params, 'search_from': search_from, 'search_to': search_to}}
 
     response = client.list_alerts_request(request_data)
 
@@ -517,14 +513,12 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch', None)
-    demisto.debug(f'JWILKES LASTRUN1: {last_fetch}')
 
     # Handle first time fetch
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
         last_fetch = int(last_fetch)
-    demisto.debug(f'JWILKES LASTRUN2: {last_fetch}')
 
     latest_created_time = cast(int, last_fetch)
     incidents = []
@@ -534,9 +528,9 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
         'field': 'creation_time', 'operator': 'gte', 'value': latest_created_time + 1}]
     if severity:
         filters.append({"field": "severity", "operator": "in", "value": severity})
-        demisto.debug(f'JWILKES RAW: {severity}')
+
     request_data = {'request_data': {'filters': filters, 'search_from': 0,
-                                     'search_to': max_fetch}, 'sort': {'field': 'creation_time', 'keyword': 'asc'}}
+                                     'search_to': max_fetch, 'sort': {'field': 'creation_time', 'keyword': 'asc'}}}
 
     raw = client.list_alerts_request(request_data)
 
@@ -556,7 +550,6 @@ def fetch_incidents(client: Client, max_fetch: int, last_run: Dict[str, int],
 
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
-        demisto.debug(f'JWILKES NAME: {incident_created_time,latest_created_time}')
 
     next_run = {'last_fetch': latest_created_time}
     return next_run, incidents
