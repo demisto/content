@@ -297,43 +297,45 @@ def test_list_alerts_command(requests_mock):
     assert response.outputs_prefix == 'ASM.Alerts'
     assert response.outputs_key_field == 'alert_id'
 
-# # CONTINUE WORKING HERE
-#     def test_fetch_incidents(requests_mock):
-#     """Tests fetch_incidents function.
 
-#         Given:
-#             - requests_mock instance to generate the appropriate fetch_incidents( API response,
-#               loaded from a local JSON file.
-#         When:
-#             - Running the 'fetch_incidents' command.
-#         Then:
-#             - Checks the output of the command function with the expected output.
-#     """
-#     from CortexXpanse import Client, fetch_incidents
+def test_fetch_incidents(requests_mock, mocker):
+    """Tests fetch_incidents function.
 
-#     from test_data.raw_response import LIST_ALERTS_RESPONSE
-#     from test_data.expected_results import LIST_ALERTS_RESULTS
-#     requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
-#                        json=LIST_ALERTS_RESPONSE)
+        Given:
+            - requests_mock instance to generate the appropriate fetch_incidents( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'fetch_incidents' command.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import Client, fetch_incidents
+    import json
 
-#     client = Client(
-#         base_url='https://test.com/api/webapp/public_api/v1',
-#         verify=True,
-#         headers={
-#             "HOST": "test.com",
-#             "Authorizatio": "THISISAFAKEKEY",
-#             "Content-Type": "application/json"
-#         },
-#         proxy=False,
-#         auth=None)
-#     args = {
-#         'limit': '2',
-#         'severity': 'high',
-#         'sort_by_creation_time': 'asc'
-#     }
+    from test_data.raw_response import LIST_ALERTS_RESPONSE
+    requests_mock.post('https://test.com/api/webapp/public_api/v1/alerts/get_alerts_multi_events/',
+                       json=LIST_ALERTS_RESPONSE)
 
-#     response = list_alerts_command(client, args)
+    client = Client(
+        base_url='https://test.com/api/webapp/public_api/v1',
+        verify=True,
+        headers={
+            "HOST": "test.com",
+            "Authorizatio": "THISISAFAKEKEY",
+            "Content-Type": "application/json"
+        },
+        proxy=False,
+        auth=None)
 
-#     assert response.outputs == LIST_ALERTS_RESULTS
-#     assert response.outputs_prefix == 'ASM.Alerts'
-#     assert response.outputs_key_field == 'alert_id'
+    last_run = {'last_fetch': 1659452708759}
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_fetch=2,
+        last_run=last_run,
+        first_fetch_time=1658452708759,
+        severity=None)
+
+    assert len(incidents) == 2
+    assert incidents[0]['name'] == "Networking Infrastructure"
+    assert json.loads(incidents[0]['rawJSON']).pop('local_insert_ts')
+    assert next_run == {'last_fetch': 1659452809020}

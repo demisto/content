@@ -249,10 +249,10 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     if sort_by_creation_time:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
-                       'search_to': search_to, "sort": {"field": "creation_time", "keyword": sort_by_creation_time}}}
+                        'search_to': search_to, "sort": {"field": "creation_time", "keyword": sort_by_creation_time}}}
     elif sort_by_severity:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from,
-                'search_to': search_to, "sort": {"field": "severity", "keyword": sort_by_severity}}}
+                        'search_to': search_to, "sort": {"field": "severity", "keyword": sort_by_severity}}}
     else:
         request_data = {"request_data": {"filters": search_params, 'search_from': search_from, 'search_to': search_to}}
 
