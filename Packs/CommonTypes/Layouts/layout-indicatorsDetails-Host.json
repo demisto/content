@@ -231,6 +231,7 @@
                         "minW": 1,
                         "moved": false,
                         "name": "Related Incidents",
+                        "name_x2": "Related Alerts",
                         "readOnly": true,
                         "static": false,
                         "type": "relatedIncidents",

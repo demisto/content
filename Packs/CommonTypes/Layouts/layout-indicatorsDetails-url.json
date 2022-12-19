@@ -61,6 +61,7 @@
                         "i": "default-main-relatedIncidents",
                         "moved": false,
                         "name": "Related Incidents",
+                        "name_x2": "Related Alerts",
                         "static": false,
                         "type": "relatedIncidents",
                         "w": 2,
