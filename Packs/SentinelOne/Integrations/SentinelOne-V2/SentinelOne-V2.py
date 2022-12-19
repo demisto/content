@@ -2352,7 +2352,8 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
     # Get arguments
     query_params = {}
     if args.get('params'):
-        for field_value in args.get('params', '').split(';'):
+       param_list = argToList(args.get('params', ''))
+        for param in param_list:
             f = field_value.split('=')[0]
             v = field_value.split('=')[1]
         query_params.update({f: v})

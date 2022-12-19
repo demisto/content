@@ -105,7 +105,7 @@ script:
     - defaultValue: '10'
       description: The maximum number of agents to return.
       name: limit
-    - description: Query params field=value pairs delimited by semicolon (e.g., activeThreats=3;gatewayIp=1.2.3.4)
+    - description: Query params field=value pairs delimited by comma (e.g., activeThreats=3,gatewayIp=1.2.3.4)
       name: params
     description: Returns all agents that match the specified criteria.
     name: sentinelone-list-agents
