@@ -92,24 +92,32 @@ def test_get_with_limit_dict(mocker):
 
 
 def test_submit_urls(mocker, requests_mock):
+    class MockResponse:
+                def __init__(self, json_data, status_code):
+                    self.json_data = json_data
+                    self.status_code = status_code
 
-    mocker.patch.object(demisto, 'args', return_value=Search_query_input)
+                def json(self):
+                    return self.json_data
+
+    mocker.patch.object(demisto, 'args', return_value=Submit_url_input)
     from ThreatGrid import submit_urls
     args = demisto.args
     # Load assertions and mocked request data
-    testing_url = Submit_url_input.get('url')
+    #testing_url = Submit_url_input.get('url')
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
     # mocker.patch.object(submit_urls, 'req', return_value=mock_response)
-    requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}',
-                      json=mock_response)
+    #requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}',
+    #                  json=mock_response)
+    submit_urls.req = MockResponse(mock_response, 200)
 
     res = submit_urls(args)
     assert res.outputs == expected_results
 
 def test_advanced_seach(mocker, requests_mock):
 
-    mocker.patch.object(demisto, 'args', return_value=Submit_url_input)
+    mocker.patch.object(demisto, 'args', return_value=Search_query_input)
     from ThreatGrid import advanced_search
     args = demisto.args
     # Load assertions and mocked request data
