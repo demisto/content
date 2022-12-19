@@ -216,35 +216,39 @@ class Client(BaseClient):
                             start_time: str = None,
                             timezone: str = None,
                             type: str = "instant",
-                            allow_multiple_devices: bool | str = True,
                             auto_recording: str = "none",
                             encryption_type: str = "enhanced_encryption",
                             join_before_host: bool | str = False,
                             meeting_authentication: bool | str = False,
-                            waiting_room: bool | str = False):
+                            waiting_room: bool | str = False,
+                            end_date_time: str | None = None,
+                            end_times: int | str = 1,
+                            monthly_day: int | str = 1,
+                            monthly_week: int | str | None = None,
+                            monthly_week_day: int | str | None = None,
+                            repeat_interval: int | str | None = None,
+                            recurrence_type: int | str | None = None,
+                            weekly_days: int | str = 1
+                            ):
 
         # converting
         host_video = argToBoolean(host_video)
-        allow_multiple_devices = argToBoolean(allow_multiple_devices)
         join_before_host = argToBoolean(join_before_host)
         meeting_authentication = argToBoolean(meeting_authentication)
         waiting_room = argToBoolean(waiting_room)
+        end_times = arg_to_number(end_times)
+        monthly_day = arg_to_number(monthly_day)
+        monthly_week = arg_to_number(monthly_week)
+        monthly_week_day = arg_to_number(monthly_week_day)
+        repeat_interval = arg_to_number(repeat_interval)
+        weekly_days = arg_to_number(weekly_days)
 
-        # argument checing
-        if type == "instant" and (timezone or start_time):
-            # arguments collision
-            raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
-        if jbh_time and not join_before_host:
-            # arguments collision
-            raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
-        if waiting_room and join_before_host:
-            # arguments collision
-            raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
-
-        # converting separately after the argument checking, because 0 as an int is equaled to  false
-        jbh_time = arg_to_number(jbh_time)
-
-        json_all_data = {}
+        if recurrence_type == "Daily":
+            recurrence_type = 1
+        elif recurrence_type == "Weekly":
+            recurrence_type = 2
+        elif recurrence_type == "Monthly":
+            recurrence_type = 3
 
         num_type = 1
         if type == "scheduled":
@@ -253,21 +257,59 @@ class Client(BaseClient):
             num_type = 3
         elif type == "recurring meeting with fixed time":
             num_type = 8
-            # end_time = start_time[8]
-            # json_all_data = {"recurrence": {
-            #     "end_date_time": "2022-04-02T15:59:00Z",
-            #     "end_times": 7,
-            #     "monthly_day": 1,
-            #     "monthly_week": 1,
-            #     "monthly_week_day": 1,
-            #     "repeat_interval": 1,
-            #     "type": 1,
-            #     "weekly_days": "1"
-            # }, }
 
+        # argument checking
+        # for arguments that have a default value, i use demisto.args to trigger an exception if user entered a value.
+        args = demisto.args()
+        if type == "instant" and (timezone or start_time):
+            raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
+
+        if jbh_time and not join_before_host:
+            raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
+
+        if waiting_room and join_before_host:
+            raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
+
+        if args.get("end_times") and end_date_time:
+            raise DemistoException(
+                "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time.")
+
+        if num_type != 8 and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
+                                 monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
+            raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
+
+        if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
+                                                          monthly_week, monthly_week_day)):
+            raise DemistoException(
+                "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
+
+        if num_type == 8 and recurrence_type == 3 and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
+            raise DemistoException(
+                """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
+                must have the fallowing arguments: monthly_week and monthly_week_day""")
+
+        if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
+            raise DemistoException("Weekly_days is for weekly recurrence_type only")
+
+        # converting separately after the argument checking, because 0 as an int is equaled to false
+        jbh_time = arg_to_number(jbh_time)
+
+        json_all_data = {}
+
+        # special section for recurring meeting with fixed time
+        if num_type == 8:
+            json_all_data.update({"recurrence": {
+                "end_date_time": end_date_time,
+                "end_times": end_times,
+                "monthly_day": monthly_day,
+                "monthly_week": monthly_week,
+                "monthly_week_day": monthly_week_day,
+                "repeat_interval": repeat_interval,
+                "type": recurrence_type,
+                "weekly_days": weekly_days
+            }})
         json_all_data.update({
             "settings": {
-                "allow_multiple_devices": allow_multiple_devices,
                 "auto_recording": auto_recording,
                 "encryption_type": encryption_type,
                 "host_video": host_video,
@@ -524,8 +566,7 @@ def zoom_user_create_command(client: Client, user_type: str, email: str, first_n
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=f"User created successfully with ID{raw_data.get('id')}",
-        # TO DO: not sure about this line
-        outputs={'User': raw_data},
+        outputs={"Zoom.User": raw_data},
         raw_response=raw_data
     )
 
@@ -539,34 +580,61 @@ def zoom_user_delete_command(client: Client, user_id: str, action: str) -> Comma
 
 
 def zoom_meeting_create_command(
-    client: Client,
-    user_id: str,
+        client: Client,
+        user_id: str,
         topic: str,
         host_video: bool | str = True,
         jbh_time: int | str | None = None,
         start_time: str = None,
         timezone: str = None,
         type: str = "instant",
-        allow_multiple_devices: bool | str = True,
         auto_recording: str = "none",
         encryption_type: str = "enhanced_encryption",
         join_before_host: bool | str = False,
         meeting_authentication: bool | str = False,
-        waiting_room: bool | str = False) -> CommandResults:
+        waiting_room: bool | str = False,
+        end_date_time: str | None = None,
+        end_times: int | str = 1,
+        monthly_day: int | str = 1,
+        monthly_week: int | str | None = None,
+        monthly_week_day: int | str | None = None,
+        repeat_interval: int | str | None = None,
+        recurrence_type: int | str | None = None,
+        weekly_days: int | str = 1) -> CommandResults:
     raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time,
                                           start_time, timezone, type,
-                                          allow_multiple_devices,
                                           auto_recording,
                                           encryption_type,
                                           join_before_host,
                                           meeting_authentication,
-                                          waiting_room)
+                                          waiting_room,
+                                          end_date_time,
+                                          end_times,
+                                          monthly_day,
+                                          monthly_week,
+                                          monthly_week_day,
+                                          repeat_interval,
+                                          recurrence_type,
+                                          weekly_days)
+    # if type == "recurring meeting with fixed time":
+    #     basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+    #                               'type', 'status',
+    #                               'timezone', 'created_at', 'start_url', 'join_url',
+    #                               ][0]
+    #     additinal_info = raw_data["occurrences"], ['start_time', 'duration']
+    #     all_info = []
+    #     all_info.append(basic_info[0][0])
+    #     all_info[0].update(additinal_info[0][0])
+    #     md = f"""Meeting created successfully.
+    #     Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
+    #     md += "\n" + tableToMarkdown('Meeting details', [all_info][0], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+    #                                                                     'type', 'status', 'start_time', 'duration',
+    #                                                                     'timezone', 'created_at', 'start_url', 'join_url'
+    #                                                                     ])
+    # else:
     md = f"""Meeting created successfully.
-    Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
-    md += "\n" + tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-                                                                 'type', 'status', 'start_time', 'duration',
-                                                                 'timezone', 'created_at', 'start_url', 'join_url',
-                                                                 ])
+        Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
+    md += "\n" + tableToMarkdown('Meeting details', [raw_data])
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,
@@ -632,10 +700,10 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
     )
 
 
-def check_authentication_type_arguments(api_key: str, api_secret: str,
-                                        # checking if the user entered extra parameters
-                                        # at the configuration level
-                                        account_id: str, client_id: str, client_secret: str):
+def check_authentication_type_parameters(api_key: str, api_secret: str,
+                                         # checking if the user entered extra parameters
+                                         # at the configuration level
+                                         account_id: str, client_id: str, client_secret: str):
     if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
         raise DemistoException("""Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
@@ -661,7 +729,7 @@ def main():  # pragma: no cover
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
-        check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
+        check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
         if command == 'test-module':
             return_results(test_module(
                 verify=verify_certificate,

@@ -509,7 +509,7 @@ def test_manual_meeting_list_pagination__large_limit(mocker):
     assert basic_request_mocker.call_args[0][2] == 200
 
 
-def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
+def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
     """
         Given -
            client
@@ -519,7 +519,7 @@ def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
             Validate that the error wil raise as excepted
     """
     with pytest.raises(DemistoException) as e:
-        Zoom.check_authentication_type_arguments(account_id="mockaccount",
+        Zoom.check_authentication_type_parameters(account_id="mockaccount",
                                                  client_id="mockclient", client_secret="mocksecret",
                                                  api_key="blabla", api_secret="")
     assert e.value.message == """Too many fields were filled.
@@ -527,7 +527,7 @@ def test_check_authentication_type_arguments__with_extra_jwt_member(mocker):
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""
 
 
-def test_check_authentication_type_arguments__with_extra_AOuth_member():
+def test_check_authentication_type_parameters__with_extra_AOuth_member():
     """
         Given -
 
@@ -537,7 +537,7 @@ def test_check_authentication_type_arguments__with_extra_AOuth_member():
             Validate that the error wil raise as excepted
     """
     with pytest.raises(DemistoException) as e:
-        Zoom.check_authentication_type_arguments(account_id="",
+        Zoom.check_authentication_type_parameters(account_id="",
                                                  client_id="", client_secret="mocksecret",
                                                  api_key="blabla", api_secret="ertert")
     assert e.value.message == """Too many fields were filled.
