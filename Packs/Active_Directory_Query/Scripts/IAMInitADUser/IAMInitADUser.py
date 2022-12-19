@@ -34,7 +34,7 @@ def main():
                                                                   {"min_lcase": min_lcase,
                                                                    "max_lcase": max_lcase,
                                                                    "min_ucase": min_ucase,
-                                                                  "max_ucase": max_ucase,
+                                                                   "max_ucase": max_ucase,
                                                                    "min_digits": min_digits,
                                                                    "max_digits": max_digits,
                                                                    "min_symbols": min_symbols,
