@@ -270,7 +270,7 @@ class Client(BaseClient):
 
             return incidents_json
         except Exception as e:
-            return_error(str(e))
+            raise DemistoException(str(e))
             return []
 
     def convert_decyfir_data_to_incidents_format(self, decyfir_alerts_incidents):
