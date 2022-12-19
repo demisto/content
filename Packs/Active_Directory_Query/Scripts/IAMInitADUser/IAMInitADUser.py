@@ -30,8 +30,15 @@ def main():
     try:
         # Generate a random password
         if pwd_generation_script == DEFAULT_PWD_GENERATION_SCRIPT:
-            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {"min_lcase": min_lcase, "max_lcase": max_lcase, "min_ucase": min_ucase,
-                                                                                          "max_ucase": max_ucase, "min_digits": min_digits, "max_digits": max_digits, "min_symbols": min_symbols, "max_symbols": max_symbols})
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script,
+                                                                  {"min_lcase": min_lcase,
+                                                                   "max_lcase": max_lcase,
+                                                                   "min_ucase": min_ucase,
+                                                                  "max_ucase": max_ucase,
+                                                                   "min_digits": min_digits,
+                                                                   "max_digits": max_digits,
+                                                                   "min_symbols": min_symbols,
+                                                                   "max_symbols": max_symbols})
         else:
             pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
         if is_error(pwd_generation_script_output):
