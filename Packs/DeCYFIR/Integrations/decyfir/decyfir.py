@@ -252,8 +252,7 @@ class Client(BaseClient):
 
             return incidents_json
         except Exception as e:
-            return_error(str(e))
-            return []
+            raise DemistoException(str(e))
 
     def prepare_incidents_for_digital_risk(self, json_data, alert_type: str, alert_subtype: str) -> List:
         try:
