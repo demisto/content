@@ -3,15 +3,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 ''' IMPORTS '''
-import requests
 import base64
 import os
 import json
+import urllib3
 from urllib.parse import quote
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
@@ -220,13 +220,13 @@ class MsGraphClient:
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
                                          grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
-                                         private_key=private_key)
+                                         private_key=private_key, retry_on_rate_limit=True)
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
 
-    def _get_root_folder_children(self, user_id):
+    def _get_root_folder_children(self, user_id, overwrite_rate_limit_retry=False):
         """
         Get the root folder (Top Of Information Store) children collection.
 
@@ -239,13 +239,15 @@ class MsGraphClient:
         rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
-        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', None)
+        root_folder_children = self.ms_client.http_request('GET', suffix_endpoint,
+                                                           overwrite_rate_limit_retry=overwrite_rate_limit_retry) \
+            .get('value', None)
         if not root_folder_children:
             raise Exception("No folders found under Top Of Information Store folder")
 
         return root_folder_children
 
-    def _get_folder_children(self, user_id, folder_id):
+    def _get_folder_children(self, user_id, folder_id, overwrite_rate_limit_retry=False):
         """
         Get the folder collection under the specified folder.
 
@@ -259,10 +261,11 @@ class MsGraphClient:
         :rtype: ``list``
         """
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}/childFolders?$top=250'
-        folder_children = self.ms_client.http_request('GET', suffix_endpoint).get('value', [])
+        folder_children = self.ms_client.http_request('GET', suffix_endpoint,
+                                                      overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
         return folder_children
 
-    def _get_folder_info(self, user_id, folder_id):
+    def _get_folder_info(self, user_id, folder_id, overwrite_rate_limit_retry=False):
         """
         Returns folder information.
 
@@ -279,12 +282,13 @@ class MsGraphClient:
         """
 
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}'
-        folder_info = self.ms_client.http_request('GET', suffix_endpoint)
+        folder_info = self.ms_client.http_request('GET', suffix_endpoint,
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if not folder_info:
             raise Exception(f'No info found for folder {folder_id}')
         return folder_info
 
-    def _get_folder_by_path(self, user_id, folder_path):
+    def _get_folder_by_path(self, user_id, folder_path, overwrite_rate_limit_retry=False):
         """
         Searches and returns basic folder information.
 
@@ -311,13 +315,14 @@ class MsGraphClient:
             # check if first folder in the path is known folder in order to skip not necessary api call
             folder_id = WELL_KNOWN_FOLDERS[folders_names[0].lower()]  # get folder shortcut instead of using folder id
             if len(folders_names) == 1:  # in such case the folder path consist only from one well known folder
-                return self._get_folder_info(user_id, folder_id)
+                return self._get_folder_info(user_id, folder_id, overwrite_rate_limit_retry)
             else:
-                current_directory_level_folders = self._get_folder_children(user_id, folder_id)
+                current_directory_level_folders = self._get_folder_children(user_id, folder_id,
+                                                                            overwrite_rate_limit_retry)
                 folders_names.pop(0)  # remove the first folder name from the path before iterating
         else:  # in such case the optimization step is skipped
             # current_directory_level_folders will be set to folders that are under Top Of Information Store (root)
-            current_directory_level_folders = self._get_root_folder_children(user_id)
+            current_directory_level_folders = self._get_root_folder_children(user_id, overwrite_rate_limit_retry)
 
         for index, folder_name in enumerate(folders_names):
             # searching for folder in current_directory_level_folders list by display name or id
@@ -332,7 +337,8 @@ class MsGraphClient:
                 # skip get folder children step in such case
                 return found_folder
             # didn't reach the end of the loop, set the current_directory_level_folders to folder children
-            current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''))
+            current_directory_level_folders = self._get_folder_children(user_id, found_folder.get('id', ''),
+                                                                        overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
@@ -366,7 +372,7 @@ class MsGraphClient:
         }
 
         fetched_emails = self.ms_client.http_request(
-            'GET', suffix_endpoint, params=params
+            'GET', suffix_endpoint, params=params, overwrite_rate_limit_retry=True
         ).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
@@ -649,7 +655,7 @@ class MsGraphClient:
             'comment': comment
         }
 
-    def _get_attachment_mime(self, message_id, attachment_id):
+    def _get_attachment_mime(self, message_id, attachment_id, overwrite_rate_limit_retry=False):
         """
         Gets attachment mime.
 
@@ -660,11 +666,12 @@ class MsGraphClient:
         :rtype: ``str``
         """
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
-        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text')
+        mime_content = self.ms_client.http_request('GET', suffix_endpoint, resp_type='text',
+                                                   overwrite_rate_limit_retry=overwrite_rate_limit_retry)
 
         return mime_content
 
-    def _get_email_attachments(self, message_id, user_id=None):
+    def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False):
         """
         Get email attachments  and upload to War Room.
 
@@ -678,7 +685,8 @@ class MsGraphClient:
             user_id = self._mailbox_to_fetch
         attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{user_id}/messages/{message_id}/attachments'
-        attachments = self.ms_client.http_request('Get', suffix_endpoint).get('value', [])
+        attachments = self.ms_client.http_request('Get', suffix_endpoint,
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry).get('value', [])
 
         for attachment in attachments:
             attachment_type = attachment.get('@odata.type', '')
@@ -691,7 +699,7 @@ class MsGraphClient:
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
-                attachment_content = self._get_attachment_mime(message_id, attachment_id)
+                attachment_content = self._get_attachment_mime(message_id, attachment_id, overwrite_rate_limit_retry)
                 attachment_name = f'{attachment_name}.eml'
             else:
                 # skip attachments that are not of the previous types (type referenceAttachment)
@@ -701,7 +709,7 @@ class MsGraphClient:
 
         return attachment_results
 
-    def _parse_email_as_incident(self, email):
+    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
         """
         Parses fetched emails as incidents.
 
@@ -714,7 +722,8 @@ class MsGraphClient:
         parsed_email = MsGraphClient._parse_item_as_dict(email)
 
         # handling attachments of fetched email
-        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        attachments = self._get_email_attachments(message_id=email.get('id', ''),
+                                                  overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         if attachments:
             parsed_email['Attachments'] = attachments
 
@@ -751,7 +760,8 @@ class MsGraphClient:
 
         if folder_path_changed:
             # detected folder path change, get new folder id
-            folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
+            folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch,
+                                                 overwrite_rate_limit_retry=True).get('id')
             demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
@@ -763,7 +773,7 @@ class MsGraphClient:
 
         fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
                                                                      exclude_ids=exclude_ids)
-        incidents = list(map(self._parse_email_as_incident, fetched_emails))
+        incidents = list(map(lambda email: self._parse_email_as_incident(email, True), fetched_emails))
         next_run_time = MsGraphClient._get_next_run_time(fetched_emails, last_fetch)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
@@ -1081,7 +1091,11 @@ def list_mails_command(client: MsGraphClient, args):
     if mail_context:
         entry_context = mail_context
         if next_page:
-            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
+            if isinstance(entry_context, dict):
+                entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
+            else:
+                entry_context[-1]['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] =\
+                    {'NextPage': next_page}  # type: ignore
 
         # human_readable builder
         human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \

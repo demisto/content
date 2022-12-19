@@ -11,9 +11,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
+        "Malware",
+        "marketplacev2:Data Source",
         "Dark Web",
-        "Malware"
+        "Threat Intelligence"
     ],
     "useCases": [
         "Threat Intelligence Management",

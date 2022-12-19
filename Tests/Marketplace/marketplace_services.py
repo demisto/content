@@ -30,7 +30,7 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
@@ -698,7 +698,7 @@ class Pack(object):
 
     def _load_pack_dependencies_metadata(self, index_folder_path, packs_dict):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-            There are 2 cases:
+            There are 3 cases:
               Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
               Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
                 dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
@@ -1756,7 +1756,8 @@ class Pack(object):
 
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
-            final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
+            final_release_notes = f"Changes are not relevant for " \
+                                  f"{'XSIAM' if marketplace == 'marketplacev2' else marketplace.upper()} marketplace."
 
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
@@ -1902,6 +1903,10 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
+
+        # Filters out for XPANSE tags
+        release_notes = remove_tags_section_from_rn(release_notes, XPANSE_MP, upload_marketplace)
+
         logging.debug(f"RN result after filtering for pack {self._pack_name} in marketplace "
                       f"{upload_marketplace}\n - {release_notes}")
 
@@ -2197,7 +2202,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("parsingrule-"):
+                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2205,7 +2210,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("modelingrule-"):
+                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
@@ -2336,7 +2341,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get('marketplaces', ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -2607,7 +2612,8 @@ class Pack(object):
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
                                       and k not in core_packs
-                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()]
+                                      and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
+                                      and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
             if mandatory_dependencies:
                 raise Exception(f'New mandatory dependencies {mandatory_dependencies} were '
                                 f'found in the core pack {self._pack_name}')
@@ -3620,7 +3626,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
-                if self.is_preview_image(file.a_path):
+                if self.is_valid_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
                     image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
                     image_name = os.path.basename(file.a_path)
@@ -3691,19 +3697,34 @@ class Pack(object):
 
         return task_status
 
-    def is_preview_image(self, file_path: str) -> bool:
-        """ Indicates whether a file_path is a preview image or not
+    def is_valid_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a valid preview image or not:
+            - The file exists (is not removed in the latest upload)
+            - Belong to the current pack
+            - Id of type png
+            - path include the word '_image'
+            - Located in either XSIAMDashboards or XSIAMReports folder
         Args:
             file_path (str): The file path
         Returns:
             bool: True if the file is a preview image or False otherwise
         """
-        return all([
+        valid_image = all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
             file_path.endswith('.png'),
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
+        if not valid_image:
+            return False
+
+        # In cases where a preview image was deleted valid_image will be true but we don't want to upload it as it does
+        # not exist anymore
+        elif not os.path.exists(file_path):
+            logging.warning(f'Image: {file_path} was deleted and therefore will not be uploaded')
+            return False
+
+        return True
 
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:
