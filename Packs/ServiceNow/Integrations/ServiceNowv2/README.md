@@ -38,11 +38,11 @@ These scripts are wrapped around the incident table, so to wrap them around anot
    2. Under **Classifier**, select ServiceNow Classifier.
    3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
    4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-   5. To enable mirroring when closing ticket in ServiceNow, select the **Close Mirrored XSOAR Incident** checkbox.
+   5. To enable mirroring to close a ticket in ServiceNow, select the **Close Mirrored XSOAR Incident** checkbox.
 
         ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-xsoar.png)
-   6. To enable mirroring when closing an incident in Cortex XSOAR, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
-      or set the **Mirrored ServiceNow Ticket custom close state code** parameter.
+   6. To enable mirroring to close an incident in Cortex XSOAR, under the **Mirrored ServiceNow Ticket closure method** dropdown, select the ticket closing method,
+      or set the **Mirrored ServiceNow Ticket custom close state code** parameter, in order to override the default closure method with a custom state.
      
         ![image](https://raw.githubusercontent.com/demisto/content/75395ba6d9118bc3a5a399a31d95de4dc27f0911/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-mirror-snow.png)
 

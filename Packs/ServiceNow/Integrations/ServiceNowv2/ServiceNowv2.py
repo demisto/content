@@ -65,7 +65,7 @@ TICKET_STATES = {
 }
 
 
-TICKET_TYPE_TO_CLOSED_STATE = {'incident': '7',
+TICKET_TYPE_TO_CLOSED_STATE = {INCIDENT: '7',
                                'problem': '4',
                                'change_request': '3',
                                'sc_task': '3',
@@ -2388,9 +2388,8 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         # Handle case of custom state doesn't exist, reverting to the original close state
         if is_custom_close and demisto.get(result, 'result.state') != close_custom_state:
             fields['state'] = TICKET_TYPE_TO_CLOSED_STATE[ticket_type]
-            demisto.debug('Given custom state doesn\'t exist')
-            demisto.debug(f'Sending second update request to server with default closed state: '
-                          f'{ticket_type}, {ticket_id}, {fields}')
+            demisto.debug(f'Given custom state doesn\'t exist - Sending second update request to server with '
+                          f'default closed state: {ticket_type}, {ticket_id}, {fields}')
             result = client.update(ticket_type, ticket_id, fields)
 
         demisto.info(f'Ticket Update result {result}')
