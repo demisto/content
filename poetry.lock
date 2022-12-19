@@ -209,17 +209,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "bs4"
-version = "0.0.1"
-description = "Dummy package for Beautiful Soup"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-beautifulsoup4 = "*"
-
-[[package]]
 name = "cachetools"
 version = "5.2.0"
 description = "Extensible memoizing collections and decorators"
@@ -430,105 +419,98 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.0"
+version = "1.8.1"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
 python-versions = ">=3.8,<3.11"
-develop = false
 
 [package.dependencies]
-autopep8 = "^1.6.0"
-bandit = "^1.7.4"
-bs4 = "^0.0.1"
+autopep8 = ">=1.6.0,<2.0.0"
+bandit = ">=1.7.4,<2.0.0"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
-click = "^8.0.0"
-colorama = "^0.4.4"
-coloredlogs = "^15.0.1"
-configparser = "^5.2.0"
+click = ">=8.0.0,<9.0.0"
+colorama = ">=0.4.4,<0.5.0"
+coloredlogs = ">=15.0.1,<16.0.0"
+configparser = ">=5.2.0,<6.0.0"
 coverage = "6.3.2"
-cryptography = "^36.0.2"
-dateparser = "^1.1.1"
-decorator = "^5.1.1"
-demisto-py = "^3.2.3"
-dictdiffer = "^0.9.0"
-dictor = "^0.1.9"
-docker = "^5.0.3"
-flake8 = "^4.0.1"
-flatten-dict = "^0.4.2"
-gitdb = "^4.0.9"
-GitPython = "^3.1.27"
-giturlparse = "^0.10.0"
-google-cloud-storage = "^2.2.1"
-imagesize = "^1.3.0"
-importlib-resources = "^5.6.0"
-inflection = "^0.5.1"
-isort = "^5.10.1"
-Jinja2 = "^3.1.1"
-jsonschema = "^4.4.0"
-klara = "^0.6.3"
-MarkupSafe = "^2.1.1"
-mergedeep = "^1.3.4"
-mypy = "^0.982"
-neo4j = "^4.4.8"
-networkx = "^2.7.1"
-nltk = "^3.7"
-ordered-set = "^4.1.0"
+cryptography = ">=36.0.2,<37.0.0"
+dateparser = ">=1.1.1,<2.0.0"
+decorator = ">=5.1.1,<6.0.0"
+demisto-py = ">=3.2.3,<4.0.0"
+dictdiffer = ">=0.9.0,<0.10.0"
+dictor = ">=0.1.9,<0.2.0"
+docker = ">=5.0.3,<6.0.0"
+flake8 = ">=4.0.1,<5.0.0"
+flatten-dict = ">=0.4.2,<0.5.0"
+gitdb = ">=4.0.9,<5.0.0"
+GitPython = ">=3.1.27,<4.0.0"
+giturlparse = ">=0.10.0,<0.11.0"
+google-cloud-storage = ">=2.2.1,<3.0.0"
+imagesize = ">=1.3.0,<2.0.0"
+importlib-resources = ">=5.6.0,<6.0.0"
+inflection = ">=0.5.1,<0.6.0"
+isort = ">=5.10.1,<6.0.0"
+Jinja2 = ">=3.1.1,<4.0.0"
+jsonschema = ">=4.4.0,<5.0.0"
+klara = ">=0.6.3,<0.7.0"
+MarkupSafe = ">=2.1.1,<3.0.0"
+mergedeep = ">=1.3.4,<2.0.0"
+mypy = ">=0.982,<0.983"
+neo4j = ">=4.4.8,<5.0.0"
+networkx = ">=2.7.1,<3.0.0"
+nltk = ">=3.7,<4.0"
+ordered-set = ">=4.1.0,<5.0.0"
 packaging = "<22"
-paramiko = "^2.11.0"
+paramiko = ">=2.11.0,<3.0.0"
 Pebble = ">=4.6.3,<6.0.0"
-pipenv = "^2022.3.28"
-prettytable = "^3.2.0"
-pydantic = "^1.9.2"
-pykwalify = "^1.8.0"
+pipenv = ">=2022.3.28,<2023.0.0"
+prettytable = ">=3.2.0,<4.0.0"
+pydantic = ">=1.9.2,<2.0.0"
+pykwalify = ">=1.8.0,<2.0.0"
 pylint = "2.12.2"
-PyPDF2 = "^1.26.0"
-pyspellchecker = "^0.6.3"
-pytest-freezegun = "^0.4.2"
-python-dotenv = "^0.20.0"
-requests = "^2.27.1"
-"ruamel.yaml" = "^0.17.21"
-slackclient = "^2.9.3"
+PyPDF2 = ">=1.28.6,<2.0.0"
+pyspellchecker = ">=0.6.3,<0.7.0"
+pytest-freezegun = ">=0.4.2,<0.5.0"
+python-dotenv = ">=0.20.0,<0.21.0"
+requests = ">=2.27.1,<3.0.0"
+"ruamel.yaml" = ">=0.17.21,<0.18.0"
+slackclient = ">=2.9.3,<3.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-typed-ast = "^1.5.2"
-typer = {version = "^0.6.1", extras = ["all"]}
+typed-ast = ">=1.5.2,<2.0.0"
+typer = {version = ">=0.6.1,<0.7.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
-types-dateparser = "^1.1.0"
-types-decorator = "^5.1.8"
+types-dateparser = ">=1.1.0,<2.0.0"
+types-decorator = ">=5.1.8,<6.0.0"
 types-emoji = ">=1.2.7,<3.0.0"
-types-filelock = "^3.2.5"
-types-futures = "^3.3.8"
-types-ipaddress = "^1.0.8"
-types-Markdown = "^3.3.21"
-types-mock = "^4.0.15"
-types-paramiko = "^2.8.17"
-types-pkg-resources = "^0.1.3"
-types-protobuf = "^3.19.15"
-types-PyMySQL = "^1.0.15"
-types-python-dateutil = "^2.8.10"
+types-filelock = ">=3.2.5,<4.0.0"
+types-futures = ">=3.3.8,<4.0.0"
+types-ipaddress = ">=1.0.8,<2.0.0"
+types-Markdown = ">=3.3.21,<4.0.0"
+types-mock = ">=4.0.15,<5.0.0"
+types-paramiko = ">=2.8.17,<3.0.0"
+types-pkg-resources = ">=0.1.3,<0.2.0"
+types-protobuf = ">=3.19.15,<4.0.0"
+types-PyMySQL = ">=1.0.15,<2.0.0"
+types-python-dateutil = ">=2.8.10,<3.0.0"
 types-pytz = ">=2021.3.6,<2023.0.0"
 types-pyvmomi = ">=7.0.6,<9.0.0"
-types-PyYAML = "^6.0.5"
+types-PyYAML = ">=6.0.5,<7.0.0"
 types-requests = "2.28.11"
-types-setuptools = "^65.6.0.1"
-types-six = "^1.16.12"
+types-setuptools = ">=65.6.0.1,<66.0.0.0"
+types-six = ">=1.16.12,<2.0.0"
 types-tabulate = ">=0.8.6,<0.10.0"
-types-ujson = "^5.6.0.0"
-typing-extensions = "^4.1.1"
-ujson = "^5.1.0"
-urllib3 = "^1.26.9"
-vulture = "^2.3"
-wcmatch = "^8.3"
-yamlordereddictloader = "^0.4.0"
+types-ujson = ">=5.6.0.0,<6.0.0.0"
+typing-extensions = ">=4.1.1,<5.0.0"
+ujson = ">=5.1.0,<6.0.0"
+urllib3 = ">=1.26.9,<2.0.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.14)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-sdk.git"
-reference = "b362a0b50ce4e9a5054068ac273d66121ce3408d"
-resolved_reference = "b362a0b50ce4e9a5054068ac273d66121ce3408d"
 
 [[package]]
 name = "Deprecated"
@@ -789,20 +771,6 @@ google-auth = ">=1.25.0,<3.0dev"
 grpc = ["grpcio (>=1.38.0,<2.0dev)"]
 
 [[package]]
-name = "google-cloud-secret-manager"
-version = "2.13.0"
-description = "Google Cloud Secret Manager API client library"
-category = "dev"
-optional = false
-python-versions = ">=3.7"
-
-[package.dependencies]
-google-api-core = {version = ">=1.34.0,<2.0.0 || >=2.11.0,<3.0.0dev", extras = ["grpc"]}
-grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
-proto-plus = ">=1.22.0,<2.0.0dev"
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
-
-[[package]]
 name = "google-cloud-storage"
 version = "2.7.0"
 description = "Google Cloud Storage API client library"
@@ -855,23 +823,10 @@ optional = false
 python-versions = ">=3.7"
 
 [package.dependencies]
-grpcio = {version = ">=1.44.0,<2.0.0dev", optional = true, markers = "extra == \"grpc\""}
 protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
 
 [package.extras]
 grpc = ["grpcio (>=1.44.0,<2.0.0dev)"]
-
-[[package]]
-name = "grpc-google-iam-v1"
-version = "0.12.4"
-description = "IAM API client library"
-category = "dev"
-optional = false
-python-versions = ">=3.6"
-
-[package.dependencies]
-googleapis-common-protos = {version = ">=1.56.0,<2.0.0dev", extras = ["grpc"]}
-grpcio = ">=1.0.0,<2.0.0dev"
 
 [[package]]
 name = "grpcio"
@@ -1009,17 +964,6 @@ description = "Lightweight pipelining with Python functions"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
-
-[[package]]
-name = "json5"
-version = "0.9.10"
-description = "A Python implementation of the JSON5 data format."
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.extras]
-dev = ["hypothesis"]
 
 [[package]]
 name = "jsonschema"
@@ -2432,7 +2376,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "02247efc13ae07341be740005f9e014b20675a8a9eefcb1833d3413f3063962a"
+content-hash = "20f0bf2a0ee4dcf7c999527f14f7169f10d17337074b14843a09ffc86739d903"
 
 [metadata.files]
 aiohttp = [
@@ -2617,9 +2561,6 @@ botocore = [
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
     {file = "bracex-2.3.post1.tar.gz", hash = "sha256:e7b23fc8b2cd06d3dec0692baabecb249dda94e06a617901ff03a6c56fd71693"},
-]
-bs4 = [
-    {file = "bs4-0.0.1.tar.gz", hash = "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"},
 ]
 cachetools = [
     {file = "cachetools-5.2.0-py3-none-any.whl", hash = "sha256:f9f17d2aec496a9aa6b76f53e3b614c965223c061982d434d160f930c698a9db"},
@@ -2812,7 +2753,10 @@ demisto-py = [
     {file = "demisto-py-3.2.4.tar.gz", hash = "sha256:fa0c29341005c91553f0586899f98550a288e0649fb4ade839d508ab3ee6d742"},
     {file = "demisto_py-3.2.4-py3-none-any.whl", hash = "sha256:2ca229d440166d75d6a8abb48a1947eca06c319099e66597775732357af3b62b"},
 ]
-demisto-sdk = []
+demisto-sdk = [
+    {file = "demisto_sdk-1.8.1-py3-none-any.whl", hash = "sha256:4f92efabe82ad74bad2eba37ead4a877960dc2cf5dc3405126631760e7d4d191"},
+    {file = "demisto_sdk-1.8.1.tar.gz", hash = "sha256:5db13786806f3271ed4bf4f92b1d56a84bde0fd06cfacda63c2e7a088ffe5faa"},
+]
 Deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -2963,10 +2907,6 @@ google-cloud-core = [
     {file = "google-cloud-core-2.3.2.tar.gz", hash = "sha256:b9529ee7047fd8d4bf4a2182de619154240df17fbe60ead399078c1ae152af9a"},
     {file = "google_cloud_core-2.3.2-py2.py3-none-any.whl", hash = "sha256:8417acf6466be2fa85123441696c4badda48db314c607cf1e5d543fa8bdc22fe"},
 ]
-google-cloud-secret-manager = [
-    {file = "google-cloud-secret-manager-2.13.0.tar.gz", hash = "sha256:d4104e11d921d235411ed4951273ac5ed6823c5fc6b9707dd0509978e9ae7bd2"},
-    {file = "google_cloud_secret_manager-2.13.0-py2.py3-none-any.whl", hash = "sha256:e451f06253a568f56bc52d9a7ae78fb731930723cf82ed6d6a83fa57f3828e4e"},
-]
 google-cloud-storage = [
     {file = "google-cloud-storage-2.7.0.tar.gz", hash = "sha256:1ac2d58d2d693cb1341ebc48659a3527be778d9e2d8989697a2746025928ff17"},
     {file = "google_cloud_storage-2.7.0-py2.py3-none-any.whl", hash = "sha256:f78a63525e72dd46406b255bbdf858a22c43d6bad8dc5bdeb7851a42967e95a1"},
@@ -3048,10 +2988,6 @@ google-resumable-media = [
 googleapis-common-protos = [
     {file = "googleapis-common-protos-1.57.0.tar.gz", hash = "sha256:27a849d6205838fb6cc3c1c21cb9800707a661bb21c6ce7fb13e99eb1f8a0c46"},
     {file = "googleapis_common_protos-1.57.0-py2.py3-none-any.whl", hash = "sha256:a9f4a1d7f6d9809657b7f1316a1aa527f6664891531bcfcc13b6696e685f443c"},
-]
-grpc-google-iam-v1 = [
-    {file = "grpc-google-iam-v1-0.12.4.tar.gz", hash = "sha256:3f0ac2c940b9a855d7ce7e31fde28bddb0d9ac362d32d07c67148306931a0e30"},
-    {file = "grpc_google_iam_v1-0.12.4-py2.py3-none-any.whl", hash = "sha256:312801ae848aeb8408c099ea372b96d253077e7851aae1a9e745df984f81f20c"},
 ]
 grpcio = [
     {file = "grpcio-1.51.1-cp310-cp310-linux_armv7l.whl", hash = "sha256:cc2bece1737b44d878cc1510ea04469a8073dbbcdd762175168937ae4742dfb3"},
@@ -3147,10 +3083,6 @@ jmespath = [
 joblib = [
     {file = "joblib-1.2.0-py3-none-any.whl", hash = "sha256:091138ed78f800342968c523bdde947e7a305b8594b910a0fea2ab83c3c6d385"},
     {file = "joblib-1.2.0.tar.gz", hash = "sha256:e1cee4a79e4af22881164f218d4311f60074197fb707e082e803b61f6d137018"},
-]
-json5 = [
-    {file = "json5-0.9.10-py2.py3-none-any.whl", hash = "sha256:993189671e7412e9cdd8be8dc61cf402e8e579b35f1d1bb20ae6b09baa78bbce"},
-    {file = "json5-0.9.10.tar.gz", hash = "sha256:ad9f048c5b5a4c3802524474ce40a622fae789860a86f10cc4f7e5f9cf9b46ab"},
 ]
 jsonschema = [
     {file = "jsonschema-4.17.3-py3-none-any.whl", hash = "sha256:a870ad254da1a8ca84b6a2905cac29d265f805acc57af304784962a2aa6508f6"},
@@ -3465,7 +3397,6 @@ pre-commit = [
 ]
 prettytable = [
     {file = "prettytable-3.5.0-py3-none-any.whl", hash = "sha256:fe391c3b545800028edf5dbb6a5360893feb398367fcc1cf8d7a5b29ce5c59a1"},
-    {file = "prettytable-3.5.0.tar.gz", hash = "sha256:52f682ba4efe29dccb38ff0fe5bac8a23007d0780ff92a8b85af64bc4fc74d72"},
 ]
 proto-plus = [
     {file = "proto-plus-1.22.1.tar.gz", hash = "sha256:6c7dfd122dfef8019ff654746be4f5b1d9c80bba787fe9611b508dd88be3a2fa"},
