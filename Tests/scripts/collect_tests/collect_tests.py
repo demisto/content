@@ -69,6 +69,7 @@ class CollectionResult:
     def __init__(
             self,
             test: Optional[str],
+            test_path: Optional[str],
             pack: Optional[str],
             reason: CollectionReason,
             version_range: Optional[VersionRange],
@@ -77,7 +78,9 @@ class CollectionResult:
             id_set: Optional[Union[IdSet, Graph]],
             is_sanity: bool = False,
             is_nightly: bool = False,
-            skip_support_level_compatibility: bool = False
+            skip_support_level_compatibility: bool = False,
+            only_to_install: bool = False,
+            only_to_upload: bool = False,
     ):
         """
         Collected test playbook, and/or a pack to install.
@@ -99,8 +102,9 @@ class CollectionResult:
                 whether to install a pack, even if it is not directly compatible.
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
         """
-        self.tests: set[str] = set()
-        self.packs: set[str] = set()
+        self.tests: list[dict] = list()
+        self.packs_to_install: set[str] = set()
+        self.packs_to_upload: set[str] = set()
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[tuple[Machine, ...]] = None
 
@@ -136,13 +140,24 @@ class CollectionResult:
             logger.warning(str(e))
             return
 
-        if test:
-            self.tests = {test}
+        if test and test_path:
+            self.tests = [{"id": test, "path": test_path}]
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            self.packs = {pack}
-            logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
+            
+            if only_to_upload == only_to_install:
+                self.packs_to_install = {pack}
+                self.packs_to_upload = {pack}
+                logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
+
+            elif only_to_install:
+                self.packs_to_install = {pack}
+                logger.info(f'collected {pack=} only to install, {reason} ({reason_description}, {version_range=})')
+
+            elif only_to_upload:
+                self.packs_to_upload = {pack}
+                logger.info(f'collected {pack=} only to upload, {reason} ({reason_description}, {version_range=})')
 
     @staticmethod
     def _validate_collection(
@@ -219,7 +234,7 @@ class CollectionResult:
     def __empty_result() -> 'CollectionResult':
         # used for combining two CollectionResult objects
         return CollectionResult(
-            test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING, version_range=None,
+            test=None, test_path=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING, version_range=None,
             reason_description='', conf=None, id_set=None
         )
 
@@ -228,8 +243,9 @@ class CollectionResult:
         if not other:
             return self
         result = self.__empty_result()
-        result.tests = self.tests | other.tests  # type: ignore[operator]
-        result.packs = self.packs | other.packs  # type: ignore[operator]
+        result.tests = self.tests + [ot for ot in other.tests if ot.get('id') not in [st.get('id') for st in self.tests]]  # type: ignore[operator]
+        result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
+        result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 
@@ -239,10 +255,11 @@ class CollectionResult:
         return sum(non_none, start=CollectionResult.__empty_result())
 
     def __repr__(self):
-        return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
+        return f'{len(self.packs_to_install)} packs, {len(self.packs_to_upload)} packs to upload, {len(self.tests)} tests, ' \
+               f'{self.version_range=}'
 
     def __bool__(self):
-        return bool(self.tests or self.packs)
+        return bool(self.tests or self.packs_to_install or self.packs_to_upload)
 
 
 class TestCollector(ABC):
@@ -260,6 +277,7 @@ class TestCollector(ABC):
         return CollectionResult.union(tuple(
             CollectionResult(
                 test=test,
+                test_path=self.id_set.id_to_test_playbook[test].path,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
                 version_range=None,
@@ -275,8 +293,9 @@ class TestCollector(ABC):
     def _always_installed_packs(self) -> Optional[CollectionResult]:
         always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
         return CollectionResult.union(tuple(
-            CollectionResult(test=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
-                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True)
+            CollectionResult(test=None, test_path=None, pack=pack, reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
+                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True,
+                             only_to_install=True)
             for pack in always_installed_packs_list)
         )
 
@@ -316,7 +335,7 @@ class TestCollector(ABC):
 
         self._validate_tests_in_id_set(result.tests)  # type:ignore[union-attr]
         result += self._always_installed_packs  # type:ignore[operator]
-        result += self._collect_test_dependencies(result.tests if result else ())  # type:ignore[union-attr]
+        result += self._collect_test_dependencies([test.get('id') for test in result.tests] if result else ())  # type:ignore[union-attr]
         result.machines = Machine.get_suitable_machines(result.version_range)  # type:ignore[union-attr]
 
         return result
@@ -337,6 +356,7 @@ class TestCollector(ABC):
                 reason_description=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
                 allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
+                only_to_install=True
             ))
 
             # collect integrations used in the test
@@ -372,6 +392,7 @@ class TestCollector(ABC):
     ) -> CollectionResult:
         return CollectionResult(
             test=None,
+            test_path=None,
             pack=pack_id,
             reason=CollectionReason.PACK_TEST_DEPENDS_ON,
             version_range=None,
@@ -445,8 +466,10 @@ class TestCollector(ABC):
             content_item_range: Optional[VersionRange] = None,
             allow_incompatible_marketplace: bool = False,
             is_nightly: bool = False,
+            only_to_install: bool = False,
     ) -> Optional[CollectionResult]:
         pack_metadata = PACK_MANAGER.get_pack_metadata(pack_id)
+        collect_only_to_upload = False
 
         try:
             self._validate_content_item_compatibility(pack_metadata, is_integration=False)
@@ -455,9 +478,18 @@ class TestCollector(ABC):
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
         except IncompatibleMarketplaceException:
-            # sometimes, we want to install packs that are not compatible (e.g. both marketplaces)
+            is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
+                MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
+                
+            # collect only to upload if:
+            # 1. collecting for marketplacev2 and pack is XSOAR & XSIAM - we want it to be uploaded but not installed
+            # 2. allow_incompatible_marketplace=False, if True, then should be also to install
+            if self.marketplace == MarketplaceVersions.MarketplaceV2 and is_xsoar_and_xsiam_pack and not allow_incompatible_marketplace:
+                collect_only_to_upload = True
+
+            # sometimes, we want to install or upload packs that are not compatible (e.g. both marketplaces)
             # because they have content that IS compatible.
-            if not allow_incompatible_marketplace:
+            if not allow_incompatible_marketplace and not collect_only_to_upload:
                 raise
 
         version_range = content_item_range \
@@ -466,13 +498,16 @@ class TestCollector(ABC):
 
         return CollectionResult(
             test=None,
+            test_path=None,
             pack=pack_id,
             reason=reason,
             version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
             id_set=self.id_set,
-            is_nightly=is_nightly
+            is_nightly=is_nightly,
+            only_to_upload=collect_only_to_upload,
+            only_to_install=only_to_install
         )
 
     def __validate_skipped_integration(self, id_: str, path: Path):
@@ -532,7 +567,8 @@ class TestCollector(ABC):
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
+        tests_ids = [test.get('id') for test in tests]
+        if not_found := set(tests_ids).difference(self.id_set.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -701,6 +737,7 @@ class BranchTestCollector(TestCollector):
             return CollectionResult.union(tuple(
                 CollectionResult(
                     test=test,
+                    test_path=self.id_set.id_to_test_playbook[test].path,
                     pack=yml.pack_id,
                     reason=reason,
                     version_range=yml.version_range,
@@ -800,6 +837,7 @@ class BranchTestCollector(TestCollector):
         return CollectionResult.union(tuple(
             CollectionResult(
                 test=test,
+                test_path=self.id_set.id_to_test_playbook[test].path,
                 pack=content_item.pack_id,
                 reason=reason,
                 version_range=content_item.version_range,
@@ -879,7 +917,7 @@ def find_pack_file_removed_from(old_path: Path, new_path: Path | None = None):
     try:
         old_pack = find_pack_folder(old_path).name
     except NotUnderPackException:
-        logger.debug(f'Skipping pack collection for removed file: {old_path}, as it does not belong to any pack')'
+        logger.debug(f'Skipping pack collection for removed file: {old_path}, as it does not belong to any pack')
         return None  # not moved from a pack, no special treatment we can do here.
 
     if new_path:
@@ -905,11 +943,18 @@ class UploadCollector(BranchTestCollector):
         # same as BranchTestCollector, but without tests.
         if result := super()._collect():
             logger.info('UploadCollector drops collected tests, as they are not required')
-            result.tests = set()
+            result.tests = list()
         return result
 
 
 class NightlyTestCollector(TestCollector, ABC):
+    def collect(self) -> Optional[CollectionResult]:
+        result: Optional[CollectionResult] = super().collect()
+
+        logger.info('NightlyCollector drops packs to upload, as they don\'t need to be uploaded')
+        result.packs_to_upload = set()
+        return result
+
     def _id_set_tests_matching_marketplace_value(self) -> Optional[CollectionResult]:
         """
         :return: all tests whose marketplace field includes the collector's marketplace value
@@ -921,6 +966,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
                     test=playbook.id_,
+                    test_path=playbook.path,
                     pack=playbook.pack_id,
                     reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                     reason_description=self.marketplace.value,
@@ -998,6 +1044,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         return CollectionResult.union(tuple(
             CollectionResult(
                 test=test,
+                test_path=self.id_set.id_to_test_playbook[test].path,
                 pack=SANITY_TEST_TO_PACK.get(test),  # None in most cases
                 reason=CollectionReason.SANITY_TESTS,
                 version_range=None,
@@ -1033,20 +1080,24 @@ def output(result: Optional[CollectionResult]):
     """
     writes to both log and files
     """
-    tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
-    packs = sorted(result.packs, key=lambda x: x.lower()) if result else ()
+    tests = sorted(result.tests, key=lambda x: x.get("id").lower()) if result else ()
+    packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
+    packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
     machines = result.machines if result and result.machines else ()
 
-    test_str = '\n'.join(tests)
-    pack_str = '\n'.join(packs)
+    test_str = '\n'.join([test.get('id') for test in tests])
+    packs_to_install_str = '\n'.join(packs_to_install)
+    packs_to_upload_str = '\n'.join(packs_to_upload)
     machine_str = ', '.join(sorted(map(str, machines)))
 
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
-    logger.info(f'collected {len(packs)} packs:\n{pack_str}')
+    logger.info(f'collected {len(packs_to_install)} packs:\n{packs_to_install_str}')
+    logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
 
-    PATHS.output_tests_file.write_text(test_str)
-    PATHS.output_packs_file.write_text(pack_str)
+    PATHS.output_tests_file.write_text(json.dumps(tests))
+    PATHS.output_packs_file.write_text(packs_to_install_str)
+    PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
 
 
