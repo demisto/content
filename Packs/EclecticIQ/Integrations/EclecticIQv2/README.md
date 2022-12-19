@@ -1,7 +1,7 @@
 Note: Support for this Pack will be moved to the Partner on NOV, 01, 2022
 # EclecticIQ Cortex XSOAR 
 ## Introduction
-### EclecticIQ Platform
+### EclecticIQ v2 Platform
 * EclecticIQ platform is a Threat Intelligence Platform (TIP) that sits at the center of an organization’s Cyber Threat Intelligence practice, collecting intelligence from open sources, commercial suppliers, and industry partnerships into a single workspace.
 * Using EclecticIQ Platform, intelligence analysts can deliver actionable intelligence and support detection, prevention, and incident response through existing security infrastructure. This approach improves security operations and leadership through a comprehensive yet cost-effective system.
 * EclecticIQ Platform is uniquely designed to improve an organization’s security posture and intelligence analysts' efficiency, speed, accuracy, and capacity, allowing organizations to continue operations unimpeded by cyber threats.

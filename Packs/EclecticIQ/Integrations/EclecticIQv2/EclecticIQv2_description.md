@@ -12,7 +12,7 @@ Configuring the EclecticIQ integration requires API credentials generated in Ecl
 6. Navigate to **API token** and click on **add**
 7. Provide the **description** and click on **generate token**.
 
-## Configure EclecticIQ Platform on Cortex XSOAR
+## Configure EclecticIQ v2 Platform on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for EclecticIQ
