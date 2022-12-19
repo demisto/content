@@ -44,7 +44,9 @@ class MsGraphClient:
         if last_modified:
             filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
         if category:
-            filters.append("category eq '{}'".format(category))
+            # The category filter returns other categories when using the `equal` operator
+            # https://learn.microsoft.com/en-us/graph/filter-query-parameter
+            filters.append("contains(category, '{}')".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
         if time_from:  # changed to ge and le in order to solve issue #27884
@@ -166,6 +168,12 @@ def search_alerts_command(client: MsGraphClient, args):
     alerts = client.search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query)['value']
     outputs = []
     for alert in alerts:
+        # Alerts with irrelevant categories should be filtered out.
+        if filter_query and 'category eq' in filter_query.lower():
+            # Basically, the filter_query could be something like "Category eq 'ransomware' and Severity eq 'high'".
+            category_filter = filter_query.lower().split("category eq")[1].split('and')[0].strip().replace("'", "")
+            if alert.get('category').lower() != category_filter:
+                continue
         outputs.append({
             'ID': alert['id'],
             'Title': alert['title'],
