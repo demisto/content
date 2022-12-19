@@ -226,7 +226,11 @@ class TestFetchEvents:
         """
         from SaasSecurityEventCollector import fetch_events_from_saas_security
         mocker.patch.object(Client, 'http_request', side_effect=queue)
-        assert expected_events.get('events') == fetch_events_from_saas_security(client=mock_client, max_fetch=max_fetch)
+        events, _ = fetch_events_from_saas_security(
+            client=mock_client, max_fetch=max_fetch
+        )
+
+        assert expected_events.get('events') == events
 
     @pytest.mark.parametrize('max_fetch, queue, expected_events', EVENTS_DATA)
     def test_saas_security_get_events(self, mocker, mock_client, max_fetch, queue, expected_events):
