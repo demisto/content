@@ -17,7 +17,7 @@
     by a user
   crontab: '*/10 * * * *'
   dataset: alerts
-  description: This alert will trigger in an event where multiple attempts of unauthorized
+  description: This alert will trigger in an event where multiple attempts of unauthorized1
     actions were detected  in the Alibaba ActionTrail account
   drilldown_query_timeframe: ALERT
   execution_mode: SCHEDULED
