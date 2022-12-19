@@ -325,6 +325,20 @@ class Client(BaseClient):
         self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def export_pcap_file_request(self, session_str: str, sensor_id: int, body: Dict) -> Response:
+        """ Retrieves the list of captured PCAP files.
+            Args:
+                session_str: str - The session id.
+                sensor_id: int - The relevant sensor id.
+                body: Dict - The parameter for the http request (file name).
+            Returns:
+                A dictionary with a list of PCAP file names.
+        """
+        url_suffix = f'/sdkapi/sensor/{sensor_id}/packetcapturepcapfile/export'
+        self.headers['NSM-SDK-API'] = session_str
+        self.headers['Accept'] = 'application/octet-stream'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1622,6 +1636,25 @@ def list_pcap_file_command(client: Client, args: Dict, session_str: str) -> Comm
     )
 
 
+def export_pcap_file_command(client: Client, args: Dict, session_str: str) -> List:
+    """ Exports the captured PCAP file.
+        Args:
+            client: client - A McAfeeNSM client.
+            args: Dict - The function arguments.
+            session_str: str - The session string for authentication.
+        Returns:
+            A CommandResult object with a list of captured PCAP files.
+    """
+    sensor_id = arg_to_number(args.get('sensor_id'))
+    file_name = args.get('file_name')
+    body = {
+        'fileName': file_name
+    }
+    response = client.export_pcap_file_request(session_str, sensor_id, body)
+    file_ = fileResult(filename=file_name, data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
+    return [file_]
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1712,6 +1745,9 @@ def main() -> None:  # pragma: no cover
             return_results(results)
         elif demisto.command() == 'nsm-list-pcap-file':
             results = list_pcap_file_command(client, demisto.args(), session_str)
+            return_results(results)
+        elif demisto.command() == 'nsm-export-pcap-file':
+            results = export_pcap_file_command(client, demisto.args(), session_str)
             return_results(results)
         else:
             raise NotImplementedError('This command is not implemented yet.')

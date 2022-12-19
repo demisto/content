@@ -1262,6 +1262,21 @@ script:
           description: The id of the attack. To get the attack_id, use the !nsm-get-attacks command, without an attack id.
           isArray: false
       outputs:
+        - contextPath: InfoFile.Name
+          description: FileName
+          type: string
+        - contextPath: InfoFile.EntryID
+          description: The EntryID of the report
+          type: string
+        - contextPath: InfoFile.Size
+          description: File Size
+          type: number
+        - contextPath: InfoFile.Type
+          description: File type e.g. "PE"
+          type: string
+        - contextPath: InfoFile.Info
+          description: Basic information of the file
+          type: string
         - contextPath: NSM.Attacks.Direction
           description: Attack direction.
           type: Unknown
@@ -1964,6 +1979,33 @@ script:
       outputs:
         - contextPath: NSM.PcapFile
           description: Pcap File Name.
+          type: string
+    - name: nsm-export-pcap-file
+      description: Exports the captured PCAP file.
+      arguments:
+        - name: sensor_id
+          required: true
+          description: The id of the sensor. To get the sensor_id, use the command !nsm-get-sensors.
+          isArray: false
+        - name: file_name
+          required: true
+          description: The name of the wanted file. To get the file_name, use the command !nsm-list-pcap-file.
+          isArray: false
+      outputs:
+        - contextPath: InfoFile.Name
+          description: FileName
+          type: string
+        - contextPath: InfoFile.EntryID
+          description: The EntryID of the report
+          type: string
+        - contextPath: InfoFile.Size
+          description: File Size
+          type: number
+        - contextPath: InfoFile.Type
+          description: File type e.g. "PE"
+          type: string
+        - contextPath: InfoFile.Info
+          description: Basic information of the file
           type: string
   isfetch: false
   runonce: false
