@@ -15,7 +15,7 @@
                 "xdm.event.description": null,
                 "xdm.target.domain": "Banana.local",
                 "xdm.observer.product": "admanager",
-                "xdm.observer.action": "User Management",
+                "xdm.event.type": "User Management",
                 "xdm.observer.vendor": "manageengine",
                 "xdm.event.outcome": "Successfully updated the user properties.",
                 "xdm.observer.name": "Bonanaza-admanager01"
