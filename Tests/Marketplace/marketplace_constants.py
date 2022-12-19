@@ -130,6 +130,7 @@ class PackTags(object):
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
     COLLECTION = "Collection"
+    DATA_SOURCE = "Data Source"
 
 
 class Metadata(object):
