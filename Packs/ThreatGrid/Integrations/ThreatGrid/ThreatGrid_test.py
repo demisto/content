@@ -103,7 +103,7 @@ def test_submit_urls(mocker, requests_mock):
     testing_url = Submit_url_input.get('url')
     mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
-    requests_mock.post(f'https://panacea.threatgrid.com/api/v2/samples?api_key=API_KEY&url={testing_url}', json=mock_response)
+    mocker.patch.object(submit_urls, 'req', return_value=mock_response)
 
     res = submit_urls(args)
     assert res.outputs == expected_results
