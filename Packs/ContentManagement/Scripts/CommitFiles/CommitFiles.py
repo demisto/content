@@ -13,7 +13,6 @@ from demisto_sdk.commands.common.tools import find_type
 PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
               '**Pack:** {}\n' \
-              '**Branch:** {}\n' \
               '**Link to incident in Cortex XSOAR:** {}\n\n' \
               '{}\n\n' \
               '---'
@@ -107,7 +106,8 @@ def commit_content_item_gitlab(branch_name: str, content_file: ContentFile, new_
     status, commit_res = execute_command('gitlab-file-create', commit_args, fail_on_error=False)
     if isinstance(commit_res, dict):
         new_files.append(content_file.file_name)
-    elif isinstance(commit_res, str) and "A file with this name already exists" in commit_res:
+    elif isinstance(commit_res, str) and "already exists" in commit_res:
+        demisto.debug(f'The file {content_file.file_name} already exist, running update command')
         if content_file.file_name == 'pack_metadata.json':
             return
         commit_args['commit_message'] = f'Updated {content_file.file_name}'
