@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: GSuiteAdmin_Test
+  id: GSuiteAdmin
   version: -1
 configuration:
 - display: User's Service Account JSON
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin
-name: GSuiteAdmin_Test
+name: GSuiteAdmin
 script:
   commands:
   - arguments:
