@@ -452,7 +452,7 @@ def main():
     first_fetch = params.get('first_fetch', '30 days').strip()
     proxy = params.get('proxy', False)
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             base_url=base_url,
