@@ -330,9 +330,10 @@ class Client(BaseClient):
             # remove all keys with val of None
             json_data=remove_None_values_from_dict(json_all_data))
 
-    def zoom_meeting_get(self, meeting_id: str, occurrence_id: str = None,
-                         show_previous_occurrences: bool | str = True):
+    def zoom_meeting_get(self, meeting_id: str, occurrence_id: str | None = None,
+                         show_previous_occurrences: bool | str = False):
         # converting
+        # if show_previous_occurrences != None:
         show_previous_occurrences = argToBoolean(show_previous_occurrences)
 
         return self._http_request(
@@ -497,11 +498,6 @@ def test_module(
     return 'ok'
 
 
-# def only_relevant_arguments(dict) -> dict:
-#     # remove all the keys with value of None
-#     new_dict = {k: v for k, v in dict.items() if v != None}
-#     return new_dict
-
 def remove_None_values_from_dict(dict_to_reduce: Dict[str, Any]):
     """
     Removes None values (but not False values) from a given dict and from the nested dicts in it.
@@ -548,15 +544,9 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
             md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number',
                                                                   'page_size', 'total_records', 'next_page_token'])
     return CommandResults(
-        outputs_prefix='Zoom',
+        outputs_prefix='Zoom.User',
         readable_output=md,
-        outputs={'Metadata': {
-            'Count': raw_data.get('page_count'),
-            # TODO this line?
-            'Number': raw_data.get('page_number'),
-            'Size': raw_data.get('page_size'),
-            'Total': raw_data.get('total_records')
-        }},
+        outputs=raw_data,
         raw_response=raw_data
     )
 
@@ -564,9 +554,9 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
 def zoom_user_create_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
     raw_data = client.zoom_user_create(user_type, email, first_name, last_name)
     return CommandResults(
-        outputs_prefix='Zoom',
-        readable_output=f"User created successfully with ID{raw_data.get('id')}",
-        outputs={"Zoom.User": raw_data},
+        outputs_prefix='Zoom.user',
+        readable_output=f"User created successfully with ID: {raw_data.get('id')}",
+        outputs=raw_data,
         raw_response=raw_data
     )
 
@@ -616,29 +606,32 @@ def zoom_meeting_create_command(
                                           repeat_interval,
                                           recurrence_type,
                                           weekly_days)
-    # if type == "recurring meeting with fixed time":
-    #     basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-    #                               'type', 'status',
-    #                               'timezone', 'created_at', 'start_url', 'join_url',
-    #                               ][0]
-    #     additinal_info = raw_data["occurrences"], ['start_time', 'duration']
-    #     all_info = []
-    #     all_info.append(basic_info[0][0])
-    #     all_info[0].update(additinal_info[0][0])
-    #     md = f"""Meeting created successfully.
-    #     Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
-    #     md += "\n" + tableToMarkdown('Meeting details', [all_info][0], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-    #                                                                     'type', 'status', 'start_time', 'duration',
-    #                                                                     'timezone', 'created_at', 'start_url', 'join_url'
-    #                                                                     ])
-    # else:
-    md = f"""Meeting created successfully.
-        Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
-    md += "\n" + tableToMarkdown('Meeting details', [raw_data])
+    if type == "recurring meeting with fixed time":
+        basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                  'type', 'status',
+                                  'timezone', 'created_at', 'start_url', 'join_url',
+                                  ][0]
+        additinal_info = raw_data["occurrences"], ['start_time', 'duration']
+        all_info = []
+        all_info.append(basic_info[0][0])
+        all_info[0].update(additinal_info[0][0])
+        # md = f"""Meeting created successfully.
+        # Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
+        md = tableToMarkdown('Meeting details', [all_info][0], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                                        'type', 'status', 'start_time', 'duration',
+                                                                        'timezone', 'created_at', 'start_url', 'join_url'
+                                                                ])
+    else:
+        # md = f"""Meeting created successfully.
+        # Start it [here]({raw_data.get("start_url")}) and join [here]({raw_data.get("join_url")})."""
+        md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                                     'type', 'status', 'start_time', 'duration',
+                                                                     'timezone', 'created_at', 'start_url', 'join_url'
+                                                             ])
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,
-        outputs={'Zoom.Meeting': raw_data},
+        outputs=raw_data,
         raw_response=raw_data
     )
 
@@ -662,8 +655,8 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
     return CommandResults(
         outputs_prefix='Zoom.meetings',
         readable_output=md,
-        # TODO do i need this line?
-        outputs={'Zoom.Meeting': raw_data},
+        outputs_key_field=str(raw_data["id"]),
+        outputs=raw_data,
         raw_response=raw_data
     )
 
@@ -686,7 +679,7 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
         md += "\n" + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
     else:
         md = tableToMarkdown("Meeting list", raw_data.get("meetings"), ['uuid', 'id',
-                                                                        'host_id', 'topic', 'type', 'start time', 'duration',
+                                                                        'host_id', 'topic', 'type', 'start_time', 'duration',
                                                                         'timezone', 'created_at', 'join_url'
                                                                         ])
         md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'total_records'])
@@ -695,7 +688,7 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
         outputs_prefix='Zoom.meetings',
         readable_output=md,
         # TODO do i need this line?
-        outputs={'Zoom.Meeting': raw_data},
+        outputs=raw_data,
         raw_response=raw_data
     )
 
