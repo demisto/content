@@ -14,12 +14,12 @@ ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
-RUN git clone --depth 1 --branch main --single-branch https://github.com/devcontainers/features.git /features
+RUN apt-get install git -y && git clone --depth 1 --branch main --single-branch https://github.com/devcontainers/features.git /features
 
-RUN UID="1000" GID="1000" bash /features/main/src/common-utils/install.sh
-RUN VERSION="os-provided" bash /features/main/src/git/install.sh
-RUN VERSION="latest" bash /features/main/src/docker-in-docker/install.sh
-RUN VERSION="lts" bash /features/main/src/node/install.sh
+RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
+RUN VERSION="os-provided" bash /features/src/git/install.sh
+RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
+RUN VERSION="lts" bash /features/src/node/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
 RUN curl -sSL https://install.python-poetry.org | python3 - \
