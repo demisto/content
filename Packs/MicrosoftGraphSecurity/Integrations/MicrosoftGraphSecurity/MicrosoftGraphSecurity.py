@@ -54,7 +54,16 @@ class MsGraphClient:
         if time_to:
             filters.append("createdDateTime le {}".format(time_to))
         if filter_query:
-            filters.append("{}".format(filter_query))
+            # Due to a problem with filtering alerts with the `eq` operator.
+            # We use the `contains` function instead of the `eq` operator (as a workaround).
+            # For example: "category eq 'Malware'" => "contains(category, 'Malware')".
+            # For more info please see: https://learn.microsoft.com/en-us/graph/filter-query-parameter.
+            filter_list = [f.strip() for f in filter_query.lower().split('and')]
+            for filter_item in filter_list:
+                if 'category eq' in filter_item:
+                    category = filter_item.split()[-1]
+                    filter_item = "contains(category, {})".format(category)
+                filters.append(filter_item)
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
@@ -168,12 +177,6 @@ def search_alerts_command(client: MsGraphClient, args):
     alerts = client.search_alerts(last_modified, severity, category, vendor, time_from, time_to, filter_query)['value']
     outputs = []
     for alert in alerts:
-        # Alerts with irrelevant categories should be filtered out.
-        if filter_query and 'category eq' in filter_query.lower():
-            # Basically, the filter_query could be something like "Category eq 'ransomware' and Severity eq 'high'".
-            category_filter = filter_query.lower().split("category eq")[1].split('and')[0].strip().replace("'", "")
-            if alert.get('category').lower() != category_filter:
-                continue
         outputs.append({
             'ID': alert['id'],
             'Title': alert['title'],
