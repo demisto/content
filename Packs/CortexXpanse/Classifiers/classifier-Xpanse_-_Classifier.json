@@ -1,0 +1,17 @@
+{
+    "defaultIncidentType": "Xpanse Issue",
+    "description": "",
+    "feed": false,
+    "id": "Xpanse - Classifier",
+    "keyTypeMap": {
+        "Critical": "Expanse Issue",
+        "High": "Expanse Issue",
+        "Low": "Expanse Issue",
+        "Medium": "Expanse Issue"
+    },
+    "name": "Xpanse - Classifier",
+    "transformer": {},
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}
