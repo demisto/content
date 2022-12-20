@@ -194,6 +194,8 @@ prepare-testing-bucket-mpv2:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
+
 
 
 prepare-testing-bucket-xpanse:
@@ -253,6 +255,8 @@ prepare-testing-bucket-xpanse:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
+
 
 
 .test_content_on_xsoar_server_instances_base:
