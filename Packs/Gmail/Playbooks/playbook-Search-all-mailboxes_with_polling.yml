@@ -1,7 +1,7 @@
 id: Search all mailboxes - Gmail with polling
 version: -1
 name: Search all mailboxes - Gmail with polling
-description: This playbook searches Gmail records for all Google users, designed for large companies with over 500 Google users.
+description: This playbook searches Gmail records for all Google users, designed for large companies with over 2500 Google users.
 starttaskid: "0"
 tasks:
   "0":
