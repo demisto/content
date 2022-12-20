@@ -3,7 +3,7 @@ commonfields:
   id: McAfeeNSMv2
   version: -1
 configuration:
-- display: 'URL (for example: https://192.168.0.1:5000)'
+- display: 'URL (for example: https://192.168.0.1:5000/sdkapi)'
   name: url
   required: true
   type: 0
@@ -1001,7 +1001,7 @@ script:
       arguments:
         - name: alert_id
           required: true
-          default: true
+          isArray: false
           description: Alert ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “ID”.
         - name: sensor_id
           description: Sensor ID. In order to get the alert id, use the command '!nsm-get-alerts' and use the output field “SensorID”.

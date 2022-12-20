@@ -1,3 +1,4 @@
+
 from requests import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -32,138 +33,117 @@ class Client(BaseClient):
             Returns:
                 A dictionary with the session details.
         """
-        url_suffix = '/sdkapi/session'
+        url_suffix = '/session'
         self.headers['NSM-SDK-API'] = encoded_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def list_domain_firewall_policy_request(self, encoded_str: str, domain_id: int) -> Dict:
+    def list_domain_firewall_policy_request(self, domain_id: Optional[int]) -> Dict:
         """ Gets the list of Firewall Policies defined in a particular domain.
             Args:
-                encoded_str: str - The session id.
-                domain_id: int - The id of the domain.
+                domain_id: Optional[int] - The id of the domain.
             Returns:
                 A dictionary with the firewall policy list.
         """
-        url_suffix = f'/sdkapi/domain/{domain_id}/firewallpolicy'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = f'/domain/{domain_id}/firewallpolicy'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_firewall_policy_request(self, encoded_str: str, policy_id: str) -> Dict:
+    def get_firewall_policy_request(self, policy_id: int) -> Dict:
         """ Gets the Firewall Policy details.
             Args:
-                encoded_str: str - The session id.
-                policy_id: str - The id of the policy.
+                policy_id: int - The id of the policy.
             Returns:
                 A dictionary with the policy details.
         """
-        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = f'/firewallpolicy/{policy_id}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def create_firewall_policy_request(self, encoded_str: str, body: Dict) -> Dict:
+    def create_firewall_policy_request(self, body: Dict) -> Dict:
         """ Adds a new Firewall Policy and Access Rules.
             Args:
-                encoded_str: str - The session id.
                 body: Dict - The params to the API call.
             Returns:
                 A dictionary with the id of the newly created policy.
         """
-        url_suffix = '/sdkapi/firewallpolicy'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = '/firewallpolicy'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def update_firewall_policy_request(self, encoded_str: str, body: Dict, policy_id: str) -> Dict:
+    def update_firewall_policy_request(self, body: Dict, policy_id: int) -> Dict:
         """ Updates an existing Firewall Policy and Access Rules.
             Args:
-                encoded_str: str - The session id.
                 body: Dict - The params to the API call.
-                policy_id: str - The id of the updated policy.
+                policy_id: int - The id of the updated policy.
             Returns:
                 A dictionary with the request status, if it succeeded or not.
         """
-        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = f'/firewallpolicy/{policy_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body)
 
-    def delete_firewall_policy_request(self, encoded_str: str, policy_id: str) -> Dict:
+    def delete_firewall_policy_request(self, policy_id: int) -> Dict:
         """ Updates an existing Firewall Policy and Access Rules.
             Args:
-                encoded_str: str - The session id.
-                policy_id: str - The id of the updated policy.
+                policy_id: int - The id of the updated policy.
             Returns:
                 A dictionary with the request status, if it succeeded or not.
         """
-        url_suffix = f'/sdkapi/firewallpolicy/{policy_id}'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = f'/firewallpolicy/{policy_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
-    def list_domain_rule_objects_request(self, encoded_str: str, domain_id: int, rule_type: str) -> Dict:
+    def list_domain_rule_objects_request(self, domain_id: int, rule_type: str) -> Dict:
         """ Gets the list of rule objects defined in a particular domain.
             Args:
-                encoded_str: str - The session id.
                 domain_id: int - The id of the domain.
                 rule_type: str - The type of the rules to be returned.
             Returns:
                 A dictionary with the rule objects list.
         """
-        url_suffix = f'/sdkapi/domain/{domain_id}/ruleobject?type={rule_type}'
-        self.headers['NSM-SDK-API'] = encoded_str
+        url_suffix = f'/domain/{domain_id}/ruleobject?type={rule_type}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_rule_object_request(self, session_str: str, rule_id: str) -> Dict:
+    def get_rule_object_request(self, rule_id: int) -> Dict:
         """ Gets the list of rule objects defined in a particular domain.
             Args:
-                session_str: str - The session id.
                 rule_id: int - The id of the rule.
             Returns:
                 A dictionary with the rule object information.
         """
-        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/ruleobject/{rule_id}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def create_rule_object_request(self, session_str: str, body: Dict) -> Dict:
+    def create_rule_object_request(self, body: Dict) -> Dict:
         """ Gets the list of rule objects defined in a particular domain.
             Args:
-                session_str: str - The session id.
                 body: Dict - The params to the API call.
             Returns:
                 A dictionary with the id of the new rule object.
         """
-        url_suffix = '/sdkapi/ruleobject'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = '/ruleobject'
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=body)
 
-    def update_rule_object_request(self, session_str: str, body: Dict, rule_id: str) -> Dict:
+    def update_rule_object_request(self, body: Dict, rule_id: int) -> Dict:
         """ Updates a Rule Object.
             Args:
-                session_str: str - The session id.
                 body: Dict - The params to the API call.
-                rule_id: str - The rule id.
+                rule_id: int - The rule id.
             Returns:
                 A dictionary with the status of the request.
         """
-        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/ruleobject/{rule_id}'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
-    def delete_rule_object_request(self, session_str: str, rule_id: str) -> Dict:
+    def delete_rule_object_request(self, rule_id: int) -> Dict:
         """ Updates a Rule Object.
             Args:
-                session_str: str - The session id.
-                rule_id: str - The rule id.
+                rule_id: int - The rule id.
             Returns:
                 A dictionary with the status of the request.
         """
-        url_suffix = f'/sdkapi/ruleobject/{rule_id}'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/ruleobject/{rule_id}'
         return self._http_request(method='DELETE', url_suffix=url_suffix)
 
-    def get_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
-                           search: str, filter_arg: str, domain_id: str, page: str = None) -> Dict:
+    def get_alerts_request(self, time_period: str, start_time: str, end_time: str, state: str,
+                           search: str, filter_arg: str, domain_id: int, page: str = None) -> Dict:
         """ Retrieves All Alerts.
             Args:
-                session_str: str - The session id.
                 time_period: str - The time period of the alert.
                 start_time: str - The start time of the alert.
                 end_time: str - The end time of the alert.
@@ -171,7 +151,7 @@ class Client(BaseClient):
                 search: str - Search string in alert details.
                 filter_arg: str - Filter alert by fields.
                 page: str - Next/Previous page.
-                domain_id: str - The id of the domain
+                domain_id: int - The id of the domain
             Returns:
                 A dictionary with the list of alerts and info about the list.
         """
@@ -190,103 +170,90 @@ class Client(BaseClient):
         if page:
             params['page'] = page
         if domain_id:
-            params['domainId'] = domain_id
-        url_suffix = '/sdkapi/alerts'
-        self.headers['NSM-SDK-API'] = session_str
+            params['domainId'] = f'{domain_id}'
+        url_suffix = '/alerts'
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_alert_details_request(self, session_str: str, alert_id: int, sensor_id: int) -> Dict:
+    def get_alert_details_request(self, alert_id: int, sensor_id: int) -> Dict:
         """ Retrieves the alert details.
             Args:
-                session_str: str - The session id.
                 alert_id: int - The id of the relevant alert.
                 sensor_id: int - The id of the relevant sensor.
             Returns:
                 A dictionary with the alert details.
         """
-        url_suffix = f'/sdkapi/alerts/{alert_id}'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/alerts/{alert_id}'
         params = {
             'sensorId': sensor_id
         }
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_attacks_request(self, session_str: str, attack_id: str) -> Dict:
+    def get_attacks_request(self, attack_id: str) -> Dict:
         """ If an attack id is given The command returns the details of the specific attack. Else, gets all available
         attack definitions in the Manager UI.
             Args:
-                session_str: str - The session id.
                 attack_id: str - The id of the relevant attack.
             Returns:
                 A dictionary with the attack list of the specific attack details.
         """
         if attack_id:
-            url_suffix = f'/sdkapi/attack/{attack_id}'
+            url_suffix = f'/attack/{attack_id}'
         else:
-            url_suffix = '/sdkapi/attacks/'
-        self.headers['NSM-SDK-API'] = session_str
-        return self._http_request(method='GET', url_suffix=url_suffix, timeout=5000)
+            url_suffix = '/attacks'
+        response = self._http_request(method='GET', timeout=5000, url_suffix=url_suffix)
+        return response
 
-    def get_domains_request(self, session_str: str, domain_id: int) -> Dict:
+    def get_domains_request(self, domain_id: Optional[int]) -> Dict:
         """ If a domain id is given The command returns the details of the specific domain.
             Else, gets all available domains.
             Args:
-                session_str: str - The session id.
-                domain_id: int - The id of the relevant attack.
+                domain_id: Optional[int] - The id of the relevant attack.
             Returns:
                 A dictionary with the attack list of the specific attack details.
         """
-        url_suffix = '/sdkapi/domain'
+        url_suffix = '/domain'
         if domain_id:
             url_suffix = f'{url_suffix}/{domain_id}'
-        self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_sensors_request(self, session_str: str, domain_id: int) -> Dict:
-        """ If a domain id is given The command returns the details of the specific domain.
-            Else, gets all available domains.
+    def get_sensors_request(self, domain_id: Optional[int]) -> Dict:
+        """ If a domain id is given The command returns the details of the sensors in the specific domain.
+            Else, gets all available sensors.
             Args:
-                session_str: str - The session id.
-                domain_id: int - The id of the relevant domain.
+                domain_id: Optional[int] - The id of the relevant domain.
             Returns:
                 A dictionary with the domains list of the specific domain details.
         """
-        url_suffix = '/sdkapi/sensors'
+        url_suffix = '/sensors'
         params = {}
         if domain_id:
             params['domain'] = domain_id
-        self.headers['NSM-SDK-API'] = session_str
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
-    def get_ips_policies_request(self, session_str: str, domain_id: int) -> Dict:
+    def get_ips_policies_request(self, domain_id: int) -> Dict:
         """ Gets all the IPS Policies defined in the specific domain.
             Args:
-                session_str: str - The session id.
                 domain_id: int - The id of the relevant domain.
             Returns:
                 A dictionary with ips policies list of the specific domain details.
         """
-        url_suffix = f'/sdkapi/domain/{domain_id}/ipspolicies'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/domain/{domain_id}/ipspolicies'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_ips_policy_details_request(self, session_str: str, policy_id: int) -> Dict:
+    def get_ips_policy_details_request(self, policy_id: int) -> Dict:
         """ Gets the policy details for the specific IPS policy.
             Args:
-                session_str: str - The session id.
                 policy_id: int - The id of the relevant ips policy.
             Returns:
                 A dictionary with the ips policy details.
         """
-        url_suffix = f'/sdkapi/ipspolicy/{policy_id}'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/ipspolicy/{policy_id}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def update_alerts_request(self, session_str: str, time_period: str, start_time: str, end_time: str, state: str,
+    def update_alerts_request(self, time_period: str, start_time: str, end_time: str, state: str,
                               search: str, filter_arg: str, body: Dict) -> Dict:
         """ Updates all relevant alerts.
             Args:
-                session_str: str - The session id.
                 time_period: str - The time period of the alert.
                 start_time: str - The start time of the alert.
                 end_time: str - The end time of the alert.
@@ -309,33 +276,28 @@ class Client(BaseClient):
             params['search'] = search
         if filter_arg:
             params['filter'] = filter_arg
-        url_suffix = '/sdkapi/alerts'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = '/alerts'
         return self._http_request(method='PUT', url_suffix=url_suffix, params=params, json_data=body)
 
-    def list_pcap_file_request(self, session_str: str, sensor_id: int) -> Dict:
+    def list_pcap_file_request(self, sensor_id: int) -> Dict:
         """ Retrieves the list of captured PCAP files.
             Args:
-                session_str: str - The session id.
                 sensor_id: int - the relevant sensor id.
             Returns:
                 A dictionary with a list of PCAP file names.
         """
-        url_suffix = f'/sdkapi/sensor/{sensor_id}/packetcapturepcapfiles'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/sensor/{sensor_id}/packetcapturepcapfiles'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def export_pcap_file_request(self, session_str: str, sensor_id: int, body: Dict) -> Response:
+    def export_pcap_file_request(self, sensor_id: int, body: Dict) -> Response:
         """ Retrieves the list of captured PCAP files.
             Args:
-                session_str: str - The session id.
                 sensor_id: int - The relevant sensor id.
                 body: Dict - The parameter for the http request (file name).
             Returns:
                 A dictionary with a list of PCAP file names.
         """
-        url_suffix = f'/sdkapi/sensor/{sensor_id}/packetcapturepcapfile/export'
-        self.headers['NSM-SDK-API'] = session_str
+        url_suffix = f'/sensor/{sensor_id}/packetcapturepcapfile/export'
         self.headers['Accept'] = 'application/octet-stream'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
@@ -383,15 +345,14 @@ def pagination(records_list: List, limit: int, page: int) -> List[Dict]:
     return results_list[:limit]
 
 
-def alerts_list_pagination(records_list: List, limit: int, page: int, session_str: str, time_period: str,
+def alerts_list_pagination(records_list: List, limit: int, page: int, time_period: str,
                            start_time: str, end_time: str, state: str, search: str, filter_arg: str,
-                           total_alerts_count: int, client: Client, domain_id: str) -> List:
+                           total_alerts_count: int, client: Client, domain_id: int) -> List:
     """ Returns the wanted records.
     Args:
         records_list: List - The original list of objects.
         limit: str - The amount of records to be returned
         page: int - The page of the results (The results in page 1, 2 ...)
-        session_str: str - The session id of the alert.
         time_period: str - The time period of the alert.
         start_time: str - The start time of the alert.
         end_time: str - The end time of the alert.
@@ -415,16 +376,16 @@ def alerts_list_pagination(records_list: List, limit: int, page: int, session_st
                 results_list.extend(records_list)
                 limit = limit - len(results_list)
                 num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
-                response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search,
+                response = client.get_alerts_request(time_period, start_time, end_time, state, search,
                                                      filter_arg, domain_id, 'next')
-                records_list = response.get('alertsList')
+                records_list = response.get('alertsList', [])
 
         records_list = records_list[num_rec_2_remove:]
         results_list.extend(records_list[:limit])
         return results_list
 
 
-def response_cases(response_str: str) -> None | str:
+def response_cases(response_str: str) -> str:
     """ Checks the response param and returns the correct response string.
     Args:
         response_str: str - The response string.
@@ -438,7 +399,7 @@ def response_cases(response_str: str) -> None | str:
         return '_'.join(split_str)
 
 
-def rule_object_type_cases(str_type: str, case: str) -> str | None:
+def rule_object_type_cases(str_type: str, case: str) -> str:
     """ Checks the rule_object_type params and returns the correct format of them.
     Args:
         str_type: str - The type string.
@@ -458,14 +419,14 @@ def rule_object_type_cases(str_type: str, case: str) -> str | None:
     return r_type
 
 
-def check_source_and_destination(source_rule_object_id: int, source_rule_object_type: str,
-                                 destination_rule_object_id: int, destination_rule_object_type: str,
+def check_source_and_destination(source_rule_object_id: Optional[Any], source_rule_object_type: str,
+                                 destination_rule_object_id: Optional[Any], destination_rule_object_type: str,
                                  create_or_update: str):
     """ Checks the source and destination objects.
     Args:
-        source_rule_object_id: int - Unique Rule Object ID.
+        source_rule_object_id: Optional[Any] - Unique Rule Object ID.
         source_rule_object_type: str - Source / Destination Mode.
-        destination_rule_object_id: int - Unique Rule Object ID.
+        destination_rule_object_id: Optional[Any] - Unique Rule Object ID.
         destination_rule_object_type: str - Source / Destination Mode.
         create_or_update: str - From what function it was called.
     Returns:
@@ -484,7 +445,7 @@ def check_source_and_destination(source_rule_object_id: int, source_rule_object_
 
 def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, description: str, is_editable: bool,
                                 policy_type: str, rule_description: str, response_param: str, rule_enabled: bool,
-                                direction: str, source_object: Dict, destination_object: Dict) -> Dict:
+                                direction: str, source_object: List, destination_object: List) -> Dict:
     """
     Args:
         domain: int - The id of the domain.
@@ -497,8 +458,8 @@ def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, 
         response_param: str - Action to be performed if the traffic matches this rule.
         rule_enabled: bool - Is Rule Enabled or not.
         direction: str - The rule direction.
-        source_object: Dict - Information about the source addresses.
-        destination_object: Dict - Information about the destination addresses.
+        source_object: List - Information about the source addresses.
+        destination_object: List - Information about the destination addresses.
     Returns:
         Returns the body for the request.
     """
@@ -733,20 +694,19 @@ def test_module(client: Client, username_n_password: str) -> str:
         raise Exception(e.message)
 
 
-def list_domain_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     """ Gets the list of Firewall Policies defined in a particular domain.
     Args:
         client: client - A McAfeeNSM client.
         args: Dict - The function arguments.
-        session_str: str - The session string for authentication.
     Returns:
         A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
-    domain_id = args.get('domain_id')
+    domain_id = arg_to_number(args.get('domain_id', None))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
 
-    response = client.list_domain_firewall_policy_request(session_str, domain_id)
+    response = client.list_domain_firewall_policy_request(domain_id)
     result = response.get('FirewallPoliciesForDomainResponseList', [])
     result = pagination(result, limit, page)
     human_readable = []
@@ -781,17 +741,16 @@ def list_domain_firewall_policy_command(client: Client, args: Dict, session_str:
     )
 
 
-def get_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     """ Gets the Firewall Policy details.
     Args:
         client: client - A McAfeeNSM client.
         args: Dict - The function arguments.
-        session_str: str - The session string for authentication.
     Returns:
         A CommandResult object with the Firewall Policy details.
     """
-    policy_id = args.get('policy_id')
-    response = client.get_firewall_policy_request(session_str, policy_id)
+    policy_id = args.get('policy_id', '')
+    response = client.get_firewall_policy_request(policy_id)
     human_readable = {'FirewallPolicyId': response.get('FirewallPolicyId'),
                       'Name': response.get('Name'),
                       'Description': response.get('Description'),
@@ -818,29 +777,28 @@ def get_firewall_policy_command(client: Client, args: Dict, session_str: str) ->
     )
 
 
-def create_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     """ Adds a new Firewall Policy and Access Rules.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
-    domain = arg_to_number(args.get('domain', '0'))
-    name = args.get('name')
+    domain = arg_to_number(args.get('domain', '0'), required=True) or 0
+    name = args.get('name', '')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
-    description = args.get('description')
-    is_editable = argToBoolean(args.get('is_editable'))
+    description = args.get('description', '')
+    is_editable = argToBoolean(args.get('is_editable')) or True
     policy_type = args.get('policy_type', '').upper()
-    rule_description = args.get('rule_description')
+    rule_description = args.get('rule_description', '')
     rule_enabled = argToBoolean(args.get('rule_enabled', True))
-    response_param = response_cases(args.get('response'))
+    response_param = response_cases(args.get('response', ''))
     direction = args.get('direction', '').upper()
-    source_rule_object_id = args.get('source_rule_object_id')
-    source_rule_object_type = args.get('source_rule_object_type')
-    destination_rule_object_id = args.get('destination_rule_object_id')
-    destination_rule_object_type = args.get('destination_rule_object_type')
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id'))
+    source_rule_object_type = args.get('source_rule_object_type', None)
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id'))
+    destination_rule_object_type = args.get('destination_rule_object_type', None)
 
     check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
                                  destination_rule_object_type, 'create')
@@ -863,21 +821,20 @@ def create_firewall_policy_command(client: Client, args: Dict, session_str: str)
                                        rule_description, response_param, rule_enabled, direction, source_object,
                                        destination_object)
 
-    response = client.create_firewall_policy_request(session_str, body)
+    response = client.create_firewall_policy_request(body)
     new_firewall_policy_id = response.get('createdResourceId')
     return CommandResults(readable_output=f'The firewall policy no.{new_firewall_policy_id} was created successfully')
 
 
-def update_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def update_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     """ Updates the Firewall Policy details.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
-    policy_id = args.get('policy_id')
+    policy_id = arg_to_number(args.get('policy_id')) or -1
     domain = args.get('domain')
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
@@ -889,15 +846,15 @@ def update_firewall_policy_command(client: Client, args: Dict, session_str: str)
     rule_enabled = args.get('rule_enabled')
     direction = args.get('direction')
     source_rule_object_id = args.get('source_rule_object_id')
-    source_rule_object_type = args.get('source_rule_object_type')
+    source_rule_object_type = args.get('source_rule_object_type', None)
     destination_rule_object_id = args.get('destination_rule_object_id')
-    destination_rule_object_type = args.get('destination_rule_object_type')
+    destination_rule_object_type = args.get('destination_rule_object_type', None)
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
 
     check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
                                  destination_rule_object_type, 'update')
 
-    policy_get_details = client.get_firewall_policy_request(session_str, policy_id)
+    policy_get_details = client.get_firewall_policy_request(policy_id)
 
     if not policy_get_details.get('IsEditable'):
         raise Exception(f"The policy no.{policy_id} can't be edited")
@@ -952,42 +909,40 @@ def update_firewall_policy_command(client: Client, args: Dict, session_str: str)
                                        rule_description, response_param, rule_enabled, direction, source_object,
                                        destination_object)
 
-    client.update_firewall_policy_request(session_str, body, policy_id)
+    client.update_firewall_policy_request(body, policy_id)
     return CommandResults(readable_output=f'The firewall policy no.{policy_id} was updated successfully')
 
 
-def delete_firewall_policy_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def delete_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
     """ Deletes the specified Firewall Policy.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
-    policy_id = args.get('policy_id')
-    client.delete_firewall_policy_request(session_str, policy_id)
+    policy_id = arg_to_number(args.get('policy_id')) or -1
+    client.delete_firewall_policy_request(policy_id)
     return CommandResults(readable_output=f'The firewall policy no.{policy_id} was deleted successfully')
 
 
-def list_domain_rule_objects_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResults:
     """ Gets the list of rule objects defined in a particular domain.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with the list.
     """
-    domain_id = args.get('domain_id')
+    domain_id = arg_to_number(args.get('domain_id'), required=True) or 0
     rule_type = args.get('type', 'All')
-    limit = arg_to_number(args.get('limit', 50))
-    page = arg_to_number(args.get('page', 1))
+    limit = arg_to_number(args.get('limit', 50)) or 50
+    page = arg_to_number(args.get('page', 1)) or 1
     if rule_type == 'All':
         rule_type = 'hostipv4,hostipv6,ipv4addressrange,ipv6addressrange,networkipv4,networkipv6'
     else:
         rule_type = rule_object_type_cases(rule_type, 'low')
-    response = client.list_domain_rule_objects_request(session_str, domain_id, rule_type)
+    response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page)
 
     human_readable = []
@@ -1013,17 +968,16 @@ def list_domain_rule_objects_command(client: Client, args: Dict, session_str: st
                           outputs_key_field='ruleobjId')
 
 
-def get_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     """ Gets the details of a Rule Object.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with information about the rule object.
     """
-    rule_id = args.get('rule_id')
-    response = client.get_rule_object_request(session_str, rule_id)
+    rule_id = arg_to_number(args.get('rule_id')) or -1
+    response = client.get_rule_object_request(rule_id)
     response = response.get('RuleObjDef', {})
     human_readable = {
         'RuleId': response.get('ruleobjId'),
@@ -1044,17 +998,16 @@ def get_rule_object_command(client: Client, args: Dict, session_str: str) -> Com
                           outputs_key_field='ruleobjId')
 
 
-def create_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     """ Adds a new Rule Object.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
     domain = arg_to_number(args.get('domain', 0))
-    rule_type = rule_object_type_cases(args.get('rule_object_type'), 'up')
+    rule_type = rule_object_type_cases(args.get('rule_object_type', ''), 'up')
     name = args.get('name')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
     description = args.get('description')
@@ -1093,24 +1046,24 @@ def create_rule_object_command(client: Client, args: Dict, session_str: str) -> 
     }]
 
     d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
-    body.get('RuleObjDef')[d_name] = extra_body
-    response = client.create_rule_object_request(session_str, body)
+    rule_obj_def = body.get('RuleObjDef', {})
+    rule_obj_def[d_name] = extra_body
+    response = client.create_rule_object_request(body)
 
     return CommandResults(readable_output=f'The rule object no.{response.get("createdResourceId")} '
                                           f'was created successfully')
 
 
-def update_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     """ Updates a Rule Object.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
-    domain = arg_to_number(args.get('domain', 0))
-    rule_id = args.get('rule_id')
+    domain = arg_to_number(args.get('domain', 0)) or 0
+    rule_id = arg_to_number(args.get('rule_id')) or -1
     name = args.get('name')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
     description = args.get('description')
@@ -1122,7 +1075,7 @@ def update_rule_object_command(client: Client, args: Dict, session_str: str) -> 
     to_address_ip_v_6 = args.get('to_address_ip_v.6')
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
 
-    response_get = client.get_rule_object_request(session_str, rule_id)
+    response_get = client.get_rule_object_request(rule_id)
     response_get = response_get.get('RuleObjDef', {})
 
     rule_type = response_get.get('ruleobjType')
@@ -1212,43 +1165,42 @@ def update_rule_object_command(client: Client, args: Dict, session_str: str) -> 
     number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_address_ip_v_4 else from_to_address_ip_v_6
     d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
-    body.get('RuleObjDef')[d_name] = extra_body
-    client.update_rule_object_request(session_str, body, rule_id)
+    rule_obj_def = body.get('RuleObjDef', {})
+    rule_obj_def[d_name] = extra_body
+    client.update_rule_object_request(body, rule_id)
     return CommandResults(readable_output=f'The rule object no.{rule_id} was updated successfully')
 
 
-def delete_rule_object_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def delete_rule_object_command(client: Client, args: Dict) -> CommandResults:
     """ Deletes a Rule Object.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a success message.
     """
-    rule_id = args.get('rule_id')
-    client.delete_rule_object_request(session_str, rule_id)
+    rule_id = arg_to_number(args.get('rule_id')) or -1
+    client.delete_rule_object_request(rule_id)
     return CommandResults(readable_output=f'The rule object no.{rule_id} was deleted successfully')
 
 
-def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_alerts_command(client: Client, args: Dict) -> CommandResults:
     """ Retrieves All Alerts.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a list of alerts.
     """
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    time_period = args.get('time_period')
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    state = args.get('state')
-    search = args.get('search')
-    filter_arg = args.get('filter')
-    domain_id = args.get('domain_id')
+    time_period = args.get('time_period', None)
+    start_time = args.get('start_time', None)
+    end_time = args.get('end_time', None)
+    state = args.get('state', None)
+    search = args.get('search', None)
+    filter_arg = args.get('filter', None)
+    domain_id = arg_to_number(args.get('domain_id')) or 0
     if args.get('new_state'):
         state = args.get('new_state')
 
@@ -1257,13 +1209,13 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     if (start_time or end_time) and time_period != 'CUSTOM':
         raise Exception('If you provided a start time or end time, you must assign the time_period parameter with the '
                         'value "CUSTOM"')
+    if time_period == 'CUSTOM' and not start_time:
+        raise Exception('If you enter "time_period=CUSTOM" please enter start_time and end_time as well.')
 
-    response = client.get_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg,
-                                         domain_id)
-    total_alerts_count = response.get('totalAlertsCount')
-    alerts_list = alerts_list_pagination(response.get('alertsList', []), limit, page, session_str, time_period,
-                                         start_time, end_time, state, search, filter_arg, total_alerts_count, client,
-                                         domain_id)
+    response = client.get_alerts_request(time_period, start_time, end_time, state, search, filter_arg, domain_id)
+    total_alerts_count = response.get('totalAlertsCount', 0)
+    alerts_list = alerts_list_pagination(response.get('alertsList', []), limit, page, time_period, start_time, end_time,
+                                         state, search, filter_arg, total_alerts_count, client, domain_id)
     alerts_list = add_entries_to_alert_list(alerts_list)
     human_readable = []
     for alert_info in alerts_list:
@@ -1300,18 +1252,17 @@ def get_alerts_command(client: Client, args: Dict, session_str: str) -> CommandR
     )
 
 
-def get_alert_details_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_alert_details_command(client: Client, args: Dict) -> CommandResults:
     """ Retrieves the relevant alert.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with the alert details.
     """
-    alert_id = arg_to_number(args.get('alert_id'))
-    sensor_id = arg_to_number(args.get('sensor_id'))
-    response = client.get_alert_details_request(session_str, alert_id, sensor_id)
+    alert_id = arg_to_number(args.get('alert_id')) or -1
+    sensor_id = arg_to_number(args.get('sensor_id')) or -1
+    response = client.get_alert_details_request(alert_id, sensor_id)
     response['ID'] = alert_id
 
     human_readable = {
@@ -1341,22 +1292,21 @@ def get_alert_details_command(client: Client, args: Dict, session_str: str) -> C
     )
 
 
-def get_attacks_command(client: Client, args: Dict, session_str: str) -> List[CommandResults]:
+def get_attacks_command(client: Client, args: Dict) -> List:
     """ If an attack id is given The command returns the details for the specific attack.
         Else, gets all available attack definitions in the Manager UI.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with The attack details or attacks list.
     """
     attack_id = args.get('attack_id')
     if attack_id:
         if not re.match('^0x[0-9A-Fa-f]{8}$', attack_id):
-            raise Exception('Error! Attack ID must be formated as 32-bit hexadecimal number. for example: 0x1234BEEF')
+            raise Exception('Error! Attack ID must be formatted as 32-bit hexadecimal number. for example: 0x1234BEEF')
 
-    response = client.get_attacks_request(session_str, attack_id)
+    response = client.get_attacks_request(attack_id)
 
     if not attack_id:
         title = 'Attacks List'
@@ -1387,29 +1337,22 @@ def get_attacks_command(client: Client, args: Dict, session_str: str) -> List[Co
         file_ = fileResult(filename='get-attacks-file-result', data=readable_outputs,
                            file_type=entryTypes['entryInfoFile'])
 
-    return [CommandResults(
-        readable_output=readable_outputs,
-        outputs_prefix='NSM.Attacks',
-        outputs=attacks_list,
-        raw_response=attacks_list,
-        outputs_key_field='attackId'
-    ), file_]
+    return [file_]
 
 
-def get_domains_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_domains_command(client: Client, args: Dict) -> CommandResults:
     """ If a domain id is given The command returns the details for the specific domain.
         Else, gets all available domains.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with The domain details or domains list.
     """
-    domain_id = arg_to_number(args.get('domain_id'))
+    domain_id = arg_to_number(args.get('domain_id', None))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    response = client.get_domains_request(session_str, domain_id)
+    response = client.get_domains_request(domain_id)
     results = response.get('DomainDescriptor', {})
     human_readable = []
     if domain_id:
@@ -1437,20 +1380,19 @@ def get_domains_command(client: Client, args: Dict, session_str: str) -> Command
     )
 
 
-def get_sensors_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_sensors_command(client: Client, args: Dict) -> CommandResults:
     """ Gets the list of sensors available in the specified domain. If the domain is not specified, details of all
         the sensors in all ADs will be provided.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with The relevant sensors.
     """
     domain_id = arg_to_number(args.get('domain_id'))
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    response = client.get_sensors_request(session_str, domain_id)
+    response = client.get_sensors_request(domain_id)
     sensors_list = pagination(response.get('SensorDescriptor', [Dict]), limit, page)
     sensors_list = update_sensors_list(sensors_list)
     human_readable = []
@@ -1484,19 +1426,18 @@ def get_sensors_command(client: Client, args: Dict, session_str: str) -> Command
     )
 
 
-def get_ips_policies_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
     """ Gets all the IPS Policies defined in the specific domain.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with The relevant ips policies.
     """
-    domain_id = arg_to_number(args.get('domain_id'))
+    domain_id = arg_to_number(args.get('domain_id')) or 0
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    response = client.get_ips_policies_request(session_str, domain_id)
+    response = client.get_ips_policies_request(domain_id)
     policies_list = pagination(response.get('PolicyDescriptorDetailsList', [Dict]), limit, page)
     policies_list = update_policies_list_entries(policies_list)
     human_readable = []
@@ -1525,18 +1466,17 @@ def get_ips_policies_command(client: Client, args: Dict, session_str: str) -> Co
     )
 
 
-def get_ips_policy_details_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def get_ips_policy_details_command(client: Client, args: Dict) -> CommandResults:
     """ gets the policy details for the specific IPS policy.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with The relevant ips policy details.
     """
-    policy_id = arg_to_number(args.get('policy_id'))
-    response = client.get_ips_policy_details_request(session_str, policy_id)
-    policy_details = update_ips_policy_entries(response.get('PolicyDescriptor'), policy_id)
+    policy_id = arg_to_number(args.get('policy_id')) or -1
+    response = client.get_ips_policy_details_request(policy_id)
+    policy_details = update_ips_policy_entries(response.get('PolicyDescriptor', {}), policy_id)
     human_readable = {
         'ID': policy_details.get('ID'),
         'Name': policy_details.get('Name'),
@@ -1565,23 +1505,22 @@ def get_ips_policy_details_command(client: Client, args: Dict, session_str: str)
     )
 
 
-def update_alerts_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def update_alerts_command(client: Client, args: Dict) -> CommandResults:
     """ Updates all the relevant alerts.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with the list of the changed alerts.
     """
-    state = args.get('state')
-    time_period = args.get('time_period')
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    new_state = args.get('new_state')
-    new_assignee = args.get('new_assignee')
-    search = args.get('search')
-    filter_arg = args.get('filter')
+    state = args.get('state', 'Any')
+    time_period = args.get('time_period', None)
+    start_time = args.get('start_time', None)
+    end_time = args.get('end_time', None)
+    new_state = args.get('new_state', None)
+    new_assignee = args.get('new_assignee', None)
+    search = args.get('search', None)
+    filter_arg = args.get('filter', None)
 
     if not new_state and not new_assignee:
         raise Exception('Error! You must specify a new alert state or a new assignee')
@@ -1596,26 +1535,25 @@ def update_alerts_command(client: Client, args: Dict, session_str: str) -> Comma
         'assignTo': new_assignee
     }
 
-    response = client.update_alerts_request(session_str, time_period, start_time, end_time, state, search, filter_arg, body)
+    response = client.update_alerts_request(time_period, start_time, end_time, state, search, filter_arg, body)
 
     if response.get('status') != 1:
         raise Exception('Error! Failed to update alerts.')
-    return get_alerts_command(client, args, session_str)
+    return get_alerts_command(client, args)
 
 
-def list_pcap_file_command(client: Client, args: Dict, session_str: str) -> CommandResults:
+def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
     """ Retrieves the list of captured PCAP files.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a list of captured PCAP files.
     """
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    sensor_id = arg_to_number(args.get('sensor_id')) or -1
     limit = arg_to_number(args.get('limit', 50)) or 50
     page = arg_to_number(args.get('page', 1)) or 1
-    response = client.list_pcap_file_request(session_str, sensor_id)
+    response = client.list_pcap_file_request(sensor_id)
     files_list = pagination(response.get('files', []), limit, page)
     human_readable = []
     for file_name in files_list:
@@ -1636,21 +1574,20 @@ def list_pcap_file_command(client: Client, args: Dict, session_str: str) -> Comm
     )
 
 
-def export_pcap_file_command(client: Client, args: Dict, session_str: str) -> List:
+def export_pcap_file_command(client: Client, args: Dict) -> List:
     """ Exports the captured PCAP file.
         Args:
             client: client - A McAfeeNSM client.
             args: Dict - The function arguments.
-            session_str: str - The session string for authentication.
         Returns:
             A CommandResult object with a list of captured PCAP files.
     """
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    sensor_id = arg_to_number(args.get('sensor_id')) or -1
     file_name = args.get('file_name')
     body = {
         'fileName': file_name
     }
-    response = client.export_pcap_file_request(session_str, sensor_id, body)
+    response = client.export_pcap_file_request(sensor_id, body)
     file_ = fileResult(filename=file_name, data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
     return [file_]
 
@@ -1684,71 +1621,73 @@ def main() -> None:  # pragma: no cover
         session_str = ''
         if demisto.command() != 'test-module':
             session_str = get_session(client, f'{user_name}:{password}')
+            headers['NSM-SDK-API'] = session_str
+            client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, f'{user_name}:{password}')
-            return_results(result)
+            result_str = test_module(client, f'{user_name}:{password}')
+            return_results(result_str)
         elif demisto.command() == 'nsm-list-domain-firewall-policy':
-            result = list_domain_firewall_policy_command(client, demisto.args(), session_str)
+            result = list_domain_firewall_policy_command(client, demisto.args())
             return_results(result)
         elif demisto.command() == 'nsm-get-firewall-policy':
-            results = get_firewall_policy_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_firewall_policy_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-create-firewall-policy':
-            results = create_firewall_policy_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = create_firewall_policy_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-update-firewall-policy':
-            results = update_firewall_policy_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = update_firewall_policy_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-delete-firewall-policy':
-            results = delete_firewall_policy_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = delete_firewall_policy_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-list-domain-rule-object':
-            results = list_domain_rule_objects_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = list_domain_rule_objects_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-rule-object':
-            results = get_rule_object_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_rule_object_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-create-rule-object':
-            results = create_rule_object_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = create_rule_object_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-update-rule-object':
-            results = update_rule_object_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = update_rule_object_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-delete-rule-object':
-            results = delete_rule_object_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = delete_rule_object_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-alerts':
-            results = get_alerts_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_alerts_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-alert-details':
-            results = get_alert_details_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_alert_details_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-attacks':
-            results = get_attacks_command(client, demisto.args(), session_str)
-            return_results(results)
+            results_list = get_attacks_command(client, demisto.args())
+            return_results(results_list)
         elif demisto.command() == 'nsm-get-domains':
-            results = get_domains_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_domains_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-sensors':
-            results = get_sensors_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_sensors_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-ips-policies':
-            results = get_ips_policies_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_ips_policies_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-get-ips-policy-details':
-            results = get_ips_policy_details_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = get_ips_policy_details_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-update-alerts':
-            results = update_alerts_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = update_alerts_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-list-pcap-file':
-            results = list_pcap_file_command(client, demisto.args(), session_str)
-            return_results(results)
+            result = list_pcap_file_command(client, demisto.args())
+            return_results(result)
         elif demisto.command() == 'nsm-export-pcap-file':
-            results = export_pcap_file_command(client, demisto.args(), session_str)
-            return_results(results)
+            results_list = export_pcap_file_command(client, demisto.args())
+            return_results(results_list)
         else:
             raise NotImplementedError('This command is not implemented yet.')
 
