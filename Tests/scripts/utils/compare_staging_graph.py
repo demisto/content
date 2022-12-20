@@ -34,6 +34,8 @@ def sort_dict(dct: dict):
                     v.sort(key=lambda x: x["id"])
                 elif v and v[0].get("name"):
                     v.sort(key=lambda x: x["name"])
+                elif v and v[0].get("display_name"):
+                    v.sort(key=lambda x: x["display_name"])
                 else:
                     print("Could not sort list", v)
 
@@ -199,6 +201,22 @@ def compare_content_packs(
     message.append(f"Missing files in graph: {missing}")
 
 
+def compare_dependencies(
+    dependencies_id_set: Path,
+    dependencies_graph: Path,
+    output_path: Path,
+    message: list[str],
+):
+    dependencies_id_set = json.load(dependencies_id_set.open())
+    dependencies_graph = json.load(dependencies_graph.open())
+    sort_dict(dependencies_id_set)
+    sort_dict(dependencies_graph)
+    diff_list = list(dictdiffer.diff(dependencies_id_set, dependencies_graph))
+    if diff_list:
+        message.append("Detected differences between dependencies")
+        json.dump(diff_list, (output_path / "dependencies-diff.json").open("w"), indent=4)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", help="artifacts of the build")
@@ -223,14 +241,17 @@ def main():
 
     content_packs_id_set = artifacts / "content_packs_id_set.zip"
     content_packs_graph = artifacts / "content_packs_graph.zip"
-
+    
+    dependencies_id_set = artifacts / "packs_dependencies_id_set.json"
+    dependencies_graph = artifacts / "packs_dependencies_graph.json"
+    
     message = [
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
 
     compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
-
+    compare_dependencies(dependencies_id_set, dependencies_graph, output_path, message)
     if not zip_graph.exists():
         message.append("No packs were uploaded for id_set")
     if not zip_id_set.exists():
@@ -261,8 +282,7 @@ def main():
             print(f"could not upload file to slack: {e}")
             slack_client.chat_postMessage(
                 channel="dmst-graph-tests",
-                text="Could not upload diff file to slack\n"
-                     f"Job URL: {os.getenv('CI_JOB_URL')}",
+                text="Could not upload diff file to slack\n" f"Job URL: {os.getenv('CI_JOB_URL')}",
             )
 
 

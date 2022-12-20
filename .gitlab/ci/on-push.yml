@@ -137,6 +137,7 @@ create-instances:
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
     - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
+    - cp $ARTIFACTS_FOLDER/packs_dependencies.json $ARTIFACTS_FOLDER/packs_dependencies_id_set.json
 
 prepare-testing-bucket-mpv2:
   tags:
@@ -195,7 +196,7 @@ prepare-testing-bucket-mpv2:
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
     - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
-
+    - cp $ARTIFACTS_FOLDER/packs_dependencies.json $ARTIFACTS_FOLDER/packs_dependencies_id_set.json
 
 
 prepare-testing-bucket-xpanse:
@@ -256,7 +257,7 @@ prepare-testing-bucket-xpanse:
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
     - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
-
+    - cp $ARTIFACTS_FOLDER/packs_dependencies.json $ARTIFACTS_FOLDER/packs_dependencies_id_set.json
 
 
 .test_content_on_xsoar_server_instances_base:

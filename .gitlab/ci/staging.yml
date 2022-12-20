@@ -109,6 +109,7 @@
 
     - section_start "change content_packs.zip name to compare afterwards"
     - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_graph.zip
+    - cp $ARTIFACTS_FOLDER/packs_dependencies.json $ARTIFACTS_FOLDER/packs_dependencies_graph.json
 
 
 graph-prepare-testing-bucket-xsoar:
