@@ -99,7 +99,7 @@
         ]
     },
     "fromVersion": "5.0.0",
-    "toVersion": "5.9.9",
+    "toVersion": "6.0.0",
     "typeId": "Case",
     "version": -1,
     "description": ""
