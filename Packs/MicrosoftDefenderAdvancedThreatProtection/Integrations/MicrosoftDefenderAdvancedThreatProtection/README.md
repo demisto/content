@@ -6435,8 +6435,9 @@ Retrieves a list of all vulnerabilities.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Vulnerability ID. | Optional |
-| name | Vulnerability title. | Optional |
-| description | Vulnerability description. | Optional |
+| name_equal | Vulnerability title. | Optional |
+| name_contains | Vulnerability title. Does not work with another filter arguments. |Optional |
+| description_contains | Vulnerability description. Does not work with another filter arguments. | Optional |
 | published_on | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
 | cvss | CVSS v3 score. | Optional |
 | severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
