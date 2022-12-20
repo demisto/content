@@ -14,6 +14,8 @@ from vmware.vapi.vsphere.client import create_vsphere_client
 
 read_demisto_info = demisto.info
 read_demisto_debug = demisto.debug
+
+
 def write_to_debug_log(msg):  # pragma: no cover
     if DEBUGGING:
         VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
