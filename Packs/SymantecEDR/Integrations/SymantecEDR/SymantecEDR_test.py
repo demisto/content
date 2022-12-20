@@ -10,33 +10,55 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
+import pytest
 import json
 import io
+from CommonServerPython import DemistoException
+from SymantecEDRDev import Client, get_incident_uuid, get_endpoint_command, get_endpoint_instance_command, \
+    get_domain_instance_command, get_file_instance_command, get_endpoint_status_command, get_event_list_command, \
+    get_event_for_incident_list_command, get_incident_list_command, get_deny_list_command, get_audit_event_command, \
+    get_incident_comments_command, get_allow_list_command, get_domain_file_association_list_command, \
+    get_endpoint_domain_association_list_command, get_endpoint_file_association_list_command, \
+    get_file_sandbox_issue_polling_command, get_file_sandbox_status_polling_command, \
+    get_file_sandbox_verdict_polling_command, get_system_activity_command, iso_creation_date
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(path, mode='r') as f:
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+client = Client(
+    base_url="http://host:port",
+    secret_key="test_123",
+    client_key="test@12345",
+    verify=False,
+    proxy=False
+)
 
-    Checks the output of the command function with the expected output.
+FILE_INSTANCE_RESPONSE = util_load_json('test_data/file_instance_data.json')
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+@pytest.mark.parametrize('raw_response, expected', [(FILE_INSTANCE_RESPONSE,
+                                                    FILE_INSTANCE_RESPONSE
+def test_get_file_instance_command(mocker, raw_response, expected):
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Tests get_get_file_instance_command function.
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
+        Given:
+            - mocker object.
+            - raw_response test data.
+            - expected output.
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+        When:
+            - Running the 'get_file_instance_command'.
 
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+        Then:
+            -  Checks the output of the command function with the expected output.
+    """
+    args = {"limit": 1}
+    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    command_results = get_file_instance_command(client, args)
+    # results is CommandResults list
+    context_detail = command_results.to_context()['Contents']
+    assert context_detail == expected.get("result")
+
