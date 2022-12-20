@@ -14,6 +14,7 @@ Query the Symantec Endpoint Protection Manager using the official REST API.
 ## Required Permissions
 The following role is required to use the Symantec Endpoint Protection API:
 - sysadmin
+Note: An **Administrator** role does not have enough permissions for this integration. A **System Administrator** (sysadmin) role is required. 
 
 ## Configure Symantec Endpoint Protection V2 on Cortex XSOAR
 
