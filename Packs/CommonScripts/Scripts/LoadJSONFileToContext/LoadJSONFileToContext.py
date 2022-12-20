@@ -12,14 +12,13 @@ if not res:
 file_path = res.get('path')
 
 # open the file, and try and load the JSON, error if it's invalid.
-exported_files = []
 with open(file_path, 'r') as f:
     try:
         data = json.load(f)
     except ValueError as e:
         return_error(f"File is not valid JSON: {e}")
-    except:
-        return_Error("Something else went wrong...")
+    except Exception:
+        return_error("Something else went wrong...")
 
 # return the results to context
 results = CommandResults(

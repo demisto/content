@@ -14,14 +14,14 @@ comment: |-
 
   You can add additional fields from the indicators using the add_field_to_context argument.
 commonfields:
-  id: SearchIndicators
+  id: SearchIndicator
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
 dockerimage: demisto/python3:3.10.8.39276
 enabled: true
-name: SearchIndicators
+name: SearchIndicator
 outputs:
 - contextPath: foundIndicators.id
   description: The id of the indicator in the XSOAR database.

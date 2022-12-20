@@ -48,7 +48,7 @@ def apply_filters(incidents: List, args: Dict):
     filtered_incidents = []
     fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed']
     if args.get("add_fields_to_context"):
-        fields = fields + args.get("add_fields_to_context").split(",")
+        fields = fields + args.get("add_fields_to_context", '').split(",")
         fields = [x.strip() for x in fields]  # clear out whitespace
     for incident in incidents:
         if names_to_filter and incident['name'] not in names_to_filter:
@@ -97,11 +97,10 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data)
+    headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
     if args.get("add_fields_to_context"):
-        add_headers: List[str] = args.get("add_fields_to_context").split(",")
-        headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink'] + add_headers
-    else:
-        headers: List[str] = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+        add_headers: List[str] = args.get("add_fields_to_context", '').split(",")
+        headers = headers + add_headers
     md: str = tableToMarkdown(name="Incidents found", t=data, headers=headers)
     return md, data, res
 
