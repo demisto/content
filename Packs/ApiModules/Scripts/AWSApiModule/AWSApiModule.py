@@ -101,7 +101,7 @@ class AWSClient:
 
             if not self.aws_access_key_id:
                 sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
-                                          region_name=self.aws_default_region)
+                                          region_name=region if region else self.aws_default_region)
                 sts_response = sts_client.assume_role(**kwargs)
                 client = boto3.client(
                     service_name=service,
@@ -127,7 +127,7 @@ class AWSClient:
             sts_response = sts_client.assume_role(**kwargs)
             client = boto3.client(
                 service_name=service,
-                region_name=self.aws_default_region,
+                region_name=region if region else self.aws_default_region,
                 aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
                 aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
                 aws_session_token=sts_response['Credentials']['SessionToken'],
