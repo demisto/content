@@ -50,6 +50,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
 QUERY_PARAMETER_PATTERN = r'.+:\(.+\)'
+FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -12916,65 +12917,26 @@ def get_query_entries(log_type:str , query: str, max_fetch: int) -> List[Dict[An
     
     return entries
     
-    
-def parse_queries(queries: str) -> Optional[dict[str,str]]:
-    """parse queries paramter string and transform it to a python dictionary
-    EXAMPLE: "Decryption:(receive_time geq '2021/01/22 08:00:00')" --> {"Decryption":"(receive_time geq '2021/01/22 08:00:00')"}
-    Args:
-        queries (str): queries paramter
 
-    Returns:
-        - Optional[Dict[str,str]]: queries parameter transformed into a python dictionary
-        - empty dictioanry if queries is None
-    """
-    if queries:
-        parsed_queries = {}
-        queries_list = queries.split(',')
-        for query_pair in queries_list:
-            if not re.search(QUERY_PARAMETER_PATTERN, query_pair):
-                raise DemistoException('Query parameter pattern is invalid.')
-            query_pair_list = query_pair.split(':',1)
-            if len(query_pair_list) == 2:
-                log_type, query = query_pair_list[0], query_pair_list[1]
-                log_type = log_type.capitalize()
-                parsed_queries[log_type] = query
-        return parsed_queries
-    return {}
-    
-
-def fetch_incidents_request(queries: str, log_types: list, max_fetch: int, last_fetch_dict: Dict[str,str]) -> Tuple[Dict[str,Any], Dict[str, str]]:    
-    # TODO: check how to deciede what queries to use; defulat based on log_types or user input.
+def fetch_incidents_request(queries_dict: Optional[Dict[str, str]], max_fetch: int, last_fetch_dict: Dict[str,str]) -> Tuple[Dict[str,Any], Dict[str, str]]:
     """get entires of incidents accourding to provided queries, log types and max_fetch paramters.
     also updates new log types in last_fetch_dict as keys if needed.
 
     Args:
-        queries (str): Query paramter
-        log_types (list): Log Type parameter
+        queries_dict (Optional[Dict[str, str]]): a dictionary of chosen log type queries
         max_fetch (int): Max incidents per fetch parameter
+        last_fetch_dict (Dict[str,str]): last fetch time per log type dictionary
 
     Returns:
-        (dict[str,dict[str,Any]], dict[str,str]): a dictionary of all the incidents entries for all the specified queries
-    """    
+        Tuple[Dict[str,Any], Dict[str, str]]: a dictionary of all the incidents entries for all the specified queries
+    """
     entries = {}
-    parsed_queries: Optional[Dict[str,str]] = {}
-    if queries:
-        parsed_queries = parse_queries(queries)
-        
-    # perform queary for each log_type chosen in 'Log Type' parameter list
-    if log_types and parsed_queries:
-        if 'All' in log_types:
-            for log_type,query in parsed_queries.items():
-                if log_type not in last_fetch_dict.keys():
-                    last_fetch_dict[log_type] = ''
-                response_entries = get_query_entries(log_type, query, max_fetch)
-                entries[log_type]=response_entries
-        else:
-            for log_type in log_types:
-                if query := parsed_queries.get(log_type, ''):
-                    if log_type not in last_fetch_dict.keys():
-                        last_fetch_dict[log_type] = ''
-                    response_entries = get_query_entries(log_type, query, max_fetch)
-                    entries[log_type]=response_entries
+    if queries_dict:
+        for log_type,query in queries_dict.items():
+            if log_type not in last_fetch_dict.keys():
+                last_fetch_dict[log_type] = ''
+            response_entries = get_query_entries(log_type, query, max_fetch)
+            entries[log_type]=response_entries
     return entries, last_fetch_dict
 
 
@@ -13070,7 +13032,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str,str], first_fetch: s
     return fetch_start_datetime_dict
 
 
-def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: list, max_fetch: int) -> tuple[dict[str,Any], dict[str,list]]:
+def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dict[str, str]], max_fetch: int) -> tuple[dict[str,Any], dict[str,list]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -13085,7 +13047,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: l
     """    
     last_fetch_dict = last_run.get("last_fetch_dict", {})
             
-    incident_entries_dict, last_fetch_dict = fetch_incidents_request(queries, log_types, max_fetch, last_fetch_dict)
+    incident_entries_dict, last_fetch_dict = fetch_incidents_request(queries_dict, max_fetch, last_fetch_dict)
     # demisto.debug(f'{len(incident_entries)} incident log types found.')
             
     fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict,first_fetch)
@@ -13097,10 +13059,31 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries: str, log_types: l
             incident_entries_dict[log_type] = incidents
             if last_fetch:
                 last_fetch_dict[log_type] = last_fetch.isoformat()
-    # demisto.debug(f'fetch incidents cycle finished with {sum(incident_entries.values())} new incidents total.')
 
     return last_fetch_dict, incident_entries_dict
     
+
+def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]]:
+    """converts chosen log type queries to a queries dictionary.
+    Exmaple: 
+    for parameters: log_type=['X_log_type'], X_log_type_queary='(example query for X_log_type)' 
+    the dictionary returned is: {'X_log_type':(example query for X_log_type)}
+
+    Args:
+        params (Dict[str, str]): instance configuration parameters
+
+    Returns:
+        Optional[Dict[str, str]]: queries dictionary
+    """
+    queries_dict = {}
+    if log_types := params.get('log_types'):
+        if 'All' in log_types:
+            for log_type in FETCH_INCIDENTS_LOG_TYPES:
+                queries_dict[log_type.capitalize()] = params.get(f'{log_type.lower()}_query',"")
+        else:
+            for log_type in log_types:
+                queries_dict[log_type.capitalize()] = params.get(f'{log_type.lower()}_query',"")
+    return queries_dict
     
 def main():
     try:
@@ -13124,10 +13107,10 @@ def main():
             # Set and define the fetch incidents command to run after activated via integration settings.
             last_run = demisto.getLastRun()
             first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME).strip()
-            queries = params.get("queries")
-            log_types = params.get("log_types")
+            queries_dict = log_types_queries_to_dict(params)
             max_fetch = arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH
-            last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries, log_types, max_fetch)
+            
+            last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
             
             # flatten incident_entries_dict to a single list of dictionries representing context entries
             parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values() for incident in incident_list]
