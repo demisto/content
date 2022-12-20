@@ -136,6 +136,7 @@ create-instances:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
     - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+    - cp $ARTIFACTS_FOLDER/content_packs.zip $ARTIFACTS_FOLDER/content_packs_id_set.zip
 
 prepare-testing-bucket-mpv2:
   tags:
