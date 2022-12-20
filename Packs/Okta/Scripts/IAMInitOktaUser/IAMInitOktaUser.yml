@@ -26,8 +26,6 @@ args:
 - name: to_email
   required: true
   description: The email address that the password will be sent to.
-- name: inc_id
-  description: The incident ID.
 - name: email_subject
   description: The subject of the email sent to IT.
 - name: min_lcase

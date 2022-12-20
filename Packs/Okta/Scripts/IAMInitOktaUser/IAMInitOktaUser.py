@@ -14,7 +14,6 @@ def main():
     username = args.get("username")
     display_name = args.get("displayname")
     to_email = args.get("to_email")
-    inc_id = args.get("inc_id")
     email_subject = args.get("email_subject")
     min_lcase = args.get("min_lcase", 0)
     max_lcase = args.get("max_lcase", 10)
@@ -91,7 +90,7 @@ def main():
 
     try:
         send_mail_outputs = send_email(display_name, username, err,
-                                       to_email, password, inc_id, email_subject)
+                                       to_email, password, email_subject)
 
         if is_error(send_mail_outputs):
             raise Exception(f'An error occurred while trying to send mail. Error is:\n{get_error(send_mail_outputs)}')
@@ -118,7 +117,7 @@ def main():
     return_results(result)
 
 
-def send_email(display_name, username, err, to_email, password, inc_id, email_subject):
+def send_email(display_name, username, err, to_email, password, email_subject):
     if not err:
         if not email_subject:
             email_subject = f'User {display_name} was successfully activated in Okta'
@@ -132,7 +131,7 @@ def send_email(display_name, username, err, to_email, password, inc_id, email_su
                       'Password: ' + password + '\n\n' \
                       'Regards,\nIAM Team'
     else:
-        email_subject = f'"User Activation In Okta" incident {inc_id} failed with user {display_name}'
+        email_subject = f'"User Activation In Okta" failed with user {display_name}'
         email_body = 'Hello,\n\n' \
                      'This message was sent to inform you that an error occurred while trying ' \
                      'to activate the user account of ' + username + ' in Okta.\n\n' \
