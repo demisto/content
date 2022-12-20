@@ -479,10 +479,8 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 
 def user_fetch_command(client, secretids):
     credentials = fetch_credentials(client, secretids)
-    print("Roshani")
-    print(credentials)
     markdown = tableToMarkdown('Credentials to fetch', credentials)
-    print(markdown)
+ 
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="Delinea.User.Fetch.Credentials",
@@ -495,7 +493,7 @@ def user_fetch_command(client, secretids):
 def fetch_credentials(client, secretids):
     credentials = []
     finalsecretsid = []
-    finalcredentials=[]
+    finalcredentials = []
     try:
         secretsid = argToList(secretids)
     except Exception as e:
