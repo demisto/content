@@ -97,7 +97,6 @@ def send_request(path, method='get', body=None, params=None, headers=None):
     body = body if body is not None else {}
     params = params if params is not None else {}
 
-    url = '{}/{}'.format(SERVER_URL, path)
     url = urljoin(SERVER_URL, path)
 
     headers = headers if headers is not None else get_headers()
