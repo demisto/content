@@ -1,7 +1,7 @@
 Integration to pull assets and other ASM related information.
-This integration was integrated and tested with version 1.2.0 of Cortex Xpanse
+This integration was integrated and tested with version 1.3.0 of Cortex Xpanse
 
-## Configure Cortex Xpanse
+## Configure Cortex Xpanse on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Cortex Xpanse.
@@ -9,10 +9,18 @@ This integration was integrated and tested with version 1.2.0 of Cortex Xpanse
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | Should be the web UI with \`api-\` appended to front (e.g., https://api-xsiam.paloaltonetworks.com). For more information please see: [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
-    | API Key ID | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
-    | API Key | See [get-started-with-cortex-xdr-apis](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis). | True |
-    
+    | Server URL | The web UI with \`api-\` appended to front \(e.g., https://api-xsiam.paloaltonetworks.com\). For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
+    | API Key ID | For more information please see https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-api-overview/get-started-with-cortex-xdr-apis. | True |
+    | API Key |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incidents Fetch Interval |  | False |
+    | Incident type |  | False |
+    | Maximum number of alerts per fetch | The maximum number of alerts per fetch. Cannot exceed 100. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Alert Severities to Fetch | The severity of the alerts that will be fetched. If no severity is provided then alerts of all the severities will be fetched. Note: An alerts whose status was changed to a filtered status after its creation time will not be fetched. | False |
+   
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1004,12 +1012,12 @@ Get internet exposure asset details according to the asset ID.
                     "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb",
                     "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8",
                     "signatureAlgorithm": "SHA1withRSA",
-                    "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.babiesrus.com",
-                    "subjectAlternativeNames": "*.babiesrus.com",
+                    "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com",
+                    "subjectAlternativeNames": "*.acme.com",
                     "subjectCountry": "US",
                     "subjectEmail": null,
                     "subjectLocality": "Wayne",
-                    "subjectName": "*.babiesrus.com",
+                    "subjectName": "*.acme.com",
                     "subjectOrg": "Acme",
                     "subjectOrgUnit": "MIS",
                     "subjectState": "New Jersey",
@@ -1038,7 +1046,7 @@ Get internet exposure asset details according to the asset ID.
             "first_observed": null,
             "ips": [],
             "last_observed": null,
-            "name": "*.babiesrus.com",
+            "name": "*.acme.com",
             "resolves": false,
             "type": "Certificate"
         }
@@ -1051,5 +1059,374 @@ Get internet exposure asset details according to the asset ID.
 >### Asset Internet Exposure
 >|asm_ids|business_units|certificate_algorithm|certificate_classifications|certificate_issuer|created|details|name|resolves|type|
 >|---|---|---|---|---|---|---|---|---|---|
->| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.babiesrus.com", "subjectAlternativeNames": "*.babiesrus.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.babiesrus.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.babiesrus.com | false | Certificate |
+>| 3c176460-8735-333c-b618-8262e2fb660c | Acme | SHA1withRSA | Wildcard,<br/>Expired,<br/>InsecureSignature | Thawte | 1663030146931 | providerDetails: <br/>domain: null<br/>topLevelAssetMapperDomain: null<br/>domainAssetType: null<br/>isPaidLevelDomain: false<br/>domainDetails: null<br/>dnsZone: null<br/>latestSampledIp: null<br/>subdomainMetadata: null<br/>recentIps: <br/>businessUnits: {'name': 'Acme'}<br/>certificateDetails: {"issuer": "C=US,O=Thawte\\, Inc.,CN=Thawte SSL CA", "issuerAlternativeNames": "", "issuerCountry": "US", "issuerEmail": null, "issuerLocality": null, "issuerName": "Thawte SSL CA", "issuerOrg": "Thawte\\\\, Inc.", "formattedIssuerOrg": "Thawte", "issuerOrgUnit": null, "issuerState": null, "publicKey": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp21W/QVHuo0Nyy9l6Qp6Ye7yniuCccplWLdkL34pB0roNWBiklLJFftFTXJLtUuYEBhEbUtOPtNr5QRZFo+LQSj+JMQsGajEgNvIIMDms2xtc+vYkuJeNRsN/0zRm8iBjCNEZ0zBbWdupO6xee+Lngq5RiyRzAN2+Q5HlmHmVOcc7NtY5VIQhajp3a5Gc7tmLXa7ZxwQb+afdlpmE0iv4ZxmXFyHwlPXUlIxfETDDjtv2EzAgrnpZ5juo7TEFZA7AjsT0lO6cC2qPE9x9kC02PeC1Heg4hWf70CsXcKQBsprLqusrPYM9+OYfZnj+Dq9j6FjZD314Nz4qTGwmZrwDQIDAQAB", "publicKeyAlgorithm": "RSA", "publicKeyRsaExponent": 65537, "signatureAlgorithm": "SHA1withRSA", "subject": "C=US,ST=New Jersey,L=Wayne,O=Acme,OU=MIS,CN=*.acme.com", "subjectAlternativeNames": "*.acme.com", "subjectCountry": "US", "subjectEmail": null, "subjectLocality": "Wayne", "subjectName": "*.acme.com", "subjectOrg": "Acme", "subjectOrgUnit": "MIS", "subjectState": "New Jersey", "serialNumber": "91384582774546160650506315451812470612", "validNotBefore": 1413158400000, "validNotAfter": 1444780799000, "version": "3", "publicKeyBits": 2048, "publicKeyModulus": "a76d56fd0547ba8d0dcb2f65e90a7a61eef29e2b8271ca6558b7642f7e29074ae83560629252c915fb454d724bb54b981018446d4b4e3ed36be50459168f8b4128fe24c42c19a8c480dbc820c0e6b36c6d73ebd892e25e351b0dff4cd19bc8818c2344674cc16d676ea4eeb179ef8b9e0ab9462c91cc0376f90e479661e654e71cecdb58e5521085a8e9ddae4673bb662d76bb671c106fe69f765a661348afe19c665c5c87c253d75252317c44c30e3b6fd84cc082b9e96798eea3b4c415903b023b13d253ba702daa3c4f71f640b4d8f782d477a0e2159fef40ac5dc29006ca6b2eabacacf60cf7e3987d99e3f83abd8fa163643df5e0dcf8a931b0999af00d", "publicKeySpki": "Up3fHwOddA9cXEeO4XBOgn63bfnvkXsOrOv6AycwQAk=", "sha1Fingerprint": "77d025c36f055e254063ae2ac3625fd4bf4507fb", "sha256Fingerprint": "9a37c952ee1169cfa6e91efb57fe6d405d1ca48b26a714e9a46f008c15ea62e8", "md5Fingerprint": "498ec19ebd6c6883ecd43d064e713002"}<br/>inferredCvesObserved: <br/>ip_ranges: {} | *.acme.com | false | Certificate |
+
+
+### asm-list-alerts
+***
+Get a list of all your ASM alerts filtered by alert IDs, severity and/or creation time. Can also sort by creation time or severity. Maximum result limit is 100 assets.
+
+
+#### Base Command
+
+`asm-list-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_id_list | Comma separated list of integers of the alert ID. | Optional | 
+| severity | Comma separated list of strings of alert severity (valid values are low, medium, high, critical, informational). | Optional | 
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+| sort_by_severity | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.Alerts.alert_id | String | A unique identfier that Cortex XSIAM assigns to each alert. | 
+| ASM.Alerts.severity | String | The severity that was assigned to this alert when it was triggered \(Options are Informatonal, Low, Medium, High, Critical, or Unknown\). | 
+| ASM.Alerts.external_id | String | The alert ID as recorded in the detector from which this alert was sent. | 
+| ASM.Alerts.name | String | Summary of the ASM internet exposure alert. | 
+| ASM.Alerts.description | String | More detailed explanation of internet exposure alert. | 
+| ASM.Alerts.host_name | String | The hostname of the endpoint or server on which this alert triggered. | 
+| ASM.Alerts.dynamic_fields | Unknown | Alert fields pulled from XSOAR context. | 
+| ASM.Alerts.events | Unknown | Individual events the comprise the alert. | 
+| ASM.Alerts.detection_timestamp | Date | Date the alert was created. | 
+
+#### Command example
+```!asm-list-alerts limit=2 severity=high sort_by_creation_time=asc```
+#### Context Example
+```json
+{
+    "ASM": {
+        "Alerts": [
+            {
+                "action": "NOT_AVAILABLE",
+                "action_pretty": "N/A",
+                "agent_data_collection_status": null,
+                "agent_device_domain": null,
+                "agent_fqdn": null,
+                "agent_ip_addresses_v6": null,
+                "agent_os_sub_type": null,
+                "agent_os_type": "NO_HOST",
+                "agent_version": null,
+                "alert_id": "231",
+                "alert_type": "Unclassified",
+                "attempt_counter": null,
+                "bioc_category_enum_key": null,
+                "bioc_indicator": null,
+                "category": null,
+                "deduplicate_tokens": null,
+                "description": "Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network.",
+                "detection_timestamp": 1659452808759,
+                "dynamic_fields": null,
+                "end_match_attempt_ts": null,
+                "endpoint_id": null,
+                "events": [
+                    {
+                        "action_country": "UNKNOWN",
+                        "action_external_hostname": null,
+                        "action_file_macro_sha256": null,
+                        "action_file_md5": null,
+                        "action_file_name": null,
+                        "action_file_path": null,
+                        "action_file_sha256": null,
+                        "action_local_ip": null,
+                        "action_local_ip_v6": null,
+                        "action_local_port": null,
+                        "action_process_causality_id": null,
+                        "action_process_image_command_line": null,
+                        "action_process_image_name": null,
+                        "action_process_image_sha256": null,
+                        "action_process_instance_id": null,
+                        "action_process_signature_status": "N/A",
+                        "action_process_signature_vendor": null,
+                        "action_registry_data": null,
+                        "action_registry_full_key": null,
+                        "action_registry_key_name": null,
+                        "action_registry_value_name": null,
+                        "action_remote_ip": null,
+                        "action_remote_ip_v6": null,
+                        "action_remote_port": 80,
+                        "actor_causality_id": null,
+                        "actor_process_causality_id": null,
+                        "actor_process_command_line": null,
+                        "actor_process_image_md5": null,
+                        "actor_process_image_name": null,
+                        "actor_process_image_path": null,
+                        "actor_process_image_sha256": null,
+                        "actor_process_instance_id": null,
+                        "actor_process_os_pid": null,
+                        "actor_process_signature_status": "N/A",
+                        "actor_process_signature_vendor": null,
+                        "actor_thread_thread_id": null,
+                        "agent_host_boot_time": null,
+                        "agent_install_type": "NA",
+                        "association_strength": null,
+                        "causality_actor_causality_id": null,
+                        "causality_actor_process_command_line": null,
+                        "causality_actor_process_execution_time": null,
+                        "causality_actor_process_image_md5": null,
+                        "causality_actor_process_image_name": null,
+                        "causality_actor_process_image_path": null,
+                        "causality_actor_process_image_sha256": null,
+                        "causality_actor_process_signature_status": "N/A",
+                        "causality_actor_process_signature_vendor": null,
+                        "cloud_provider": null,
+                        "cluster_name": null,
+                        "container_id": null,
+                        "contains_featured_host": "NO",
+                        "contains_featured_ip": "NO",
+                        "contains_featured_user": "NO",
+                        "dns_query_name": null,
+                        "dst_action_country": null,
+                        "dst_action_external_hostname": null,
+                        "dst_action_external_port": null,
+                        "dst_agent_id": null,
+                        "dst_association_strength": null,
+                        "dst_causality_actor_process_execution_time": null,
+                        "event_id": null,
+                        "event_sub_type": null,
+                        "event_timestamp": 1659452808759,
+                        "event_type": null,
+                        "fw_app_category": null,
+                        "fw_app_id": null,
+                        "fw_app_subcategory": null,
+                        "fw_app_technology": null,
+                        "fw_device_name": null,
+                        "fw_email_recipient": null,
+                        "fw_email_sender": null,
+                        "fw_email_subject": null,
+                        "fw_interface_from": null,
+                        "fw_interface_to": null,
+                        "fw_is_phishing": "N/A",
+                        "fw_misc": null,
+                        "fw_rule": null,
+                        "fw_rule_id": null,
+                        "fw_serial_number": null,
+                        "fw_url_domain": null,
+                        "fw_vsys": null,
+                        "fw_xff": null,
+                        "identity_sub_type": null,
+                        "identity_type": null,
+                        "image_name": null,
+                        "module_id": null,
+                        "operation_name": null,
+                        "os_actor_causality_id": null,
+                        "os_actor_effective_username": null,
+                        "os_actor_process_causality_id": null,
+                        "os_actor_process_command_line": null,
+                        "os_actor_process_image_name": null,
+                        "os_actor_process_image_path": null,
+                        "os_actor_process_image_sha256": null,
+                        "os_actor_process_instance_id": null,
+                        "os_actor_process_os_pid": null,
+                        "os_actor_process_signature_status": "N/A",
+                        "os_actor_process_signature_vendor": null,
+                        "os_actor_thread_thread_id": null,
+                        "project": null,
+                        "referenced_resource": null,
+                        "resource_sub_type": null,
+                        "resource_type": null,
+                        "story_id": null,
+                        "user_agent": null,
+                        "user_name": null
+                    }
+                ],
+                "external_id": "FAKE-GUID",
+                "filter_rule_id": null,
+                "host_ip": null,
+                "host_name": null,
+                "is_pcap": false,
+                "is_whitelisted": false,
+                "last_modified_ts": 1660240725450,
+                "local_insert_ts": 1659455267908,
+                "mac": null,
+                "mac_addresses": null,
+                "matching_service_rule_id": null,
+                "matching_status": "MATCHED",
+                "mitre_tactic_id_and_name": null,
+                "mitre_technique_id_and_name": null,
+                "name": "Networking Infrastructure",
+                "original_tags": null,
+                "resolution_comment": "ASM alert resolution",
+                "resolution_status": "STATUS_070_RESOLVED_OTHER",
+                "severity": "high",
+                "source": "ASM",
+                "starred": false,
+                "tags": null
+            },
+            {
+                "action": "NOT_AVAILABLE",
+                "action_pretty": "N/A",
+                "agent_data_collection_status": null,
+                "agent_device_domain": null,
+                "agent_fqdn": null,
+                "agent_ip_addresses_v6": null,
+                "agent_os_sub_type": null,
+                "agent_os_type": "NO_HOST",
+                "agent_version": null,
+                "alert_id": "33",
+                "alert_type": "Unclassified",
+                "attempt_counter": null,
+                "bioc_category_enum_key": null,
+                "bioc_indicator": null,
+                "category": null,
+                "deduplicate_tokens": null,
+                "description": "Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network.",
+                "detection_timestamp": 1659452809020,
+                "dynamic_fields": null,
+                "end_match_attempt_ts": null,
+                "endpoint_id": null,
+                "events": [
+                    {
+                        "action_country": "UNKNOWN",
+                        "action_external_hostname": null,
+                        "action_file_macro_sha256": null,
+                        "action_file_md5": null,
+                        "action_file_name": null,
+                        "action_file_path": null,
+                        "action_file_sha256": null,
+                        "action_local_ip": null,
+                        "action_local_ip_v6": null,
+                        "action_local_port": null,
+                        "action_process_causality_id": null,
+                        "action_process_image_command_line": null,
+                        "action_process_image_name": null,
+                        "action_process_image_sha256": null,
+                        "action_process_instance_id": null,
+                        "action_process_signature_status": "N/A",
+                        "action_process_signature_vendor": null,
+                        "action_registry_data": null,
+                        "action_registry_full_key": null,
+                        "action_registry_key_name": null,
+                        "action_registry_value_name": null,
+                        "action_remote_ip": null,
+                        "action_remote_ip_v6": null,
+                        "action_remote_port": 80,
+                        "actor_causality_id": null,
+                        "actor_process_causality_id": null,
+                        "actor_process_command_line": null,
+                        "actor_process_image_md5": null,
+                        "actor_process_image_name": null,
+                        "actor_process_image_path": null,
+                        "actor_process_image_sha256": null,
+                        "actor_process_instance_id": null,
+                        "actor_process_os_pid": null,
+                        "actor_process_signature_status": "N/A",
+                        "actor_process_signature_vendor": null,
+                        "actor_thread_thread_id": null,
+                        "agent_host_boot_time": null,
+                        "agent_install_type": "NA",
+                        "association_strength": null,
+                        "causality_actor_causality_id": null,
+                        "causality_actor_process_command_line": null,
+                        "causality_actor_process_execution_time": null,
+                        "causality_actor_process_image_md5": null,
+                        "causality_actor_process_image_name": null,
+                        "causality_actor_process_image_path": null,
+                        "causality_actor_process_image_sha256": null,
+                        "causality_actor_process_signature_status": "N/A",
+                        "causality_actor_process_signature_vendor": null,
+                        "cloud_provider": null,
+                        "cluster_name": null,
+                        "container_id": null,
+                        "contains_featured_host": "NO",
+                        "contains_featured_ip": "NO",
+                        "contains_featured_user": "NO",
+                        "dns_query_name": null,
+                        "dst_action_country": null,
+                        "dst_action_external_hostname": null,
+                        "dst_action_external_port": null,
+                        "dst_agent_id": null,
+                        "dst_association_strength": null,
+                        "dst_causality_actor_process_execution_time": null,
+                        "event_id": null,
+                        "event_sub_type": null,
+                        "event_timestamp": 1659452809020,
+                        "event_type": null,
+                        "fw_app_category": null,
+                        "fw_app_id": null,
+                        "fw_app_subcategory": null,
+                        "fw_app_technology": null,
+                        "fw_device_name": null,
+                        "fw_email_recipient": null,
+                        "fw_email_sender": null,
+                        "fw_email_subject": null,
+                        "fw_interface_from": null,
+                        "fw_interface_to": null,
+                        "fw_is_phishing": "N/A",
+                        "fw_misc": null,
+                        "fw_rule": null,
+                        "fw_rule_id": null,
+                        "fw_serial_number": null,
+                        "fw_url_domain": null,
+                        "fw_vsys": null,
+                        "fw_xff": null,
+                        "identity_sub_type": null,
+                        "identity_type": null,
+                        "image_name": null,
+                        "module_id": null,
+                        "operation_name": null,
+                        "os_actor_causality_id": null,
+                        "os_actor_effective_username": null,
+                        "os_actor_process_causality_id": null,
+                        "os_actor_process_command_line": null,
+                        "os_actor_process_image_name": null,
+                        "os_actor_process_image_path": null,
+                        "os_actor_process_image_sha256": null,
+                        "os_actor_process_instance_id": null,
+                        "os_actor_process_os_pid": null,
+                        "os_actor_process_signature_status": "N/A",
+                        "os_actor_process_signature_vendor": null,
+                        "os_actor_thread_thread_id": null,
+                        "project": null,
+                        "referenced_resource": null,
+                        "resource_sub_type": null,
+                        "resource_type": null,
+                        "story_id": null,
+                        "user_agent": null,
+                        "user_name": null
+                    }
+                ],
+                "external_id": "FAKE-GUID",
+                "filter_rule_id": null,
+                "host_ip": null,
+                "host_name": null,
+                "is_pcap": false,
+                "is_whitelisted": false,
+                "last_modified_ts": 1660240426055,
+                "local_insert_ts": 1659455246812,
+                "mac": null,
+                "mac_addresses": null,
+                "matching_service_rule_id": null,
+                "matching_status": "MATCHED",
+                "mitre_tactic_id_and_name": null,
+                "mitre_technique_id_and_name": null,
+                "name": "Networking Infrastructure",
+                "original_tags": null,
+                "resolution_comment": "ASM alert resolution",
+                "resolution_status": "STATUS_070_RESOLVED_OTHER",
+                "severity": "high",
+                "source": "ASM",
+                "starred": false,
+                "tags": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ASM Alerts
+>|Action|Action Pretty|Agent Os Type|Alert Id|Alert Type|Description|Detection Timestamp|Events|External Id|Is Pcap|Is Whitelisted|Last Modified Ts|Local Insert Ts|Matching Status|Name|Resolution Comment|Resolution Status|Severity|Source|Starred|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| NOT_AVAILABLE | N/A | NO_HOST | 231 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452808759 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452808759, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240725450 | 1659455267908 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
+>| NOT_AVAILABLE | N/A | NO_HOST | 33 | Unclassified | Networking and security infrastructure, such as firewalls and routers, generally should not have their administration panels open to public Internet. Compromise of these devices, often though password guessing or vulnerability exploitation, provides privileged access to an enterprise network. | 1659452809020 | {'agent_install_type': 'NA', 'agent_host_boot_time': None, 'event_sub_type': None, 'module_id': None, 'association_strength': None, 'dst_association_strength': None, 'story_id': None, 'event_id': None, 'event_type': None, 'event_timestamp': 1659452809020, 'actor_process_instance_id': None, 'actor_process_image_path': None, 'actor_process_image_name': None, 'actor_process_command_line': None, 'actor_process_signature_status': 'N/A', 'actor_process_signature_vendor': None, 'actor_process_image_sha256': None, 'actor_process_image_md5': None, 'actor_process_causality_id': None, 'actor_causality_id': None, 'actor_process_os_pid': None, 'actor_thread_thread_id': None, 'causality_actor_process_image_name': None, 'causality_actor_process_command_line': None, 'causality_actor_process_image_path': None, 'causality_actor_process_signature_vendor': None, 'causality_actor_process_signature_status': 'N/A', 'causality_actor_causality_id': None, 'causality_actor_process_execution_time': None, 'causality_actor_process_image_md5': None, 'causality_actor_process_image_sha256': None, 'action_file_path': None, 'action_file_name': None, 'action_file_md5': None, 'action_file_sha256': None, 'action_file_macro_sha256': None, 'action_registry_data': None, 'action_registry_key_name': None, 'action_registry_value_name': None, 'action_registry_full_key': None, 'action_local_ip': None, 'action_local_ip_v6': None, 'action_local_port': None, 'action_remote_ip': None, 'action_remote_ip_v6': None, 'action_remote_port': 80, 'action_external_hostname': None, 'action_country': 'UNKNOWN', 'action_process_instance_id': None, 'action_process_causality_id': None, 'action_process_image_name': None, 'action_process_image_sha256': None, 'action_process_image_command_line': None, 'action_process_signature_status': 'N/A', 'action_process_signature_vendor': None, 'os_actor_effective_username': None, 'os_actor_process_instance_id': None, 'os_actor_process_image_path': None, 'os_actor_process_image_name': None, 'os_actor_process_command_line': None, 'os_actor_process_signature_status': 'N/A', 'os_actor_process_signature_vendor': None, 'os_actor_process_image_sha256': None, 'os_actor_process_causality_id': None, 'os_actor_causality_id': None, 'os_actor_process_os_pid': None, 'os_actor_thread_thread_id': None, 'fw_app_id': None, 'fw_interface_from': None, 'fw_interface_to': None, 'fw_rule': None, 'fw_rule_id': None, 'fw_device_name': None, 'fw_serial_number': None, 'fw_url_domain': None, 'fw_email_subject': None, 'fw_email_sender': None, 'fw_email_recipient': None, 'fw_app_subcategory': None, 'fw_app_category': None, 'fw_app_technology': None, 'fw_vsys': None, 'fw_xff': None, 'fw_misc': None, 'fw_is_phishing': 'N/A', 'dst_agent_id': None, 'dst_causality_actor_process_execution_time': None, 'dns_query_name': None, 'dst_action_external_hostname': None, 'dst_action_country': None, 'dst_action_external_port': None, 'contains_featured_host': 'NO', 'contains_featured_user': 'NO', 'contains_featured_ip': 'NO', 'image_name': None, 'container_id': None, 'cluster_name': None, 'referenced_resource': None, 'operation_name': None, 'identity_sub_type': None, 'identity_type': None, 'project': None, 'cloud_provider': None, 'resource_type': None, 'resource_sub_type': None, 'user_agent': None, 'user_name': None} | FAKE-GUID | false | false | 1660240426055 | 1659455246812 | MATCHED | Networking Infrastructure | ASM alert resolution | STATUS_070_RESOLVED_OTHER | high | ASM | false |
 
