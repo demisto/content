@@ -46,6 +46,10 @@ FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
 
+BATCH_DIVIDER = 5
+MAX_USERS = 2500
+MAX_WITHOUT_POLLING = 500
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -745,6 +749,81 @@ def get_millis_from_date(date, arg_name):
             raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
+def cutting_for_batches(list_accounts: list) -> List[list]:
+
+    batch_size = int(len(list_accounts) / BATCH_DIVIDER)
+    rest = len(list_accounts) % BATCH_DIVIDER
+
+    accounts: list = []
+    for i in range(1, BATCH_DIVIDER + 1):
+        accounts.append(list_accounts[batch_size * (i - 1):batch_size * i])
+
+    if rest > 0:
+        accounts[0].extend(list_accounts[batch_size * BATCH_DIVIDER:])
+
+    return accounts
+
+
+def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> List[CommandResults]:
+
+    accounts_batches = cutting_for_batches(accounts)
+
+    command_results: List[CommandResults] = []
+    args = {k: v for k, v in demisto.args().items()}
+    for batch in accounts_batches:
+
+        args.update({'list_accounts': batch})
+        command_results.append(
+            CommandResults(
+                readable_output='Please wait... serching...',
+                scheduled_command=ScheduledCommand(
+                    command='gmail-search-all-mailboxes',
+                    next_run_in_seconds=10,
+                    args={k: v for k, v in args.items()},
+                    timeout_in_seconds=600
+                )
+            )
+        )
+        del args['list_accounts']
+    command_results.append(
+        CommandResults(
+            outputs_key_field='PageToken',
+            outputs={'PageToken': {'NextPageToken': next_page_token}}
+        )
+    )
+
+    return command_results
+
+
+def get_mailboxes(max_results: int, users_next_page_token: str = None):
+    '''
+    Used to fetch the list of accounts for the search-all-mailboxes command
+    '''
+    list_accounts = []
+    counter = 0
+    users_next_page_token = users_next_page_token
+    service = get_service('admin', 'directory_v1')
+    while True:
+        command_args = {
+            'maxResults': min(max_results, 100),
+            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
+            'pageToken': users_next_page_token
+        }
+
+        result = service.users().list(**command_args).execute()
+        counter += len(result['users'])
+        list_accounts.extend([account['primaryEmail'] for account in result['users']])
+        users_next_page_token = result.get('nextPageToken')
+
+        if counter >= max_results:
+            list_accounts = list_accounts[:max_results]
+            break
+        if users_next_page_token is None:
+            break
+
+    return list_accounts, users_next_page_token
+
+
 ''' FUNCTIONS '''
 
 
@@ -1146,55 +1225,60 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts):
-    users_next_page_token = None
-    service = get_service('admin', 'directory_v1')
-    while True:
-        command_args = {
-            'maxResults': 100,
-            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            'pageToken': users_next_page_token
-        }
+def search_in_mailboxes(list_accounts, receive_only_accounts):
 
-        result = service.users().list(**command_args).execute()
-        users_count = len(result['users'])
-        users_next_page_token = result.get('nextPageToken')
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        entries = []
+        for user in list_accounts:
+            futures.append(executor.submit(search_command, mailbox=user,
+                                           receive_only_accounts=receive_only_accounts))
+        for future in concurrent.futures.as_completed(futures):
+            entry = future.result()
+            if entry:
+                entries.append(entry)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            accounts_counter = 0
-            futures = []
+        if entries:
+            if receive_only_accounts:
+                entries = [mailboxes_to_entry(entries)]
+            return_results(entries)
             entries = []
-            for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
-            for future in concurrent.futures.as_completed(futures):
-                accounts_counter += 1
-                result = future.result()
-                if result is None:
-                    continue
-                entries.append(future.result())
-                if accounts_counter % 100 == 0:
-                    demisto.info(
-                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
-                        of total accounts ({accounts_counter} / {users_count}), \
-                        and found {len(entries)} results so far',
-                    )
-
-        if receive_only_accounts:
-            entries = [mailboxes_to_entry(entries)]
-
-        # if these are the final result push - return them
-        if users_next_page_token is None:
-            if entries:
-                entries.append("Search completed")
-            else:
-                entries.append("No entries.")
-                return entries
-
-        # return midway results
-        return entries
 
 
-def search_command(mailbox=None):
+def search_all_mailboxes():
+
+    args = demisto.args()
+    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'true'))
+    list_accounts = argToList(args.get('list_accounts', ''))
+    next_page_token = args.get('page-token', '')
+
+    if list_accounts:
+        support_multithreading()
+        search_in_mailboxes(list_accounts, receive_only_accounts)
+
+    else:
+        # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
+        if next_page_token:
+            del demisto.args()['page-token']
+
+        # Get the accounts that will be searched, maximum accounts is set by MAX_USERS.
+        all_accounts, next_page_token = get_mailboxes(MAX_USERS, next_page_token)
+
+        # When the number of accounts is more than MAX_WITHOUT_POLLING the searching will make with polling commands.
+        if len(all_accounts) > MAX_WITHOUT_POLLING:
+            command_results: List[CommandResults] = scheduled_commands_for_more_users(all_accounts, next_page_token)
+            command_results.append(information_search_process(len(all_accounts), argToList(args.get('searching_accounts'))))
+            return_results(command_results)
+
+        # In case that the number of accounts less than MAX_WITHOUT_POLLING the searching run as usual.
+        elif all_accounts:
+            if args.get('searching_accounts'):
+                return_results(information_search_process(len(all_accounts), argToList(args.get('searching_accounts'))))
+            args['list_accounts'] = all_accounts
+            search_all_mailboxes()
+
+
+def search_command(mailbox=None, receive_only_accounts=False):
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1219,7 +1303,6 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
