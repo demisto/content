@@ -30,7 +30,7 @@ from google.cloud import storage
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
     PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
-    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
+    CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
@@ -125,6 +125,9 @@ class Pack(object):
         self._is_modified = None  # initialized in detect_modified function
         self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
+        self._has_fetch = False
+        self._is_data_source = False
+        self._single_integration = True  # assuming the pack contains one integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -194,6 +197,13 @@ class Pack(object):
         """ setter of is_siem
         """
         self._is_siem = is_siem
+
+    @property
+    def is_data_source(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_data_source
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -498,6 +508,30 @@ class Pack(object):
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
+    def is_data_source_pack(self, yaml_content):
+
+        is_data_source = self._is_data_source
+        # this's the first integration in the pack, and the pack is in xsiem
+        if self._single_integration and 'marketplacev2' in self.marketplaces:
+
+            # the integration is not deprecated
+            if not yaml_content.get('deprecated', False):
+
+                # the integration contains isfetch or isfetchevents
+                if yaml_content.get('script', {}).get('isfetchevents', False) or \
+                        yaml_content.get('script', {}).get('isfetch', False) is True:
+                    logging.info(f"{yaml_content.get('name')} is a Data Source potential")
+                    is_data_source = True
+        # already has the pack as data source
+        elif not self._single_integration and is_data_source:
+
+            # got a second integration in the pack that's not deprecated
+            if not yaml_content.get('deprecated', False):
+                logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+                is_data_source = False
+
+        return is_data_source
+
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
         Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
@@ -508,11 +542,19 @@ class Pack(object):
         Returns:
             Doesn't return
         """
+        logging.info("adding pack type tags")
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
+
+            self._is_data_source = self.is_data_source_pack(yaml_content)
+
+            # already found integration in the pack that's not deprecated
+            if not yaml_content.get('deprecated', False):
+                self._single_integration = False
+
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
@@ -698,7 +740,7 @@ class Pack(object):
 
     def _load_pack_dependencies_metadata(self, index_folder_path, packs_dict):
         """ Loads dependencies metadata and returns mapping of pack id and it's loaded data.
-            There are 2 cases:
+            There are 3 cases:
               Case 1: The dependency is present in the index.zip. In this case, we add it to the dependencies results.
               Case 2: The dependency is missing from the index.zip since it is a new pack. In this case, handle missing
                 dependency - This means we mark this pack as 'missing dependency', and once the new index.zip is
@@ -1756,7 +1798,8 @@ class Pack(object):
 
         final_release_notes = construct_entities_block(filtered_release_notes).strip()
         if not final_release_notes:
-            final_release_notes = f"Changes are not relevant for {'XSOAR' if marketplace == 'xsoar' else 'XSIAM'} marketplace."
+            final_release_notes = f"Changes are not relevant for " \
+                                  f"{'XSIAM' if marketplace == 'marketplacev2' else marketplace.upper()} marketplace."
 
         changelog_entry[Changelog.RELEASE_NOTES] = final_release_notes
         logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
@@ -1902,6 +1945,10 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
+
+        # Filters out for XPANSE tags
+        release_notes = remove_tags_section_from_rn(release_notes, XPANSE_MP, upload_marketplace)
+
         logging.debug(f"RN result after filtering for pack {self._pack_name} in marketplace "
                       f"{upload_marketplace}\n - {release_notes}")
 
@@ -2336,7 +2383,7 @@ class Pack(object):
             self.display_name = user_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._user_metadata = user_metadata
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
-            self._marketplaces = user_metadata.get('marketplaces', ['xsoar'])
+            self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar'])
 
             logging.info(f"Finished loading {self._pack_name} pack user metadata")
             task_status = True
@@ -2354,6 +2401,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
+        tags |= {f"marketplacev2:{PackTags.DATA_SOURCE}"} if self._is_data_source else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -3621,7 +3669,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
-                if self.is_preview_image(file.a_path):
+                if self.is_valid_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
                     image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
                     image_name = os.path.basename(file.a_path)
@@ -3692,19 +3740,34 @@ class Pack(object):
 
         return task_status
 
-    def is_preview_image(self, file_path: str) -> bool:
-        """ Indicates whether a file_path is a preview image or not
+    def is_valid_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a valid preview image or not:
+            - The file exists (is not removed in the latest upload)
+            - Belong to the current pack
+            - Id of type png
+            - path include the word '_image'
+            - Located in either XSIAMDashboards or XSIAMReports folder
         Args:
             file_path (str): The file path
         Returns:
             bool: True if the file is a preview image or False otherwise
         """
-        return all([
+        valid_image = all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
             file_path.endswith('.png'),
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
+        if not valid_image:
+            return False
+
+        # In cases where a preview image was deleted valid_image will be true but we don't want to upload it as it does
+        # not exist anymore
+        elif not os.path.exists(file_path):
+            logging.warning(f'Image: {file_path} was deleted and therefore will not be uploaded')
+            return False
+
+        return True
 
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:

@@ -165,13 +165,19 @@ class MsGraphClient:
         Returns:
             dict:
         """
-        no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
-                    f'/?$expand=microsoft.graph.itemattachment/item'
-        with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
-                       f'messages/{message_id}/attachments/{attachment_id}/'
-                       f'?$expand=microsoft.graph.itemattachment/item')
+        if attachment_id:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments/{attachment_id}' \
+                        f'/?$expand=microsoft.graph.itemattachment/item'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
+        else:
+            no_folder = f'/users/{user_id}/messages/{message_id}/attachments'
+            with_folder = (f'/users/{user_id}/{build_folders_path(folder_id)}/'  # type: ignore
+                           f'messages/{message_id}/attachments')
         suffix = with_folder if folder_id else no_folder
         response = self.ms_client.http_request('GET', suffix)
+        response = [response] if response and attachment_id else response.get('value', [])
         return response
 
     def get_message(self, user_id: str, message_id: str, folder_id: str = '', odata: str = '') -> dict:
@@ -1583,8 +1589,10 @@ def get_attachment_command(client: MsGraphClient, args):
     folder_id = args.get('folder_id')
     attachment_id = args.get('attachment_id')
     raw_response = client.get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
-    attachment = create_attachment(raw_response, user_id)
-    return_results(attachment)
+    attachments = []
+    for attachment in raw_response:
+        attachments.append(create_attachment(attachment, user_id))
+    return attachments
 
 
 def get_message_command(client: MsGraphClient, args):
@@ -2060,7 +2068,7 @@ def main():
         elif command == 'msgraph-mail-list-attachments':
             list_attachments_command(client, args)
         elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command(client, args)
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-list-folders':
             list_folders_command(client, args)
         elif command == 'msgraph-mail-list-child-folders':

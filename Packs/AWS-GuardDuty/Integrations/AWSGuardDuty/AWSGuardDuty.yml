@@ -37,29 +37,36 @@ configuration:
   section: Connect
   advanced: true
 - display: Access Key
+  name: credentials
+  required: false
+  type: 9
+  displaypassword: Secret Key
+- display: Access Key
   name: access_key
   required: false
   type: 0
   section: Connect
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
   section: Connect
+  hidden: true
 - display: Timeout
   name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
+  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
   required: false
   type: 0
   section: Connect
   advanced: true
 - display: Retries
   name: retries
-  defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+  defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
 - display: How many incidents to fetch each time
@@ -73,22 +80,22 @@ configuration:
   type: 0
   defaultvalue: 3 days
 - display: Guard Duty Severity level
+  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
   name: gs_severity
-  required: false
   type: 16
+  required: false
   section: Collect
   advanced: true
-  additionalinfo: 'You can set the severity level of the findings to be fetched: "Low", "Medium", "High". For example, if you set the severity level to "Medium", the integration will only fetch findings with severity level of Medium and higher.'
   options:
   - Low
   - Medium
   - High
 - display: Archive findings After Fetch
-  additionalinfo: You can set whether findings that are fetched will be moved to the GuardDuty archive.
   name: is_archive
+  required: false
   type: 8
   defaultvalue: "false"
-  required: false
+  additionalinfo: You can set whether findings that are fetched will be moved to the GuardDuty archive.
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
@@ -1490,7 +1497,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.37755
+  dockerimage: demisto/boto3py3:1.0.0.41464
   feed: false
   isfetch: true
   longRunning: false
