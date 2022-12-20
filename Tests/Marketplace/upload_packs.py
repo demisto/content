@@ -21,9 +21,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, \
     json_write
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
-    CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
-    SKIPPED_STATUS_CODES
-from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
+    CONTENT_ROOT_PATH, PACKS_FOLDER, IGNORED_FILES, LANDING_PAGE_SECTIONS_PATH, SKIPPED_STATUS_CODES
+from demisto_sdk.commands.common.tools import str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -1067,12 +1066,14 @@ def main():
     pack_names_to_upload = get_packs_names(packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     # list of all packs from `content_packs.zip` given from create artifacts
-    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), is_modified=pack_name in pack_names_to_upload)
+    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
+                              is_modified=pack_name in pack_names_to_upload)
                          for pack_name in os.listdir(extract_destination_path)]
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
-    packs_list = all_content_packs if is_bucket_upload_flow else list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
+    packs_list = all_content_packs if is_bucket_upload_flow else \
+        list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
