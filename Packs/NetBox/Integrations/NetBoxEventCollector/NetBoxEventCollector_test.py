@@ -12,6 +12,24 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+def test_add_time_param_to_events():
+    """
+    Given:
+        - list of events
+    When:
+        - Calling add_time_param_to_events
+    Then:
+        - Ensure the _time parameter is added to the events
+    """
+    from NetBoxEventCollector import add_time_param_to_events
+
+    events = util_load_json('test_data/netbox-get-events.json')
+    events = add_time_param_to_events(events)
+
+    assert events[0]['_time'] == '2022-12-04T14:33:52.067484Z'
+    assert events[4]['_time'] == '2022-12-07T08:19:57.810348Z'
+
+
 def test_get_events_command(requests_mock):
     """
     Given:
