@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cf6bc2b4-cafb-4eb8-8d70-93ccb3bf8f75
+    taskid: 543bfdb9-dd11-4956-84d7-613584e8737a
     type: start
     task:
-      id: cf6bc2b4-cafb-4eb8-8d70-93ccb3bf8f75
+      id: 543bfdb9-dd11-4956-84d7-613584e8737a
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+    taskid: dd127952-ee61-4659-82b8-345b555d57e9
     type: title
     task:
-      id: d9b8ff21-a8ec-437b-8d5e-2af99e27d119
+      id: dd127952-ee61-4659-82b8-345b555d57e9
       version: -1
       name: Done
       type: title
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: de67faa2-c10f-4fc7-8c36-3d82667dcb41
+    taskid: 49e6a7e7-5b80-4be3-8a6e-9da4856d252c
     type: regular
     task:
-      id: de67faa2-c10f-4fc7-8c36-3d82667dcb41
+      id: 49e6a7e7-5b80-4be3-8a6e-9da4856d252c
       version: -1
       name: DeleteContext
       description: |-
@@ -106,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: d3e7a7f0-29a4-40f3-8080-3791a832adf1
+    taskid: b377f60a-0aa1-41aa-8692-8a019a6dd430
     type: playbook
     task:
-      id: d3e7a7f0-29a4-40f3-8080-3791a832adf1
+      id: b377f60a-0aa1-41aa-8692-8a019a6dd430
       version: -1
       name: Search in mailboxes Gmail (Loop) with polling
       description: This playbook is used as a subplaybook for the Playbook Search-all-mailboxes - Gmail, it should not be used.
@@ -156,7 +156,7 @@ tasks:
           root: inputs.query
       searching_accounts:
         complex:
-          root: SearchingAccounts
+          root: SearchProcess
       subject:
         complex:
           root: inputs.subject

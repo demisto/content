@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6e543801-00e7-4ddf-8d14-9d7b6e2f91bf
+    taskid: ffd081fd-2d32-4c72-887f-849c7bb34923
     type: start
     task:
-      id: 6e543801-00e7-4ddf-8d14-9d7b6e2f91bf
+      id: ffd081fd-2d32-4c72-887f-849c7bb34923
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 9a88cd46-cce4-412e-800a-bc7311fe2942
+    taskid: 0b7fe62d-601c-4968-8049-f46b1ba4ccb4
     type: title
     task:
-      id: 9a88cd46-cce4-412e-800a-bc7311fe2942
+      id: 0b7fe62d-601c-4968-8049-f46b1ba4ccb4
       version: -1
       name: Done
       type: title
@@ -64,10 +64,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 3ce4a6cb-b41c-458f-83d1-abd42cfcae7b
+    taskid: 4d42bafa-1d6d-4991-8547-c948982ad34d
     type: regular
     task:
-      id: 3ce4a6cb-b41c-458f-83d1-abd42cfcae7b
+      id: 4d42bafa-1d6d-4991-8547-c948982ad34d
       version: -1
       name: DeleteContext
       description: |-
@@ -87,7 +87,7 @@ tasks:
       all:
         simple: "yes"
       keysToKeep:
-        simple: Gmail,NewPageToken,Stop,SearchingAccounts
+        simple: Gmail,NewPageToken,Stop,SearchProcess
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -106,10 +106,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: b24ddffc-c8cd-42fa-82f7-266bf2220ff7
+    taskid: b6a073df-cacd-4878-85ea-6c191ef3ef8c
     type: regular
     task:
-      id: b24ddffc-c8cd-42fa-82f7-266bf2220ff7
+      id: b6a073df-cacd-4878-85ea-6c191ef3ef8c
       version: -1
       name: Set Stop
       description: |-
@@ -148,10 +148,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 157eb311-da92-4fb4-8157-ad39598a3e1e
+    taskid: ae04c6e3-b927-4648-8008-28fdd16a8371
     type: regular
     task:
-      id: 157eb311-da92-4fb4-8157-ad39598a3e1e
+      id: ae04c6e3-b927-4648-8008-28fdd16a8371
       version: -1
       name: Set NewPageToken
       description: Set a value in context under the key you entered.
@@ -189,10 +189,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 0db5fd65-522f-4ca4-8c4f-0982b98098ca
+    taskid: 88d4d553-cf57-460d-8c91-272f69370990
     type: condition
     task:
-      id: 0db5fd65-522f-4ca4-8c4f-0982b98098ca
+      id: 88d4d553-cf57-460d-8c91-272f69370990
       version: -1
       name: Is there NextPageToken
       description: Checking if there is a new NextPageToken for next iteration.
@@ -234,14 +234,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 5cf0dca3-39a2-41a6-869b-2d09d90117c9
+    taskid: 856ec299-25b1-417d-84c5-f75660e999c4
     type: regular
     task:
-      id: 5cf0dca3-39a2-41a6-869b-2d09d90117c9
+      id: 856ec299-25b1-417d-84c5-f75660e999c4
       version: -1
       name: Search in mailboxes
       description: Searches the Gmail records for all Google users.
-      script: Gmail|||gmail-search-all-mailboxes
+      script: '|||gmail-search-all-mailboxes'
       type: regular
       iscommand: true
       brand: Gmail
@@ -348,15 +348,6 @@ tasks:
                 value:
                   simple: inputs.query
                 iscontext: true
-      searched_accounts:
-        complex:
-          root: inputs.searched_accounts
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.searched_accounts
-                iscontext: true
       searching_accounts:
         complex:
           root: inputs.searching_accounts
@@ -404,10 +395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b3d3dd75-0554-45c0-8fc6-01d4d513cb15
+    taskid: 3c4418eb-a8d8-446a-874a-1f9ec2c6607c
     type: regular
     task:
-      id: b3d3dd75-0554-45c0-8fc6-01d4d513cb15
+      id: 3c4418eb-a8d8-446a-874a-1f9ec2c6607c
       version: -1
       name: Delete SearchingAccounts key previous
       description: |-
@@ -425,7 +416,7 @@ tasks:
       - "32"
     scriptarguments:
       key:
-        simple: SearchingAccounts
+        simple: SearchProcess
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -561,7 +552,7 @@ outputs:
 - contextPath: Stop
   description: As a result of this output, the loop will come to an end.
   type: unknown
-- contextPath: SearchingAccounts
+- contextPath: SearchProcess
   description: Needs rewrite.
 tests:
 - No tests

@@ -839,9 +839,9 @@ def information_search_process(length_accounts: int, searching_accounts: str) ->
         readable_output = f'Searching accounts, ' \
                           f'from 1 to {length_accounts} from all the accounts'
     else:
-        last_account_number = searching_accounts.split(' ')[5]
+        last_account_number_searched = searching_accounts.split(' ')[5]
         readable_output = f'Searching accounts, ' \
-                          f'from {int(last_account_number) + 1} to {int(last_account_number) + length_accounts}' \
+                          f'from {int(last_account_number_searched) + 1} to {int(last_account_number_searched) + length_accounts}' \
                           ' from all the accounts'
 
     return CommandResults(
