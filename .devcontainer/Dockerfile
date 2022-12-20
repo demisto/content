@@ -1,21 +1,22 @@
 FROM python:3.10-slim-bullseye
 
-ADD createCerts.sh .
-RUN apt-get update && apt-get install dos2unix -y \
-    && dos2unix /createCerts.sh \
-    && chmod +x /createCerts.sh \ 
-    && /createCerts.sh /usr/local/share/ca-certificates/certs.crt \
-    && update-ca-certificates \
-    && apt-get install python2 -y
-
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
-# This is a workaround for VSCode devcontainer features in self signed certificate
-RUN apt-get install git -y && git clone --depth 1 --rev 42e5a013cc914f87d0ff7bf613a1f80d9ff57579 --single-branch https://github.com/devcontainers/features.git /features
+ADD createCerts.sh .
+RUN apt-get update && apt-get install dos2unix git python2 -y \
+    && dos2unix /createCerts.sh \
+    && chmod +x /createCerts.sh \ 
+    && /createCerts.sh /usr/local/share/ca-certificates/certs.crt \
+    && update-ca-certificates \
+    && rm -rf /features \
+    && git clone https://github.com/devcontainers/features.git /features \
+    && cd /features \
+    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579
 
+# This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
 RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
