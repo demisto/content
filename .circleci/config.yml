@@ -123,6 +123,7 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        sudo curl -sSL https://install.python-poetry.org | python3 -
         poetry --version
 
         # Check if CircleCI's config file and poetry files files are up to date

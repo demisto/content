@@ -107,6 +107,7 @@
 
 .install_venv: &install_venv
   - section_start "Installing Virtualenv" --collapsed
+  - curl -sSL https://install.python-poetry.org | python3 -
   - echo "Checking if pyproject.toml is consistent with poetry.lock"
   - poetry lock --check
   # we still need to install even if cached. if cached, `poetry` will handle it
