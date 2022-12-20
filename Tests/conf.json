@@ -184,9 +184,9 @@
             "has_api": false
         },
         {
-            "integrations": "Palo Alto Networks Threat Vault",
-            "playbookID": "PANW Threat Vault - Signature Search - Test",
-            "fromversion": "5.0.0"
+            "integrations": "Palo Alto Networks Threat Vault v2",
+            "playbookID": "PANW Threat Vault v2 - Test",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
@@ -2759,7 +2759,7 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80
         },
         {
