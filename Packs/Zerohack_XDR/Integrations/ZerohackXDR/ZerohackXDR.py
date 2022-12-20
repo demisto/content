@@ -1,5 +1,6 @@
-
-
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 from typing import Any, Dict, Tuple, List, Optional, cast
 import urllib3
 import json
@@ -98,7 +99,6 @@ class Client(BaseClient):
         offset = 0
         max_results = '1'
 
-       # unreachable code error was removed 
         request_params['offset'] = offset
         if max_results:
             request_params['limit'] = max_results
@@ -149,7 +149,6 @@ def test_module(client: Client) -> str:
 
     return 'ok'
 
-
 def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], first_fetch_time: Optional[int], min_severity: str) -> Tuple[Dict[str, int], List[dict]]:
     """
     This function continously fetches incidents from the Zerohack XDR api.
@@ -178,22 +177,30 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    # Get the last fetch time. If not provided then go for the first fetch time.
-    last_fetch = last_run.get('last_fetch', None)
-    if last_fetch is None:
-        last_fetch = first_fetch_time
-    else:
-        last_fetch = int(last_fetch)
-
-    last_incident_time = cast(int, last_fetch)
-    last_fetch_timestamp = str(datetime.fromtimestamp(last_fetch))
+    # A dictionary to store last fetch values for each severity.
+    next_run = {}
+    # Sorting the severity levels and creating a list.
     severity_levels = ZEROHACK_SEVERITIES[ZEROHACK_SEVERITIES.index(min_severity):]
     severity_levels.sort()
     # Initializating the incidents dictionary and setting the severity levels.
     incidents: List[Dict[str, Any]] = []
 
     for severity in severity_levels:
+        # Get the last fetch time for each severity.
+        # If not set then make use of the first fetch time.
+        last_fetch = last_run.get(f'last_fetch_severity_{severity}', None)
+        if last_fetch is None:
+            last_fetch = first_fetch_time
+        else:
+            last_fetch = int(last_fetch)
+
+        # Set the last incident time for this severity and start the calculations.
+        last_incident_time = cast(int, last_fetch)
+        last_fetch_timestamp = str(datetime.fromtimestamp(last_fetch))
+        # Calculate the required results from this severity level.
         required_results = math.floor(max_results/len(severity_levels))
+
+        # Fetch the response from the API.
         response = client.get_alerts(max_results = required_results, severity_level = severity, start_time = last_fetch_timestamp)
         if response["message_type"] != "d_not_f":
             for alert in response["data"]:
@@ -211,13 +218,18 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                         'rawJSON': json.dumps(alert),
                         'severity': convert_to_demisto_severity(alert.get('ids_threat_severity', 'Low')),
                     }
+                    demisto.debug(incident)
                     incidents.append(incident)
                     last_incident_time = incident_created_time
+
+        # Based on the findings update the last fetch dictionary.
         if last_fetch == last_incident_time:
             demisto.debug(f"Couldnt find new incidents with {last_fetch}. Updating.")
             last_incident_time = last_incident_time + 1
+            next_run[f'last_fetch_severity_{severity}'] = last_incident_time
+        else:
+            next_run[f'last_fetch_severity_{severity}'] = last_incident_time
 
-    next_run = {'last_fetch': last_incident_time}
     return next_run, incidents
 
 def get_latest_incident(client: Client, severity_level: str):
@@ -275,8 +287,11 @@ def main() -> None:
                                        arg_name='First fetch time', required=True)
     first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
 
-    # First fetch timestamp failsafe.
-    assert isinstance(first_fetch_timestamp, int)
+    # Checking the first fetch value type.
+    try:
+        int(first_fetch_timestamp)
+    except TypeError:
+        raise DemistoException("the first fetch value is invalid")
 
     demisto.debug(f'The command initiated is: {demisto.command()}')
     try:
