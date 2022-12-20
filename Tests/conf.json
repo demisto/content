@@ -184,9 +184,9 @@
             "has_api": false
         },
         {
-            "integrations": "Palo Alto Networks Threat Vault",
-            "playbookID": "PANW Threat Vault - Signature Search - Test",
-            "fromversion": "5.0.0"
+            "integrations": "Palo Alto Networks Threat Vault v2",
+            "playbookID": "PANW Threat Vault v2 - Test",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
@@ -5353,7 +5353,9 @@
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
-        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
+        "Phishing v3 - Get Original Email + Search & Delete - Test": "Issue CRTX-70684",
+        "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test": "Issue CRTX-70684"
     },
     "skipped_integrations": {
         "Lastline v2": "No license",
