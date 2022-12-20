@@ -2400,7 +2400,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {f"marketplacev2:{PackTags.DATA_SOURCE}"} if self._is_data_source else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
