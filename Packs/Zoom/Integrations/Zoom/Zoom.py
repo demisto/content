@@ -3,6 +3,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
+from datetime import datetime
 import dateparser
 
 
@@ -250,7 +251,7 @@ class Client(BaseClient):
         elif recurrence_type == "Monthly":
             recurrence_type = 3
 
-        num_type = 1
+        num_type = 1  # "instant"
         if type == "scheduled":
             num_type = 2
         elif type == "recurring meeting with fixed time":
@@ -277,7 +278,7 @@ class Client(BaseClient):
             raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
 
         if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
-                                                                  monthly_week, monthly_week_day)):
+                                                           monthly_week, monthly_week_day)):
             raise DemistoException(
                 "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
 
@@ -289,8 +290,15 @@ class Client(BaseClient):
         if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
             raise DemistoException("Weekly_days is for weekly recurrence_type only")
 
+        if num_type == 8 and not recurrence_type:
+            raise DemistoException(
+                "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type")
+
         # converting separately after the argument checking, because 0 as an int is equaled to false
         jbh_time = arg_to_number(jbh_time)
+
+        if start_time:
+            check_start_time_format(start_time)
 
         json_all_data = {}
 
@@ -511,6 +519,18 @@ def remove_None_values_from_dict(dict_to_reduce: Dict[str, Any]):
                 reduced_dict[key] = value
 
     return reduced_dict
+
+
+def check_start_time_format(start_time):
+    """checking if the time format is a full time format"""
+    expected_format = "%Y-%m-%dT%H:%M:%S"
+    if start_time.endswith("Z"):
+        expected_format += "%z"
+    try:
+        datetime.strptime(start_time, expected_format)
+    except ValueError as e:
+        raise DemistoException(
+            "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' ") from e
 
 
 '''FORMATTING FUNCTIONS'''
