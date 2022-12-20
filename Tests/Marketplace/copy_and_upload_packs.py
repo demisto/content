@@ -347,13 +347,20 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
-        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+    pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict, pc_failed_packs_dict, \
+    pc_successful_private_packs_dict,  pc_uploaded_images = get_upload_data(packs_results_file_path,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
+    logging.debug(f"Successful uploaded dependencies zip packs from Prepare Content: "
+                  f"{pc_successful_uploaded_dependencies_zip_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
     logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
+
+    # we want to copy also packs that successfuly uploaded their dependencies zip, thus unifying
+    # pc_successful_packs_dict and pc_successful_uploaded_dependencies_zip_packs_dict
+    pc_successful_packs_dict = pc_successful_packs_dict | pc_successful_uploaded_dependencies_zip_packs_dict
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict,

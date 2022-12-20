@@ -3806,7 +3806,7 @@ def get_pull_request_numbers_from_file(file_path) -> List[int]:
     return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
-def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict]:
+def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
@@ -3817,6 +3817,7 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
     Returns:
         dict: The successful packs dict
         dict: The failed packs dict
+        dict: the successful uploaded dependencies zip packs
         dict : The successful private packs dict
         dict: The images data dict
 
@@ -3825,13 +3826,16 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         packs_results_file = load_json(packs_results_file_path)
         stage_data: dict = packs_results_file.get(stage, {})
         successful_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        successful_uploaded_dependencies_zip_packs_dict = \
+            stage_data.get(BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS, {})
         failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
         successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
+        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, \
+               failed_packs_dict, successful_private_packs_dict, images_data_dict
 
     logging.debug(f'{packs_results_file_path} does not exist in artifacts')
-    return {}, {}, {}, {}
+    return {}, {}, {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
