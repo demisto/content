@@ -5356,6 +5356,7 @@
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2"
     },
     "skipped_integrations": {
+        "ews_mail_sender_srtest02" : "CRTX-70720 Bad Password",
         "Lastline v2": "No license",
         "AbuseIPDB": "License expired",
         "checkpointdome9": "No license",
