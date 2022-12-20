@@ -637,10 +637,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 66d246d0-c320-4f79-80d4-0c352478f10e
+    taskid: 5d9b464b-cbcb-4a81-8be2-957d16ed52c0
     type: regular
     task:
-      id: 66d246d0-c320-4f79-80d4-0c352478f10e
+      id: 5d9b464b-cbcb-4a81-8be2-957d16ed52c0
       version: -1
       name: Lookup Firewall rule names with associated network
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
@@ -677,6 +677,7 @@ tasks:
               suffix:
                 value:
                   simple: '"'
+          - operator: toLowerCase
     separatecontext: false
     continueonerrortype: ""
     view: |-
