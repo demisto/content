@@ -123,6 +123,7 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        rm -rf $HOME/.poetry/bin/poetry
         sudo curl -sSL https://install.python-poetry.org | python3 -
         poetry --version
 
@@ -179,7 +180,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "/tmp/poetry_version" }}-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -336,16 +337,13 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - run:
-          name: "poetry version"
-          command: echo $(poetry --version) >> /tmp/poetry_version
       - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
             - .venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "/tmp/poetry_version" }}-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
