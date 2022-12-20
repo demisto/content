@@ -101,7 +101,7 @@ script:
             For recurring meeting with fixed time only.
 
             Select how many times the meeting should recur before it is canceled. 
-            
+
             max = 365. Default = 1.
         - name: monthly_day
           description: >
@@ -270,7 +270,7 @@ script:
           description: Number of users to return. Max 300. The default is 30.
           type: int
         - name: next_page_token
-          description: The next page token is used to paginate through large result sets
+          description: The next page token is used to get the next page. Note that you must pass the same page size that you pased at the first call.
           type: string
           required: false
         - name: limit
@@ -361,13 +361,12 @@ script:
           description: Provide this field to view meeting details of a particular occurrence of the recurring meeting.
           type: string
         - name: show_previous_occurrences
-          default: false
           auto: PREDEFINED
           predefined:
             - False
             - True
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
-          defaultValue: '"True"'
+          defaultValue: True
       outputs:
         - contextPath: Zoom.Meetings
       description: Get the information of an existing zoom meeting
@@ -381,7 +380,7 @@ script:
           default: false
           description: Number of users to return. Default = 30. Max = 300.
         - name: next_page_token
-          description: The next page token is used to paginate through large result sets
+          description: The next page token is used to paginate te the next page. Note that you must pass the same page size that you pased at the first call.
           type: string
         - name: limit
           description: The total amunt of results to show.
