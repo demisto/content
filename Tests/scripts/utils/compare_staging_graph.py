@@ -266,7 +266,7 @@ def main():
         except Exception as e:
             print(f"could not upload file to slack: {e}")
             slack_client.chat_postMessage(
-                channels="dmst-graph-tests",
+                channel="dmst-graph-tests",
                 text="Could not upload diff file to slack\n"
                      f"Job URL: {os.getenv('CI_JOB_URL')}",
             )
