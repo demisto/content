@@ -4,7 +4,7 @@ import json
 import pytest
 from requests.auth import _basic_auth_str
 from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
-    create_query
+    create_query, convert_sco_to_indicator_sdo
 import demistomock as demisto
 
 HEADERS = {
@@ -572,3 +572,20 @@ def test_parse_manifest_and_object_args_with_valid_date(mocker, taxii2_server_v2
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
         assert response.json == manifest
+
+
+def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
+    """
+        Given
+            sco indicator to sdo indicator with type file.
+        When
+            Running convert_sco_to_indicator_sdo.
+        Then
+            Validating the result
+    """
+    ioc = util_load_json('test_files/objects21_file.json').get('objects', {})[0]
+    mocker.patch('TAXII2Server.create_sdo_stix_uuid', return_value={})
+
+    output = convert_sco_to_indicator_sdo(ioc, ioc)
+    assert 'file:hash.' in output.get('pattern', '')
+    assert 'pattern_type' in output.keys()
