@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from typing import Union
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,6 +16,7 @@ def edl_http_request(base_url, edl_name, verify, creds):
     HTTP Request to check EDL, using basic auth if creds are provided
     Returns the full response.
     """
+    response: Union[Dict, requests.Response]
     try:
         if creds:
             username = creds.get('username')
