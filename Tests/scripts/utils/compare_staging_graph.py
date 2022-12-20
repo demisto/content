@@ -56,18 +56,15 @@ def compare_indexes(index_id_set_path: Path, index_graph_path: Path, output_path
     return False
 
 
-def compare_dirs(dir1: str, dir2: str, output_path: Path) -> Tuple[list[str], str]:
+def compare_dirs(dir1: str, dir2: str, output_path: Path) -> list[str]:
     dir_compare = filecmp.dircmp(dir1, dir2)
-    capture = io.StringIO()
-    with redirect_stdout(capture):
-        dir_compare.report_full_closure()
 
     diff_files: list[str] = []
     compare_files(dir_compare, dir1, dir2, output_path, diff_files)
-    return diff_files, capture.getvalue()
+    return diff_files
 
 
-def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> Tuple[list[str], str]:
+def compare_zips(zip1: Path, zip2: Path, output_path: Path) -> list[str]:
     """Compare two zip files content"""
     # extract zip files
     output_path.mkdir(parents=True, exist_ok=True)
@@ -163,13 +160,9 @@ def compare(
     # compare directories
     dir_cmp = filecmp.dircmp(zip_id_set, zip_graph)
     # capture stdout
-    capture_stdout = io.StringIO()
-    with redirect_stdout(capture_stdout):
-        dir_cmp.report_full_closure()
     for file in dir_cmp.common_files:
         pack = file.removesuffix(".zip")
-        diff_files, summary = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
-        message.extend((f"### {pack} ###", summary))
+        diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
         if diff_files:
             diff_found = True
             message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
