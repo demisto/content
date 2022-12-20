@@ -16,7 +16,7 @@ ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bi
 # This is a workaround for VSCode devcontainer features in self signed certificate
 
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/install.sh /install-common.sh
-ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/install.sh /main.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/main.sh /main.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/git/install.sh /install-git.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-docker/install.sh /install-dind.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/node/install.sh /install-node.sh
