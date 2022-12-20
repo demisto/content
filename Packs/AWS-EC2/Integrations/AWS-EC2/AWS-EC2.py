@@ -1553,8 +1553,8 @@ def create_policy_kwargs_dict(args):
     policy_kwargs_keys = (('fromPort', 'FromPort'), ('toPort', 'ToPort'))
     policy_kwargs = {}
     for args_key, dict_key in policy_kwargs_keys:
-        if key := args.get(args_key):
-            policy_kwargs.update({dict_key: arg_to_number(key)})
+        if int(args.get(args_key)) is not None:
+            policy_kwargs.update({dict_key: int(args.get(args_key))})
     policy_kwargs_keys = (('cidrIp', 'CidrIp'), ('ipProtocol', 'IpProtocol'),
                           ('sourceSecurityGroupName', 'SourceSecurityGroupName'),
                           ('SourceSecurityGroupOwnerId', 'SourceSecurityGroupOwnerId'),

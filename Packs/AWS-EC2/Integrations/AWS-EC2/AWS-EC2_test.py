@@ -81,5 +81,16 @@ def test_aws_ec2_authorize_security_group_egress_rule(mocker, args, expected_res
         assert results == expected_results
 
 
-def test_aws_ec2_authorize_security_group_ingress_rule():
-    assert True
+def test_create_policy_kwargs_dict():
+    """
+    Given
+    - empty policy kwargs
+
+    When
+    - running create_policy_kwargs_dict function
+
+    Then
+    - make sure that create_policy_kwargs_dict does not fail on any exception
+
+    """
+    assert AWS_EC2.create_policy_kwargs_dict({}) == {}
