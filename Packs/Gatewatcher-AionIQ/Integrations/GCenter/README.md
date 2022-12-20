@@ -21,11 +21,6 @@ To simplify GCenter v2.5.3.102 is called GCenter in the Pack.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### gw-list-alerts (deprecated)
-***
-List all alerts. The command is deprecated. You should use the the `gw-es-wrapper` command instead.
-
-
 ### gw-get-alert
 ***
 Get an alert by it's uid

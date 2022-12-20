@@ -33,7 +33,7 @@ name: GCenter
 script:
   commands:
   - name: gw-list-alerts
-    description: List all alerts
+    description: List all alerts (Deprecated. use gw-es-wrapper command instead)
     deprecated: true
     outputs:
     - contextPath: GCenter.Alert.List.sha256
