@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 235d4f1f-490b-4885-8d96-51ff9fef2dff
+    taskid: 5e500d11-7271-4af7-8367-f80168225669
     type: start
     task:
-      id: 235d4f1f-490b-4885-8d96-51ff9fef2dff
+      id: 5e500d11-7271-4af7-8367-f80168225669
       version: -1
       name: ""
       iscommand: false
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 50
         }
       }
@@ -36,10 +36,10 @@ tasks:
     continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 15ffc64d-0ab8-4836-82f6-076c16759769
+    taskid: 08f47732-082f-460f-8ccb-0b15755bce27
     type: regular
     task:
-      id: 15ffc64d-0ab8-4836-82f6-076c16759769
+      id: 08f47732-082f-460f-8ccb-0b15755bce27
       version: -1
       name: Unzip pack
       description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 370
         }
       }
@@ -73,10 +73,10 @@ tasks:
     continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 32ceacf6-4a23-41a7-8ed7-5ea275fcfe34
+    taskid: 7248d03e-2b13-43cd-89ec-98fdd550c070
     type: regular
     task:
-      id: 32ceacf6-4a23-41a7-8ed7-5ea275fcfe34
+      id: 7248d03e-2b13-43cd-89ec-98fdd550c070
       version: -1
       name: Read metadata.json file
       description: Load the contents of a file into context.
@@ -105,7 +105,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 545
         }
       }
@@ -119,10 +119,10 @@ tasks:
     continueonerrortype: ""
   "12":
     id: "12"
-    taskid: eb82dbd0-6591-4b1f-83db-404497e50cd8
+    taskid: c38fe235-5a09-4621-82b0-1b65e94ea351
     type: regular
     task:
-      id: eb82dbd0-6591-4b1f-83db-404497e50cd8
+      id: c38fe235-5a09-4621-82b0-1b65e94ea351
       version: -1
       name: Set pack name
       description: Set a pack name in context under the key PackName.
@@ -157,7 +157,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 720
         }
       }
@@ -171,10 +171,10 @@ tasks:
     continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 3644c7a9-269e-4f00-83ad-f64523176434
+    taskid: 9107974c-e152-4a7b-8f69-ca988881b001
     type: regular
     task:
-      id: 3644c7a9-269e-4f00-83ad-f64523176434
+      id: 9107974c-e152-4a7b-8f69-ca988881b001
       version: -1
       name: Send notification
       description: Sends a message to a user, group, or channel.
@@ -198,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2240
+          "x": 685,
+          "y": 2235
         }
       }
     note: false
@@ -212,10 +212,10 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 86b53518-6f73-4716-835c-97f57a417ca8
+    taskid: 21e06594-223f-4e48-815d-7caef3b9f39e
     type: regular
     task:
-      id: 86b53518-6f73-4716-835c-97f57a417ca8
+      id: 21e06594-223f-4e48-815d-7caef3b9f39e
       version: -1
       name: Get username
       description: commands.local.cmd.get.users
@@ -235,7 +235,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 195
         }
       }
@@ -249,10 +249,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: a979f769-d17b-4817-884a-c533a556c4c4
+    taskid: 5cec1b8d-460f-444c-8606-b0ddf6233fa5
     type: regular
     task:
-      id: a979f769-d17b-4817-884a-c533a556c4c4
+      id: 5cec1b8d-460f-444c-8606-b0ddf6233fa5
       version: -1
       name: Set incident fields values
       description: |-
@@ -285,8 +285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1390
+          "x": 470,
+          "y": 1370
         }
       }
     note: false
@@ -299,10 +299,10 @@ tasks:
     continueonerrortype: ""
   "33":
     id: "33"
-    taskid: c17af818-1b69-4a1c-8e46-b10c58f11430
+    taskid: 684639ae-9772-4cbe-8a1f-94bd39ff8b44
     type: condition
     task:
-      id: c17af818-1b69-4a1c-8e46-b10c58f11430
+      id: 684639ae-9772-4cbe-8a1f-94bd39ff8b44
       version: -1
       name: Is Slack v2 enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -324,7 +324,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 797.5,
           "y": 1885
         }
       }
@@ -338,10 +338,10 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 99c15f43-eea5-48af-8576-c1434229f937
+    taskid: ac2776bf-b590-45b4-8c0f-a71529e04bad
     type: condition
     task:
-      id: 99c15f43-eea5-48af-8576-c1434229f937
+      id: ac2776bf-b590-45b4-8c0f-a71529e04bad
       version: -1
       name: Is Microsoft Teams enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -363,7 +363,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 910,
           "y": 2060
         }
       }
@@ -377,10 +377,10 @@ tasks:
     continueonerrortype: ""
   "42":
     id: "42"
-    taskid: f201d067-53ac-48b4-8926-a7eef801bafe
+    taskid: 45cb8118-9845-49bd-838e-b22df3cec2c1
     type: title
     task:
-      id: f201d067-53ac-48b4-8926-a7eef801bafe
+      id: 45cb8118-9845-49bd-838e-b22df3cec2c1
       version: -1
       name: Send notification
       type: title
@@ -394,7 +394,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 910,
           "y": 1565
         }
       }
@@ -408,10 +408,10 @@ tasks:
     continueonerrortype: ""
   "43":
     id: "43"
-    taskid: e964d19f-6760-4ead-836b-9e9495a7c349
+    taskid: bb251813-25d1-4567-8dc6-c59b67dd4ef1
     type: title
     task:
-      id: e964d19f-6760-4ead-836b-9e9495a7c349
+      id: bb251813-25d1-4567-8dc6-c59b67dd4ef1
       version: -1
       name: Done
       type: title
@@ -422,7 +422,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 1012.5,
           "y": 2410
         }
       }
@@ -436,10 +436,10 @@ tasks:
     continueonerrortype: ""
   "44":
     id: "44"
-    taskid: 45959dca-48b2-41a6-87e7-db5e9e39d206
+    taskid: 9a0fece8-462f-4528-85b5-5d7bcf3d60b4
     type: condition
     task:
-      id: 45959dca-48b2-41a6-87e7-db5e9e39d206
+      id: 9a0fece8-462f-4528-85b5-5d7bcf3d60b4
       version: -1
       name: Is channel given?
       type: condition
@@ -466,7 +466,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 910,
           "y": 1710
         }
       }
@@ -480,10 +480,10 @@ tasks:
     continueonerrortype: ""
   "45":
     id: "45"
-    taskid: 40898dbb-39bf-42ef-8981-c8e37e9ba4a8
+    taskid: 840fad60-19e4-4626-82c9-b297c28fd61c
     type: playbook
     task:
-      id: 40898dbb-39bf-42ef-8981-c8e37e9ba4a8
+      id: 840fad60-19e4-4626-82c9-b297c28fd61c
       version: -1
       name: Pull Request Creation - Github
       description: This playbook creates a pull request using Github integration.
@@ -516,8 +516,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1215
+          "x": 470,
+          "y": 1210
         }
       }
     note: false
@@ -530,10 +530,10 @@ tasks:
     continueonerrortype: ""
   "46":
     id: "46"
-    taskid: 49cc5d40-6c4f-4cd9-8052-f5c390f3b801
+    taskid: e46c9f2a-788b-4bef-81f1-a3bb83bdc5e3
     type: title
     task:
-      id: 49cc5d40-6c4f-4cd9-8052-f5c390f3b801
+      id: e46c9f2a-788b-4bef-81f1-a3bb83bdc5e3
       version: -1
       name: Create the pull request
       type: title
@@ -547,7 +547,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 895
         }
       }
@@ -561,10 +561,10 @@ tasks:
     continueonerrortype: ""
   "47":
     id: "47"
-    taskid: 279c30f3-1970-4cd9-8275-1f6aea84b175
+    taskid: b4894f8f-75e3-4406-86f3-06500e96ba77
     type: condition
     task:
-      id: 279c30f3-1970-4cd9-8275-1f6aea84b175
+      id: b4894f8f-75e3-4406-86f3-06500e96ba77
       version: -1
       name: What integration to use for create the pull request
       description: Check the GitIntegration input to know which git integration we want to use to create the pull request.
@@ -578,6 +578,8 @@ tasks:
       - "45"
       bitbucket:
       - "49"
+      GitLab:
+      - "53"
     separatecontext: false
     conditions:
     - label: github
@@ -603,10 +605,20 @@ tasks:
           right:
             value:
               simple: bitbucket
+    - label: GitLab
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GitIntegration
+            iscontext: true
+          right:
+            value:
+              simple: gitlab
     view: |-
       {
         "position": {
-          "x": 490,
+          "x": 695,
           "y": 1040
         }
       }
@@ -620,10 +632,10 @@ tasks:
     continueonerrortype: ""
   "48":
     id: "48"
-    taskid: 24dfbac3-fe79-4a09-880b-6cc67b28473a
+    taskid: fbc7b286-9eb2-4818-8ce0-a911a2eb654c
     type: regular
     task:
-      id: 24dfbac3-fe79-4a09-880b-6cc67b28473a
+      id: fbc7b286-9eb2-4818-8ce0-a911a2eb654c
       version: -1
       name: Print error
       description: Prints an error entry with a given message
@@ -646,8 +658,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1165,
-          "y": 1215
+          "x": -30,
+          "y": 1210
         }
       }
     note: false
@@ -660,13 +672,13 @@ tasks:
     continueonerrortype: ""
   "49":
     id: "49"
-    taskid: 17ca51a0-19aa-4280-881d-2b40667c3abf
+    taskid: 0f8941a5-780f-4aec-8b31-f19ab6d3af24
     type: playbook
     task:
-      id: 17ca51a0-19aa-4280-881d-2b40667c3abf
+      id: 0f8941a5-780f-4aec-8b31-f19ab6d3af24
       version: -1
       name: Pull Request Creation - Bitbucket
-      description: This playbook creates a pull request using Github integration.
+      description: This playbook creates a pull request using Bitbucket integration.
       playbookName: Pull Request Creation - Bitbucket
       type: playbook
       iscommand: false
@@ -694,7 +706,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
+          "x": 910,
           "y": 1210
         }
       }
@@ -707,10 +719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 76da55ce-d100-4731-8756-fdf64c71674b
+    taskid: 8094455e-1dab-4f49-8d98-02841f7d6011
     type: regular
     task:
-      id: 76da55ce-d100-4731-8756-fdf64c71674b
+      id: 8094455e-1dab-4f49-8d98-02841f7d6011
       version: -1
       name: Set incident fields values
       description: |-
@@ -744,7 +756,101 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 720,
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: e2a56c19-f448-43bc-887d-d22c5e435f07
+    type: playbook
+    task:
+      id: e2a56c19-f448-43bc-887d-d22c5e435f07
+      version: -1
+      name: Pull Request Creation - GitLab
+      description: This playbook creates a pull request using GitLab integration.
+      playbookName: Pull Request Creation - GitLab
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      MainBranch:
+        simple: ${inputs.MainBranch}
+      PackName:
+        simple: ${PackName}
+      PullRequestTemplate:
+        simple: ${inputs.PullRequestTemplate}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 04f8f18d-6c22-4cad-88dd-0a0fbf91d785
+    type: regular
+    task:
+      id: 04f8f18d-6c22-4cad-88dd-0a0fbf91d785
+      version: -1
+      name: Set incident fields values
+      description: |-
+        Update the following incident fields with the relevant data:
+        - cicdreviewer
+        - cicdpullrequestlink
+        - cicdpackname
+        - cicdbranch
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      cicdbranch:
+        complex:
+          root: BranchName
+      cicdpackname:
+        complex:
+          root: PackName
+      cicdpullrequestlink:
+        simple: https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+      cicdreviewer:
+        complex:
+          root: GitLab.MergeRequest.reviewers
+          accessor: account_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
           "y": 1390
         }
       }
@@ -761,8 +867,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2425,
-        "width": 1495,
-        "x": 50,
+        "width": 1750,
+        "x": -30,
         "y": 50
       }
     }
@@ -781,13 +887,13 @@ inputs:
   playbookInputQuery:
 - key: MainBranch
   value:
-    simple: master
+    simple: main
   required: true
   description: The name of the branch you want the changes pulled into, which must be an existing branch on the current repository.
   playbookInputQuery:
 - key: GitIntegration
   value:
-    simple: github
+    simple: gitlab
   required: true
   description: Which version control integration to use. We support github, gitlab and bitbucket.
   playbookInputQuery:
@@ -795,5 +901,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-contentitemexportablefields:
-  contentitemfields: {}
