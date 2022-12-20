@@ -1,0 +1,22 @@
+[
+    {
+        "name": "HTTP",
+        "value": "HTTP"
+    },
+    {
+        "name": "HTTPS",
+        "value": "HTTPS"
+    },
+    {
+        "name": "TLSCLIENTPORT",
+        "value": "TLSCLIENTPORT"
+    },
+    {
+        "name": "FTP",
+        "value": "FTP"
+    },
+    {
+        "name": "FTPS",
+        "value": "FTPS"
+    }
+]

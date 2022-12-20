@@ -1,0 +1,18 @@
+{
+    "results": {
+        "name": "FortiWeb-AWS_OnDemand",
+        "network": [
+            {
+                "id": "port1",
+                "name": "port1",
+                "label": 1,
+                "alias": "",
+                "ip_netmask": "10.0.5.105/24",
+                "speedDuplex": "-1 Mbps/ Duplex",
+                "tx": "751309",
+                "rx": "711367",
+                "link": "Up"
+            }
+        ]
+    }
+}

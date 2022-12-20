@@ -1,0 +1,7 @@
+CommonServerPython.py
+CommonServerUserPython.py
+DemistoClassApiModule.py
+demistomock.py
+config
+__pycache__
+.demisto-sdk-report

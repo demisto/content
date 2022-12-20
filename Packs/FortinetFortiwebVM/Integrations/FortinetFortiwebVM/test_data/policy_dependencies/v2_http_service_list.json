@@ -1,0 +1,59 @@
+{
+    "results": [
+        {
+            "id": 1,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "HTTP",
+            "port": "80 ",
+            "protocol": "TCP",
+            "protocol_val": "1"
+        },
+        {
+            "id": 2,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "HTTPS",
+            "port": "443 ",
+            "protocol": "TCP",
+            "protocol_val": "1"
+        },
+        {
+            "id": 3,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "TLSCLIENTPORT",
+            "port": "49443 ",
+            "protocol": "TCP",
+            "protocol_val": "1"
+        },
+        {
+            "id": 4,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "FTP",
+            "port": "21 ",
+            "protocol": "TCP",
+            "protocol_val": "1"
+        },
+        {
+            "id": 5,
+            "can_view": 1,
+            "q_ref": 1,
+            "can_clone": 1,
+            "q_type": 1,
+            "name": "FTPS",
+            "port": "990 ",
+            "protocol": "TCP",
+            "protocol_val": "1"
+        }
+    ]
+}

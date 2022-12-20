@@ -1,5 +1,4 @@
 from http import HTTPStatus
-from typing import Dict, Any
 from urllib.parse import urljoin
 from FortinetFortiwebVM import ClientV1, ClientV2, Client
 from CommonServerPython import *
@@ -40,21 +39,25 @@ def mock_client(version: str) -> Client:
 @pytest.mark.parametrize(
     ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
         (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
-            'name': 'check'
+            'name': 'check',
+            'default_action': 'Allow'
         }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
         (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
-            'name': 'check'
+            'name': 'check',
+            'default_action': 'Allow'
         }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
         (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
-            'name': 'check'
+            'name': 'check',
+            'default_action': 'Allow'
         }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
         (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
-            'name': 'check'
+            'name': 'check',
+            'default_action': 'Allow'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_protected_hostname_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
-                                           status_code: HTTPStatus, assert_flag: bool):
+def test_protected_hostname_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
+                                                 status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create a protected hostname group.
     Given:
@@ -66,52 +69,12 @@ def test_protected_hostname_create_command(requests_mock, mock_client: Client, v
      - Ensure that protected hostname created.
      - Ensure relevant error raised.
     """
-    from FortinetFortiwebVM import protected_hostname_create_command
+    from FortinetFortiwebVM import protected_hostname_group_create_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response, status_code=status_code)
     try:
-        result = protected_hostname_create_command(mock_client, args)
-        # assert result.raw_response['id'] == 'asd'
-    except DemistoException:
-        assert assert_flag
-
-
-@pytest.mark.parametrize(
-    ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    ))
-def test_protected_hostname_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
-                                           status_code: HTTPStatus, assert_flag: bool):
-    """
-    Scenario: Update a protected hostname group.
-    Given:
-     - User has provided correct parameters.
-     - User has provided not exist name.
-    When:
-     - fortiwebvm-protected-hostname-group-update called.
-    Then:
-     - Ensure that protected hostname updated.
-     - Ensure relevant error raised.
-    """
-    from FortinetFortiwebVM import protected_hostname_update_command
-    json_response = load_mock_response(jsonpath)
-    url = urljoin(mock_client.base_url, endpoint)
-    requests_mock.put(url=url, json=json_response, status_code=status_code)
-    try:
-        result = protected_hostname_update_command(mock_client, args)
+        result = protected_hostname_group_create_command(mock_client, args)
         assert expected_value in result.readable_output
         # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
     except DemistoException:
@@ -133,9 +96,50 @@ def test_protected_hostname_update_command(requests_mock, mock_client: Client, v
             'name': 'check'
         }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     ))
-def test_protected_hostname_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                           args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value,
-                                           status_code: HTTPStatus, assert_flag: bool):
+def test_protected_hostname_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
+                                                 status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Update a protected hostname group.
+    Given:
+     - User has provided correct parameters.
+     - User has provided not exist name.
+    When:
+     - fortiwebvm-protected-hostname-group-update called.
+    Then:
+     - Ensure that protected hostname updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import protected_hostname_group_update_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = protected_hostname_group_update_command(mock_client, args)
+        assert expected_value in result.readable_output
+        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
+    except DemistoException:
+        assert assert_flag
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
+        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+            'name': 'check'
+        }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
+        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+            'name': 'check'
+        }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+            'name': 'check'
+        }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
+        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+            'name': 'check'
+        }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    ))
+def test_protected_hostname_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
+                                                 status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Delete a protected hostname group.
     Given:
@@ -147,12 +151,12 @@ def test_protected_hostname_delete_command(requests_mock, mock_client: Client, v
      - Ensure that protected hostname deleted.
      - Ensure relevant error raised.
     """
-    from FortinetFortiwebVM import protected_hostname_delete_command
+    from FortinetFortiwebVM import protected_hostname_group_delete_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response, status_code=status_code)
     try:
-        result = protected_hostname_delete_command(mock_client, args)
+        result = protected_hostname_group_delete_command(mock_client, args)
         assert expected_value in result.readable_output
     except DemistoException:
         assert assert_flag
@@ -171,8 +175,8 @@ def test_protected_hostname_delete_command(requests_mock, mock_client: Client, v
         }, 'protected_hostname/v2_get_list_success.json', 3),
     ),
 )
-def test_protected_hostname_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                         args: Dict[str, Any], jsonpath: str, expected: int):
+def test_protected_hostname_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                               args: str, jsonpath: str, expected):
     """
     Scenario: List a protected hostname groups.
     Given:
@@ -182,11 +186,11 @@ def test_protected_hostname_list_command(requests_mock, mock_client: Client, ver
     Then:
      - Ensure that protected hostname listed.
     """
-    from FortinetFortiwebVM import protected_hostname_list_command
+    from FortinetFortiwebVM import protected_hostname_group_list_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
-    result = protected_hostname_list_command(mock_client, args)
+    result = protected_hostname_group_list_command(mock_client, args)
     assert len(result.outputs) == expected
     assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
 
@@ -219,7 +223,7 @@ def test_protected_hostname_list_command(requests_mock, mock_client: Client, ver
      HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
 def test_protected_hostname_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, expected_value,
+                                                  args: str, jsonpath: str, expected_value: str,
                                                   status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Create a protected hostname member.
@@ -280,8 +284,8 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client: Cl
      "'results': {'errcode': -3}"),
 ))
 def test_protected_hostname_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus,
-                                                  assert_flag: bool, expected_value: str):
+                                                  args: str, jsonpath: str, status_code: HTTPStatus, assert_flag: bool,
+                                                  expected_value):
     """
     Scenario: Update a protected hostname member.
     Given:
@@ -294,6 +298,11 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
      - Ensure relevant error raised.
     """
     from FortinetFortiwebVM import protected_hostname_member_update_command
+    if version == ClientV1.API_VER:
+        url = urljoin(mock_client.base_url,
+                      'ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost')
+        get_response = load_mock_response('protected_hostname_member/v1_get_list_success.json')
+        requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
@@ -325,8 +334,8 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
     }, 'protected_hostname_member/v2_delete_failed.json', HTTPStatus.INTERNAL_SERVER_ERROR, True, "'errcode': -1"),
 ))
 def test_protected_hostname_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus,
-                                                  assert_flag: bool, expected_value: str):
+                                                  args: str, jsonpath: str, status_code: HTTPStatus, assert_flag: bool,
+                                                  expected_value):
     """
     Scenario: Update a protected hostname member.
     Given:
@@ -366,7 +375,7 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client: Cl
     ),
 )
 def test_protected_hostname_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                args: Dict[str, Any], jsonpath: str, expected: int):
+                                                args: str, jsonpath: str, expected):
     """
     Scenario: List a protected hostname groups.
     Given:
@@ -381,7 +390,7 @@ def test_protected_hostname_member_list_command(requests_mock, mock_client: Clie
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = protected_hostname_member_list_command(mock_client, args)
-    assert len(result.outputs) == expected
+    assert len(result.outputs['members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameMember'
 
 
@@ -389,24 +398,30 @@ def test_protected_hostname_member_list_command(requests_mock, mock_client: Clie
     ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
         (ClientV1.API_VER, 'WebProtection/Access/IPList', {
             'name': 'check',
-            'action': 'deny and no log',
         }, 'ip_list_group/v1_create_success.json', 'id', 'check', HTTPStatus.OK, False),
         (ClientV1.API_VER, 'WebProtection/Access/IPList', {
             'name': 'check',
-            'action': 'deny and no log',
-        }, 'ip_list_group/v1_create_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+        }, 'ip_list_group/v1_create_exist.json', 'id', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR,
+         True),
         (ClientV2.API_VER, 'cmdb/waf/ip-list', {
             'name': 'check',
-            'action': 'deny and no log',
+            'action': 'Alert deny',
+            'block_period': 600,
+            'severity': 'Low',
+            'ignore_x_forwarded_for': 'disable'
         }, 'ip_list_group/v2_create_success.json', 'id', 'check', HTTPStatus.OK, False),
         (ClientV2.API_VER, 'cmdb/waf/ip-list', {
             'name': 'check',
-            'action': 'deny and no log',
-        }, 'ip_list_group/v2_create_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+            'action': 'Alert deny',
+            'block_period': 600,
+            'severity': 'Low',
+            'ignore_x_forwarded_for': 'disable'
+        }, 'ip_list_group/v2_create_exist.json', 'id', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR,
+         True),
     ))
-def test_ip_list_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                      args: Dict[str, Any], jsonpath, expected_key: str, expected_value: str,
-                                      status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                      jsonpath: str, expected_key: str, expected_value: str, status_code: HTTPStatus,
+                                      assert_flag: bool):
     """
     Scenario: Create an IP list group.
     Given:
@@ -425,7 +440,8 @@ def test_ip_list_group_create_command(requests_mock, mock_client: Client, versio
     try:
         result = ip_list_group_create_command(mock_client, args)
         assert expected_value in result.readable_output
-    except DemistoException:
+    except DemistoException as error:
+        assert expected_value in error.message
         assert assert_flag
 
 
@@ -433,16 +449,17 @@ def test_ip_list_group_create_command(requests_mock, mock_client: Client, versio
     ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
         (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
             'name': 'check',
-            'action': 'block period',
+            'action': 'Alert deny',
         }, 'ip_list_group/v2_update_success.json', 'id', 'check', HTTPStatus.OK, False),
         (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
             'name': 'check',
-            'action': 'block period',
-        }, 'ip_list_group/v2_not_exist.json', 'id', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+            'action': 'Alert deny',
+        }, 'ip_list_group/v2_not_exist.json', 'id', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR,
+         True),
     ))
-def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                      args: Dict[str, Any], jsonpath, expected_key: str, expected_value: str,
-                                      status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                      jsonpath: str, expected_key: str, expected_value: str, status_code: HTTPStatus,
+                                      assert_flag: bool):
     """
     Scenario: Update an IP list group.
     Given:
@@ -461,7 +478,8 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, versio
     try:
         result = ip_list_group_update_command(mock_client, args)
         assert expected_value in result.readable_output
-    except DemistoException:
+    except DemistoException as error:
+        assert expected_value in error.message
         assert assert_flag
 
 
@@ -479,8 +497,8 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, versio
         'name': 'Example'
     }, 'protected_hostname/v2_failed_exist.json', HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
-def test_ip_list_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                      args: Dict[str, Any], jsonpath: str, status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                      jsonpath: str, status_code: HTTPStatus, assert_flag):
     """
     Scenario: Delete an IP list group.
     Given:
@@ -497,7 +515,7 @@ def test_ip_list_group_delete_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response, status_code=status_code)
     try:
-        result = ip_list_group_delete_command(mock_client, args)
+        ip_list_group_delete_command(mock_client, args)
     except DemistoException:
         assert assert_flag
 
@@ -515,8 +533,8 @@ def test_ip_list_group_delete_command(requests_mock, mock_client: Client, versio
         }, 'ip_list_group/v2_list_success.json', 3),
     ),
 )
-def test_ip_list_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                    args: Dict[str, Any], jsonpath: str, expected: int):
+def test_ip_list_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                    jsonpath: str, expected):
     """
     Scenario: List an IP list groups.
     Given:
@@ -540,29 +558,33 @@ def test_ip_list_group_list_command(requests_mock, mock_client: Client, version:
         (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember', {
             'group_name': '1234',
             'ip_address': '1.2.3.89',
-            'type': 'black ip'
+            'type': 'Black IP',
+            'severity': 'Low'
         }, 'ip_list_member/v1_create_success.json', 'id', '6', HTTPStatus.OK, False),
         (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember', {
             'group_name': '1234',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP',
+            'severity': 'Low'
         }, 'ip_list_member/v1_exist.json', 'id', 'The IP has already existed in the table.',
          HTTPStatus.INTERNAL_SERVER_ERROR, True),
         (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234', {
             'group_name': '1234',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP',
+            'severity': 'Low'
         }, 'ip_list_member/v2_create_success.json', 'id', '5', HTTPStatus.OK, False),
         (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234', {
             'group_name': '1234',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP',
+            'severity': 'Low'
         }, 'ip_list_member/v2_exist.json', 'id', "'results': {'errcode': -6014}", HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
     ))
-def test_ip_list_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                       args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value: str,
-                                       status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                       jsonpath: str, expected_key: str, expected_value: str, status_code: HTTPStatus,
+                                       assert_flag: bool):
     """
     Scenario: Create an IP list member.
     Given:
@@ -594,32 +616,32 @@ def test_ip_list_member_create_command(requests_mock, mock_client: Client, versi
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP'
         }, 'ip_list_member/v1_create_success.json', 'id', '1', HTTPStatus.OK, False),
         (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember/1', {
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP'
         }, 'ip_list_member/v1_not_exist.json', 'id', 'Invalid length of value.', HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
         (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP'
         }, 'ip_list_member/v2_create_success.json', 'id', '1', HTTPStatus.OK, False),
         (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
             'group_name': '1234',
             'member_id': '1',
             'ip_address': '1.1.1.1',
-            'type': 'black ip'
+            'type': 'Black IP'
         }, 'ip_list_member/v2_not_exist.json', 'id', "'results': {'errcode': -3}", HTTPStatus.INTERNAL_SERVER_ERROR,
          True),
     ))
-def test_ip_list_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                       args: Dict[str, Any], jsonpath: str, expected_key: str, expected_value: str,
-                                       status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                       jsonpath: str, expected_key: str, expected_value: str, status_code: HTTPStatus,
+                                       assert_flag: bool):
     """
     Scenario: Update an IP list member.
     Given:
@@ -632,6 +654,10 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
      - Ensure relevant error raised.
     """
     from FortinetFortiwebVM import ip_list_member_update_command
+    if version == ClientV1.API_VER:
+        url = urljoin(mock_client.base_url, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember')
+        get_response = load_mock_response('ip_list_member/v1_list_success.json')
+        requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
@@ -661,9 +687,8 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
         'member_id': '1',
     }, 'ip_list_member/v2_not_exist.json', "'results': {'errcode': -3}", HTTPStatus.INTERNAL_SERVER_ERROR, True),
 ))
-def test_ip_list_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: Dict[str,
-                                                                                                                   Any],
-                                       jsonpath: str, expected_value, status_code: HTTPStatus, assert_flag: bool):
+def test_ip_list_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                       jsonpath: str, expected_value: str, status_code: HTTPStatus, assert_flag: bool):
     """
     Scenario: Delete an IP list member.
     Given:
@@ -702,8 +727,8 @@ def test_ip_list_member_delete_command(requests_mock, mock_client: Client, versi
         }, 'ip_list_member/v2_list_success.json', 3),
     ),
 )
-def test_ip_list_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                     args: Dict[str, Any], jsonpath: str, expected: int):
+def test_ip_list_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                     jsonpath: str, expected):
     """
     Scenario: List an IP list members.
     Given:
@@ -718,7 +743,7 @@ def test_ip_list_member_list_command(requests_mock, mock_client: Client, version
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = ip_list_member_list_command(mock_client, args)
-    assert len(result.outputs) == expected
+    assert len(result.outputs['members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.IpListPolicyMember'
 
 
@@ -759,6 +784,9 @@ def test_http_content_routing_member_add_command(requests_mock, mock_client: Cli
     args = {
         'policy_name': 'policy',
         'http_content_routing_policy': '1234',
+        'is_default': 'yes',
+        'inherit_web_protection_profile': 'disable',
+        'status': 'enable'
     }
     try:
         result = http_content_routing_member_add_command(mock_client, args)
@@ -797,6 +825,10 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client: 
     """
 
     from FortinetFortiwebVM import http_content_routing_member_update_command
+    if version == ClientV1.API_VER:
+        url = urljoin(mock_client.base_url, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting')
+        get_response = load_mock_response('http_content_routing_member/v1_list_success.json')
+        requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
@@ -869,7 +901,7 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client: 
     ),
 )
 def test_http_content_routing_member_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, expected: int):
+                                                  args: str, jsonpath: str, expected):
     """
     Scenario: List HTTP content routing members.
     Given:
@@ -884,5 +916,1308 @@ def test_http_content_routing_member_list_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = http_content_routing_member_list_command(mock_client, args)
-    assert len(result.outputs) == expected
+    assert len(result.outputs['members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.HttpContentRoutingMember'
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code'), (
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json', 'check', HTTPStatus.OK),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_exist.json', 'The object already exist.',
+     HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_create_success.json', 'check', HTTPStatus.OK),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_exist.json', "The object already exist.",
+     HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json',
+     "There is a problem with one or more arguments.", HTTPStatus.INTERNAL_SERVER_ERROR),
+))
+def test_geo_ip_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                     expected_value: str, status_code: HTTPStatus):
+    from FortinetFortiwebVM import geo_ip_group_create_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    args = {
+        'name': 'check',
+        'action': 'Alert deny',
+        'block_period': '50',
+        'severity': 'High',
+        'ignore_x_forwarded_for': 'enable'
+    }
+    try:
+        result = geo_ip_group_create_command(mock_client, args)
+        assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code'), (
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_update_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json',
+     'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_update_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json',
+     "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_wrong_parameters.json',
+     "There is a problem with one or more arguments.", HTTPStatus.INTERNAL_SERVER_ERROR),
+))
+def test_geo_ip_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                     expected_value: str, status_code: HTTPStatus):
+    from FortinetFortiwebVM import geo_ip_group_update_command
+    if version == ClientV1.API_VER:
+        url = urljoin(mock_client.base_url, 'WebProtection/Access/GeoIP')
+        get_response = load_mock_response('geo_ip_group/v1_list_success.json')
+        requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    args = {
+        'name': 'check',
+        'action': 'Alert deny',
+        'block_period': '50',
+        'severity': 'High',
+        'ignore_x_forwarded_for': 'enable'
+    }
+    try:
+        result = geo_ip_group_update_command(mock_client, args)
+        assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code'), (
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_delete_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json',
+     'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_delete_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json',
+     "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_wrong_parameters.json',
+     "There is a problem with one or more arguments.", HTTPStatus.INTERNAL_SERVER_ERROR),
+))
+def test_geo_ip_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                     expected_value: str, status_code: HTTPStatus):
+    from FortinetFortiwebVM import geo_ip_group_delete_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=status_code)
+    args = {'name': 'check'}
+    try:
+        result = geo_ip_group_delete_command(mock_client, args)
+        assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath', 'expected'),
+    (
+        (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_list_success.json', 3),
+        (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_list_success.json', 3),
+    ),
+)
+def test_geo_ip_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                   expected):
+    """
+    Scenario: List an IP list members.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-ip-list-member-list called.
+    Then:
+     - Ensure that protected hostname listed.
+    """
+    from FortinetFortiwebVM import geo_ip_group_list_command
+    args = {'page': '1', 'page_size': 3}
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = geo_ip_group_list_command(mock_client, args)
+    assert len(result.outputs) == expected
+    assert result.outputs_prefix == 'FortiwebVM.GeoIpGroup'
+
+
+@pytest.mark.parametrize(
+    ('version', 'post_endpoint', 'get_endpoint', 'post_jsonpath', 'get_jsonpath', 'expected_value', 'status_code'), (
+        (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry', 'WebProtection/Access/GeoIP/ron/AddCountry',
+         'geo_ip_member/v1_add_success.json', 'geo_ip_member/v1_list_success.json', 'check', HTTPStatus.OK),
+        (ClientV2.API_VER, 'waf/geoip.setCountrys?mkey=ron', 'cmdb/waf/geo-block-list/country-list?mkey=ron',
+         'geo_ip_member/v2_add_success.json', 'geo_ip_member/v2_list_success.json', 'check', HTTPStatus.OK),
+        (ClientV2.API_VER, 'waf/geoip.setCountrys?mkey=ron', 'cmdb/waf/geo-block-list/country-list?mkey=ron',
+         'geo_ip_member/v2_not_exist.json', 'geo_ip_member/v2_list_success.json', 'The object does not exist.',
+         HTTPStatus.INTERNAL_SERVER_ERROR),
+    ))
+def test_geo_ip_member_add_command(requests_mock, mock_client: Client, version: str, post_endpoint: str,
+                                   get_endpoint: str, post_jsonpath: str, get_jsonpath: str, expected_value: str,
+                                   status_code: HTTPStatus):
+    """
+    Scenario: Add a Geo IP member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist host.
+    When:
+     - fortiwebvm-geo-ip-member-add called.
+    Then:
+     - Ensure that protected hostname created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import geo_ip_member_add_command
+    post_json_response = load_mock_response(post_jsonpath)
+    get_json_response = load_mock_response(get_jsonpath)
+    post_url = urljoin(mock_client.base_url, post_endpoint)
+    get_url = urljoin(mock_client.base_url, get_endpoint)
+    requests_mock.post(url=post_url, json=post_json_response, status_code=status_code)
+    requests_mock.get(url=get_url, json=get_json_response, status_code=status_code)
+    args = {'group_name': 'ron', 'countries': 'Spain,France'}
+    try:
+        result = geo_ip_member_add_command(mock_client, args)
+        assert 'Spain' in result.readable_output
+        assert 'France' in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry/1', 'ip_list_member/v1_delete_success.json', '1',
+     HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry/1', 'geo_ip_member/v1_not_exist.json',
+     'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list/country-list?mkey=ron&sub_mkey=1',
+     'geo_ip_member/v2_delete_success.json', '1', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list/country-list?mkey=ron&sub_mkey=1', 'geo_ip_member/v2_not_exist.json',
+     "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_geo_ip_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                      expected_value: str, status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Delete a Geo IP member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided not exist host.
+    When:
+     - fortiwebvm-geo-ip-member-delete called.
+    Then:
+     - Ensure that protected hostname created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import geo_ip_member_delete_command
+    args = {'group_name': 'ron', 'member_id': 1}
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=status_code)
+    try:
+        result = geo_ip_member_delete_command(mock_client, args)
+        assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert assert_flag
+
+
+@pytest.mark.parametrize(
+    ('version', 'args', 'endpoint', 'jsonpath', 'expected'),
+    (
+        (ClientV1.API_VER, {
+            'group_name': 'ron',
+            'limit': 1
+        }, 'WebProtection/Access/GeoIP/ron/AddCountry', 'geo_ip_member/v1_list_success.json', 1),
+        (ClientV1.API_VER, {
+            'group_name': 'ron',
+            'page': 1,
+            'page_size': 2
+        }, 'WebProtection/Access/GeoIP/ron/AddCountry', 'geo_ip_member/v1_list_success.json', 2),
+        (ClientV2.API_VER, {
+            'group_name': 'ron',
+            'limit': 1
+        }, 'cmdb/waf/geo-block-list/country-list?mkey=ron', 'geo_ip_member/v2_list_success.json', 1),
+        (ClientV2.API_VER, {
+            'group_name': 'ron',
+            'page': 1,
+            'page_size': 2
+        }, 'cmdb/waf/geo-block-list/country-list?mkey=ron', 'geo_ip_member/v2_list_success.json', 2),
+    ),
+)
+def test_geo_ip_member_list_command(requests_mock, mock_client: Client, version: str, args, endpoint, jsonpath: str,
+                                    expected):
+    """
+    Scenario: List the Geo IP members.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fortiwebvm-geo-ip-member-list called.
+    Then:
+     - Ensure that geo ip listed.
+    """
+    from FortinetFortiwebVM import geo_ip_member_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = geo_ip_member_list_command(mock_client, args)
+    assert len(result.outputs['countries']) == expected
+    assert result.outputs_prefix == 'FortiwebVM.GeoIpMember'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'System/Status/StatusOperation', 'system_status/v1_operation_status.json'),
+        (ClientV2.API_VER, 'system/status.systemoperation', 'system_status/v2_operation_status.json'),
+    ),
+)
+def test_operation_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: Get operation status.
+    When:
+     - fortiwebvm-system-operation-status-get.
+    Then:
+     - Ensure that the output is correct.
+    """
+
+    from FortinetFortiwebVM import operation_status_get_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = operation_status_get_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.SystemOperation'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'System/Status/PolicyStatus', 'system_status/v1_policy_status.json'),
+        (ClientV2.API_VER, 'policy/policystatus', 'system_status/v2_policy_status.json'),
+    ),
+)
+def test_policy_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: Get policy status.
+    When:
+     - fortiwebvm-system-policy-status-get.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import policy_status_get_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = policy_status_get_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.SystemPolicy'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'System/Status/Status', 'system_status/v1_system_status.json'),
+        (ClientV2.API_VER, 'system/status.systemstatus', 'system_status/v2_system_status.json'),
+    ),
+)
+def test_system_status_get_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: Get system status.
+    When:
+     - fortiwebvm-system-status-get.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import system_status_get_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = system_status_get_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.SystemStatus'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'ServerObjects/Server/ServerPool', 'policy_dependencies/v1_server_pool.json'),
+        (ClientV2.API_VER, 'cmdb/server-policy/server-pool', 'policy_dependencies/v2_server_pool.json'),
+    ),
+)
+def test_server_pool_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: List the server pools.
+    When:
+     - fortiwebvm-server-pool-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import server_pool_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = server_pool_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.ServerPool'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'ServerObjects/Service/HttpServiceList', 'policy_dependencies/v1_http_service_list.json'),
+        (ClientV2.API_VER, 'cmdb/server-policy/service.predefined', 'policy_dependencies/v2_http_service_list.json'),
+    ),
+)
+def test_http_service_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: List the HTTP services.
+    When:
+     - fortiwebvm-http-service-list-get.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import http_service_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = http_service_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.HttpServiceList'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'Policy/WebProtectionProfile/InlineProtectionProfile',
+         'policy_dependencies/v1_inline_protection_profile.json'),
+        (ClientV2.API_VER, 'cmdb/waf/web-protection-profile.inline-protection',
+         'policy_dependencies/v2_inline_protection_profile.json'),
+    ),
+)
+def test_inline_protection_profile_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                jsonpath: str):
+    """
+    Scenario: List the Inline protection profiles.
+    When:
+     - fortiwebvm-inline-protection-profile-list   .
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import inline_protection_profile_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = inline_protection_profile_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.InlineProtectionProfile'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'ServerObjects/Server/VirtualServer', 'policy_dependencies/v1_virtual_server.json'),
+        (ClientV2.API_VER, 'cmdb/server-policy/vserver', 'policy_dependencies/v2_virtual_server.json'),
+    ),
+)
+def test_virtual_server_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: List the virtual servers.
+    When:
+     - fortiwebvm-virtual-server-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import virtual_server_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = virtual_server_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.VirtualServer'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'ServerObjects/Server/HTTPContentRoutingPolicy',
+         'policy_dependencies/v1_http_content_routing_policy.json'),
+        (ClientV2.API_VER, 'cmdb/server-policy/http-content-routing-policy',
+         'policy_dependencies/v2_http_content_routing_policy.json'),
+    ),
+)
+def test_http_content_routing_policy_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  jsonpath: str):
+    """
+    Scenario: List the HTTP content routing policies..
+    When:
+     - fortiwebvm-http-content-routing-member-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import http_content_routing_policy_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = http_content_routing_policy_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.HttpContentRoutingPolicy'
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v1_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+    }, 'server_policy/v1_create_success.json', 'It must to insert at least one HTTP or HTTPS service.', HTTPStatus.OK,
+     True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'retry_on_http_response_codes': '77,404'
+    }, 'server_policy/v1_create_success.json', 'Please insert codes from the list.', HTTPStatus.OK, True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_wrong_parameters.json', 'There is a problem with one or more arguments.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v2_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v2_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v2_wrong_parameters.json', 'There is a problem with one or more arguments.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_server_policy_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                      jsonpath: str, expected_value: str, status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Create a new server policy.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-server-policy-create called.
+    Then:
+     - Ensure that server policy created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import server_policy_create_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    try:
+        result = server_policy_create_command(mock_client, args)
+        assert expected_value in result.readable_output
+        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v1_create_success.json', '123456789', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+    }, 'server_policy/v1_create_success.json', 'It must to insert at least one HTTP or HTTPS service.', HTTPStatus.OK,
+     True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'retry_on_http_response_codes': '77,404'
+    }, 'server_policy/v1_create_success.json', 'Please insert codes from the list.', HTTPStatus.OK, True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_wrong_parameters.json', 'There is a problem with one or more arguments.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
+        'name': '123456789',
+        'deployment_mode': 'Single Server/Server Balance',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_wrong_parameters.json',
+     'Server pool is requierd argument while deployment_mode is "Single Server/Server Balance".',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v2_create_success.json', '123456789', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v2_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=123456789', {
+        'name': '123456789',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v2_wrong_parameters.json', 'There is a problem with one or more arguments.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_server_policy_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                      jsonpath: str, expected_value: str, status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Update a new server policy.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-server-policy-update called.
+    Then:
+     - Ensure that server policy updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import server_policy_update_command
+    get_endpoint = 'Policy/ServerPolicy/ServerPolicy' if version == ClientV1.API_VER else 'cmdb/server-policy/policy'
+    get_jsonpath = 'server_policy/v1_list_success.json' if version == ClientV1.API_VER else 'server_policy/v2_list_success.json'
+    url = urljoin(mock_client.base_url, get_endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = server_policy_update_command(mock_client, args)
+        assert expected_value in result.readable_output
+        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code'), (
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/check', 'server_policy/v1_delete_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/check', 'server_policy/v1_not_exist.json',
+     'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=check', 'server_policy/v2_delete_success.json', 'check',
+     HTTPStatus.OK),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=check', 'server_policy/v2_not_exist.json',
+     "The object does not exist.", HTTPStatus.INTERNAL_SERVER_ERROR),
+))
+def test_server_policy_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                      expected_value: str, status_code: HTTPStatus):
+    """
+    Scenario: Delete a server policy.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-server-policy-delete called.
+    Then:
+     - Ensure that server policy deleted.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import server_policy_delete_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=status_code)
+    args = {'name': 'check'}
+    try:
+        result = server_policy_delete_command(mock_client, args)
+        assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert expected_value in error.message
+        assert status_code == HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath', 'expected'),
+    (
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', 'server_policy/v1_list_success.json', 2),
+        (ClientV2.API_VER, 'cmdb/server-policy/policy', 'server_policy/v2_list_success.json', 2),
+    ),
+)
+def test_server_policy_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str,
+                                    expected):
+    """
+    Scenario: List server policies.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-server-policy-list called.
+    Then:
+     - Ensure that server policy listed.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import server_policy_list_command
+
+    args = {'page': '1', 'page_size': 2}
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = server_policy_list_command(mock_client, args)
+    assert len(result.outputs) == expected
+    assert result.outputs_prefix == 'FortiwebVM.ServerPolicy'
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'request_url': '123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_exist.json', 'Request URL must start with  / .', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_url_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'request_url': '123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_exist.json', 'Request URL must start with  / .', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_url_create_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                             jsonpath: str, expected_value: str, status_code: HTTPStatus,
+                                             assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist url member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-url-create called.
+    Then:
+     - Ensure that custom whitelist url member created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_url_create_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    url = urljoin(mock_client.base_url, endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_url_create_command(mock_client, args)
+        # assert expected_value in result.readable_output
+        assert result.outputs_prefix == 'FortiwebVM.CustomGlobalWhitelist'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'name': 'ron',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'name': 'ron',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_parameter_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'request_type': 'Simple String',
+        'request_url_status': 'enable',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_exist.json', 'Please insert request_url.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'request_type': 'Simple String',
+        'request_url_status': 'enable',
+        'request_url': '/asds',
+        'domain_status': 'enable',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_exist.json', 'Please insert domain.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_parameter_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                   args: str, jsonpath: str, expected_value: str,
+                                                   status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist parameter member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-parameter-create called.
+    Then:
+     - Ensure that custom whitelist parameter member created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_parameter_create_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    url = urljoin(mock_client.base_url, endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_parameter_create_command(mock_client, args)
+        assert result.outputs_prefix == 'FortiwebVM.CustomGlobalWhitelist'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'name': 'ron',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'name': 'ron',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_cookie_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_cookie_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                args: str, jsonpath: str, expected_value: str, status_code: HTTPStatus,
+                                                assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist cookie member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-cookie-create called.
+    Then:
+     - Ensure that custom whitelist cookie member created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_cookie_create_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    url = urljoin(mock_client.base_url, endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_cookie_create_command(mock_client, args)
+        assert result.outputs_prefix == 'FortiwebVM.CustomGlobalWhitelist'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
+        'name': 'ron',
+        'status': 'disable',
+        'header_name_type': 'Simple String'
+    }, 'custom_whitelist/v1_wrong_parameters.json', 'Create command not supported in version 1.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'status': 'disable',
+        'header_name_type': 'Simple String'
+    }, 'custom_whitelist/v2_parameter_create_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'status': 'disable',
+        'header_name_type': 'Simple String'
+    }, 'custom_whitelist/v2_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+        'name': 'ron',
+        'status': 'disable',
+        'header_name_type': 'Simple String',
+        'value_status': 'enable'
+    }, 'custom_whitelist/v2_wrong_parameters.json', 'Please insert value.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_header_field_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                      args: str, jsonpath: str, expected_value: str,
+                                                      status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist header field member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-header-field-create called.
+    Then:
+     - Ensure that custom whitelist header field member created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_header_field_create_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    url = urljoin(mock_client.base_url, endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_header_field_create_command(mock_client, args)
+        assert result.outputs_prefix == 'FortiwebVM.CustomGlobalWhitelist'
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
+        'id': '3',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
+        'id': '3',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v1_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/6', {
+        'id': '6',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable',
+    }, 'custom_whitelist/v1_not_exist.json', "You can't update Parameter member with URL update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=1', {
+        'id': '1',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_url_update_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=77', {
+        'id': '77',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable'
+    }, 'custom_whitelist/v2_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=6', {
+        'id': '2',
+        'request_url': '/123',
+        'request_type': 'Simple String',
+        'status': 'disable',
+    }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with URL update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: str,
+                                             jsonpath: str, expected_value: str, status_code: HTTPStatus,
+                                             assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist url member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-url-update called.
+    Then:
+     - Ensure that custom whitelist url member updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_url_update_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    url = urljoin(mock_client.base_url, get_endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_url_update_command(mock_client, args)
+        # assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/6', {
+        'id': '6',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/6', {
+        'id': '6',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
+        'id': '3',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_not_exist.json', "You can't update URL member with Parameter update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
+        'id': '2',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_parameter_update_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
+        'id': '2',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=1', {
+        'id': '1',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', "You can't update URL member with Parameter update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                   args: str, jsonpath: str, expected_value: str,
+                                                   status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Update a custom whitelist parameter member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-parameter-update called.
+    Then:
+     - Ensure that custom whitelist parameter member updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_parameter_update_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    url = urljoin(mock_client.base_url, get_endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_parameter_update_command(mock_client, args)
+        # assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
+        'id': '7',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
+        'id': '7',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
+        'id': '3',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_not_exist.json', "You can't update URL member with Cookie update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=3', {
+        'id': '3',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_cookie_update_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=3', {
+        'id': '3',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
+        'id': '2',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with Cookie update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                args: str, jsonpath: str, expected_value: str, status_code: HTTPStatus,
+                                                assert_flag: bool):
+    """
+    Scenario: Create a custom whitelist cookie member.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-cookie-update called.
+    Then:
+     - Ensure that custom whitelist cookie member updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_cookie_update_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    url = urljoin(mock_client.base_url, get_endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_cookie_update_command(mock_client, args)
+        # assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
+        'id': '7',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v1_success.json', 'Update command not supported in version 1.',
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
+        'id': '4',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_header_field_update_success.json', 'check', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
+        'id': '4',
+        'name': 'sdfs',
+        'value_status': 'enable',
+    }, 'custom_whitelist/v2_header_field_update_success.json', 'Please insert value.', HTTPStatus.INTERNAL_SERVER_ERROR,
+     True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
+        'id': '4',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', 'The object does not exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
+    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
+        'id': '2',
+        'name': 'sdfs',
+    }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with Header Field update command.",
+     HTTPStatus.INTERNAL_SERVER_ERROR, True),
+))
+def test_custom_whitelist_header_field_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                      args: str, jsonpath: str, expected_value: str,
+                                                      status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Update a custom whitelist header-field member.
+    Given:
+     - User has provided correct header_fields.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-whitelist-header-field-update called.
+    Then:
+     - Ensure that custom whitelist header field member updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_whitelist_header_field_update_command
+    get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    url = urljoin(mock_client.base_url, get_endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_whitelist_header_field_update_command(mock_client, args)
+        # assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'WebProtection/Access/GeoIPExceptionsList', 'geo_dependencies/v1_geo_exceptions.json'),
+        (ClientV2.API_VER, 'cmdb/waf/geo-ip-except', 'geo_dependencies/v2_geo_exceptions.json'),
+    ),
+)
+def test_geo_exception_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: List the Geo IP Exceptions.
+    When:
+     - fortiwebvm-geo-exception-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import geo_exception_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = geo_exception_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.GeoExceptionGroup'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'LogReport/LogPolicy/TriggerList', 'geo_dependencies/v1_trigger_policy.json'),
+        (ClientV2.API_VER, 'cmdb/log/trigger-policy', 'geo_dependencies/v2_trigger_policy.json'),
+    ),
+)
+def test_trigger_policy_list_command(requests_mock, mock_client: Client, version: str, endpoint: str, jsonpath: str):
+    """
+    Scenario: List the Trigger Policies.
+    When:
+     - fortiwebvm-trigger-policy-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import trigger_policy_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = trigger_policy_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.TriggerPolicy'
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+    (ClientV1.API_VER, 'ServerObjects/Global/CustomPredefinedGlobalWhiteList', {
+        'id': '200001',
+        'status': 'enable',
+    }, 'custom_predifined/v1_update_success.json', 'Update command not supported in version 1.', HTTPStatus.OK, False),
+    (ClientV2.API_VER, 'policy/serverobjects.global.predefinedglobalwhitelist', {
+        'id': '200001',
+        'status': 'enable',
+    }, 'custom_predifined/v2_update_success.json', 'check', HTTPStatus.OK, False),
+))
+def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                    args: str, jsonpath: str, expected_value: str,
+                                                    status_code: HTTPStatus, assert_flag: bool):
+    """
+    Scenario: Update a custom predifined whitelist member.
+    Given:
+     - User has provided correct data.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-custom-predefined-whitelist-update called.
+    Then:
+     - Ensure that custom whitelist predifined member updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import custom_predifined_whitelist_update_command
+    get_jsonpath = 'custom_predifined/v1_list_success.json' if version == ClientV1.API_VER else 'custom_predifined/v2_list_success.json'
+    url = urljoin(mock_client.base_url, endpoint)
+    get_response = load_mock_response(get_jsonpath)
+    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    try:
+        result = custom_predifined_whitelist_update_command(mock_client, args)
+        # assert expected_value in result.readable_output
+    except DemistoException as error:
+        assert assert_flag
+        assert expected_value in error.message
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'ServerObjects/Global/CustomPredefinedGlobalWhiteList',
+         'custom_predifined/v1_list_success.json'),
+        (ClientV2.API_VER, 'policy/serverobjects.global.predefinedglobalwhitelist',
+         'custom_predifined/v2_list_success.json'),
+    ),
+)
+def test_custom_predifined_whitelist_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                  jsonpath: str):
+    """
+    Scenario: List the custom predifined whitelist members.
+    When:
+     - fortiwebvm-custom-predefined-whitelist-update called.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import custom_predifined_whitelist_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = custom_predifined_whitelist_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.CustomPredefinedGlobalWhitelist'
+
+
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'jsonpath'),
+    (
+        (ClientV1.API_VER, 'System/Certificates/InterCAGroupList',
+         'policy_dependencies/v1_certificate_intermediate_group.json'),
+        (ClientV2.API_VER, 'cmdb/system/certificate.intermediate-certificate-group',
+         'policy_dependencies/v2_certificate_intermediate_group.json'),
+    ),
+)
+def test_certificate_intermediate_group_list_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                     jsonpath: str):
+    """
+    Scenario: List the Certificate intermediate groups.
+    When:
+     - fortiwebvm-certificate-intermediate-group-list.
+    Then:
+     - Ensure that the output is correct.
+    """
+    from FortinetFortiwebVM import certificate_intermediate_group_list_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.get(url=url, json=json_response)
+    result = certificate_intermediate_group_list_command(mock_client, {})
+    assert result.outputs_prefix == 'FortiwebVM.CertificateIntermediateGroup'
