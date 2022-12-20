@@ -11,6 +11,28 @@ from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
 
+
+def write_to_debug_log(msg):  # pragma: no cover
+    if DEBUGGING:
+        VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
+
+
+def use_demisto_debug(msg):  # pragma: no cover
+    write_to_debug_log(msg)
+    temp = sys.stdout
+    sys.stdout = sys.__stdout__
+    demisto.debug(msg)
+    sys.stdout = temp
+
+
+def use_demisto_info(msg):  # pragma: no cover
+    write_to_debug_log(msg)
+    temp = sys.stdout
+    sys.stdout = sys.__stdout__
+    demisto.info(msg)
+    sys.stdout = temp
+
+
 demisto.info = use_demisto_info  # type: ignore
 demisto.debug = use_demisto_debug  # type: ignore
 VMWARE_DEBUGGER = []
@@ -813,27 +835,6 @@ def unregister_vm(si, args):
 def test_module(si):
     get_vms(si, {'limit': '1'})
     return 'ok'
-
-
-def write_to_debug_log(msg):  # pragma: no cover
-    if DEBUGGING:
-        VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
-
-
-def use_demisto_debug(msg):  # pragma: no cover
-    write_to_debug_log(msg)
-    temp = sys.stdout
-    sys.stdout = sys.__stdout__
-    demisto.debug(msg)
-    sys.stdout = temp
-
-
-def use_demisto_info(msg):  # pragma: no cover
-    write_to_debug_log(msg)
-    temp = sys.stdout
-    sys.stdout = sys.__stdout__
-    demisto.info(msg)
-    sys.stdout = temp
 
 
 def main():  # pragma: no cover
