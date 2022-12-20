@@ -365,24 +365,21 @@ def alerts_list_pagination(records_list: List, limit: int, page: int, time_perio
     Returns:
         The wanted records.
     """
-    if page == 1 and limit < 1000:
-        return records_list[:limit]
-    else:
-        num_rec_2_remove = (limit * (page - 1))
-        results_list = []
-        if total_alerts_count > 1000:
-            while num_rec_2_remove + limit > 1000:
-                records_list = records_list[num_rec_2_remove:]
-                results_list.extend(records_list)
-                limit = limit - len(results_list)
-                num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
-                response = client.get_alerts_request(time_period, start_time, end_time, state, search,
-                                                     filter_arg, domain_id, 'next')
-                records_list = response.get('alertsList', [])
+    num_rec_2_remove = (limit * (page - 1))
+    results_list = []
+    if total_alerts_count > 1000:
+        while (num_rec_2_remove + limit > 1000) and (len(records_list) == 1000):
+            records_list = records_list[num_rec_2_remove:]
+            results_list.extend(records_list)
+            limit = limit - len(records_list)
+            num_rec_2_remove = 0 if num_rec_2_remove <= 1000 else num_rec_2_remove - 1000
+            response = client.get_alerts_request(time_period, start_time, end_time, state, search,
+                                                 filter_arg, domain_id, 'next')
+            records_list = response.get('alertsList', [])
 
-        records_list = records_list[num_rec_2_remove:]
-        results_list.extend(records_list[:limit])
-        return results_list
+    records_list = records_list[num_rec_2_remove:]
+    results_list.extend(records_list[:limit])
+    return results_list
 
 
 def response_cases(response_str: str) -> str:
@@ -419,14 +416,14 @@ def rule_object_type_cases(str_type: str, case: str) -> str:
     return r_type
 
 
-def check_source_and_destination(source_rule_object_id: Optional[Any], source_rule_object_type: str,
-                                 destination_rule_object_id: Optional[Any], destination_rule_object_type: str,
+def check_source_and_destination(source_rule_object_id: Optional[int], source_rule_object_type: str,
+                                 destination_rule_object_id: Optional[int], destination_rule_object_type: str,
                                  create_or_update: str):
     """ Checks the source and destination objects.
     Args:
-        source_rule_object_id: Optional[Any] - Unique Rule Object ID.
+        source_rule_object_id: Optional[int] - Unique Rule Object ID.
         source_rule_object_type: str - Source / Destination Mode.
-        destination_rule_object_id: Optional[Any] - Unique Rule Object ID.
+        destination_rule_object_id: Optional[int] - Unique Rule Object ID.
         destination_rule_object_type: str - Source / Destination Mode.
         create_or_update: str - From what function it was called.
     Returns:
@@ -515,7 +512,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
-            from_to_list: List = None - A list that contains dictionaries with from and do addresses.
+            from_to_list: List - A list that contains dictionaries with from and do addresses.
         Returns:
             Returns the body for the request.
         """
@@ -549,8 +546,8 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
             f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than the argument '
             f'“address_ip_v.{number}” must contain a value.')
     if ('HOST' in rule_type or 'NETWORK' in rule_type) and (from_address or to_address):
-        raise Exception('If the "rule_object_type" is Endpoint or Network than from_address and to_adresses parameters '
-                        'should not contain value.')
+        raise Exception('If the "rule_object_type" is Endpoint or Network than from_address and to_addresses parameters'
+                        ' should not contain value.')
     if 'ADDRESS_RANGE' in rule_type and not to_address and not from_address:
         raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than the arguments '
                         f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value.')
@@ -795,9 +792,9 @@ def create_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     rule_enabled = argToBoolean(args.get('rule_enabled', True))
     response_param = response_cases(args.get('response', ''))
     direction = args.get('direction', '').upper()
-    source_rule_object_id = arg_to_number(args.get('source_rule_object_id'))
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', None))
     source_rule_object_type = args.get('source_rule_object_type', None)
-    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id'))
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', None))
     destination_rule_object_type = args.get('destination_rule_object_type', None)
 
     check_source_and_destination(source_rule_object_id, source_rule_object_type, destination_rule_object_id,
@@ -845,9 +842,9 @@ def update_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     response_param = args.get('response')
     rule_enabled = args.get('rule_enabled')
     direction = args.get('direction')
-    source_rule_object_id = args.get('source_rule_object_id')
+    source_rule_object_id = arg_to_number(args.get('source_rule_object_id', None))
     source_rule_object_type = args.get('source_rule_object_type', None)
-    destination_rule_object_id = args.get('destination_rule_object_id')
+    destination_rule_object_id = arg_to_number(args.get('destination_rule_object_id', None))
     destination_rule_object_type = args.get('destination_rule_object_type', None)
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
 
