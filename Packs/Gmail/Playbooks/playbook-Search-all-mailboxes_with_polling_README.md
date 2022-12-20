@@ -1,4 +1,4 @@
-This playbook searches Gmail records for all Google users, designed for large companies with over 500 Google users.
+This playbook searches Gmail records for all Google users, designed for large companies with over 2500 Google users.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

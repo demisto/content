@@ -793,12 +793,13 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
             )
         )
         del args['list_accounts']
-    command_results.append(
-        CommandResults(
-            outputs_key_field='PageToken',
-            outputs={'PageToken': {'NextPageToken': next_page_token}}
+    if next_page_token:
+        command_results.append(
+            CommandResults(
+                outputs_key_field='PageToken',
+                outputs={'PageToken': {'NextPageToken': next_page_token}}
+            )
         )
-    )
 
     return command_results
 
