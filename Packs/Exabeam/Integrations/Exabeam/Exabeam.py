@@ -722,12 +722,12 @@ class Client(BaseClient):
         return params
 
     def get_single_incident(self, incident_id: str, username: str = None):
-        headers = {**self._headers, 'EXA_USERNAME': 'demisto'}
+        headers = {**self._headers, 'EXA_USERNAME': username or self.username}
         return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
                                   headers=headers)
 
     def get_incidents(self, query: Dict[str, str]):
-        headers = {**self._headers, 'EXA_USERNAME': 'demisto'}
+        headers = {**self._headers}
         return self._http_request(
             'POST',
             url_suffix='/ir/api/incidents/search',
@@ -739,14 +739,14 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def format_single_incident(incident, is_fetch=False):
+def format_single_incident(incident):
     incident_fields = incident.get('fields')
     formatted_incident = {'incidentId': incident.get('incidentId'),
                           'name': incident.get('name'),
                           'fields': {
-        'startedDate': convert_unix_to_date(incident_fields.get('startedDate', None)),
-        'closedDate': convert_unix_to_date(incident_fields.get('closedDate', None)),
-        'createdAt': convert_unix_to_date(incident_fields.get('createdAt', None)),
+        'startedDate': convert_unix_to_date(incident_fields.get('startedDate')),
+        'closedDate': convert_unix_to_date(incident_fields.get('closedDate')),
+        'createdAt': convert_unix_to_date(incident_fields.get('createdAt')),
         'owner': incident_fields.get('owner'),
         'status': incident_fields.get('status'),
         'incidentType': incident_fields.get('incidentType'),
@@ -755,9 +755,6 @@ def format_single_incident(incident, is_fetch=False):
         'queue': incident_fields.get('queue'),
         'description': incident_fields.get('description')
     }}
-
-    if is_fetch:
-        formatted_incident['rawJSON'] = json.dumps(incident)
 
     return formatted_incident
 
@@ -1142,7 +1139,7 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
-def format_fetch_start_time_to_timestamp(start_time: Optional[str], end_time: Optional[str]) -> tuple[int, int]:
+def format_fetch_time_to_timestamp(start_time: Optional[str], end_time: Optional[str]) -> Tuple[int, int]:
 
     return (int(dateparser.parse(start_time).replace(tzinfo=utc).timestamp() * 1000.0),
             int(dateparser.parse(end_time).replace(tzinfo=utc).timestamp() * 1000.0))
@@ -2002,7 +1999,7 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
     for incident in raw_incidents:
         incident_start_time = parser.parse(convert_unix_to_date(incident["fields"]["startedDate"]))
         if not start_time or incident_start_time > start_time:
-            incidents.append(format_single_incident(incident, True))
+            incidents.append(format_single_incident(incident))
 
         if incident_start_time > start_time:
             max_start_time = incident_start_time
@@ -2015,7 +2012,7 @@ def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
 
 
 def list_incidents(client: Client, args: Dict[str, str]):
-    incident_id = args.get('incident_id')
+    incident_ids = argToList(args.get('incident_id'))
     query = args.get('query')
     incident_type = args.get('incident_type')
     priority = args.get('priority')
@@ -2023,13 +2020,18 @@ def list_incidents(client: Client, args: Dict[str, str]):
     limit = args.get('limit', 50)
     page_size = args.get('page_size', 25)
     page_number = args.get('page_number', 1)
+    username = args.get('username')
+
+    if incident_ids and client.username == TOKEN_INPUT_IDENTIFIER and not username:
+        raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
 
     incidents = []
     raw_response = dict()
 
-    if incident_id:
-        raw_response = client.get_single_incident(incident_id)
-        incidents.append(format_single_incident(raw_response))
+    if incident_ids:
+        for incident_id in incident_ids:
+            raw_response = client.get_single_incident(incident_id, username)
+            incidents.append(format_single_incident(raw_response))
 
     else:
         if any([query, incident_type, priority, status]):
@@ -2047,21 +2049,23 @@ def list_incidents(client: Client, args: Dict[str, str]):
     return human_readable, entry_context, raw_response
 
 
-def fetch_incidents(client: Client, args: Dict[str, str]):
+def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     last_run = demisto.getLastRun()
+    demisto.debug(last_run)
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
-        first_fetch=args.get('first_fetch', ''),
+        first_fetch=args.get('first_fetch', '3 days'),
         look_back=1,
         date_format='%Y-%m-%dT%H:%M:%S.%fZ',
     )
 
-    start_time_as_milisecound, end_time_as_milisecound = format_fetch_start_time_to_timestamp(start_time, end_time)
+    start_time_as_milisecound, end_time_as_milisecound = format_fetch_time_to_timestamp(start_time, end_time)
     # query = args.get('query')
     incident_type = args.get('incident_type')
     priority = args.get('priority')
     status = args.get('status')
+    limit = arg_to_number(args.get('max_fetch', 50))
 
     q = assign_params(
         incidentType=incident_type,
@@ -2074,10 +2078,37 @@ def fetch_incidents(client: Client, args: Dict[str, str]):
     )
 
     resp = client.get_incidents(q)
-    incidents: List[dict] = resp.get('incidents', [])
+    incidents_res: List[dict] = resp.get('incidents', [])
 
-    demisto.setLastRun({'last_time_fetch': end_time_as_milisecound})
-    demisto.incidents(incidents)
+    incidents_filtered = filter_incidents_by_duplicates_and_limit(
+        incidents_res=incidents_res,
+        last_run=last_run,
+        fetch_limit=limit,
+        id_field='incidentId'
+    )
+
+    incidents: List[dict] = []
+    for incident in incidents_filtered:
+        incidents.append({
+            'Name': incident.get('name'),
+            'occurred': convert_unix_to_date(incident.get('baseFields', {}).get('createdAt')).split('.')[0] + 'Z',
+            'rawJSON': json.dumps(incident)
+        })
+
+    last_run = update_last_run_object(
+        last_run=last_run,
+        incidents=incidents_filtered,
+        fetch_limit=limit,
+        start_fetch_time=start_time,
+        end_fetch_time=end_time,
+        look_back=1,
+        created_time_field='createdAt',
+        id_field='incidentId',
+        date_format='%Y-%m-%dT%H:%M:%S',
+        increase_last_run_time=True
+    )
+
+    return incidents, last_run
 
 
 def main():
@@ -2133,7 +2164,6 @@ def main():
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
-        'fetch-incidents': fetch_incidents,
     }
 
     try:
@@ -2142,7 +2172,9 @@ def main():
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
-            commands[command](client, demisto.args())
+            incidents, next_run = fetch_incidents(client, demisto.params())
+            demisto.incidents(incidents)
+            demisto.setLastRun(next_run)
         elif command == 'test-module':
             return_outputs(*commands[command](client, demisto.args(), demisto.params()))
         elif command in commands:
@@ -2164,10 +2196,4 @@ def main():
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
-    # main()
-    a, b = get_fetch_run_time_range({'time': '1671370552772'}, '', 0, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
-    print(a, b)
-    a = parse(a).replace(tzinfo=utc).timestamp() * 1000.0
-    b = parse(b).replace(tzinfo=utc).timestamp() * 1000.0
-    print(int(a), int(b))
-    # print(dateparser.parse(str(datetime.fromtimestamp(1671368323675 / 1000.0)), settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': True}) + timedelta(hours=0))
+    main()

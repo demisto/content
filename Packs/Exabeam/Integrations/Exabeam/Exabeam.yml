@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam Dev
+  id: Exabeam
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -93,8 +93,8 @@ configuration:
   required: false
   type: 8
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam Dev
-name: Exabeam Dev
+display: Exabeam
+name: Exabeam
 script:
   commands:
   - arguments:
@@ -1957,7 +1957,7 @@ script:
   - arguments:
     - default: false
       description: The incident ID
-      isArray: false
+      isArray: True
       name: incident_id
       required: false
       secret: false
@@ -2041,6 +2041,12 @@ script:
       description: Number of total results in each page.
       isArray: false
       name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: When the instance is configure by an API key, it must be used with the username argument.
+      isArray: false
+      name: username
       required: false
       secret: false
     deprecated: false

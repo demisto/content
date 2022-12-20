@@ -2,7 +2,7 @@ import pytest
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
-    get_notable_sequence_event_types, delete_context_table_records, list_incidents
+    get_notable_sequence_event_types, delete_context_table_records, list_incidents, fetch_incidents
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -11,6 +11,7 @@ from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABEL
     EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA, \
     EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS, \
     EXPECTED_RESULT_AFTER_RECORD_DELETION, EXPECTED_INCIDENT_LIST
+from test_data.response_incidents import INCIDENTS
 
 
 def test_contents_append_notable_user_info():
@@ -184,3 +185,31 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
                     headers={})
     human_readable, entry_context, session_details_raw_data = get_notable_session_details(client, {'limit': '1'})
     assert human_readable == 'No results found.'
+
+
+@pytest.mark.parametrize(
+    'params',
+    [
+        (
+            {
+                'incident_type': 'test',
+                'priority': 'test',
+                'status': 'test',
+                'fetch_limit': '5',
+                'first_fetch': '1 day'
+            }
+        )
+    ]
+)
+def test_fetch_incidents(mocker, params):
+
+    # check_for_fetch_tun_time = mocker.patch('Exabeam.get_fetch_run_time_range')
+    check_for_fetch_time_to_timestamp = mocker.patch('Exabeam.format_fetch_time_to_timestamp')
+    mocker.patch.object(Client, '_login', return_value=None)
+    mocker.patch.object(Client, 'get_incidents', return_valut=INCIDENTS)
+    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
+                    headers={})
+
+    incidents, next_run = fetch_incidents(client, params)
+
+    pass
