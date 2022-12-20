@@ -1,0 +1,8 @@
+!create_observable type="ipv4" value="001.001.001.001" maliciousness="high"
+!create_sighting type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"
+!lookup_observables type="ipv4" value="001.001.001.001"
+!create_observable type="email" value="example@example.com" maliciousness="medium"
+!create_sighting type="ipv6" value="2001:0db8:85a3:0000:0000:8a2e:0370:7334" description="sighting creation" title="sighting" tags="Alert" confidence_level="low"
+!lookup_observables type="ipv6" value="2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+!create_observable type="domain" value="https://examples.com" maliciousness="safe"
+create_sighting type="domain" value="https://examples.com" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"" 
