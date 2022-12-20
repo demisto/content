@@ -65,6 +65,7 @@ class MsGraphClient:
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
+        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 
