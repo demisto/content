@@ -610,7 +610,7 @@ def fetch_credentials():
     for engine_type in engines:
         engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
         engines_to_fetch_from += engines_to_fetch
-
+    engines_to_fetch_from = [{'path': 'aws', 'version': '2', 'type': 'AWS'}]
     if len(engines_to_fetch_from) == 0:
         return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
