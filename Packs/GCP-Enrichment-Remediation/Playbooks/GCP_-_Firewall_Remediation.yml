@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e783f34e-432b-4f40-8761-5958f39d0248
+    taskid: a4f3ee9a-3da0-4443-861e-0f4fd4dfd88a
     type: start
     task:
-      id: e783f34e-432b-4f40-8761-5958f39d0248
+      id: a4f3ee9a-3da0-4443-861e-0f4fd4dfd88a
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: afd45690-ffd2-446e-8dcc-6e346e3ace58
+    taskid: 0186b87e-cdbe-4ff8-828e-17eb3bc8ceea
     type: condition
     task:
-      id: afd45690-ffd2-446e-8dcc-6e346e3ace58
+      id: 0186b87e-cdbe-4ff8-828e-17eb3bc8ceea
       version: -1
       name: Is Google Cloud Compute enabled and are Input values defined?
       description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
@@ -127,10 +127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 848c9e33-315c-435c-8104-cd1eeba70f45
+    taskid: 48b75aa1-8d8c-4cfd-8926-1860fb296a12
     type: title
     task:
-      id: 848c9e33-315c-435c-8104-cd1eeba70f45
+      id: 48b75aa1-8d8c-4cfd-8926-1860fb296a12
       version: -1
       name: Done
       type: title
@@ -155,10 +155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 1f3cf208-77b3-4820-80e1-951a50ec342f
+    taskid: bc962556-2c73-4968-82a7-51a99cf8fe97
     type: condition
     task:
-      id: 1f3cf208-77b3-4820-80e1-951a50ec342f
+      id: bc962556-2c73-4968-82a7-51a99cf8fe97
       version: -1
       name: Does the remediation allow rule exist?
       description: Check whether the last command returned remediation allow rule or not.
@@ -200,10 +200,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c3660121-04fb-4300-8fe3-e11064217f81
+    taskid: c8d90e25-884c-4a12-8131-16a93c0b49ff
     type: regular
     task:
-      id: c3660121-04fb-4300-8fe3-e11064217f81
+      id: c8d90e25-884c-4a12-8131-16a93c0b49ff
       version: -1
       name: Get network tags information.
       description: Returns the tags of instance.
@@ -218,9 +218,13 @@ tasks:
       instance:
         complex:
           root: inputs.GcpInstance
+          transformers:
+          - operator: uniq
       zone:
         complex:
           root: inputs.GcpZone
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -239,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 7a35769a-dcee-42e0-82dd-89cd990c4aab
+    taskid: bccd5171-294f-4ae1-89b7-199c33f30ae2
     type: title
     task:
-      id: 7a35769a-dcee-42e0-82dd-89cd990c4aab
+      id: bccd5171-294f-4ae1-89b7-199c33f30ae2
       version: -1
       name: Create allow and block rules
       type: title
@@ -270,10 +274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: d58efdff-2746-431e-8010-f9168b5efb22
+    taskid: b101460b-ebe4-4a3f-84c4-793a04f2f56a
     type: regular
     task:
-      id: d58efdff-2746-431e-8010-f9168b5efb22
+      id: b101460b-ebe4-4a3f-84c4-793a04f2f56a
       version: -1
       name: Add block everything firewall rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -308,6 +312,8 @@ tasks:
                 value:
                   simple: ipprotocol=
               suffix: {}
+          - operator: toLowerCase
+          - operator: uniq
       direction:
         simple: INGRESS
       name:
@@ -329,9 +335,13 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
       network:
         complex:
           root: inputs.GcpNetwork
+          transformers:
+          - operator: uniq
       priority:
         simple: "1"
       sourceRanges:
@@ -359,6 +369,8 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -377,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 5a5a01bf-4ada-4624-8215-0dedefc853c2
+    taskid: d7cbc5a4-3716-47cb-882f-2949989f72e2
     type: regular
     task:
-      id: 5a5a01bf-4ada-4624-8215-0dedefc853c2
+      id: d7cbc5a4-3716-47cb-882f-2949989f72e2
       version: -1
       name: Add allow rule
       description: Creates a firewall rule in the specified project using the data included in the request.
@@ -415,6 +427,7 @@ tasks:
                 value:
                   simple: ipprotocol=
               suffix: {}
+          - operator: uniq
       direction:
         simple: INGRESS
       name:
@@ -436,9 +449,13 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
       network:
         complex:
           root: inputs.GcpNetwork
+          transformers:
+          - operator: uniq
       priority:
         simple: "0"
       sourceRanges:
@@ -466,6 +483,8 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -484,10 +503,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 7413070c-c8d2-435f-8aae-3225cae3e03d
+    taskid: 04c4da2b-2bd5-46cb-82dd-053e1b1a0281
     type: condition
     task:
-      id: 7413070c-c8d2-435f-8aae-3225cae3e03d
+      id: 04c4da2b-2bd5-46cb-82dd-053e1b1a0281
       version: -1
       name: Does the network tags already exist on the instance?
       description: |+
@@ -536,6 +555,7 @@ tasks:
                       value:
                         simple: inputs.RemoteProtocol
                       iscontext: true
+                - operator: toLowerCase
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -554,10 +574,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 3e5be817-d180-46ba-8d10-5e399abad5e6
+    taskid: 90b6c0d8-e04c-424c-8532-19c6754f31dd
     type: regular
     task:
-      id: 3e5be817-d180-46ba-8d10-5e399abad5e6
+      id: 90b6c0d8-e04c-424c-8532-19c6754f31dd
       version: -1
       name: Add and set network tags
       description: Add network tag for the specified instance.
@@ -595,6 +615,7 @@ tasks:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
+          - operator: toLowerCase
       zone:
         complex:
           root: inputs.GcpZone
@@ -616,10 +637,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 6822b4bb-5d01-48c2-8aca-13693dbb031a
+    taskid: 66d246d0-c320-4f79-80d4-0c352478f10e
     type: regular
     task:
-      id: 6822b4bb-5d01-48c2-8aca-13693dbb031a
+      id: 66d246d0-c320-4f79-80d4-0c352478f10e
       version: -1
       name: Lookup Firewall rule names with associated network
       description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
