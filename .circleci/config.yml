@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.33772  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.41284  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -123,8 +123,6 @@ references:
       name: Prepare Environment
       when: always
       command: |
-        rm -rf $HOME/.poetry/bin/poetry
-        sudo curl -sSL https://install.python-poetry.org | python3 -
         poetry --version
 
         # Check if CircleCI's config file and poetry files files are up to date
