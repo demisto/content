@@ -17,3 +17,4 @@
 !delinea-user-search filter.searchFields="userName" filter.searchText="xsoarUser"
 !delinea-user-update id="10" displayName="XsoarNew" password="0987654321"
 !delinea-user-delete id="10"
+!delinea-fetch-users
