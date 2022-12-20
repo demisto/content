@@ -1307,7 +1307,8 @@ Inspecting these messages should allow you to determine what percent the search 
 | after | Search for messages sent after a certain time period. For example, 2018/05/06 | Optional | 
 | before | Search for messages sent before a certain time period. For example, 2018/05/09 | Optional | 
 | has-attachments | Whether to search for messages sent with attachments. | Optional | 
-| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: false) | Optional | 
+| show-only-mailboxes | Whether to return only mailboxes which contain the email. (Default: true) | Optional | 
+| list_accounts | This is a list of accounts where the search will take place | Optional | 
 
 
 #### Context Output
@@ -1326,7 +1327,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | Gmail.Body | string | The content of the email. | 
 | Gmail.Attachments | unknown | The attachments of the email. IDs are separated by ','. | 
 | Gmail.Headers | unknown | All headers of specific mail \(list\). | 
-| Gmail.Mailbox | string | The Gmail Mailbox. | 
+| Gmail.Mailboxes | string | The Gmail mailboxes in which emails matching the query were found. | 
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
 | Email.CC | String | Additional recipient email address \(CC\). | 
@@ -1338,6 +1339,8 @@ Inspecting these messages should allow you to determine what percent the search 
 | Email.Headers | String | The headers of the email. | 
 | Email.Attachments.entryID | Unknown | Email Attachments. IDs are separated by ','. | 
 | Email.Date | String | The date the email was received. | 
+| PageToken.NextPageToken | String | The use of this output is in the Search all mailboxes - Gmail with polling Playbook, so NextPageToken is used to call back the command to fetch the list of the next accounts in which the search will be made. | 
+| SearchProcess | String | The use of this output is in the Search all mailboxes - Gmail with polling Playbook, it allows the search process to be followed. | 
 
 
 #### Command Example

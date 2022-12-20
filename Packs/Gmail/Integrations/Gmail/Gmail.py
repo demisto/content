@@ -408,7 +408,7 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes):
+def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     result = []
     unsearched_accounts = []
@@ -841,7 +841,8 @@ def information_search_process(length_accounts: int, searching_accounts: str) ->
     else:
         last_account_number_searched = searching_accounts.split(' ')[5]
         readable_output = f'Searching accounts, ' \
-                          f'from {int(last_account_number_searched) + 1} to {int(last_account_number_searched) + length_accounts}' \
+                          f'from {int(last_account_number_searched) + 1} to' \
+                          f' {int(last_account_number_searched) + length_accounts}' \
                           ' from all the accounts'
 
     return CommandResults(
@@ -2651,7 +2652,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                cmd_func()
+                cmd_func()  # type: ignore
             else:
                 return_results(cmd_func())  # type: ignore
     except Exception as e:
