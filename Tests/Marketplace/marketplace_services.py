@@ -67,7 +67,7 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -122,7 +122,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
-        self._is_modified = None  # initialized in detect_modified function
+        self._is_modified = is_modified
         self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
@@ -1138,7 +1138,6 @@ class Pack(object):
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            self._is_modified = pack_was_modified
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")

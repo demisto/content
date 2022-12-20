@@ -30,43 +30,21 @@ from Tests.scripts.utils import logging_wrapper as logging
 import traceback
 
 
-def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
-    """Detects and returns packs names to upload.
-
-    In case that `Modified` is passed in target_packs input, checks the git difference between two commits,
-    current and previous and greps only ones with prefix Packs/.
-    By default this function will receive `All` as target_packs and will return all packs names from content repo.
+def get_packs_names(packs_to_upload: str) -> set:
+    """Returns a set of pack's names to upload.
 
     Args:
-        target_packs (str): csv packs names or `All` for all available packs in content
-                            or `Modified` for only modified packs (currently not in use).
-        previous_commit_hash (str): the previous commit to diff with.
+        packs_to_upload (str): csv list of packs names to upload.
 
     Returns:
         set: unique collection of packs names to upload.
 
     """
-    if target_packs.lower() == "all":
-        if os.path.exists(PACKS_FULL_PATH):
-            all_packs = {p for p in os.listdir(PACKS_FULL_PATH) if p not in IGNORED_FILES}
-            logging.info(f"Number of selected packs to upload is: {len(all_packs)}")
-            # return all available packs names
-            return all_packs
-        else:
-            logging.error(f"Folder {PACKS_FOLDER} was not found at the following path: {PACKS_FULL_PATH}")
-            sys.exit(1)
-    elif target_packs.lower() == "modified":
-        cmd = f"git diff --name-only HEAD..{previous_commit_hash} | grep 'Packs/'"
-        modified_packs_path = run_command(cmd).splitlines()
-        modified_packs = {p.split('/')[1] for p in modified_packs_path if p not in IGNORED_PATHS}
-        logging.info(f"Number of modified packs is: {len(modified_packs)}")
-        # return only modified packs between two commits
-        return modified_packs
-    elif target_packs and isinstance(target_packs, str):
-        modified_packs = {p.strip() for p in target_packs.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(modified_packs)}")
+    if packs_to_upload and isinstance(packs_to_upload, str):
+        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
+        logging.info(f"Number of selected packs to upload is: {len(packs)}")
         # return only packs from csv list
-        return modified_packs
+        return packs
     else:
         logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
         sys.exit(1)
@@ -1051,7 +1029,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    target_packs = option.pack_names if option.pack_names else ""
+    packs_to_upload = option.pack_names if option.pack_names else ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
@@ -1086,20 +1064,21 @@ def main():
                                                                         is_bucket_upload_flow, ci_branch)
 
     # detect packs to upload
-    pack_names = get_packs_names(target_packs, previous_commit_hash)  # list of the pack's ids to upload
+    pack_names_to_upload = get_packs_names(packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    # this is a list of all packs from `content_packs.zip`
-    content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name))
-                     for pack_name in os.listdir(extract_destination_path)]
+    # list of all packs from `content_packs.zip` given from create artifacts
+    all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name), is_modified=pack_name in pack_names_to_upload)
+                         for pack_name in os.listdir(extract_destination_path)]
 
-    # this is a list of packs given to this script
-    packs_list = list(filter(lambda x: x.name in pack_names, content_packs))
+    # pack's list to update their index metadata and upload them.
+    # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
+    packs_list = all_content_packs if is_bucket_upload_flow else list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
 
     if not override_all_packs:
@@ -1110,7 +1089,7 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, content_packs, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
@@ -1204,7 +1183,7 @@ def main():
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)
         shutil.copyfile(pack.zip_path, uploaded_packs_dir / f"{pack.name}.zip")
         task_status, skipped_upload, _ = pack.upload_to_storage(pack.zip_path, pack.latest_version, storage_bucket,
-                                                                override_all_packs,
+                                                                override_all_packs or pack.is_modified,
                                                                 storage_base_path)
 
         if not task_status:
