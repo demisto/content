@@ -55,7 +55,7 @@ script:
       - Deny
       required: false
     deprecated: false
-    description: Create Protected Hostname.
+    description: Create Protected Hostname Group.
     execution: false
     name: fortiwebvm-protected-hostname-group-create
   - arguments:
@@ -75,7 +75,7 @@ script:
       - Deny
       required: false
     deprecated: false
-    description: Update Protected Hostname.
+    description: Update Protected Hostname Group.
     execution: false
     name: fortiwebvm-protected-hostname-group-update
   - arguments:
@@ -102,13 +102,13 @@ script:
     name: fortiwebvm-protected-hostname-group-list
     outputs:
     - contextPath: FortiwebVM.ProtectedHostnameGroup.id
-      description: Protected Hostname ID.
+      description: Protected Hostname Group ID.
       type: String
     - contextPath: FortiwebVM.ProtectedHostnameGroup.default_action
-      description: Action.
+      description: Protected Hostname Group Action.
       type: Number
     - contextPath: FortiwebVM.ProtectedHostnameGroup.protected_hostname_count
-      description: Protected Hostname members number.
+      description: Protected Hostname Group members number.
       type: Number
     - contextPath: FortiwebVM.ProtectedHostnameGroup.can_delete
       description: Can deleted flag. Supports API version 1 only.
@@ -155,8 +155,7 @@ script:
       - disable
       required: false
     deprecated: false
-    description: Create Protected Hostname Member (Protected Hostname Member is a
-      member of Protected Hostname).
+    description: Create Protected Hostname Member (Protected Hostname Member is a sub-object of Protected Hostname Group).
     execution: false
     name: fortiwebvm-protected-hostname-member-create
     outputs:
@@ -247,16 +246,16 @@ script:
       description: Protected Hostname Member ID.
       type: String
     - contextPath: FortiwebVM.ProtectedHostnameMember.Members.action
-      description: Action.
+      description: Protected Hostname Member Action.
       type: String
     - contextPath: FortiwebVM.ProtectedHostnameMember.Members.host
-      description: IP Address.
+      description: Protected Hostname Member IP Address.
       type: String
     - contextPath: FortiwebVM.ProtectedHostnameMember.Members.ignore_port
-      description: Ignore Port. Supports API version 2 only.
+      description: Protected Hostname Member Ignore Port. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ProtectedHostnameMember.Members.include_subdomains
-      description: Include Subdomains. Supports API version 2 only.
+      description: Protected Hostname Member Include Subdomains. Supports API version 2 only.
       type: String
   - arguments:
     - description: Protected Hostname Group Name.
@@ -419,28 +418,28 @@ script:
       description: Can delete flag. Supports API version 1 only.
       type: Boolean
     - contextPath: FortiwebVM.IpListGroup.q_ref
-      description: Supports API version 2 only.
+      description: The CMDB reference count. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.q_type
-      description: Supports API version 2 only.
+      description: IP list group object type. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.can_clone
-      description: Supports API version 2 only.
+      description: Can clone flag. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.block_period
-      description: Supports API version 2 only.
+      description: IP list group Block Period. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.can_view
-      description: Supports API version 2 only.
+      description: Can view flag. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.IpListGroup.action
-      description: "Action Supports API version 2 only."
+      description: "IP list group Action. Supports API version 2 only."
       type: String
     - contextPath: FortiwebVM.IpListGroup.trigger_policy
-      description: Trigger Policy NameSupports API version 2 only.
+      description: IP list group Trigger Policy Name. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.IpListGroup.severity
-      description: SeveritySupports API version 2 only.
+      description: IP list group Severity. Supports API version 2 only.
       type: String
   - arguments:
     - description: IP List Group Name.
@@ -558,22 +557,22 @@ script:
     name: fortiwebvm-ip-list-member-list
     outputs:
     - contextPath: FortiwebVM.IpListMember.group_name
-      description: Policy Group Name.
+      description: IP list Group Name.
       type: String
     - contextPath: FortiwebVM.IpListMember.Members.id
-      description: Policy member ID.
+      description: IP list Member ID.
       type: String
     - contextPath: FortiwebVM.IpListMember.Members.type
-      description: Type.
+      description: IP list Member Type.
       type: String
     - contextPath: FortiwebVM.IpListMember.Members.severity
-      description: Severity (V1 only).
+      description: IP list Member Severity. Supports API version 1 only.
       type: String
     - contextPath: FortiwebVM.IpListMember.Members.trigger_policy
-      description: Trigger Policy Name. (V1 only).
+      description: IP list Member Trigger Policy. Supports API version 1 only.
       type: String
     - contextPath: FortiwebVM.IpListMember.Members.ip
-      description: IP Address.
+      description: IP list Member IP Address.
       type: String
   - arguments:
     - description: IP List Group Name.
@@ -1093,52 +1092,52 @@ script:
     name: fortiwebvm-custom-whitelist-list
     outputs:
     - contextPath: FortiwebVM.CustomGlobalWhitelist.id
-      description: ID.
+      description: Custom Global Whitelist object ID.
       type: Number
     - contextPath: FortiwebVM.CustomGlobalWhitelist.name
-      description: Name.
+      description: Custom Global Whitelist object Name.
       type: Number
     - contextPath: FortiwebVM.CustomGlobalWhitelist.type
-      description: Type.
+      description: Custom Global Whitelist object Type.
       type: Number
     - contextPath: FortiwebVM.CustomGlobalWhitelist.status
-      description: Enable.
+      description: Custom Global Whitelist object status.
       type: Boolean
     - contextPath: FortiwebVM.CustomGlobalWhitelist.request_type
-      description: Request Type.
+      description: Custom Global Whitelist object Request Type.
       type: Number
     - contextPath: FortiwebVM.CustomGlobalWhitelist.request_url
-      description: Request URL.
+      description: Custom Global Whitelist object Request URL.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.header_name_type
-      description: Header Type.Only V2.
+      description: Custom Global Whitelist object Header Type. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.domain_type
-      description: Domain Type.Only V2.
+      description: Custom Global Whitelist object Domain Type. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.name_type
-      description: Name Type. Only V2.
+      description: Custom Global Whitelist object Name Type.  Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.request_url_status
-      description: Request File Status.Only V2.
+      description: Custom Global Whitelist object Request File Status. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.domain_status
-      description: Domain Status.Only V2.
+      description: Custom Global Whitelist object Domain Status. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.domain
-      description: Domain.Only V2.
+      description: Custom Global Whitelist object Domain. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.path
-      description: Path.Only V2.
+      description: Custom Global Whitelist object Path. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.header_value_type
-      description: Value Type.Only V2.
+      description: Custom Global Whitelist object Value Type. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.value
-      description: Value.Only V2.
+      description: Custom Global Whitelist object Value. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.CustomGlobalWhitelist.value_status
-      description: Value Status.Only V2.
+      description: Custom Global Whitelist object Value Status. Supports API version 2 only.
       type: String
   - arguments:
     - description: Geo IP Group Name.
@@ -1439,13 +1438,13 @@ script:
     name: fortiwebvm-geo-ip-member-list
     outputs:
     - contextPath: FortiwebVM.GeoIpMember.group_name
-      description: Geo IP Member ID.
+      description: Geo IP Member Group Name.
       type: String
     - contextPath: FortiwebVM.GeoIpMember.countries.id
       description: Geo IP Member ID.
       type: String
     - contextPath: FortiwebVM.GeoIpMember.countries.country
-      description: Country Name.
+      description: Geo IP Member Country Name.
       type: Number
   - arguments:
     - description: Geo IP Group Name.
@@ -1599,31 +1598,31 @@ script:
     name: fortiwebvm-geo-ip-group-list
     outputs:
     - contextPath: FortiwebVM.GeoIpGroup.id
-      description: Geo IP ID.
+      description: Geo IP Group ID.
       type: Number
     - contextPath: FortiwebVM.GeoIpGroup.count
-      description: Geo IP Members Count.
+      description: Geo IP Group Members Count.
       type: Number
     - contextPath: FortiwebVM.GeoIpGroup.trigger_policy
-      description: Geo IP Trigger Policy Name.
+      description: Geo IP Group Trigger Policy Name.
       type: String
     - contextPath: FortiwebVM.GeoIpGroup.severity
-      description: Geo IP Severity Number.
+      description: Geo IP Group Severity Number.
       type: String
     - contextPath: FortiwebVM.GeoIpGroup.except
-      description: 'Geo IP Exception groups.'
+      description: 'Geo IP Group Exception groups.'
       type: String
     - contextPath: FortiwebVM.GeoIpGroup.can_delete
-      description: Only V1.
+      description: Geo IP Group Can delete flag. Supports API version 1 only.
       type: Boolean
     - contextPath: FortiwebVM.GeoIpGroup.action
-      description: The action that FortiWeb will take when  detects a violation of the rule. Supports API version 2 only.
+      description: Geo IP Group Action. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.GeoIpGroup.block_period
-      description: The number of seconds that you want to block subsequent requests. Supports API version 2 only.
+      description: Geo IP Group Block Period. Supports API version 2 only.
       type: Number
     - contextPath: FortiwebVM.GeoIpGroup.ignore_x_forwarded_for
-      description: enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only.
+      description: Geo IP Group Ignore X-Forwarded-For flag. Supports API version 2 only.
       type: String
   - deprecated: false
     description: Get Operation Status
@@ -2295,16 +2294,16 @@ script:
     name: fortiwebvm-server-policy-list
     outputs:
     - contextPath: FortiwebVM.ServerPolicy.name
-      description: Policy Name.
+      description: Server Policy Name.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.deployment_mode
-      description: Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy.
+      description: Server Policy Deployment Mode.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.protocol
-      description: Policy protocol.
+      description: Server Policy protocol.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.web_protection_profile
-      description: Enable inherit web protection profile.
+      description: Server Policy inherit web protection profile flag.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.monitor_mode
       description: Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules.
@@ -2322,10 +2321,10 @@ script:
       description: Server Polciy certificate intermediate group.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.server_pool
-      description: 'The name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance".'
+      description: Server Policy Server Pool name.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.protected_hostnames
-      description: "Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host"
+      description: Server Policy Protected Hostname name.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.client_real_ip
       description: "Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client."
@@ -2379,10 +2378,10 @@ script:
       description: "Not documented. Required when: scripting is enable. Supports API version 2 only."
       type: String
     - contextPath: FortiwebVM.ServerPolicy.allow_list
-      description: Supports API version 2 only.
+      description: Server Policy Allow List. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.replace_msg
-      description: Select the replacement message to apply to the policy. Supports
+      description: Server Policy replacement message. Supports API version 2 only.
         API version 2 only.
       type: String
   - arguments:
@@ -2549,25 +2548,25 @@ script:
     name: fortiwebvm-http-content-routing-member-list
     outputs:
     - contextPath: FortiwebVM.HttpContentRoutingMember.policy_name
-      description: Policy Name.
+      description: HTTP Content Routing Policy Name.
       type: String
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.id
-      description: ID.
+      description: HTTP Content Routing ID.
       type: String
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.default
-      description: Default.
+      description: HTTP Content Routing Is Default.
       type: String
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.http_content_routing_policy
       description: HTTP content routing policy name.
       type: String
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile
-      description: Enable inherit web protection profile.
+      description: HTTP Content Routing inherit web protection profile flag.
       type: Boolean
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.profile
-      description: Profile.
+      description: HTTP Content Routing Profile.
       type: String
     - contextPath: FortiwebVM.HttpContentRoutingMember.Members.status
-      description: Status. Supports API version 2 only.
+      description: HTTP Content Routing Status. Supports API version 2 only.
       type: String
   dockerimage: demisto/python3:3.8.3.8715
   feed: false

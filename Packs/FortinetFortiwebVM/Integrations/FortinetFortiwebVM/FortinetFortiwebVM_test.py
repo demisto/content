@@ -36,28 +36,18 @@ def mock_client(version: str) -> Client:
     return client
 
 
-@pytest.mark.parametrize(
-    ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
-            'name': 'check',
-            'default_action': 'Allow'
-        }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
-            'name': 'check',
-            'default_action': 'Allow'
-        }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
-            'name': 'check',
-            'default_action': 'Allow'
-        }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
-            'name': 'check',
-            'default_action': 'Allow'
-        }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    ))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
+        'name': 'check',
+        'default_action': 'Allow'
+    }, 'protected_hostname/v1_success.json'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
+        'name': 'check',
+        'default_action': 'Allow'
+    }, 'protected_hostname/v2_success.json'),
+))
 def test_protected_hostname_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
-                                                 status_code: HTTPStatus, assert_flag: bool):
+                                                 args: str, jsonpath: str):
     """
     Scenario: Create a protected hostname group.
     Given:
@@ -72,33 +62,65 @@ def test_protected_hostname_group_create_command(requests_mock, mock_client: Cli
     from FortinetFortiwebVM import protected_hostname_group_create_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
-    requests_mock.post(url=url, json=json_response, status_code=status_code)
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
     try:
-        result = protected_hostname_group_create_command(mock_client, args)
-        assert expected_value in result.readable_output
-        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
+        protected_hostname_group_create_command(mock_client, args)
     except DemistoException:
-        assert assert_flag
+        assert False
 
 
-@pytest.mark.parametrize(
-    ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    ))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
+        'name': 'check',
+        'default_action': 'Allow'
+    }, 'protected_hostname/v1_failed_exist.json', 'The object already exist.'),
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
+        'name': 'check',
+        'default_action': 'wrong_action'
+    }, 'protected_hostname/v1_failed_exist.json', 'The default action should be Allow/Deny/Deny (no log)'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
+        'name': 'check',
+        'default_action': 'Allow'
+    }, 'protected_hostname/v2_failed_exist.json', 'The object already exist.'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
+        'name': 'check',
+        'default_action': 'wrong_action'
+    }, 'protected_hostname/v2_failed_exist.json', 'The default action should be Allow/Deny/Deny (no log)'),
+))
+def test_fail_protected_hostname_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                      args: str, jsonpath: str, error_msg: str):
+    """
+    Scenario: Create a protected hostname group.
+    Given:
+     - User has provided correct parameters.
+     - User has provided exist name.
+    When:
+     - fortiwebvm-protected-hostname-group-create called.
+    Then:
+     - Ensure that protected hostname created.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import protected_hostname_group_create_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+    with pytest.raises(DemistoException) as error_info:
+        protected_hostname_group_create_command(mock_client, args)
+    assert error_msg in str(error_info.value)
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+        'name': 'check',
+        'default_action': 'Deny'
+    }, 'protected_hostname/v1_success.json'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+        'name': 'check',
+        'default_action': 'Deny'
+    }, 'protected_hostname/v2_success.json'),
+))
 def test_protected_hostname_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
-                                                 status_code: HTTPStatus, assert_flag: bool):
+                                                 args: str, jsonpath: str):
     """
     Scenario: Update a protected hostname group.
     Given:
@@ -113,33 +135,61 @@ def test_protected_hostname_group_update_command(requests_mock, mock_client: Cli
     from FortinetFortiwebVM import protected_hostname_group_update_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
-    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    requests_mock.put(url=url, json=json_response)
     try:
-        result = protected_hostname_group_update_command(mock_client, args)
-        assert expected_value in result.readable_output
-        # assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameGroup'
+        protected_hostname_group_update_command(mock_client, args)
     except DemistoException:
-        assert assert_flag
+        assert False
 
 
-@pytest.mark.parametrize(
-    ('version', 'endpoint', 'args', 'jsonpath', 'expected_key', 'expected_value', 'status_code', 'assert_flag'), (
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
-            'name': 'check'
-        }, 'protected_hostname/v1_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_success.json', 'name', 'check', HTTPStatus.OK, False),
-        (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
-            'name': 'check'
-        }, 'protected_hostname/v2_failed_exist.json', 'name', 'check', HTTPStatus.INTERNAL_SERVER_ERROR, True),
-    ))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+        'name': 'check',
+    }, 'protected_hostname/v1_failed_exist.json', 'The object already exist.'),
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+        'name': 'check',
+        'default_action': 'wrong_action'
+    }, 'protected_hostname/v1_success.json', 'The default action should be Allow/Deny/Deny (no log)'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+        'name': 'check',
+    }, 'protected_hostname/v2_failed_exist.json', 'The object already exist.'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+        'name': 'check',
+        'default_action': 'wrong_action'
+    }, 'protected_hostname/v2_success.json', 'The default action should be Allow/Deny/Deny (no log)'),
+))
+def test_fail_protected_hostname_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                      args: str, jsonpath: str, error_msg: str):
+    """
+    Scenario: Update a protected hostname group.
+    Given:
+     - User has provided correct parameters.
+     - User has provided not exist name.
+    When:
+     - fortiwebvm-protected-hostname-group-update called.
+    Then:
+     - Ensure that protected hostname updated.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import protected_hostname_group_update_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.put(url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+    with pytest.raises(DemistoException) as error_info:
+        protected_hostname_group_update_command(mock_client, args)
+    assert error_msg in str(error_info.value)
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+        'name': 'check'
+    }, 'protected_hostname/v1_success.json'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+        'name': 'check'
+    }, 'protected_hostname/v2_success.json'),
+))
 def test_protected_hostname_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                 args: str, jsonpath: str, expected_key: str, expected_value: str,
-                                                 status_code: HTTPStatus, assert_flag: bool):
+                                                 args: str, jsonpath: str):
     """
     Scenario: Delete a protected hostname group.
     Given:
@@ -154,12 +204,41 @@ def test_protected_hostname_group_delete_command(requests_mock, mock_client: Cli
     from FortinetFortiwebVM import protected_hostname_group_delete_command
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
-    requests_mock.delete(url=url, json=json_response, status_code=status_code)
+    requests_mock.delete(url=url, json=json_response)
     try:
-        result = protected_hostname_group_delete_command(mock_client, args)
-        assert expected_value in result.readable_output
+        protected_hostname_group_delete_command(mock_client, args)
     except DemistoException:
-        assert assert_flag
+        assert False
+
+
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
+    (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
+        'name': 'check'
+    }, 'protected_hostname/v1_failed_exist.json', 'The object already exist.'),
+    (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
+        'name': 'check'
+    }, 'protected_hostname/v2_failed_exist.json', 'The object already exist.'),
+))
+def test_fail_protected_hostname_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                                      args: str, jsonpath: str, error_msg: str):
+    """
+    Scenario: Delete a protected hostname group.
+    Given:
+     - User has provided correct parameters.
+     - User has provided not exist name.
+    When:
+     - fortiwebvm-protected-hostname-group-delete called.
+    Then:
+     - Ensure that protected hostname deleted.
+     - Ensure relevant error raised.
+    """
+    from FortinetFortiwebVM import protected_hostname_group_delete_command
+    json_response = load_mock_response(jsonpath)
+    url = urljoin(mock_client.base_url, endpoint)
+    requests_mock.delete(url=url, json=json_response, status_code=HTTPStatus.INTERNAL_SERVER_ERROR)
+    with pytest.raises(DemistoException) as error_info:
+        protected_hostname_group_delete_command(mock_client, args)
+    assert error_msg in str(error_info.value)
 
 
 @pytest.mark.parametrize(
@@ -390,7 +469,7 @@ def test_protected_hostname_member_list_command(requests_mock, mock_client: Clie
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = protected_hostname_member_list_command(mock_client, args)
-    assert len(result.outputs['members']) == expected
+    assert len(result.outputs['Members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameMember'
 
 
@@ -743,8 +822,8 @@ def test_ip_list_member_list_command(requests_mock, mock_client: Client, version
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = ip_list_member_list_command(mock_client, args)
-    assert len(result.outputs['members']) == expected
-    assert result.outputs_prefix == 'FortiwebVM.IpListPolicyMember'
+    assert len(result.outputs['Members']) == expected
+    assert result.outputs_prefix == 'FortiwebVM.IpListMember'
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'expected_value', 'status_code'), (
@@ -916,7 +995,7 @@ def test_http_content_routing_member_list_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = http_content_routing_member_list_command(mock_client, args)
-    assert len(result.outputs['members']) == expected
+    assert len(result.outputs['Members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.HttpContentRoutingMember'
 
 
@@ -1375,14 +1454,6 @@ def test_http_content_routing_policy_list_command(requests_mock, mock_client: Cl
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-        'retry_on_http_response_codes': '77,404'
-    }, 'server_policy/v1_create_success.json', 'Please insert codes from the list.', HTTPStatus.OK, True),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
     }, 'server_policy/v1_exist.json', 'The object already exist.', HTTPStatus.INTERNAL_SERVER_ERROR, True),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
         'name': 'check',
@@ -1456,14 +1527,6 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
     }, 'server_policy/v1_create_success.json', 'It must to insert at least one HTTP or HTTPS service.', HTTPStatus.OK,
      True),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
-        'name': '123456789',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-        'retry_on_http_response_codes': '77,404'
-    }, 'server_policy/v1_create_success.json', 'Please insert codes from the list.', HTTPStatus.OK, True),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
         'name': '123456789',
         'deployment_mode': 'HTTP Content Routing',
