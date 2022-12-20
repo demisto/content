@@ -824,6 +824,29 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     return list_accounts, users_next_page_token
 
 
+def information_search_process(length_accounts: int, searching_accounts: List[str]) -> CommandResults:
+
+    if not searching_accounts:
+        readable_output = f'Searching on {length_accounts} accounts, ' \
+                          f'from 1 to {length_accounts} from all the accounts'
+        outputs_searching = {'SearchingAccounts': str([1, length_accounts])}
+    else:
+
+        readable_output = f'Searching on {length_accounts} accounts, ' \
+                          f'from {int(searching_accounts[1]) + 1} to {int(searching_accounts[1]) + length_accounts}' \
+                          ' from all the accounts'
+        outputs_searching = {
+            'SearchingAccounts':
+                str([int(searching_accounts[1]) + 1,
+                    int(searching_accounts[1]) + length_accounts])
+        }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs_searching
+    )
+
+
 ''' FUNCTIONS '''
 
 

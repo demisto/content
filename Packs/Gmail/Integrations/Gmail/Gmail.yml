@@ -623,16 +623,27 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to return only mailboxes which contain the email. Default is "False".
+      description: Whether to return only mailboxes which contain the email. Default is "True".
       name: show-only-mailboxes
       predefined:
       - "false"
       - "true"
       required: false
       secret: false
+    - default: false
+      description: This is a list of accounts where the search will take place.
+      name: list_accounts
+      required: false
+      secret: false
+    - default: false
+      description: Used to track a search's progress.
+      name: searching_accounts
+      required: false
+      secret: false
     deprecated: false
     description: Searches the Gmail records for all Google users.
     execution: false
+    polling: true
     name: gmail-search-all-mailboxes
     outputs:
     - contextPath: Gmail.ID
@@ -671,9 +682,15 @@ script:
     - contextPath: Gmail.Headers
       description: All headers of specific mail (list).
       type: unknown
-    - contextPath: Gmail.Mailbox
-      description: The Gmail Mailbox.
-      type: string
+    - contextPath: Gmail.Mailboxes
+      description: The Gmail mailboxes in which emails matching the query were found.
+      type: String
+    - contextPath: PageToken.NextPageToken
+      description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, so NextPageToken is used to call back the command to fetch the list of the next accounts in which the search will be made.
+      type: String
+    - contextPath: SearchingAccounts
+      description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, it allows the search process to be followed.
+      type: String
     - contextPath: Email.To
       description: The recipient of the email.
       type: String
