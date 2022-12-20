@@ -1,7 +1,7 @@
 {
     "google_drive_raw": {
         "events": {
-          "type": "json",
+          "type": "string",
           "is_array": true
         },
         "ipAddress": {
