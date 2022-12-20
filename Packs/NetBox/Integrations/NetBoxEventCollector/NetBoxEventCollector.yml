@@ -40,7 +40,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: This is the NetBox event collector integration for Cortex XSIAM.
+description: NetBox event collector integration for Cortex XSIAM.
 display: 'NetBox Event Collector'
 name: NetBox Event Collector
 script:
