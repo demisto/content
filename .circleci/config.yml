@@ -179,7 +179,7 @@ references:
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ poetry --version }}-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -336,7 +336,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+      # - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
