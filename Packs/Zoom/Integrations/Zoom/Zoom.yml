@@ -86,36 +86,36 @@ script:
           predefined:
             - instant
             - scheduled
-            - recurring meeting with no fixed time
             - recurring meeting with fixed time
           description: The type of the meeting
           defaultValue: instant
         - name: end_date_time
           description: >
-            For recurring meeting with fixed time only.
+            For recurring meetings only.
             Select the final date on which the meeting will recur before it is canceled
 
             For example: 2017-11-25T12:00:00Z
         - name: end_times
           description: >
-            For recurring meeting with fixed time only.
+            For recurring meetings only.
 
             Select how many times the meeting should recur before it is canceled. 
 
             max = 365. Default = 1.
         - name: monthly_day
           description: >
-            For recurring meeting with fixed time and Monthly recurrence_type only.
+            For recurring meetings with Monthly recurrence_type only.
+
             State the day in a month, the meeting should recur. The value range is from 1 to 31. Default = 1.
         - name: monthly_week
           description: >
-            For recurring meeting with fixed time and Monthly recurrence_type only.
+            For recurring meetings with Monthly recurrence_type only.
 
             State the week of the month when the meeting should recur. If you use this field, you must also use the monthly_week_day field to state the day of the week when the meeting should recur.
             Allowed: -1 (for last week of the month) ┃1┃2┃3┃4
         - name: monthly_week_day
           description: >
-            For recurring meeting with fixed time and Monthly recurrence_type only.
+            For recurring meetings with Monthly recurrence_type only.
 
             State a specific day in a week when the monthly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7
 
@@ -129,7 +129,7 @@ script:
             For a daily meeting, the maximum is 90 days. For a weekly meeting the maximum is of 12 weeks. For a monthly meeting, there is a maximum of 3 months.
         - name: recurrence_type
           description: >
-            For recurring meeting with fixed time only.
+            For recurring meetings  only.
 
             Set the recurrence meeting types.
           auto: PREDEFINED
@@ -139,7 +139,7 @@ script:
             - Monthly
         - name: weekly_days
           description: >
-            For recurring meeting with fixed time and Weekly recurrence_type only.
+            For recurring meetings with a Weekly recurrence_type only.
 
             State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.
         - name: auto_recording
@@ -366,7 +366,7 @@ script:
             - False
             - True
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
-          defaultValue: True
+          defaultValue: False
       outputs:
         - contextPath: Zoom.Meetings
       description: Get the information of an existing zoom meeting

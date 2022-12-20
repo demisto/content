@@ -253,8 +253,6 @@ class Client(BaseClient):
         num_type = 1
         if type == "scheduled":
             num_type = 2
-        elif type == "recurring meeting with no fixed time":
-            num_type = 3
         elif type == "recurring meeting with fixed time":
             num_type = 8
 
@@ -279,7 +277,7 @@ class Client(BaseClient):
             raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
 
         if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
-                                                          monthly_week, monthly_week_day)):
+                                                                  monthly_week, monthly_week_day)):
             raise DemistoException(
                 "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
 
