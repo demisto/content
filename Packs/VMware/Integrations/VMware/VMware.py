@@ -12,6 +12,8 @@ from pyVmomi import vim, vmodl  # type: ignore
 from vmware.vapi.vsphere.client import create_vsphere_client
 
 
+read_demisto_info = demisto.info
+read_demisto_debug = demisto.debug
 def write_to_debug_log(msg):  # pragma: no cover
     if DEBUGGING:
         VMWARE_DEBUGGER.append(f"Received the following message: {msg}")
@@ -21,7 +23,7 @@ def use_demisto_debug(msg):  # pragma: no cover
     write_to_debug_log(msg)
     temp = sys.stdout
     sys.stdout = sys.__stdout__
-    demisto.debug(msg)
+    read_demisto_debug(msg)
     sys.stdout = temp
 
 
@@ -29,7 +31,7 @@ def use_demisto_info(msg):  # pragma: no cover
     write_to_debug_log(msg)
     temp = sys.stdout
     sys.stdout = sys.__stdout__
-    demisto.info(msg)
+    read_demisto_info(msg)
     sys.stdout = temp
 
 
