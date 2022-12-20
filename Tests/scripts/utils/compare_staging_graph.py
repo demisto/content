@@ -228,7 +228,7 @@ def main():
     collected_packs_graph = artifacts / "content_packs_to_install-graph.txt"
 
     content_packs_id_set = artifacts / "content_packs.zip"
-    content_packs_graph = artifacts / "content_packs-graph.zip"
+    content_packs_graph = artifacts / "content_packs_graph.zip"
 
     message = [
         f"Diff report for {marketplace}",
