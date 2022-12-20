@@ -1128,12 +1128,18 @@ def main():
 
     # pack relevant for the current marketplace this upload is done for
     packs_for_current_marketplace_dict: dict[str, Pack] = {}
+    logging.debug(f'** (0) packs_for_current_marketplace_dict {packs_for_current_marketplace_dict}')
 
     # starting iteration over packs
     # in this loop, we load the user metadata for each pack, and filter out the packs that are not relevant for
     # this current marketplace.
     for pack in packs_list:
+        logging.debug(f'** pack name {pack}')
         task_status = pack.load_user_metadata()
+        logging.debug(f'** task_status {task_status}')
+        logging.debug(f'** marketplace {marketplace}')
+        logging.debug(f'** pack marketplaces {pack.marketplaces}')
+
         if not task_status:
             pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
             pack.cleanup()
@@ -1147,6 +1153,8 @@ def main():
         else:
             packs_for_current_marketplace_dict[pack.name] = pack
 
+    logging.debug(f'** (1) packs_for_current_marketplace_dict {packs_for_current_marketplace_dict}')
+
     # iterating over packs that are for this current marketplace
     # we iterate over all packs (and not just for modified packs) for several reasons -
     # 1. we might need the info about this pack if a modified pack is dependent on it.
@@ -1154,6 +1162,8 @@ def main():
     # changelog, etc.
     pack: Pack
     for pack in list(packs_for_current_marketplace_dict.values()):
+        logging.debug(f'** (3) packs_for_current_marketplace_dict {packs_for_current_marketplace_dict}')
+
         task_status = pack.collect_content_items()
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name

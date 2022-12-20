@@ -2623,6 +2623,8 @@ class Pack(object):
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
         logging.debug(f'(0) {first_level_dependencies=}')
         logging.debug(f'(0) {all_levels_dependencies=}')
+        logging.debug(f'** in set_pack_dependencies packs_dict {packs_dict}')
+        logging.debug(f'** in set_pack_dependencies marketplace {marketplace}')
 
         # filter out packs that are not a part of the marketplace this upload is for
         first_level_dependencies = {k: v for k, v in first_level_dependencies.items() if k in packs_dict}
