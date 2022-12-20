@@ -42,6 +42,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
-register_module_line('SearchIndicator', 'end', __line__())
