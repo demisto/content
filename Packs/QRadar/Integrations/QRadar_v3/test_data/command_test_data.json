@@ -2357,6 +2357,77 @@
    "status": "CLOSED"
   }
  },
+ "get_remote_network_cidr": {
+  "response": [
+    {
+     "name": "String",
+     "description": "String",
+     "cidrs": [
+      "127.0.0.2/24"
+     ],
+     "id": 42,
+     "group": "String1"
+    },
+    {
+     "name": "String",
+     "description": "String",
+     "cidrs": [
+      "127.0.0.1/32"
+     ],
+     "id": 43,
+     "group": "String2"
+    }
+  ],
+  "expected": {
+   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
+   "outputs_key_field": "id",
+   "outputs": [
+    {"id": 42, "name": "String", "description": "String"},
+    {"id": 43, "name": "String", "description": "String"}
+   ]
+  }
+ },
+ "create_and_update_remote_network_cidr": {
+  "args": {
+   "name": "test-name",
+   "description": "test-description",
+   "cidrs": [
+    "1.2.3.4/8"
+   ],
+   "id": 45,
+   "group": "test-group"
+  },
+  "response": {
+   "name": "test-name",
+   "description": "test-description",
+   "cidrs": [
+    "1.2.3.4/8"
+   ],
+   "id": 45,
+   "group": "test-group"
+  },
+  "expected": {
+   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
+   "outputs_key_field": "id",
+   "outputs": {"id": 45, "name": "test-name", "group": "test-group", "description": "test-description"}
+  }
+ },
+ "remote_network_deploy_execution": {
+  "args": {
+   "host_ip": "127.0.0.1",
+   "status": "INITIATING",
+   "deployment_type": "INCREMENTAL"
+  },
+  "response": {"status": "IN_PROGRESS"},
+  "expected": {
+   "outputs_prefix": "QRadar.deploy",
+   "outputs_key_field": null,
+   "outputs": {"status": "IN_PROGRESS"}
+  }
+ },
+ "remote_network_cidr_delete": {
+  "readable_output":  "### Successfully deleted the following remote network(s)\n|ID|\n|---|\n| 46 |\n"
+ },
  "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",
  "correlation_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'  limit 20 START 1613399051536"
 }

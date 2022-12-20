@@ -2,7 +2,7 @@
     "name": "Nmap",
     "description": "Run nmap scans with the given parameters",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,7 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xpanse"
     ]
 }

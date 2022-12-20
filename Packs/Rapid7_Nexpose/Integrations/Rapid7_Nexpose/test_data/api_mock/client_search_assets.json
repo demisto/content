@@ -1,0 +1,1110 @@
+[
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "databases": [
+            {
+                "id": 0,
+                "name": "Test"
+            }
+        ],
+        "history": [
+            {
+                "date": "2020-10-01T22:40:08.974Z",
+                "scanId": 650,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2021-06-29T06:58:48.740Z",
+                "scanId": 762,
+                "type": "SCAN",
+                "version": 2
+            },
+            {
+                "date": "2049-03-01T04:31:56Z",
+                "description": "admin",
+                "type": "ASSET-IMPORT",
+                "user": "admin",
+                "version": 3
+            },
+            {
+                "date": "2022-11-10T10:53:29.782Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 4,
+                "vulnerabilityExceptionId": 10
+            }
+        ],
+        "id": 12,
+        "ip": "192.0.2.0",
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 18794.236328125,
+        "riskScore": 18794.236328125,
+        "services": [
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "7.1.26"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/7.1.26"
+                    },
+                    {
+                        "name": "verbs-1",
+                        "value": "GET"
+                    },
+                    {
+                        "name": "verbs-count",
+                        "value": "1"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 80,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.4.25"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "7.1.26"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.4.25 (Debian)"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/7.1.26"
+                    },
+                    {
+                        "name": "verbs-1",
+                        "value": "GET"
+                    },
+                    {
+                        "name": "verbs-count",
+                        "value": "1"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 8080,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.4.25"
+            }
+        ],
+        "vulnerabilities": {
+            "critical": 6,
+            "exploits": 4,
+            "malwareKits": 0,
+            "moderate": 0,
+            "severe": 39,
+            "total": 45
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "history": [
+            {
+                "date": "2020-10-01T22:40:43.032Z",
+                "scanId": 650,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2022-07-10T11:51:17.910Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 2,
+                "vulnerabilityExceptionId": 1
+            },
+            {
+                "date": "2022-10-30T09:21:40.355Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 3,
+                "vulnerabilityExceptionId": 11
+            },
+            {
+                "date": "2022-10-30T09:38:22.218Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 4,
+                "vulnerabilityExceptionId": 12
+            },
+            {
+                "date": "2022-11-02T14:54:19.059Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
+                "version": 5,
+                "vulnerabilityExceptionId": 1
+            },
+            {
+                "date": "2022-11-10T10:06:10.004Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
+                "version": 6,
+                "vulnerabilityExceptionId": 12
+            },
+            {
+                "date": "2022-11-10T10:53:29.792Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 7,
+                "vulnerabilityExceptionId": 10
+            }
+        ],
+        "hostName": "php.testsparker.com",
+        "hostNames": [
+            {
+                "name": "php.testsparker.com",
+                "source": "user"
+            }
+        ],
+        "id": 14,
+        "ip": "192.0.2.0",
+        "os": "Microsoft Windows",
+        "osFingerprint": {
+            "description": "Microsoft Windows",
+            "family": "Windows",
+            "id": 11,
+            "product": "Windows",
+            "systemName": "Microsoft Windows",
+            "vendor": "Microsoft"
+        },
+        "rawRiskScore": 185949.84375,
+        "riskScore": 185949.84375,
+        "services": [
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "5.2.6"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.2.8 (Win32) PHP/5.2.6"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.2.8 (Win32) PHP/5.2.6"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/5.2.6"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 80,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.2.8"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "PHP",
+                        "value": "5.2.6"
+                    },
+                    {
+                        "name": "http.banner",
+                        "value": "Apache/2.2.8 (Win32) PHP/5.2.6"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Apache/2.2.8 (Win32) PHP/5.2.6"
+                    },
+                    {
+                        "name": "http.banner.x-powered-by",
+                        "value": "PHP/5.2.6"
+                    }
+                ],
+                "family": "Apache",
+                "name": "HTTP",
+                "port": 443,
+                "product": "HTTPD",
+                "protocol": "tcp",
+                "vendor": "Apache",
+                "version": "2.2.8"
+            }
+        ],
+        "vulnerabilities": {
+            "critical": 131,
+            "exploits": 68,
+            "malwareKits": 0,
+            "moderate": 8,
+            "severe": 244,
+            "total": 383
+        }
+    },
+    {
+        "addresses": [
+            {
+                "ip": "192.0.2.0"
+            }
+        ],
+        "assessedForPolicies": false,
+        "assessedForVulnerabilities": true,
+        "files": [
+            {
+                "attributes": [
+                    {
+                        "name": "comment",
+                        "value": "Remote Admin"
+                    }
+                ],
+                "name": "ADMIN$",
+                "type": "directory"
+            },
+            {
+                "attributes": [
+                    {
+                        "name": "mount-point",
+                        "value": "C:\\"
+                    }
+                ],
+                "name": "C$",
+                "type": "directory"
+            }
+        ],
+        "history": [
+            {
+                "date": "2021-07-28T15:44:39.398Z",
+                "scanId": 764,
+                "type": "SCAN",
+                "version": 1
+            },
+            {
+                "date": "2022-06-29T16:10:06.743Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 2,
+                "vulnerabilityExceptionId": 2
+            },
+            {
+                "date": "2022-07-10T11:51:17.892Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 3,
+                "vulnerabilityExceptionId": 1
+            },
+            {
+                "date": "2022-10-27T11:57:32.017Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_APPLIED",
+                "version": 4,
+                "vulnerabilityExceptionId": 8
+            },
+            {
+                "date": "2022-11-02T14:54:19.045Z",
+                "description": "admin",
+                "type": "VULNERABILITY_EXCEPTION_UNAPPLIED",
+                "version": 5,
+                "vulnerabilityExceptionId": 1
+            }
+        ],
+        "hostName": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+        "hostNames": [
+            {
+                "name": "EC2AMAZ-ICVJCRK",
+                "source": "dce"
+            },
+            {
+                "name": "ec2-34-255-72-253.eu-west-1.compute.amazonaws.com",
+                "source": "user"
+            }
+        ],
+        "id": 19,
+        "ip": "192.0.2.0",
+        "os": "Microsoft Windows Server 2016 Datacenter Edition 1607",
+        "osFingerprint": {
+            "architecture": "x86_64",
+            "description": "Microsoft Windows Server 2016 Datacenter Edition 1607",
+            "family": "Windows",
+            "id": 27,
+            "product": "Windows Server 2016 Datacenter Edition",
+            "systemName": "Microsoft Windows",
+            "type": "Server",
+            "vendor": "Microsoft",
+            "version": "1607"
+        },
+        "rawRiskScore": 9519.7001953125,
+        "riskScore": 9519.7001953125,
+        "services": [
+            {
+                "name": "DCE Endpoint Resolution",
+                "port": 135,
+                "protocol": "tcp"
+            },
+            {
+                "name": "CIFS",
+                "port": 139,
+                "protocol": "tcp"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "domain",
+                        "value": "EC2AMAZ-ICVJCRK"
+                    },
+                    {
+                        "name": "password-mode",
+                        "value": "encrypt"
+                    },
+                    {
+                        "name": "security-mode",
+                        "value": "user"
+                    },
+                    {
+                        "name": "smb-signing",
+                        "value": "disabled"
+                    },
+                    {
+                        "name": "smb1-enabled",
+                        "value": "true"
+                    },
+                    {
+                        "name": "smb2-enabled",
+                        "value": "true"
+                    },
+                    {
+                        "name": "smb2-signing",
+                        "value": "enabled"
+                    }
+                ],
+                "name": "CIFS",
+                "port": 445,
+                "product": "Windows Server 2016 Datacenter 6.3",
+                "protocol": "tcp"
+            },
+            {
+                "family": "SQL Server",
+                "name": "TDS",
+                "port": 1433,
+                "product": "SQL Server 2017",
+                "protocol": "tcp",
+                "vendor": "Microsoft",
+                "version": "14.0.3391"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "ssl",
+                        "value": "true"
+                    },
+                    {
+                        "name": "ssl.cert.chainerror",
+                        "value": "[Path does not chain with any of the trust anchors]"
+                    },
+                    {
+                        "name": "ssl.cert.issuer.dn",
+                        "value": "CN=EC2AMAZ-ICVJCRK"
+                    },
+                    {
+                        "name": "ssl.cert.key.alg.name",
+                        "value": "RSA"
+                    },
+                    {
+                        "name": "ssl.cert.key.rsa.modulusBits",
+                        "value": "2048"
+                    },
+                    {
+                        "name": "ssl.cert.not.valid.after",
+                        "value": "Tue, 18 Jan 2022 13:08:16 IST"
+                    },
+                    {
+                        "name": "ssl.cert.not.valid.before",
+                        "value": "Mon, 19 Jul 2021 14:08:16 IDT"
+                    },
+                    {
+                        "name": "ssl.cert.selfsigned",
+                        "value": "true"
+                    },
+                    {
+                        "name": "ssl.cert.serial.number",
+                        "value": "25949284602418322393628232134762185202"
+                    },
+                    {
+                        "name": "ssl.cert.sha1.fingerprint",
+                        "value": "f6c0278730735029fa903151d1a1c3c66d2157f4"
+                    },
+                    {
+                        "name": "ssl.cert.sig.alg.name",
+                        "value": "SHA256withRSA"
+                    },
+                    {
+                        "name": "ssl.cert.subject.dn",
+                        "value": "CN=EC2AMAZ-ICVJCRK"
+                    },
+                    {
+                        "name": "ssl.cert.validchain",
+                        "value": "false"
+                    },
+                    {
+                        "name": "ssl.cert.validsignature",
+                        "value": "true"
+                    },
+                    {
+                        "name": "ssl.cert.version",
+                        "value": "3"
+                    },
+                    {
+                        "name": "ssl.protocols",
+                        "value": "tlsv1_0,tlsv1_1,tlsv1_2"
+                    },
+                    {
+                        "name": "sslv3",
+                        "value": "false"
+                    },
+                    {
+                        "name": "tlsv1_0",
+                        "value": "true"
+                    },
+                    {
+                        "name": "tlsv1_0.ciphers",
+                        "value": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_RC4_128_MD5"
+                    },
+                    {
+                        "name": "tlsv1_0.extensions",
+                        "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET"
+                    },
+                    {
+                        "name": "tlsv1_1",
+                        "value": "true"
+                    },
+                    {
+                        "name": "tlsv1_1.ciphers",
+                        "value": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_RC4_128_MD5"
+                    },
+                    {
+                        "name": "tlsv1_1.extensions",
+                        "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET"
+                    },
+                    {
+                        "name": "tlsv1_2",
+                        "value": "true"
+                    },
+                    {
+                        "name": "tlsv1_2.ciphers",
+                        "value": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_3DES_EDE_CBC_SHA,TLS_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_RC4_128_MD5"
+                    },
+                    {
+                        "name": "tlsv1_2.extensions",
+                        "value": "RENEGOTIATION_INFO,EXTENDED_MASTER_SECRET"
+                    }
+                ],
+                "name": "RDP",
+                "port": 3389,
+                "protocol": "tcp"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "http.banner",
+                        "value": "Microsoft-HTTPAPI/2.0"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Microsoft-HTTPAPI/2.0"
+                    }
+                ],
+                "name": "HTTP",
+                "port": 5985,
+                "product": "Microsoft-HTTPAPI",
+                "protocol": "tcp",
+                "version": "2.0"
+            },
+            {
+                "configurations": [
+                    {
+                        "name": "http.banner",
+                        "value": "Microsoft-HTTPAPI/2.0"
+                    },
+                    {
+                        "name": "http.banner.server",
+                        "value": "Microsoft-HTTPAPI/2.0"
+                    }
+                ],
+                "name": "HTTP",
+                "port": 8082,
+                "product": "Microsoft-HTTPAPI",
+                "protocol": "tcp",
+                "version": "2.0"
+            }
+        ],
+        "software": [
+            {
+                "description": "Amazon Web Services AWS PV Drivers 8.4.0",
+                "id": 432,
+                "product": "AWS PV Drivers",
+                "vendor": "Amazon Web Services",
+                "version": "8.4.0"
+            },
+            {
+                "description": "Amazon Web Services Amazon SSM Agent 3.0.1124.0",
+                "id": 436,
+                "product": "Amazon SSM Agent",
+                "vendor": "Amazon Web Services",
+                "version": "3.0.1124.0"
+            },
+            {
+                "description": "Amazon Web Services Developer Relations AWS Tools for Windows 3.15.1350",
+                "id": 428,
+                "product": "AWS Tools for Windows",
+                "vendor": "Amazon Web Services Developer Relations",
+                "version": "3.15.1350"
+            },
+            {
+                "description": "Amazon Web Services aws-cfn-bootstrap 2.0.6",
+                "id": 437,
+                "product": "aws-cfn-bootstrap",
+                "vendor": "Amazon Web Services",
+                "version": "2.0.6"
+            },
+            {
+                "description": "Microsoft .NET Framework 4.8",
+                "family": ".NET Framework",
+                "id": 431,
+                "product": ".NET Framework 4.8",
+                "vendor": "Microsoft"
+            },
+            {
+                "description": "Microsoft .NET Framework 4.8 Client Profile",
+                "family": ".NET Framework",
+                "id": 435,
+                "product": ".NET Framework 4.8 Client Profile",
+                "vendor": "Microsoft"
+            },
+            {
+                "description": "Microsoft Internet Explorer 11.4350.14393.0",
+                "family": "Internet Explorer",
+                "id": 439,
+                "product": "Internet Explorer",
+                "type": "Internet Client",
+                "vendor": "Microsoft",
+                "version": "11.4350.14393.0"
+            },
+            {
+                "description": "Microsoft MSXML 6.30.14393.4530",
+                "family": "MSXML",
+                "id": 438,
+                "product": "MSXML",
+                "vendor": "Microsoft",
+                "version": "6.30.14393.4530"
+            },
+            {
+                "description": "Microsoft MSXML 8.110.14393.4467",
+                "family": "MSXML",
+                "id": 441,
+                "product": "MSXML",
+                "vendor": "Microsoft",
+                "version": "8.110.14393.4467"
+            },
+            {
+                "description": "Microsoft SQL Server 2017 14.0.1000.169",
+                "family": "SQL Server",
+                "id": 442,
+                "product": "SQL Server 2017",
+                "type": "Database Server",
+                "vendor": "Microsoft",
+                "version": "14.0.1000.169"
+            },
+            {
+                "description": "Microsoft SQL Server 2017 14.0.3391.2",
+                "family": "SQL Server",
+                "id": 440,
+                "product": "SQL Server 2017",
+                "type": "Database Server",
+                "vendor": "Microsoft",
+                "version": "14.0.3391.2"
+            },
+            {
+                "description": "Microsoft Windows Media Player 12.0.10011.16384",
+                "family": "Windows Media Player",
+                "id": 433,
+                "product": "Windows Media Player",
+                "type": "Media Client",
+                "vendor": "Microsoft",
+                "version": "12.0.10011.16384"
+            }
+        ],
+        "userGroups": [
+            {
+                "id": 7,
+                "name": "ANONYMOUS LOGON"
+            },
+            {
+                "id": 579,
+                "name": "Access Control Assistance Operators"
+            },
+            {
+                "id": 544,
+                "name": "Administrators"
+            },
+            {
+                "id": 11,
+                "name": "Authenticated Users"
+            },
+            {
+                "id": 3,
+                "name": "BATCH"
+            },
+            {
+                "id": 551,
+                "name": "Backup Operators"
+            },
+            {
+                "id": 1,
+                "name": "CONSOLE LOGON"
+            },
+            {
+                "id": 1,
+                "name": "CREATOR GROUP"
+            },
+            {
+                "id": 3,
+                "name": "CREATOR GROUP SERVER"
+            },
+            {
+                "id": 0,
+                "name": "CREATOR OWNER"
+            },
+            {
+                "id": 2,
+                "name": "CREATOR OWNER SERVER"
+            },
+            {
+                "id": 574,
+                "name": "Certificate Service DCOM Access"
+            },
+            {
+                "id": 569,
+                "name": "Cryptographic Operators"
+            },
+            {
+                "id": 1,
+                "name": "DIALUP"
+            },
+            {
+                "id": 562,
+                "name": "Distributed COM Users"
+            },
+            {
+                "id": 9,
+                "name": "ENTERPRISE DOMAIN CONTROLLERS"
+            },
+            {
+                "id": 573,
+                "name": "Event Log Readers"
+            },
+            {
+                "id": 0,
+                "name": "Everyone"
+            },
+            {
+                "id": 546,
+                "name": "Guests"
+            },
+            {
+                "id": 578,
+                "name": "Hyper-V Administrators"
+            },
+            {
+                "id": 568,
+                "name": "IIS_IUSRS"
+            },
+            {
+                "id": 4,
+                "name": "INTERACTIVE"
+            },
+            {
+                "id": 17,
+                "name": "IUSR"
+            },
+            {
+                "id": 0,
+                "name": "LOCAL"
+            },
+            {
+                "id": 19,
+                "name": "LOCAL SERVICE"
+            },
+            {
+                "id": 113,
+                "name": "Local account"
+            },
+            {
+                "id": 114,
+                "name": "Local account and member of Administrators group"
+            },
+            {
+                "id": 2,
+                "name": "NETWORK"
+            },
+            {
+                "id": 20,
+                "name": "NETWORK SERVICE"
+            },
+            {
+                "id": 0,
+                "name": "NULL SID"
+            },
+            {
+                "id": 556,
+                "name": "Network Configuration Operators"
+            },
+            {
+                "id": 513,
+                "name": "None"
+            },
+            {
+                "id": 4,
+                "name": "OWNER RIGHTS"
+            },
+            {
+                "id": 8,
+                "name": "PROXY"
+            },
+            {
+                "id": 559,
+                "name": "Performance Log Users"
+            },
+            {
+                "id": 558,
+                "name": "Performance Monitor Users"
+            },
+            {
+                "id": 547,
+                "name": "Power Users"
+            },
+            {
+                "id": 550,
+                "name": "Print Operators"
+            },
+            {
+                "id": 576,
+                "name": "RDS Endpoint Servers"
+            },
+            {
+                "id": 577,
+                "name": "RDS Management Servers"
+            },
+            {
+                "id": 575,
+                "name": "RDS Remote Access Servers"
+            },
+            {
+                "id": 14,
+                "name": "REMOTE INTERACTIVE LOGON"
+            },
+            {
+                "id": 12,
+                "name": "RESTRICTED"
+            },
+            {
+                "id": 555,
+                "name": "Remote Desktop Users"
+            },
+            {
+                "id": 580,
+                "name": "Remote Management Users"
+            },
+            {
+                "id": 552,
+                "name": "Replicator"
+            },
+            {
+                "id": 10,
+                "name": "SELF"
+            },
+            {
+                "id": 6,
+                "name": "SERVICE"
+            },
+            {
+                "id": 1002,
+                "name": "SQLRUserGroup"
+            },
+            {
+                "id": 1000,
+                "name": "SQLServer2005SQLBrowserUser$EC2AMAZ-ISQ8EGQ"
+            },
+            {
+                "id": 1001,
+                "name": "SQLServerMSASUser$EC2AMAZ-ISQ8EGQ$MSSQLSERVER"
+            },
+            {
+                "id": 18,
+                "name": "SYSTEM"
+            },
+            {
+                "id": 582,
+                "name": "Storage Replica Administrators"
+            },
+            {
+                "id": 581,
+                "name": "System Managed Accounts Group"
+            },
+            {
+                "id": 13,
+                "name": "TERMINAL SERVER USER"
+            },
+            {
+                "id": 15,
+                "name": "This Organization"
+            },
+            {
+                "id": 545,
+                "name": "Users"
+            }
+        ],
+        "users": [
+            {
+                "id": 500,
+                "name": "Administrator"
+            },
+            {
+                "id": 503,
+                "name": "DefaultAccount"
+            },
+            {
+                "id": 501,
+                "name": "Guest"
+            },
+            {
+                "fullName": "LOCALSERVICE",
+                "id": -1,
+                "name": "LOCALSERVICE"
+            },
+            {
+                "fullName": "LocalService",
+                "id": -1,
+                "name": "LocalService"
+            },
+            {
+                "fullName": "MSSQLFDLauncher",
+                "id": -1,
+                "name": "MSSQLFDLauncher"
+            },
+            {
+                "fullName": "MSSQLLaunchpad",
+                "id": -1,
+                "name": "MSSQLLaunchpad"
+            },
+            {
+                "fullName": "MSSQLSERVER",
+                "id": -1,
+                "name": "MSSQLSERVER"
+            },
+            {
+                "fullName": "MSSQLSERVER00",
+                "id": 1003,
+                "name": "MSSQLSERVER00"
+            },
+            {
+                "fullName": "MSSQLSERVER01",
+                "id": 1004,
+                "name": "MSSQLSERVER01"
+            },
+            {
+                "fullName": "MSSQLSERVER02",
+                "id": 1005,
+                "name": "MSSQLSERVER02"
+            },
+            {
+                "fullName": "MSSQLSERVER03",
+                "id": 1006,
+                "name": "MSSQLSERVER03"
+            },
+            {
+                "fullName": "MSSQLSERVER04",
+                "id": 1007,
+                "name": "MSSQLSERVER04"
+            },
+            {
+                "fullName": "MSSQLSERVER05",
+                "id": 1008,
+                "name": "MSSQLSERVER05"
+            },
+            {
+                "fullName": "MSSQLSERVER06",
+                "id": 1009,
+                "name": "MSSQLSERVER06"
+            },
+            {
+                "fullName": "MSSQLSERVER07",
+                "id": 1010,
+                "name": "MSSQLSERVER07"
+            },
+            {
+                "fullName": "MSSQLSERVER08",
+                "id": 1011,
+                "name": "MSSQLSERVER08"
+            },
+            {
+                "fullName": "MSSQLSERVER09",
+                "id": 1012,
+                "name": "MSSQLSERVER09"
+            },
+            {
+                "fullName": "MSSQLSERVER10",
+                "id": 1013,
+                "name": "MSSQLSERVER10"
+            },
+            {
+                "fullName": "MSSQLSERVER11",
+                "id": 1014,
+                "name": "MSSQLSERVER11"
+            },
+            {
+                "fullName": "MSSQLSERVER12",
+                "id": 1015,
+                "name": "MSSQLSERVER12"
+            },
+            {
+                "fullName": "MSSQLSERVER13",
+                "id": 1016,
+                "name": "MSSQLSERVER13"
+            },
+            {
+                "fullName": "MSSQLSERVER14",
+                "id": 1017,
+                "name": "MSSQLSERVER14"
+            },
+            {
+                "fullName": "MSSQLSERVER15",
+                "id": 1018,
+                "name": "MSSQLSERVER15"
+            },
+            {
+                "fullName": "MSSQLSERVER16",
+                "id": 1019,
+                "name": "MSSQLSERVER16"
+            },
+            {
+                "fullName": "MSSQLSERVER17",
+                "id": 1020,
+                "name": "MSSQLSERVER17"
+            },
+            {
+                "fullName": "MSSQLSERVER18",
+                "id": 1021,
+                "name": "MSSQLSERVER18"
+            },
+            {
+                "fullName": "MSSQLSERVER19",
+                "id": 1022,
+                "name": "MSSQLSERVER19"
+            },
+            {
+                "fullName": "MSSQLSERVER20",
+                "id": 1023,
+                "name": "MSSQLSERVER20"
+            },
+            {
+                "fullName": "MSSQLServerOLAPService",
+                "id": -1,
+                "name": "MSSQLServerOLAPService"
+            },
+            {
+                "fullName": "MsDtsServer140",
+                "id": -1,
+                "name": "MsDtsServer140"
+            },
+            {
+                "fullName": "NetworkService",
+                "id": -1,
+                "name": "NetworkService"
+            },
+            {
+                "fullName": "SQL Server Distributed Replay Client",
+                "id": -1,
+                "name": "SQL Server Distributed Replay Client"
+            },
+            {
+                "fullName": "SQL Server Distributed Replay Controller",
+                "id": -1,
+                "name": "SQL Server Distributed Replay Controller"
+            },
+            {
+                "fullName": "SQLSERVERAGENT",
+                "id": -1,
+                "name": "SQLSERVERAGENT"
+            },
+            {
+                "fullName": "SQLServerReportingServices",
+                "id": -1,
+                "name": "SQLServerReportingServices"
+            },
+            {
+                "fullName": "SQLTELEMETRY",
+                "id": -1,
+                "name": "SQLTELEMETRY"
+            },
+            {
+                "fullName": "SSASTELEMETRY",
+                "id": -1,
+                "name": "SSASTELEMETRY"
+            },
+            {
+                "fullName": "SSISTELEMETRY140",
+                "id": -1,
+                "name": "SSISTELEMETRY140"
+            },
+            {
+                "fullName": "localSystem",
+                "id": -1,
+                "name": "localSystem"
+            }
+        ],
+        "vulnerabilities": {
+            "critical": 0,
+            "exploits": 0,
+            "malwareKits": 0,
+            "moderate": 5,
+            "severe": 13,
+            "total": 18
+        }
+    }
+]
