@@ -189,7 +189,7 @@ def compare_content_packs(
 ):
     ZipFile(content_packs_id_set).extractall(output_path / "id_set")
     ZipFile(content_packs_graph).extractall(output_path / "graph")
-    list_files_id_set = (output_path / "id_set").rglob("*")
+    list_files_id_set = list((output_path / "id_set").rglob("*"))
     assert list_files_id_set, "No files in content packs id_set"
     missing = [
         path
