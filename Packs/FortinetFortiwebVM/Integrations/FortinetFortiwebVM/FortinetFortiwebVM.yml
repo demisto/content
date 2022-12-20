@@ -6,6 +6,7 @@ configuration:
 - defaultvalue: https://www.example.com
   display: Server URL
   name: url
+  type: 0
   required: true
 - name: credentials
   displaypassword: The API Key.
@@ -20,13 +21,13 @@ configuration:
   options:
   - V1
   - V2
-- defaultvalue: false
-  display: Use system proxy
+- defaultvalue: 'false'
+  display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: false
-  display: Trust any certificate
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -2117,10 +2118,6 @@ script:
       isArray: false
       name: intergroup
       required: false
-    - description: Missing.
-      isArray: false
-      name: proxy
-      required: false
     - auto: PREDEFINED
       description: Missing in version 1.
       isArray: false
@@ -2580,3 +2577,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.2.0

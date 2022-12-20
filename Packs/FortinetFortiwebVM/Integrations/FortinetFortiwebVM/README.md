@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fortiwebvm-protected-hostname-group-create
 ***
-Create Protected Hostname.
+Create Protected Hostname Group.
 
 
 #### Base Command
@@ -40,7 +40,7 @@ Create Protected Hostname.
 There is no context output for this command.
 ### fortiwebvm-protected-hostname-group-update
 ***
-Update Protected Hostname.
+Update Protected Hostname Group.
 
 
 #### Base Command
@@ -79,14 +79,14 @@ List the Protected Hostname groups.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ProtectedHostnameGroup.id | String | Protected Hostname ID. | 
-| FortiwebVM.ProtectedHostnameGroup.default_action | Number | Action. | 
-| FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | Protected Hostname members number. | 
+| FortiwebVM.ProtectedHostnameGroup.id | String | Protected Hostname Group ID. | 
+| FortiwebVM.ProtectedHostnameGroup.default_action | Number | Protected Hostname Group Action. | 
+| FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | Protected Hostname Group members number. | 
 | FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Can deleted flag. Supports API version 1 only. | 
 
 ### fortiwebvm-protected-hostname-member-create
 ***
-Create Protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
+Create Protected Hostname Member (Protected Hostname Member is a sub-object of Protected Hostname Group).
 
 
 #### Base Command
@@ -157,10 +157,10 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 | --- | --- | --- |
 | FortiwebVM.ProtectedHostnameMember.group_name | String | Protected Hostname Group Name. | 
 | FortiwebVM.ProtectedHostnameMember.Members.id | String | Protected Hostname Member ID. | 
-| FortiwebVM.ProtectedHostnameMember.Members.action | String | Action. | 
-| FortiwebVM.ProtectedHostnameMember.Members.host | String | IP Address. | 
-| FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Ignore Port. Supports API version 2 only. | 
-| FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Include Subdomains. Supports API version 2 only. | 
+| FortiwebVM.ProtectedHostnameMember.Members.action | String | Protected Hostname Member Action. | 
+| FortiwebVM.ProtectedHostnameMember.Members.host | String | Protected Hostname Member IP Address. | 
+| FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Protected Hostname Member Ignore Port. Supports API version 2 only. | 
+| FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Protected Hostname Member Include Subdomains. Supports API version 2 only. | 
 
 ### fortiwebvm-protected-hostname-member-delete
 ***
@@ -270,14 +270,14 @@ Supports API versions 1 & 2.
 | FortiwebVM.IpListGroup.id | String | IP list id. | 
 | FortiwebVM.IpListGroup.ip_list_count | Number | IP list members number. | 
 | FortiwebVM.IpListGroup.can_delete | Boolean | Can delete flag. Supports API version 1 only. | 
-| FortiwebVM.IpListGroup.q_ref | Number | Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.q_type | Number | Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.can_clone | Number | Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.block_period | Number | Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.can_view | Number | Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.action | String | Action Supports API version 2 only. | 
-| FortiwebVM.IpListGroup.trigger_policy | String | Trigger Policy NameSupports API version 2 only. | 
-| FortiwebVM.IpListGroup.severity | String | SeveritySupports API version 2 only. | 
+| FortiwebVM.IpListGroup.q_ref | Number | The CMDB reference count. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.q_type | Number | IP list group object type. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.can_clone | Number | Can clone flag. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.block_period | Number | IP list group Block Period. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.can_view | Number | Can view flag. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.action | String | IP list group Action. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.trigger_policy | String | IP list group Trigger Policy Name. Supports API version 2 only. | 
+| FortiwebVM.IpListGroup.severity | String | IP list group Severity. Supports API version 2 only. | 
 
 ### fortiwebvm-ip-list-member-create
 ***
@@ -350,12 +350,12 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.IpListMember.group_name | String | Policy Group Name. | 
-| FortiwebVM.IpListMember.Members.id | String | Policy member ID. | 
-| FortiwebVM.IpListMember.Members.type | String | Type. | 
-| FortiwebVM.IpListMember.Members.severity | String | Severity \(V1 only\). | 
-| FortiwebVM.IpListMember.Members.trigger_policy | String | Trigger Policy Name. \(V1 only\). | 
-| FortiwebVM.IpListMember.Members.ip | String | IP Address. | 
+| FortiwebVM.IpListMember.group_name | String | IP list Group Name. | 
+| FortiwebVM.IpListMember.Members.id | String | IP list Member ID. | 
+| FortiwebVM.IpListMember.Members.type | String | IP list Member Type. | 
+| FortiwebVM.IpListMember.Members.severity | String | IP list Member Severity. Supports API version 1 only. | 
+| FortiwebVM.IpListMember.Members.trigger_policy | String | IP list Member Trigger Policy. Supports API version 1 only. | 
+| FortiwebVM.IpListMember.Members.ip | String | IP list Member IP Address. | 
 
 ### fortiwebvm-ip-list-member-delete
 ***
@@ -674,22 +674,22 @@ List the Custom Global Whitelist Objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.CustomGlobalWhitelist.id | Number | ID. | 
-| FortiwebVM.CustomGlobalWhitelist.name | Number | Name. | 
-| FortiwebVM.CustomGlobalWhitelist.type | Number | Type. | 
-| FortiwebVM.CustomGlobalWhitelist.status | Boolean | Enable. | 
-| FortiwebVM.CustomGlobalWhitelist.request_type | Number | Request Type. | 
-| FortiwebVM.CustomGlobalWhitelist.request_url | String | Request URL. | 
-| FortiwebVM.CustomGlobalWhitelist.header_name_type | String | Header Type.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.domain_type | String | Domain Type.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.name_type | String | Name Type. Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.request_url_status | String | Request File Status.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.domain_status | String | Domain Status.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.domain | String | Domain.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.path | String | Path.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.header_value_type | String | Value Type.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.value | String | Value.Only V2. | 
-| FortiwebVM.CustomGlobalWhitelist.value_status | String | Value Status.Only V2. | 
+| FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist object ID. | 
+| FortiwebVM.CustomGlobalWhitelist.name | Number | Custom Global Whitelist object Name. | 
+| FortiwebVM.CustomGlobalWhitelist.type | Number | Custom Global Whitelist object Type. | 
+| FortiwebVM.CustomGlobalWhitelist.status | Boolean | Custom Global Whitelist object status. | 
+| FortiwebVM.CustomGlobalWhitelist.request_type | Number | Custom Global Whitelist object Request Type. | 
+| FortiwebVM.CustomGlobalWhitelist.request_url | String | Custom Global Whitelist object Request URL. | 
+| FortiwebVM.CustomGlobalWhitelist.header_name_type | String | Custom Global Whitelist object Header Type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain_type | String | Custom Global Whitelist object Domain Type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.name_type | String | Custom Global Whitelist object Name Type.  Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.request_url_status | String | Custom Global Whitelist object Request File Status. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain_status | String | Custom Global Whitelist object Domain Status. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.domain | String | Custom Global Whitelist object Domain. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.path | String | Custom Global Whitelist object Path. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.header_value_type | String | Custom Global Whitelist object Value Type. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.value | String | Custom Global Whitelist object Value. Supports API version 2 only. | 
+| FortiwebVM.CustomGlobalWhitelist.value_status | String | Custom Global Whitelist object Value Status. Supports API version 2 only. | 
 
 ### fortiwebvm-geo-ip-member-add
 ***
@@ -752,9 +752,9 @@ Get Geo IP Member (Geo IP Member is a member of Geo IP).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.GeoIpMember.group_name | String | Geo IP Member ID. | 
+| FortiwebVM.GeoIpMember.group_name | String | Geo IP Member Group Name. | 
 | FortiwebVM.GeoIpMember.countries.id | String | Geo IP Member ID. | 
-| FortiwebVM.GeoIpMember.countries.country | Number | Country Name. | 
+| FortiwebVM.GeoIpMember.countries.country | Number | Geo IP Member Country Name. | 
 
 ### fortiwebvm-geo-ip-group-create
 ***
@@ -844,15 +844,15 @@ Get Geo IP list.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.GeoIpGroup.id | Number | Geo IP ID. | 
-| FortiwebVM.GeoIpGroup.count | Number | Geo IP Members Count. | 
-| FortiwebVM.GeoIpGroup.trigger_policy | String | Geo IP Trigger Policy Name. | 
-| FortiwebVM.GeoIpGroup.severity | String | Geo IP Severity Number. | 
-| FortiwebVM.GeoIpGroup.except | String | Geo IP Exception groups. | 
-| FortiwebVM.GeoIpGroup.can_delete | Boolean | Only V1. | 
-| FortiwebVM.GeoIpGroup.action | String | The action that FortiWeb will take when  detects a violation of the rule. Supports API version 2 only. | 
-| FortiwebVM.GeoIpGroup.block_period | Number | The number of seconds that you want to block subsequent requests. Supports API version 2 only. | 
-| FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. | 
+| FortiwebVM.GeoIpGroup.id | Number | Geo IP Group ID. | 
+| FortiwebVM.GeoIpGroup.count | Number | Geo IP Group Members Count. | 
+| FortiwebVM.GeoIpGroup.trigger_policy | String | Geo IP Group Trigger Policy Name. | 
+| FortiwebVM.GeoIpGroup.severity | String | Geo IP Group Severity Number. | 
+| FortiwebVM.GeoIpGroup.except | String | Geo IP Group Exception groups. | 
+| FortiwebVM.GeoIpGroup.can_delete | Boolean | Geo IP Group Can delete flag. Supports API version 1 only. | 
+| FortiwebVM.GeoIpGroup.action | String | Geo IP Group Action. Supports API version 2 only. | 
+| FortiwebVM.GeoIpGroup.block_period | Number | Geo IP Group Block Period. Supports API version 2 only. | 
+| FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | Geo IP Group Ignore X-Forwarded-For flag. Supports API version 2 only. | 
 
 ### fortiwebvm-system-operation-status-get
 ***
@@ -1203,17 +1203,17 @@ List the Server Policies.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.ServerPolicy.name | String | Policy Name. | 
-| FortiwebVM.ServerPolicy.deployment_mode | String | Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy. | 
-| FortiwebVM.ServerPolicy.protocol | String | Policy protocol. | 
-| FortiwebVM.ServerPolicy.web_protection_profile | String | Enable inherit web protection profile. | 
+| FortiwebVM.ServerPolicy.name | String | Server Policy Name. | 
+| FortiwebVM.ServerPolicy.deployment_mode | String | Server Policy Deployment Mode. | 
+| FortiwebVM.ServerPolicy.protocol | String | Server Policy protocol. | 
+| FortiwebVM.ServerPolicy.web_protection_profile | String | Server Policy inherit web protection profile flag. | 
 | FortiwebVM.ServerPolicy.monitor_mode | String | Enable to override deny and redirect actions defined in the server protection rules for the selected policy. This setting enables FortiWeb to log attacks without performing the deny or redirect action. Disable to allow FortiWeb to perform attack deny/redirect actions as defined by the server protection rules. | 
 | FortiwebVM.ServerPolicy.http_service | String | HTTP service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
 | FortiwebVM.ServerPolicy.https_service | String | HTTPS service name. Custom or predefined service that defines the port number on which the virtual server receives HTTPS traffic. | 
 | FortiwebVM.ServerPolicy.certificate | String | Server Polciy certificate. | 
 | FortiwebVM.ServerPolicy.certificate_intermediate_group | String | Server Polciy certificate intermediate group. | 
-| FortiwebVM.ServerPolicy.server_pool | String | The name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance". | 
-| FortiwebVM.ServerPolicy.protected_hostnames | String | Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host | 
+| FortiwebVM.ServerPolicy.server_pool | String | Server Policy Server Pool name. | 
+| FortiwebVM.ServerPolicy.protected_hostnames | String | Server Policy Protected Hostname name. | 
 | FortiwebVM.ServerPolicy.client_real_ip | String | Enable to configure FortiWeb to use the source IP address of the client that originated the request when it connects to a back-end server on behalf of that client. | 
 | FortiwebVM.ServerPolicy.syn_cookie | String | Enable to detect TCP SYN flood attacks. | 
 | FortiwebVM.ServerPolicy.redirect_to_https | String | Enable to automatically redirect all HTTP requests to the HTTPS service with the same URL and parameters. | 
@@ -1228,8 +1228,8 @@ List the Server Policies.
 | FortiwebVM.ServerPolicy.retry_on_http_response_codes | String | The failure return code when pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enable. | 
 | FortiwebVM.ServerPolicy.scripting | String | Not documented. Supports API version 2 only. | 
 | FortiwebVM.ServerPolicy.scripting_list | String | Not documented. Required when: scripting is enable. Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.allow_list | String | Supports API version 2 only. | 
-| FortiwebVM.ServerPolicy.replace_msg | String | Select the replacement message to apply to the policy. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.allow_list | String | Server Policy Allow List. Supports API version 2 only. | 
+| FortiwebVM.ServerPolicy.replace_msg | String | Server Policy replacement message. Supports API version 2 only. API version 2 only. | 
 
 ### fortiwebvm-content-routing-policy-list
 ***
@@ -1346,10 +1346,10 @@ List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FortiwebVM.HttpContentRoutingMember.policy_name | String | Policy Name. | 
-| FortiwebVM.HttpContentRoutingMember.Members.id | String | ID. | 
-| FortiwebVM.HttpContentRoutingMember.Members.default | String | Default. | 
+| FortiwebVM.HttpContentRoutingMember.policy_name | String | HTTP Content Routing Policy Name. | 
+| FortiwebVM.HttpContentRoutingMember.Members.id | String | HTTP Content Routing ID. | 
+| FortiwebVM.HttpContentRoutingMember.Members.default | String | HTTP Content Routing Is Default. | 
 | FortiwebVM.HttpContentRoutingMember.Members.http_content_routing_policy | String | HTTP content routing policy name. | 
-| FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | Enable inherit web protection profile. | 
-| FortiwebVM.HttpContentRoutingMember.Members.profile | String | Profile. | 
-| FortiwebVM.HttpContentRoutingMember.Members.status | String | Status. Supports API version 2 only. | 
+| FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP Content Routing inherit web protection profile flag. | 
+| FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP Content Routing Profile. | 
+| FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP Content Routing Status. Supports API version 2 only. | 
