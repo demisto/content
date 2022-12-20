@@ -44,8 +44,6 @@ class MsGraphClient:
         if last_modified:
             filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
         if category:
-            # The category filter returns other categories when using the `equal` operator
-            # https://learn.microsoft.com/en-us/graph/filter-query-parameter
             filters.append("contains(category, '{}')".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
