@@ -807,8 +807,8 @@ def test_module(si):
 
 
 def main():  # pragma: no cover
-    sout = sys.stdout
-    sys.stdout = StringIO()
+    if argToBoolean(demisto.params().get('redirect_std_out', 'false')):
+        sys.stdout = StringIO()
     res = []
     si = None
     try:
@@ -865,7 +865,7 @@ def main():  # pragma: no cover
         res.append({  # type: ignore
             "Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Logout failed. " + str(ex)})
 
-    sys.stdout = sout
+    sys.stdout = sys.__stdout__
     demisto.results(res)
 
 
