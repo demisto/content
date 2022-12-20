@@ -66,6 +66,10 @@ configuration:
   name: request_timeout
   required: false
   type: 0
+- display: Mark fetched emails as read
+  name: mark_as_read
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
