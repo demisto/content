@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 131
+version: 132
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -1001,7 +1001,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 350
         }
       }
     note: false
@@ -1840,10 +1840,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: cfae6e7b-464a-4bf1-8b17-aa1847c02461
+    taskid: 7cde5d53-dd8d-476b-80ab-0b4afad04282
     type: regular
     task:
-      id: cfae6e7b-464a-4bf1-8b17-aa1847c02461
+      id: 7cde5d53-dd8d-476b-80ab-0b4afad04282
       version: -1
       name: 'upload  new file '
       description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
@@ -1876,6 +1876,8 @@ tasks:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
       parent_id:
         simple: root
+      retry-count:
+        simple: "2"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2199,10 +2201,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: aab068ec-9c1d-4a33-806c-dfece96a421a
+    taskid: 905a2f2b-3954-4715-8612-d039fe1be0ff
     type: regular
     task:
-      id: aab068ec-9c1d-4a33-806c-dfece96a421a
+      id: 905a2f2b-3954-4715-8612-d039fe1be0ff
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -2215,7 +2217,7 @@ tasks:
       - "47"
     scriptarguments:
       seconds:
-        simple: "3"
+        simple: "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
