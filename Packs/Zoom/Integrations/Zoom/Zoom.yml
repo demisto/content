@@ -8,6 +8,11 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Use the Zoom integration manage your Zoom users and meetings
 detaileddescription: "[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom-dev)"
 configuration:
+  - defaultvalue: 'https://api.zoom.us/v2/'
+    display: Server URL (e.g. 'https://api.zoom.us/v2/')
+    name: url
+    required: true
+    type: 0
   - display: Account ID (OAuth)
     name: account_id
     type: 0
@@ -270,7 +275,8 @@ script:
           description: Number of users to return. Max 300. The default is 30.
           type: int
         - name: next_page_token
-          description: The next page token is used to get the next page. Note that you must pass the same page size that you pased at the first call.
+          description: >
+            The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
           type: string
           required: false
         - name: limit
@@ -380,7 +386,8 @@ script:
           default: false
           description: Number of users to return. Default = 30. Max = 300.
         - name: next_page_token
-          description: The next page token is used to paginate te the next page. Note that you must pass the same page size that you pased at the first call.
+          description: >
+            The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
           type: string
         - name: limit
           description: The total amunt of results to show.

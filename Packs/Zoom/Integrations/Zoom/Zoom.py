@@ -7,7 +7,7 @@ from datetime import datetime
 import dateparser
 
 
-BASE_URL = 'https://api.zoom.us/v2/'
+# BASE_URL = 'https://api.zoom.us/v2/'
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.
@@ -473,13 +473,14 @@ def test_module(
     account_id,
     client_id,
     client_secret,
+    base_url,
 ):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
     try:
         client = Client(
-            base_url=BASE_URL,
+            base_url=base_url,
             verify=verify,
             proxy=proxy,
             api_key=api_key,
@@ -724,9 +725,9 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
 def main():  # pragma: no cover
     # TODO do i need this line?
     results: Union[CommandResults, str, List[CommandResults]]
-
     params = demisto.params()
     args = demisto.args()
+    base_url = params.get('url')
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     account_id = params.get('account_id')
@@ -744,6 +745,7 @@ def main():  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(
                 verify=verify_certificate,
+                base_url=base_url,
                 proxy=proxy,
                 api_key=api_key,
                 api_secret=api_secret,
@@ -753,7 +755,7 @@ def main():  # pragma: no cover
             ))
 
         client = Client(
-            base_url=BASE_URL,
+            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             api_key=api_key,
