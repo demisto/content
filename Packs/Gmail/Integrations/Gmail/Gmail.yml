@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Gmail
+  id: Gmail Dev
   version: -1
 configuration:
 - display: Email of user with admin privileges
@@ -68,8 +68,8 @@ configuration:
   defaultvalue: "50"
   additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
-display: Gmail
-name: Gmail
+display: Gmail Dev
+name: Gmail Dev
 script:
   commands:
   - arguments:
@@ -685,10 +685,13 @@ script:
     - contextPath: Gmail.Mailboxes
       description: The Gmail mailboxes in which emails matching the query were found.
       type: String
+    - contextPath: Gmail.UnsearchedAcounts
+      description: The unsearched acounts with the error.
+      type: String
     - contextPath: PageToken.NextPageToken
       description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, so NextPageToken is used to call back the command to fetch the list of the next accounts in which the search will be made.
       type: String
-    - contextPath: SearchingAccounts
+    - contextPath: SearchProcess
       description: The use of this output is in the Search all mailboxes - Gmail with polling Playbook, it allows the search process to be followed.
       type: String
     - contextPath: Email.To
