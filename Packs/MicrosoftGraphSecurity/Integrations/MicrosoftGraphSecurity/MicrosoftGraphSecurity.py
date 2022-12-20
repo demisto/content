@@ -52,9 +52,9 @@ class MsGraphClient:
         if time_to:
             filters.append("createdDateTime le {}".format(time_to))
         if filter_query:
-            # Due to a problem with filtering alerts with the `eq` operator.
-            # We use the `contains` function instead of the `eq` operator (as a workaround).
-            # For example: "category eq 'Malware'" => "contains(category, 'Malware')".
+            # Due to an issue (from Microsoft Graph API) with filtering alerts with the `eq` operator,
+            # We use the `contains` function instead of the `eq` operator (as a workaround), For example:
+            # "category eq 'Malware' and severity eq 'High'" => "contains(category, 'Malware') and severity eq 'High'".
             # For more info please see: https://learn.microsoft.com/en-us/graph/filter-query-parameter.
             filter_list = [f.strip() for f in filter_query.lower().split('and')]
             for filter_item in filter_list:
