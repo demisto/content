@@ -1,24 +1,32 @@
 id: CortexXpanse_Test
-version: -1
+inputs: []
 name: CortexXpanse_Test
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
+    continueonerrortype: ""
     id: "0"
-    taskid: 3bda6329-4551-4ab0-8a57-a4fda148ceac
-    type: start
-    task:
-      id: 3bda6329-4551-4ab0-8a57-a4fda148ceac
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d833692-5d85-4dee-8e56-4c15685238bf
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 6d833692-5d85-4dee-8e56-4c15685238bf
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -26,33 +34,33 @@ tasks:
           "y": -480
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "1":
+    continueonerrortype: ""
     id: "1"
-    taskid: 9a79ff43-d949-4a56-8553-f196e1767363
-    type: regular
-    task:
-      id: 9a79ff43-d949-4a56-8553-f196e1767363
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 088f457a-fe51-4860-886c-36079c658f48
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 088f457a-fe51-4860-886c-36079c658f48
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -60,30 +68,30 @@ tasks:
           "y": -330
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "2":
+    continueonerrortype: ""
     id: "2"
-    taskid: 5b3f3479-2039-48c0-89be-fe48310c1c9c
-    type: regular
-    task:
-      id: 5b3f3479-2039-48c0-89be-fe48310c1c9c
-      version: -1
-      name: asm-list-external-service
-      script: Cortex Xpanse|||asm-list-external-service
-      type: regular
-      iscommand: true
-      brand: Cortex Xpanse
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "3"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      id: 0861a013-a0f1-4aa2-8016-c3694a3bf40c
+      iscommand: true
+      name: asm-list-external-service
+      script: Cortex Xpanse|||asm-list-external-service
+      type: regular
+      version: -1
+    taskid: 0861a013-a0f1-4aa2-8016-c3694a3bf40c
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -91,102 +99,102 @@ tasks:
           "y": -130
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.service_id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.service_name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.service_type
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.ip_address
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.externally_detected_providers
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.is_active
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.first_observed
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.last_observed
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.port
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.protocol
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.inactive_classifications
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.discovery_type
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.business_units
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService.externally_inferred_vulnerability_score
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
     id: "3"
-    taskid: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
-    type: condition
-    task:
-      id: 6050cd9b-4c4a-4552-83ed-b71f00bed7df
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "15"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.service_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.service_name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.service_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.ip_address
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.externally_detected_providers
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.is_active
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.first_observed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.last_observed
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.port
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.protocol
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.inactive_classifications
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.discovery_type
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService.externally_inferred_vulnerability_score
-            iscontext: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d37f7842-9f7e-4cc0-8a1f-7c00b438aa0a
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: d37f7842-9f7e-4cc0-8a1f-7c00b438aa0a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -194,33 +202,33 @@ tasks:
           "y": 70
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
+    continueonerrortype: ""
     id: "4"
-    taskid: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
-    type: regular
-    task:
-      id: 8af3914c-9aa7-4dab-877b-ddd7269fe02d
-      version: -1
-      name: asm-get-external-service
-      script: Cortex Xpanse|||asm-get-external-service
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     scriptarguments:
       service_id:
         simple: 94232f8a-f001-3292-aa65-63fa9d981427
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fedb5ea4-b815-4d5b-8af5-583c94c91c3b
+      iscommand: true
+      name: asm-get-external-service
+      script: Cortex Xpanse|||asm-get-external-service
+      type: regular
+      version: -1
+    taskid: fedb5ea4-b815-4d5b-8af5-583c94c91c3b
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -228,39 +236,39 @@ tasks:
           "y": 440
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalService
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
     id: "5"
-    taskid: 48c85ab7-82c2-4cd9-8606-15bda686002d
-    type: condition
-    task:
-      id: 48c85ab7-82c2-4cd9-8606-15bda686002d
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "16"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalService
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cd3af2c-15c9-41dd-8bcd-86bfeee20307
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 9cd3af2c-15c9-41dd-8bcd-86bfeee20307
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -268,30 +276,30 @@ tasks:
           "y": 640
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
+    continueonerrortype: ""
     id: "6"
-    taskid: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
-    type: regular
-    task:
-      id: 012d1b96-e5a4-4f2b-8a43-1a4d2c7e59c4
-      version: -1
-      name: asm-list-external-ip-address-range
-      script: Cortex Xpanse|||asm-list-external-ip-address-range
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "7"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9c8d7e99-b47f-4fcf-8547-8cfd6f7ccb15
+      iscommand: true
+      name: asm-list-external-ip-address-range
+      script: Cortex Xpanse|||asm-list-external-ip-address-range
+      type: regular
+      version: -1
+    taskid: 9c8d7e99-b47f-4fcf-8547-8cfd6f7ccb15
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -299,72 +307,72 @@ tasks:
           "y": 1200
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.range_id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.first_ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.last_ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.ips_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.date_added
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.business_units
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.organization_handles
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
     id: "7"
-    taskid: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
-    type: condition
-    task:
-      id: 28f41a87-92c1-40f4-86e5-f7d920fdbe95
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "17"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.range_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.first_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.last_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.date_added
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.organization_handles
-            iscontext: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9cd74651-fe3a-4b19-8192-710e93858e80
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 9cd74651-fe3a-4b19-8192-710e93858e80
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -372,33 +380,33 @@ tasks:
           "y": 1400
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
+    continueonerrortype: ""
     id: "8"
-    taskid: 14b82f70-0430-4cdc-8cc8-8128d67f2827
-    type: regular
-    task:
-      id: 14b82f70-0430-4cdc-8cc8-8128d67f2827
-      version: -1
-      name: asm-get-external-ip-address-range
-      script: Cortex Xpanse|||asm-get-external-ip-address-range
-      type: regular
-      iscommand: true
-      brand: Cortex Xpanse
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "9"
+    note: false
+    quietmode: 0
     scriptarguments:
       range_id:
         simple: 4da29b7f-3086-3b52-981b-aa8ee5da1e60
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      id: ee88a5ed-070f-46f2-8a2d-eadd833fe4ce
+      iscommand: true
+      name: asm-get-external-ip-address-range
+      script: Cortex Xpanse|||asm-get-external-ip-address-range
+      type: regular
+      version: -1
+    taskid: ee88a5ed-070f-46f2-8a2d-eadd833fe4ce
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -406,77 +414,77 @@ tasks:
           "y": 1840
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.range_id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.first_ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.last_ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.ips_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.date_added
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.business_units
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.organization_handles
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.ExternalIpAddressRange.details
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
     id: "9"
-    taskid: 7445f71c-715b-45bc-8d95-f0dc05663162
-    type: condition
-    task:
-      id: 7445f71c-715b-45bc-8d95-f0dc05663162
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "18"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.range_id
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.first_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.last_ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.active_responsive_ips_count
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.date_added
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.business_units
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.organization_handles
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.ExternalIpAddressRange.details
-            iscontext: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4a94f6b7-2fae-4391-89d2-24694e9772c3
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 4a94f6b7-2fae-4391-89d2-24694e9772c3
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -484,30 +492,30 @@ tasks:
           "y": 2040
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "10":
+    continueonerrortype: ""
     id: "10"
-    taskid: 8d07cf51-ecc3-4906-861d-66ecf380c010
-    type: regular
-    task:
-      id: 8d07cf51-ecc3-4906-861d-66ecf380c010
-      version: -1
-      name: asm-list-asset-internet-exposure
-      script: Cortex Xpanse|||asm-list-asset-internet-exposure
-      type: regular
-      iscommand: true
-      brand: Cortex Xpanse
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "11"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      id: cbf281f4-1e8f-4cf9-8580-fe8c2e602c74
+      iscommand: true
+      name: asm-list-asset-internet-exposure
+      script: Cortex Xpanse|||asm-list-asset-internet-exposure
+      type: regular
+      version: -1
+    taskid: cbf281f4-1e8f-4cf9-8580-fe8c2e602c74
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -515,37 +523,37 @@ tasks:
           "y": 2370
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ASM.AssetInternetExposure
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
     id: "11"
-    taskid: 0fde5143-663e-481d-82c4-d49e231e5935
-    type: condition
-    task:
-      id: 0fde5143-663e-481d-82c4-d49e231e5935
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       "yes":
       - "19"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ASM.AssetInternetExposure
-            iscontext: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 35ee9dad-b0cd-418d-8871-d856c7148699
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 35ee9dad-b0cd-418d-8871-d856c7148699
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -553,33 +561,33 @@ tasks:
           "y": 2570
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "12":
+    continueonerrortype: ""
     id: "12"
-    taskid: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
-    type: regular
-    task:
-      id: 6d706f2c-ef65-437a-8aaa-03f7161a92e7
-      version: -1
-      name: asm-get-asset-internet-exposure
-      script: Cortex Xpanse|||asm-get-asset-internet-exposure
-      type: regular
-      iscommand: true
-      brand: Cortex Xpanse
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "13"
+    note: false
+    quietmode: 0
     scriptarguments:
       asm_id:
         simple: 3c176460-8735-333c-b618-8262e2fb660c
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      id: eee983c0-e88e-442b-8f28-00d1314f2813
+      iscommand: true
+      name: asm-get-asset-internet-exposure
+      script: Cortex Xpanse|||asm-get-asset-internet-exposure
+      type: regular
+      version: -1
+    taskid: eee983c0-e88e-442b-8f28-00d1314f2813
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -587,39 +595,39 @@ tasks:
           "y": 2930
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
-    id: "13"
-    taskid: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
-    type: condition
-    task:
-      id: 3d8f5d79-4a6e-483c-8377-c58c6d8b1c6b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-    separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: ASM
                 accessor: AssetInternetExposure
-            iscontext: true
+                root: ASM
+          operator: isNotEmpty
+      label: "yes"
     continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c584df42-4109-4a09-84bf-0c7426fcd60e
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: c584df42-4109-4a09-84bf-0c7426fcd60e
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -627,61 +635,61 @@ tasks:
           "y": 3130
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "14":
+    continueonerrortype: ""
     id: "14"
-    taskid: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
-    type: title
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: e57e2fc0-e300-4d58-870b-ec4d7de4ea69
-      version: -1
+      brand: ""
+      id: 176c7864-c05c-45b0-8b70-8a4f83b81e8d
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ""
+      version: -1
       description: ''
-    separatecontext: false
-    continueonerrortype: ""
+    taskid: 176c7864-c05c-45b0-8b70-8a4f83b81e8d
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3330
+          "y": 3930
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "15":
+    continueonerrortype: ""
     id: "15"
-    taskid: 927246df-14c2-4875-8231-7f2900b3afe8
-    type: regular
-    task:
-      id: 927246df-14c2-4875-8231-7f2900b3afe8
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e72670b0-430b-443d-871d-ab8f8a0a77d9
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e72670b0-430b-443d-871d-ab8f8a0a77d9
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -689,33 +697,33 @@ tasks:
           "y": 255
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
+    continueonerrortype: ""
     id: "16"
-    taskid: 13fd1729-43bd-4c36-8eea-332ec1627a72
-    type: regular
-    task:
-      id: 13fd1729-43bd-4c36-8eea-332ec1627a72
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "6"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bdc51298-64b9-4136-897b-a55a64a7404e
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: bdc51298-64b9-4136-897b-a55a64a7404e
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -723,33 +731,33 @@ tasks:
           "y": 925
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
+    continueonerrortype: ""
     id: "17"
-    taskid: c2a17860-493e-40a1-8430-9781fa160bee
-    type: regular
-    task:
-      id: c2a17860-493e-40a1-8430-9781fa160bee
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27e8f102-999a-4828-878f-86c788459c7a
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 27e8f102-999a-4828-878f-86c788459c7a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -757,33 +765,33 @@ tasks:
           "y": 1570
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
+    continueonerrortype: ""
     id: "18"
-    taskid: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
-    type: regular
-    task:
-      id: 5ed0a658-1647-4c8b-8bdb-1a902eba648a
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "10"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 98c1a0e0-0eec-49c4-82fe-6e2cd2a17557
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 98c1a0e0-0eec-49c4-82fe-6e2cd2a17557
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -791,33 +799,33 @@ tasks:
           "y": 2205
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "19":
+    continueonerrortype: ""
     id: "19"
-    taskid: 1b97a566-b545-44d9-821d-a130c991a1dc
-    type: regular
-    task:
-      id: 1b97a566-b545-44d9-821d-a130c991a1dc
-      version: -1
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "12"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c17ceab-ac81-4232-84b0-ce934fcd3fb1
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 3c17ceab-ac81-4232-84b0-ce934fcd3fb1
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -825,28 +833,129 @@ tasks:
           "y": 2755
         }
       }
-    note: false
-    timertriggers: []
+  "20":
+    continueonerrortype: ""
+    id: "20"
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      description: Get a list of all your ASM alerts filtered by alert IDs, severity and/or creation time. Can also sort by creation time or severity. Maximum result limit is 100 assets.
+      id: d655bc05-7f28-4722-8d06-8445c5ac60a7
+      iscommand: true
+      name: asm-list-alerts
+      script: Cortex Xpanse|||asm-list-alerts
+      type: regular
+      version: -1
+    taskid: d655bc05-7f28-4722-8d06-8445c5ac60a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3500
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Alerts
+                root: ASM
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1ad28a4-89b5-4c28-8051-ea73dc9ef63d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: f1ad28a4-89b5-4c28-8051-ea73dc9ef63d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3700
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 26262f3e-0ecd-4e55-840d-4bfa72d6cdda
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 26262f3e-0ecd-4e55-840d-4bfa72d6cdda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3325
+        }
+      }
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3875,
+        "height": 4475,
         "width": 390,
         "x": 40,
         "y": -480
       }
     }
   }
-inputs: []
-outputs: []
-marketplaces:
-- marketplacev2
 fromversion: 6.5.0
 description: ''
