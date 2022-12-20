@@ -1,4 +1,4 @@
-category:    "Data Enrichment & Threat Intelligence"
+category: "Data Enrichment & Threat Intelligence"
 commonfields:
   id: decyfir
   version: -1
@@ -6,7 +6,7 @@ configuration:
 - display: Incident type
   name: incidentType
   required: false
-  type:  13
+  type: 13
 - defaultvalue:
   display: Server URL (e.g. https://example.net)
   name: url
@@ -54,6 +54,7 @@ description: DeCYFIR API's provides External Threat Landscape Management insight
 display: DeCYFIR
 name: decyfir
 script:
+  commands: []
   dockerimage: demisto/python3:3.10.9.40422
   feed: false
   isfetch: true
@@ -64,3 +65,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
