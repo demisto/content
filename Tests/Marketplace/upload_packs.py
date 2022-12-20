@@ -1068,7 +1068,7 @@ def main():
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
                               is_modified=pack_name in pack_names_to_upload)
-                         for pack_name in os.listdir(extract_destination_path)]
+                         for pack_name in os.listdir(extract_destination_path) if pack_name != 'index']
 
     # pack's list to update their index metadata and upload them.
     # only in bucket upload flow it will be all content packs until the refactoring script ticket (CIAC-3559)
