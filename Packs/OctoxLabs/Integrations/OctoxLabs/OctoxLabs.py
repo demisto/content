@@ -3,11 +3,11 @@ from CommonServerUserPython import *  # noqa
 
 from octoxlabs import OctoxLabs
 
-import requests
+import urllib3
 from typing import Any, Dict, List, Callable, Optional
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 """ CONSTANTS """
@@ -150,7 +150,7 @@ def search_devices(octox: OctoxLabs, args: Dict[str, Any]) -> CommandResults:
     if isinstance(fields, str):
         fields = [f.strip() for f in fields.split(",")]
 
-    count, devices = octox.search_assets(
+    count, devices = octox.search_devices(
         query=args.get("query", ""),
         fields=fields,
         page=args.get("page", 1),
