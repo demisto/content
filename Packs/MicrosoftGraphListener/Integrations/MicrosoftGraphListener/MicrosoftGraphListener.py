@@ -215,7 +215,8 @@ class MsGraphClient:
                  certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  display_full_email_body: bool = False,
-                 fetch_mail_body_as_text: bool = True):
+                 fetch_mail_body_as_text: bool = True,
+                 mark_fetched_read: bool = False):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
@@ -228,6 +229,7 @@ class MsGraphClient:
         self._emails_fetch_limit = emails_fetch_limit
         self._display_full_email_body = display_full_email_body
         self._fetch_mail_body_as_text = fetch_mail_body_as_text
+        self._mark_fetched_read = mark_fetched_read
 
     def _get_root_folder_children(self, user_id, overwrite_rate_limit_retry=False):
         """
@@ -368,7 +370,8 @@ class MsGraphClient:
         demisto.debug(f'Fetching Emails starting from {last_fetch}')
         fetched_emails = self.get_emails(exclude_ids=exclude_ids, last_fetch=last_fetch,
                                          folder_id=folder_id, overwrite_rate_limit_retry=True,
-                                         fetch_mail_body_as_text=self._fetch_mail_body_as_text)
+                                         fetch_mail_body_as_text=self._fetch_mail_body_as_text,
+                                         mark_emails_as_read=self._mark_fetched_read)
 
         fetched_emails = fetched_emails[:self._emails_fetch_limit]
 
@@ -744,7 +747,7 @@ class MsGraphClient:
         return incident
 
     def get_emails(self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False,
-                   fetch_mail_body_as_text: bool | None = False) -> list:
+                   fetch_mail_body_as_text: bool | None = False, mark_emails_as_read: bool = False) -> list:
         if fetch_mail_body_as_text is None:
             fetch_mail_body_as_text = self._fetch_mail_body_as_text
 
@@ -753,7 +756,7 @@ class MsGraphClient:
 
         # Adding the "$" sign to the select filter results in the 'internetMessageHeaders' field not being contained
         # within the response, (looks like a bug in graph API).
-        return self.ms_client.http_request(
+        results = self.ms_client.http_request(
             method='GET',
             url_suffix=f'/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages',
             params={
@@ -765,6 +768,39 @@ class MsGraphClient:
             headers=headers,
             overwrite_rate_limit_retry=overwrite_rate_limit_retry,
         ).get('value', [])
+
+        if mark_emails_as_read:
+            for email in results:
+                if email.get('id'):
+                    self.update_email_read_status(message_id=email["id"],
+                                                  read=True,
+                                                  folder_id=folder_id)
+
+        return results
+
+    def update_email_read_status(self, message_id: str, read: bool, folder_id: str | None = None) -> dict:
+        """
+        Update the status of an email to read / unread.
+
+        Args:
+            message_id (str): Message id to mark as read/unread
+            folder_id (str): Folder id to update
+            read (bool): Whether to mark the email as read or unread. True for read, False for unread.
+
+        Returns:
+            dict: API response
+        """
+        if folder_id is not None:
+            suffix = f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/messages/{message_id}'
+
+        else:
+            suffix = f'/users/{self._mailbox_to_fetch}/messages/{message_id}'
+
+        return self.ms_client.http_request(
+            method='PATCH',
+            url_suffix=suffix,
+            json_data={'isRead': read},
+        )
 
     @logger
     def fetch_incidents(self, last_run):
@@ -1156,6 +1192,25 @@ def get_email_as_eml_command(client: MsGraphClient, args):
     return file_result
 
 
+def update_email_status_command(client: MsGraphClient, args) -> CommandResults:
+    folder_id = args.get('folder_id')
+    message_ids = argToList(args['message_ids'])
+    status: str = args['status']
+    mark_as_read = (status.lower() == 'read')
+
+    raw_responses = []
+
+    for message_id in message_ids:
+        raw_responses.append(
+            client.update_email_read_status(message_id=message_id, folder_id=folder_id, read=mark_as_read)
+        )
+
+    return CommandResults(
+        readable_output=f'Emails status has been updated to {status}.',
+        raw_response=raw_responses[0] if len(raw_responses) == 1 else raw_responses
+    )
+
+
 def build_folders_path(folder_string: str) -> Optional[str]:
     """
 
@@ -1307,6 +1362,7 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     display_full_email_body = argToBoolean(params.get("display_full_email_body", "false"))
+    mark_fetched_read = argToBoolean(params.get("mark_fetched_read", "false"))
 
     # params related to self deployed
     tenant_id = refresh_token if self_deployed else ''
@@ -1319,8 +1375,8 @@ def main():
     client = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                            emails_fetch_limit, auth_code=params.get('auth_code', ''), private_key=private_key,
-                           display_full_email_body=display_full_email_body, redirect_uri=params.get('redirect_uri', ''),
-                           certificate_thumbprint=certificate_thumbprint)
+                           display_full_email_body=display_full_email_body, mark_fetched_read=mark_fetched_read,
+                           redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:
         command = demisto.command()
         args = prepare_args(command, demisto.args())
@@ -1354,7 +1410,9 @@ def main():
         elif command == 'msgraph-mail-list-attachments':
             return_results(list_attachments_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
-            demisto.results(get_email_as_eml_command(client, args))
+            return_results(get_email_as_eml_command(client, args))
+        elif command == 'msgraph-update-email-status':
+            return_results(update_email_status_command(client, args))
     except Exception as e:
         return_error(str(e))
 
