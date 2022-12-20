@@ -4729,8 +4729,8 @@ def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> lis
     return results_list
 
 
-def create_filter_list_vulnerabilities(id_and_severity: str, name: str, description: str, published_on: str, cvss: str,
-                                       updated_on: str) -> str:
+def create_filter_list_vulnerabilities(id_and_severity: str, name_equal: str, name_contains: str, description: str,
+                                       published_on: str, cvss: str, updated_on: str) -> str:
     """ Create a string filter.
         Args:
             id_and_severity: str - Id and severity of the vulnerability.
@@ -4745,8 +4745,10 @@ def create_filter_list_vulnerabilities(id_and_severity: str, name: str, descript
     filter_query_list = []
     if id_and_severity:
         filter_query_list.append(id_and_severity)
-    if name:
-        filter_query_list.append(f"contains(name, '{name}')")
+    if name_contains:
+        filter_query_list.append(f"contains(name, '{name_contains}')")
+    if name_equal:
+        filter_query_list.append(f"name eq '{name_equal}'")
     if description:
         filter_query_list.append(f"contains(description, '{description}')")
     if cvss:
@@ -4781,15 +4783,17 @@ def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandRe
     """
     id = argToList(args.get('id', ''))
     severity = argToList(args.get('severity', ''))
-    name = args.get('name', '')
-    description = args.get('description', '')
+    name_equal = args.get('name_equal', '')
+    name_contains = args.get('name_contains', '')
+    description = args.get('description_contains', '')
     published_on = date_to_iso_format(args.get('published_on', ''))
     updated_on = date_to_iso_format(args.get('updated_on', ''))
     cvss = args.get('cvss', '')
     limit = args.get('limit', '25')
     offset = args.get('offset', '0')
     filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
-    filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name, description, published_on, cvss, updated_on)
+    filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name_equal, name_contains, description,
+                                                    published_on, cvss, updated_on)
     headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
                'exploitVerified', 'publicExploit', 'cvssV3']
     list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)

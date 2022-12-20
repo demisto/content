@@ -4772,12 +4772,17 @@ script:
     - default: false
       description: Vulnerability title.
       isArray: false
-      name: name
+      name: name_equal
       secret: false
     - default: false
-      description: Vulnerability description.
+      description: Vulnerability title. Does not work with another filter arguments.
       isArray: false
-      name: description
+      name: name_contains
+      secret: false
+    - default: false
+      description: Vulnerability description. Does not work with another filter arguments.
+      isArray: false
+      name: description_contains
       secret: false
     - default: false
       description: Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.

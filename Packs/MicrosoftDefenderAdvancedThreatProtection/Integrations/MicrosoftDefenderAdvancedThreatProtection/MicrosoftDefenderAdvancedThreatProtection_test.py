@@ -2632,18 +2632,23 @@ def test_create_filter(args_and_name_list, expected_result):
     assert create_filters_result == expected_result
 
 
-@pytest.mark.parametrize('id_and_severity, name, description, published_on, cvss, updated_on, expected_result', [
-    ("", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
-    ("", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
-    ("", "", "", "", "some_cvss", "", "cvssV3 ge some_cvss"),
-    ("", "", "some_description", "", "", "", "contains(description, 'some_description')"),
-    ("", "some_name", "", "", "", "", "contains(name, 'some_name')"),
-    ("", "some_name", "", "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
-     "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and (publishedOn ge 2020-12-16T00:00:00Z)")
-])
-def test_create_filter_list_vulnerabilities(id_and_severity, name, description, published_on, cvss, updated_on, expected_result):
+@pytest.mark.parametrize('id_and_severity, name_equal, name_contains, description, published_on, cvss,'
+                         'updated_on, expected_result',
+                         [("", "", "", "", "2020-12-16T00:00:00Z", "", "", "publishedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "", "2020-12-16T00:00:00Z", "updatedOn ge 2020-12-16T00:00:00Z"),
+                          ("", "", "", "", "", "some_cvss", "", "cvssV3 ge some_cvss"),
+                          ("", "", "", "some_description", "", "", "", "contains(description, 'some_description')"),
+                          ("", "some_name_equal", "", "", "", "", "", "name eq 'some_name_equal'"),
+                          ("", "", "some_name_contains", "", "", "", "", "contains(name, 'some_name_contains')"),
+                          ("", "", "some_name", "", "" "2020-12-16T00:00:00Z", "", "2020-12-16T00:00:00Z",
+                           "(contains(name, 'some_name')) and (updatedOn ge 2020-12-16T00:00:00Z) and "
+                           "(publishedOn ge 2020-12-16T00:00:00Z)")
+                          ])
+def test_create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on, cvss,
+                                            updated_on, expected_result):
     from MicrosoftDefenderAdvancedThreatProtection import create_filter_list_vulnerabilities
-    result = create_filter_list_vulnerabilities(id_and_severity, name, description, published_on, cvss, updated_on)
+    result = create_filter_list_vulnerabilities(id_and_severity, name_equal, name_contains, description, published_on,
+                                                cvss, updated_on)
     assert result == expected_result
 
 
