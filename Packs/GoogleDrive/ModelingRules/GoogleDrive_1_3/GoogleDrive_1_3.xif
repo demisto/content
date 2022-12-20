@@ -1,7 +1,9 @@
 [MODEL: dataset = google_workspace_drive_raw]
 alter type = json_extract_scalar(events, "$.0.type"),
     operation = json_extract_scalar(events ,"$.0.name"),
-    event_parameters = json_extract(events ,"$.0.parameters")
+    event_parameters = json_extract(events ,"$.0.parameters"),
+    actor_email = json_extract_scalar(actor ,"$.email"),
+    actor_profileId = json_extract_scalar(actor ,"$.profileId")
 // change parameters type
 | alter event_parameters = to_json_string(event_parameters )
 | alter event_parameters = replace(event_parameters ,"\\"","\"")
@@ -14,4 +16,9 @@ alter type = json_extract_scalar(events, "$.0.type"),
     xdm.event.type = type,
     xdm.target.file.file_type = doc_type,
     xdm.target.file.filename = doc_title,
-    xdm.source.user.username = owner;
+    xdm.source.user.username = actor_email,
+    xdm.target.user.username = owner,
+    xdm.source.user.identifier = actor_profileId,
+    xdm.target.resource.type = kind, //The type of API resource
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product;

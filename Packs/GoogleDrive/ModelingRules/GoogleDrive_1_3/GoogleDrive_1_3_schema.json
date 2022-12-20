@@ -1,5 +1,5 @@
 {
-    "google_drive_raw": {
+    "google_workspace_drive_raw": {
         "events": {
           "type": "string",
           "is_array": true
@@ -7,6 +7,22 @@
         "ipAddress": {
           "type": "string",
           "is_array": false
+        },
+        "_product": {
+            "type": "string",
+            "is_array": true
+          },
+        "_vendor": {
+            "type": "string",
+            "is_array": true
+        },
+        "kind": {
+            "type": "string",
+            "is_array": true
+        },
+        "actor": {
+            "type": "string",
+            "is_array": true
         }
     }
 }
