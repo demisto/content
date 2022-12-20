@@ -14,7 +14,7 @@ ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
-RUN apt-get install git -y && git clone --depth 1 --branch main --single-branch https://github.com/devcontainers/features.git /features
+RUN apt-get install git -y && git clone --depth 1 --rev 42e5a013cc914f87d0ff7bf613a1f80d9ff57579 --single-branch https://github.com/devcontainers/features.git /features
 
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
