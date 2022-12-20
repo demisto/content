@@ -1328,6 +1328,7 @@ Inspecting these messages should allow you to determine what percent the search 
 | Gmail.Attachments | unknown | The attachments of the email. IDs are separated by ','. | 
 | Gmail.Headers | unknown | All headers of specific mail \(list\). | 
 | Gmail.Mailboxes | string | The Gmail mailboxes in which emails matching the query were found. | 
+| Gmail.UnsearchedAcounts | string | The unsearched acounts with the error. |
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
 | Email.CC | String | Additional recipient email address \(CC\). | 
