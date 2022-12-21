@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install dos2unix git python2 -y \
     && rm -rf /features \
     && git clone https://github.com/devcontainers/features.git /features \
     && cd /features \
-    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579
+    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579 \
+    && chown demisto $HOME
     
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
