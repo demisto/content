@@ -243,9 +243,9 @@ class CollectionResult:
         if not other:
             return self
         result = self.__empty_result()
-        result.tests |= other.tests  # type: ignore[operator]
-        result.packs_to_install |= other.packs_to_install  # type: ignore[operator]
-        result.packs_to_upload |= other.packs_to_upload
+        result.tests = self.tests | other.tests  # type: ignore[operator]
+        result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
+        result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 
