@@ -89,13 +89,13 @@ class Client(BaseClient):
         return next_run
 
 
-def add_time_param_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Adds the _time parameter to the events.
+    Adds the _time key to the events.
     Args:
-        events: list, the events to add the time parameter to.
+        events: list, the events to add the time key to.
     Returns:
-        list: The events with the _time parameter.
+        list: The events with the _time key.
     """
     for event in events:
         if event.get("created"):
@@ -263,7 +263,7 @@ def main() -> None:  # pragma: no cover
                 demisto.setLastRun(next_run)
 
             if should_push_events:
-                events = add_time_param_to_events(events)
+                events = add_time_key_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
