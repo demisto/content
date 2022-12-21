@@ -295,3 +295,63 @@ def test_update_sensors_list():
     expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
     result_list = update_sensors_list(records_list)
     assert expected_records_list == result_list
+
+
+def test_update_attacks_list_entries():
+    """
+        Given:
+            - A list of attacks.
+        When:
+            - In get_attacks command.
+        Then:
+            - Returns the attacks list with the updated entries.
+    """
+    from McAfeeNSMv2 import update_attacks_list_entries
+    records_list = util_load_json('test_data/commands_test_data.json').get('get_attacks')
+    expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_get_attacks_list')
+    result_list = update_attacks_list_entries(records_list)
+    assert expected_records_list == result_list
+
+
+def test_update_ips_policy_entries():
+    """
+        Given:
+            - A Dictionary with ips policy details.
+        When:
+            - In get_ips_policy_details command.
+        Then:
+            - Returns the ips policy details with the updated entries.
+    """
+    from McAfeeNSMv2 import update_ips_policy_entries
+    ips_details = util_load_json('test_data/commands_test_data.json').get('get_ips_policy_details')
+    expected_ips_details = util_load_json('test_data/commands_test_data.json').get('expected_ips_policy')
+    result = update_ips_policy_entries(ips_details, 17)
+    assert expected_ips_details == result
+
+
+def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - Domain id, limit to the list and a page.
+
+    When:
+        - nsm-list-domain-firewall-policy command is executed
+
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from McAfeeNSMv2 import list_domain_firewall_policy_command
+    args = {'domain_id': '0', 'limit': '2'}
+    response = util_load_json('test_data/commands_test_data.json').get('list_domain_firewall_policy')
+    expected_result = response.get('FirewallPoliciesForDomainResponseList')
+    mocker.patch.object(mcafeensmv2_client, 'list_domain_firewall_policy_request', return_value=response)
+    result = list_domain_firewall_policy_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Firewall Policies List\n' \
+                               '|policyId|policyName|domainId|visibleToChild|description|isEditable|policyType|' \
+                               'policyVersion|lastModUser|\n' \
+                               '|---|---|---|---|---|---|---|---|---|\n' \
+                               '| 147 | n | 0 | true | d | true | ADVANCED | 1 | user |\n' \
+                               '| 140 | hello | 0 | true | hello policy | true | ADVANCED | 1 | user |\n'
+    readable_output = result.readable_output
+    assert readable_output == expected_readable_output
+    assert result.raw_response == expected_result

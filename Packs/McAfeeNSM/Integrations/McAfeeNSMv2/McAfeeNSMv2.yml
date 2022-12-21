@@ -355,7 +355,7 @@ script:
           predefined:
             - yes
             - no
-          defaultvalue: yes
+          defaultValue: yes
         - name: direction
           auto: PREDEFINED
           description: The direction of the rule.
