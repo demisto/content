@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from urllib.parse import urljoin
-from FortinetFortiwebVM import ClientV1, ClientV2, Client, ERRORS, READABLE_OUTPUT
+from FortinetFortiwebVM import ClientV1, ClientV2, Client, ERRORS, OutputTitles
 from CommonServerPython import *
 import json
 import pytest
@@ -63,10 +63,8 @@ def test_protected_hostname_group_create_command(requests_mock, mock_client: Cli
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
-    try:
-        protected_hostname_group_create_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = protected_hostname_group_create_command(mock_client, args)
+    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_CREATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -136,10 +134,8 @@ def test_protected_hostname_group_update_command(requests_mock, mock_client: Cli
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
-    try:
-        protected_hostname_group_update_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = protected_hostname_group_update_command(mock_client, args)
+    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -205,10 +201,8 @@ def test_protected_hostname_group_delete_command(requests_mock, mock_client: Cli
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
-    try:
-        protected_hostname_group_delete_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = protected_hostname_group_delete_command(mock_client, args)
+    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -313,12 +307,9 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     requests_mock.get(url=url, json=json_response_get, status_code=200)
-    try:
-        result = protected_hostname_member_create_command(mock_client, args)
-        assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameMember'
-        assert result.outputs['id'] == expected_value
-    except DemistoException:
-        assert False
+    result = protected_hostname_member_create_command(mock_client, args)
+    assert result.outputs_prefix == 'FortiwebVM.ProtectedHostnameMember'
+    assert result.outputs['id'] == expected_value
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -428,10 +419,8 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
-    try:
-        protected_hostname_member_update_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = protected_hostname_member_update_command(mock_client, args)
+    assert OutputTitles.PROTECTED_HOSTNAME_MEMBER_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -534,10 +523,8 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client: Cl
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
-    try:
-        protected_hostname_member_delete_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = protected_hostname_member_delete_command(mock_client, args)
+    assert OutputTitles.PROTECTED_HOSTNAME_MEMBER_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -644,10 +631,8 @@ def test_ip_list_group_create_command(requests_mock, mock_client: Client, versio
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
-    try:
-        ip_list_group_create_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = ip_list_group_create_command(mock_client, args)
+    assert OutputTitles.IP_LIST_GROUP_CREATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -748,10 +733,8 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, versio
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
-    try:
-        ip_list_group_update_command(mock_client, args)
-    except DemistoException:
-        assert False
+    result = ip_list_group_update_command(mock_client, args)
+    assert OutputTitles.IP_LIST_GROUP_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -815,10 +798,9 @@ def test_ip_list_group_delete_command(requests_mock, mock_client: Client, versio
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
-    try:
-        ip_list_group_delete_command(mock_client, args)
-    except DemistoException:
-        assert False
+
+    result = ip_list_group_delete_command(mock_client, args)
+    assert OutputTitles.IP_LIST_GROUP_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1021,7 +1003,8 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
-    ip_list_member_update_command(mock_client, args)
+    result = ip_list_member_update_command(mock_client, args)
+    assert OutputTitles.IP_LIST_MEMBER_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1091,7 +1074,8 @@ def test_ip_list_member_delete_command(requests_mock, mock_client: Client, versi
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
-    ip_list_member_delete_command(mock_client, args)
+    result = ip_list_member_delete_command(mock_client, args)
+    assert OutputTitles.IP_LIST_MEMBER_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1285,7 +1269,9 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client: 
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     args = {'policy_name': 'policy', 'http_content_routing_policy': '1234', 'id': 1}
-    http_content_routing_member_update_command(mock_client, args)
+
+    result = http_content_routing_member_update_command(mock_client, args)
+    assert OutputTitles.HTTP_CONTENT_ROUTING_MEMBER_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1347,7 +1333,9 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client: 
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     args = {'policy_name': 'policy', 'id': 1}
-    http_content_routing_member_delete_command(mock_client, args)
+
+    result = http_content_routing_member_delete_command(mock_client, args)
+    assert OutputTitles.HTTP_CONTENT_ROUTING_MEMBER_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1436,7 +1424,9 @@ def test_geo_ip_group_create_command(requests_mock, mock_client: Client, version
         'severity': 'High',
         'ignore_x_forwarded_for': 'enable'
     }
-    geo_ip_group_create_command(mock_client, args)
+
+    result = geo_ip_group_create_command(mock_client, args)
+    assert OutputTitles.GEO_IP_GROUP_CREATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg', 'additional_args'), (
@@ -1499,7 +1489,9 @@ def test_geo_ip_group_update_command(requests_mock, mock_client: Client, version
         'severity': 'High',
         'ignore_x_forwarded_for': 'enable'
     }
-    geo_ip_group_update_command(mock_client, args)
+
+    result = geo_ip_group_update_command(mock_client, args)
+    assert OutputTitles.GEO_IP_GROUP_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1539,7 +1531,7 @@ def test_geo_ip_group_delete_command(requests_mock, mock_client: Client, version
     requests_mock.delete(url=url, json=json_response)
     args = {'name': 'check'}
     result = geo_ip_group_delete_command(mock_client, args)
-    assert READABLE_OUTPUT.GEO_IP_DELETE in result.readable_output
+    assert OutputTitles.GEO_IP_GROUP_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1614,7 +1606,7 @@ def test_geo_ip_member_add_command(requests_mock, mock_client: Client, version: 
     requests_mock.post(url=post_url, json=post_json_response)
     args = {'group_name': 'ron', 'countries': 'Spain,France'}
     result = geo_ip_member_add_command(mock_client, args)
-    assert READABLE_OUTPUT.GEO_IP_MEMBER_ADD in result.readable_output
+    assert OutputTitles.GEO_IP_MEMBER_ADD in result.readable_output
     assert 'FortiwebVM.GeoIpMember' == result.outputs_prefix
 
 
@@ -1673,7 +1665,7 @@ def test_geo_ip_member_delete_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = geo_ip_member_delete_command(mock_client, args)
-    assert READABLE_OUTPUT.GEO_IP_MEMBER_DELETE in result.readable_output
+    assert OutputTitles.GEO_IP_MEMBER_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1973,7 +1965,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = server_policy_create_command(mock_client, args)
-    assert READABLE_OUTPUT.SERVER_POLICY_CREATE in result.readable_output
+    assert OutputTitles.SERVER_POLICY_CREATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2104,7 +2096,7 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
     result = server_policy_update_command(mock_client, args)
-    assert READABLE_OUTPUT.SERVER_POLICY_UPDATE in result.readable_output
+    assert OutputTitles.SERVER_POLICY_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2175,7 +2167,7 @@ def test_server_policy_delete_command(requests_mock, mock_client: Client, versio
     args = {'name': 'check'}
 
     result = server_policy_delete_command(mock_client, args)
-    assert READABLE_OUTPUT.SERVER_POLICY_DELETE in result.readable_output
+    assert OutputTitles.SERVER_POLICY_DELETE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -2597,7 +2589,7 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_url_update_command(mock_client, args)
-    assert READABLE_OUTPUT.CUSTOM_WHITELIST_URL_UPDATE in result.readable_output
+    assert OutputTitles.CUSTOM_WHITELIST_URL_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2691,7 +2683,7 @@ def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: C
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_parameter_update_command(mock_client, args)
-    assert READABLE_OUTPUT.CUSTOM_WHITELIST_PARAMETER_UPDATE in result.readable_output
+    assert OutputTitles.CUSTOM_WHITELIST_PARAMETER_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2772,7 +2764,7 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_cookie_update_command(mock_client, args)
-    assert READABLE_OUTPUT.CUSTOM_WHITELIST_COOKIE_UPDATE in result.readable_output
+    assert OutputTitles.CUSTOM_WHITELIST_COOKIE_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2849,7 +2841,7 @@ def test_custom_whitelist_header_field_update_command(requests_mock, mock_client
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_header_field_update_command(mock_client, args)
-    assert READABLE_OUTPUT.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE in result.readable_output
+    assert OutputTitles.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2977,12 +2969,8 @@ def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: 
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
-    try:
-        result = custom_predifined_whitelist_update_command(mock_client, args)
-        # assert expected_value in result.readable_output
-    except DemistoException as error:
-        assert assert_flag
-        assert expected_value in error.message
+    result = custom_predifined_whitelist_update_command(mock_client, args)
+    assert OutputTitles.CUSTOM_PREDIFINED_UPDATE in result.readable_output
 
 
 @pytest.mark.parametrize(
