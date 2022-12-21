@@ -32,11 +32,11 @@ This playbook does not use any sub-playbooks.
 | HuntCollectionTechniques | Set to True to hunt for MITRE Collection techniques identified alerts. | True | Optional |
 | HuntCnCTechniques | Set to True to hunt for identified alerts with MITRE Command and Control techniques. | True | Optional |
 | HuntImpactTechniques | Set to True to hunt for identified alerts with MITRE Impact techniques. | True | Optional |
-| entityID | Entity Value |  | Optional |
+| HuntCredentialAccessTechniques | Set to True to hunt for identified alerts with MITRE Credential Access techniques. |  | Optional |
 | timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago     | 2 hours | Optional |
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. |  | Optional |
 | EntityType | Entity type to search on xdr-get-alers custom filters |  | Optional |
-| HuntCredentialAccessTechniques | Set to True to hunt for identified alerts with MITRE Credential Access techniques. |  | Optional |
+| entityID | Entity value |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -44,7 +44,8 @@ This playbook does not use any sub-playbooks.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | NextPhaseAlerts | Array size | unknown |
+| PaloAltoNetworksXDR.Alert | Fetched alerts | unknown |
 
 ## Playbook Image
 ---
-![Cortex XDR - Entity Investigation](../doc_files/Cortex_XDR_-_Entity_Investigation.png)
+![Cortex XDR - Get entity alerts by MITRE tactics](../doc_files/Cortex_XDR_-_Get_entity_alerts_by_MITRE_tactics.png)

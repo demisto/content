@@ -1,6 +1,6 @@
-id: Cortex XDR - Entity Investigation
+id: Cortex XDR - Get entity alerts by MITRE tactics
 version: -1
-name: Cortex XDR - Entity Investigation
+name: Cortex XDR - Get entity alerts by MITRE tactics
 description: |-
   This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook fetch alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
   Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
@@ -1934,10 +1934,10 @@ inputs:
   required: false
   description: Set to True to hunt for identified alerts with MITRE Impact techniques.
   playbookInputQuery:
-- key: entityID
+- key: HuntCredentialAccessTechniques
   value: {}
   required: false
-  description: Entity Value
+  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
   playbookInputQuery:
 - key: timeRange
   value:
@@ -1955,14 +1955,17 @@ inputs:
   required: false
   description: Entity type to search on xdr-get-alers custom filters
   playbookInputQuery:
-- key: HuntCredentialAccessTechniques
+- key: entityID
   value: {}
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Credential Access techniques.
+  description: Entity value
   playbookInputQuery:
 outputs:
 - contextPath: NextPhaseAlerts
   description: Array size
+- contextPath: PaloAltoNetworksXDR.Alert
+  description: Fetched alerts
+  type: unknown
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
