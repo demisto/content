@@ -2871,10 +2871,11 @@ class TestGetSuccessfulAndFailedPacks:
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -2882,10 +2883,11 @@ class TestGetSuccessfulAndFailedPacks:
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {}
+        assert successful_uploaded_dependencies == {}
         assert failed == {}
         assert private_packs == {}
         assert images == {}
@@ -2920,7 +2922,7 @@ class TestGetSuccessfulAndFailedPacks:
                     }
                 }
             }))
-        successful, failed, private_packs, images = get_upload_data(
+        successful, successful_uploaded_dependencies, failed, private_packs, images = get_upload_data(
             file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
         )
         assert successful == {"TestPack1": {
