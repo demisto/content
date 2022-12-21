@@ -173,6 +173,7 @@ def main():
     try:
         value = args.get('value')
         template = args.get('template')
+        template_type = args.get('template_type', 'raw')
         variable_markers = argToList(args.get('variable_markers', '${,}'))
         if not variable_markers or not variable_markers[0]:
             raise ValueError('variable_markers must have a start marker.')
@@ -188,6 +189,10 @@ def main():
         if not template:
             template = value
             value = None
+        elif template_type == 'json':
+            template = json.loads(template)
+        elif template_type != 'raw':
+            raise DemistoException(f'Invalid template type: {template_type}')
 
         dx = ContextData(
             context=dx,
