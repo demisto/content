@@ -9,14 +9,14 @@ jobs:
   output_info:
     runs-on: ubuntu-latest
     steps:
-      - name: Print out event stuf
+      - name: Print out event stuff
         run: |
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
   auto_approve_and_merge:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content'
+    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content' && contains(github.event.pull_request.labels.*.name, 'docker')
     steps:
       - name: Approve and auto-merge for docker update PRs
         env:
@@ -25,3 +25,4 @@ jobs:
         run: |
           echo "Approving and merging"
           gh pr review --approve "$PR_URL"
+          gh pr merge --auto --squash "$PR_URL"
