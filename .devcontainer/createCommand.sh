@@ -23,5 +23,7 @@ echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
 echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
 echo "Setting up content dependencies"
-
-NO_HOOKS=1 .hooks/bootstrap
+pipx install poetry
+sudo chown demisto -R $HOME
+poetry install
+npm install
