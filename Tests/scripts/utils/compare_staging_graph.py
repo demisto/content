@@ -251,7 +251,7 @@ def main():
     ]
 
     compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
-    compare_dependencies(dependencies_id_set, dependencies_graph, output_path, message)
+    # compare_dependencies(dependencies_id_set, dependencies_graph, output_path, message)
     if not zip_graph.exists():
         message.append("No packs were uploaded for id_set")
     if not zip_id_set.exists():
