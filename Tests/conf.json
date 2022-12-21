@@ -1450,6 +1450,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "URL extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Test IP Indicator Fields",
             "fromversion": "5.0.0"
         },
