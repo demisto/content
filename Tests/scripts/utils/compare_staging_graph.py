@@ -211,11 +211,10 @@ def compare_dependencies(
     dependencies_id_set = json.load(dependencies_id_set.open())
     dependencies_graph = json.load(dependencies_graph.open())
     for pack_idset, deps_idset in dependencies_id_set.items():
-        pack_graph = dependencies_graph.get(pack_idset)
-        if not pack_graph:
+        deps_graph = dependencies_graph.get(pack_idset)
+        if not deps_graph:
             message.append(f"Missing pack {pack_idset} in dependencies graph")
             continue
-        deps_graph = pack_graph.get("dependencies")
         if deps_idset != deps_graph:
             message.append(f"Differences in dependencies for pack {pack_idset}")
             compare_all_level_dependencies(pack_idset, deps_idset, deps_graph, message)
@@ -286,7 +285,10 @@ def main():
     ]
 
     compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
-    compare_dependencies(dependencies_id_set, dependencies_graph, message)
+    try:
+        compare_dependencies(dependencies_id_set, dependencies_graph, message)
+    except Exception as e:
+        print("Failed to compare dependencies", e)
     if not zip_graph.exists():
         message.append("No packs were uploaded for id_set")
     if not zip_id_set.exists():
