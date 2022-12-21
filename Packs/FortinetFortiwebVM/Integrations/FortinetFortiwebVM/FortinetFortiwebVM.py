@@ -10,6 +10,50 @@ from dataclasses import dataclass
 LIMIT_SIZE = 50
 
 
+class READABLE_OUTPUT:
+    GEO_IP_DELETE = 'Geo IP group successfully deleted!'
+    GEO_IP_MEMBER_ADD = 'Geo IP members successfully added!'
+    GEO_IP_MEMBER_DELETE = 'Geo IP member succesfuly deleted!'
+    SERVER_POLICY_CREATE = 'Server Policy succesfuly created!'
+    SERVER_POLICY_UPDATE = 'Server Policy succesfuly updated!'
+    SERVER_POLICY_DELETE = 'Server Policy succesfuly deleted!'
+    CUSTOM_WHITELIST_URL_UPDATE = 'Custom whitelist URL member succesfuly updated!'
+    CUSTOM_WHITELIST_PARAMETER_UPDATE = 'Custom whitelist Parameter member succesfuly updated!'
+    CUSTOM_WHITELIST_COOKIE_UPDATE = 'Custom whitelist Cookie member succesfuly updated!'
+    CUSTOM_WHITELIST_HEADER_FIELD_UPDATE = 'Custom whitelist Header Field member succesfuly updated!'
+
+
+class ERRORS:
+    NOT_EXIST = 'The object does not exist.'
+    ALREADY_EXIST = 'The object already exist.'
+    ARGUMENTS = 'There is a problem with one or more arguments.'
+    DEFAULT_ACTION = 'The default action should be Allow/Deny/Deny (no log)'
+    ACTION = 'The action should be Allow/Deny/Deny (no log)'
+    IGNORE_PORT = 'ignore_port should be enable/disable'
+    INCLUDE_SUBDOMAINS = 'include_subdomains should be enable/disable'
+    BLOCK_PERIOD = 'Block period should be a number in range of 1-600.'
+    IP_ACTION = 'The action should be "Alert deny"/"Block period"/"Deny (no log)"'
+    SEVERITY = 'The severity should be High/Medium/Low/Info'
+    IGNORE_X_FORWARDED_FOR = 'ignore_x_forwarded_for should be enable/disable'
+    V1_NOT_SUPPORTED = 'Command not supported in version 1.'
+    TYPE = 'The type should be "Allow Only Ip"/"Black IP"/"Trust IP"'
+    IP = 'is not a valid IPv4/IPv6 address.'
+    ALLOW_IP_V1 = 'Allow only ip not supported by version 1.'
+    IS_DEFAULT = 'is_default should be yes/no'
+    INHERIT_WEB_PROTECTION_PROFILE = 'inherit_web_protection_profile should be enable/disable'
+    STATUS = 'status should be enable/disable'
+    PROTOCOL = 'It must to insert at least one HTTP or HTTPS service.'
+    DEPLOYMENT_MODE = 'deployment_mode should be "HTTP Content Routing"/"Single Server/Server Balance"'
+    SERVER_POOL = 'Server pool is requierd argument while deployment_mode is "Single Server/Server Balance".'
+    SCRIPTING = 'scripting should be enable/disable'
+    SCRIPTING_LIST = 'At Least one scripting is required.'
+    CERTIFICATE_TYPE = 'certificate_type should be "Local"/"Multi Certificate"/"Letsencrypt"'
+    REQUEST_URL = 'Request URL must start with  / .'
+    REQUEST_URL_INSERT = 'Please insert request_url.'
+    DOMAIN_INSERT = 'Please insert domain.'
+    VALUE_INSERT = 'Please insert value.'
+
+
 class Parser:
 
     @abstractmethod
@@ -1194,12 +1238,12 @@ class ClientV1(Client):
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
             if error_msg in self.NOT_EXIST_ERROR_MSGS:
-                raise DemistoException(f'The object does not exist. {error}', res=res)
+                raise DemistoException(f'{ERRORS.NOT_EXIST} {error}', res=res)
             # create
             elif error_msg in self.EXIST_ERROR_MSGS:
-                raise DemistoException(f'The object already exist. {error}', res=res)
+                raise DemistoException(f'{ERRORS.ALREADY_EXIST} {error}', res=res)
             elif error_msg in self.WRONG_PARAMETER_ERROR_MSGS:
-                raise DemistoException(f'There is a problem with one or more arguments. {error}', res=res)
+                raise DemistoException(f'{ERRORS.ARGUMENTS} {error}', res=res)
 
             else:
                 raise DemistoException(
@@ -2168,16 +2212,16 @@ class ClientV2(Client):
         sub_error_code = dict_safe_get(error_msg, ['results', 'errcode'])
         # Only if we add Geo IP member to group that dose'nt exist.
         if not sub_error_code:
-            raise DemistoException(f'The object does not exist. {error_msg}', res=res)
+            raise DemistoException(f'{ERRORS.NOT_EXIST} {error_msg}', res=res)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete & get
             if sub_error_code in self.NOT_EXIST_ERROR_CODES:
-                raise DemistoException(f'The object does not exist. {error_msg}', res=res)
+                raise DemistoException(f'{ERRORS.NOT_EXIST} {error_msg}', res=res)
             # create
             elif sub_error_code in self.EXIST_ERROR_CODES:
-                raise DemistoException(f'The object already exist. {error_msg}', res=res)
+                raise DemistoException(f'{ERRORS.ALREADY_EXIST} {error_msg}', res=res)
             elif sub_error_code in self.WRONG_PARAMETER_ERROR_CODES:
-                raise DemistoException(f'There is a problem with one or more arguments. {error_msg}', res=res)
+                raise DemistoException(f'{ERRORS.ARGUMENTS} {error_msg}', res=res)
             else:
                 raise DemistoException(
                     f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
@@ -3446,7 +3490,7 @@ def protected_hostname_group_validation(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('default_action') and args['default_action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException('The default action should be Allow/Deny/Deny (no log)')
+        raise DemistoException(ERRORS.DEFAULT_ACTION)
 
 
 def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3542,11 +3586,11 @@ def protected_hostname_member_validation(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('action') and args['action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException('The action should be Allow/Deny/Deny (no log)')
+        raise DemistoException(ERRORS.ACTION)
     if args.get('ignore_port') and args['ignore_port'] not in ['enable', 'disable']:
-        raise DemistoException('ignore_port should be enable/disable')
+        raise DemistoException(ERRORS.IGNORE_PORT)
     if args.get('include_subdomains') and args['include_subdomains'] not in ['enable', 'disable']:
-        raise DemistoException('include_subdomains should be enable/disable')
+        raise DemistoException(ERRORS.INCLUDE_SUBDOMAINS)
 
 
 def protected_hostname_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3678,14 +3722,14 @@ def ip_list_group_validation(client: Client, args: Dict[str, Any]):
 
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException('Block period should be a number in range of 1-600.')
+        raise DemistoException(ERRORS.BLOCK_PERIOD)
 
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException('The action should be "Alert deny"/"Block period"/"Deny (no log)"')
+        raise DemistoException(ERRORS.IP_ACTION)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException('The action should be High/Medium/Low/Info')
+        raise DemistoException(ERRORS.SEVERITY)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException('ignore_x_forwarded_for should be enable/disable')
+        raise DemistoException(ERRORS.IGNORE_X_FORWARDED_FOR)
 
 
 def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3723,7 +3767,7 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Option
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if not isinstance(client, ClientV2):
-        raise DemistoException('Update command not supported in version 1.')
+        raise DemistoException(ERRORS.V1_NOT_SUPPORTED)
     ip_list_group_validation(client, args)
     group_name = args['name']
     response = client.ip_list_group_update_request(  # type: ignore # client is ClientV2.
@@ -3791,14 +3835,14 @@ def ip_list_member_validation(client: Client, args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if client.version == ClientV1.API_VER and args.get('type') and args['type'] == 'Allow Only Ip':
-        raise DemistoException('Allow only ip not supported by version 1.')
+        raise DemistoException(ERRORS.ALLOW_IP_V1)
     if args.get('type') and args['type'] not in ['Allow Only Ip', 'Black IP', 'Trust IP']:
-        raise DemistoException('The type should be "Allow Only Ip"/"Black IP"/"Trust IP"')
+        raise DemistoException(ERRORS.TYPE)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException('The severity should be High/Medium/Low/Info')
+        raise DemistoException(ERRORS.SEVERITY)
     if (ip := args.get('ip_address')) and not re.match(ipv4Regex, ip) and not re.match(ipv6Regex, ip) and not re.match(
             ipv4Regex + '-' + ipv4Regex, ip) and not re.match(ipv6Regex + '-' + ipv6Regex, ip):
-        raise DemistoException(f'{ip} is not a valid IPv4/IPv6 address.')
+        raise DemistoException(f'{ip} {ERRORS.IP}')
 
 
 def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3918,13 +3962,13 @@ def http_content_routing_member_validation(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('is_default') and args['is_default'] not in ['yes', 'no']:
-        raise DemistoException('is_default should be yes/no')
+        raise DemistoException(ERRORS.IS_DEFAULT)
     if args.get('inherit_web_protection_profile') and args['inherit_web_protection_profile'] not in [
             'enable', 'disable'
     ]:
-        raise DemistoException('inherit_web_protection_profile should be enable/disable')
+        raise DemistoException(ERRORS.INHERIT_WEB_PROTECTION_PROFILE)
     if args.get('status') and args['status'] not in ['enable', 'disable']:
-        raise DemistoException('status should be enable/disable')
+        raise DemistoException(ERRORS.STATUS)
 
 
 def http_content_routing_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4051,13 +4095,13 @@ def geo_ip_group_validation(client: Client, args: Dict[str, Any]):
     """
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException('Block period should be a number in range of 1-600.')
+        raise DemistoException(ERRORS.BLOCK_PERIOD)
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException('The action should be "Alert deny"/"Block period"/"Deny (no log)"')
+        raise DemistoException(ERRORS.IP_ACTION)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException('The action should be High/Medium/Low/Info')
+        raise DemistoException(ERRORS.SEVERITY)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException('ignore_x_forwarded_for should be enable/disable')
+        raise DemistoException(ERRORS.IGNORE_X_FORWARDED_FOR)
 
 
 def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4252,7 +4296,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
                                                                                 client.parser.geo_ip_member, {})
     countries_data = find_dict_in_array(parsed_data, 'country', countries)
 
-    readable_output = tableToMarkdown(name='Geo IP members:',
+    readable_output = tableToMarkdown(name=READABLE_OUTPUT.GEO_IP_MEMBER_ADD,
                                       t=countries_data,
                                       headers=['id', 'country'],
                                       headerTransform=string_to_table_header)
@@ -4636,25 +4680,24 @@ def server_policy_validation(version: str, args: Dict[str, Any]):
     http_service = args.get('http_service')
     https_service = args.get('https_service')
     if not (http_service or https_service):
-        raise DemistoException('It must to insert at least one HTTP or HTTPS service.')
-    scripting = args.get('scripting')
-    scripting_list = args.get('scripting_list')
-    if scripting == 'enable' and not scripting_list:
-        raise DemistoException('At Least one scripting is required.')
-    retry_on_http_response_codes = argToList(args.get('retry_on_http_response_codes'))
-    if args['deployment_mode'] == 'Single Server/Server Balance' and not args.get('server_pool'):
-        raise DemistoException(
-            'Server pool is requierd argument while deployment_mode is "Single Server/Server Balance".')
-
+        raise DemistoException(ERRORS.PROTOCOL)
     if args.get('deployment_mode') and args['deployment_mode'] not in [
             'HTTP Content Routing', 'Single Server/Server Balance'
     ]:
-        raise DemistoException('deployment_mode should be "HTTP Content Routing"/"Single Server/Server Balance"')
+        raise DemistoException(ERRORS.DEPLOYMENT_MODE)
+    if args['deployment_mode'] == 'Single Server/Server Balance' and not args.get('server_pool'):
+        raise DemistoException(ERRORS.SERVER_POOL)
     if version == ClientV2.API_VER:
+        scripting = args.get('scripting')
+        if args.get('scripting') and args['scripting'] not in ['enable', 'disable']:
+            raise DemistoException(ERRORS.SCRIPTING)
+        scripting_list = args.get('scripting_list')
+        if scripting == 'enable' and not scripting_list:
+            raise DemistoException(ERRORS.SCRIPTING_LIST)
         if args.get('certificate_type') and args['certificate_type'] not in [
                 'Local', 'Multi Certificate', 'Letsencrypt'
         ]:
-            raise DemistoException('certificate_type should be "Local"/"Multi Certificate"/"Letsencrypt"')
+            raise DemistoException(ERRORS.CERTIFICATE_TYPE)
         if args.get('client_real_ip') and args['client_real_ip'] not in ['enable', 'disable']:
             raise DemistoException('client_real_ip should be enable/disable')
         if args.get('mach_once') and args['mach_once'] not in ['enable', 'disable']:
@@ -4742,7 +4785,7 @@ def server_policy_create_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, 'Server Policy succesfuly created!')
+    command_results = generate_simple_command_results('name', name, response, READABLE_OUTPUT.SERVER_POLICY_CREATE)
 
     return command_results
 
@@ -4804,7 +4847,7 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, 'Server Policy succesfuly updated!')
+    command_results = generate_simple_command_results('name', name, response, READABLE_OUTPUT.SERVER_POLICY_UPDATE)
 
     return command_results
 
@@ -4821,7 +4864,7 @@ def server_policy_delete_command(client: Client, args: Dict[str, Any]) -> Option
     """
     name = args['name']
     response = client.server_policy_delete_request(name)
-    command_results = generate_simple_command_results('id', name, response, 'Server policy successfully deleted!')
+    command_results = generate_simple_command_results('id', name, response, READABLE_OUTPUT.SERVER_POLICY_DELETE)
 
     return command_results
 
@@ -4868,6 +4911,8 @@ def custom_whitelist_validation(version: str, args: Dict[str, Any], member_type:
     Raises:
         DemistoException: Errors.
     """
+    # if args.get('status') and args['status'] not in ['enable', 'disable']:
+    #     raise DemistoException(ERRORS.STATUS)
     if args.get('type') and args['type'] != member_type:
         raise DemistoException(f"You can't update {args['type']} member with {member_type} update command.")
     if version == ClientV2.API_VER:
@@ -4876,10 +4921,10 @@ def custom_whitelist_validation(version: str, args: Dict[str, Any], member_type:
         if args.get('domain_status') == 'enable' and not args.get('domain'):
             raise DemistoException('Please insert domain.')
         if args.get('value_status') == 'enable' and not args.get('value'):
-            raise DemistoException('Please insert value.')
+            raise DemistoException(ERRORS.VALUE_INSERT)
     if member_type == 'URL':
         if args.get('request_type') == 'Simple String' and args.get('request_url') and args['request_url'][0] != '/':
-            raise DemistoException('Request URL must start with  / .')
+            raise DemistoException(ERRORS.REQUEST_URL)
         if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
             raise DemistoException('request_type should be "Simple String"/"Regular Expression"')
     if member_type == 'Parameter' and version == ClientV2.API_VER:
@@ -4890,13 +4935,13 @@ def custom_whitelist_validation(version: str, args: Dict[str, Any], member_type:
                 raise DemistoException('request_type should be "Simple String"/"Regular Expression"')
             if args.get('request_type') == 'Simple String' and args.get(
                     'request_url') and args['request_url'][0] != '/':
-                raise DemistoException('Request URL must start with  / .')
+                raise DemistoException(ERRORS.REQUEST_URL)
         if args.get('domain_status') and args['domain_status'] == 'enable':
             if args.get('domain_type') and args['domain_type'] not in ['Simple String', 'Regular Expression']:
                 raise DemistoException('domain_type should be "Simple String"/"Regular Expression"')
     if member_type == 'Header Field' and version == ClientV2.API_VER:
         if version == ClientV1.API_VER:
-            raise DemistoException('Create command not supported in version 1.')
+            raise DemistoException(ERRORS.V1_NOT_SUPPORTED)
         if args.get('header_name_type') and args['header_name_type'] not in ['Simple String', 'Regular Expression']:
             raise DemistoException('header_name_type should be "Simple String"/"Regular Expression"')
         if args.get('value_status') and args['value_status'] == 'enable':
@@ -4952,8 +4997,7 @@ def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) ->
                                                           request_type=args.get('request_type'),
                                                           request_url=args.get('request_url'),
                                                           status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response,
-                                                      'Custom whitelist URL member succesfuly updated!')
+    command_results = generate_simple_command_results('id', id, response, READABLE_OUTPUT.CUSTOM_WHITELIST_URL_UPDATE)
 
     return command_results
 
@@ -5051,7 +5095,7 @@ def custom_whitelist_parameter_update_command(client: Client, args: Dict[str, An
                                                                 domain_type=args.get('domain_type'),
                                                                 domain=args.get('domain'))
     command_results = generate_simple_command_results('id', id, response,
-                                                      'Custom whitelist Parameter member succesfuly updated!')
+                                                      READABLE_OUTPUT.CUSTOM_WHITELIST_PARAMETER_UPDATE)
 
     return command_results
 
@@ -5104,7 +5148,7 @@ def custom_whitelist_cookie_update_command(client: Client, args: Dict[str, Any])
                                                              path=args.get('path'),
                                                              status=args.get('status'))
     command_results = generate_simple_command_results('id', id, response,
-                                                      'Custom whitelist cookie member succesfuly updated!')
+                                                      READABLE_OUTPUT.CUSTOM_WHITELIST_COOKIE_UPDATE)
 
     return command_results
 
@@ -5120,7 +5164,7 @@ def custom_whitelist_header_field_create_command(client: Client, args: Dict[str,
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if client.version == ClientV1.API_VER:
-        raise DemistoException('Create command not supported in version 1.')
+        raise DemistoException(ERRORS.V1_NOT_SUPPORTED)
     custom_whitelist_validation(version=client.version, args=args, member_type='Header Field')
     name = args['name']
     response = client.custom_whitelist_header_field_create_request(  # type: ignore #client is ClientV2
@@ -5150,7 +5194,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
     """
 
     if not isinstance(client, ClientV2):
-        raise DemistoException('Update command not supported in version 1.')
+        raise DemistoException(ERRORS.V1_NOT_SUPPORTED)
     id = args['id']
     # Get exist settings from Fortiweb for validation
     args = get_object_data_before_update(client=client,
@@ -5169,7 +5213,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
         value=args.get('value'))
 
     command_results = generate_simple_command_results('id', id, response,
-                                                      'Custom whitelist Parameter member succesfuly updated!')
+                                                      READABLE_OUTPUT.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE)
     return command_results
 
 
@@ -5551,7 +5595,7 @@ def block_period_validation(version: str, block_period: Optional[int]):
         block_period (Optional[int]): Block period input value.
     """
     if version == ClientV2.API_VER and block_period and not 1 <= block_period <= 600:
-        raise DemistoException('Block period should be a number in range of 1-600.')
+        raise DemistoException(ERRORS.BLOCK_PERIOD)
 
 
 def main() -> None:
