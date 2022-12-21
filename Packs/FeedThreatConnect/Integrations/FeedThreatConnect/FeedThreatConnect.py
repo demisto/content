@@ -501,7 +501,7 @@ def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     return url
 
 
-def should_send_request(params: dict, endpoint: str):
+def should_send_request(params: dict, endpoint: str):  # pragma: no cover
     """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == 'indicators':
         if not argToList(params.get('indicator_type')):
