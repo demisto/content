@@ -3,7 +3,6 @@ import demistomock as demisto  # noqa: F401
 import urllib3
 import copy
 from operator import itemgetter
-
 from typing import Tuple, Callable
 
 # Disable insecure warnings
