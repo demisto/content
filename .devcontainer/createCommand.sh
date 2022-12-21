@@ -18,6 +18,7 @@ echo "Setting up VSCode paths"
 
 cp .devcontainer/settings.json .vscode/settings.json 
 touch CommonServerUserPython.py
+touch DemistoClassApiModule.py
 path=$(printf '%s:' Packs/ApiModules/Scripts/*)
 rm -f .env
 echo "PYTHONPATH=""$path"":$PYTHONPATH" >> .env
