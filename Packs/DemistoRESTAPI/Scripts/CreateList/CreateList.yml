@@ -1,13 +1,12 @@
 commonfields:
-  id: DemistoCreateList
+  id: CreateList
   version: -1
-name: DemistoCreateList
+name: CreateList
 script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Deprecated. Use CreateList
-deprecated: true
+comment: Create a new list
 enabled: true
 args:
 - name: listName
