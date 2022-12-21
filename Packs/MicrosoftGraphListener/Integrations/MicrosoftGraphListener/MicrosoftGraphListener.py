@@ -790,7 +790,7 @@ class MsGraphClient:
         Returns:
             dict: API response
         """
-        if folder_id is not None:
+        if folder_id:
             suffix = f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/messages/{message_id}'
 
         else:
