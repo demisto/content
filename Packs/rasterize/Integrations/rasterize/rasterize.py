@@ -515,7 +515,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: str, password: str, horizontal: bo
     :return: A list of stream of combined images
     """
     demisto.debug(f'Loading file at Path: {path}')
-    input_pdf = PdfReader(open(path, "rb"), strict=False)
+    input_pdf = PdfReader(open(path, "rb"), strict=False, password=password)
     pages = len(input_pdf.pages) if max_pages == "*" else min(int(max_pages), len(input_pdf.pages))
 
     with tempfile.TemporaryDirectory() as output_folder:
