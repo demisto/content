@@ -83,8 +83,14 @@ class ERRORS:
     CERTIFICATE_TYPE = 'certificate_type should be "Local"/"Multi Certificate"/"Letsencrypt"'
     REQUEST_URL = 'Request URL must start with  / .'
     REQUEST_URL_INSERT = 'Please insert request_url.'
+    REQUEST_TYPE = 'request_type should be "Simple String"/"Regular Expression"'
+    DOMAIN_TYPE = 'domain_type should be "Simple String"/"Regular Expression"'
+    NAME_TYPE = 'name_type should be "Simple String"/"Regular Expression"'
+    HEADER_NAME_TYPE = 'header_name_type should be "Simple String"/"Regular Expression"'
+    HEADER_VALUE_TYPE = 'header_value_type should be "Simple String"/"Regular Expression"'
     DOMAIN_INSERT = 'Please insert domain.'
     VALUE_INSERT = 'Please insert value.'
+    COUNTRIES = 'Please insert counries from the list.'
 
 
 class Parser:
@@ -550,7 +556,7 @@ class ParserV1(Parser):
         return {'Simple String': 1, 'Regular Expression': 2}
 
     @property
-    def request_type_api_to_user_mapper(self) -> Dict[str, Any]:
+    def request_type_api_to_user_mapper(self) -> Dict[Any, str]:
         """Mapping the API output for request type to the user output
         Returns:
             Dict[str, Any]: Mapped dictionary.
@@ -566,7 +572,7 @@ class ParserV1(Parser):
         return {'URL': 1, 'Parameter': 2, 'Cookie': 3}
 
     @property
-    def custom_whitelist_api_to_user_mapper(self) -> Dict[str, Any]:
+    def custom_whitelist_api_to_user_mapper(self) -> Dict[Any, str]:
         """Mapping the API output for custom whitelist types to the user output
         Returns:
             Dict[str, Any]: Mapped dictionary.
@@ -1065,7 +1071,8 @@ class Client(BaseClient):
 
     @abstractmethod
     def http_content_routing_member_update_request(self, policy_name: str, member_id: str,
-                                                   http_content_routing_policy: str, is_default: Optional[str],
+                                                   http_content_routing_policy: Optional[str],
+                                                   is_default: Optional[str],
                                                    inherit_webprotection_profile: Optional[str],
                                                    **kwargs) -> Dict[str, Any]:
         pass
@@ -1105,7 +1112,7 @@ class Client(BaseClient):
         pass
 
     @abstractmethod
-    def geo_ip_member_list_request(self, group_name: str) -> Dict[str, Any]:
+    def geo_ip_member_list_request(self, group_name: str) -> Union[Dict[str, Any], List[Dict[str, Any]]]:
         pass
 
     @abstractmethod
@@ -1313,8 +1320,10 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1.
         """
         data = remove_empty_elements({
-            'name': name,
-            'defaultAction': self.parser.action_user_to_api_mapper.get(default_action)
+            'name':
+            name,
+            'defaultAction':
+            dict_safe_get(self.parser.action_user_to_api_mapper.get, [default_action])
         })
         response = self._http_request(method='PUT',
                                       url_suffix=f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}',
@@ -1569,7 +1578,8 @@ class ClientV1(Client):
         return response
 
     def http_content_routing_member_update_request(self, policy_name: str, member_id: str,
-                                                   http_content_routing_policy: str, is_default: Optional[str],
+                                                   http_content_routing_policy: Optional[str],
+                                                   is_default: Optional[str],
                                                    inherit_webprotection_profile: Optional[str],
                                                    **kwargs) -> Dict[str, Any]:
         """Update an HTTP content routing member.
@@ -1726,7 +1736,7 @@ class ClientV1(Client):
         response = self._http_request(method='DELETE', url_suffix=endpoint)
         return response
 
-    def geo_ip_member_list_request(self, group_name: str) -> Dict[str, Any]:
+    def geo_ip_member_list_request(self, group_name: str) -> List[Dict[str, Any]]:
         """List the Geo IP members.
 
         Args:
@@ -1803,7 +1813,7 @@ class ClientV1(Client):
         """
         return self._http_request(method='GET', url_suffix='ServerObjects/Server/HTTPContentRoutingPolicy')
 
-    def server_policy_data_builder(self, name: str, deployment_mode: str, virtual_server: str,
+    def server_policy_data_builder(self, name: str, deployment_mode: Optional[str], virtual_server: Optional[str],
                                    server_pool: Optional[str], protected_hostnames: Optional[str],
                                    client_real_ip: Optional[str], syn_cookie: Optional[str],
                                    half_open_thresh: Optional[str], http_service: Optional[str],
@@ -2611,7 +2621,8 @@ class ClientV2(Client):
         return response
 
     def http_content_routing_member_update_request(self, policy_name: str, member_id: str,
-                                                   http_content_routing_policy: str, is_default: Optional[str],
+                                                   http_content_routing_policy: Optional[str],
+                                                   is_default: Optional[str],
                                                    inherit_webprotection_profile: Optional[str], **kwargs):
         """Update an HTTP content routing member.
 
@@ -2875,21 +2886,23 @@ class ClientV2(Client):
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
 
-    def server_policy_data_builder(self, name: str, deployment_mode: str, virtual_server: str,
+    def server_policy_data_builder(self, name: str, deployment_mode: Optional[str], virtual_server: Optional[str],
                                    server_pool: Optional[str], protected_hostnames: Optional[str],
                                    client_real_ip: Optional[str], syn_cookie: Optional[str],
                                    half_open_thresh: Optional[str], http_service: Optional[str],
-                                   https_service: Optional[str], http2: Optional[str], protocol: str,
+                                   https_service: Optional[str], http2: Optional[str], protocol: Optional[str],
                                    multi_certificate: Optional[str], certificate_group: Optional[str],
                                    certificate: Optional[str], intergroup: Optional[str], proxy: Optional[str],
                                    redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                    monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
-                                   comments: Optional[str], mach_once: Optional[str], ip_range: str, retry_on: str,
-                                   retry_on_cache_size: str, retry_on_connect_failure: str,
-                                   retry_times_on_connect_failure: str, retry_on_http_layer: str,
-                                   retry_times_on_http_layer: str, retry_on_http_response_codes: str, scripting: str,
-                                   scripting_list: str, allow_list: str, replace_msg: str,
-                                   certificate_type: str, lets_certificate: str) -> Dict[str, Any]:
+                                   comments: Optional[str], mach_once: Optional[str], ip_range: Optional[str],
+                                   retry_on: Optional[str], retry_on_cache_size: Optional[str],
+                                   retry_on_connect_failure: Optional[str],
+                                   retry_times_on_connect_failure: Optional[str], retry_on_http_layer: Optional[str],
+                                   retry_times_on_http_layer: Optional[str],
+                                   retry_on_http_response_codes: Optional[list], scripting: Optional[str],
+                                   scripting_list: Optional[str], allow_list: Optional[str], replace_msg: Optional[str],
+                                   certificate_type: Optional[str], lets_certificate: Optional[str]) -> Dict[str, Any]:
         data = {
             'data':
             remove_empty_elements({
@@ -2934,7 +2947,7 @@ class ClientV2(Client):
                 'retry-times-on-http-layer':
                 retry_times_on_http_layer,
                 'retry-on-http-response-codes':
-                ' '.join(retry_on_http_response_codes),
+                ' '.join(retry_on_http_response_codes) if retry_on_http_response_codes else None,
                 'scripting':
                 scripting,
                 'scripting-list':
@@ -3056,7 +3069,7 @@ class ClientV2(Client):
             retry_times_on_connect_failure=kwards.get('retry_times_on_connect_failure'),
             retry_on_http_layer=kwards.get('retry_on_http_layer'),
             retry_times_on_http_layer=kwards.get('retry_times_on_http_layer'),
-            retry_on_http_response_codes=' '.join(kwards.get('retry_on_http_response_codes')),
+            retry_on_http_response_codes=kwards.get('retry_on_http_response_codes'),
             scripting=kwards.get('scripting'),
             scripting_list=kwards.get('scripting_list'),
             monitor_mode=monitor_mode,
@@ -3149,7 +3162,7 @@ class ClientV2(Client):
             retry_times_on_connect_failure=kwards.get('retry_times_on_connect_failure'),
             retry_on_http_layer=kwards.get('retry_on_http_layer'),
             retry_times_on_http_layer=kwards.get('retry_times_on_http_layer'),
-            retry_on_http_response_codes=' '.join(kwards.get('retry_on_http_response_codes')),
+            retry_on_http_response_codes=kwards.get('retry_on_http_response_codes'),
             scripting=kwards.get('scripting'),
             scripting_list=kwards.get('scripting_list'),
             monitor_mode=monitor_mode,
@@ -3421,8 +3434,10 @@ class ClientV2(Client):
                                       json_data=data)
         return response
 
-    def custom_whitelist_header_field_update_request(self, id: str, header_name_type: str, name: str, value_status: str,
-                                                     header_value_type: str, value: str, status: str) -> Dict[str, Any]:
+    def custom_whitelist_header_field_update_request(self, id: str, header_name_type: Optional[str],
+                                                     name: Optional[str], value_status: Optional[str],
+                                                     header_value_type: Optional[str], value: Optional[str],
+                                                     status: Optional[str]) -> Dict[str, Any]:
         """Update a custom whitelist header field.
 
         Args:
@@ -3792,7 +3807,7 @@ def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Optional[CommandResults]:
+def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Update an IP list group.
 
     Args:
@@ -3818,7 +3833,7 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Option
     return command_results
 
 
-def ip_list_group_delete_command(client: Client, args: Dict[str, Any]) -> Optional[CommandResults]:
+def ip_list_group_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     group_name = args['name']
     response = client.ip_list_group_delete_request(group_name)
     command_results = generate_simple_command_results('id', group_name, response, OutputTitles.IP_LIST_GROUP_DELETE)
@@ -4206,7 +4221,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def geo_ip_group_delete_command(client: Client, args: Dict[str, Any]) -> Optional[CommandResults]:
+def geo_ip_group_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Delete a Geo IP group.
 
     Args:
@@ -4303,7 +4318,7 @@ def geo_ip_member_validation(args: Dict[str, Any]):
     ]
     countries = argToList(args['countries'])
     if not set(countries).issubset(set(data)):
-        raise DemistoException('Please insert counries from the list.')
+        raise DemistoException(ERRORS.COUNTRIES)
 
 
 def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4469,11 +4484,13 @@ def system_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.system_status_get_request()
     results = response['results'] if client.version == ClientV2.API_VER else response
     parsed_data = client.parser.system_status(results)
-    headers = create_headers(client.version, [
-        'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time', 'firmware_version',
-        'administrative_domain'
-    ], ['system_uptime', 'fips_and_cc_mode', 'log_disk'],
-                             ['manager_status', 'sysyem_up_days', 'sysyem_up_hrs', 'sysyem_up_mins'])
+    headers = create_headers(client.version,
+                             common_headers=[
+                                 'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time',
+                                 'firmware_version', 'administrative_domain'
+                             ],
+                             v1_only_headers=['system_uptime', 'fips_and_cc_mode', 'log_disk'],
+                             v2_only_headers=['manager_status', 'sysyem_up_days', 'sysyem_up_hrs', 'sysyem_up_mins'])
     readable_output = tableToMarkdown(name='System Status:',
                                       t=parsed_data,
                                       headers=headers,
@@ -4888,7 +4905,7 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
     return command_results
 
 
-def server_policy_delete_command(client: Client, args: Dict[str, Any]) -> Optional[CommandResults]:
+def server_policy_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Delete a server policy.
 
     Args:
@@ -4953,38 +4970,38 @@ def custom_whitelist_validation(version: str, args: Dict[str, Any], member_type:
         raise DemistoException(f"You can't update {args['type']} member with {member_type} update command.")
     if version == ClientV2.API_VER:
         if args.get('request_url_status') == 'enable' and not args.get('request_url'):
-            raise DemistoException('Please insert request_url.')
+            raise DemistoException(ERRORS.REQUEST_URL_INSERT)
         if args.get('domain_status') == 'enable' and not args.get('domain'):
-            raise DemistoException('Please insert domain.')
+            raise DemistoException(ERRORS.DOMAIN_INSERT)
         if args.get('value_status') == 'enable' and not args.get('value'):
             raise DemistoException(ERRORS.VALUE_INSERT)
     if member_type == 'URL':
         if args.get('request_type') == 'Simple String' and args.get('request_url') and args['request_url'][0] != '/':
             raise DemistoException(ERRORS.REQUEST_URL)
         if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException('request_type should be "Simple String"/"Regular Expression"')
+            raise DemistoException(ERRORS.REQUEST_TYPE)
     if member_type == 'Parameter' and version == ClientV2.API_VER:
         if args.get('name_type') and args['name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException('name_type should be "Simple String"/"Regular Expression"')
+            raise DemistoException(ERRORS.NAME_TYPE)
         if args.get('request_status') and args['request_status'] == 'enable':
             if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException('request_type should be "Simple String"/"Regular Expression"')
+                raise DemistoException(ERRORS.REQUEST_TYPE)
             if args.get('request_type') == 'Simple String' and args.get(
                     'request_url') and args['request_url'][0] != '/':
                 raise DemistoException(ERRORS.REQUEST_URL)
         if args.get('domain_status') and args['domain_status'] == 'enable':
             if args.get('domain_type') and args['domain_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException('domain_type should be "Simple String"/"Regular Expression"')
+                raise DemistoException(ERRORS.DOMAIN_TYPE)
     if member_type == 'Header Field' and version == ClientV2.API_VER:
         if version == ClientV1.API_VER:
             raise DemistoException(ERRORS.V1_NOT_SUPPORTED)
         if args.get('header_name_type') and args['header_name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException('header_name_type should be "Simple String"/"Regular Expression"')
+            raise DemistoException(ERRORS.HEADER_NAME_TYPE)
         if args.get('value_status') and args['value_status'] == 'enable':
             if args.get('header_value_type') and args['header_value_type'] not in [
                     'Simple String', 'Regular Expression'
             ]:
-                raise DemistoException('header_value_type should be "Simple String"/"Regular Expression"')
+                raise DemistoException(ERRORS.HEADER_VALUE_TYPE)
 
 
 def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -5010,7 +5027,7 @@ def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
-def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) -> Optional[CommandResults]:
+def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Update a custom whitelist url member.
 
     Args:
@@ -5314,7 +5331,7 @@ def custom_predifined_whitelist_list_command(client: Client, args: Dict[str, Any
     response = client.custom_predifined_whitelist_list_request()
     if object_type:
         data = response if client.version == ClientV1.API_VER else response['results']
-        rel_data = find_dict_in_array(data, 'type', object_type).get('details')
+        rel_data = dict_safe_get(find_dict_in_array(data, 'type', object_type), ['details'])
         response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
     else:
         data = response if client.version == ClientV1.API_VER else response['results']
@@ -5372,12 +5389,12 @@ def custom_predifined_whitelist_update_command(client: Client, args: Dict[str, A
 
 
 def list_response_handler(client: Client,
-                          response: List[Dict[str, Any]],
+                          response: Union[List[Dict[str, Any]], Dict[str, Any]],
                           data_parser: Callable,
                           args: Dict[str, Any],
                           sub_object_id: Optional[str] = None,
                           internal_path: Optional[List[str]] = None,
-                          sub_object_key: str = '_id') -> List[Dict[str, Any]]:
+                          sub_object_key: str = '_id') -> Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]:
     """Handle the list output response to xsoar output.
     Args:
         client (Client): Fortiweb VM client.
@@ -5387,8 +5404,12 @@ def list_response_handler(client: Client,
         sub_object_id (Optional[str]): Sub Object ID.
         internal_path (Optional[List[str]]): Internal path inside the response.
         sub_object_key (Optional[str]): Sub Object key.
+
+    Raises:
+        DemistoException: The object does not exist.
+
     Returns:
-        List[Dict[str, Any]]: Filtered output to xsoar.
+        Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]: Filtered output to xsoar, pagination message and response output.
     """
     if client.version == ClientV2.API_VER:
         response = response['results']  # type: ignore # V2 always returns a Dict.
@@ -5549,8 +5570,7 @@ def get_object_data(version: str,
     """
     if members_list := get_request(object_id) if object_id else get_request():
         members_list = members_list if version == ClientV1.API_VER else members_list['results']
-        return find_dict_in_array(  # type: ignore: #command will return Dict[str, Any] because value is str.
-            members_list, by_key, value)
+        return find_dict_in_array(members_list, by_key, value)
     return None
 
 
