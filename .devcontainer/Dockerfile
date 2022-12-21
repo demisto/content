@@ -23,9 +23,7 @@ RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
-RUN chown -R $USERNAME $HOME \
-    && curl -sSL https://install.python-poetry.org | python3 - \
-    && python -m pip install --user pipx \
+RUN python -m pip install --user pipx \
     && python -m pipx ensurepath \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
     && echo "source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> $HOME/.zshrc \
