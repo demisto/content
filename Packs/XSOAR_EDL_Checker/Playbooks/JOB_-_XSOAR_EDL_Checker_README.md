@@ -12,7 +12,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* XSOAREDLCheckerAutomation
+* XSOARAllEDLCheckerAutomation
 
 ### Commands
 * send-mail

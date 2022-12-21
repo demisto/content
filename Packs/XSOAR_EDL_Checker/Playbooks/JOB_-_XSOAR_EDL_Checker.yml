@@ -71,7 +71,7 @@ tasks:
       version: -1
       name: Check the EDLs
       description: Runs the xsoaredlchecker-get-edl command for all configured instances, and returns a consolidated output.
-      scriptName: XSOAREDLCheckerAutomation
+      scriptName: XSOARAllEDLCheckerAutomation
       type: regular
       iscommand: false
       brand: ""
