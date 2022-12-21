@@ -1,0 +1,253 @@
+id: JOB - XSOAR EDL Checker
+version: -1
+name: JOB - XSOAR EDL Checker
+description: "This playbook executes the XSOAR EDL Checker automation and will send email notification when an EDL is not functioning.   \n\nRun this playbook as a job (hourly?) to monitor your EDLs."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1213a315-08db-4555-8f5a-1176629ef518
+    type: start
+    task:
+      id: 1213a315-08db-4555-8f5a-1176629ef518
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5e1ce334-7a94-4046-8b6e-c2637ea836c1
+    type: title
+    task:
+      id: 5e1ce334-7a94-4046-8b6e-c2637ea836c1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 25ac2d3d-f1cf-4ffa-872f-ce23fbedf978
+    type: regular
+    task:
+      id: 25ac2d3d-f1cf-4ffa-872f-ce23fbedf978
+      version: -1
+      name: Check the EDLs
+      description: Runs the xsoaredlchecker-get-edl command for all configured instances, and returns a consolidated output.
+      scriptName: XSOARAllEDLCheckerAutomation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 077bee0d-ab6f-420a-81ec-93664e1dac29
+    type: condition
+    task:
+      id: 077bee0d-ab6f-420a-81ec-93664e1dac29
+      version: -1
+      name: Are there failing EDLs?
+      description: 'Check if there are EDLs which are not returning a 200 OK response. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: EDLChecker.Response
+            iscontext: true
+          right:
+            value:
+              simple: "200"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5371b62e-0d16-4259-819b-e0bc0a5d3840
+    type: condition
+    task:
+      id: 5371b62e-0d16-4259-819b-e0bc0a5d3840
+      version: -1
+      name: Should we send notifications?
+      description: 'Check whether the input for SendNotification has a list of emails to send notification to. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SendNotification
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1375fc79-f1da-4391-852e-221063faaa0a
+    type: regular
+    task:
+      id: 1375fc79-f1da-4391-852e-221063faaa0a
+      version: -1
+      name: Send Notification
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: |-
+          The XSOAR EDL Checker has noted failures on the following EDLS, view the full results here:
+
+          ${demistoUrls.investigation}
+
+          Results:
+          ${EDLChecker}
+      subject:
+        simple: XSOAR EDL Checker Notification
+      to:
+        complex:
+          root: inputs.SendNotification
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: SendNotification
+  value: {}
+  required: false
+  description: 'The comma separated list of email addresses to send notification to. '
+  playbookInputQuery:
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
