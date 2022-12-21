@@ -114,8 +114,8 @@ configuration:
     - Data
     - Correlation
     - System
-    - Wildfire Submissions
-    - Decryption (Exists from PanOS version 10.0++)
+    - Wildfire
+    - Decryption
     - All
 - display: Traffic Log Type Query
   name: traffic_query

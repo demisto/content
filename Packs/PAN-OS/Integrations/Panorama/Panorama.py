@@ -13063,10 +13063,11 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     return last_fetch_dict, incident_entries_dict
     
 
+
 def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]]:
     """converts chosen log type queries to a queries dictionary.
     Exmaple: 
-    for parameters: log_type=['X_log_type'], X_log_type_queary='(example query for X_log_type)' 
+    for parameters: log_type=['X_log_type'], X_log_type_query='(example query for X_log_type)' 
     the dictionary returned is: {'X_log_type':(example query for X_log_type)}
 
     Args:
@@ -13077,12 +13078,12 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]
     """
     queries_dict = {}
     if log_types := params.get('log_types'):
-        if 'All' in log_types:
-            for log_type in FETCH_INCIDENTS_LOG_TYPES:
-                queries_dict[log_type.capitalize()] = params.get(f'{log_type.lower()}_query',"")
-        else:
-            for log_type in log_types:
-                queries_dict[log_type.capitalize()] = params.get(f'{log_type.lower()}_query',"")
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = params.get(f'{log_type.lower()}_query',"")
+            if log_type_query and not log_type_query.startswith("Please input a query, example:"):
+                queries_dict[log_type.capitalize()] = log_type_query
+
     return queries_dict
     
 def main():
