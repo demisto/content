@@ -214,40 +214,39 @@ def compare_dependencies(
         if not deps_graph:
             message.append(f"Missing pack {pack_idset} in dependencies graph")
             continue
-        if deps_idset != deps_graph:
-            message.append(f"Differences in dependencies for pack {pack_idset}")
-            compare_all_level_dependencies(pack_idset, deps_idset, deps_graph, message)
-
-            compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, message)
+        compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, message)
 
 
 def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, message: list[str]):
     first_level_dependencies_idset = deps_idset["dependencies"]
     first_level_dependencies_graph = deps_graph["dependencies"]
     if first_level_dependencies_idset != first_level_dependencies_graph:
-        for dep_idset, dep_idset in first_level_dependencies_idset.items():
-            if dep_idset not in first_level_dependencies_graph:
-                message.append(f"Missing dependency {dep_idset} in graph for pack {pack}")
-                continue
-            if dep_idset != first_level_dependencies_graph[dep_idset]:
-                message.append(
-                    f"Differences in dependency {dep_idset} for pack {pack}: "
-                    f"{list(dictdiffer.diff(dep_idset, first_level_dependencies_graph[dep_idset]))}"
-                )
+        message.append(f"Differences in dependencies for pack {pack}")
+        mandatory_deps_idset = {dep for dep, data in first_level_dependencies_idset.items() if data.get("mandatory")}
+        mandatory_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if data.get("mandatory")}
+        if missing_in_graph := (mandatory_deps_idset - mandatory_deps_graph):
+            message.append(
+                f"Missing mandatory dependencies for pack {pack}: "
+                f"{missing_in_graph}"
+            )
+        if extra_in_graph := (mandatory_deps_graph - mandatory_deps_idset):
+            message.append(
+                f"Extra mandatory dependencies for pack {pack}: "
+                f"{extra_in_graph}"
+            )
 
-        for dep_graph, dep_graph in first_level_dependencies_graph.items():
-            if dep_graph not in first_level_dependencies_idset:
-                message.append(f"Extra dependency {dep_graph} in graph for pack {pack}")
-
-
-def compare_all_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, message: list[str]):
-    all_level_dependencies_idset = set(deps_idset.get("allLevelDependencies"))
-    all_level_dependencies_graph = set(deps_graph.get("allLevelDependencies"))
-    if all_level_dependencies_idset != all_level_dependencies_graph:
-        if missing_deps := (all_level_dependencies_idset - all_level_dependencies_graph):
-            message.append(f"Missing differences in allLevelDependencies for pack {pack}: " f"{missing_deps}")
-        if extra_deps := (all_level_dependencies_graph - all_level_dependencies_idset):
-            message.append(f"Extra differences in allLevelDependencies for pack {pack}: " f"{extra_deps}")
+        optional_deps_idset = {dep for dep, data in first_level_dependencies_idset.items() if not data.get("mandatory")}
+        optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
+        if missing_in_graph := (optional_deps_idset - optional_deps_graph):
+            message.append(
+                f"Missing optional dependencies for pack {pack}: "
+                f"{missing_in_graph}"
+            )
+        if extra_in_graph := (optional_deps_graph - optional_deps_idset):
+            message.append(
+                f"Extra optional dependencies for pack {pack}: "
+                f"{extra_in_graph}"
+            )
 
 
 def main():
@@ -306,20 +305,12 @@ def main():
             output_path,
         )
     print("\n".join(message))
-    if slack_token and (diff_output := output_path / f"diff-{marketplace}.zip").exists():
+    if slack_token:
         slack_client = WebClient(token=slack_token)
-        try:
-            slack_client.files_upload(
-                file=str(diff_output),
-                channels="dmst-graph-tests",
-                initial_comment="\n".join(message),
-            )
-        except Exception as e:
-            print(f"could not upload file to slack: {e}")
-            slack_client.chat_postMessage(
-                channel="dmst-graph-tests",
-                text="Could not upload diff file to slack\n" f"Job URL: {os.getenv('CI_JOB_URL')}",
-            )
+        slack_client.chat_postMessage(
+            channel="dmst-graph-tests",
+            text="Check out\n" f"Job URL: {os.getenv('CI_JOB_URL')}",
+        )
 
 
 if __name__ == "__main__":
