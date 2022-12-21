@@ -15,7 +15,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -277,6 +277,37 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
+
+
+@freeze_time('2022-05-01 12:52:29')
+def test_fetch_incidents_with_changed_fetch_limit(mocker):
+    """Unit test
+    Given
+    - fetch incidents command
+    - command args
+    - command raw response
+    When
+    - mock the parse_date_range.
+    - mock the Client's send_request.
+    Then
+    - run the fetch incidents command using the Client
+    Validate The number of fetch_limit in the last_run
+    """
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=20,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
+    mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
+    mocker.patch.object(demisto, 'getLastRun', return_value={'limit': 10})
+    set_last_run = mocker.patch.object(demisto, 'setLastRun')
+    fetch_incidents(client)
+
+    assert set_last_run.call_args[0][0].get('limit') == 20
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1117,7 +1148,7 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Other'}
 
 
 def test_get_remote_data_closing_incident(mocker):
@@ -1640,3 +1671,17 @@ def test_get_closure_case(params, expected):
         - case 6: Should return 'closed'
     """
     assert get_closure_case(params) == expected
+
+
+@pytest.mark.parametrize('ticket_state, expected_res', [('1', 'Other'),
+                                                        ('7', 'Resolved')])
+def test_converts_state_close_reason(ticket_state, expected_res):
+    """
+    Givne:
+        - ticket_state: The state for the closed service now ticket
+    When:
+        - closing a ticket on service now
+    Then:
+        - return the matching XSOAR incident state.
+    """
+    assert converts_state_close_reason(ticket_state) == expected_res

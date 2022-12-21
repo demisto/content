@@ -142,6 +142,9 @@ configuration:
   - url
   - user-account
   - windows-registry-key
+  - identity
+  - location
+  - vulnerability
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
@@ -254,7 +257,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.35879
+  dockerimage: demisto/taxii2:1.0.0.40847
   feed: true
   isfetch: false
   longRunning: false

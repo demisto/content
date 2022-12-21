@@ -1614,7 +1614,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.9.40422
   runonce: false
   subtype: python3
 fromversion: 5.0.0

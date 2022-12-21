@@ -146,6 +146,15 @@ class MicrosoftClient(BaseClient):
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
 
+    def is_command_executed_from_integration(self):
+        ctx = demisto.callingContext.get('context', {})
+        executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+
+        if executed_commands:
+            return executed_commands[0].get('moduleBrand', "") != 'Scripts'
+
+        return True
+
     def http_request(
             self, *args, resp_type='json', headers=None,
             return_empty_response=False, scope: Optional[str] = None,
@@ -178,9 +187,15 @@ class MicrosoftClient(BaseClient):
         if self.timeout:
             kwargs['timeout'] = self.timeout
 
+        should_http_retry_on_rate_limit = self.retry_on_rate_limit and not overwrite_rate_limit_retry
+        if should_http_retry_on_rate_limit and not kwargs.get('error_handler'):
+            kwargs['error_handler'] = self.handle_error_with_metrics
+
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
+        if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
+            self.create_api_metrics(response.status_code)
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.
         if response.status_code == 206:
@@ -197,8 +212,7 @@ class MicrosoftClient(BaseClient):
                 error_message = 'Not Found - 404 Response'
             raise NotFoundError(error_message)
 
-        if self.retry_on_rate_limit and not overwrite_rate_limit_retry and response.status_code == 429 and \
-                is_demisto_version_ge('6.2.0'):
+        if should_http_retry_on_rate_limit and response.status_code == 429 and is_demisto_version_ge('6.2.0'):
             command_args = demisto.args()
             ran_once_flag = command_args.get('ran_once_flag')
             demisto.info(f'429 MS rate limit for command {demisto.command()}, where ran_once_flag is {ran_once_flag}')
@@ -523,6 +537,24 @@ class MicrosoftClient(BaseClient):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
                                                                  args=args_for_next_run))
+
+    def handle_error_with_metrics(self, res):
+        self.create_api_metrics(res.status_code)
+        self.client_error_handler(res)
+
+    def create_api_metrics(self, status_code):
+        execution_metrics = ExecutionMetrics()
+        ok_codes = (200, 201, 202, 204, 206)
+
+        if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+            return
+        if status_code == 429:
+            execution_metrics.quota_error += 1
+        elif status_code in ok_codes:
+            execution_metrics.success += 1
+        else:
+            execution_metrics.general_error += 1
+        return_results(execution_metrics.metrics)
 
     @staticmethod
     def error_parser(error: requests.Response) -> str:

@@ -26,6 +26,13 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 
 4.  Click **Test** to validate the URLs, token, and connection.
 
+### Required API client scope
+In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+- Real Time Response - Read and Write
+- Alerts - Read and Write
+- Hosts - Read
+- IOC Manager - Read and Write
+
 ### Incident Mirroring
  
 You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections (available from Cortex XSOAR version 6.0.0).
@@ -89,7 +96,7 @@ Searches for devices that match the query.
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
 | CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
 | CrowdStrike.Device.PolicyType | String | The policy type of the device. | 
-| CrowdStrike.Device.Status | String | The device status. | 
+| CrowdStrike.Device.Status | String | The device status which might be Online, Offline or Unknown. | 
 | Endpoint.Hostname | String | The endpoint's hostname. | 
 | Endpoint.OS | String | The endpoint's operation system. | 
 | Endpoint.OSVersion | String | The endpoint's operation system version. | 
@@ -430,7 +437,7 @@ specified in your containment policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. | Required | 
+| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs. | Required | 
 
  
 

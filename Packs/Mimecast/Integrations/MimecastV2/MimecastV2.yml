@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Network Security
 commonfields:
   id: MimecastV2
   version: -1
@@ -2546,7 +2546,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.8.37233
 tests:
 - Mimecast test
 fromversion: 5.0.0

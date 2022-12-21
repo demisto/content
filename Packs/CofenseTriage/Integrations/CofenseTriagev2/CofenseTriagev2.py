@@ -10,9 +10,10 @@ import functools
 import itertools
 import json
 import math
+import urllib3
 
 from urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
+urllib3.disable_warnings(category=InsecureRequestWarning)
 
 TERSE_FIELDS = [
     'id',

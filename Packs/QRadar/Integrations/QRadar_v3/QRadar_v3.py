@@ -83,6 +83,7 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 LAST_MIRROR_KEY = 'last_mirror_update'
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
+NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
 ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
@@ -368,7 +369,7 @@ class Client(BaseClient):
 
     def http_request(self, method: str, url_suffix: str, params: Optional[Dict] = None,
                      json_data: Optional[Dict] = None, additional_headers: Optional[Dict] = None,
-                     timeout: Optional[int] = None):
+                     timeout: Optional[int] = None, resp_type: str = 'json'):
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
         return self._http_request(
             method=method,
@@ -377,7 +378,8 @@ class Client(BaseClient):
             json_data=json_data,
             headers=headers,
             error_handler=self.qradar_error_handler,
-            timeout=timeout
+            timeout=timeout,
+            resp_type=resp_type
         )
 
     @staticmethod
@@ -670,6 +672,41 @@ class Client(BaseClient):
             url_suffix=f'/siem/{address_suffix}',
             params=assign_params(filter=filter_, fields=fields),
             additional_headers={'Range': range_} if range_ else None
+        )
+
+    def create_and_update_remote_network_cidr(self, body: Dict[str, Any], fields: str, update: bool = False):
+        headers = {'fields': fields}
+
+        return self.http_request(
+            method='POST',
+            url_suffix='/staged_config/remote_networks' + (f'/{body.get("id")}' if update else ''),
+            json_data=body,
+            additional_headers=headers
+        )
+
+    def get_remote_network_cidr(self, range_: Optional[str] = None, filter_: Optional[str] = None, fields: Optional[str] = None):
+        headers = {'Range': range_}
+        params = assign_params(filter=filter_, fields=fields)
+
+        return self.http_request(
+            method='GET',
+            url_suffix='/staged_config/remote_networks',
+            params=params,
+            additional_headers=headers
+        )
+
+    def delete_remote_network_cidr(self, id_):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/staged_config/remote_networks/{id_}',
+            resp_type='response'
+        )
+
+    def remote_network_deploy_execution(self, body):
+        return self.http_request(
+            method='POST',
+            url_suffix='/staged_config/deploy_status',
+            json_data=body
         )
 
     def test_connection(self):
@@ -1447,6 +1484,73 @@ def validate_long_running_params(params: Dict) -> None:
                                    ' Please set a value for it.')
 
 
+def get_cidrs_indicators(query):
+    """Extracts cidrs from a query"""
+    if not query:
+        return []
+
+    res = demisto.searchIndicators(query=query)
+
+    indicators = []
+    for indicator in res.get('iocs', []):
+        if indicator.get('indicator_type').lower() == 'cidr':
+            indicators.append(indicator.get('value'))
+
+    return indicators
+
+
+def verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields):
+    # verify that only one of the arguments is given
+    if cidrs_list and cidrs_from_query:
+        return 'Cannot specify both cidrs and query arguments.'
+
+    # verify that at least one of the arguments is given
+    if not cidrs_list and not cidrs_from_query:
+        return 'Must specify either cidrs or query arguments.'
+
+    # verify that the given cidrs are valid
+    for cidr in cidrs_list:
+        if not re.match(ipv4cidrRegex, cidr) and not re.match(ipv6cidrRegex, cidr):
+            return f'{cidr} is not a valid CIDR.'
+
+    # verify that the given name and group are valid
+    if not NAME_AND_GROUP_REGEX.match(name) or not NAME_AND_GROUP_REGEX.match(group):
+        return 'Name and group arguments only allow letters, numbers, \'_\' and \'-\'.'
+
+    fields_list = argToList(fields)
+    if fields_list:
+        possible_fields = ['id', 'name', 'group', 'cidrs', 'description']
+        for field in fields_list:
+            if field not in possible_fields:
+                return f'{field} is not a valid field. Possible fields are: {possible_fields}.'
+
+
+def is_positive(*values: int | None) -> bool:
+    # checks if all values are positive or None but not a negative numbers
+    for value in values:
+        if value is not None and value < 1:
+            return False
+    return True
+
+
+def verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name):
+    # verify that the given limit and page and page_size are valid
+    if not is_positive(limit, page, page_size):
+        return 'Limit, page and page_size arguments must be positive numbers.'
+
+    # verify that only one of the arguments is given
+    if limit and (page or page_size):
+        return 'Please provide either limit argument or page and page_size arguments.'
+
+    # verify that if page are given, page_size is also given and vice versa
+    if (page and not page_size) or (page_size and not page):
+        return 'Please provide both page and page_size arguments.'
+
+    # verify that only one of the arguments is given
+    if filter_ and (group or id_ or name):
+        return 'You can not use filter argument with group, id or name arguments.'
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -1772,7 +1876,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                 enrich_offense_with_events,
                 client=client,
                 offense=offense,
-                fetch_mode=fetch_mode,
+                fetch_mode=fetch_mode,  # type: ignore
                 events_columns=events_columns,
                 events_limit=events_limit,
             ))
@@ -3596,6 +3700,221 @@ def qradar_search_retrieve_events_command(
                           )
 
 
+def qradar_remote_network_cidr_create_command(client: Client, args) -> CommandResults:
+    """Create remote network cidrs
+    Args:
+        client (Client): The QRadar client to use.
+        args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If the args are not valid.
+
+    Returns:
+        CommandResults.
+    """
+    cidrs_list = argToList(args.get('cidrs'))
+    cidrs_from_query = get_cidrs_indicators(args.get('query'))
+    name = args.get('name')
+    description = args.get('description')
+    group = args.get('group')
+    fields = args.get('fields')
+
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
+    if error_message:
+        raise DemistoException(error_message)
+
+    body = {
+        "name": name,
+        "description": description,
+        "cidrs": cidrs_list or cidrs_from_query,
+        "group": group
+    }
+
+    response = client.create_and_update_remote_network_cidr(body, fields)
+    success_message = 'The new staged remote network was successfully created.'
+
+    return CommandResults(
+        raw_response=response,
+        readable_output=tableToMarkdown(success_message, response)
+    )
+
+
+def qradar_remote_network_cidr_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If given both filter and group, id or name arguments.
+
+    Returns:
+        CommandResults.
+
+    """
+    limit = arg_to_number(args.get('limit'))
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    group = args.get('group')
+    id_ = args.get('id')
+    name = args.get('name')
+    filter_ = args.get('filter', '')
+    fields = args.get('fields')
+
+    error_message = verify_args_for_remote_network_cidr_list(limit, page, page_size, filter_, group, id_, name)
+    if error_message:
+        raise DemistoException(error_message)
+
+    if page and page_size:
+        first_item = (int(page) - 1) * int(page_size)
+        last_item = int(page) * int(page_size) - 1
+        range_ = f'items={first_item}-{last_item}'
+    else:
+        range_ = f'items=0-{str(limit - 1) if limit else str(DEFAULT_LIMIT_VALUE - 1)}'
+
+    if not filter_:
+        if group:
+            filter_ += f'group="{group}"'
+        if id_:
+            filter_ += f' AND id={id_}' if group else f'id={id_}'
+        if name:
+            filter_ += f' AND name="{name}"' if (group or id_) else f'name="{name}"'
+
+    response = client.get_remote_network_cidr(range_, filter_, fields)
+    outputs = [{'id': res.get('id'),
+                'name': res.get('name'),
+                'description': res.get('description')}
+               for res in response]
+    headers = ['id', 'name', 'group', 'cidrs', 'description']
+    success_message = 'List of the staged remote networks'
+    if response:
+        readable_output = tableToMarkdown(success_message, response, headers=headers)
+        readable_output += f"Above results are with page number: {page} and with size: {page_size}." if page and page_size \
+            else f"Above results are with limit: {limit if limit else DEFAULT_LIMIT_VALUE}."
+    else:
+        readable_output = 'No results found.'
+
+    return CommandResults(
+        outputs_prefix='QRadar.RemoteNetworkCIDR',
+        outputs_key_field='id',
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output
+    )
+
+
+def qradar_remote_network_cidr_delete_command(client: Client, args) -> CommandResults:
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Returns:
+    Two CommandResults objects, one for the success and one for the failure.
+    """
+    ids = argToList(args.get('id'))
+    success_delete_ids = []
+    unsuccessful_delete_ids = []
+
+    for id_ in ids:
+        try:
+            client.delete_remote_network_cidr(id_)
+            success_delete_ids.append(id_)
+        except DemistoException as e:
+            unsuccessful_delete_ids.append(assign_params(ID=id_, Error=e.message))
+
+    success_human_readable = tableToMarkdown('Successfully deleted the following remote network(s)',
+                                             success_delete_ids, headers=['ID'])
+    unsuccessful_human_readable = tableToMarkdown('Failed to delete the following remote network(s)',
+                                                  unsuccessful_delete_ids, headers=['ID', 'Error'])
+
+    return CommandResults(
+        readable_output=((success_human_readable if success_delete_ids else '')
+                         + (unsuccessful_human_readable if unsuccessful_delete_ids else ''))
+    )
+
+
+def qradar_remote_network_cidr_update_command(client: Client, args):
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Raises:
+        DemistoException: If the args are not valid.
+
+    Returns:
+    CommandResults.
+    """
+    id_ = arg_to_number(args.get('id'))
+    name = args.get('name')
+    cidrs_list = argToList(args.get('cidrs'))
+    cidrs_from_query = get_cidrs_indicators(args.get('query'))
+    description = args.get('description')
+    group = args.get('group')
+    fields = args.get('fields')
+
+    error_message = verify_args_for_remote_network_cidr(cidrs_list, cidrs_from_query, name, group, fields)
+    if error_message:
+        raise DemistoException(error_message)
+
+    body = {
+        "name": name,
+        "description": description,
+        "cidrs": cidrs_list or cidrs_from_query,
+        "id": id_,
+        "group": group
+    }
+
+    response = client.create_and_update_remote_network_cidr(body, fields, update=True)
+    success_message = 'The staged remote network was successfully updated'
+    outputs = {'id': response.get('id'),
+               'name': response.get('name'),
+               'group': response.get('group'),
+               'description': response.get('description')}
+
+    return CommandResults(
+        outputs_prefix='QRadar.RemoteNetworkCIDR',
+        outputs_key_field='id',
+        outputs=outputs,
+        readable_output=tableToMarkdown(success_message, response),
+        raw_response=response
+    )
+
+
+def qradar_remote_network_deploy_execution_command(client: Client, args):
+    """
+    Args:
+    client (Client): The QRadar client to use.
+    args (dict): Demisto arguments.
+
+    Returns:
+    CommandResults.
+    """
+    host_ip = args.get('host_ip')
+    status = args.get('status', 'INITIATING')
+    deployment_type = args.get('deployment_type')
+
+    if not re.match(ipv4Regex, host_ip) and not re.match(ipv6Regex, host_ip):
+        raise DemistoException('The host_ip argument is not a valid ip address.')
+    if not status == 'INITIATING':
+        raise DemistoException('The status argument must be INITIATING.')
+    if deployment_type not in ['INCREMENTAL', 'FULL']:
+        raise DemistoException('The deployment_type argument must be INCREMENTAL or FULL.')
+
+    body = {"hosts": [{"ip": host_ip, "status": status}], "type": deployment_type}
+
+    response = client.remote_network_deploy_execution(body)
+    success_message = 'The remote network deploy execution was successfully created.'
+
+    return CommandResults(
+        outputs_prefix='QRadar.deploy',
+        outputs={'status': response['status']},
+        readable_output=success_message,
+        raw_response=response
+    )
+
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -3701,7 +4020,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_version = params.get('api_version')
-    if float(api_version) < MINIMUM_API_VERSION:
+    if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
 
@@ -3819,6 +4138,22 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'qradar-search-retrieve-events':
             return_results(qradar_search_retrieve_events_command(client, params, args))
+
+        elif command == 'qradar-remote-network-cidr-create':
+            return_results(qradar_remote_network_cidr_create_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-list':
+            return_results(qradar_remote_network_cidr_list_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-delete':
+            return_results(qradar_remote_network_cidr_delete_command(client, args))
+
+        elif command == 'qradar-remote-network-cidr-update':
+            return_results(qradar_remote_network_cidr_update_command(client, args))
+
+        elif command == 'qradar-remote-network-deploy-execution':
+            return_results(qradar_remote_network_deploy_execution_command(client, args))
+
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
