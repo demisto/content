@@ -2331,7 +2331,7 @@ script:
     - contextPath: CimTrak.Object.agentObjectId
       description: Agent Object Id
       type: number
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   longRunning: true
   runonce: false
