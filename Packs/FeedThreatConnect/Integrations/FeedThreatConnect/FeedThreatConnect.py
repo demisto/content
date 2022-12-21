@@ -416,7 +416,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
 
 
 def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
-    List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa
+    List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -501,7 +501,7 @@ def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     return url
 
 
-def should_send_request(params: dict, endpoint: str):  # pragma: no cover
+def should_send_request(params: dict, endpoint: str):
     """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == 'indicators':
         if not argToList(params.get('indicator_type')):
