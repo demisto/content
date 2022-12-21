@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 - display: Fetches Credentials
-  name:  isFetchCredentials
+  name: isFetchCredentials
   required: false
   type: 8
 - display: Secret IDs (Provide multiple Id's by using ',' example- 1,2,3)
@@ -33,7 +33,7 @@ display: DelineaSS
 name: DelineaSS
 script:
   commands:
-  - arguments:
+  - arguments: []
     deprecated: false
     description: Extracting the credentials from secret
     execution: false
