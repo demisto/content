@@ -81,7 +81,7 @@ configuration:
   name: use_display_value
   required: false
   type: 8
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. To find the date format of your instance see https://docs.servicenow.com/bundle/tokyo-platform-administration/page/administer/time/task/t_PersonalizeTheSystemDateFormat.html'
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
