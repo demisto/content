@@ -10968,7 +10968,7 @@ def get_ha_state(
     topology: Topology,
     device_filter_string: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowHAState]:
+) -> List[ShowHAState] | ShowHAState:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
