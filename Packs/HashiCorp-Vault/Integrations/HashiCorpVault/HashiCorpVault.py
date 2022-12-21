@@ -746,7 +746,6 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
-        demisto.info('***********: {}'.format(role))
         role_url = engine_path + '/roles/' + role
         demisto.info('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
@@ -771,14 +770,13 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         access_key = aws_credentials['data'].get('access_key')
         secret_key = aws_credentials['data'].get('secret_key')
         if aws_credentials['data'].get('security_token'):
-            access_key = access_key + '@@@' + aws_credentials["data"].get("security_token")
+            secret_key = secret_key + '@@@' + aws_credentials["data"].get("security_token")
         secrets.append({
             'user': access_key,
             'password': secret_key,
             'name': role
         })
 
-    demisto.info(str('##########################secrets: {}'.format(secrets)))
     return secrets
 
 
@@ -807,20 +805,7 @@ try:
     if demisto.command() == 'test-module':
         demisto.results('ok')
     elif demisto.command() == 'fetch-credentials':
-        context = demisto.getIntegrationContext()
-        get_credentials = False
-        now = datetime.now()
-        if 'credentials_last_fetch' in integ_context:
-            last = datetime.fromtimestamp(integ_context['credentials_last_fetch'])
-            diff = (now - last).seconds
-            if diff >= int(demisto.params().get('credentialsFetchInterval')):
-                get_credentials = True
-        else:
-            get_credentials = True
-        if get_credentials:
-            fetch_credentials()
-            integ_context['credentials_last_fetch'] = now.timestamp()
-            demisto.setIntegrationContext(integ_context)
+        fetch_credentials()
     elif demisto.command() == 'hashicorp-list-secrets-engines':
         list_secrets_engines_command()
     elif demisto.command() == 'hashicorp-list-secrets':
