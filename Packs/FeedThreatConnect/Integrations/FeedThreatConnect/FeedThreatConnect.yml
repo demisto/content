@@ -25,8 +25,8 @@ configuration:
   type: 4
   hidden: true
 - defaultvalue: '2000'
-  additionalinfo: The number of indicatort to get per fetch
-  display: Indicatort to get per fetch
+  additionalinfo: The number of indicators to get per fetch.
+  display: Indicators to get per fetch
   name: fetch_limit
   required: false
   type: 0
