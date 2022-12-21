@@ -1807,7 +1807,15 @@ def get_num_events(events: list[dict]) -> int:
     return sum(int(event.get('eventcount', 1)) for event in events)
 
 
-def get_concurrent_searches(context_data: dict) -> int:
+def get_current_concurrent_searches(context_data: dict) -> int:
+    """This will return the number of concurrent searches that are currently running.
+
+    Args:
+        context_data (dict): context data
+
+    Returns:
+        int: number of concurrent searches
+    """
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     return len([offense_id for offense_id, status in waiting_for_update.items()
                if status not in {QueryStatus.WAIT.value, QueryStatus.ERROR.value}])
@@ -1920,8 +1928,9 @@ def prepare_context_for_events(offenses_with_metadata):
     changed_offense_ids = []
     for offense, is_success in offenses_with_metadata:
         if not is_success:
+            offense_id = str(offense.get('id'))
             ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
-            changed_offense_ids.append(str(offense['id']))
+            changed_offense_ids.append(offense_id)
     safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
 
 
@@ -1967,7 +1976,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
-    concurrent_mirroring_searches = get_concurrent_searches(context_data)
+    concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
     samples = context_data.get('samples', [])
     sample_length = 0
     if samples:
@@ -3509,7 +3518,7 @@ def add_modified_remote_offenses(client: Client,
         print_context_data_stats(new_context_data, "Get Modified Remote Data - Before update")
         mirrored_offenses_queries = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         finished_offenses_queue = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
-        current_concurrent_searches = get_concurrent_searches(context_data)
+        current_concurrent_searches = get_current_concurrent_searches(context_data)
         offense_ids_to_search = []
 
         for offense_id, search_id in mirrored_offenses_queries.copy().items():
