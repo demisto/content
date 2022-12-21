@@ -410,6 +410,23 @@ def test_zoom_meeting_create__too_meny_arguments(mocker):
     assert e.value.message == "Too money arguments. start_time and timezone are for scheduled meetings only."
 
 
+# def test_zoom_meeting_create__missing_arguments(mocker):
+#     """
+#        Given -
+#           client
+#        When -
+#            asking for a meeting with  type ant start_time
+#        Then -
+#            Validate that the right error will return
+#     """
+#     mocker.patch.object(Client, "generate_oauth_token")
+#     client = Client(base_url='https://test.com', account_id="mockaccount",
+#                     client_id="mockclient", client_secret="mocksecret")
+
+#     with pytest.raises(DemistoException) as e:
+#         client.zoom_meeting_create(type="instant", topic="nonsense", user_id="mock@moker.com",
+#                                    start_time="2022-10-04T15:59:00Z")
+#     assert e.value.message == "Too money arguments. start_time and timezone are for scheduled meetings only."
 def test_meeting_get__show_previous_occurrences_is_false(mocker):
     """
        Given -

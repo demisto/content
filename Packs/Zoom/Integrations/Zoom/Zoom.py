@@ -15,7 +15,11 @@ TOKEN_LIFE_TIME = timedelta(minutes=58)
 # maximun records that the api can return in one request
 MAX_RECORDS_PER_PAGE = 300
 
-
+USER_TYPE_MAPPING = {
+    "Basic": "Basic",
+    2: "Pro",
+    3: "Corp"
+}
 '''CLIENT CLASS'''
 
 
@@ -45,7 +49,11 @@ class Client(BaseClient):
             self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
-            self.access_token = self.get_oauth_token()
+            try:
+                self.access_token = self.get_oauth_token()
+            except Exception:
+                demisto.debug("Cannot get access token")
+                self.access_token = None
 
     def generate_oauth_token(self):
         """
@@ -119,6 +127,7 @@ class Client(BaseClient):
 
     def zoom_user_create(self, user_type: str, email: str, first_name: str, last_name: str):
         ut = user_type
+        USER_TYPE_MAPPING.get(ut)
         user_type = 1  # Basic
         if ut == 'Pro':
             user_type = 2
@@ -466,29 +475,12 @@ def get_jwt_token(apiKey: str, apiSecret: str) -> str:
 
 
 def test_module(
-    verify,
-    proxy,
-    api_key,
-    api_secret,
-    account_id,
-    client_id,
-    client_secret,
-    base_url,
+    client: Client
 ):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify,
-            proxy=proxy,
-            api_key=api_key,
-            api_secret=api_secret,
-            account_id=account_id,
-            client_id=client_id,
-            client_secret=client_secret,
-        )
         # running an arbitrary command to test the connection
         client.zoom_user_list(1, None, 'active')
     except DemistoException as e:
@@ -565,7 +557,10 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
     return CommandResults(
         outputs_prefix='Zoom.User',
         readable_output=md,
-        outputs=raw_data,
+        # keeping the syntax of the output of the previous version
+        outputs=raw_data | {'Number': raw_data.get('page_number'), 'Count': raw_data.get('page_count'),
+                            'Size': raw_data.get('page_size'),
+                            'Total': raw_data.get('total_records')},
         raw_response=raw_data
     )
 
@@ -610,6 +605,7 @@ def zoom_meeting_create_command(
         repeat_interval: int | str | None = None,
         recurrence_type: int | str | None = None,
         weekly_days: int | str = 1) -> CommandResults:
+    # preprocess
     raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time,
                                           start_time, timezone, type,
                                           auto_recording,
@@ -648,7 +644,7 @@ def zoom_meeting_create_command(
                                                                      'timezone', 'created_at', 'start_url', 'join_url'
                                                              ])
     return CommandResults(
-        outputs_prefix='Zoom.meetings',
+        outputs_prefix='Zoom.meeting',
         readable_output=md,
         outputs=raw_data,
         raw_response=raw_data
@@ -658,7 +654,7 @@ def zoom_meeting_create_command(
 def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResults:
     raw_data = client.zoom_recording_get(meeting_id)
     return CommandResults(
-        outputs_prefix='Zoom',
+        # outputs_prefix='Zoom',
         readable_output=raw_data,
         raw_response=raw_data
     )
@@ -672,7 +668,7 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
                                                          'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
                                                          ])
     return CommandResults(
-        outputs_prefix='Zoom.meetings',
+        outputs_prefix='Zoom.Meetings',
         readable_output=md,
         outputs_key_field=str(raw_data["id"]),
         outputs=raw_data,
@@ -704,10 +700,13 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
         md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'total_records'])
 
     return CommandResults(
-        outputs_prefix='Zoom.meetings',
+        outputs_prefix='Zoom.Meetings',
         readable_output=md,
-        # TODO do i need this line?
-        outputs=raw_data,
+        # keeping the syntax of the output of the previous version
+        outputs=raw_data | {'Number': raw_data.get('page_number'),
+                            'Count': raw_data.get('page_count'),
+                            'Size': raw_data.get('page_size'),
+                            'Total': raw_data.get('total_records')},
         raw_response=raw_data
     )
 
@@ -742,17 +741,6 @@ def main():  # pragma: no cover
 
     try:
         check_authentication_type_parameters(api_key, api_secret, account_id, client_id, client_secret)
-        if command == 'test-module':
-            return_results(test_module(
-                verify=verify_certificate,
-                base_url=base_url,
-                proxy=proxy,
-                api_key=api_key,
-                api_secret=api_secret,
-                account_id=account_id,
-                client_id=client_id,
-                client_secret=client_secret,
-            ))
 
         client = Client(
             base_url=base_url,
@@ -764,6 +752,11 @@ def main():  # pragma: no cover
             client_id=client_id,
             client_secret=client_secret,
         )
+
+        if command == 'test-module':
+            return_results(test_module(
+                client=client,
+            ))
 
         demisto.debug(f'Command being called is {command}')
 

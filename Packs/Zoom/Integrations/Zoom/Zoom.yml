@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAYAAACXpx/YAAAAAXN
 description: Use the Zoom integration manage your Zoom users and meetings
 detaileddescription: "[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom-dev)"
 configuration:
-  - defaultvalue: 'https://api.zoom.us/v2/'
+  - defaultvalue: "https://api.zoom.us/v2/"
     display: Server URL (e.g. 'https://api.zoom.us/v2/')
     name: url
     required: true
@@ -76,7 +76,7 @@ script:
           description: Email of the created user
           type: string
         - contextPath: Zoom.User.created_at
-          description: Created date of the user
+          description: Created date of the user. Note that this field does not appear in zoom v2 and above.
           type: date
         - contextPath: Zoom.User.type
           description: The type of the user
@@ -221,6 +221,30 @@ script:
         - contextPath: Zoom.Meeting.start_url
           description: The URL to start the meeting
           type: string
+        - contextPath: Zoom.Meeting.uuid
+          description: Unique meeting ID of the new meeting that is created
+          type: string
+        - contextPath: Zoom.Meeting.status
+          description: The status of the meeting
+          type: string
+        - contextPath: Zoom.Meeting.start_time
+          description: The time that the meeting will start at
+          type: Date
+        - contextPath: Zoom.Meeting.host email
+          description: The email of the host of this meeting
+          type: string
+        - contextPath: Zoom.Meeting.topic
+          description: The topic of the meeting
+          type: string
+        - contextPath: Zoom.Meeting.duration
+          description: The duratian of the meeting
+          type: number
+        - contextPath: Zoom.Meeting.created_at
+          description: The time that this meeting was created
+          type: Date
+        - contextPath: Zoom.Meeting.type
+          description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+          type: number
       description: Create a new zoom meeting (scheduled or instant)
     - name: zoom-recording-get
       arguments:
@@ -374,7 +398,39 @@ script:
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
           defaultValue: False
       outputs:
-        - contextPath: Zoom.Meetings
+        - contextPath: Zoom.Meetings.join_url
+          description: Join url for the meeting
+          type: string
+        - contextPath: Zoom.Meetings.id
+          description: Meeting id of the new meeting that is created
+          type: string
+        - contextPath: Zoom.Meetings.start_url
+          description: The URL to start the meeting
+          type: string
+        - contextPath: Zoom.Meetings.uuid
+          description: Unique meeting ID of the new meeting that is created
+          type: string
+        - contextPath: Zoom.Meetings.status
+          description: The status of the meeting
+          type: string
+        - contextPath: Zoom.Meetings.start_time
+          description: The time that the meeting will start at
+          type: Date
+        - contextPath: Zoom.Meetings.host email
+          description: The email of the host of this meeting
+          type: string
+        - contextPath: Zoom.Meetings.topic
+          description: The topic of the meeting
+          type: string
+        - contextPath: Zoom.Meetings.duration
+          description: The duratian of the meeting
+          type: number
+        - contextPath: Zoom.Meetings.created_at
+          description: The time that this meeting was created
+          type: Date
+        - contextPath: Zoom.Meetings.type
+          description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
+          type: number
       description: Get the information of an existing zoom meeting
     - name: zoom-meeting-list
       arguments:
@@ -404,6 +460,44 @@ script:
             - upcoming_meetings
             - previous_meetings
           defaultValue: '"scheduled"'
+      outputs:
+        - contextPath: Zoom.Meetings.page_size
+          description: The size of the page returned from the API
+          type: number
+        - contextPath: Zoom.Meetings.total_records
+          description: The total records in the API for this request.
+          type: number
+        - contextPath: Zoom.Meetings.join_url
+          description: Join url for the meeting
+          type: string
+        - contextPath: Zoom.Meetings.id
+          description: Meeting id of the new meeting that is created
+          type: string
+        - contextPath: Zoom.Meetings.start_url
+          description: The URL to start the meeting
+          type: string
+        - contextPath: Zoom.Meetings.uuid
+          description: Unique meeting ID of the new meeting that is created
+          type: string
+        - contextPath: Zoom.Meetings.status
+          description: The status of the meeting
+          type: string
+        - contextPath: Zoom.Meetings.start_time
+          description: The time that the meeting will start at
+          type: Date
+        - contextPath: Zoom.Meetings.host email
+          description: The email of the host of this meeting
+          type: string
+        - contextPath: Zoom.Meetings.topic
+          description: The topic of the meeting
+          type: string
+        - contextPath: Zoom.Meetings.duration
+          description: The duratian of the meeting
+          type: number
+        - contextPath: Zoom.Meetings.created_at
+          description: The time that this meeting was created
+          type: Date
+        - contextPath: Zoom.Meetings.type
       description:
         "This command will show all the user meetings. Note: only scheduled
         and unexpired meetings will appear."
