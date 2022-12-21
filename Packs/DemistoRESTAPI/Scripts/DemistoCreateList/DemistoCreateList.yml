@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Deprecated. Use CreateList
+comment: Deprecated. Use CreateList instead.
 deprecated: true
 enabled: true
 args:
