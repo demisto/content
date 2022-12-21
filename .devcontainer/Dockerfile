@@ -2,7 +2,6 @@ FROM python:3.10-slim-bullseye
 
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
-ENV POETRY_HOME $HOME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
@@ -24,7 +23,8 @@ RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
-RUN curl -sSL https://install.python-poetry.org | python3 - \
+RUN chown -R $USERNAME $HOME \
+    && curl -sSL https://install.python-poetry.org | python3 - \
     && python -m pip install --user pipx \
     && python -m pipx ensurepath \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
