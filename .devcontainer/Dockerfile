@@ -23,7 +23,7 @@ RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
-RUN chown -R $USERNAME $HOME/.cache/ \
+RUN chown -R $USERNAME $HOME \
     && curl -sSL https://install.python-poetry.org | python3 - \
     && python -m pip install --user pipx \
     && python -m pipx ensurepath \
