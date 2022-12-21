@@ -263,8 +263,6 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         simple_observable_value = value
     try:
         # cti code prints to stdout so we need to catch it.
-        old_stdout = sys.stdout
-        sys.stdout = StringIO()
         result = client.stix_cyber_observable.create(
             simple_observable_key=simple_observable_key,
             simple_observable_value=simple_observable_value,
@@ -274,7 +272,6 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
             simple_observable_description=description,
             x_opencti_score=score, observableData=data
         )
-        sys.stdout = old_stdout
     except KeyError as e:
         raise DemistoException(f'Missing argument at data {e}')
 
