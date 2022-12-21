@@ -6,7 +6,6 @@ echo "Fixing permissions"
 
 sudo chown demisto .venv
 sudo chown demisto node_modules
-sudo chown demisto -R $HOME
 sudo chown demisto /workspaces
 
 echo "Setting up git certificate"
@@ -24,6 +23,5 @@ echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
 echo "Setting up content dependencies"
 pipx install poetry
-sudo chown demisto -R $HOME
 poetry install
 npm install
