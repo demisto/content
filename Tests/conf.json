@@ -931,7 +931,7 @@
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
-            "timeout": 500
+            "timeout": 3000
         },
         {
             "integrations": "ServiceNow CMDB",
@@ -1447,6 +1447,10 @@
         },
         {
             "playbookID": "Indicators reputation-.json Test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "playbookID": "URL extraction test",
             "fromversion": "5.5.0"
         },
         {
