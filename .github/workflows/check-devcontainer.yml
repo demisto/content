@@ -2,12 +2,12 @@ name: Check Devcontainer JSON
 on:
   pull_request:
     paths:
-      - .devcontainer
+      - .devcontainer/**
   push:
     branches:
       - master
     paths:
-      - .devcontainer
+      - .devcontainer/**
 jobs:
   Build-Devcontainer:
     runs-on: ubuntu-latest
