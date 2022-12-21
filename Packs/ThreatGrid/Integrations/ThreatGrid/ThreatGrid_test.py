@@ -112,7 +112,7 @@ def test_submit_urls(mocker):
     args = Submit_url_input
 
     res = submit_urls(args, req=mock_req)
-    assert res.outputs == expected_results
+    assert res == expected_results
 
 def test_advanced_seach(mocker, requests_mock):
 
