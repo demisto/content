@@ -407,15 +407,15 @@ class AsyncMock(MagicMock):
 
 
 @pytest.mark.asyncio
-async def test_get_slack_name_user(mocker):
+def test_get_slack_name_user(mocker):
     from SlackV3 import get_slack_name
 
-    async def users_info(user: str):
+    def users_info(user: str):
         if user != 'alexios':
             return js.loads(USERS)[0]
         return None
 
-    async def conversations_info():
+    def conversations_info():
         return {'channel': js.loads(CONVERSATIONS)[0]}
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
@@ -429,13 +429,13 @@ async def test_get_slack_name_user(mocker):
 
     # User in integration context
     user_id = 'U012A3CDE'
-    name = await get_slack_name(user_id, socket_client)
+    name = get_slack_name(user_id, socket_client)
     assert name == 'spengler'
     assert socket_client.call_count == 0
 
     # User not in integration context
     unknown_user = 'USASSON'
-    name = await get_slack_name(unknown_user, socket_client)
+    name = get_slack_name(unknown_user, socket_client)
     assert name == 'spengler'
     assert socket_client.users_info.call_count == 1
 
@@ -446,47 +446,44 @@ async def test_get_slack_name_user(mocker):
     assert socket_client.users_info.call_count == 1
 
 
-@pytest.mark.asyncio
-async def test_get_slack_name_channel(mocker):
+def test_get_slack_name_channel(mocker):
     from SlackV3 import get_slack_name
 
     # Set
 
-    async def users_info(user: str):
+    def users_info(user: str):
         if user != 'alexios':
             return js.loads(USERS)[0]
         return None
 
-    async def conversations_info(channel=''):
+    def conversations_info(channel=''):
         return js.loads(CONVERSATIONS)[0]
-
-    socket_client = AsyncMock()
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext')
-    mocker.patch.object(socket_client, 'users_info', side_effect=users_info)
-    mocker.patch.object(socket_client, 'conversations_info',
+    mocker.patch.object(slack_sdk.WebClient, 'users_info', side_effect=users_info)
+    mocker.patch.object(slack_sdk.WebClient, 'conversations_info',
                         side_effect=conversations_info)
 
     # Assert
 
     # Channel in integration context
     channel_id = 'C012AB3CD'
-    name = await get_slack_name(channel_id, socket_client)
+    name = get_slack_name(channel_id)
     assert name == 'general'
-    assert socket_client.api_call.call_count == 0
+    assert slack_sdk.WebClient.api_call.call_count == 0
 
     # Channel not in integration context
     unknown_channel = 'CSASSON'
-    name = await get_slack_name(unknown_channel, socket_client)
+    name = get_slack_name(unknown_channel)
     assert name == 'general'
-    assert socket_client.conversations_info.call_count == 1
+    assert slack_sdk.WebClient.conversations_info.call_count == 1
 
     # Channel doesn't exist
     nonexisting_channel = 'lulz'
-    name = await get_slack_name(nonexisting_channel, socket_client)
+    name = get_slack_name(nonexisting_channel)
     assert name == ''
-    assert socket_client.conversations_info.call_count == 1
+    assert slack_sdk.WebClient.conversations_info.call_count == 1
 
 
 @pytest.mark.asyncio

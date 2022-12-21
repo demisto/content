@@ -1,16 +1,21 @@
+import asyncio
 import ssl
 import threading
+import time
 from distutils.util import strtobool
 from typing import Tuple
 
+import aiohttp
 import slack_sdk
 from slack_sdk.errors import SlackApiError
-from slack_sdk.socket_mode import SocketModeClient
+from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.slack_response import SlackResponse
 from slack_sdk.web.client import WebClient
-from queue import Queue
+import multiprocessing
+from slack_sdk.socket_mode.aiohttp import SocketModeClient
+
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -59,6 +64,7 @@ APP_TOKEN: str
 PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
+ASYNC_CLIENT: slack_sdk.web.async_client.AsyncWebClient
 CLIENT: slack_sdk.WebClient
 ALLOW_INCIDENTS: bool
 INCIDENT_TYPE: str
@@ -86,7 +92,7 @@ DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
-MESSAGE_QUEUE: Queue
+MESSAGE_QUEUE: multiprocessing.Queue
 
 ''' HELPER FUNCTIONS '''
 
@@ -964,31 +970,40 @@ class SlackLogger:
         demisto.error(message)
 
 
-def socket_client_loop():
+async def socket_client_loop():
     try:
         exception_await_seconds = 1
-
-        slack_logger = SlackLogger()
-        client = SocketModeClient(
-            app_token=APP_TOKEN,
-            web_client=CLIENT,
-            logger=slack_logger,  # type: ignore
-            auto_reconnect_enabled=True,
-            trace_enabled=EXTENSIVE_LOGGING,
-            concurrency=100
-        )
-        client.socket_mode_request_listeners.append(acknowledge_and_queue)  # type: ignore
-        try:
-            client.connect()
-            demisto.debug("Socket is connected")
-            # After successful connection, we reset the backoff time.
-            exception_await_seconds = 1
-            demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
-            time.sleep(threading.TIMEOUT_MAX)
-        except Exception as e:
-            demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
-            time.sleep(exception_await_seconds)
-            exception_await_seconds *= 2
+        while True:
+            slack_logger = SlackLogger()
+            client = SocketModeClient(
+                app_token=APP_TOKEN,
+                web_client=ASYNC_CLIENT,
+                logger=slack_logger,  # type: ignore
+                auto_reconnect_enabled=True,
+                trace_enabled=EXTENSIVE_LOGGING,
+            )
+            if not VERIFY_CERT:
+                # SocketModeClient does not respect environment variables for ssl verification.
+                # Instead we use a custom session.
+                session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=VERIFY_CERT))
+                client.aiohttp_client_session = session
+            client.socket_mode_request_listeners.append(acknowledge_and_queue)  # type: ignore
+            try:
+                await client.connect()
+                demisto.debug("Socket is connected")
+                # After successful connection, we reset the backoff time.
+                exception_await_seconds = 1
+                demisto.debug(f"Resetting exception wait time to {exception_await_seconds}")
+                await asyncio.sleep(float("inf"))
+            except Exception as e:
+                demisto.debug(f"Exception in long running loop, waiting {exception_await_seconds} - {e}")
+                await asyncio.sleep(exception_await_seconds)
+                exception_await_seconds *= 2
+            finally:
+                try:
+                    await session.close()
+                except Exception as e:
+                    demisto.debug(f"Failed to close client. - {e}")
     except Exception as e:
         demisto.error(f"An error has occurred while trying to create the socket client. {e}")
 
@@ -1009,14 +1024,17 @@ def start_listening():
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
+        # Initialize logging for multiprocessing.
+        multiprocessing.log_to_stderr(logging.DEBUG)
         # create the long-running background task loop
-        background_task = threading.Thread(target=long_running_loop, daemon=True)
+        background_task = multiprocessing.Process(target=long_running_loop)
+        # run the process
         background_task.start()
         demisto.info("Created background task")
 
         # Create the message listeners
         message_consumers = [
-            threading.Thread(target=consume_and_process_message, args=(MESSAGE_QUEUE, i, CLIENT), daemon=True) for i
+            multiprocessing.Process(target=consume_and_process_message, args=(i,)) for i
             in range(3)]
         for message_consumer in message_consumers:
             message_consumer.start()
@@ -1024,18 +1042,20 @@ def start_listening():
 
         # Join long-running background task to loop
 
-        # create the socket_client loop
-        socket_client = threading.Thread(target=socket_client_loop)
-        socket_client.start()
-        demisto.info("Started Client")
+        # # create the socket_client loop
+        # socket_client = threading.Thread(target=socket_client_loop)
+        # socket_client.start()
+        # demisto.info("Started Client")
+        #
+        # # Join socket_client to loop
+        # socket_client.join()  # blocking
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(socket_client_loop())
 
-        # Join socket_client to loop
-        socket_client.join()
-
-        # Join message listeners to process
-        for message_consumer in message_consumers:
-            message_consumer.join()
-            demisto.info("Starting consumer task")
+        # # Join message listeners to process
+        # for message_consumer in message_consumers:
+        #     message_consumer.join()
+        #     demisto.info("Starting consumer task")
 
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
@@ -1382,11 +1402,11 @@ def handle_newly_created_channel(creator, channel):
         return
 
 
-def acknowledge_and_queue(client: SocketModeClient, req: SocketModeRequest):
+async def acknowledge_and_queue(client: SocketModeClient, req: SocketModeRequest):
     demisto.info("Handling request")
     if req.envelope_id:
         response = SocketModeResponse(envelope_id=req.envelope_id)
-        client.send_socket_mode_response(response)
+        await client.send_socket_mode_response(response)
     if req.retry_attempt:
         if req.retry_attempt > 0 and IGNORE_RETRIES:
             demisto.debug("Slack is resending the message. To prevent double posts, the retry is ignored.")
@@ -1395,9 +1415,10 @@ def acknowledge_and_queue(client: SocketModeClient, req: SocketModeRequest):
             demisto.debug(f"Slack is resending the message. Ignore retries is - {IGNORE_RETRIES} and the "
                           f"retry attempt is - {req.retry_attempt}. Continuing to process the event.")
     MESSAGE_QUEUE.put(req)
+    demisto.debug(f"Added to Queue new message. Total in queue is {MESSAGE_QUEUE.qsize()}")
 
 
-def consume_and_process_message(queue: Queue, i: int):
+def consume_and_process_message(i: int):
     """
     This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
     this flow will be triggered. The Payload can be of any type and this function will determine what type it is, then
@@ -1408,9 +1429,15 @@ def consume_and_process_message(queue: Queue, i: int):
     :return: None
     """
     while True:
-        req = queue.get()
-        data_type: str = req.type
-        payload: dict = req.payload
+        req = MESSAGE_QUEUE.get()
+        demisto.debug(f"Pulling message with req: {req}. Total in Queue is now - {MESSAGE_QUEUE.qsize()}")
+        try:
+            data_type: str = req.type
+            payload: dict = req.payload
+        except:
+            demisto.debug("something bad happened.")
+            continue
+        demisto.debug("got here")
         if data_type == 'error':
             error = payload.get('error', {})
             error_code = error.get('code')
@@ -2565,7 +2592,7 @@ def init_globals(command_name: str = ''):
     """
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
     global COMMON_CHANNELS, DISABLE_CACHING, CHANNEL_NOT_FOUND_ERROR_MSG, LONG_RUNNING_ENABLED, DEMISTO_API_KEY, DEMISTO_URL
     global IGNORE_RETRIES, EXTENSIVE_LOGGING, MESSAGE_QUEUE
@@ -2584,6 +2611,7 @@ def init_globals(command_name: str = ''):
     PROXIES = handle_proxy()
     PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel', None)
+    ASYNC_CLIENT = AsyncWebClient(token=BOT_TOKEN, ssl=SSL_CONTEXT, proxy=PROXY_URL)
     CLIENT = slack_sdk.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
@@ -2642,7 +2670,7 @@ def init_globals(command_name: str = ''):
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
 
         # Open a Queue for message processing
-        MESSAGE_QUEUE = Queue()
+        MESSAGE_QUEUE = multiprocessing.Queue()
 
 
 def print_thread_dump():
