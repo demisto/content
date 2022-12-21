@@ -40,6 +40,17 @@ configuration:
   required: false
   type: 0
   additionalinfo: A comma-separated list of owners to fetch indicators from.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. The determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, so only indicators that are
+    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
+    are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
