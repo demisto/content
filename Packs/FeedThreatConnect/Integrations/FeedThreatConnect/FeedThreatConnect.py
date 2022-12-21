@@ -245,7 +245,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
     fields = create_indicator_fields(indicator, indicator_type)
-    relationships = create_indicator_relationships(fields, indicator_type, indicator_value)
+    relationships = create_indicator_relationships(fields, indicator_type, indicator_value)  # type: ignore
     indicator_obj = {
         "value": indicator_value,
         "type": indicator_type,
@@ -416,7 +416,7 @@ def module_test_command(client: Client, args):  # pragma: no cover # noqa
 
 
 def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
-    List[Dict[str, Any]], List[Dict[str, Any]]]:
+    List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -515,18 +515,18 @@ def should_send_request(params: dict, endpoint: str):
 
 def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
     """Creating tql query to add information to the API response"""
-    owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
-    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '
-    status = f'AND ({create_or_query("status", params.get("status"))}) '
+    owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '  # type: ignore
+    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '  # type: ignore
+    status = f'AND ({create_or_query("status", params.get("status"))}) '  # type: ignore
 
     confidence = ''
     active_only = ''
     threat_score = ''
     if endpoint == 'indicators':
         active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
-        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
+        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''  # type: ignore # noqa
         threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
-            if int(params.get("threat_assess_score")) != 0 else ''
+            if int(params.get("threat_assess_score")) != 0 else ''  # type: ignore
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
@@ -557,7 +557,7 @@ def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> 
     return next_run
 
 
-def get_indicators_command(client: Client, args: dict) -> dict:  # pragma: no cover
+def get_indicators_command(client: Client, args: dict) -> dict:  # pragma: no cover # type: ignore
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
@@ -572,7 +572,7 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # pragma: no co
 
     tql = args.get('tql_query', '')
     if not tql:
-        owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
+        owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''  # type: ignore # noqa
         active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' \
             if argToBoolean(args.get("active_indicators")) else ''
         confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
@@ -603,7 +603,7 @@ def get_indicators_command(client: Client, args: dict) -> dict:  # pragma: no co
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=t, removeNull=True)  # type: ignore # noqa
 
-        return readable_output, {}, list(response)
+        return readable_output, {}, list(response)  # type: ignore
 
 
 def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
