@@ -100,6 +100,8 @@ class CollectionResult:
         :param skip_support_level_compatibility:
                 whether to install a pack, even if it is not directly compatible.
                 This is used when collecting a pack containing a content item, when their marketplace values differ.
+        :param only_to_install: whether to collect the pack only to install it without upload to the bucket.
+        :param only_to_upload: whether to collect the pack only to upload it to the bucket without install.
         """
         self.tests: set[str] = set()
         self.packs_to_install: set[str] = set()
@@ -241,9 +243,9 @@ class CollectionResult:
         if not other:
             return self
         result = self.__empty_result()
-        result.tests = self.tests | other.tests  # type: ignore[operator]
-        result.packs_to_install = self.packs_to_install | other.packs_to_install  # type: ignore[operator]
-        result.packs_to_upload = self.packs_to_upload | other.packs_to_upload
+        result.tests |= other.tests  # type: ignore[operator]
+        result.packs_to_install |= other.packs_to_install  # type: ignore[operator]
+        result.packs_to_upload |= other.packs_to_upload
         result.version_range = self.version_range | other.version_range if self.version_range else other.version_range
         return result
 

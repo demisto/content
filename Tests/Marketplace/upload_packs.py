@@ -1028,7 +1028,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    packs_to_upload = option.pack_names if option.pack_names else ""
+    packs_to_upload = option.pack_names or ""
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
     signature_key = option.key_string
