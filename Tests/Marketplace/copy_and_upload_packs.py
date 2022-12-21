@@ -347,9 +347,9 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict, pc_failed_packs_dict, \
-    pc_successful_private_packs_dict, pc_uploaded_images = get_upload_data(packs_results_file_path,
-                                                                           BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+    pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict, \
+        pc_failed_packs_dict, pc_successful_private_packs_dict, \
+        pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
     logging.debug(f"Successful uploaded dependencies zip packs from Prepare Content: "
