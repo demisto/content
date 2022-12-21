@@ -383,7 +383,7 @@ class Client(BaseClient):
 
             return return_data
         except Exception as e:
-           raise DemistoException(str(e))
+            raise DemistoException(str(e))
 
 
 # commands

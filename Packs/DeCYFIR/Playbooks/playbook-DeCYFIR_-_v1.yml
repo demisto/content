@@ -1,24 +1,23 @@
 id: 1979fb0c-0ebd-4ae6-891b-676804c6450c
-version: 48
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: DeCYFIR - v1
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: b7a09b64-2308-4487-8e79-50cde7b38fb2
     type: start
     task:
       id: b7a09b64-2308-4487-8e79-50cde7b38fb2
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 65599e92-12ae-43d5-8515-81af93e2f32c
     type: condition
     task:
@@ -43,16 +42,17 @@ tasks:
       name: Check  DeCYFIR Categories
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Check  DeCYFIR Categories
     nexttasks:
       AS:
-      - "3"
+      - '3'
       DR-DB_WB:
-      - "16"
+      - '16'
       DR-IMP_INF:
-      - "4"
+      - '4'
       DR-SO_PE:
-      - "6"
+      - '6'
     separatecontext: false
     conditions:
     - label: AS
@@ -139,7 +139,6 @@ tasks:
             value:
               simple: incident.category
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -154,8 +153,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 0ce8f781-1692-492c-8ec6-d33b79d3d4af
     type: regular
     task:
@@ -169,12 +168,11 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       text:
         simple: ${incident}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -189,33 +187,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 77aac983-1ee7-4d02-8f6f-f23427d533b9
     type: playbook
     task:
       id: 77aac983-1ee7-4d02-8f6f-f23427d533b9
       version: -1
-      name: Default run for Impersonation & Infringement (DR)
-      description: This playbook executes when no other playbook is associated with
-        an incident. It enriches indicators in an incident using one or more integrations.
+      name: Default
+      description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
       playbookName: Default
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       Enrich:
-        simple: "True"
+        simple: 'True'
       OnCall:
-        simple: "false"
+        simple: 'false'
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -232,33 +228,31 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 14dd6c08-e662-4c90-87de-94179c6348b3
     type: playbook
     task:
       id: 14dd6c08-e662-4c90-87de-94179c6348b3
       version: -1
-      name: Default run for Social & Public Exposure (DR)
-      description: This playbook executes when no other playbook is associated with
-        an incident. It enriches indicators in an incident using one or more integrations.
+      name: Default
+      description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
       playbookName: Default
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       Enrich:
-        simple: "True"
+        simple: 'True'
       OnCall:
-        simple: "false"
+        simple: 'false'
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -275,8 +269,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 1a4a194e-4cc8-405c-849d-10ceb36d225e
     type: playbook
     task:
@@ -287,14 +281,14 @@ tasks:
       playbookName: Entity Enrichment - Generic v3
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
-      - "20"
-      - "21"
-      - "22"
-      - "24"
+      - '14'
+      - '20'
+      - '21'
+      - '22'
+      - '24'
     scriptarguments:
       CVE:
         complex:
@@ -331,7 +325,7 @@ tasks:
           transformers:
           - operator: uniq
       ResolveIP:
-        simple: "False"
+        simple: 'False'
       SHA1:
         complex:
           root: File
@@ -357,10 +351,9 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: true
-    continueonerrortype: ""
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
@@ -377,8 +370,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: e436f133-2c18-4817-8a6b-fe478e1e058c
     type: regular
     task:
@@ -389,15 +382,14 @@ tasks:
       scriptName: DomainReputation
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       domain:
         simple: ${Domain.Name}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -412,8 +404,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 9d087919-f6f2-479b-80ea-5d49b3bdf309
     type: regular
     task:
@@ -424,15 +416,14 @@ tasks:
       scriptName: IPReputation
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       ip:
         simple: ${IP.Address}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -447,8 +438,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 8b801953-de57-4613-88d9-1e5cc3c1bc99
     type: regular
     task:
@@ -459,15 +450,14 @@ tasks:
       scriptName: URLReputation
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       url:
         simple: ${URL.Data}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -482,8 +472,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 82289db8-e07e-4046-835a-1d6662baeb2a
     type: playbook
     task:
@@ -498,12 +488,11 @@ tasks:
       playbookName: CVE Enrichment - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     separatecontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -518,8 +507,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: 42d41f58-1ceb-4da8-88f2-532fbad76636
     type: regular
     task:
@@ -530,15 +519,14 @@ tasks:
       scriptName: GenerateSummaryReports
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       ids:
         simple: ${incident.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -553,8 +541,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 74502606-5abb-4c76-8a3c-530894d3b0f1
     type: regular
     task:
@@ -568,12 +556,11 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       text:
         simple: ${incident}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -588,8 +575,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 165258bc-238e-46eb-86d0-cc48d450971a
     type: title
     task:
@@ -598,9 +585,9 @@ tasks:
       name: DONE
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Task Completed.
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -615,8 +602,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: e850ec86-253b-4179-8918-2560b268a516
     type: condition
     task:
@@ -625,15 +612,16 @@ tasks:
       name: Check severity Critical & High
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checking severity Critical & High
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "19"
+      - '2'
+      yes:
+      - '19'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -648,7 +636,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "4"
+                        simple: '4'
                   - operator: isEqualString
                     left:
                       value:
@@ -656,13 +644,12 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: "3"
+                        simple: '3'
             iscontext: true
           right:
             value:
               simple: incident.severity
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -677,8 +664,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: b33e0291-d6ce-47bb-8543-997695f9fa68
     type: regular
     task:
@@ -697,19 +684,18 @@ tasks:
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       assignBy:
         simple: random
       onCall:
-        simple: "false"
+        simple: 'false'
       roles:
         simple: Analyst
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -724,8 +710,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 5cff5d34-450d-4f44-814f-88f07d31562c
     type: condition
     task:
@@ -734,22 +720,22 @@ tasks:
       name: Does Domain data exist?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Checking the domain value is exists or not
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "9"
+      - '17'
+      yes:
+      - '9'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: Domain
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -764,8 +750,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: cf237b46-a36b-4c1e-8d0f-99bc9aa80713
     type: condition
     task:
@@ -774,22 +760,22 @@ tasks:
       name: Does IP data exist?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Does IP data exist or not
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "11"
+      - '17'
+      yes:
+      - '11'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: IP
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -804,8 +790,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 0ebb92f8-97e0-4dd7-8e65-c428499dd69a
     type: condition
     task:
@@ -814,22 +800,22 @@ tasks:
       name: Does URL data exist?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Does URL data exist or not
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "13"
+      - '17'
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: URL
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -844,8 +830,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 375726a0-fcd2-4d04-8f9b-1d4d61c1adb2
     type: regular
     task:
@@ -856,15 +842,14 @@ tasks:
       scriptName: FileReputation
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       file:
         simple: ${File.Malicious}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -879,8 +864,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 1cc2df46-206b-4e1c-864d-f5e30c96f443
     type: condition
     task:
@@ -889,22 +874,22 @@ tasks:
       name: Does any File Malicious data exist?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: Does any File Malicious data exist or not
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "23"
+      - '17'
+      yes:
+      - '23'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
             value:
               simple: File.Malicious
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -949,3 +934,7 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: DeCYFIR API's provides External Threat Landscape Management insights.

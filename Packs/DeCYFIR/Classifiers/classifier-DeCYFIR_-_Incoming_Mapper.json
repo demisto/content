@@ -1,115 +1,93 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "3a6a714e-c879-4a33-89b0-4f7fa0dbaf9b",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": {
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Alert Category": {
-					"complex": {
-						"filters": [],
-						"root": "category",
-						"transformers": []
-					}
-				},
-				"Categories": {
-					"complex": {
-						"filters": [],
-						"root": "category",
-						"transformers": []
-					}
-				},
-				"DeCYFIR-Category": {
-					"complex": {
-						"filters": [],
-						"root": "category",
-						"transformers": []
-					}
-				},
-				"DeCYFIR-Sub Category": {
-					"complex": {
-						"filters": [],
-						"root": "sub_category",
-						"transformers": []
-					}
-				},
-				"Description": {
-					"complex": {
-						"filters": [],
-						"root": "description",
-						"transformers": []
-					}
-				},
-				"External Category Name": {
-					"complex": {
-						"filters": [],
-						"root": "category",
-						"transformers": []
-					}
-				},
-				"External Severity": {
-					"complex": {
-						"filters": [],
-						"root": "risk_score",
-						"transformers": []
-					}
-				},
-				"External Sub Category Name": {
-					"complex": {
-						"filters": [],
-						"root": "sub_category",
-						"transformers": []
-					}
-				},
-				"Sub Category": {
-					"complex": {
-						"filters": [],
-						"root": "sub_category",
-						"transformers": []
-					}
-				},
-				"dbotMirrorId": {
-					"complex": {
-						"filters": [],
-						"root": "uid",
-						"transformers": []
-					}
-				},
-				"occurred": {
-					"complex": {
-						"filters": [],
-						"root": "alert_created_date",
-						"transformers": []
-					}
-				}
-			}
-		}
-	},
-	"name": "DeCYFIR - Incoming Mapper",
-	"nameRaw": "DeCYFIR - Incoming Mapper",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "3a6a714e-c879-4a33-89b0-4f7fa0dbaf9b",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Categories": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "DeCYFIR-Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "DeCYFIR-Sub Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                },
+                "External Category Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "External Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_score",
+                        "transformers": []
+                    }
+                },
+                "External Sub Category Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    }
+                },
+                "Sub Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "sub_category",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "uid",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_created_date",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "DeCYFIR - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
 }

@@ -1,39 +1,21 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "e8bdac08-137f-4c7f-8512-dd6f1b27efdc",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Attack Surface": "Attack Surface",
-		"Data Breach \u0026 Web Monitoring": "Data Breach \u0026 Web Monitoring",
-		"Impersonation \u0026 Infringement": "Impersonation \u0026 Infringement",
-		"Social \u0026 Public Exposure": "Social \u0026 Public Exposure"
-	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
-	"name": "DeCYFIR - Incidents Classifier",
-	"nameRaw": "DeCYFIR - Incidents Classifier",
-	"packID": "",
-	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"simple": "category"
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "e8bdac08-137f-4c7f-8512-dd6f1b27efdc",
+    "keyTypeMap": {
+        "Attack Surface": "Attack Surface",
+        "Data Breach \u0026 Web Monitoring": "Data Breach \u0026 Web Monitoring",
+        "Impersonation \u0026 Infringement": "Impersonation \u0026 Infringement",
+        "Social \u0026 Public Exposure": "Social \u0026 Public Exposure"
+    },
+    "name": "DeCYFIR - Incidents Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "category"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
 }
