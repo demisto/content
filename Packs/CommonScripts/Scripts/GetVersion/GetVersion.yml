@@ -1,14 +1,11 @@
 commonfields:
-  id: DemistoVersion
-  id_x2: GetVersion
+  id: GetVersion
   version: -1
-name: DemistoVersion
-name_x2: GetVersion
+name: GetVersion
 script: ''
 type: python
 tags: []
-comment: Deprecated. Use GetVersion instead. Return the Demisto server version.
-deprecated: true
+comment: Return the Demisto server version.
 enabled: true
 outputs:
 - contextPath: DemistoVersion.version
