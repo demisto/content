@@ -61,12 +61,6 @@ def is_valid_args(args: Dict):
 def apply_filters(incidents: List, args: Dict):
     names_to_filter = set(argToList(args.get('name')))
     types_to_filter = set(argToList(args.get('type')))
-    is_summerized_version = argToBoolean(args.get('summerizedversion', False))
-
-    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed']
-    if args.get("add_fields_to_summerizied_context"):
-        summerized_fields = summerized_fields + args.get("add_fields_to_context", '').split(",")
-        summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
 
     filtered_incidents = []
     for incident in incidents:
@@ -74,16 +68,23 @@ def apply_filters(incidents: List, args: Dict):
             continue
         if types_to_filter and incident['type'] not in types_to_filter:
             continue
-
-        if is_summerized_version:
-            summerizied_incident = {}
-            for field in summerized_fields:
-                summerizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
-            filtered_incidents.append(summerizied_incident)
-        else:
-            filtered_incidents.append(incident)
+        filtered_incidents.append(incident)
 
     return filtered_incidents
+
+
+def summarize_incidents(args, incidents):
+    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed']
+    if args.get("add_fields_to_summerizied_context"):
+        summerized_fields = summerized_fields + args.get("add_fields_to_context", '').split(",")
+        summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
+    summarized_incidents = []
+    for incident in incidents:
+        summerizied_incident = {}
+        for field in summerized_fields:
+            summerizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+        summarized_incidents.append(summerizied_incident)
+    return summarized_incidents
 
 
 def add_incidents_link(data: List, platform: str):
@@ -145,7 +146,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data, platform)
     headers: List[str]
-    is_summerized_version = argToBoolean(args.get('summerizedversion', False))
+    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
@@ -153,16 +154,18 @@ def search_incidents(args: Dict):   # pragma: no cover
         md = tableToMarkdown(name="Alerts found", t=data, headers=headers, removeNull=True, url_keys=['alertLink'])
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
-        if is_summerized_version and args.get("add_fields_to_context"):
-            add_headers: List[str] = args.get("add_fields_to_context", '').split(",")
-            headers = headers + add_headers
+        if is_summarized_version:
+            data = summarize_incidents(data)
+            if args.get("add_fields_to_summarize_context"):
+                add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
+                headers = headers + add_headers
         md = tableToMarkdown(name="Incidents found", t=data, headers=headers)
     return md, data, res
 
 
 def main():  # pragma: no cover
     args: Dict = demisto.args()
-    is_summerized_version = argToBoolean(args.get('summerizedversion', False))
+    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     try:
         readable_output, outputs, raw_response = search_incidents(args)
         if search_results_label := args.get('searchresultslabel'):
@@ -175,8 +178,9 @@ def main():  # pragma: no cover
             outputs=outputs,
             raw_response=raw_response,
             # in summerized version, ignore auto extract
-            ignore_auto_extract=is_summerized_version
+            ignore_auto_extract=is_summarized_version
         )
+        print(outputs)
         return_results(results)
     except DemistoException as error:
         return_error(str(error), error)
