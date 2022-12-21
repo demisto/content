@@ -14,7 +14,13 @@ ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
-
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/bin/devcontainer-info /bin/devcontainer-info
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/bin/systemctl /bin/systemctl
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/bin/code /bin/code
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/scripts/devcontainers.zsh-theme /scripts/devcontainers.zsh-theme
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/scripts/bash_theme_snippet.sh /scripts/bash_theme_snippet.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/scripts/rc_snippet.sh /scripts/rc_snippet.sh
+ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/main.sh /main.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/common-utils/install.sh /install-common.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/git/install.sh /install-git.sh
 ADD https://raw.githubusercontent.com/devcontainers/features/main/src/docker-in-docker/install.sh /install-dind.sh
