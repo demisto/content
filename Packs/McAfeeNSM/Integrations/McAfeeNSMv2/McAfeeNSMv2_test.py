@@ -279,3 +279,19 @@ def test_add_entries_to_alert_list():
     expected_records_list = util_load_json('test_data/commands_test_data.json').get('updated_get_alert_list')
     result_list = add_entries_to_alert_list(records_list)
     assert expected_records_list == result_list
+
+
+def test_update_sensors_list():
+    """
+        Given:
+            - A list of sensors.
+        When:
+            - In get_sensors command.
+        Then:
+            - Returns the sensors list with the updated entries.
+    """
+    from McAfeeNSMv2 import update_sensors_list
+    records_list = util_load_json('test_data/commands_test_data.json').get('get_sensors')
+    expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
+    result_list = update_sensors_list(records_list)
+    assert expected_records_list == result_list

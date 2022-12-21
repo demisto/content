@@ -404,7 +404,6 @@ script:
           predefined:
             - true
             - false
-          defaultvalue: false
     - name: nsm-delete-firewall-policy
       description: Deletes the specified Firewall Policy.
       arguments:
@@ -421,7 +420,7 @@ script:
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule.
+          description: The type of the rule. The default value is All.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -432,7 +431,6 @@ script:
             - Network IP V.6
             - All
           required: false
-          defaultvalue: All
         - name: limit
           required: false
           isArray: false
@@ -998,6 +996,7 @@ script:
           description: Sensor ID.
           type: String
     - name: nsm-get-alert-details
+      description: Retrieves the relevant alert details.
       arguments:
         - name: alert_id
           required: true
