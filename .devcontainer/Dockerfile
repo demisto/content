@@ -14,9 +14,8 @@ RUN apt-get update && apt-get install dos2unix git python2 -y \
     && rm -rf /features \
     && git clone https://github.com/devcontainers/features.git /features \
     && cd /features \
-    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579 \
-    && chown demisto $HOME
-    
+    && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579
+
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
@@ -24,7 +23,8 @@ RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 
 # install poetry, configure certificate for git and tools for oh my zsh
-RUN curl -sSL https://install.python-poetry.org | python3 - \
+RUN chown $USERNAME $HOME \
+    && curl -sSL https://install.python-poetry.org | python3 - \
     && python -m pip install --user pipx \
     && python -m pipx ensurepath \
     && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.zsh/zsh-syntax-highlighting \
