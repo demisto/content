@@ -182,7 +182,7 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
-def set_fields_query(params, endpoint) -> str:
+def set_fields_query(params: dict, endpoint: str) -> str:
     """Creating fields query to add information to the API response"""
     fields_str = '&fields=tags'
     if endpoint == 'indicators':
@@ -193,7 +193,7 @@ def set_fields_query(params, endpoint) -> str:
     return fields_str
 
 
-def create_types_query(params, endpoint) -> str:
+def create_types_query(params: dict, endpoint: str) -> str:
     """Creating TypeName query to fetch different types of indicators"""
     group_types = argToList(params.get('group_type'))
     indicator_types = argToList(params.get('indicator_type'))
@@ -292,7 +292,7 @@ def create_indicator_fields(indicator, indicator_type):
     return fields
 
 
-def create_indicator_relationships(indicator, indicator_type, indicator_value):
+def create_indicator_relationships(indicator: dict, indicator_type: str, indicator_value: str):
     relationships_list = []
     if argToBoolean(demisto.getParam('createRelationships')):
         demisto.debug('Creating relationships')
@@ -389,7 +389,7 @@ def create_or_query(param_name: str, delimiter_str: str) -> str:
     return query[:len(query) - 3]
 
 
-def module_test_command(client: Client, args):  # pragma: no cover
+def module_test_command(client: Client, args):  # pragma: no cover # noqa
     """ Test module - Get 4 indicators from ThreatConnect.
     Args:
         client: ThreatConnect client.
@@ -415,7 +415,8 @@ def module_test_command(client: Client, args):  # pragma: no cover
             return_error(str(e))
 
 
-def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
+    List[Dict[str, Any]], List[Dict[str, Any]]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -465,12 +466,13 @@ def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dic
                     not indicators_next_link and not groups_next_link):
                 break
     except Exception as e:
-        demisto.error(f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
+        demisto.error(
+            f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
 
     return indicators, groups
 
 
-def build_url_with_query_params(params, endpoint, last_run):
+def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     """Setting the url for the request for each endpoint"""
     if not should_send_request(params, endpoint):
         return ''
@@ -499,7 +501,7 @@ def build_url_with_query_params(params, endpoint, last_run):
     return url
 
 
-def should_send_request(params, endpoint):
+def should_send_request(params: dict, endpoint: str):
     """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == 'indicators':
         if not argToList(params.get('indicator_type')):
@@ -511,7 +513,7 @@ def should_send_request(params, endpoint):
     return True
 
 
-def set_tql_query(from_date, params, endpoint):
+def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
     """Creating tql query to add information to the API response"""
     owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
     tags = f'AND ({create_or_query("tag", params.get("tags"))}) '
@@ -538,7 +540,7 @@ def set_tql_query(from_date, params, endpoint):
     return tql
 
 
-def get_updated_last_run(indicators, groups, previous_run):
+def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> dict:
     """Setting the Last Run structure"""
 
     next_run = {}
@@ -555,10 +557,11 @@ def get_updated_last_run(indicators, groups, previous_run):
     return next_run
 
 
-def get_indicators_command(client: Client, args):  # pragma: no cover
+def get_indicators_command(client: Client, args: dict) -> dict:  # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
+        args: The arguments from XSOAR.
     Returns:
         str: Human readable.
         dict: Operation entry context.
@@ -603,10 +606,11 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
         return readable_output, {}, list(response)
 
 
-def get_owners_command(client: Client, args) -> COMMAND_OUTPUT:  # pragma: no cover
+def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
     Args:
         client: ThreatConnect client.
+        args: The arguments from XSOAR.
     Returns:
         str: Human readable.
         dict: Operation entry context.
@@ -621,7 +625,7 @@ def get_owners_command(client: Client, args) -> COMMAND_OUTPUT:  # pragma: no co
     return readable_output, {}, list(response)
 
 
-def main():  # pragma: no cover
+def main():  # pragma: no cover # noqa
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
     credentials = demisto.params().get('api_credentials', {})
