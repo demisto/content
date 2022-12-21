@@ -3565,7 +3565,7 @@
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
             "fromversion": "6.0.0",
-            "timeout": 1000
+            "timeout": 3000
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
