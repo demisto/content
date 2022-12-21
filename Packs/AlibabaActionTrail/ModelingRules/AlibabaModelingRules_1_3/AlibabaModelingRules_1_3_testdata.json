@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "60ace5ee-448f-46dc-95e5-982a502bbe43",
+            "vendor": "alibaba",
+            "product": "action_trail",
+            "dataset": "alibaba_action_trail_raw",
+            "event_data": { "_time": "Nov 23rd 2022 23:26:15", "_insert_time": "Nov 23rd 2022 23:27:02", "_id": "x1-y1-a1-b1-abc123", "_tag": "[]", "event": "null", "_vendor": "alibaba", "__date__": "null", "__line__": "null", "__time__": "1669238775", "_product": "action-trail", "_raw_log": "", "__topic__": "actiontrail_audit_event", "_raw_json": "", "__source__": "actiontrail_internal", "__time___0": "1669238775", "__log_count__": "null", "event_eventid": "abc123", "event_eventrw": "Read", "__log_pattern__": "null", "_collector_name": "alibaba_action-trail", "_collector_type": "XSIAM", "event_acsregion": "TLV", "event_errorcode": "null", "event_eventname": "DescribeDBClusters", "event_eventtype": "ApiCall", "event_requestid": "abc123", "event_useragent": "audit.log.aliyuncs.com", "event_apiversion": "2017-08-01", "__log_signature__": "null", "event_eventsource": "polardb.aliyuncs.com", "event_servicename": "polardb", "event_errormessage": "null", "event_eventversion": "1", "event_resourcename": "null", "event_resourcetype": "null", "_reporting_device_ip": "8.8.8.8", "event_sourceipaddress": "audit.log.aliyuncs.com", "__sls_query_parameter__": "null", "event_useridentity_type": "testuser:Common_Data_Access", "_final_reporting_device_ip": "1.1.1.1", "event_requestparameterjson": "{\"stsTokenPrincipalName\":\"aliyunserviceroleforslsaudit/Common_Data_Access\",\"AcsProduct\":\"polardb\",\"PageSize\":30,\"PageNumber\":1,\"UserAgent\":\"AlibabaCloud (linux\",\"ClientPort\":2962,\"SignatureType\":\"\",\"RegionId\":\"TLV\",\"stsTokenPlayerUid\":abc123}", "event_useridentity_username": "aliyunserviceroleforslsaudit:Common_Data_Access", "event_requestparameters_name": "null", "event_useridentity_accountid": "abc123", "event_requestparameters_hostid": "null", "event_requestparameters_region": "null", "event_useridentity_accesskeyid": "abc123.abc123", "event_useridentity_principalid": "7067606:Common_Data_Access", "event_insightdetails_insighttype": "null", "event_additionaleventdata_mfachecked": "null", "event_insightdetails_sourceipaddress": "null", "event_insightdetails_insightcontext_statistics_insightcount": "null" },
+            "expected_values": {
+                "xdm.event.type": "ApiCall",
+                "xdm.observer.product": "alibaba",
+                "xdm.observer.vendor": "action-trail",
+                "xdm.event.operation": "DescribeDBClusters",
+                "xdm.target.resource.name": null,
+                "xdm.target.resource.type": null,
+                "xdm.event.outcome": null,
+                "xdm.target.cloud.region": "TLV",
+                "xdm.source.user.username": "testuser:Common_Data_Access",
+                "xdm.source.user.user_type": "assumed-role",
+                "xdm.source.user.identifier": "7067606:Common_Data_Access",
+                "xdm.source.ipv4": "audit.log.aliyuncs.com",
+                "xdm.event.id": "abc123"
+            }
+        }
+    ]
+}
