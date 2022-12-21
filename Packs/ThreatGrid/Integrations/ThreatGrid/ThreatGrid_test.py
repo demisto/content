@@ -92,27 +92,17 @@ def test_get_with_limit_dict(mocker):
 
 
 def test_submit_urls(mocker):
-    # API_KEY = 'API_KEY'
-    def mock_req(*args, **kwargs):
-        class MockResponse:
-            def __init__(self, json_data, status_code):
-                self.json_data = json_data
-                self.status_code = status_code
-
-            def json(self):
-                return self.json_data
-
-        return MockResponse(mock_response, 200)
-    # def mock_req(method, path, params={'api_key': API_KEY}, body=None):
-    #     return mock_response
-
-    from ThreatGrid import submit_urls
-    mock_response = util_load_json('test_data/submit_url.json')
+    req_mock = mocker.Mock()
+    mock_response = mocker.Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
+    req_mock.return_value = mock_response
+    from ThreatGrid import submit_urls
     args = Submit_url_input
 
-    res = submit_urls(args, req=mock_req)
-    assert res == expected_results
+    res = submit_urls(args, req=req_mock)
+    assert res.outputs == expected_results
 
 def test_advanced_seach(mocker, requests_mock):
 
