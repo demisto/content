@@ -3100,16 +3100,16 @@ class TestFirewallCommand:
     @patch("Panorama.run_op_command")
     def test_get_ha_status_firewall(self, patched_run_op_command, mock_firewall_topology):
         """
-        Given the XML output for a HA firewall which is enabled, ensure the dataclasses are parsed correctly
+        Given the XML output for a HA firewall which is enabled, ensure the data class is parsed correctly
         """
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
         result = FirewallCommand.get_ha_status(mock_firewall_topology)
 
         assert result.status != 'HA Not enabled.'
-        assert result.active
-        assert result.hostid
-        assert result.peer == ''
+        assert result.active is not None
+        assert result.hostid is not None
+        assert result.peer is not None
 
     @patch("Panorama.run_op_command")
     def test_get_ha_status_panorama(self, patched_run_op_command, mock_topology):
