@@ -947,7 +947,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "75"
+      - "21"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1013,8 +1013,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 3580
+          "x": 50,
+          "y": 3480
         }
       }
     note: false
@@ -1026,10 +1026,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b5e6f97e-8a29-48e7-8ce5-a1855d7e6355
+    taskid: e2e1ebed-efb1-40dc-8c3c-6a80a3f2d76b
     type: condition
     task:
-      id: b5e6f97e-8a29-48e7-8ce5-a1855d7e6355
+      id: e2e1ebed-efb1-40dc-8c3c-6a80a3f2d76b
       version: -1
       name: Validate Outputs
       type: condition
@@ -1087,7 +1087,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3765
+          "y": 3645
         }
       }
     note: false
@@ -1157,7 +1157,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3890
+          "y": 3850
         }
       }
     note: false
@@ -1471,7 +1471,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "34"
+      - "75"
     scriptarguments:
       ref_name:
         simple: Test-Reference-Name_2
@@ -1493,10 +1493,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: ee97601e-2790-4e46-8dc4-b1a180a0690d
+    taskid: b7f55928-489d-414e-816b-f9d4841eeb5e
     type: regular
     task:
-      id: ee97601e-2790-4e46-8dc4-b1a180a0690d
+      id: b7f55928-489d-414e-816b-f9d4841eeb5e
       version: -1
       name: Get Domains List
       description: Gets the list of domains. You must have the System Administrator
@@ -1520,7 +1520,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 6410
         }
       }
     note: false
@@ -1561,7 +1561,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 6555
         }
       }
     note: false
@@ -1598,7 +1598,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 6710
         }
       }
     note: false
@@ -2816,33 +2816,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: be19dd35-f720-4b4a-8c77-54af0c1adf8a
+    taskid: c78f274a-0008-4e21-8da9-d6333a0476e1
     type: regular
     task:
-      id: be19dd35-f720-4b4a-8c77-54af0c1adf8a
+      id: c78f274a-0008-4e21-8da9-d6333a0476e1
       version: -1
-      name: Look for test reference
-      description: Retrieves a list of reference sets.
-      script: '|||qradar-reference-sets-list'
+      name: Wait for reference deletion
+      description: Sleep for X seconds
+      scriptName: Sleep
       type: regular
-      iscommand: true
+      iscommand: false
       brand: ""
     nexttasks:
-      '#error#':
-      - "21"
       '#none#':
-      - "22"
+      - "34"
     scriptarguments:
-      ref_name:
-        simple: Test-Reference-Name_2
+      seconds:
+        simple: "30"
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 3485
+          "x": 50,
+          "y": 6280
         }
       }
     note: false
@@ -2858,8 +2855,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 11060,
-        "width": 810,
-        "x": -370,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
