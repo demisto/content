@@ -2087,7 +2087,8 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
     """
     from FortinetFortiwebVM import server_policy_update_command
     get_endpoint = 'Policy/ServerPolicy/ServerPolicy' if version == ClientV1.API_VER else 'cmdb/server-policy/policy'
-    get_jsonpath = 'server_policy/v1_list_success.json' if version == ClientV1.API_VER else 'server_policy/v2_list_success.json'
+    get_jsonpath = 'server_policy/v1_list_success.json' if version == ClientV1.API_VER else \
+        'server_policy/v2_list_success.json'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2130,7 +2131,8 @@ def test_fail_server_policy_update_command(requests_mock, mock_client: Client, v
     """
     from FortinetFortiwebVM import server_policy_update_command
     get_endpoint = 'Policy/ServerPolicy/ServerPolicy' if version == ClientV1.API_VER else 'cmdb/server-policy/policy'
-    get_jsonpath = 'server_policy/v1_list_success.json' if version == ClientV1.API_VER else 'server_policy/v2_list_success.json'
+    get_jsonpath = 'server_policy/v1_list_success.json' if version == ClientV1.API_VER else \
+        'server_policy/v2_list_success.json'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2581,7 +2583,8 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
     """
     from FortinetFortiwebVM import custom_whitelist_url_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2633,7 +2636,8 @@ def test_fail_custom_whitelist_url_update_command(requests_mock, mock_client: Cl
     """
     from FortinetFortiwebVM import custom_whitelist_url_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2675,7 +2679,8 @@ def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: C
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -2719,7 +2724,8 @@ def test_fail_custom_whitelist_parameter_update_command(requests_mock, mock_clie
     """
     from FortinetFortiwebVM import custom_whitelist_parameter_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -2756,7 +2762,8 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2800,7 +2807,8 @@ def test_fail_custom_whitelist_cookie_update_command(requests_mock, mock_client:
     """
     from FortinetFortiwebVM import custom_whitelist_cookie_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -2833,7 +2841,8 @@ def test_custom_whitelist_header_field_update_command(requests_mock, mock_client
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response)
@@ -2878,7 +2887,8 @@ def test_fail_custom_whitelist_header_field_update_command(requests_mock, mock_c
     """
     from FortinetFortiwebVM import custom_whitelist_header_field_update_command
     get_jsonpath = 'custom_whitelist/v1_list.json' if version == ClientV1.API_VER else 'custom_whitelist/v2_list.json'
-    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else 'cmdb/server-policy/pattern.custom-global-white-list-group'
+    get_endpoint = 'ServerObjects/Global/CustomGlobalWhiteList' if version == ClientV1.API_VER else \
+        'cmdb/server-policy/pattern.custom-global-white-list-group'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
@@ -2962,7 +2972,8 @@ def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: 
      - Ensure relevant error raised.
     """
     from FortinetFortiwebVM import custom_predifined_whitelist_update_command
-    get_jsonpath = 'custom_predifined/v1_list_success.json' if version == ClientV1.API_VER else 'custom_predifined/v2_list_success.json'
+    get_jsonpath = 'custom_predifined/v1_list_success.json' if version == ClientV1.API_VER else \
+        'custom_predifined/v2_list_success.json'
     url = urljoin(mock_client.base_url, endpoint)
     get_response = load_mock_response(get_jsonpath)
     requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
