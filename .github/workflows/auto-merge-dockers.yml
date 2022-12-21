@@ -21,7 +21,7 @@ jobs:
       - name: Approve and auto-merge for docker update PRs
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Approving and merging"
           gh pr review --approve "$PR_URL"
