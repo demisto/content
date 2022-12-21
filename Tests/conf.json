@@ -931,7 +931,7 @@
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
-            "timeout": 500
+            "timeout": 3000
         },
         {
             "integrations": "ServiceNow CMDB",
