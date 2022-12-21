@@ -3,7 +3,7 @@ import pytest
 from stix2 import TAXIICollectionSource
 from test_data.mitre_test_data import ATTACK_PATTERN, COURSE_OF_ACTION, INTRUSION_SET, MALWARE, TOOL, ID_TO_NAME, \
     RELATION, STIX_TOOL, STIX_MALWARE, STIX_ATTACK_PATTERN, MALWARE_LIST_WITHOUT_PREFIX, MALWARE_LIST_WITH_PREFIX, \
-    INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME
+    INDICATORS_LIST, NEW_INDICATORS_LIST, MITRE_ID_TO_MITRE_NAME, OLD_ID_TO_NAME, NEW_ID_TO_NAME, RELATIONSHIP_ENTITY
 
 ENTERPRISE_COLLECTION_ID = '95ecc380-afe9-11e4-9b6c-751b66dd541e'
 NON_ENTERPRISE_COLLECTION_ID = '101010101010101010101010101010101'
@@ -199,3 +199,21 @@ def test_create_relationships_invalid():
     item_json = {'source_ref': '',
                  'target_ref': ''}
     assert create_relationship(item_json, {}) is None
+
+
+def test_create_relationship_with_unknown_relationship_name():
+    from FeedMitreAttackv2 import create_relationship
+    item_json = {'source_ref--source_ref': 'source_ref',
+                 'target_ref--target_ref': 'target_ref'}
+    output = create_relationship(RELATIONSHIP_ENTITY, item_json)
+    assert output is not None
+
+
+@pytest.mark.parametrize('attack_id, attack_pattern_obj, expected_result', [
+    ("T1111", {"external_references": [{"external_id": 'T1111'}]}, True),
+    ("T1098", {"external_references": [{"external_id": 'T1111'}]}, False)
+])
+def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj, expected_result):
+    from FeedMitreAttackv2 import filter_attack_pattern_object_by_attack_id
+    output = filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj)
+    assert output == expected_result

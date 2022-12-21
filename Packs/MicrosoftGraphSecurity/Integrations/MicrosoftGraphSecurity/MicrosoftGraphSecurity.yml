@@ -85,7 +85,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Fetch incidents of the given providers only. 
+- display: Fetch incidents of the given providers only.
   additionalinfo: Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
@@ -113,8 +113,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: When the alert was last modified in the following string format
-        - YYYY-MM-DD
+      description: When the alert was last modified in the following string format - YYYY-MM-DD
       isArray: false
       name: last_modified
       predefined:
@@ -137,36 +136,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: Category of the alert, e.g. credentialTheft, ransomware (Categories
-        can be added or removed by vendors.)
+      description: Category of the alert, e.g. credentialTheft, ransomware (Categories can be added or removed by vendors.)
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: The start time (creation time of alert) for the search in the following
-        string format - YYYY-MM-DD
+      description: The start time (creation time of alert) for the search in the following string format - YYYY-MM-DD
       isArray: false
       name: time_from
       required: false
       secret: false
     - default: false
-      description: The end time (creation time of alert) for the search in the following
-        string format -  YYYY-MM-DD
+      description: The end time (creation time of alert) for the search in the following string format -  YYYY-MM-DD
       isArray: false
       name: time_to
       required: false
       secret: false
     - default: false
-      description: Use this field to filter on any of the alert properties in the
-        format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
+      description: Use this field to filter on any of the alert properties in the format "{property} eq '{property-value}'", e.g. "category eq 'ransomware'"
       isArray: false
       name: filter
       required: false
       secret: false
     deprecated: false
-    description: List alerts (security issues) within a customer's tenant that Microsoft
-      or partner security solutions have identified.
+    description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
     execution: false
     name: msg-search-alerts
     outputs:
@@ -212,9 +206,7 @@ script:
       secret: false
     - default: false
       defaultValue: All
-      description: 'Fields to fetch for specified Alert apart from the basic properties,
-        given as comma separated values, e.g. NetworkConnections,Processes. Optional
-        values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
+      description: 'Fields to fetch for specified Alert apart from the basic properties, given as comma separated values, e.g. NetworkConnections,Processes. Optional values: All,NetworkConnections,Processes,RegistryKeys,UserStates,HostStates,FileStates,CloudAppStates,MalwareStates,CustomerComment,Triggers,VendorInformation,VulnerabilityStates'
       isArray: false
       name: fields_to_include
       required: false
@@ -259,8 +251,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the analyst the alert is assigned to for triage, investigation,
-        or remediation.
+      description: Name of the analyst the alert is assigned to for triage, investigation, or remediation.
       isArray: false
       name: assigned_to
       required: false
@@ -302,8 +293,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: User-definable labels that can be applied to an alert and can serve
-        as filter conditions, for example "HVA", "SAW).
+      description: User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
       isArray: false
       name: tags
       required: false
@@ -321,9 +311,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update an editable alert property within any integrated solution
-      to keep alert status and assignments in sync across solutions using its reference
-      ID.
+    description: Update an editable alert property within any integrated solution to keep alert status and assignments in sync across solutions using its reference ID.
     execution: false
     name: msg-update-alert
     outputs:
@@ -374,7 +362,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: true
   longRunning: false
@@ -384,5 +372,6 @@ script:
   subtype: python3
   type: python
 tests:
-- Microsoft Graph Security Test
+- Microsoft Graph Security Test dev
+- Microsoft Graph Security Test prod
 fromversion: 5.0.0

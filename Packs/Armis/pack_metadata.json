@@ -2,16 +2,14 @@
     "name": "Armis",
     "description": "Agentless and passive security platform that sees, identifies, and classifies every device, tracks behavior, identifies threats, and takes action automatically to protect critical information and systems",
     "support": "partner",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Armis Corporation",
     "url": "https://support.armis.com/",
     "email": "support@armis.com",
     "categories": [
         "Network Security"
     ],
-    "tags": [
-        "Data Source"
-    ],
+    "tags": [],
     "created": "2021-01-02T18:00:53Z",
     "useCases": [],
     "keywords": [],

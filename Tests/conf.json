@@ -74,6 +74,14 @@
         {
             "integrations": "Microsoft Teams Management",
             "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_device_code",
+            "is_mockable": false,
+            "timeout": 700
+        },
+        {
+            "integrations": "Microsoft Teams Management",
+            "playbookID": "Microsoft Teams Management - Test",
+            "instance_names": "ms_teams_management_client_credentials",
             "is_mockable": false,
             "timeout": 700
         },
@@ -121,7 +129,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names":"azure_waf_user_auth_instance",
+            "instance_names": "azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -176,9 +184,9 @@
             "has_api": false
         },
         {
-            "integrations": "Palo Alto Networks Threat Vault",
-            "playbookID": "PANW Threat Vault - Signature Search - Test",
-            "fromversion": "5.0.0"
+            "integrations": "Palo Alto Networks Threat Vault v2",
+            "playbookID": "PANW Threat Vault v2 - Test",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "Microsoft Endpoint Configuration Manager",
@@ -204,6 +212,14 @@
             "fromversion": "5.5.0",
             "memory_threshold": 300,
             "timeout": 1500
+        },
+        {
+            "integrations": "SecurityAndComplianceV2",
+            "playbookID": "O365-SecurityAndComplianceV2-Test",
+            "fromversion": "5.5.0",
+            "memory_threshold": 300,
+            "pid_threshold": 40,
+            "timeout": 2500
         },
         {
             "integrations": "Azure Storage Container",
@@ -543,7 +559,10 @@
             "instance_names": "ms_azure_compute_self_deployed"
         },
         {
-            "integrations": ["Symantec Data Loss Prevention", "Symantec Data Loss Prevention v2"],
+            "integrations": [
+                "Symantec Data Loss Prevention",
+                "Symantec Data Loss Prevention v2"
+            ],
             "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
@@ -915,7 +934,7 @@
             "integrations": "ServiceNow v2",
             "instance_names": "snow_basic_auth",
             "fromversion": "6.0.0",
-            "timeout": 500
+            "timeout": 3000
         },
         {
             "integrations": "ServiceNow CMDB",
@@ -1434,6 +1453,10 @@
             "fromversion": "5.5.0"
         },
         {
+            "playbookID": "URL extraction test",
+            "fromversion": "5.5.0"
+        },
+        {
             "playbookID": "Test IP Indicator Fields",
             "fromversion": "5.0.0"
         },
@@ -1820,7 +1843,7 @@
             "timeout": 500
         },
         {
-            "integrations": ["EWS v2", "EWSO365"],
+            "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
             "is_mockable": false
@@ -2364,6 +2387,13 @@
             "has_api": false
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "integrations": "Active Directory Query v2",
+            "instance_names": "active_directory_ninja_with_ntlm",
+            "fromversion": "5.0.0",
+            "has_api": false
+        },
+        {
             "playbookID": "Docker Hardening Test",
             "fromversion": "5.0.0",
             "runnable_on_docker_only": true
@@ -2736,7 +2766,7 @@
         },
         {
             "integrations": "AWS - S3",
-            "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436",
+            "playbookID": "AWS - S3 Test Playbook",
             "memory_threshold": 80
         },
         {
@@ -2889,7 +2919,10 @@
         {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
-            "integrations": ["VirusTotal", "Zimperium"],
+            "integrations": [
+                "VirusTotal",
+                "Zimperium"
+            ],
             "instance_names": "virus_total_general"
         },
         {
@@ -3300,7 +3333,10 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": ["Zoom Feed", "Demisto REST API"],
+            "integrations": [
+                "Zoom Feed",
+                "Demisto REST API"
+            ],
             "playbookID": "FeedZoom_Test",
             "fromversion": "5.5.0"
         },
@@ -4218,17 +4254,6 @@
             ]
         },
         {
-            "playbookID": "Microsoft Graph Security Test",
-            "fromversion": "5.0.0",
-            "integrations": [
-                "Microsoft Graph"
-            ],
-            "instance_names": [
-                "ms_graph_security_prod",
-                "ms_graph_security_dev"
-            ]
-        },
-        {
             "playbookID": "Azure Kubernetes Services - Test",
             "fromversion": "5.0.0",
             "instance_names": "aks_device_code_instance",
@@ -4766,6 +4791,7 @@
         {
             "playbookID": "Microsoft Teams - Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_teams_management_device_code",
             "integrations": [
                 "Microsoft Teams Management",
                 "Microsoft Teams"
@@ -4932,7 +4958,6 @@
             "integrations": [
                 "Gmail"
             ]
-            
         },
         {
             "playbookID": "Get Original Email - EWS v2 - test",
@@ -5173,6 +5198,11 @@
             "fromversion": "6.2.0"
         },
         {
+            "integrations": "CiscoSMA",
+            "playbookID": "CiscoSMA",
+            "fromversion": "6.2.0"
+        },
+        {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
             "playbookID": "testplaybook- JoeSecuirtyV2"
@@ -5181,6 +5211,10 @@
             "integrations": "Cisco Umbrella Reporting",
             "playbookID": "Cisco Umbrella Reporting Test",
             "fromversion": "6.5.0"
+        },
+        {
+            "integrations": "XSOAR EDL Checker",
+            "playbookID": "TestXSOAREDLCheckerPlaybook"
         }
     ],
     "skipped_tests": {
@@ -5188,8 +5222,8 @@
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
         "Cortex Data Lake Test": "Issue CRTX-67423",
-        "playbook-CheckPointSandBlast_Test" : "Checkpoint playbook no license",
-        "playbook-BmcITSM-Test" : "issue with license CIAC-3776",
+        "playbook-CheckPointSandBlast_Test": "Checkpoint playbook no license",
+        "playbook-BmcITSM-Test": "issue with license CIAC-3776",
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
@@ -5267,7 +5301,7 @@
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
         "McAfee ESM v2 - Test v11.1.3": "Issue 43825",
-        "McAfee ESM v2 (v11.3) - Test" : "Jira ticket CRTX-65370",
+        "McAfee ESM v2 (v11.3) - Test": "Jira ticket CRTX-65370",
         "McAfee ESM Watchlists - Test v11.3": "Jira ticket CRTX-65370",
         "Detonate URL - WildFire v2.1 - Test": "Issue 40834",
         "Domain Enrichment - Generic v2 - Test": "Issue 40862",
@@ -5334,7 +5368,10 @@
         "AD v2 - debug-mode": "No credentials",
         "CortexAttackSurfaceManagement_Test": "No instance - issue CRTX-65449",
         "OpenCTI Test": "Add Support to version 5.x of OpenCTI - issue CIAC-4407",
-        "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2"
+        "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
+        "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
+        "Phishing v3 - Get Original Email + Search & Delete - Test": "Issue CRTX-70684",
+        "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test": "Issue CRTX-70684"
     },
     "skipped_integrations": {
         "Lastline v2": "No license",
@@ -5434,6 +5471,9 @@
         "Cisco Stealthwatch": "No instance - developed by Qmasters",
         "AzureKeyVault": "No instance - developed by Qmasters",
         "Armis": "No instance - developed by SOAR Experts",
+        "CiscoESA": "No instance - developed by Qmasters",
+        "CiscoSMA": "No instance - developed by Qmasters",
+        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
@@ -5453,12 +5493,9 @@
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
-        "LogRhythm": "The integration is deprecated",
-        "CiscoESA": "No instance - developed by Qmasters",
-        "Cisco Umbrella Reporting": "No instance - developed by Login-Soft"
+        "LogRhythm": "The integration is deprecated"
     },
-    "nightly_integrations": [
-    ],
+    "nightly_integrations": [],
     "nightly_packs": [
         "CommonScripts",
         "CommonPlaybooks",
@@ -5531,6 +5568,7 @@
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "SecurityAndCompliance": "Integration doesn't support proxy",
+        "SecurityAndComplianceV2": "Integration doesn't support proxy",
         "Cherwell": "Submits a file - tests that send files shouldn't be mocked. this problem was fixed but the test is not running anymore because the integration is skipped",
         "Maltiverse": "issue 24335",
         "ActiveMQ": "stomp sdk not supporting proxy.",
