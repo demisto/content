@@ -243,9 +243,9 @@ script:
           isArray: false
           auto: PREDEFINED
           predefined:
-            - true
-            - false
-          defaultValue: true
+            - yes
+            - no
+          defaultValue: yes
         - name: direction
           auto: PREDEFINED
           description: The direction of the rule.
@@ -353,8 +353,9 @@ script:
           isArray: false
           auto: PREDEFINED
           predefined:
-            - true
-            - false
+            - yes
+            - no
+          defaultvalue: yes
         - name: direction
           auto: PREDEFINED
           description: The direction of the rule.
@@ -402,8 +403,8 @@ script:
           isArray: false
           auto: PREDEFINED
           predefined:
-            - true
-            - false
+            - 'true'
+            - 'false'
     - name: nsm-delete-firewall-policy
       description: Deletes the specified Firewall Policy.
       arguments:
@@ -735,8 +736,8 @@ script:
           isArray: false
           auto: PREDEFINED
           predefined:
-            - true
-            - false
+            - 'true'
+            - 'false'
     - name: nsm-delete-rule-object
       description: Deletes a Rule Object.
       arguments:

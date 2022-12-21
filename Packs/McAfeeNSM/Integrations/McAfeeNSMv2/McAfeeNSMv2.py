@@ -866,7 +866,7 @@ def update_firewall_policy_command(client: Client, args: Dict) -> CommandResults
     policy_type = policy_get_details.get('PolicyType') if not policy_type else policy_type.upper()
     rule_description = member_rule_list.get('Description') if not rule_description else argToBoolean(rule_description)
     response_param = member_rule_list.get('Response') if not response_param else response_cases(response_param)
-    rule_enabled = member_rule_list.get('Enabled') if not rule_enabled else rule_enabled
+    rule_enabled = member_rule_list.get('Enabled') if not rule_enabled else argToBoolean(rule_enabled)
     direction = member_rule_list.get('Direction') if not direction else direction.upper()
 
     if is_overwrite:
