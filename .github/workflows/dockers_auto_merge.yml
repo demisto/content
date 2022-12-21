@@ -16,7 +16,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
   auto_approve_and_merge:
     runs-on: ubuntu-latest
-    if: ${{startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content')}}
+    if: startsWith(github.head_ref, 'demisto/') && github.repository == 'demisto/content'
     steps:
       - name: Approve and auto-merge for docker update PRs
         env:
