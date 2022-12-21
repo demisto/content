@@ -2376,8 +2376,6 @@ def test_module(client: EWSClient, max_fetch):
 def sub_main():
     is_test_module = False
     params = demisto.params()
-    if(params.get('upn_mailbox')):
-        print('fine')
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
@@ -2436,6 +2434,7 @@ def sub_main():
         else:
             output = normal_commands[command](client, **args)  # type: ignore[operator]
             return_outputs(*output)
+            # return_results(normal_commands[command](client, **args))
 
     except Exception as e:
         demisto.error(f'got exception {e}')
