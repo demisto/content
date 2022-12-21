@@ -67,8 +67,6 @@ SANDBOX_STATE = {
     1: 'In Progress',
     2: 'Error'
 }
-
-
 ''' CLIENT CLASS '''
 
 
@@ -650,6 +648,40 @@ def endpoint_instance_readable_output(results: List[Dict], title: str) -> str:
     return markdown
 
 
+# def generic_association_readable_output(results: List[Dict], title: str) -> str:
+#     """
+#     Convert to XSOAR Readable output for
+#             Domain-file, endpoint-domains and endpoint-file association
+#     Args:
+#         results (list): Symantec Association Results data
+#         title (str): Title string
+#     Returns:
+#         A string representation of the Markdown table
+#     """
+#
+#     summary_data = []
+#     for data in results:
+#         new = {
+#             'device_name': data.get('device_name', ''),
+#             'device_ip': data.get('device_ip', ''),
+#             'device_uid': data.get('device_uid', ''),
+#             'signature_company_name': data.get('signature_company_name', ''),
+#             'name': data.get('name', ''),
+#             'sha2': data.get('sha2', ''),
+#             'last_seen': data.get('last_seen', ''),
+#             'first_seen': data.get('first_seen', ''),
+#             'data_source_url': data.get('data_source_url', ''),
+#             'data_source_url_domain': data.get('data_source_url_domain', ''),
+#             'folder': data.get('folder', '')
+#          }
+#         summary_data.append(new)
+#     headers = summary_data[0] if summary_data else {}
+#     headers = list(headers.keys())
+#     markdown = tableToMarkdown(title, summary_data, headers=headers,
+#                                removeNull=True)
+#     return markdown
+
+
 def incident_readable_output(results: List[Dict], title: str):
     """
     Convert to User Readable output for Incident resources
@@ -879,6 +911,35 @@ def query_search_condition(q_type: str, q_value: str, ignore_validation=False) -
     return condition
 
 
+# def get_incident_event_filter_query(args: Dict[str, Any]) -> str:
+#     """
+#     This function validate the incident event search query and return the query condition
+#     Args:
+#         args: demisto.args()
+#     Returns:
+#         Return string.
+#     """
+#     # Incident event parameters
+#     event_type_id = arg_to_number(args.get('type_id'))
+#     severity = EVENT_SEVERITY.get(args.get('severity'))
+#     query = args.get('query')
+#
+#     if query and (event_type_id or severity):
+#         raise DemistoException(INVALID_QUERY_ERROR_MSG)
+#
+#     condition = None
+#     if event_type_id:
+#         condition = f'type_id: {event_type_id}'
+#
+#     if severity:
+#         condition = f'severity_id: {severity}' if not condition else f'{condition} AND severity_id: {severity}'
+#
+#     if query:
+#         condition = query
+#
+#     return condition
+
+
 def get_incident_filter_query(args: Dict[str, Any]) -> str:
     """
     This function validate the incident filter search query and return the query condition
@@ -945,6 +1006,29 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         condition = query
 
     return condition
+
+
+# def fetch_event_data(req_endpoint: str, client: Client, args: Dict[str, Any], max_limit: int) -> dict:
+#     """
+#     Request to Get event response Raw Json Data
+#     Args:
+#         req_endpoint : Endpoint API for request incident
+#         client: Symantec EDR on-premise client objectd to use.
+#         args: all command arguments, usually passed from ``demisto.args()``.
+#         max_limit (int): Limit the maximum number of incident return
+#     Returns:
+#         Response raw result.
+#     """
+#     endpoint = req_endpoint
+#     payload = post_request_body(args, max_limit)
+#
+#     # search query as Lucene query string
+#     search_query = get_event_filter_query(args)
+#     if search_query:
+#         payload['query'] = search_query
+#
+#     raw_response = client.query_request_api(endpoint, payload)
+#     return raw_response
 
 
 def get_association_filter_query(args: Dict) -> str:
@@ -1084,6 +1168,11 @@ def check_valid_indicator_value(indicator_type: str,indicator_value: str) -> boo
         if not re.match(md5Regex, indicator_value):
             raise ValueError(
                 f'MD5 value {indicator_value} is invalid')
+
+    # if indicator_type == 'domain':
+    #     if not re.match(domainRegex, indicator_value):
+    #         raise ValueError(
+    #             f'MD5 value {indicator_value} is invalid')
 
     return True
 
@@ -1609,7 +1698,9 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
     payload = post_request_body(args, page * page_limit)
-
+    query = args.get('query', None)
+    if query:
+        payload['query'] = query
     raw_response = client.query_request_api(endpoint, payload)
     total_row = raw_response.get('total')
 
@@ -1648,7 +1739,9 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
     payload = post_request_body(args, page * page_limit)
-
+    query = args.get('query', None)
+    if query:
+        payload['query'] = query
     raw_response = client.query_request_api(endpoint, payload)
     total_row = raw_response.get('total')
 
@@ -1689,10 +1782,14 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
     page_limit, offset = pagination(page, page_size)
     payload = post_request_body(args, page * page_limit)
 
+    query = args.get('query', None)
+    if query:
+        payload['query'] = query
+
     raw_response = client.query_request_api(endpoint, payload)
     total_row = raw_response.get('total')
 
-    title = get_command_title_string("File Instances", arg_to_number(args.get('page', 0)), page_size, total_row)
+    title = get_command_title_string("Endpoint Instances", arg_to_number(args.get('page', 0)), page_size, total_row)
 
     result = raw_response.get('result', [])
     page_result = get_data_of_current_page(offset, page_limit, result)
@@ -2203,7 +2300,7 @@ def main() -> None:
             client_id=username,
             client_secret=password
         )
-
+#
         args = demisto.args()
 
         demisto.debug(f'Command being called is {demisto.command()}')
@@ -2237,7 +2334,7 @@ def main() -> None:
             "symantec-edr-system-activity-list": get_system_activity_command,
 
             # Audit Events
-            "symantec-edr-audit-event-get": get_audit_event_command,
+            "symantec-edr-audit-event-list": get_audit_event_command,
 
             # Allow List Policies
             "symantec-edr-allow-list-policy-get": get_allow_list_command,
@@ -2246,13 +2343,13 @@ def main() -> None:
             "symantec-edr-deny-list-policy-get": get_deny_list_command,
 
             # Domain Instances
-            "symantec-edr-domain-instance-get": get_domain_instance_command,
+            "symantec-edr-domain-instance-list": get_domain_instance_command,
 
             # Endpoint Instances
-            "symantec-edr-endpoint-instance-get": get_endpoint_instance_command,
+            "symantec-edr-endpoint-instance-list": get_endpoint_instance_command,
 
             # File Instances
-            "symantec-edr-file-instance-get": get_file_instance_command,
+            "symantec-edr-file-instance-list": get_file_instance_command,
 
             # Events
             "symantec-edr-event-list": get_event_list_command,
@@ -2268,7 +2365,7 @@ def main() -> None:
             return_results(get_endpoint_command(client, args, 'rejoin_endpoint'))
         elif command == "symantec-edr-endpoint-delete-file":
             return_results(get_endpoint_command(client, args, 'delete_endpoint_file'))
-        elif command == "symantec-edr-endpoint-cancel":
+        elif command == "symantec-edr-endpoint-cancel-command":
             return_results(get_endpoint_command(client, args, 'cancel_command'))
         elif command in ['file']:
             # File Sandbox Analysis, Command Status, and Verdict
@@ -2288,5 +2385,3 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-

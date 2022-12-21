@@ -9,8 +9,7 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications
-    to communicate with Symantec EDR
+- additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications to communicate with Symantec EDR
   display: Client ID
   name: credentials
   required: true
@@ -20,8 +19,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Retrieve incident related events and incident lineage events from
-    the EDR database
+- additionalinfo: Retrieve incident related events and incident lineage events from the EDR database
   defaultvalue: 'true'
   display: Fetch incidents Events
   name: isIncidentsEvent
@@ -33,8 +31,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: New
-  display: Status to filter out fetching as incidents. Comma-separated lists are supported,
-    e.g., New,In-Progress
+  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., New,In-Progress
   name: fetch_status
   options:
   - New
@@ -44,8 +41,7 @@ configuration:
   required: false
   type: 16
 - defaultvalue: Medium,High
-  display: Severity to filter out fetching as incidents. Comma-separated lists are
-    supported, e.g., Medium,High.
+  display: Severity to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
   name: fetch_severity
   options:
   - Low
@@ -54,14 +50,13 @@ configuration:
   required: false
   type: 16
 - defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
   display: Maximum number of incidents to fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -72,19 +67,18 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Symantec EDR (On Prem) endpoints help to detect threats on your network
-  by filter endpoints data to find Indicators of Compromise (IoCs) and take actions
-  to remediate the threat(s). EDR on-premise capabilities allow incident responders
-  to quickly search, identify and contain all impacted endpoints while investigating
-  threats using a choice of on-premises
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Symantec EDR (On Prem) endpoints help to detect threats on your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify and contain all impacted endpoints while investigating threats using a choice of on-premises
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
 name: SymantecEDRDev
 script:
   commands:
   - arguments:
     - default: false
-      description: 'For "isolate_endpoint"  the field is strings representing a device
-        ID of the target computer '
+      description: 'For "isolate_endpoint"  the field is strings representing a device ID of the target computer '
       isArray: true
       name: device_id
       predefined:
@@ -92,29 +86,18 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: '"isolate_endpoint" - Isolates endpoints by cutting connections that
-      the endpoint(s) has to internal networks and external networks, based on the
-      endpoint Device IDs'
+    description: '"isolate_endpoint" - Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint Device IDs'
     execution: false
     name: symantec-edr-endpoint-isolate
     outputs:
     - contextPath: SymantecEDR.Command.isolate_endpoint.command_id
       description: Command ID
       type: String
-    - contextPath: 'SymantecEDR.Command.isolate_endpoint.error_code '
-      description: "This represents the status of the command action. Values: \n\n\
-        -1 = Error \n0 = Command isolate_endpoint successfully requested \n1 = Commandisolate_endpoint\
-        \ not supported for target command type \n2 = Command isolate_endpoint failed\
-        \ because the target command is already in terminal state (i.e., completed,\
-        \ error, or cancelled) \n3 = Command isolate_endpoint is already in progress\
-        \ for the target command "
+    - contextPath: SymantecEDR.Command.isolate_endpoint.error_code
+      description: "This represents the status of the command action. Values: \n\n-1 = Error \n0 = Command isolate_endpoint successfully requested \n1 = Commandisolate_endpoint not supported for target command type \n2 = Command isolate_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled) \n3 = Command isolate_endpoint is already in progress for the target command "
       type: Number
-    - contextPath: 'SymantecEDR.Command.isolate_endpoint.message '
-      description: "Message explaining error code. \n\nValues: \n-1 = Error  \n0 =\
-        \ Command isolate_endpoint successfully requested  \n1 = Command isolate_endpoint\
-        \ not supported for target command type  \n2 = Command isolate_endpoint failed\
-        \ because the target command is already in terminal state  \n3 = Command isolate_endpoint\
-        \ is already in progress for the target command "
+    - contextPath: SymantecEDR.Command.isolate_endpoint.message
+      description: "Message explaining error code. \n\nValues: \n-1 = Error  \n0 = Command isolate_endpoint successfully requested  \n1 = Command isolate_endpoint not supported for target command type  \n2 = Command isolate_endpoint failed because the target command is already in terminal state  \n3 = Command isolate_endpoint is already in progress for the target command "
       type: String
   - arguments:
     - default: false
@@ -162,8 +145,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a search value. Also support query with multiple search
-        value provided by comma "," seperator
+      description: Specifies a search value. Also support query with multiple search value provided by comma "," seperator
       isArray: false
       name: search_value
       required: false
@@ -173,51 +155,35 @@ script:
     execution: false
     name: symantec-edr-domain-file-association-list
     outputs:
-    - contextPath: SymantecEDR.DomainFileAssociation.next
-      description: 'The token used for cursoring. '
-      type: String
-    - contextPath: 'SymantecEDR.DomainFileAssociation.total '
-      description: 'Count of domain file association objects matching the query '
-      type: Number
-    - contextPath: SymantecEDR.DomainFileAssociation.result.data_source_url
+    - contextPath: SymantecEDR.DomainFileAssociation.data_source_url
       description: "The URL that was accessed \n\nExample: \"http://www.westfallave.com/insight/cloudcar.exe\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.data_source_url_domain
+    - contextPath: SymantecEDR.DomainFileAssociation.data_source_url_domain
       description: "Domain name of the accessed URL \n\nExample: \"westfallave.com\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association\
-        \ was last updated \n\nExample: \"10.212.24.159\""
+    - contextPath: SymantecEDR.DomainFileAssociation.device_ip
+      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint\
-        \ when this association was last updated \n\nExample: \"170915-000020\""
+    - contextPath: SymantecEDR.DomainFileAssociation.device_name
+      description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.device_uid
-      description: "Unique ID of the endpoint that downloaded the file from the URL\
-        \ \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
+    - contextPath: SymantecEDR.DomainFileAssociation.device_uid
+      description: "Unique ID of the endpoint that downloaded the file from the URL \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-01-30T04:13:10.669Z\""
+    - contextPath: SymantecEDR.DomainFileAssociation.frst_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.last_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-01-30T04:13:10.669Z\""
+    - contextPath: SymantecEDR.DomainFileAssociation.last_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.name
-      description: "The file name of the downloadedfilee. This attribute doesn’t include\
-        \ the path of the file \n\nExample: \"cloudcar[2].exe\""
+    - contextPath: SymantecEDR.DomainFileAssociation.name
+      description: "The file name of the downloadedfilee. This attribute doesn’t include the path of the file \n\nExample: \"cloudcar[2].exe\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.sha2
-      description: "The SHA256 checksum of the file (hex string) that was downloaded\
-        \ from the URL \n\nExample: \"3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5\""
+    - contextPath: SymantecEDR.DomainFileAssociation.sha2
+      description: "The SHA256 checksum of the file (hex string) that was downloaded from the URL \n\nExample: \"3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5\""
       type: String
-    - contextPath: SymantecEDR.DomainFileAssociation.result.signature_company_name
-      description: "The signer company name of the downloaded file. \n\nExample: \"\
-        Microsoft Windows\""
+    - contextPath: SymantecEDR.DomainFileAssociation.signature_company_name
+      description: "The signer company name of the downloaded file. \n\nExample: \"Microsoft Windows\""
       type: String
   - arguments:
     - default: false
@@ -243,18 +209,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies a search query as Lucene query string.\nExample: Example:\
-        \ query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\"\
-        \ \n\nNote: For more details refer to Symantec EDR (On-Prem) API document\
-        \ https://apidocs.securitycloud.symantec.com/#"
+      description: "Specifies a search query as Lucene query string.\nExample: Example: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#"
       isArray: false
       name: query
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specific a filters option in lieu of “query”. These filters will\
-        \ improve query performance. \nSearch query type are  domain  and device_uid"
+      description: "Specific a filters option in lieu of “query”. These filters will improve query performance. \nSearch query type are  domain  and device_uid"
       isArray: false
       name: search_query
       predefined:
@@ -263,8 +225,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a search value. Also support query with multiple search
-        value provided by comma "," seperator
+      description: Specifies a search value. Also support query with multiple search value provided by comma "," seperator
       isArray: false
       name: search_value
       required: false
@@ -274,39 +235,26 @@ script:
     execution: false
     name: symantec-edr-endpoint-domain-association-list
     outputs:
-    - contextPath: SymantecEDR.EndpointDomainAssociation.next
-      description: The token used for cursoring
-      type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.total
-      description: Count of endpoint domain association objects matching the query
-      type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.data_source_url
+    - contextPath: SymantecEDR.EndpointDomainAssociation.data_source_url
       description: "The URL that was accessed \n\nExample: \"http://www.westfallave.com/insight/cloudcar.exe\""
       type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.data_source_url_domain
+    - contextPath: SymantecEDR.EndpointDomainAssociation.data_source_url_domain
       description: "Domain name of the accessed URL \n\nExample: \"westfallave.com\""
       type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association\
-        \ was last updated \n\nExample: \"10.212.24.159\""
+    - contextPath: SymantecEDR.EndpointDomainAssociation.device_ip
+      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
       type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint\
-        \ when this association was last updated \n\nExample: \"170915-000020\""
+    - contextPath: SymantecEDR.EndpointDomainAssociation.device_name
+      description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
       type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.device_uid
-      description: "Unique ID of the endpoint that accessed this URL \n\nExample:\
-        \ \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
+    - contextPath: SymantecEDR.EndpointDomainAssociation.device_uid
+      description: "Unique ID of the endpoint that accessed this URL \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
       type: String
-    - contextPath: SymantecEDR.EndpointDomainAssociation.result.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-01-30T04:13:10.669Z\""
+    - contextPath: SymantecEDR.EndpointDomainAssociation.frst_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
       type: String
-    - contextPath: 'SymantecEDR.EndpointDomainAssociation.result.last_seen '
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-01-30T04:13:10.669Z\" "
+    - contextPath: SymantecEDR.EndpointDomainAssociation.last_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\" "
       type: String
   - arguments:
     - default: false
@@ -332,10 +280,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies a search query as Lucene query string.\nExample: Example:\
-        \ query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\"\
-        \ \n\nNote: For more details refer to Symantec EDR (On-Prem) API document\
-        \ https://apidocs.securitycloud.symantec.com/#"
+      description: "Specifies a search query as Lucene query string.\nExample: Example: query=\"first_seen: [2022-10-01T07:00:58.030Z  TO 2022-10-21T06:41:54.452Z]\" \n\nNote: For more details refer to Symantec EDR (On-Prem) API document https://apidocs.securitycloud.symantec.com/#"
       isArray: false
       name: query
       required: false
@@ -353,8 +298,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies a search value. Also support query with multiple search
-        value provided by comma "," seperator
+      description: Specifies a search value. Also support query with multiple search value provided by comma "," seperator
       isArray: false
       name: search_value
       required: false
@@ -364,42 +308,28 @@ script:
     execution: false
     name: symantec-edr-endpoint-file-association-list
     outputs:
-    - contextPath: SymantecEDR.EndpointFileAssociation.next
-      description: The token used for cursoring.
+    - contextPath: SymantecEDR.EndpointFileAssociation.device_ip
+      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.total
-      description: Count of endpoint file association objects matching the query
-      type: Number
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association\
-        \ was last updated \n\nExample: \"10.212.24.159\""
+    - contextPath: SymantecEDR.EndpointFileAssociation.device_name
+      description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint\
-        \ when this association was last updated \n\nExample: \"170915-000020\""
-      type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.device_uid
+    - contextPath: SymantecEDR.EndpointFileAssociation.device_uid
       description: "Unique ID of the endpoint that has this file \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-02-04T09:00:00.577Z\""
+    - contextPath: SymantecEDR.EndpointFileAssociation.frst_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-02-04T09:00:00.577Z\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.folder
-      description: "The folder where the file resides. This attribute does not include\
-        \ the name of the file \n\nExample: \"c:\\\\windows\\\\system32\""
+    - contextPath: SymantecEDR.EndpointFileAssociation.folder
+      description: "The folder where the file resides. This attribute does not include the name of the file \n\nExample: \"c:\\\\windows\\\\system32\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.last_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this association \n\
-        \nExample: \"2018-02-04T09:00:01.778Z\""
+    - contextPath: SymantecEDR.EndpointFileAssociation.last_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-02-04T09:00:01.778Z\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.name
-      description: "The name of the file. This attribute doesn’t include the path\
-        \ of the file \n\nExample: \"sc.exe\""
+    - contextPath: SymantecEDR.EndpointFileAssociation.name
+      description: "The name of the file. This attribute doesn’t include the path of the file \n\nExample: \"sc.exe\""
       type: String
-    - contextPath: SymantecEDR.EndpointFileAssociation.result.sha2
+    - contextPath: SymantecEDR.EndpointFileAssociation.sha2
       description: "The SHA256 checksum of the file (hex string) \n\nExample: \"eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31\""
       type: String
   - arguments:
@@ -436,37 +366,25 @@ script:
     deprecated: false
     description: Get Domain Instances
     execution: false
-    name: symantec-edr-domain-instance-get
+    name: symantec-edr-domain-instance-list
     outputs:
-    - contextPath: 'SymantecEDR.DomainInstance.next '
-      description: The token used for cursoring.
-      type: String
-    - contextPath: SymantecEDR.DomainInstance.total
-      description: Count of domain instances matching the query
-      type: Number
-    - contextPath: SymantecEDR.DomainInstance.result.data_source_url
+    - contextPath: SymantecEDR.DomainInstance.data_source_url
       description: "Last URL accessed on this domain \nExample: \"http://www.skyscan.com/shample/shample.exe\""
       type: String
-    - contextPath: SymantecEDR.DomainInstance.result.data_source_url_domain
+    - contextPath: SymantecEDR.DomainInstance.data_source_url_domain
       description: "The name of the domain. \nExample: \"skyscan.com\" "
       type: String
-    - contextPath: SymantecEDR.DomainInstance.result.disposition
-      description: "Domain disposition: \n\n0 = healthy/good \n1 = unknown \n2 = suspicious\
-        \ \n3 = bad"
+    - contextPath: SymantecEDR.DomainInstance.disposition
+      description: "Domain disposition: \n\n0 = healthy/good \n1 = unknown \n2 = suspicious \n3 = bad"
       type: Number
-    - contextPath: SymantecEDR.DomainInstance.result.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the creation of this instance. \n\n\
-        Example: \"2018-01-30T04:13:10.669Z\""
+    - contextPath: SymantecEDR.DomainInstance.frst_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this instance. \n\nExample: \"2018-01-30T04:13:10.669Z\""
       type: String
-    - contextPath: SymantecEDR.DomainInstance.result.last_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation\
-        \ time of the event that resulted into the update of this instance. \n\nExample:\
-        \ \"2018-01-30T04:13:10.669Z\" "
+    - contextPath: SymantecEDR.DomainInstance.last_seen
+      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the update of this instance. \n\nExample: \"2018-01-30T04:13:10.669Z\" "
       type: String
-    - contextPath: SymantecEDR.DomainInstance.result.external_ip
-      description: "The IP address (IPv4 or IPv6) of the device/machine that accepted\
-        \ the connection. \n\nExample: \"85.158.136.166\""
+    - contextPath: SymantecEDR.DomainInstance.external_ip
+      description: "The IP address (IPv4 or IPv6) of the device/machine that accepted the connection. \n\nExample: \"85.158.136.166\""
       type: String
   - arguments:
     - default: false
@@ -501,48 +419,32 @@ script:
     deprecated: false
     description: Get Endpoint Instances
     execution: false
-    name: symantec-edr-endpoint-instance-get
+    name: symantec-edr-endpoint-instance-list
     outputs:
-    - contextPath: 'SymantecEDR.EndpointInstance.next '
-      description: 'The token used for cursoring. '
+    - contextPath: SymantecEDR.EndpointInstance.device_ip
+      description: "The IP address of the endpoint. IPv4 or IPv6 format. \nExample: \"192.168.0.250\" "
       type: String
-    - contextPath: 'SymantecEDR.EndpointInstance.total '
-      description: 'Count of endpoint instances matching the query '
-      type: Number
-    - contextPath: SymantecEDR.EndpointInstance.result.device_ip
-      description: "The IP address of the endpoint. IPv4 or IPv6 format. \nExample:\
-        \ \"192.168.0.250\" "
+    - contextPath: SymantecEDR.EndpointInstance.device_name
+      description: "The host name or, if unavailable, the IP address of the endpoint. \nExample: \"WIN-CRNK1KQJBC0 "
       type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint.\
-        \ \nExample: \"WIN-CRNK1KQJBC0 "
-      type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.device_uid
+    - contextPath: SymantecEDR.EndpointInstance.device_uid
       description: "Unique ID of the endpoint. \nExample: \"12b1d2ce-dddb-4bcc-990e-28f44cf8ddcb\""
       type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.domain_or_workgroup
-      description: "Domain or workgroup name depending on the configuration. \nExample:\
-        \ \"WORKGROUP\" "
+    - contextPath: SymantecEDR.EndpointInstance.domain_or_workgroup
+      description: "Domain or workgroup name depending on the configuration. \nExample: \"WORKGROUP\" "
       type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.time
-      description: "The timestamp (in ISO 8601 format) that Specifies the creation\
-        \ or last update time of this instance. This is the creation time when there\
-        \ were no updates. Otherwise, it is the time of the last update. \nExample:\
-        \ \"2018-01-15T14:05:57.127Z\" "
+    - contextPath: SymantecEDR.EndpointInstance.time
+      description: "The timestamp (in ISO 8601 format) that Specifies the creation or last update time of this instance. This is the creation time when there were no updates. Otherwise, it is the time of the last update. \nExample: \"2018-01-15T14:05:57.127Z\" "
       type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.user_name
-      description: "The name of the user that originated or caused the event. \nExample:\
-        \ \"Administrator\" "
+    - contextPath: SymantecEDR.EndpointInstance.user_name
+      description: "The name of the user that originated or caused the event. \nExample: \"Administrator\" "
       type: String
-    - contextPath: SymantecEDR.EndpointInstance.result.ip_addresses
-      description: "Array of all the IP addresses (IPv4 or IPv6) associated with the\
-        \ endpoint. \n Example: [\"192.168.0.250\"]"
+    - contextPath: SymantecEDR.EndpointInstance.ip_addresses
+      description: "Array of all the IP addresses (IPv4 or IPv6) associated with the endpoint. \n Example: [\"192.168.0.250\"]"
       type: Unknown
   - arguments:
     - default: false
-      description: "The maximum number of records to return. \nLimit default value\
-        \ is 50. \nNote: If the page_size argument is set by the user then the limit\
-        \ argument will be ignored."
+      description: "The maximum number of records to return. \nLimit default value is 50. \nNote: If the page_size argument is set by the user then the limit argument will be ignored."
       isArray: false
       name: limit
       required: false
@@ -576,34 +478,21 @@ script:
     deprecated: false
     description: Get File Instances
     execution: false
-    name: symantec-edr-file-instance-get
+    name: symantec-edr-file-instance-list
     outputs:
-    - contextPath: SymantecEDR.FileInstance.next
-      description: 'The token used for cursoring. '
+    - contextPath: SymantecEDR.FileInstance.first_seen
+      description: "The timestamp (in ISO 8601 format) that Specifies the creation time of the event that resulted into the creation of this instance. \n\nExample: \"2018-01-30T04:13:10.669Z\" "
       type: String
-    - contextPath: 'SymantecEDR.FileInstance.total '
-      description: 'Count of File instances matching the query '
-      type: Number
-    - contextPath: 'SymantecEDR.FileInstance.result.frst_seen '
-      description: "The timestamp (in ISO 8601 format) that Specifies the creation\
-        \ time of the event that resulted into the creation of this instance. \n\n\
-        Example: \"2018-01-30T04:13:10.669Z\" "
+    - contextPath: SymantecEDR.FileInstance.folder
+      description: "The folder where the file resides. This attribute does not include the name of the file. \n\nExample: \"c:\\\\users\\\\public\\\\pictures\" "
       type: String
-    - contextPath: 'SymantecEDR.FileInstance.result.folder '
-      description: "The folder where the file resides. This attribute does not include\
-        \ the name of the file. \n\nExample: \"c:\\\\users\\\\public\\\\pictures\"\
-        \ "
+    - contextPath: SymantecEDR.FileInstance.last_seen
+      description: "The timestamp (in ISO 8601 format) that Specifies the creation time of the event that resulted into the update of this instance. \n\nExample: \"2018-01-30T04:13:10.669Z\" "
       type: String
-    - contextPath: 'SymantecEDR.FileInstance.result.last_seen '
-      description: "The timestamp (in ISO 8601 format) that Specifies the creation\
-        \ time of the event that resulted into the update of this instance. \n\nExample:\
-        \ \"2018-01-30T04:13:10.669Z\" "
+    - contextPath: SymantecEDR.FileInstance.name
+      description: "The name of the file. This attribute does not include the path of the file. \n\nExample: \"virus.exe\" "
       type: String
-    - contextPath: 'SymantecEDR.FileInstance.result.name '
-      description: "The name of the file. This attribute does not include the path\
-        \ of the file. \n\nExample: \"virus.exe\" "
-      type: String
-    - contextPath: 'SymantecEDR.FileInstance.result.sha2 '
+    - contextPath: SymantecEDR.FileInstance.sha2
       description: "The SHA256 checksum of the file (hex string) \n\nExample: \"eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31\""
       type: String
   - arguments:
@@ -630,15 +519,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
       required: false
@@ -652,18 +539,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Request for specific system activities from following events:\
-        \  \n0         = Application Activity \n1000 = System Health \nRefer to this\
-        \ <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\"\
-        >link text</a> to check the type_id for event type"
+      description: "Request for specific system activities from following events:  \n0         = Application Activity \n1000 = System Health \nRefer to this <a href=\"https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\">link text</a> to check the type_id for event type"
       isArray: false
       name: type_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the severity from following:  \nInfo\nwarning \nminor\
-        \ \nmajor \ncritical \nfatal "
+      description: "Specifies the severity from following:  \nInfo\nwarning \nminor \nmajor \ncritical \nfatal "
       isArray: false
       name: severity
       predefined:
@@ -677,8 +560,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "The overall success or failure of the action reported by the event.\
-        \ Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2)"
+      description: "The overall success or failure of the action reported by the event. Possible values are: \nUnknown (0)\nSuccess (1)\nFailure  (2)"
       isArray: false
       name: status
       predefined:
@@ -693,116 +575,82 @@ script:
     name: symantec-edr-system-activity-list
     outputs:
     - contextPath: SymantecEDR.SystemActivity.device_time
-      description: The timestamp (in ISO 8601 format) that specifes the time at which
-        the event occurred.
+      description: The timestamp (in ISO 8601 format) that specifes the time at which the event occurred.
       type: String
-    - contextPath: 'SymantecEDR.SystemActivity.type_id '
-      description: "The unique identifier for an event. Following this events link\
-        \ and Summary Type IDs:\nhttps://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\n\
-        \nSystem Activity Log Event Type: \nViewing Symantec EDR appliance activities\
-        \ in the System Activity log (broadcom.com) \n"
+    - contextPath: SymantecEDR.SystemActivity.type_id
+      description: "The unique identifier for an event. Following this events link and Summary Type IDs:\nhttps://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html\n\nSystem Activity Log Event Type: \nViewing Symantec EDR appliance activities in the System Activity log (broadcom.com) \n"
       type: Number
     - contextPath: SymantecEDR.SystemActivity.severity_id
-      description: "Event severity that specifies the importance of the event. Possible\
-        \ values are: \n1 = info (default) \n2 = warning \n3 = minor \n4 = major \n\
-        5 = critical \n6 = fatal "
+      description: "Event severity that specifies the importance of the event. Possible values are: \n1 = info (default) \n2 = warning \n3 = minor \n4 = major \n5 = critical \n6 = fatal "
       type: Number
     - contextPath: SymantecEDR.SystemActivity.message
-      description: 'Human-readable (possibly multi-line) event message or description
-        of the event. '
+      description: Human-readable (possibly multi-line) event message or description of the event.
       type: String
     - contextPath: SymantecEDR.SystemActivity.device_ip
       description: The IPv6 or IPv4 address of the device that originated the event.
       type: String
     - contextPath: SymantecEDR.SystemActivity.atp_node_role
-      description: "The role of the ATP appliance that generated the event. Possible\
-        \ values are: \n\n0 = Pre-Bootstrap \n1 = Network Scanner \n2 = Management\
-        \ \n3 = Standalone Network \n4 = Standalone Endpoint \n5 = All in One"
+      description: "The role of the ATP appliance that generated the event. Possible values are: \n\n0 = Pre-Bootstrap \n1 = Network Scanner \n2 = Management \n3 = Standalone Network \n4 = Standalone Endpoint \n5 = All in One"
       type: Number
     - contextPath: SymantecEDR.SystemActivity.category_id
       description: "The event type category. \n\n4 = Audit "
       type: String
-    - contextPath: 'SymantecEDR.SystemActivity.device_cap '
+    - contextPath: SymantecEDR.SystemActivity.device_cap
       description: Name or caption of ATP appliance that generated the event.
       type: String
     - contextPath: SymantecEDR.SystemActivity.device_name
-      description: The device name (i.e., the name of the endpoint or appliance associated
-        with an event).
+      description: The device name (i.e., the name of the endpoint or appliance associated with an event).
       type: String
     - contextPath: SymantecEDR.SystemActivity.feature_name
-      description: "The name of the feature that originated the event. \nApplicable\
-        \ events : 1, 20, 21, 1000 \nExample : \"Search\" "
+      description: "The name of the feature that originated the event. \nApplicable events : 1, 20, 21, 1000 \nExample : \"Search\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.id
-      description: "The event identifier for applicable events : 8080, 8081, 8082,\
-        \ 8083, 8084, 8085, 8086, 8089, 8090 \n1 = Exists \n2 = Partial \n\nThe outcome\
-        \ of the Session Audit event for Applicable events : 20 \n0 = Unknown \n1\
-        \ = Logon \n2 = Logoff \n\nThe outcome of the Entity Audit event. Applicable\
-        \ events : 21  \n0 = Unknown \n1 = Create \n2 = Update \n3 = Delete \n\n"
+      description: "The event identifier for applicable events : 8080, 8081, 8082, 8083, 8084, 8085, 8086, 8089, 8090 \n1 = Exists \n2 = Partial \n\nThe outcome of the Session Audit event for Applicable events : 20 \n0 = Unknown \n1 = Logon \n2 = Logoff \n\nThe outcome of the Entity Audit event. Applicable events : 21  \n0 = Unknown \n1 = Create \n2 = Update \n3 = Delete \n\n"
       type: String
     - contextPath: SymantecEDR.SystemActivity.log_name
-      description: "The index of the event. \nNote: This is for informational purpose\
-        \ and cannot be used as a filter. Use time as start_time to query for events.\
-        \ Example : \"epmp_events-2015-11-05\" "
+      description: "The index of the event. \nNote: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. Example : \"epmp_events-2015-11-05\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.log_time
       description: 'The time the event was logged.  Example : "YYYY-MM-DDThh:mm:ss.SSSZ"'
       type: String
     - contextPath: SymantecEDR.SystemActivity.remediation
-      description: "Description how to fix the issue, if applicable. \nApplicable\
-        \ events : 1000 \nExample : \"Enter valid connection settings for SEPM server\
-        \ [SEPM_DB→<IP>:<PORT>] for Symantec Endpoint Protection Correlation to work\
-        \ properly.\" "
+      description: "Description how to fix the issue, if applicable. \nApplicable events : 1000 \nExample : \"Enter valid connection settings for SEPM server [SEPM_DB→<IP>:<PORT>] for Symantec Endpoint Protection Correlation to work properly.\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.status_detail
-      description: "String representing the type of failure that may have occurred.\
-        \ The list includes, but is not limited to, the following: \nservice_failure\
-        \ \nservice_unavailable \nnetwork_error \ncertifcate_error \nsw_update_error\
-        \ \ninternal_error \nauthentication_error \nconnection_error "
+      description: "String representing the type of failure that may have occurred. The list includes, but is not limited to, the following: \nservice_failure \nservice_unavailable \nnetwork_error \ncertifcate_error \nsw_update_error \ninternal_error \nauthentication_error \nconnection_error "
       type: String
     - contextPath: SymantecEDR.SystemActivity.status_exception
-      description: "Low level exception message if available. \nApplicable events\
-        \ : 1000 "
+      description: "Low level exception message if available. \nApplicable events : 1000 "
       type: String
     - contextPath: SymantecEDR.SystemActivity.status_id
-      description: "The overall success or failure of the action reported by the event.\
-        \ Possible values are: \n0 = Unknown \n1 = Success \n2 = Failure \nApplicable\
-        \ events : 1, 20, 21, 1000 \nExample : 1 "
+      description: "The overall success or failure of the action reported by the event. Possible values are: \n0 = Unknown \n1 = Success \n2 = Failure \nApplicable events : 1, 20, 21, 1000 \nExample : 1 "
       type: Number
     - contextPath: SymantecEDR.SystemActivity.uuid
-      description: 'The unique ID for this event. UUID uniquely identifies an event
-        with a single event type (type_id). '
+      description: 'The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id). '
       type: Unknown
     - contextPath: SymantecEDR.SystemActivity.process_pid
-      description: "PID of the service for which an action was taken. \nApplicable\
-        \ events : 1000 \nExample : 31337"
+      description: "PID of the service for which an action was taken. \nApplicable events : 1000 \nExample : 31337"
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_db_ip_address
       description: IP address of the SEPM database.
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_enabled
-      description: "Indicates whether ATP is enabled to log on and gather logs from\
-        \ this database. Applicable events : 1000 \nDefault : false \nExample : true "
+      description: "Indicates whether ATP is enabled to log on and gather logs from this database. Applicable events : 1000 \nDefault : false \nExample : true "
       type: Boolean
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_db_type
-      description: "Type of database: MSSQL or Sybase. \n\nApplicable events : 1000\
-        \ \n\nExample : \"SYBASE\" "
+      description: "Type of database: MSSQL or Sybase. \n\nApplicable events : 1000 \n\nExample : \"SYBASE\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_user_name
-      description: "User name of the SEPM database. \n\nApplicable events : 1000 \n\
-        \nExample : \"ATP_QUERY_USER\" "
+      description: "User name of the SEPM database. \n\nApplicable events : 1000 \n\nExample : \"ATP_QUERY_USER\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_status
-      description: "Status of SEPM database configuration with ATP. \n\nApplicable\
-        \ events : 1000 \n\nExample : \"healthy\" "
+      description: "Status of SEPM database configuration with ATP. \n\nApplicable events : 1000 \n\nExample : \"healthy\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_sepm_name
-      description: "User-provided name for SEPM database server. \n\nApplicable events\
-        \ : 1000 \n\nExample : \"SEPM_DB\" "
+      description: "User-provided name for SEPM database server. \n\nApplicable events : 1000 \n\nExample : \"SEPM_DB\" "
       type: String
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_db_port
-      description: "Database port of SEPM database. \n\nApplicable events : 1000 \n\
-        \nExample : 8081 "
+      description: "Database port of SEPM database. \n\nApplicable events : 1000 \n\nExample : 8081 "
       type: Number
     - contextPath: SymantecEDR.SystemActivity.data_sepm_server_db_name
       description: SymantecEDR.SystemActivity.data.eventdata.sepm_server.db_name
@@ -817,16 +665,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies the beginning of the search time frame.  Supports ISO
-        (e.g "yyyy-MM-dd’T’HH:mm:ss.SSSZ") or '10 seconds', '5 minutes', '2 days',
-        '1 weeks').
+      description: Specifies the beginning of the search time frame.  Supports ISO (e.g "yyyy-MM-dd’T’HH:mm:ss.SSSZ") or '10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Specifies the end of the search time frame. Supports ISO (e.g"yyyy-MM-dd’T’HH:mm:ss.SSSZ")
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: Specifies the end of the search time frame. Supports ISO (e.g"yyyy-MM-dd’T’HH:mm:ss.SSSZ") and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
       required: false
@@ -846,24 +691,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Specifies a search query as Lucene query string.\nExample: query=\"\
-        type_id:(4096 OR 4098 OR 4123)\"\n\nThe search query is broken up into terms\
-        \ and operators. \n\nThere are two types of terms: Single Terms and Phrases.\n\
-        \      (a) A Single Term is a single word such as \"test\" or \"hello\"\n\
-        \      (b) A Phrase is a group of words surrounded by double quotes such as\
-        \ \"hello dolly\"\n\nWhen creating a search query string, consider the following:\n\
-        \n1. You can search any field by specifying the field name followed by a colon\
-        \ \":\" and then the term you are looking for\n2. Escape special characters\
-        \ that are part of the query syntax. To escape a special character use the\
-        \ \\ before the character. The current list of special characters are '+,\
-        \ -, &&, ||, !, ( ), { }, [ ], ^, \", ~ ,*, ?, \\, :'\n3. Date value should\
-        \ follow ISO 8601 date stamp standard format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)\n\
-        4. Supported Boolean operators for complex query are: AND OR + - NOT Note:\
-        \ Boolean operators must be ALL CAPS\n5. Multiple terms can be combined together\
-        \ with Boolean operators to form a more complex query in the query clause\n\
-        6. Use parentheses to group clauses to form sub-queries\n7. Defaults to all\
-        \ events for the start_time and end_time specified in the query\n8. The maximum\
-        \ length of the query string is 10240 characters"
+      description: "Specifies a search query as Lucene query string.\nExample: query=\"type_id:(4096 OR 4098 OR 4123)\"\n\nThe search query is broken up into terms and operators. \n\nThere are two types of terms: Single Terms and Phrases.\n      (a) A Single Term is a single word such as \"test\" or \"hello\"\n      (b) A Phrase is a group of words surrounded by double quotes such as \"hello dolly\"\n\nWhen creating a search query string, consider the following:\n\n1. You can search any field by specifying the field name followed by a colon \":\" and then the term you are looking for\n2. Escape special characters that are part of the query syntax. To escape a special character use the \\ before the character. The current list of special characters are '+, -, &&, ||, !, ( ), { }, [ ], ^, \", ~ ,*, ?, \\, :'\n3. Date value should follow ISO 8601 date stamp standard format (yyyy-MM-dd'T'HH:mm:ss.SSSXXX)\n4. Supported Boolean operators for complex query are: AND OR + - NOT Note: Boolean operators must be ALL CAPS\n5. Multiple terms can be combined together with Boolean operators to form a more complex query in the query clause\n6. Use parentheses to group clauses to form sub-queries\n7. Defaults to all events for the start_time and end_time specified in the query\n8. The maximum length of the query string is 10240 characters"
       isArray: false
       name: query
       required: false
@@ -877,7 +705,7 @@ script:
     deprecated: false
     description: Get  Audit Events
     execution: false
-    name: symantec-edr-audit-event-get
+    name: symantec-edr-audit-event-list
   - arguments:
     - default: false
       description: |-
@@ -902,8 +730,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
       predefined:
@@ -911,8 +738,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
       predefined:
@@ -937,8 +763,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the severity from following:  \ninfo (1) \nwarning (2)\
-        \ \nminor (3) \nmajor (4) \ncritical (5) \nfatal (6) "
+      description: "Specifies the severity from following:  \ninfo (1) \nwarning (2) \nminor (3) \nmajor (4) \ncritical (5) \nfatal (6) "
       isArray: false
       name: severity
       predefined:
@@ -1016,9 +841,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the severity from following:  \ninfo (1)\nwarning (2)\
-        \ \nminor (3) \nmajor (4) \ncritical (5) \nfatal (6)\n\nDefault: All Severity\
-        \ Type"
+      description: "Specifies the severity from following:  \ninfo (1)\nwarning (2) \nminor (3) \nmajor (4) \ncritical (5) \nfatal (6)\n\nDefault: All Severity Type"
       isArray: false
       name: severity
       predefined:
@@ -1094,8 +917,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the incident  severity/priority level \nLow (1) \nMedium\
-        \ (2) \nHigh (3)"
+      description: "Specifies the incident  severity/priority level \nLow (1) \nMedium (2) \nHigh (3)"
       isArray: false
       name: severity
       predefined:
@@ -1106,8 +928,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the incident status: \nOpen (1) \nWaiting (2) \nIn-Progress(3)\
-        \ \nClose (4)"
+      description: "Specifies the incident status: \nOpen (1) \nWaiting (2) \nIn-Progress(3) \nClose (4)"
       isArray: false
       name: status
       predefined:
@@ -1122,19 +943,19 @@ script:
     execution: false
     name: symantec-edr-incident-list
     outputs:
-    - contextPath: SymantecEDR.Incident.result.atp_incident_id
+    - contextPath: SymantecEDR.Incident.atp_incident_id
       description: A unique identifer for this incident.
       type: Number
-    - contextPath: SymantecEDR.Incident.result.log_name
+    - contextPath: SymantecEDR.Incident.log_name
       description: |-
         The index of the incident.
         Note: This is for informational purpose and cannot be used as a flter.
         Use time as start_time to query for incidents. Example : "epmp_incident-2018-03-01"
       type: String
-    - contextPath: SymantecEDR.Incident.result.summary
+    - contextPath: SymantecEDR.Incident.summary
       description: Summary information about the incident.
       type: String
-    - contextPath: SymantecEDR.Incident.result.priority_level
+    - contextPath: SymantecEDR.Incident.priority_level
       description: |-
         Priority level of the incident. Possible values are:
         1 = LOW
@@ -1146,20 +967,20 @@ script:
         The creation time (in ISO 8601 format) when the last event associated
         with the incident was created. Matches the last event’s time feld.
       type: Date
-    - contextPath: SymantecEDR.Incident.result.time
+    - contextPath: SymantecEDR.Incident.time
       description: The creation time (in ISO 8601 format) of the incident.
       type: Date
-    - contextPath: SymantecEDR.Incident.result.rule_name
+    - contextPath: SymantecEDR.Incident.rule_name
       description: The name of the rule that triggered this incident.
       type: String
-    - contextPath: SymantecEDR.Incident.result.first_event_seen
+    - contextPath: SymantecEDR.Incident.first_event_seen
       description: |-
         The creation time (in ISO 8601 format) when the frst event associated
         with the incident was created. Matches the frst event’s time feld. This
         is likely before the incident’s creation time feld given incidents are
         created after their frst event is seen.
       type: Date
-    - contextPath: SymantecEDR.Incident.result.state
+    - contextPath: SymantecEDR.Incident.state
       description: |-
         The current state of the incident. Possible values are:
         1 = OPEN
@@ -1167,32 +988,32 @@ script:
         3 = IN_WORK
         4 = CLOSED
       type: Number
-    - contextPath: SymantecEDR.Incident.result.detection_type
+    - contextPath: SymantecEDR.Incident.detection_type
       description: Incident Detection Type
       type: String
-    - contextPath: SymantecEDR.Incident.result.device_time
+    - contextPath: SymantecEDR.Incident.device_time
       description: |-
         The timestamp (in ISO 8601 format) that specifes the time at which the
         event occurred
       type: Date
-    - contextPath: SymantecEDR.Incident.result.recommended_action
+    - contextPath: SymantecEDR.Incident.recommended_action
       description: |-
         Recommended action for this incident. Possible actions could be
         isolating an endpoint, deleting fle from endpoint, blacklist URL, or
         domain, etc.
       type: String
-    - contextPath: SymantecEDR.Incident.result.updated
+    - contextPath: SymantecEDR.Incident.updated
       description: The time (in ISO 8601 format) of last modifcation.
       type: Date
-    - contextPath: SymantecEDR.Incident.result.uuid
+    - contextPath: SymantecEDR.Incident.uuid
       description: |-
         The GUID assigned for this incident.
         Example : "483e3fde-4556-4800-81b1-e8da5ee394b6"
       type: String
-    - contextPath: SymantecEDR.Incident.result.atp_rule_id
+    - contextPath: SymantecEDR.Incident.atp_rule_id
       description: The textual representation of the rule that triggered this incident.
       type: String
-    - contextPath: SymantecEDR.Incident.result.resolution
+    - contextPath: SymantecEDR.Incident.resolution
       description: |-
         The resolution of the closed incident. Possible values are:
         0 =INSUFFICIENT_DATA. The incident does not have sufcient information to make a determination.
@@ -1203,12 +1024,6 @@ script:
         5 = BENIGN. The incident detected the activity as expected but is not a security threat.
         6 = TEST. The incident was generated due to internal security testing.
       type: Number
-    - contextPath: SymantecEDR.Incident.next
-      description: 'The token used for cursoring. '
-      type: String
-    - contextPath: SymantecEDR.Incident.total
-      description: 'The total number of incidents in the overall query '
-      type: String
   - arguments:
     - default: false
       description: Specifies unique incident Id
@@ -1239,15 +1054,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
       required: false
@@ -1257,23 +1070,16 @@ script:
     execution: false
     name: symantec-edr-incident-comment-get
     outputs:
-    - contextPath: 'SymantecEDR.IncidentComment.next '
-      description: The token used for cursoring.
-      type: String
-    - contextPath: 'SymantecEDR.IncidentComment.total '
-      description: Count of IncidentComment objects matching the query
-      type: String
     - contextPath: SymantecEDR.IncidentComment.incident_id
       description: Incident ID
       type: Number
-    - contextPath: SymantecEDR.IncidentComment.result.comment
+    - contextPath: SymantecEDR.IncidentComment.comment
       description: The comment of incident
       type: String
-    - contextPath: SymantecEDR.IncidentComment.result.time
-      description: 'The timestamp (in ISO 8601 format) that specifies the time at
-        which the comment was added to incident '
+    - contextPath: SymantecEDR.IncidentComment.time
+      description: 'The timestamp (in ISO 8601 format) that specifies the time at which the comment was added to incident '
       type: String
-    - contextPath: SymantecEDR.IncidentComment.result.user_id
+    - contextPath: SymantecEDR.IncidentComment.user_id
       description: "The user id who registered the comment. \nExample: 100000"
       type: String
   - arguments:
@@ -1300,41 +1106,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Returns list of domain type deny list policies matching to the
-        specified pattern value. If no value is specified, then all domain type allow
-        list policies will be returned. '
+      description: 'Returns list of domain type deny list policies matching to the specified pattern value. If no value is specified, then all domain type allow list policies will be returned. '
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
-      description: Returns specific deny list policy for the specified identifier.
-        If no value is specified, then all deny list policies will be returned.
+      description: Returns specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned.
       isArray: false
       name: denylist_id
       required: false
       secret: false
     - default: false
-      description: Returns list of ip type deny list policies matching to the Specified
-        pattern value. If no value is Specified, then all ip type deny list policies
-        will be returned
+      description: Returns list of ip type deny list policies matching to the Specified pattern value. If no value is Specified, then all ip type deny list policies will be returned
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: Returns Specific sha256 type deny list policy for the Specified
-        sha256 value. If no value is Specified, then all sha256 type deny list policies
-        will be returned.
+      description: Returns Specific sha256 type deny list policy for the Specified sha256 value. If no value is Specified, then all sha256 type deny list policies will be returned.
       isArray: false
       name: sha256
       required: false
       secret: false
     - default: false
-      description: "Returns list of url type deny list policies matching to the Specified\
-        \ pattern value. If no value is Specified, then all url type deny list policies\
-        \ will be returned. \n\nNote: url string must be Specified in encoded URL\
-        \ format."
+      description: "Returns list of url type deny list policies matching to the Specified pattern value. If no value is Specified, then all url type deny list policies will be returned. \n\nNote: url string must be Specified in encoded URL format."
       isArray: false
       name: url
       required: false
@@ -1344,27 +1140,17 @@ script:
     execution: false
     name: symantec-edr-deny-list-policy-get
     outputs:
-    - contextPath: 'SymantecEDR.DenyListPolicy.next '
-      description: 'The token used for deny list policies cursoring '
+    - contextPath: SymantecEDR.DenyListPolicy.comment
+      description: "Specifies the comment for this deny  list policy. If not Specified, then defaults to empty string. \n\nExample: \"No monitoring required for Control traffic from this IP.\""
       type: String
-    - contextPath: SymantecEDR.DenyListPolicy.result.comment
-      description: "Specifies the comment for this deny  list policy. If not Specified,\
-        \ then defaults to empty string. \n\nExample: \"No monitoring required for\
-        \ Control traffic from this IP.\""
-      type: String
-    - contextPath: SymantecEDR.DenyListPolicy.result.id
-      description: "The unique ID of this deny list policy. This id can be used in\
-        \ patch or delete request. \n\nNote: This is ignored if present in create\
-        \ request "
+    - contextPath: SymantecEDR.DenyListPolicy.id
+      description: "The unique ID of this deny list policy. This id can be used in patch or delete request. \n\nNote: This is ignored if present in create request "
       type: Number
-    - contextPath: SymantecEDR.DenyListPolicy.result.target_type
-      description: "Specifies type of this denylist policy. \n\nExample: \"ip\" \n\
-        \nenum (\"ip\", \"domain\", \"url\", \"sha256\", \"incident_trigger_sig_id\"\
-        )"
+    - contextPath: SymantecEDR.DenyListPolicy.target_type
+      description: "Specifies type of this denylist policy. \n\nExample: \"ip\" \n\nenum (\"ip\", \"domain\", \"url\", \"sha256\", \"incident_trigger_sig_id\")"
       type: String
-    - contextPath: SymantecEDR.DenyListPolicy.result.target_value
-      description: "Specifies value of this deny list policy. \n\nExample: \"1.1.1.1\"\
-        \ "
+    - contextPath: SymantecEDR.DenyListPolicy.target_value
+      description: "Specifies value of this deny list policy. \n\nExample: \"1.1.1.1\" "
       type: String
   - arguments:
     - default: false
@@ -1391,41 +1177,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Returns list of domain type allow list policies matching to the
-        specified pattern value. If no value is specified, then all domain type allow
-        list policies will be returned. '
+      description: 'Returns list of domain type allow list policies matching to the specified pattern value. If no value is specified, then all domain type allow list policies will be returned. '
       isArray: false
       name: domain
       required: false
       secret: false
     - default: false
-      description: Returns specific allow list policy for the specified identifier.
-        If no value is specified, then all allow list policies will be returned.
+      description: Returns specific allow list policy for the specified identifier. If no value is specified, then all allow list policies will be returned.
       isArray: false
       name: allowlist_id
       required: false
       secret: false
     - default: false
-      description: 'Returns list of ip type allow list policies matching to the Specified
-        pattern value. If no value is Specified, then all ip type allow list policies
-        will be returned. '
+      description: 'Returns list of ip type allow list policies matching to the Specified pattern value. If no value is Specified, then all ip type allow list policies will be returned. '
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: "Returns list of url type allow list policies matching to the Specified\
-        \ pattern value. If no value is Specified, then all url type allow list policies\
-        \ will be returned. \n\nNote: Url string must be Specified in encoded URL\
-        \ format. "
+      description: "Returns list of url type allow list policies matching to the Specified pattern value. If no value is Specified, then all url type allow list policies will be returned. \n\nNote: Url string must be Specified in encoded URL format. "
       isArray: false
       name: url
       required: false
       secret: false
     - default: false
-      description: 'Returns Specific sha256 type allow list policy for the Specified
-        sha256 value. If no value is Specified, then all sha256 type allow list policies
-        will be returned. '
+      description: 'Returns Specific sha256 type allow list policy for the Specified sha256 value. If no value is Specified, then all sha256 type allow list policies will be returned. '
       isArray: false
       name: sha256
       required: false
@@ -1435,30 +1211,22 @@ script:
     execution: false
     name: symantec-edr-allow-list-policy-get
     outputs:
-    - contextPath: SymantecEDR.AllowListPolicy.next
-      description: The token used for allowing list policies cursoring.
+    - contextPath: SymantecEDR.AllowListPolicy.comment
+      description: "Specifies the comment for this allow list policy. If not Specified, then defaults to empty string. \n\nExample: \"No monitoring required for Control traffic from this IP."
       type: String
-    - contextPath: SymantecEDR.AllowListPolicy.result.comment
-      description: "Specifies the comment for this allow list policy. If not Specified,\
-        \ then defaults to empty string. \n\nExample: \"No monitoring required for\
-        \ Control traffic from this IP."
+    - contextPath: SymantecEDR.AllowListPolicy.id
+      description: "The unique ID of this allow list policy. This id can be used in patch or delete request. \n\nNote: This is ignored if present in create request"
       type: String
-    - contextPath: SymantecEDR.AllowListPolicy.result.id
-      description: "The unique ID of this allow list policy. This id can be used in\
-        \ patch or delete request. \n\nNote: This is ignored if present in create\
-        \ request"
+    - contextPath: SymantecEDR.AllowListPolicy.target_type
+      description: "Specifies type of this whitelist policy.  enum (\"ip\", \"domain\", \"url\", \"sha256\", \"incident_trigger_sig_id\") \n\nExample: \"ip\" "
       type: String
-    - contextPath: SymantecEDR.AllowListPolicy.result.target_type
-      description: "Specifies type of this whitelist policy.  enum (\"ip\", \"domain\"\
-        , \"url\", \"sha256\", \"incident_trigger_sig_id\") \n\nExample: \"ip\" "
-      type: String
-    - contextPath: SymantecEDR.AllowListPolicy.result.target_value
+    - contextPath: SymantecEDR.AllowListPolicy.target_value
       description: "Specifies value of this allow list policy. \n\nExample: \"1.1.1.1\""
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: Hash of the file to query. Supports SHA256
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -1469,9 +1237,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: "Specifes the operation to take on specifed incident.\n- Add :\
-        \ Add Comments to Incident.\n- Close: Closed Incident. \n- Update: Update\
-        \ status either Open or Close Incident."
+      description: "Specifes the operation to take on specifed incident.\n- Add : Add Comments to Incident.\n- Close: Closed Incident. \n- Update: Update status either Open or Close Incident."
       isArray: false
       name: operation
       predefined:
@@ -1482,9 +1248,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Update Close or Open Incident with status. value is any one of
-        the state integer e.g.  (1 = open, 2 = waiting, 3 In-progress).  The type
-        is integer. example "value=2"
+      description: Update Close or Open Incident with status. value is any one of the state integer e.g.  (1 = open, 2 = waiting, 3 In-progress).  The type is integer. example "value=2"
       isArray: false
       name: update_status
       predefined:
@@ -1507,22 +1271,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z)
-        and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
       required: false
       secret: false
     deprecated: false
-    description: Incidents Patch command for the close incident, update resolution
-      of closed incident or add comments to incident.
+    description: Incidents Patch command for the close incident, update resolution of closed incident or add comments to incident.
     execution: false
     name: symantec-edr-incident-update
   - arguments:
@@ -1537,28 +1298,14 @@ script:
     execution: false
     name: symantec-edr-endpoint-status
     outputs:
-    - contextPath: 'SymantecEDR.CommandStatus.command_issuer_name '
-      description: "The user display name who issued the command. \n\nExample: \"\
-        ATP API\""
-      type: String
-    - contextPath: SymantecEDR.CommandStatus.next
-      description: The token used for cursoring.
+    - contextPath: SymantecEDR.CommandStatus.command_issuer_name
+      description: "The user display name who issued the command. \n\nExample: \"ATP API\""
       type: String
     - contextPath: SymantecEDR.CommandStatus.state
-      description: "Command state \n\nenum (\"completed\", \"initializing\", \"in_progress\"\
-        , \"error\", \"cancel_requested\", \"cancelled\") "
+      description: "Command state \n\nenum (\"completed\", \"initializing\", \"in_progress\", \"error\", \"cancel_requested\", \"cancelled\") "
       type: String
-    - contextPath: SymantecEDR.CommandStatus.total
-      description: The total number of status elements present in this query
-      type: Number
     - contextPath: SymantecEDR.CommandStatus.status.error_code
-      description: "This represents error codes for a specific target. \nPossible\
-        \ values:\n-1 = Error\n1 = In-progress\n9000 = File Is Clean\n9001 = File\
-        \ Is Malware\n9003 = File Size Over Limit (File Size Should Not Exceed 10MB\
-        \ For Sandbox Submission)\n9005 = Query To Sandbox Failed (Check Network Connectivity)\n\
-        9006 = File Type Not Supported (Check With Symantec Support For Sandbox Supported\
-        \ File List)\n9007 = File Not Found In FileStore (Use get_endpoint_fle Command\
-        \ To Copy File Into FileStore)"
+      description: "This represents error codes for a specific target. \nPossible values:\n-1 = Error\n1 = In-progress\n9000 = File Is Clean\n9001 = File Is Malware\n9003 = File Size Over Limit (File Size Should Not Exceed 10MB For Sandbox Submission)\n9005 = Query To Sandbox Failed (Check Network Connectivity)\n9006 = File Type Not Supported (Check With Symantec Support For Sandbox Supported File List)\n9007 = File Not Found In FileStore (Use get_endpoint_fle Command To Copy File Into FileStore)"
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.message
       description: |-
@@ -1574,9 +1321,7 @@ script:
         File Not Found In FileStore (9007)
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.state
-      description: "This represents the command status for specific target. Values:\
-        \ \n\n 0 = Completed \n1 = In progress \n2 = Error \n3 = Cancelled \n4 = Cancel\
-        \ requested"
+      description: "This represents the command status for specific target. Values: \n\n 0 = Completed \n1 = In progress \n2 = Error \n3 = Cancelled \n4 = Cancel requested"
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.target
       description: The target feld represents SHA256 of a fle
@@ -1589,8 +1334,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Rejoins endpoints by re-establishing connections that the endpoint(s)
-      has to internal networks and external networks, based on the endpoint IDs
+    description: Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs
     execution: false
     name: symantec-edr-endpoint-rejoin
     outputs:
@@ -1598,19 +1342,10 @@ script:
       description: Command ID
       type: String
     - contextPath: SymantecEDR.Command.rejoin_endpoint.error_code
-      description: "This represents the status of the command action. Values:\n-1\
-        \ = Error \n0 = Command rejoin_endpoint successfully requested \n1 = Command\
-        \ rejoin_endpoint not supported for target command type \n2 = Command rejoin_endpoint\
-        \ failed because the target command is already in terminal state (i.e., completed,\
-        \ error, or cancelled) \n3 = Command rejoin_endpoint is already in progress\
-        \ for the target command\n"
+      description: "This represents the status of the command action. Values:\n-1 = Error \n0 = Command rejoin_endpoint successfully requested \n1 = Command rejoin_endpoint not supported for target command type \n2 = Command rejoin_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled) \n3 = Command rejoin_endpoint is already in progress for the target command\n"
       type: Number
     - contextPath: SymantecEDR.Command.rejoin_endpoint.message
-      description: "Message explaining error code. \n\nValues: \n-1 = Error  \n0 =\
-        \ Command rejoin_endpoint successfully requested  \n1 = Command rejoin_endpoint\
-        \ not supported for target command type  \n2 = Command rejoin_endpoint failed\
-        \ because the target command is already in terminal state  \n3 = Command rejoin_endpoint\
-        \ is already in progress for the target command"
+      description: "Message explaining error code. \n\nValues: \n-1 = Error  \n0 = Command rejoin_endpoint successfully requested  \n1 = Command rejoin_endpoint not supported for target command type  \n2 = Command rejoin_endpoint failed because the target command is already in terminal state  \n3 = Command rejoin_endpoint is already in progress for the target command"
       type: String
   - arguments:
     - default: false
@@ -1626,8 +1361,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes a file, i.e. deletes all instances of the file, based on
-      the file hash that you have specified from the endpoint using the Device ID
+    description: Deletes a file, i.e. deletes all instances of the file, based on the file hash that you have specified from the endpoint using the Device ID
     execution: false
     name: symantec-edr-endpoint-delete-file
     outputs:
@@ -1635,20 +1369,10 @@ script:
       description: Command ID
       type: String
     - contextPath: SymantecEDR.Command.delete_endpoint_file.error_code
-      description: "This represents the status of the command action. \n Possible\
-        \ values:\n-1 = Error\n0= Command delete_endpoint_file successfully requested\n\
-        1 = Command delete_endpoint_file not supported for target command type\n2\
-        \ = Command delete_endpoint_file failed because the target command is already\
-        \ in terminal state (i.e.,completed, error, or cancelled)\n3 = Command delete_endpoint_file\
-        \ is already in progress for the target command"
+      description: "This represents the status of the command action. \n Possible values:\n-1 = Error\n0= Command delete_endpoint_file successfully requested\n1 = Command delete_endpoint_file not supported for target command type\n2 = Command delete_endpoint_file failed because the target command is already in terminal state (i.e.,completed, error, or cancelled)\n3 = Command delete_endpoint_file is already in progress for the target command"
       type: String
     - contextPath: SymantecEDR.Command.delete_endpoint_file.message
-      description: "Message explaining error code. \nPossible Values: \n-1 = Error\
-        \  \n0 = Command delete_endpoint_file successfully requested  \n1 = Command\
-        \ delete_endpoint_file not supported for target command type  \n2 = Command\
-        \ delete_endpoint_file failed because the target command is already in terminal\
-        \ state  \n3 = Commanddelete_endpoint_file is already in progress for the\
-        \ target command"
+      description: "Message explaining error code. \nPossible Values: \n-1 = Error  \n0 = Command delete_endpoint_file successfully requested  \n1 = Command delete_endpoint_file not supported for target command type  \n2 = Command delete_endpoint_file failed because the target command is already in terminal state  \n3 = Commanddelete_endpoint_file is already in progress for the target command"
       type: String
   - arguments:
     - default: false
@@ -1658,31 +1382,20 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Cancel a command that is already in progress. Cancel the command\
-      \ execution on all the endpoints where it is still in progress. \nOnly one command\
-      \ can be cancelled at a time."
+    description: "Cancel a command that is already in progress. Cancel the command execution on all the endpoints where it is still in progress. \nOnly one command can be cancelled at a time."
     execution: false
-    name: symantec-edr-endpoint-cancel
+    name: symantec-edr-endpoint-cancel-command
     outputs:
     - contextPath: SymantecEDR.Command.cancel.command_id
       description: Command ID
       type: String
     - contextPath: SymantecEDR.Command.cancel.error_code
-      description: "This represents the status of the command action. Possible Values:\
-        \ \n-1 = Error \n0 = Command cancel successfully requested \n1 = Command cancel\
-        \ not supported for target command type \n2 = Command cancel failed because\
-        \ the target command is already in terminal state (i.e., completed, error,\
-        \ or cancelled) \n3 = Command cancel is already in progress for the target\
-        \ command"
+      description: "This represents the status of the command action. Possible Values: \n-1 = Error \n0 = Command cancel successfully requested \n1 = Command cancel not supported for target command type \n2 = Command cancel failed because the target command is already in terminal state (i.e., completed, error, or cancelled) \n3 = Command cancel is already in progress for the target command"
       type: String
     - contextPath: SymantecEDR.Command.cancel.message
-      description: "Message explaining error code. Possible Values: \n-1 = Error \
-        \ \n0 = Command cancel successfully requested  \n1 = Command cancel not supported\
-        \ for target command type  \n2 = Command cancel failed because the target\
-        \ command is already in terminal state  \n3 = Command cancel is already in\
-        \ progress for the target command"
+      description: "Message explaining error code. Possible Values: \n-1 = Error  \n0 = Command cancel successfully requested  \n1 = Command cancel not supported for target command type  \n2 = Command cancel failed because the target command is already in terminal state  \n3 = Command cancel is already in progress for the target command"
       type: String
-  dockerimage: demisto/python3:3.7.4.2245
+  dockerimage: demisto/python3:3.10.9.40422
   feed: false
   isfetch: true
   longRunning: false
@@ -1691,3 +1404,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

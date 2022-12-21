@@ -14,13 +14,7 @@ import pytest
 import json
 import io
 from CommonServerPython import DemistoException
-from SymantecEDRDev import Client, get_incident_uuid, get_endpoint_command, get_endpoint_instance_command, \
-    get_domain_instance_command, get_file_instance_command, get_endpoint_status_command, get_event_list_command, \
-    get_event_for_incident_list_command, get_incident_list_command, get_deny_list_command, get_audit_event_command, \
-    get_incident_comments_command, get_allow_list_command, get_domain_file_association_list_command, \
-    get_endpoint_domain_association_list_command, get_endpoint_file_association_list_command, \
-    get_file_sandbox_issue_polling_command, get_file_sandbox_status_polling_command, \
-    get_file_sandbox_verdict_polling_command, get_system_activity_command, iso_creation_date
+from SymantecEDRDev import Client, get_file_instance_command
 
 
 def util_load_json(path):
