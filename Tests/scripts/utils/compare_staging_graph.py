@@ -198,7 +198,6 @@ def compare_content_packs(
         for path in list_files_id_set
         if not Path(str(path).replace("id_set", "graph")).exists()
         and "NonSupported" not in str(path)
-        and not Path(str(path).replace("classifier-mapper-classifier", "classifier-mapper")).exists()
     ]
     message.append(f"Missing files in graph: {missing}")
 
