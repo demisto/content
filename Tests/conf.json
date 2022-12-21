@@ -3012,6 +3012,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar Indicator Hunting Test",
+            "timeout": 12000,
             "fromversion": "6.0.0"
         },
         {
@@ -3576,8 +3577,7 @@
         {
             "integrations": "QRadar v3",
             "playbookID": "QRadar_v3-test",
-            "fromversion": "6.0.0",
-            "timeout": 3000
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTest",
