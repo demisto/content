@@ -24,5 +24,4 @@ echo "MYPYPATH=""$path"":$MYPYPATH" >> .env
 
 echo "Setting up content dependencies"
 
-poetry install --no-root
-# NO_HOOKS=1 .hooks/bootstrap
+NO_HOOKS=1 .hooks/bootstrap
