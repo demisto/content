@@ -27,7 +27,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/netutils:1.0.0.24101
+dockerimage: demisto/netutils:1.0.0.40934
 runas: DBotWeakRole
 tests:
 - No test
