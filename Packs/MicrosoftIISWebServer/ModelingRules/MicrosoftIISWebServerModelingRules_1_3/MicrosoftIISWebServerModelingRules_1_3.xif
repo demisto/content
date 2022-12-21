@@ -55,6 +55,8 @@ alter event_type = arrayindex(regextract(_raw_log, "(\S+\s\d+\s\S+\s\d+)"),0)
 | alter
     xdm.source.ipv4 = c_ip,
     xdm.target.ipv4 = s_ip,
+    xdm.source.port = to_integer(s_port),
+    xdm.target.port = to_integer(c_port),
     xdm.target.resource.sub_type = s_port,
     xdm.network.http.method = cs_method,
     xdm.target.resource.id = streamid,
