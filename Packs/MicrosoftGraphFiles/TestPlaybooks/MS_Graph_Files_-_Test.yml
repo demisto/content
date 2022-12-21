@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 132
+version: 136
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -1138,7 +1138,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1020
         }
       }
     note: false
@@ -2067,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 8fb5dd65-fb0b-4795-87e8-93ab51e9aa05
+    taskid: 27f22e55-71f2-4da4-8181-c31944058c47
     type: regular
     task:
-      id: 8fb5dd65-fb0b-4795-87e8-93ab51e9aa05
+      id: 27f22e55-71f2-4da4-8181-c31944058c47
       version: -1
       name: save id
       description: Set a value in context under the key you entered.
@@ -2088,7 +2088,7 @@ tasks:
         complex:
           root: MsGraphFiles.UploadedFiles
           filters:
-          - - operator: isEqualString
+          - - operator: isEqualNumber
               left:
                 value:
                   simple: MsGraphFiles.UploadedFiles.Size
@@ -2097,12 +2097,6 @@ tasks:
                 value:
                   simple: "7450762"
           accessor: ID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
     separatecontext: false
     continueonerrortype: ""
     view: |-
