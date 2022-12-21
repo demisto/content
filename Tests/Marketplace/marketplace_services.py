@@ -29,12 +29,10 @@ from google.cloud import storage
 
 import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import PackFolders, Metadata, GCPConfig, BucketUploadFlow, PACKS_FOLDER, \
-    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, \
-    PACK_FOLDERS_TO_ID_SET_KEYS, \
+    PackTags, PackIgnored, Changelog, BASE_PACK_DEPENDENCY_DICT, SIEM_RULES_OBJECTS, PackStatus, PACK_FOLDERS_TO_ID_SET_KEYS, \
     CONTENT_ROOT_PATH, XSOAR_MP, XSIAM_MP, XPANSE_MP, TAGS_BY_MP, CONTENT_ITEM_NAME_MAPPING, \
     ITEMS_NAMES_TO_DISPLAY_MAPPING, RN_HEADER_TO_ID_SET_KEYS
-from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, \
-    construct_entities_block
+from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
@@ -807,7 +805,7 @@ class Pack(object):
             version_display_name if version_display_name else changelog_entry[Changelog.DISPLAY_NAME].split('-')[0]
         build_number_with_prefix = \
             build_number_with_prefix if build_number_with_prefix else \
-                changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
+            changelog_entry[Changelog.DISPLAY_NAME].split('-')[1]
 
         changelog_entry[Changelog.RELEASE_NOTES] = release_notes
         changelog_entry, _ = self.filter_changelog_entries(
@@ -1668,7 +1666,7 @@ class Pack(object):
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
-                                                                         for pr_num in version_to_prs[version]})
+                                                                        for pr_num in version_to_prs[version]})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
@@ -1786,10 +1784,8 @@ class Pack(object):
             logging.debug(f"The pack {self._pack_name} release notes does not contain any entities")
             return changelog_entry, False
 
-        filtered_release_notes_from_tags = self.filter_headers_without_entries(
-            release_notes_dict)  # type: ignore[arg-type]
-        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set,
-                                                                     marketplace)
+        filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
+        filtered_release_notes = self.filter_entries_by_display_name(filtered_release_notes_from_tags, id_set, marketplace)
 
         # if not filtered_release_notes and self.are_all_changes_relevant_to_more_than_one_marketplace(modified_files_data):
         #     # In case all release notes were filtered out, verify that it also makes sense - by checking that the
@@ -2248,8 +2244,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.PARSING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ParsingRule')
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2257,8 +2252,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.MODELING_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'ModelingRule')
                         schema: Dict[str, Any] = json.loads(content_item.get('schema') or '{}')
                         folder_collected_items.append({
@@ -2268,8 +2262,7 @@ class Pack(object):
                             'datasets': list(schema.keys()),
                         })
 
-                    elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.CORRELATION_RULES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'CorrelationRule')
                         folder_collected_items.append({
                             'id': content_item.get('global_rule_id', ''),
@@ -2278,8 +2271,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.XSIAM_DASHBOARDS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_DASHBOARDS.value)
                         dashboard = {
                             'id': content_item.get('dashboards_data', [{}])[0].get('global_id', ''),
@@ -2292,8 +2284,7 @@ class Pack(object):
                             dashboard.update({"preview": preview})
                         folder_collected_items.append(dashboard)
 
-                    elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.XSIAM_REPORTS.value and pack_file_name.startswith("external-"):
                         preview = self.get_preview_image_gcp_path(pack_file_name, PackFolders.XSIAM_REPORTS.value)
                         report = {
                             'id': content_item.get('templates_data', [{}])[0].get('global_id', ''),
@@ -2325,8 +2316,7 @@ class Pack(object):
                             'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
                         })
 
-                    elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith(
-                            "external-"):
+                    elif current_directory == PackFolders.XDRC_TEMPLATES.value and pack_file_name.startswith("external-"):
                         self.add_pack_type_tags(content_item, 'XDRCTemplate')
                         folder_collected_items.append({
                             'id': content_item.get('content_global_id', ''),
@@ -3695,8 +3685,7 @@ class Pack(object):
             logging.exception(f"Failed uploading {self.name} pack preview image. Additional info: {e}")
             return False
 
-    def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path,
-                            build_bucket_base_path):
+    def copy_preview_images(self, production_bucket, build_bucket, images_data, storage_base_path, build_bucket_base_path):
         """ Copies pack's preview image from the build bucket to the production bucket
 
         Args:
