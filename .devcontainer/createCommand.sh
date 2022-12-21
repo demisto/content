@@ -6,7 +6,7 @@ echo "Fixing permissions"
 
 sudo chown demisto .venv
 sudo chown demisto node_modules
-sudo chown demisto $HOME
+sudo chown demisto -R $HOME
 sudo chown demisto /workspaces
 
 echo "Setting up git certificate"
