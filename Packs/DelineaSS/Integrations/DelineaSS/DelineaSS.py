@@ -491,9 +491,9 @@ def user_fetch_command(client, secretids):
 
 
 def fetch_credentials(client, secretids):
-    credentials = []
-    finalsecretsid = []
-    finalcredentials = []
+    credentials: List[Any] = []
+    finalsecretsid: List[Any] = []
+    finalcredentials:List[Any] = []
     try:
         secretsid = argToList(secretids)
     except Exception as e:
