@@ -24,5 +24,6 @@ tags:
 - Utility
 type: python
 fromversion: 6.0.0
+dockerimage: demisto/python3:3.10.9.40422
 tests:
 - No tests (auto formatted)
