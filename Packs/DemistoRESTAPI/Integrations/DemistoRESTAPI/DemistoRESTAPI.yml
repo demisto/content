@@ -123,6 +123,10 @@ script:
       description: 'The pack zip file url.'
       required: false
       isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
+      required: false
+      isArray: false
     - name: skip_verify
       description: 'If true will skip pack signature validation, Available from 6.5.0 server version.'
       required: false

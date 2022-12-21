@@ -1,0 +1,79 @@
+{
+    "idea": {
+        "id": "7144646026151911047",
+        "name": "[Test] Mirroring",
+        "reference_num": "DEMO-I-2895",
+        "score": 3,
+        "created_at": "2022-09-18T09:15:32.943Z",
+        "updated_at": "2022-12-05T10:17:47.065Z",
+        "product_id": "6836114877834670881",
+        "votes": 2,
+        "status_changed_at": "2022-12-05T10:17:47.065Z",
+        "workflow_status": {
+            "id": "6904419099755086274",
+            "name": "Shipped",
+            "position": 7,
+            "complete": false,
+            "color": "#7f7f7f"
+        },
+        "description": {
+            "id": "7144646026273598263",
+            "body": "Aha Jira Mirroring",
+            "created_at": "2022-09-18T09:15:32.971Z",
+            "attachments": []
+        },
+        "visibility": "Visible to all ideas portal users",
+        "url": "test/ideas/ideas/DEMO-I-2895",
+        "resource": "test/api/v1/ideas/DEMO-I-2895",
+        "product": {
+            "id": "6836114877834670881",
+            "reference_prefix": "DEMO",
+            "name": "Customer Feature Requests",
+            "product_line": false,
+            "created_at": "2020-06-08T22:57:07.099Z",
+            "workspace_type": "product_workspace"
+        },
+        "created_by_portal_user": {
+            "id": "6866738214309336808",
+            "name": "Test Tester",
+            "email": "user@email.com",
+            "created_at": "2020-08-30T11:31:18.238Z"
+        },
+        "created_by_idea_user": {
+            "id": "6951900696067621885",
+            "name": "Test Tester",
+            "email": "user@email.com",
+            "created_at": "2021-04-16T23:25:13.678Z"
+        },
+        "assigned_to_user": {
+            "id": "6878244936949625239",
+            "name": "Test Tester",
+            "email": "user@email.com",
+            "created_at": "2020-09-30T11:43:15.879Z",
+            "updated_at": "2022-12-02T09:46:27.293Z",
+            "default_assignee": false
+        },
+        "feature": {
+            "id": "7144646339649854720",
+            "reference_num": "DEMO-1019",
+            "name": "[Test] Mirroring",
+            "created_at": "2022-09-18T09:16:45.939Z",
+            "url": "test/features/DEMO-1019",
+            "resource": "test/api/v1/features/DEMO-1019",
+            "product_id": "6836114877834670881"
+        },
+        "endorsements_count": 2,
+        "comments_count": 0,
+        "score_facts": [],
+        "tags": [],
+        "full_tags": [],
+        "categories": [
+            {
+                "id": "6871298164875917780",
+                "name": "New Integration Request",
+                "parent_id": null,
+                "created_at": "2020-09-11T18:26:14.464Z"
+            }
+        ]
+    }
+}
