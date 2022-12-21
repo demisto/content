@@ -465,7 +465,7 @@ def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dic
                     not indicators_next_link and not groups_next_link):
                 break
     except Exception as e:
-        demisto.debug(f'Got an error in the fetch loop: {str(e)}')
+        demisto.error(f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
 
     return indicators, groups
 
