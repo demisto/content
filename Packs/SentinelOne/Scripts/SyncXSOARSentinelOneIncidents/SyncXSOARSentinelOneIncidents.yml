@@ -22,5 +22,5 @@ runonce: false
 tests:
   - SyncXSOARSentinelOneIncidents-test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.8.37233
+dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
