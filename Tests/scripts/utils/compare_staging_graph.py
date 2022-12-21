@@ -196,7 +196,9 @@ def compare_content_packs(
     missing = [
         path
         for path in list_files_id_set
-        if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
+        if not Path(str(path).replace("id_set", "graph")).exists()
+        and "NonSupported" not in str(path)
+        and not Path(str(path).replace("classifier-mapper-classifier", "classifier-mapper")).exists()
     ]
     message.append(f"Missing files in graph: {missing}")
 
@@ -204,17 +206,50 @@ def compare_content_packs(
 def compare_dependencies(
     dependencies_id_set: Path,
     dependencies_graph: Path,
-    output_path: Path,
     message: list[str],
 ):
     dependencies_id_set = json.load(dependencies_id_set.open())
     dependencies_graph = json.load(dependencies_graph.open())
-    sort_dict(dependencies_id_set)
-    sort_dict(dependencies_graph)
-    diff_list = list(dictdiffer.diff(dependencies_id_set, dependencies_graph))
-    if diff_list:
-        message.append("Detected differences between dependencies")
-        json.dump(diff_list, (output_path / "dependencies-diff.json").open("w"), indent=4)
+    for pack_idset, deps_idset in dependencies_id_set.items():
+        pack_graph = dependencies_graph.get(pack_idset)
+        if not pack_graph:
+            message.append(f"Missing pack {pack_idset} in dependencies graph")
+            continue
+        deps_graph = pack_graph.get("dependencies")
+        if deps_idset != deps_graph:
+            message.append(f"Differences in dependencies for pack {pack_idset}")
+            compare_all_level_dependencies(pack_idset, deps_idset, deps_graph, message)
+
+            compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, message)
+
+
+def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, message: list[str]):
+    first_level_dependencies_idset = deps_idset["dependencies"]
+    first_level_dependencies_graph = deps_graph["dependencies"]
+    if first_level_dependencies_idset != first_level_dependencies_graph:
+        for dep_idset, dep_idset in first_level_dependencies_idset.items():
+            if dep_idset not in first_level_dependencies_graph:
+                message.append(f"Missing dependency {dep_idset} in graph for pack {pack}")
+                continue
+            if dep_idset != first_level_dependencies_graph[dep_idset]:
+                message.append(
+                    f"Differences in dependency {dep_idset} for pack {pack}: "
+                    f"{list(dictdiffer.diff(dep_idset, first_level_dependencies_graph[dep_idset]))}"
+                )
+
+        for dep_graph, dep_graph in first_level_dependencies_graph.items():
+            if dep_graph not in first_level_dependencies_idset:
+                message.append(f"Extra dependency {dep_graph} in graph for pack {pack}")
+
+
+def compare_all_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, message: list[str]):
+    all_level_dependencies_idset = set(deps_idset.get("allLevelDependencies"))
+    all_level_dependencies_graph = set(deps_graph.get("allLevelDependencies"))
+    if all_level_dependencies_idset != all_level_dependencies_graph:
+        if missing_deps := (all_level_dependencies_idset - all_level_dependencies_graph):
+            message.append(f"Missing differences in allLevelDependencies for pack {pack}: " f"{missing_deps}")
+        if extra_deps := (all_level_dependencies_graph - all_level_dependencies_idset):
+            message.append(f"Extra differences in allLevelDependencies for pack {pack}: " f"{extra_deps}")
 
 
 def main():
@@ -241,17 +276,17 @@ def main():
 
     content_packs_id_set = artifacts / "content_packs_id_set.zip"
     content_packs_graph = artifacts / "content_packs_graph.zip"
-    
+
     dependencies_id_set = artifacts / "packs_dependencies_id_set.json"
     dependencies_graph = artifacts / "packs_dependencies_graph.json"
-    
+
     message = [
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
 
     compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
-    # compare_dependencies(dependencies_id_set, dependencies_graph, output_path, message)
+    compare_dependencies(dependencies_id_set, dependencies_graph, output_path, message)
     if not zip_graph.exists():
         message.append("No packs were uploaded for id_set")
     if not zip_id_set.exists():
