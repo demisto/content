@@ -8319,6 +8319,7 @@ def test_collect_execution_metrics():
                                 'IndicatorTimeline': [],
                                 'Note': False,
                                 'Relationships': [],
+                                'Tags': [],
                                 'Type': 19}
 
     # Assert collected metrics are correct
