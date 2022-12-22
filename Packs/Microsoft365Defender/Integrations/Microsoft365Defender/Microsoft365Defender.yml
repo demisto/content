@@ -177,6 +177,7 @@ script:
       - Active
       - Resolved
       - Redirected
+      - InProgress
     - description: Owner of the incident.
       name: assigned_to
     - description: Incident's ID.
@@ -189,6 +190,7 @@ script:
       - Unknown
       - FalsePositive
       - TruePositive
+      - InformationalExpectedActivity
     - description: Comment to be added to the incident.
       name: comment
     - auto: PREDEFINED
@@ -196,12 +198,17 @@ script:
       name: determination
       predefined:
       - NotAvailable
-      - Apt
       - Malware
-      - SecurityPersonnel
       - SecurityTesting
       - UnwantedSoftware
-      - Other.
+      - MultiStagedAttack
+      - MaliciousUserActivity
+      - CompromisedAccount
+      - Phishing
+      - LineOfBusinessApplication
+      - ConfirmedActivity
+      - NotMalicious
+      - Other
     - description: 'A comma-separated list of custom tags associated with an incident. For example: tag1,tag2,tag3.'
       isArray: true
       name: tags
@@ -305,7 +312,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.40696
   isfetch: true
   runonce: false
   script: ''
