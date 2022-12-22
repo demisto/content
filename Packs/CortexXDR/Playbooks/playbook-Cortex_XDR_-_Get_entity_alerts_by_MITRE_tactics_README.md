@@ -1,4 +1,4 @@
-This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook fetch alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
+This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook search alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
 Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
@@ -33,7 +33,7 @@ This playbook does not use any sub-playbooks.
 | HuntCnCTechniques | Set to True to hunt for identified alerts with MITRE Command and Control techniques. | True | Optional |
 | HuntImpactTechniques | Set to True to hunt for identified alerts with MITRE Impact techniques. | True | Optional |
 | HuntCredentialAccessTechniques | Set to True to hunt for identified alerts with MITRE Credential Access techniques. |  | Optional |
-| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago     | 2 hours | Optional |
+| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day<br/>\* 2 minutes<br/>\* 4 hours<br/>\* 8 days | 2 hours | Optional |
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. |  | Optional |
 | EntityType | Entity type to search on xdr-get-alers custom filters |  | Optional |
 | entityID | Entity value |  | Optional |
@@ -43,8 +43,8 @@ This playbook does not use any sub-playbooks.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| NextPhaseAlerts | Array size | unknown |
-| PaloAltoNetworksXDR.Alert | Fetched alerts | unknown |
+| PaloAltoNetworksXDR.Alert | Alerts found | unknown |
+| ArraySize | Array size | unknown |
 
 ## Playbook Image
 ---

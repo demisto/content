@@ -2,7 +2,7 @@ id: Cortex XDR - Get entity alerts by MITRE tactics
 version: -1
 name: Cortex XDR - Get entity alerts by MITRE tactics
 description: |-
-  This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook fetch alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
+  This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook search alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
   Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 starttaskid: "0"
 tasks:
@@ -66,6 +66,7 @@ tasks:
           right:
             value:
               simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -470,7 +471,8 @@ tasks:
       extend-context:
         simple: Persistence
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -977,7 +979,8 @@ tasks:
       extend-context:
         simple: Reconnaissance
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1036,7 +1039,8 @@ tasks:
       extend-context:
         simple: Initial_Access
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1095,7 +1099,8 @@ tasks:
       extend-context:
         simple: Execution
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1154,7 +1159,8 @@ tasks:
       extend-context:
         simple: Privilege_Escalation
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1213,7 +1219,8 @@ tasks:
       extend-context:
         simple: Defense_Evasion
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1272,7 +1279,8 @@ tasks:
       extend-context:
         simple: Discovery
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1331,7 +1339,8 @@ tasks:
       extend-context:
         simple: Lateral_Movement
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1390,7 +1399,8 @@ tasks:
       extend-context:
         simple: Collection
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1447,7 +1457,8 @@ tasks:
       extend-context:
         simple: Command_And_Control
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1506,7 +1517,8 @@ tasks:
       extend-context:
         simple: Impact_techniques
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1699,8 +1711,6 @@ tasks:
                 value:
                   simple: critical
               ignorecase: true
-      contextKey:
-        simple: NextPhaseAlerts
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -1830,7 +1840,8 @@ tasks:
       extend-context:
         simple: Defense_Evasion
       time_frame:
-        simple: ${inputs.timeRange}
+        complex:
+          root: inputs.timeRange
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1943,7 +1954,13 @@ inputs:
   value:
     simple: 2 hours
   required: false
-  description: "A time range to execute the hunting in.\nThe input should be in the following format:\n* 1 day ago\n* 2 minutes ago\n* 4 hours ago\n* 8 days ago    "
+  description: |-
+    A time range to execute the hunting in.
+    The input should be in the following format:
+    * 1 day
+    * 2 minutes
+    * 4 hours
+    * 8 days
   playbookInputQuery:
 - key: RunAll
   value: {}
@@ -1961,11 +1978,11 @@ inputs:
   description: Entity value
   playbookInputQuery:
 outputs:
-- contextPath: NextPhaseAlerts
-  description: Array size
 - contextPath: PaloAltoNetworksXDR.Alert
-  description: Fetched alerts
+  description: Alerts found
   type: unknown
+- contextPath: ArraySize
+  description: Array size
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
