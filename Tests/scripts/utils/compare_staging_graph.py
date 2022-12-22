@@ -19,6 +19,7 @@ from typing import Tuple
 from demisto_sdk.commands.content_graph.content_graph_commands import create_content_graph
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 
+
 yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
@@ -263,6 +264,17 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
                 f"{sorted(extra_in_graph)}"
             )
             
+
+        if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
+            message.append(
+                f"Missing optional dependencies for pack {pack}: "
+                f"{sorted(missing_in_graph)}"
+            )
+        if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
+            message.append(
+                f"Extra optional dependencies for pack {pack}: "
+                f"{sorted(extra_in_graph)}"
+            )
 
 
 def main():
