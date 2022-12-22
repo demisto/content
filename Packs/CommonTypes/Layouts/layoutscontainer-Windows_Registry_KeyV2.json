@@ -1,10 +1,96 @@
 {
-    "id": "registryKey",
+    "fromVersion": "6.10.0",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_blocked",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_keyvalue",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "name": "Registry Key Indicator",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
+    "id": "Registry Key Indicator",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -57,7 +143,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Basic Information",
                         "static": false,
@@ -75,7 +160,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Community Score",
                         "query": "PositiveDetectionsVSDetectionEngines",
@@ -134,7 +218,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Related Incidents",
                         "readOnly": true,
@@ -170,7 +253,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Timeline",
                         "static": false,
@@ -186,7 +268,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Expiration Status",
                         "static": false,
@@ -201,7 +282,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Reputation",
                         "static": false,
@@ -217,7 +297,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Reputation Status",
                         "static": false,
@@ -232,7 +311,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Comments",
                         "static": false,
@@ -300,7 +378,6 @@
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Sources",
                         "static": false,
@@ -329,7 +406,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Highest Reliability",
                         "static": false,
@@ -405,7 +481,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Tags and TLP",
                         "static": false,
@@ -448,7 +523,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Actions",
                         "static": false,
@@ -485,7 +559,6 @@
                         ],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Assignee",
                         "static": false,
@@ -499,7 +572,6 @@
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Feed Related Indicators",
                         "query": "FeedRelatedIndicatorsWidget",
@@ -703,5 +775,8 @@
             }
         ]
     },
+    "name": "Registry Key Indicator",
+    "system": false,
+    "version": -1,
     "description": ""
 }

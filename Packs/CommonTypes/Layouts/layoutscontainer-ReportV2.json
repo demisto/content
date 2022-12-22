@@ -1,6 +1,95 @@
 {
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_publications",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_published",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "id": "STIX Report",
+    "id": "Report",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -24,37 +113,37 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "dcbf9500-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "d500b3d0-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 2,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "published",
                                 "height": 22,
                                 "id": "d9ab2910-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 3,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -137,7 +226,10 @@
                         "y": 0
                     },
                     {
+                        "displayType": "ROW",
                         "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
                         "i": "vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
@@ -157,10 +249,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false
+                        "y": 0
                     },
                     {
                         "h": 3,
@@ -171,10 +260,10 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     },
                     {
                         "h": 3,
@@ -185,10 +274,10 @@
                         "moved": false,
                         "name": "Timeline",
                         "static": false,
+                        "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "type": "indicatorTimeline"
+                        "y": 0
                     },
                     {
                         "h": 3,
@@ -246,15 +335,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "8717fb00-b30b-11eb-941c-e725acf1fbbc",
                                 "index": 1,
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -266,15 +355,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "published",
                                 "height": 22,
                                 "id": "8491ec60-b30b-11eb-941c-e725acf1fbbc",
                                 "index": 3,
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -357,10 +446,10 @@
                         "moved": false,
                         "name": "Comments",
                         "static": false,
+                        "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 6,
-                        "type": "comments"
+                        "y": 6
                     },
                     {
                         "h": 2,
@@ -406,7 +495,6 @@
     "name": "Report",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
+    "fromVersion": "6.10.0",
     "description": ""
 }
