@@ -9,4 +9,4 @@ alter
     tmp_prepare = to_integer(tmp_con_time)
 |alter
     _time = if(tmp_num > 10, to_timestamp(tmp_prepare , "millis"), to_timestamp(tmp_prepare , "seconds"))
-| fields tmp_time_part, tmp_mili_part, tmp_con_time, tmp_num, tmp_prepare;
+| fields -tmp_time_part, tmp_mili_part, tmp_con_time, tmp_num, tmp_prepare;
