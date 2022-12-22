@@ -480,7 +480,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 def user_fetch_command(client, secretids):
     credentials = fetch_credentials(client, secretids)
     markdown = tableToMarkdown('Credentials to fetch', credentials)
-
+ 
     return CommandResults(
         readable_output=markdown,
         outputs_prefix="Delinea.User.Fetch.Credentials",
@@ -491,12 +491,12 @@ def user_fetch_command(client, secretids):
 
 
 def fetch_credentials(client, secretids):
-    credentials: List[Any] = []
-    finalsecretsid: List[Any] = []
-    finalcredentials: List[Any] = []
+    credentials = []
+    finalsecretsid = []
+    finalcredentials = []
     try:
         secretsid = argToList(secretids)
-    except Exception as e:
+    except DemistoException as e:
         demisto.debug(f"Could not fetch credentials: Provide valid secret id.{e}")
         credentials = []
 
@@ -504,10 +504,10 @@ def fetch_credentials(client, secretids):
         if id not in finalsecretsid:
             finalsecretsid.append(id)
 
-    if len(finalsecretsid) == 0:
+    if not finalsecretsid :
         credentials.clear()
         demisto.credentials(credentials)
-        demisto.debug("Could not fetch credentials:Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
+        demisto.debug("Could not fetch credentials: Enter a valid secret ID to fetch credentials.\n For multiple ID use ',' (e.g. 1,2)")
         credentials = []
     else:
         for secret_id in finalsecretsid:

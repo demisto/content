@@ -35,7 +35,7 @@ script:
   commands:
   - arguments: []
     deprecated: false
-    description: Extracting the credentials from secret
+    description: Extracting the credentials according to the instance's configured secrets ID.
     execution: false
     name: delinea-fetch-users
     outputs:
