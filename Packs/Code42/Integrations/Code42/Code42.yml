@@ -918,7 +918,7 @@ script:
     - contextPath: Code42.UpdatedUserRiskProfiles.Success
       description: If the risk profile update was successful.
       type: boolean
-  dockerimage: demisto/py42:1.0.0.33857
+  dockerimage: demisto/py42:1.0.0.40798
   feed: false
   isfetch: true
   longRunning: false
