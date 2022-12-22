@@ -232,23 +232,37 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
                 f"Moved to optional dependencies for pack {pack}: "
                 f"{sorted(moved_to_optional)}"
             )
+            with Neo4jContentGraphInterface() as graph:
+                for dep in moved_to_optional:
+                    message.append(
+                        f"Reason for moving {dep} to optional: "
+                        f"{graph.get_dependency_reason(pack, dep, False)}"
+                    )
 
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
             message.append(
                 f"Moved to mandatory dependencies for pack {pack}: "
                 f"{sorted(moved_to_mandatory)}"
             )
+            with Neo4jContentGraphInterface() as graph:
+                for dep in moved_to_mandatory:
+                    message.append(
+                        f"Reason for moving {dep} to mandatory: "
+                        f"{graph.get_dependency_reason(pack, dep, True)}"
+                    )
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(
                 f"Missing mandatory dependencies for pack {pack}: "
                 f"{sorted(missing_in_graph)}"
             )
+            
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(
                 f"Extra mandatory dependencies for pack {pack}: "
                 f"{sorted(extra_in_graph)}"
             )
+            
 
 
 def main():
