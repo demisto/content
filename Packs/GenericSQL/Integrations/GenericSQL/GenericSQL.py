@@ -198,7 +198,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     if params.get('isFetch'):
 
         if not params.get('fetchQuery'):
-            msg += 'Missing mandatory parameter Fetch events query. '
+            msg += 'Missing parameter Fetch events query. '
 
         if limit := params.get('fetch_limit'):
             limit = arg_to_number(limit)
@@ -214,7 +214,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
             msg += 'A starting point for fetching is missing, please enter Start ID or Start Timestamp. '
 
         if not params.get('column_name'):
-            msg += 'Missing mandatory parameter Column name for fetching. '
+            msg += 'Missing parameter Column name for fetching. '
 
     return msg if msg else 'ok', {}, []
 
@@ -270,7 +270,7 @@ def get_last_run(params: dict):
 
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"original last run: {last_run}")
+    demisto.debug(f"### {last_run=} ###")
 
     # for the first iteration
     if not last_run:
@@ -404,11 +404,15 @@ def fetch_incidents(client: Client, params: dict):
         client (Client): The API client.
         params (dict): The params for fetch.
     """
+    demisto.debug(f'### {params=} ###')
     last_run = get_last_run(params)
     sql_query = create_sql_query(last_run, params)
     limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
     result, headers = client.sql_query_execute_request(sql_query, {})
+    demisto.debug(f'### {result=} ###')
+    demisto.debug(f'### {headers=} ###')
     table = convert_sqlalchemy_to_readable_table(result)
+    demisto.debug(f"## {table=} ##")
     table = table[:limit_fetch]
 
     incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params)
@@ -418,7 +422,7 @@ def fetch_incidents(client: Client, params: dict):
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
-
+    demisto.debug(f"## {incidents=} ##")
     return incidents, last_run
 
 

@@ -2,6 +2,7 @@ import os
 
 import pytest
 import sqlalchemy
+import test_data as td
 
 from GenericSQL import Client, sql_query_execute, generate_default_port_by_dialect
 
@@ -253,3 +254,85 @@ def test_mysql_integration():
      {'arg1': 'value1', 'arg2': 'value2', 'driver': 'ODBC Driver 17 for SQL Server'})])
 def test_parse_connect_parameters(connect_parameters, dialect, expected_response):
     assert Client.parse_connect_parameters(connect_parameters, dialect) == expected_response
+
+
+@pytest.mark.parametrize('table, params, response, headers, expected_incidents, expected_last_run', [
+    (td.TABLE_1, td.PARAMS_1, td.RESPONSE_1, td.HEADERS_1, td.EXPECTED_INCIDENTS_1, td.EXPECTED_LAST_RUN_1)])
+def test_fetch_incident_by_id_simple_query(table, params, response, headers, expected_incidents, expected_last_run, mocker):
+    """
+    Given
+    - raw response of the database
+    - response converted to table
+    - headers
+    - configuration parameters
+    When
+    - mock the database result
+    Then
+    - validate the expected_last_run - if updated properly
+    - validate the length of the incidents
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value={})
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check last run is updated as expected
+    assert expected_last_run == last_run
+    # check the limit
+    assert len(incidents) == len(expected_incidents)
+
+
+@pytest.mark.parametrize('table, params, response, headers, last_run_before_fetch', [
+    (td.TABLE_2, td.PARAMS_2, td.RESPONSE_2, td.HEADERS_2, td.LAST_RUN_BEFORE_FETCH_2)])
+def test_fetch_incident_without_incidents(table, params, response, headers, last_run_before_fetch, mocker):
+    """
+    Given
+    - raw response of the database
+    - response converted to table
+    - headers
+    - configuration parameters
+    When
+    - mock the database result
+    Then
+    - validate the expected_last_run - should be the same - no incidents
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run_before_fetch)
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check last run is not updated, should be the same - We don't have any new incidents
+    assert last_run_before_fetch == last_run
+
+
+@pytest.mark.parametrize('table, params, response, headers, last_run_before_second_fetch, expected_incidents', [
+    (td.TABLE_3, td.PARAMS_3, td.RESPONSE_3, td.HEADERS_3, td.LAST_RUN_BEFORE_SECOND_FETCH_3, td.EXPECTED_INCIDENTS_3)])
+def test_fetch_incident_avoiding_duplicates(table, params, response, headers, last_run_before_second_fetch,
+                                            expected_incidents, mocker):
+    """
+    Given
+    - raw response of the database
+    - response converted to table
+    - headers
+    - configuration parameters
+    When
+    - mock the database result
+    Then
+    - validate the incidents - should contain only one incident at the end, after omitting the duplicate incident
+    """
+    from GenericSQL import fetch_incidents
+    mocker.patch('GenericSQL.demisto.getLastRun', return_value=last_run_before_second_fetch)
+    mocker.patch.object(Client, '_create_engine_and_connect', return_value=mocker.Mock(spec=sqlalchemy.engine.base.Connection))
+    mocker.patch.object(Client, 'sql_query_execute_request', return_value=(response, headers))
+    mocker.patch('GenericSQL.convert_sqlalchemy_to_readable_table', return_value=table)
+    client = Client('sql_dialect', 'server_url', 'username', 'password', 'port', 'database', "", False)
+    incidents, last_run = fetch_incidents(client, params)
+    # check incidents without duplicates
+    assert len(expected_incidents) == len(incidents)
+    for expected_incident, incident in zip(expected_incidents, incidents):
+        assert expected_incident.get('name') == incident.get('name')
+        assert expected_incident.get('rawJSON') == incident.get('rawJSON')

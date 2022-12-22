@@ -30,6 +30,73 @@ There are two options to use to bind variables:
 2. Use only bind variable values, for example:
     INSERT into Table(ID, Name) VALUES (%s, %s)" bind_variables_values= "123, Ben”
 
+## Default ports
+If the port value is empty, a default port will be selected according to the database type.
+- MySQL: 3306
+- PostgreSQL: 5432
+- Microsoft SQL Server: 1433
+- Oracle: 1521
+
+
+## Connection Arguments
+Specify arguments for the configuration of an instance name-value pairs, for example:
+```
+charset=utf8
+```
+Separate pairs using __&amp;__ character, for example:
+```
+charset=utf8&read_timeout=10
+```
+
+## Connection Pooling
+By default, the integration does not pool database connections. Thus, a connection is created and closed for each command run by the integration. When connection pooling is enabled, each Docker container will maintain a single connection open for time specified in the the _Connection Pool Time to Live_ parameter (default: 600 seconds). After the time to live expires, and upon execution of a new command, the database connection will close and a new connection will be created. 
+
+**Note**: when pooling is enabled, the number of active open database connections will equal the number of active running **demisto/genericsql** Docker containers.  
+
+## Bind Variables 
+There are two options to use to bind variables:
+1. Use both bind variable names and values, for example:
+    SELECT * from Table Where ID=:x" bind_variables_names=x bind_variables_values=123
+2. Use only bind variable values, for example:
+    INSERT into Table(ID, Name) VALUES (%s, %s)" bind_variables_values= "123, Ben”
+
+## Fetch Incidents
+There are two options to fetch incidents:
+1. Fetch by both ID and timestamp (where id is unique but not sequence and timestamp is not unique).
+   Below 'Fetch by' in the configuration, choose this option and fill in 'Column name for fetching'
+   the exact column's name to fetch which means the timestamp column, and also the ID column name.
+2. Fetch by unique sequence ID or unique timestamp.
+   Below 'Fetch by' in the configuration, choose this option and fill only the 'Column name for fetching' with
+   the exact column's name to fetch (id column or timestamp column).
+
+#### Fetch events query
+The Generic SQL query/procedure.
+Only simple queries are supported, which means 'select * from table_name'.
+It's highly recommended to use procedures.
+Procedures (examples):
+1. MySQL - "CREATE PROCEDURE *PROCEDURE_NAME*(
+    IN ts DATETIME, IN l INT
+)
+BEGIN
+    SELECT * 
+     FROM TABLE_NAME
+    WHERE timestamp >= ts order by timestamp asc limit l;
+END"
+   (Notes: The procedure should contain conditions on the fetch parameter, ts here is the dynamic parameter for the fetch cycles.
+When using MySQL DB, the procedure should contain also the limit inside.
+After creating the procedure, we'll execute this query like this: 'call Procedure_name', 
+when both parameters, ts or id and l-limit, will be added by the fetch)
+2. MSSQL - "CREATE PROCEDURE *PROCEDURE_NAME* @timestamp DATETIME
+AS
+SELECT * FROM TABLE_NAME WHERE timestamp >= @timestamp order by timestamp"
+   (Notes: The procedure should contain conditions on the fetch parameter, timestamp here is the dynamic parameter for the fetch cycles.
+When using MSSQL DB: the parameter name should be the same as the column name,
+the limit is handled outside the query.
+After creating the procedure, we'll execute this query like this: 'EXEC Procedure_name', 
+when both parameters, timestamp or id and l-limit, will be added by the fetch)
+3. When 'Fetch parameters' == ID and timestamp, The handling of the ID occurs internally and has no reference in the query.
+4. When 'Fetch parameters' == Unique sequence ID or unique timestamp, create the procedure with '>' and not '>=' 
+
 ## Configure Generic SQL on Cortex XSOAR
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
