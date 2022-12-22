@@ -115,7 +115,7 @@ def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_da
     mocker.patch.object(demisto, "info")
     client.fetch_incidents(last_run_data)
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder, overwrite_rate_limit_retry=True)
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -126,7 +126,7 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     mocker.patch.object(demisto, "info")
     client.fetch_incidents({})
 
-    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing", overwrite_rate_limit_retry=True)
 
 
 def test_add_second_to_str_date():
@@ -311,6 +311,133 @@ def test_list_emails(mocker):
 
     list_mails_command_results = list_mails_command(client, {})
     assert 'Total of 1 mails received' in list_mails_command_results.readable_output
+    assert 'john.doe@company.com' in list_mails_command_results.readable_output
+    assert 'qwe' in list_mails_command_results.readable_output
+
+
+def test_list_emails_raw_response_contains_list(mocker):
+    from MicrosoftGraphListener import list_mails_command
+    RAW_RESPONSE = [
+        {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users('mailbox%40company.com')/messages",
+            "value":
+                [
+                    {
+                        "@odata.etag": "W/\"ABCDEF/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
+                    },
+                    {
+                        "@odata.etag": "W/\"KAHSKD/iABCDEF\"",
+                        "bccRecipients": [],
+                        "body": {
+                            "content": "test",
+                            "contentType": "text"
+                        },
+                        "bodyPreview": "test",
+                        "categories": [],
+                        "ccRecipients": [],
+                        "changeKey": "ABCDEF/iABCDEF",
+                        "conversationId": "asdasdasd",
+                        "conversationIndex": "adqweqwe",
+                        "createdDateTime": "2021-01-01T10:18:41Z",
+                        "flag": {
+                            "flagStatus": "notFlagged"
+                        },
+                        "from": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "hasAttachments": True,
+                        "id": "qwe",
+                        "importance": "normal",
+                        "inferenceClassification": "focused",
+                        "internetMessageId": "\u003cqwe@qwe.eurprd05.prod.outlook.com\u003e",
+                        "isDeliveryReceiptRequested": None,
+                        "isDraft": False,
+                        "isRead": False,
+                        "isReadReceiptRequested": False,
+                        "lastModifiedDateTime": "2021-01-01T10:18:41Z",
+                        "parentFolderId": "PARENT==",
+                        "receivedDateTime": "2021-01-01T10:18:41Z",
+                        "replyTo": [],
+                        "sender": {
+                            "emailAddress": {
+                                "address": "john.doe@company.com",
+                                "name": "John Doe"
+                            }
+                        },
+                        "sentDateTime": "2021-08-20T10:18:40Z",
+                        "subject": "Test",
+                        "toRecipients": [
+                            {
+                                "emailAddress": {
+                                    "address": "mailbox@company.com",
+                                    "name": "My mailbox"
+                                }
+                            }
+                        ],
+                        "webLink": "https://outlook.office365.com/owa/?ItemID=ABCDEF"
+                    }
+                ],
+                '@odata.nextLink': 'https://graph.microsoft.com/v1.0/users/avishai@demistodev.onmicrosoft.com'
+        }]
+    client = self_deployed_client()
+    mocker.patch.object(client, 'list_mails', return_value=RAW_RESPONSE)
+
+    list_mails_command_results = list_mails_command(client, {})
+    assert '2 mails received' in list_mails_command_results.readable_output
     assert 'john.doe@company.com' in list_mails_command_results.readable_output
     assert 'qwe' in list_mails_command_results.readable_output
 

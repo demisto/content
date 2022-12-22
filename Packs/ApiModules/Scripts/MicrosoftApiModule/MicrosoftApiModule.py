@@ -146,6 +146,15 @@ class MicrosoftClient(BaseClient):
             self.resources = resources if resources else []
             self.resource_to_access_token: Dict[str, str] = {}
 
+    def is_command_executed_from_integration(self):
+        ctx = demisto.callingContext.get('context', {})
+        executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
+
+        if executed_commands:
+            return executed_commands[0].get('moduleBrand', "") != 'Scripts'
+
+        return True
+
     def http_request(
             self, *args, resp_type='json', headers=None,
             return_empty_response=False, scope: Optional[str] = None,
@@ -185,7 +194,7 @@ class MicrosoftClient(BaseClient):
         response = super()._http_request(  # type: ignore[misc]
             *args, resp_type="response", headers=default_headers, **kwargs)
 
-        if should_http_retry_on_rate_limit:
+        if should_http_retry_on_rate_limit and self.is_command_executed_from_integration():
             self.create_api_metrics(response.status_code)
         # 206 indicates Partial Content, reason will be in the warning header.
         # In that case, logs with the warning header will be written.

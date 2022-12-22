@@ -7,27 +7,30 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
-  display: Host URL (e.g. https://graph.microsoft.com)
+  display: Host URL
   name: host
   required: true
   type: 0
   section: Connect
-- display: ID (received from the admin consent - see Detailed Instructions (?) section)
+- display: Application ID or Client ID
+  additionalinfo: See the Help tab.
   name: auth_id
   required: true
   type: 4
   section: Connect
-- display: Token (received from the admin consent - see Detailed Instructions (?) section)
+- display: Token or Tenant ID
+  additionalinfo: See the Help tab.
   name: tenant_id
   required: true
   type: 4
   section: Connect
-- display: Key (received from the admin consent - see Detailed Instructions (?) section)
+- display: Key or Client Secret
+  additionalinfo: See the Help tab.
   name: enc_key
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- additionalinfo: Used for certificate authentication as it appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
@@ -51,7 +54,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Use a self-deployed Azure Application
+- display: Use a self-deployed Azure application
   name: self_deployed
   required: false
   type: 8
@@ -68,7 +71,8 @@ configuration:
   type: 13
   section: Connect
 - defaultvalue: 1 day
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  display: First fetch time range
+  additionalinfo: <number> <time unit>, for example 1 hour, 30 minutes
   hidden: false
   name: fetch_time
   required: false
@@ -81,21 +85,27 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Fetch incidents of the given providers only. Multiple providers can be inserted, seperated by a comma, e.g. "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
+- display: Fetch incidents of the given providers only.
+  additionalinfo: Multiple providers can be inserted separated by a comma, for example "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false
   type: 0
   section: Collect
   advanced: true
-- display: Use this field to filter the incidents that are being fetched according to any of the alert properties. Filter should be in the format "{property} eq '{property-value}'", multiple filters can be applied seperated with " and ", e.g. "createdDateTime eq YYYY-MM-DD and severity eq 'high'". Overrides the providers list, if given.
+- display: Fetched incidents filter 
+  additionalinfo: Use this field to filter fetched incidents according
+    to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "{property} eq
+    '{property-value}'". Multiple filters can be applied separated with " and ", for example
+    "createdDateTime eq YYYY-MM-DD and severity eq 'high'".
   hidden: false
   name: fetch_filter
   required: false
   type: 0
   section: Collect
   advanced: true
-description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
+description: Unified gateway to security insights - all from a unified Microsoft Graph
+  Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
 script:
@@ -247,7 +257,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Time at which the alert was closed in the following string format - MM/DD/YYYY
+      description: Time the alert was closed in the string format MM/DD/YYYY.
       isArray: false
       name: closed_date_time
       required: false
@@ -283,19 +293,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: User-definable labels that can be applied to an alert and can serve as filter conditions, e.g.  "HVA", "SAW).
+      description: User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).
       isArray: false
       name: tags
       required: false
       secret: false
     - default: false
-      description: Details about the security service vendor, e.g. Microsoft
+      description: Details about the security service vendor, for example Microsoft.
       isArray: false
       name: vendor_information
       required: true
       secret: false
     - default: false
-      description: Details about the security service vendor, e.g. Windows Defender ATP
+      description: Details about the security service vendor, for example Windows Defender ATP.
       isArray: false
       name: provider_information
       required: true
@@ -352,7 +362,7 @@ script:
     - contextPath: MsGraph.User.Name
       description: User name
       type: string
-  dockerimage: demisto/crypto:1.0.0.31715
+  dockerimage: demisto/crypto:1.0.0.39526
   feed: false
   isfetch: true
   longRunning: false
@@ -362,5 +372,6 @@ script:
   subtype: python3
   type: python
 tests:
-- Microsoft Graph Security Test
+- Microsoft Graph Security Test dev
+- Microsoft Graph Security Test prod
 fromversion: 5.0.0

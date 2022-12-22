@@ -121,22 +121,24 @@ def run_shell_command(command: str, *args) -> bytes:
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
+    error_string = completed_process.stderr.decode('utf-8')
     if exit_codes != 0:
-        error_string = completed_process.stderr.decode('utf-8')
-        if "Incorrect password" in error_string:
+        if 'PDF file is damaged' in error_string or 'Couldn\'t read xref table' in error_string:
+            raise ShellException('PDf file is damaged/corrupted.')
+        elif "Incorrect password" in error_string:
             raise PdfInvalidCredentialsException(
                 'Incorrect password. Please provide the correct password.')
-        if 'Copying of text from this document is not allowed' in error_string:
+        elif 'Copying of text from this document is not allowed' in error_string:
             raise PdfCopyingProtectedException(
                 'Copying is not permitted')
         raise ShellException(
             f'Failed with the following error code: {exit_codes}.\n'
             f' Error: {error_string}'
         )
-    elif completed_process.stderr:
+    elif error_string:
         demisto.debug(
             f"ReadPDFFilev2: exec of [{cmd}] completed with warnings: "
-            f'{completed_process.stderr.decode("utf8")}'
+            f'{error_string}'
         )
     return completed_process.stdout
 

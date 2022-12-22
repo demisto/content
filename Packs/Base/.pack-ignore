@@ -60,3 +60,5 @@ EntryType
 Enums
 CustomIndicator
 Mutex
+SSLAdapter
+SSL

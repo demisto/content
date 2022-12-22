@@ -1,0 +1,2001 @@
+id: Cisco Umbrella Reporting Test
+name: Cisco Umbrella Reporting Test
+version: -1
+fromversion: 6.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: eb84bf33-4675-4fb0-be63-10f6cd180f26
+    type: start
+    task:
+      id: eb84bf33-4675-4fb0-be63-10f6cd180f26
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 6cc0f91b-0d18-4ddb-9d1a-19d5205a9954
+    type: regular
+    task:
+      id: 6cc0f91b-0d18-4ddb-9d1a-19d5205a9954
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: b842681d-5cde-461a-a743-818756454dc0
+    type: regular
+    task:
+      id: b842681d-5cde-461a-a743-818756454dc0
+      version: -1
+      name: umbrella-reporting-destination-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-destination-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 1c02befc-64f6-41ed-9f24-97037a366eed
+    type: condition
+    task:
+      id: 1c02befc-64f6-41ed-9f24-97037a366eed
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.count
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.count
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.domain
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.domain
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.bandwidth
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.bandwidth
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.rank
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.rank
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.policycategories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.categories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.allowedrequests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.allowedrequests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.blockedrequests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.blockedrequests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.requests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Destination.counts.requests
+              iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: ddad5295-9641-4998-b603-9afad4dfc5a0
+    type: regular
+    task:
+      id: ddad5295-9641-4998-b603-9afad4dfc5a0
+      version: -1
+      name: umbrella-reporting-category-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-category-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: f4c8c128-b038-4376-a841-e3c5fecd9c81
+    type: condition
+    task:
+      id: f4c8c128-b038-4376-a841-e3c5fecd9c81
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.count
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.count
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.bandwidth
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.bandwidth
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.category.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.rank
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Category.rank
+              iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: b6804c52-01fa-48e0-928b-5cf1c536a312
+    type: regular
+    task:
+      id: b6804c52-01fa-48e0-928b-5cf1c536a312
+      version: -1
+      name: umbrella-reporting-identity-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-identity-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: cfe9c855-536e-49b1-b61a-f2c0f5705377
+    type: condition
+    task:
+      id: cfe9c855-536e-49b1-b61a-f2c0f5705377
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.requests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.requests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.bandwidth
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.bandwidth
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.rank
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.rank
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.allowedrequests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.allowedrequests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.blockedrequests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.blockedrequests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.requests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.counts.requests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.type.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.deleted
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Identity.identity.deleted
+              iscontext: true
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 4a41ebde-678e-48ec-b534-5ff1ffe59450
+    type: regular
+    task:
+      id: 4a41ebde-678e-48ec-b534-5ff1ffe59450
+      version: -1
+      name: umbrella-reporting-event-type-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-event-type-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 7aac056c-37be-4152-bbe2-92e507f03ec5
+    type: condition
+    task:
+      id: 7aac056c-37be-4152-bbe2-92e507f03ec5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Eventtype.eventtype
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Eventtype.eventtype
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Eventtype.count
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Eventtype.count
+              iscontext: true
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 391e484c-bdc0-415c-a6d1-d03f9cc9fe65
+    type: regular
+    task:
+      id: 391e484c-bdc0-415c-a6d1-d03f9cc9fe65
+      version: -1
+      name: umbrella-reporting-file-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-file-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: bb49de9c-88a9-4f54-a31d-a4fe4ee32f68
+    type: condition
+    task:
+      id: bb49de9c-88a9-4f54-a31d-a4fe4ee32f68
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.requests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.requests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.identitycount
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.identitycount
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.sha256
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.sha256
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.filenames
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.filenames
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.filetypes
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.filetypes
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.File.categories.integration
+              iscontext: true
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: 4aacc43d-2e6b-42fc-aee7-8a5665cd802c
+    type: regular
+    task:
+      id: 4aacc43d-2e6b-42fc-aee7-8a5665cd802c
+      version: -1
+      name: umbrella-reporting-threat-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-threat-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: 87273db7-c9a3-4f81-9b72-39fc8f60265b
+    type: condition
+    task:
+      id: 87273db7-c9a3-4f81-9b72-39fc8f60265b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.threat
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.threat
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.threattype
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.threattype
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.count
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Threats.count
+              iscontext: true
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: f37af9c0-d60d-405e-9be9-20035878fd63
+    type: regular
+    task:
+      id: f37af9c0-d60d-405e-9be9-20035878fd63
+      version: -1
+      name: umbrella-reporting-activity-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-activity-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: 92256866-e1a2-460e-9fee-2de6924c55ba
+    type: condition
+    task:
+      id: 92256866-e1a2-460e-9fee-2de6924c55ba
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.externalip
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.externalip
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.internalip
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.internalip
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.policycategories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.type
+              iscontext: true
+        - - operator: isExists
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.categories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.verdict
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.verdict
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.domain
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.domain
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.timestamp
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.time
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.time
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.date
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.date
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.type.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.label
+              iscontext: true
+        - - operator: isExists
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.identities.deleted
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.threats.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.threats.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.threats.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.threats.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allapplications.category.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.allowedapplications.category.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.querytype
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.querytype
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.returncode
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.returncode
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Activity.blockedapplications.category.id
+              iscontext: true
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: ac462284-dc5a-45ce-a144-cae9a38ea832
+    type: regular
+    task:
+      id: ac462284-dc5a-45ce-a144-cae9a38ea832
+      version: -1
+      name: umbrella-reporting-activity-get
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-activity-get
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      traffic_type:
+        simple: dns
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: 64d5dcdf-4c96-43ee-ab2c-333990e7b620
+    type: condition
+    task:
+      id: 64d5dcdf-4c96-43ee-ab2c-333990e7b620
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.externalip
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.externalip
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.internalip
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.internalip
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.policycategories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.deprecated
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.deprecated
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.integration
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.categories.integration
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.verdict
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.verdict
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.domain
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.domain
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.timestamp
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.timestamp
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.time
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.time
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.date
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.date
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.type.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.deleted
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.identities.deleted
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.threats.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.threats.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.threats.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.threats.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allapplications.category.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.allowedapplications.category.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.querytype
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.querytype
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.returncode
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.returncode
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.id
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.type
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.type
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.category.label
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.category.label
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.category.id
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.ActivityDns.blockedapplications.category.id
+              iscontext: true
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: 3c878fd3-dd36-489c-844b-0ddfb75fe90e
+    type: regular
+    task:
+      id: 3c878fd3-dd36-489c-844b-0ddfb75fe90e
+      version: -1
+      name: umbrella-reporting-summary-list
+      description: ''
+      script: Cisco Umbrella Reporting|||umbrella-reporting-summary-list
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: afe7d472-9eff-4dcf-999f-f0b7fb303da2
+    type: condition
+    task:
+      id: afe7d472-9eff-4dcf-999f-f0b7fb303da2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applications
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applications
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applicationsallowed
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applicationsallowed
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applicationsblocked
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.applicationsblocked
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.categories
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.categories
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.domains
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.domains
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.files
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.files
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.filetypes
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.filetypes
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.identities
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.identities
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.identitytypes
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.identitytypes
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.policycategories
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.policycategories
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.policyrequests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.policyrequests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requests
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requests
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requestsallowed
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requestsallowed
+              iscontext: true
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requestsblocked
+              iscontext: true
+          - operator: isEmpty
+            left:
+              value:
+                simple: UmbrellaReporting.Summary.requestsblocked
+              iscontext: true
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: '20'
+    taskid: ef2c7070-1007-4b0d-b3e4-ce6a4da11c54
+    type: title
+    task:
+      id: ef2c7070-1007-4b0d-b3e4-ce6a4da11c54
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
