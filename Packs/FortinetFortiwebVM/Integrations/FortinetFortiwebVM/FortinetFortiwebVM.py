@@ -1,11 +1,9 @@
 from http import HTTPStatus
 from typing import Any, Dict, Tuple, Optional, Callable
-from urllib.parse import urljoin
 from abc import abstractmethod
 from CommonServerPython import *
 import demistomock as demisto
 import re
-from dataclasses import dataclass
 
 LIMIT_SIZE = 50
 
@@ -91,6 +89,9 @@ class ERRORS:
     DOMAIN_INSERT = 'Please insert domain.'
     VALUE_INSERT = 'Please insert value.'
     COUNTRIES = 'Please insert counries from the list.'
+    NAME_INSERT = 'Please insert name.'
+    DEPLOYMENT_MODE_INSERT = 'Please insert deployment mode.'
+    VIRTUAL_SERVER = 'Please insert virtual server.'
 
 
 class Parser:
@@ -988,16 +989,17 @@ class Client(BaseClient):
     def __init__(self, base_url: str, api_key: str, version: str, endpoint_prefix: str, proxy: bool, verify: bool):
         self.base_url = urljoin(base_url, endpoint_prefix)
         self.version = version
-        parser_class: Parser = {'V1': ParserV1, 'V2': ParserV2}[version]
+        parser_class = {'V1': ParserV1, 'V2': ParserV2}[version]
         self.parser: Parser = parser_class()
         headers = {'Content-Type': 'application/json', 'Authorization': api_key}
         super().__init__(base_url=self.base_url, verify=verify, headers=headers, proxy=proxy)
 
     def _http_request(self, *args, **kwargs):
-        return super()._http_request(*args, error_handler=self.error_handler, **kwargs)
+        kwargs['error_handler'] = self.error_handler
+        return super()._http_request(*args, **kwargs)
 
     @abstractmethod
-    def error_handler(self, res):
+    def error_handler(self, res: requests.Response):
         pass
 
     @abstractmethod
@@ -1260,7 +1262,7 @@ class ClientV1(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res):
+    def error_handler(self, res: requests.Response):
         """Error handler for Fortiweb v1 response.
 
         Args:
@@ -2238,7 +2240,7 @@ class ClientV2(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res):
+    def error_handler(self, res: requests.Response):
         """Error handler for Fortiweb v2 response.
 
         Args:
@@ -2997,7 +2999,6 @@ class ClientV2(Client):
                     'multi-certificate': 'disable',
                     'certificate-group': '',
                 }))
-        print(data)
         return data
 
     def server_policy_create_request(self, name: str, deployment_mode: str, virtual_server: str,
@@ -4335,7 +4336,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
     group_name = args['group_name']
     countries = argToList(args['countries'])
     all_countries = countries
-    if client.version == ClientV1.API_VER:
+    if isinstance(client, ClientV1):
         # Get last countries
         old_countries_list: List[str] = client.geo_ip_member_list_request(group_name=group_name)[0]['SSet']
         all_countries = set(countries)
@@ -4345,7 +4346,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
     get_response = client.geo_ip_member_list_request(group_name=group_name)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, get_response,
                                                                                 client.parser.geo_ip_member, {})
-    countries_data = find_dict_in_array(parsed_data, 'country', countries)
+    countries_data = find_dicts_in_array(parsed_data, 'country', countries)
 
     readable_output = tableToMarkdown(name=OutputTitles.GEO_IP_MEMBER_ADD,
                                       t=countries_data,
@@ -4730,6 +4731,13 @@ def server_policy_validation(version: str, args: Dict[str, Any]):
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
+    if not args.get('name'):
+        raise DemistoException(ERRORS.NAME_INSERT)
+    if not args.get('deployment_mode'):
+        raise DemistoException(ERRORS.DEPLOYMENT_MODE_INSERT)
+    if not args.get('virtual_server'):
+        raise DemistoException(ERRORS.VIRTUAL_SERVER)
+
     http_service = args.get('http_service')
     https_service = args.get('https_service')
     if not (http_service or https_service):
@@ -4788,6 +4796,14 @@ def server_policy_validation(version: str, args: Dict[str, Any]):
             raise DemistoException('Please insert codes from the list.')
 
 
+def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
+    file_data = demisto.getFilePath(json_template_id)
+    with open(file_data['path'], 'rb') as f:
+        args = json.load(f)
+    args['name'] = name
+    return args
+
+
 def server_policy_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Create a server policy.
 
@@ -4798,8 +4814,10 @@ def server_policy_create_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    server_policy_validation(client.version, args)
     name = args['name']
+    if json_template_id := args.get('json_template_id'):
+        args.update(read_json_policy(json_template_id, name))
+    server_policy_validation(client.version, args)
     response = client.server_policy_create_request(
         name=args['name'],
         deployment_mode=args['deployment_mode'],
@@ -4854,6 +4872,8 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     name = args['name']
+    if json_template_id := args.get('json_template_id'):
+        args = read_json_policy(json_template_id, name)
     # Get exist settings from Fortiweb for validation
     args = get_object_data_before_update(client=client,
                                          value=name,
@@ -5398,7 +5418,7 @@ def list_response_handler(client: Client,
     """Handle the list output response to xsoar output.
     Args:
         client (Client): Fortiweb VM client.
-        response (List[Dict[str, Any]]): Response from list request.
+        response (Union[List[Dict[str, Any]], Dict[str, Any]]): Response from list request.
         data_parser (_type_): Parser command.
         args (Dict[str, Any]): Command arguments from XSOAR.
         sub_object_id (Optional[str]): Sub Object ID.
@@ -5409,7 +5429,8 @@ def list_response_handler(client: Client,
         DemistoException: The object does not exist.
 
     Returns:
-        Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]: Filtered output to xsoar, pagination message and response output.
+        Tuple[List[Dict[str, Any]], str, List[Dict[str, Any]]]: Filtered output to xsoar,
+        pagination message and response output.
     """
     if client.version == ClientV2.API_VER:
         response = response['results']  # type: ignore # V2 always returns a Dict.
@@ -5419,11 +5440,11 @@ def list_response_handler(client: Client,
         response_list = []
         response_list.append(response)
         response = response_list
-    if sub_object_id:
+    if sub_object_id and isinstance(response, list):
         group_dict = find_dict_in_array(response, sub_object_key, sub_object_id)
         response = [group_dict] if group_dict else []
         if not response:
-            raise DemistoException('The object does not exist.')
+            raise DemistoException(ERRORS.NOT_EXIST)
     response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = parser_handler(response, data_parser)
     return parsed_data, pagination_message, response
@@ -5501,33 +5522,44 @@ def paginate_results(version: str, response: Union[List, Dict[str, Any]], args: 
     return output, pagination_message
 
 
-def find_dict_in_array(container: List[Dict[str, Any]], key: str,
-                       value: Union[str, List[str]]) -> Union[Dict[str, Any], List[Dict[str, Any]], None]:
+def find_dict_in_array(container: List[Dict[str, Any]], key: str, value: str) -> Optional[Dict[str, Any]]:
     """Gets dictionary object in list of dictionaries.The search is by key that exist in each dictionary.
 
     Args:
         container (list): List of dictionaries.
         key (str): Key to recognize the correct dictionary.
-        value (Union[str, List[str]]): The value/values for the key.
+        value (str]): The value for the key.
 
     Returns:
-        Union[Dict[str, Any], List[Dict[str, Any]],None]: The dictionary / The dictionaries / None if there is no match.
+        Optional[Dict[str, Any]]: The dictionary / The dictionaries / None if there is no match.
     """
 
-    if isinstance(value, str):
-        for obj in container:
-            if obj.get(key) and str(obj[key]) == value:
-                return obj
-    if isinstance(value, List):
-        return [obj for obj in container if obj[key] in value] or None
+    for obj in container:
+        if obj.get(key) and str(obj[key]) == value:
+            return obj
     return None
+
+
+def find_dicts_in_array(container: List[Dict[str, Any]], key: str, value: List[str]) -> Optional[List[Dict[str, Any]]]:
+    """Gets dictionaries object in list of dictionaries.The search is by key that exist in each dictionary.
+
+    Args:
+        container (list): List of dictionaries.
+        key (str): Key to recognize the correct dictionary.
+        value (List[str]): The values for the key.
+
+    Returns:
+        Optional[List[Dict[str, Any]]]: The dictionaries / None if there is no match.
+    """
+
+    return [obj for obj in container if obj[key] in value] or None
 
 
 def get_object_id(client: Client,
                   create_response: Dict[str, Any],
                   by_key: str,
                   value: str,
-                  get_request,
+                  get_request: Callable,
                   object_id: Optional[str] = None) -> str:
     """Get object / sub object id. After create sub (member)
         object we should get list of all members and get our id by some key.

@@ -1795,6 +1795,10 @@ script:
       isArray: false
       name: name
       required: true
+    - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration .
+      isArray: false
+      name: json_template_id
+      required: false
     - auto: PREDEFINED
       description: Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy.
       isArray: false
@@ -1802,11 +1806,11 @@ script:
       predefined:
       - HTTP Content Routing
       - Single Server/Server Balance
-      required: true
+      required: false
     - description: Enter the name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters.
       isArray: false
       name: virtual_server
-      required: true
+      required: false
     - auto: PREDEFINED
       description: 'Match once enabled.Required when: deployment_mode = "HTTP Content Routing".'
       isArray: false
@@ -2256,6 +2260,10 @@ script:
         API version 2 only.
       isArray: false
       name: replacemsg
+      required: false
+    - description: Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration .
+      isArray: false
+      name: json_template_id
       required: false
     deprecated: false
     description: Update Server Policy.

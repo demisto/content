@@ -1422,7 +1422,8 @@ def test_http_content_routing_member_list_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = http_content_routing_member_list_command(mock_client, args)
-    assert isinstance(result.outputs,dict) and isinstance(result.outputs['Members'],list) and len(result.outputs['Members']) == expected
+    assert isinstance(result.outputs, dict) and isinstance(result.outputs['Members'], list) and len(
+        result.outputs['Members']) == expected
     assert result.outputs_prefix == 'FortiwebVM.HttpContentRoutingMember'
 
 
@@ -1597,14 +1598,27 @@ def test_geo_ip_group_list_command(requests_mock, mock_client: Client, version: 
     assert result.outputs_prefix == 'FortiwebVM.GeoIpGroup'
 
 
-@pytest.mark.parametrize(('version', 'post_endpoint', 'get_endpoint', 'post_jsonpath', 'get_jsonpath'), (
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry', 'WebProtection/Access/GeoIP/ron/AddCountry',
-     'geo_ip_member/v1_add_success.json', 'geo_ip_member/v1_list_success.json'),
-    (ClientV2.API_VER, 'waf/geoip.setCountrys?mkey=ron', 'cmdb/waf/geo-block-list/country-list?mkey=ron',
-     'geo_ip_member/v2_add_success.json', 'geo_ip_member/v2_list_success.json'),
-))
+@pytest.mark.parametrize(
+    ('version', 'post_endpoint', 'get_endpoint', 'post_jsonpath', 'get_jsonpath', 'args', 'expected_value'), (
+        (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry', 'WebProtection/Access/GeoIP/ron/AddCountry',
+         'geo_ip_member/v1_add_success.json', 'geo_ip_member/v1_list_success.json', {
+             'group_name': 'ron',
+             'countries': 'Spain'
+         }, 1),
+        (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry', 'WebProtection/Access/GeoIP/ron/AddCountry',
+         'geo_ip_member/v1_add_success.json', 'geo_ip_member/v1_list_success.json', {
+             'group_name': 'ron',
+             'countries': 'Spain,France'
+         }, 2),
+        (ClientV2.API_VER, 'waf/geoip.setCountrys?mkey=ron', 'cmdb/waf/geo-block-list/country-list?mkey=ron',
+         'geo_ip_member/v2_add_success.json', 'geo_ip_member/v2_list_success.json', {
+             'group_name': 'ron',
+             'countries': 'Spain,France'
+         }, 2),
+    ))
 def test_geo_ip_member_add_command(requests_mock, mock_client: Client, version: str, post_endpoint: str,
-                                   get_endpoint: str, post_jsonpath: str, get_jsonpath: str):
+                                   get_endpoint: str, post_jsonpath: str, get_jsonpath: str, args: Dict[str, Any],
+                                   expected_value: int):
     """
     Scenario: Add a Geo IP member.
     Given:
@@ -1623,10 +1637,10 @@ def test_geo_ip_member_add_command(requests_mock, mock_client: Client, version: 
     post_url = urljoin(mock_client.base_url, post_endpoint)
     requests_mock.get(url=get_url, json=get_json_response)
     requests_mock.post(url=post_url, json=post_json_response)
-    args = {'group_name': 'ron', 'countries': 'Spain,France'}
     result = geo_ip_member_add_command(mock_client, args)
     assert OutputTitles.GEO_IP_MEMBER_ADD in str(result.readable_output)
     assert 'FortiwebVM.GeoIpMember' == result.outputs_prefix
+    assert len(result.outputs) == expected_value
 
 
 @pytest.mark.parametrize(('version', 'post_endpoint', 'get_endpoint', 'post_jsonpath', 'get_jsonpath', 'error_msg'), (
@@ -1755,7 +1769,7 @@ def test_geo_ip_member_list_command(requests_mock, mock_client: Client, version:
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.get(url=url, json=json_response)
     result = geo_ip_member_list_command(mock_client, args)
-    if isinstance(result.outputs, dict) and isinstance(result.outputs['FortiwebVM'],list):
+    if isinstance(result.outputs, dict) and isinstance(result.outputs['countries'], list):
         assert len(result.outputs['countries']) == expected
     assert result.outputs_prefix == 'FortiwebVM.GeoIpMember'
 
@@ -1989,71 +2003,72 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
     assert OutputTitles.SERVER_POLICY_CREATE in str(result.readable_output)
 
 
-@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-    }, 'server_policy/v1_create_success.json', ERRORS.PROTOCOL),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'wrong',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.DEPLOYMENT_MODE),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'Single Server/Server Balance',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.SERVER_POOL),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.ALREADY_EXIST),
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-    }, 'server_policy/v1_wrong_parameters.json', ERRORS.ARGUMENTS),
-    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP'
-    }, 'server_policy/v2_exist.json', ERRORS.ALREADY_EXIST),
-    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-        'scripting': 'wrong'
-    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING),
-    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-        'scripting': 'enable'
-    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING_LIST),
-    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-        'name': 'check',
-        'deployment_mode': 'HTTP Content Routing',
-        'server_pool': 'server1',
-        'virtual_server': 'virtual1',
-        'http_service': 'HTTP',
-    }, 'server_policy/v2_wrong_parameters.json', ERRORS.ARGUMENTS),
-))
+@pytest.mark.parametrize(
+    ('version', 'endpoint', 'args', 'jsonpath', 'error_msg'),
+    (
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+        }, 'server_policy/v1_create_success.json', ERRORS.PROTOCOL),
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+            'name': 'check',
+            'deployment_mode': 'wrong',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+        }, 'server_policy/v1_exist.json', ERRORS.DEPLOYMENT_MODE),
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+            'name': 'check',
+            'deployment_mode': 'Single Server/Server Balance',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+        }, 'server_policy/v1_exist.json', ERRORS.SERVER_POOL),
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+        }, 'server_policy/v1_exist.json', ERRORS.ALREADY_EXIST),
+        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+        }, 'server_policy/v1_wrong_parameters.json', ERRORS.ARGUMENTS),
+        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP'
+        }, 'server_policy/v2_exist.json', ERRORS.ALREADY_EXIST),
+        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+            'scripting': 'wrong'
+        }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING),
+        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+            'scripting': 'enable'
+        }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING_LIST),
+        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+            'name': 'check',
+            'deployment_mode': 'HTTP Content Routing',
+            'server_pool': 'server1',
+            'virtual_server': 'virtual1',
+            'http_service': 'HTTP',
+        }, 'server_policy/v2_wrong_parameters.json', ERRORS.ARGUMENTS), ))
 def test_fail_server_policy_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            args: Dict[str, Any], jsonpath: str, error_msg: str):
     """
@@ -2077,25 +2092,24 @@ def test_fail_server_policy_create_command(requests_mock, mock_client: Client, v
     assert error_msg in str(error_info.value)
 
 
-@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value', 'status_code', 'assert_flag'), (
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'expected_value'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
         'name': '123456789',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP'
-    }, 'server_policy/v1_create_success.json', '123456789', HTTPStatus.OK, False),
+    }, 'server_policy/v1_create_success.json', '123456789'),
     (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=123456789', {
         'name': '123456789',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP'
-    }, 'server_policy/v2_create_success.json', '123456789', HTTPStatus.OK, False),
+    }, 'server_policy/v2_create_success.json', '123456789'),
 ))
-def test_server_policy_update_command(requests_mock, mock_client: Client, version: str, endpoint: str, args: Dict[str,
-                                                                                                                  Any],
-                                      jsonpath: str, expected_value: str, status_code: HTTPStatus, assert_flag: bool):
+def test_server_policy_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
+                                      args: Dict[str, Any], jsonpath: str, expected_value: str):
     """
     Scenario: Update a new server policy.
     Given:
@@ -2113,14 +2127,13 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
         'server_policy/v2_list_success.json'
     url = urljoin(mock_client.base_url, get_endpoint)
     get_response = load_mock_response(get_jsonpath)
-    requests_mock.get(url=url, json=get_response, status_code=HTTPStatus.OK)
+    requests_mock.get(url=url, json=get_response)
 
     json_response = load_mock_response(jsonpath)
     url = urljoin(mock_client.base_url, endpoint)
-    requests_mock.put(url=url, json=json_response, status_code=status_code)
+    requests_mock.put(url=url, json=json_response)
     result = server_policy_update_command(mock_client, args)
     assert OutputTitles.SERVER_POLICY_UPDATE in str(result.readable_output)
-
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
