@@ -74,16 +74,19 @@ def apply_filters(incidents: List, args: Dict):
 
 
 def summarize_incidents(args, incidents):
-    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed']
-    if args.get("add_fields_to_summerizied_context"):
-        summerized_fields = summerized_fields + args.get("add_fields_to_context", '').split(",")
+    print('summarizing')
+    summerized_fields = ['id', 'name', 'type', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
+    if args.get("add_fields_to_summarize_context"):
+        summerized_fields = summerized_fields + args.get("add_fields_to_summarize_context", '').split(",")
         summerized_fields = [x.strip() for x in summerized_fields]  # clear out whitespace
     summarized_incidents = []
     for incident in incidents:
-        summerizied_incident = {}
+        print(incident)
+        summarizied_incident = {}
         for field in summerized_fields:
-            summerizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
-        summarized_incidents.append(summerizied_incident)
+            summarizied_incident[field] = incident.get(field, incident["CustomFields"].get(field, "n/a"))
+        summarized_incidents.append(summarizied_incident)
+        print(summarizied_incident)
     return summarized_incidents
 
 
@@ -117,12 +120,14 @@ def transform_to_alert_data(incidents: List):
 
 
 def search_incidents(args: Dict):   # pragma: no cover
+    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     if not is_valid_args(args):
         return
 
-    if fromdate := arg_to_datetime(args.get('fromdate')):
+    if fromdate := arg_to_datetime(args.get('fromdate', '30 days ago' if is_summarized_version else None)):
         from_date = fromdate.isoformat()
         args['fromdate'] = from_date
+
     if todate := arg_to_datetime(args.get('todate')):
         to_date = todate.isoformat()
         args['todate'] = to_date
@@ -146,7 +151,6 @@ def search_incidents(args: Dict):   # pragma: no cover
     data = apply_filters(res[0]['Contents']['data'], args)
     data = add_incidents_link(data, platform)
     headers: List[str]
-    is_summarized_version = argToBoolean(args.get('summarizedversion', False))
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
                    'owner', 'targetprocessname', 'username', 'alertLink']
@@ -155,7 +159,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     else:
         headers = ['id', 'name', 'severity', 'status', 'owner', 'created', 'closed', 'incidentLink']
         if is_summarized_version:
-            data = summarize_incidents(data)
+            data = summarize_incidents(args, data)
             if args.get("add_fields_to_summarize_context"):
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
