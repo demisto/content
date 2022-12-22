@@ -4,6 +4,7 @@ filter
 | alter
     xdm.network.rule = policy,
     xdm.target.port = to_integer(dstPort),
+    xdm.source.port = to_integer(ConnectorPort),
     xdm.target.ipv4 = dst,
     xdm.source.ipv4 = src,
     xdm.observer.vendor = _vendor,
