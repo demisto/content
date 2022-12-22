@@ -403,7 +403,7 @@ def test_update_remote_system_delta(mocker):
             "incidentChanged": "17757",
             "remoteId": "17757",
             "data": {"summary": "data", "not_changes_key": "not_changes_val"},
-            "delta": {"summary": "changes"},
+            "delta": {"summary": "changes", "dbotMirrorDirection": "test"},
         }
     )
     assert res == "17757"
