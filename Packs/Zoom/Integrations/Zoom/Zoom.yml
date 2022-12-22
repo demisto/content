@@ -245,7 +245,7 @@ script:
         - contextPath: Zoom.Meeting.type
           description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
           type: number
-      description: Create a new zoom meeting (scheduled or instant)
+      description: Create a new zoom meeting (scheduled ,instant, or recurring)
     - name: zoom-recording-get
       arguments:
         - name: meeting_id
@@ -461,6 +461,9 @@ script:
             - previous_meetings
           defaultValue: '"scheduled"'
       outputs:
+        - contextPath: Zoom.Metadata.Total
+          description: Total number of records
+          type: number
         - contextPath: Zoom.Meetings.page_size
           description: The size of the page returned from the API
           type: number

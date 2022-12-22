@@ -474,9 +474,7 @@ def get_jwt_token(apiKey: str, apiSecret: str) -> str:
     return encoded
 
 
-def test_module(
-    client: Client
-):
+def test_module(client: Client):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
@@ -555,12 +553,19 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
             md += '\n' + tableToMarkdown('Metadata', [raw_data], ['page_count', 'page_number',
                                                                   'page_size', 'total_records', 'next_page_token'])
     return CommandResults(
-        outputs_prefix='Zoom.User',
+        outputs_prefix='Zoom',
         readable_output=md,
+        outputs={
+            'User': raw_data.get('users'),
+            'Metadata': {'Count': raw_data.get('page_count'),
+                         'Number': raw_data.get('page_number'),
+                         'Size': raw_data.get('page_size'),
+                         'Total': raw_data.get('total_records')}
+        },
         # keeping the syntax of the output of the previous version
-        outputs=raw_data | {'Number': raw_data.get('page_number'), 'Count': raw_data.get('page_count'),
-                            'Size': raw_data.get('page_size'),
-                            'Total': raw_data.get('total_records')},
+        # outputs=raw_data | {'Zoom.Metadata': {'Number': raw_data.get('page_number'), 'Count': raw_data.get('page_count'),
+        #                     'Size': raw_data.get('page_size'),
+        #                                       'Total': raw_data.get('total_records')}},
         raw_response=raw_data
     )
 
@@ -568,7 +573,7 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
 def zoom_user_create_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
     raw_data = client.zoom_user_create(user_type, email, first_name, last_name)
     return CommandResults(
-        outputs_prefix='Zoom.user',
+        outputs_prefix='Zoom.User',
         readable_output=f"User created successfully with ID: {raw_data.get('id')}",
         outputs=raw_data,
         raw_response=raw_data
@@ -644,7 +649,7 @@ def zoom_meeting_create_command(
                                                                      'timezone', 'created_at', 'start_url', 'join_url'
                                                              ])
     return CommandResults(
-        outputs_prefix='Zoom.meeting',
+        outputs_prefix='Zoom.Meeting',
         readable_output=md,
         outputs=raw_data,
         raw_response=raw_data
@@ -700,13 +705,14 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
         md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'total_records'])
 
     return CommandResults(
-        outputs_prefix='Zoom.Meetings',
+        outputs_prefix='Zoom',
         readable_output=md,
         # keeping the syntax of the output of the previous version
-        outputs=raw_data | {'Number': raw_data.get('page_number'),
-                            'Count': raw_data.get('page_count'),
-                            'Size': raw_data.get('page_size'),
-                            'Total': raw_data.get('total_records')},
+        outputs={
+            'Meetings': raw_data,
+            'Metadata': {'Size': raw_data.get('page_size'),
+                         'Total': raw_data.get('total_records')}
+        },
         raw_response=raw_data
     )
 
