@@ -7,13 +7,13 @@ import traceback
 RELIABILITY = 'C - Fairly reliable'
 
 SCORE_DICT = {
-        "UNKNOWN": 0,
-        "UNCLASSIFIED": 0,
-        "KNOWN": 1,
-        "GOODWARE": 1,
-        "SUSPICIOUS": 2,
-        "MALICIOUS": 3
-    }
+    "UNKNOWN": 0,
+    "UNCLASSIFIED": 0,
+    "KNOWN": 1,
+    "GOODWARE": 1,
+    "SUSPICIOUS": 2,
+    "MALICIOUS": 3
+}
 
 
 def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
@@ -45,7 +45,7 @@ def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
     if a1000_classification in ("UNKNOWN", "UNCLASSIFIED"):
         overall_classification = cloud_classification
     else:
-        if SCORE_DICT.get(cloud_classification) > SCORE_DICT.get(a1000_classification):
+        if SCORE_DICT.get(cloud_classification, 0) > SCORE_DICT.get(a1000_classification, 0):
             overall_classification = cloud_classification
         else:
             overall_classification = a1000_classification

@@ -125,7 +125,7 @@ def a1000_report_output(response_json):
     dbot_score = Common.DBotScore(
         indicator=sha1,
         indicator_type=DBotScoreType.FILE,
-        integration_name='ReversingLabs A1000',
+        integration_name='ReversingLabs A1000 v2',
         score=d_bot_score,
         malicious_description=f"{result.get('classification_reason')} - {result.get('classification_result')}",
         reliability=RELIABILITY
@@ -379,7 +379,7 @@ def get_classification_output(response_json):
         dbot_score = Common.DBotScore(
             indicator=response_json.get('sha1'),
             indicator_type=DBotScoreType.FILE,
-            integration_name='ReversingLabs A1000',
+            integration_name='ReversingLabs A1000 v2',
             score=d_bot_score,
             malicious_description=status,
             reliability=RELIABILITY
