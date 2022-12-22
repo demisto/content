@@ -106,8 +106,8 @@ All HTTPS traffic that will hit the selected messaging endpoint will be directed
 
 ## Setup Video
 <video controls>
-    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true"
-            type="video/mov"/>
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mp4?raw=true"
+            type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/blob/master/Assets/MicrosoftTeams/FullConfigVideo.mov?raw=true
 </video>
 
