@@ -12927,7 +12927,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]], max_fetch: i
         last_fetch_dict (Dict[str,str]): last fetch time per log type dictionary
 
     Returns:
-        Tuple[Dict[str,Any], Dict[str, str]]: a dictionary of all the incidents entries for all the specified queries
+        Tuple[Dict[str,Any], Dict[str, str]]: a dictionary of all the incidents entries and a dicitonary of last fetches for all the specified queries
     """
     entries = {}
     if queries_dict:
