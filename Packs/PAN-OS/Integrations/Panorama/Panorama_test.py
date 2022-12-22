@@ -5862,7 +5862,8 @@ class TestFetchIncidentsHelperFunctions:
                                    dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
     case_first_fetch_time_bigger = ('2022/01/01 11:00', '2022/01/01 12:00',
                                     dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
-    test_calculate_fetch_start_datetime_args = [case_first_fetch, case_last_fetch_time_bigger, case_first_fetch_time_bigger]
+    test_calculate_fetch_start_datetime_args = [case_first_fetch,
+                                                case_last_fetch_time_bigger, case_first_fetch_time_bigger]
 
     @pytest.mark.parametrize('last_fetch, first_fetch, expected_result', test_calculate_fetch_start_datetime_args)
     def test_calculate_fetch_start_datetime(self, last_fetch, first_fetch, expected_result):
@@ -5883,7 +5884,7 @@ class TestFetchIncidentsHelperFunctions:
     def test_calculate_fetch_start_datetime_error(self, mocker):
         """
         Given:
-        - invalid last run time or First fetch timestamp paramter 
+        - invalid last run time or First fetch timestamp paramter
 
         When:
         - calculate_fetch_start_datetime function is called
@@ -5897,16 +5898,14 @@ class TestFetchIncidentsHelperFunctions:
             calculate_fetch_start_datetime('example', 'example')
 
     case_empty_log_type = ({}, {})
-    case_all_log_type_queries_selected = ({'log_types': ['All'], 'traffic_query': 'traffic query',
-                                           'threat_query': 'threat query', 'url_query': 'url query',
-                                           'data_query': 'data query', 'correlation_query': 'correlation query',
-                                           'system_query': 'system query', 'wildfire_query': 'wildfire query',
-                                           'decryption_query': 'decryption query'}, {'Traffic': 'traffic query',
-                                                                                     'Threat': 'threat query',
-                                                                                     'Url': 'url query',
-                                                                                     'Data': 'data query',
-                                          'Correlation': 'correlation query', 'System': 'system query',
-                                          'Wildfire': 'wildfire query', 'Decryption': 'decryption query'})
+    case_all_log_type_queries_selected = (
+        {'log_types': ['All'],
+         'traffic_query': 'traffic query', 'threat_query': 'threat query', 'url_query': 'url query',
+         'data_query': 'data query', 'correlation_query': 'correlation query', 'system_query': 'system query',
+         'wildfire_query': 'wildfire query', 'decryption_query': 'decryption query'},
+        {'Traffic': 'traffic query', 'Threat': 'threat query', 'Url': 'url query', 'Data': 'data query',
+         'Correlation': 'correlation query', 'System': 'system query', 'Wildfire': 'wildfire query',
+         'Decryption': 'decryption query'})
     case_one_valid_log_type_query_selected = (
         {'log_types': ['All'], 'traffic_query': 'traffic query'}, {'Traffic': 'traffic query'})
     case_one_invalid_log_type_query_selected = (
@@ -5953,7 +5952,8 @@ class TestFetchIncidentsHelperFunctions:
         assert filter_incident_entries([{'time_generated': '2022/01/01 11:00'},
                                         {'time_generated': '2022/01/01 12:00'},
                                         {'time_generated': '2022/01/01 13:00'}],
-                                       dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})) == [{'time_generated': '2022/01/01 13:00'}]
+                                       dateparser.parse('2022/01/01 12:00',
+                                                        settings={'TIMEZONE': 'UTC'})) == [{'time_generated': '2022/01/01 13:00'}]
 
     def test_incident_entry_to_incident_context(self):
         """
@@ -5975,7 +5975,7 @@ class TestFetchIncidentsHelperFunctions:
                 'rawJSON': json.dumps(raw_entry),
                 'type': 'TYPE'
             }
-        assert incident_entry_to_incident_context(raw_entry) == context_entry  
+        assert incident_entry_to_incident_context(raw_entry) == context_entry
 
     def test_get_fetch_start_datetime_dict(self):
         """
@@ -5990,7 +5990,8 @@ class TestFetchIncidentsHelperFunctions:
         - assert that the returned (log_type,datetime) key,value pair dictionary is valid
         """
         from Panorama import get_fetch_start_datetime_dict
-        assert get_fetch_start_datetime_dict({'log_name': '2022/01/01 13:00'}, '2022/01/01 12:00') == {'log_name': dateparser.parse('2022/01/01 13:00', settings={'TIMEZONE': 'UTC'})}
+        assert get_fetch_start_datetime_dict({'log_name': '2022/01/01 13:00'}, '2022/01/01 12:00') == {
+            'log_name': dateparser.parse('2022/01/01 13:00', settings={'TIMEZONE': 'UTC'})}
 
 
 """ FETCH INCIDENTS FLOWS """
@@ -6041,7 +6042,8 @@ class TestFetchIncidentsFlows:
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = 10
 
-        raw_entries = {'@logid': '123456789', 'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
+        raw_entries = {'@logid': '123456789', 'seqno': '000000001',
+                       'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
         expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
@@ -6116,7 +6118,9 @@ class TestFetchIncidentsFlows:
                                             {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse(
-            '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}), 'Y_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
+            '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),
+            'Y_log_type': dateparser.parse(
+            '2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.fetch_incidents_request', return_value=fetch_incidents_request_result)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
@@ -6141,7 +6145,8 @@ class TestFetchIncidentsFlows:
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T11:00:00', 'Y_log_type': '2022-01-01T13:00:00'}}
         first_fetch = '24 hours'
-        queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)", 'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
+        queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)",
+                        'Y_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = 10
 
         X_log_type_raw_entries = [{'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 11:00:00'}]
@@ -6149,7 +6154,7 @@ class TestFetchIncidentsFlows:
         fetch_incidents_request_result = (
             {'X_log_type': X_log_type_raw_entries, 'Y_log_type': Y_log_type_raw_entries},
             {'X_log_type': '2022-01-01T12:00:00', 'Y_log_type': '2022-01-01T12:00:00'})
-        
+
         expected_parsed_incident_entries = [{'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
                                             'rawJSON': json.dumps(Y_log_type_raw_entries[0]), 'type': 'Y_log_type'}]
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'}),

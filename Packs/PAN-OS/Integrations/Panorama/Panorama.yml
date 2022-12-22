@@ -108,15 +108,15 @@ configuration:
   type: 16
   additionalinfo: Select which logs to retrieve.
   options:
-    - Traffic
-    - Threat
-    - URL
-    - Data
-    - Correlation
-    - System
-    - Wildfire
-    - Decryption
-    - All
+  - Traffic
+  - Threat
+  - URL
+  - Data
+  - Correlation
+  - System
+  - Wildfire
+  - Decryption
+  - All
 - display: Traffic Log Type Query
   name: traffic_query
   required: false
@@ -157,6 +157,10 @@ configuration:
   required: false
   type: 12
   defaultvalue: 'Please input a query, example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))'
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -1061,7 +1065,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. 
+      description: Adds or removes sites or categories.
       isArray: true
       name: action
       predefined:
@@ -1189,7 +1193,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL categories. 
+      description: The action for the URL categories.
       name: action
       predefined:
       - allow
@@ -1490,7 +1494,7 @@ script:
     - description: The description of the rule to create.
       name: description
     - auto: PREDEFINED
-      description: The action for the rule. 
+      description: The action for the rule.
       name: action
       predefined:
       - allow
@@ -1510,13 +1514,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). 
+      description: Whether to negate the source (address, address group).
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). 
+      description: Whether to negate the destination (address, address group).
       name: negate_destination
       predefined:
       - Yes
@@ -1526,7 +1530,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. 
+      description: Whether to disable the rule.
       name: disable
       predefined:
       - Yes
@@ -1622,7 +1626,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. 
+      description: The object type to block in the policy rule.
       name: object_type
       predefined:
       - ip
@@ -1737,7 +1741,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. 
+      description: The parameter in the security rule to change.
       name: element_to_change
       predefined:
       - source
@@ -2237,7 +2241,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The log type. 
+      description: The log type.
       name: log-type
       predefined:
       - threat
@@ -2652,7 +2656,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: The type for the next hop. 
+      description: The type for the next hop.
       name: nexthop_type
       predefined:
       - ip-address
@@ -2953,7 +2957,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. 
+      description: The security profile for which to get information.
       name: security_profile
       predefined:
       - data-filtering
@@ -3098,7 +3102,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Security profile type. 
+      description: Security profile type.
       name: profile_type
       predefined:
       - data-filtering
@@ -4438,7 +4442,7 @@ script:
       isArray: true
       name: sites
     - auto: PREDEFINED
-      description: Adds or removes sites or categories. 
+      description: Adds or removes sites or categories.
       isArray: true
       name: action
       predefined:
@@ -4602,7 +4606,7 @@ script:
       name: url_category
       required: true
     - auto: PREDEFINED
-      description: The action for the URL category. 
+      description: The action for the URL category.
       name: action
       predefined:
       - allow
@@ -4909,7 +4913,7 @@ script:
       name: rulename
     - description: The description of the rule to create.
       name: description
-    - description: The action for the rule. 
+    - description: The action for the rule.
       name: action
       auto: PREDEFINED
       predefined:
@@ -4930,13 +4934,13 @@ script:
       isArray: true
       name: destination_zone
     - auto: PREDEFINED
-      description: Whether to negate the source (address, address group). 
+      description: Whether to negate the source (address, address group).
       name: negate_source
       predefined:
       - Yes
       - No
     - auto: PREDEFINED
-      description: Whether to negate the destination (address, address group). 
+      description: Whether to negate the destination (address, address group).
       name: negate_destination
       predefined:
       - Yes
@@ -4946,7 +4950,7 @@ script:
       name: service
     - auto: PREDEFINED
       defaultValue: No
-      description: Whether to disable the rule. 
+      description: Whether to disable the rule.
       name: disable
       predefined:
       - Yes
@@ -5041,7 +5045,7 @@ script:
     - description: The name of the custom block policy rule to create.
       name: rulename
     - auto: PREDEFINED
-      description: The object type to block in the policy rule. 
+      description: The object type to block in the policy rule.
       name: object_type
       predefined:
       - ip
@@ -5154,7 +5158,7 @@ script:
       name: rulename
       required: true
     - auto: PREDEFINED
-      description: The parameter in the security rule to change. 
+      description: The parameter in the security rule to change.
       name: element_to_change
       predefined:
       - source
@@ -5654,7 +5658,7 @@ script:
       description: The rule tags.
       type: String
   - arguments:
-    - description: The log type. 
+    - description: The log type.
       name: log-type
       required: true
       auto: PREDEFINED
@@ -6241,7 +6245,7 @@ script:
       name: destination
       required: true
     - auto: PREDEFINED
-      description: The type for the next hop. 
+      description: The type for the next hop.
       name: nexthop_type
       predefined:
       - ip-address
@@ -6532,7 +6536,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The security profile for which to get information. 
+      description: The security profile for which to get information.
       name: security_profile
       predefined:
       - data-filtering
@@ -6678,7 +6682,7 @@ script:
       description: The rule name.
       type: String
   - arguments:
-    - description: The security profile type. 
+    - description: The security profile type.
       name: profile_type
       required: true
       auto: PREDEFINED
@@ -8430,7 +8434,7 @@ script:
       - post-rulebase
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed rules or not. 
+      description: Whether to show the un-committed rules or not.
       isArray: false
       name: show_uncommitted
       auto: PREDEFINED
@@ -8717,7 +8721,7 @@ script:
       required: false
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed virtual routers or not. 
+      description: Whether to show the un-committed virtual routers or not.
       isArray: false
       name: show_uncommitted
       required: false
@@ -8974,7 +8978,7 @@ script:
       - post-rulebase
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed rules or not. 
+      description: Whether to show the un-committed rules or not.
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -9226,7 +9230,7 @@ script:
       name: device-group
     - default: false
       defaultValue: 'false'
-      description: Whether to show the un-committed application-groups or not. 
+      description: Whether to show the un-committed application-groups or not.
       isArray: false
       name: show_uncommitted
       auto: PREDEFINED
@@ -9330,7 +9334,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.39679
+  dockerimage: demisto/pan-os-python:1.0.0.41310
   feed: false
   isfetch: true
   longRunning: false
