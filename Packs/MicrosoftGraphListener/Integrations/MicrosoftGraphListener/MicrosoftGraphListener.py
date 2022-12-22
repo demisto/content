@@ -92,7 +92,7 @@ def upload_file(filename, content, attachments_list):
     })
 
 
-def read_file(attach_id):
+def read_file(attach_id: str) -> tuple[bytes, int, str]:
     """
     Reads file that was uploaded to War Room.
 
@@ -160,7 +160,7 @@ def prepare_args(command, args):
     return args
 
 
-def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
+def prepare_outputs_for_reply_mail_command(reply, email_to: str, message_id: str) -> CommandResults:
     reply.pop('attachments', None)
     to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(reply)
     reply['toRecipients'] = to_recipients
@@ -799,7 +799,7 @@ class MsGraphClient:
 
         return next_run, incidents
 
-    def create_draft(self, email, json_data, reply_message_id=None):
+    def create_draft(self, email: str, json_data, reply_message_id: str = None) -> dict:
         """
         Create a draft message for either a new message or as a reply to an existing message.
         Args:
@@ -815,11 +815,10 @@ class MsGraphClient:
             suffix = f'/users/{email}/messages'  # create draft for a new message
         return self.ms_client.http_request('POST', suffix, json_data=json_data)
 
-    def create_draft_command(self, **kwargs):
+    def create_draft_command(self, **kwargs) -> tuple[str, dict, dict]:
         """
         Creates draft message in user's mailbox, in draft folder.
         """
-        # suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages'
         draft = MsGraphClient._build_message(**kwargs)
         less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
             attachments=draft.get('attachments')
@@ -829,7 +828,7 @@ class MsGraphClient:
         created_draft = self.create_draft(email=self._mailbox_to_fetch, json_data=draft)
         if more_than_3mb_attachments:  # we have at least one attachment that should be uploaded using upload session
             self.add_attachments_via_upload_session(
-                email=self._mailbox_to_fetch, draft_id=created_draft.get('id'), attachments=more_than_3mb_attachments
+                email=self._mailbox_to_fetch, draft_id=created_draft.get('id', ''), attachments=more_than_3mb_attachments
             )
         parsed_draft = MsGraphClient._parse_item_as_dict(created_draft)
         human_readable = tableToMarkdown(f'Created draft with id: {parsed_draft.get("ID", "")}', parsed_draft)
@@ -837,7 +836,7 @@ class MsGraphClient:
 
         return human_readable, ec, created_draft
 
-    def send_email_command(self, **kwargs):
+    def send_email_command(self, **kwargs) -> tuple[str, dict]:
         """
         Sends email from user's mailbox, the sent message will appear in Sent Items folder.
         Sending email process:
@@ -862,13 +861,6 @@ class MsGraphClient:
 
         message_content.pop('attachments', None)
         message_content.pop('internet_message_headers', None)
-
-        to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(message_content)
-        message_content['toRecipients'] = to_recipients
-        message_content['ccRecipients'] = cc_recipients
-        message_content['bccRecipients'] = bcc_recipients
-
-        message_content = assign_params(**message_content)
         human_readable = tableToMarkdown('Email was sent successfully.', message_content)
         ec = {self.CONTEXT_SENT_EMAIL_PATH: message_content}
 
@@ -885,7 +877,8 @@ class MsGraphClient:
             'POST', f'/users/{email}/sendMail', json_data={'message': json_data}, resp_type="text"
         )
 
-    def reply_to_command(self, to_recipients, comment, message_id, attach_ids, attach_names, attach_cids):
+    def mail_reply_to_command(self, to_recipients: list, comment: str, message_id: str,
+                              attach_ids: list, attach_names: list, attach_cids: str) -> str:
         """
         Sends reply message to recipients.
 
@@ -910,9 +903,20 @@ class MsGraphClient:
         :return: String representation of markdown message regarding successful message submission.
         rtype: ``str``
         """
-        suffix_endpoint = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/reply'
         reply = MsGraphClient._build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
-        self.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
+        less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+            attachments=reply.get('message').get('attachments')
+        )
+        if more_than_3mb_attachments:
+            reply['message']['attachments'] = less_than_3mb_attachments
+            self.send_mail_with_upload_session_flow(
+                email=self._mailbox_to_fetch,
+                json_data=reply,
+                attachments_more_than_3mb=more_than_3mb_attachments,
+                reply_message_id=message_id
+            )
+        else:
+            self.send_reply(email_from=self._mailbox_to_fetch, message_id=message_id, json_data=reply)
 
         return f'### Replied to: {", ".join(to_recipients)} with comment: {comment}'
 
@@ -932,10 +936,10 @@ class MsGraphClient:
             resp_type="text"
         )
 
-    def reply_mail_command(self, args):
+    def reply_mail_command(self, args: dict) -> CommandResults:
         email_to = argToList(args.get('to'))
         email_from = args.get('from', self._mailbox_to_fetch)
-        message_id = args.get('inReplyTo')
+        message_id = args.get('inReplyTo', '')
         email_body = args.get('body', "")
         email_subject = args.get('subject', "")
         email_subject = f'Re: {email_subject}'
@@ -970,7 +974,7 @@ class MsGraphClient:
 
         return prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
 
-    def send_draft(self, email, draft_id):
+    def send_draft(self, email: str, draft_id: str):
         """
         Sends a draft message.
         Args:
@@ -979,7 +983,7 @@ class MsGraphClient:
         """
         self.ms_client.http_request('POST', f'/users/{email}/messages/{draft_id}/send', resp_type='text')
 
-    def send_draft_command(self, draft_id):
+    def send_draft_command(self, draft_id: str) -> str:
         """
         Send draft message.
 
@@ -1122,7 +1126,7 @@ class MsGraphClient:
         else:
             raise Exception("Failed validating the user.")
 
-    def add_attachments_via_upload_session(self, email, draft_id, attachments):
+    def add_attachments_via_upload_session(self, email: str, draft_id: str, attachments: list[dict]):
         """
         Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
@@ -1135,12 +1139,12 @@ class MsGraphClient:
             self.add_attachment_with_upload_session(
                 email=email,
                 draft_id=draft_id,
-                attachment_data=attachment.get('data'),
-                attachment_name=attachment.get('name'),
-                is_inline=attachment.get('isInline')
+                attachment_data=attachment.get('data', ''),
+                attachment_name=attachment.get('name', ''),
+                is_inline=attachment.get('isInline', False)
             )
 
-    def get_upload_session(self, email, draft_id, attachment_name, attachment_size, is_inline):
+    def get_upload_session(self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool) -> dict:
         """
         Create an upload session for a specific draft ID.
         Args:
@@ -1165,8 +1169,8 @@ class MsGraphClient:
 
     @staticmethod
     def upload_attachment(
-        upload_url, start_chunk_idx, end_chunk_idx, chunk_data, attachment_size
-    ):
+        upload_url: str, start_chunk_idx: int, end_chunk_idx: int, chunk_data: bytes, attachment_size: int
+    ) -> requests.Response:
         """
         Upload an attachment to the upload URL.
         Args:
@@ -1188,7 +1192,8 @@ class MsGraphClient:
         demisto.debug(f'uploading session headers: {headers}')
         return requests.put(url=upload_url, data=chunk_data, headers=headers)
 
-    def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
+    def add_attachment_with_upload_session(self, email: str, draft_id: str, attachment_data: bytes,
+                                           attachment_name: str, is_inline: bool = False):
         """
         Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
         more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
@@ -1247,7 +1252,8 @@ class MsGraphClient:
             demisto.error(f'{e}')
             raise e
 
-    def send_mail_with_upload_session_flow(self, email, json_data, attachments_more_than_3mb, reply_message_id=None):
+    def send_mail_with_upload_session_flow(self, email: str, json_data: dict,
+                                           attachments_more_than_3mb: list[dict], reply_message_id: str = None):
         """
         Sends an email with the upload session flow, this is used only when there is one attachment that is larger
         than 3 MB.
@@ -1262,7 +1268,7 @@ class MsGraphClient:
         """
         # create the draft email
         created_draft = self.create_draft(email=email, json_data=json_data, reply_message_id=reply_message_id)
-        draft_id = created_draft.get('id')
+        draft_id = created_draft.get('id', '')
         self.add_attachments_via_upload_session(  # add attachments via upload session.
             email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
         )
@@ -1579,7 +1585,7 @@ def main():
             human_readable, ec, raw_response = client.create_draft_command(**args)
             return_outputs(human_readable, ec, raw_response)
         elif command == 'msgraph-mail-reply-to':
-            human_readable = client.reply_to_command(**args)  # pylint: disable=E1123
+            human_readable = client.mail_reply_to_command(**args)  # pylint: disable=E1123
             return_outputs(human_readable)
         elif command == 'msgraph-mail-send-draft':
             human_readable = client.send_draft_command(**args)  # pylint: disable=E1123
