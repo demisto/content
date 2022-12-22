@@ -6693,6 +6693,9 @@ class CommandResults:
     :type mark_as_note: ``bool``
     :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
 
+    :type tags: ``list``
+    :param tags:  must be a list, default value is None. Used to tag war room entries.
+
     :type entry_type: ``int`` code of EntryType
     :param entry_type: type of return value, see EntryType
 
@@ -6757,6 +6760,7 @@ class CommandResults:
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
         self.mark_as_note = mark_as_note
+        self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
         self.execution_metrics = execution_metrics
