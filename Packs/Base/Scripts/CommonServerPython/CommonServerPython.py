@@ -6695,6 +6695,7 @@ class CommandResults:
                  indicator=None,
                  ignore_auto_extract=False,
                  mark_as_note=False,
+                 tags=None,
                  scheduled_command=None,
                  relationships=None,
                  entry_type=None,
@@ -6771,6 +6772,9 @@ class CommandResults:
         if self.raw_response:
             raw_response = self.raw_response
 
+        if self.tags:
+            tags = self.tags
+
         if self.ignore_auto_extract:
             ignore_auto_extract = True
 
@@ -6817,6 +6821,7 @@ class CommandResults:
             'Contents': raw_response,
             'HumanReadable': human_readable,
             'EntryContext': outputs,
+            'Tags': tags,
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
