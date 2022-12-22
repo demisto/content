@@ -469,9 +469,6 @@ script:
     - type: String
       contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime
       description: Date and time the file was created.
-    - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime
-      description: Date and time the file was created.
     - type: List
       contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports
       description: Reports of amounts of available RAM memory.
