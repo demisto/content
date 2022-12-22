@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
-import AddNewIndicators
+import CreateNewIndicatorsOnly
 from typing import Any
 
 
@@ -47,7 +47,7 @@ def test_no_values(mocker):
     expected_entry_context = {}
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '0 new indicators have been added' in results.get('HumanReadable')
@@ -75,14 +75,14 @@ def test_all_indicators_exist_with_single_value(mocker):
             }]
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': '1.1.1.1',
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'existing',
             'ID': '0',
             'Score': 0,
@@ -93,7 +93,7 @@ def test_all_indicators_exist_with_single_value(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '0 new indicators have been added' in results.get('HumanReadable')
@@ -121,7 +121,7 @@ def test_all_indicators_exist_with_multiple_value(mocker):
             }]
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': [
@@ -131,7 +131,7 @@ def test_all_indicators_exist_with_multiple_value(mocker):
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'existing',
             'ID': '0',
             'Score': 0,
@@ -148,7 +148,7 @@ def test_all_indicators_exist_with_multiple_value(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '0 new indicators have been added' in results.get('HumanReadable')
@@ -187,7 +187,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
             }
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': [
@@ -197,7 +197,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'existing',
             'ID': '0',
             'Score': 0,
@@ -214,7 +214,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '1 new indicators have been added' in results.get('HumanReadable')
@@ -248,7 +248,7 @@ def test_some_indicators_are_excluded(mocker):
                 }
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': [
@@ -258,7 +258,7 @@ def test_some_indicators_are_excluded(mocker):
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'unavailable',
             'Type': 'Unknown',
             'Value': '1.1.1.1'
@@ -273,7 +273,7 @@ def test_some_indicators_are_excluded(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '1 new indicators have been added' in results.get('HumanReadable')
@@ -303,14 +303,14 @@ def test_indicator_including_commas(mocker):
             }
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': 'http://www.paloaltonetworks.com/?q=,123',
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'new',
             'ID': '0',
             'Score': 0,
@@ -321,7 +321,7 @@ def test_indicator_including_commas(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '1 new indicators have been added' in results.get('HumanReadable')
@@ -351,7 +351,7 @@ def test_print_verbose(mocker):
             }
         raise ValueError('Unexpected calls')
 
-    mocker.patch('AddNewIndicators.execute_command', side_effect=__execute_command)
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': '1.1.1.1',
@@ -359,7 +359,7 @@ def test_print_verbose(mocker):
     })
 
     expected_entry_context = {
-        'AddNewIndicators(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
+        'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
             'Status': 'new',
             'ID': '0',
             'Score': 0,
@@ -370,7 +370,7 @@ def test_print_verbose(mocker):
     }
 
     mocker.patch.object(demisto, 'results')
-    AddNewIndicators.main()
+    CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert '|ID|Score|Status|Type|Value' in results.get('HumanReadable')

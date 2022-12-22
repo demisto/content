@@ -1,12 +1,12 @@
 commonfields:
-  id: AddNewIndicators
+  id: CreateNewIndicatorsOnly
   version: -1
-name: AddNewIndicators
+name: CreateNewIndicatorsOnly
 script: ''
 type: python
 tags:
 - Utility
-comment: Add indicators to the Threat Intel DB only if they are not registered.
+comment: Create indicators to the Threat Intel DB only if they are not registered.
 enabled: true
 args:
 - name: indicator_values
@@ -52,19 +52,19 @@ args:
   - "false"
   description: Output additional messages as readable output
 outputs:
-- contextPath: AddNewIndicators.ID
+- contextPath: CreateNewIndicatorsOnly.ID
   description: The indicator ID
   type: string
-- contextPath: AddNewIndicators.Value
+- contextPath: CreateNewIndicatorsOnly.Value
   description: The indicator value
   type: string
-- contextPath: AddNewIndicators.Type
+- contextPath: CreateNewIndicatorsOnly.Type
   description: The indicator type
   type: string
-- contextPath: AddNewIndicators.Score
+- contextPath: CreateNewIndicatorsOnly.Score
   description: The indicator score
   type: number
-- contextPath: AddNewIndicators.Status
+- contextPath: CreateNewIndicatorsOnly.Status
   description: The status of the indicator requested to add, which states either one of new, existing or unavailable.
   type: string
 scripttarget: 0

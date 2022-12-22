@@ -78,13 +78,13 @@ def main():
             readable_output += '\n' + tblToMd('New Indicator Created', ents)
 
         return_results(CommandResults(
-            outputs_prefix='AddNewIndicators',
+            outputs_prefix='CreateNewIndicatorsOnly',
             outputs_key_field=['Value', 'Type'],
             outputs=ents,
             readable_output=readable_output
         ))
     except Exception as e:
-        return_error(f'Failed to execute AddNewIndicators.\nError:\n{str(e)}')
+        return_error(f'Failed to execute CreateNewIndicatorsOnly.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

@@ -1,4 +1,4 @@
-Add indicators to the Threat Intel DB only if they are not registered.
+Create new indicators to the Threat Intel DB only if they are not registered.
 
 ## Script Data
 ---
@@ -26,11 +26,11 @@ Add indicators to the Threat Intel DB only if they are not registered.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| AddNewIndicators.ID | The indicator ID | string |
-| AddNewIndicators.Value | The indicator value | string |
-| AddNewIndicators.Type | The indicator type | string |
-| AddNewIndicators.Score | The indicator score | number |
-| AddNewIndicators.Status | The status of the indicator requested to add, which states either one of new, existing or unavailable. | string |
+| CreateNewIndicatorsOnly.ID | The indicator ID | string |
+| CreateNewIndicatorsOnly.Value | The indicator value | string |
+| CreateNewIndicatorsOnly.Type | The indicator type | string |
+| CreateNewIndicatorsOnly.Score | The indicator score | number |
+| CreateNewIndicatorsOnly.Status | The status of the indicator requested to add, which states either one of new, existing or unavailable. | string |
 
 ## Notice
 ---
