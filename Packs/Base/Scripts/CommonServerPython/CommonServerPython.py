@@ -6772,6 +6772,7 @@ class CommandResults:
     def to_context(self):
         outputs = {}  # type: dict
         relationships = []  # type: list
+        tags = []  # type: list
         if self.readable_output:
             human_readable = self.readable_output
         else:
