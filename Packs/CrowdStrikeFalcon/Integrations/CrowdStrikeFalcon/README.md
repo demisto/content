@@ -3985,7 +3985,7 @@ An external data source might not use the same data retention policy, which can 
 ### cs-falcon-spotlight-search-vulnerability
 
 ***
- Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
 
 #### Base Command
 
@@ -3995,20 +3995,20 @@ An external data source might not use the same data retention policy, which can 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-|filter| limit the vulnerabilities returned to specific properties | Optional |
+|filter| Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. | Optional |
 | aid |  Unique agent identifier (AID) of a sensor | Optional |
 | cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Optional |
-| cve_severity | Severity of the CVE | Optional |
-| tags | Name of a tag assigned to a host | Optional |
-| status | Status of a vulnerability | Optional |
-| platform_name | Operating system platform | Optional |
-| host_group | Unique system-assigned ID of a host group | Optional |
+| cve_severity | Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional |
+| tags | Name of a tag assigned to a host. Retrieve tags from Host Tags APIs | Optional |
+| status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional |
+| platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional |
+| host_group | Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs | Optional |
 | host_type | Type of host a sensor is running on | Optional |
-| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to Falcon | Optional |
-| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule or not | Optional |
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon | Optional |
+| is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule | Optional |
 | display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity | Optional |
-| display_evaluation_logic_info | Display logic information type of data to be returned for each vulnerability entity | Optional |
-| display_host_info | Display host information type of data to be returned for each vulnerability entity | Optional |
+| display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity | Optional |
+| display_host_info | Whether to return host information type of data for each vulnerability entity | Optional |
 | limit | Maximum number of items to return (1-5000) | Optional |
 
 #### Context Output
@@ -4020,14 +4020,14 @@ An external data source might not use the same data retention policy, which can 
 | CrowdStrike.Vulnerability.aid | String | Unique agent identifier (AID) of the sensor where the vulnerability was found | 
 | CrowdStrike.Vulnerability.created_timestamp | String | UTC date and time that the vulnerability was created in Spotlight | 
 | CrowdStrike.Vulnerability.updated_timestamp | String | UTC date and time of the last update made on the vulnerability | 
-| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. One of open, closed, reopen, or expired | 
+| CrowdStrike.Vulnerability.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired | 
 | CrowdStrike.Vulnerability.apps.product_name_version | String | Name and version of the product associated with the vulnerability | 
-| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability | 
+| CrowdStrike.Vulnerability.apps.sub_status | String | Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen | 
 | CrowdStrike.Vulnerability.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability | 
-| CrowdStrike.Vulnerability.host_info.hostname | String | Cloud instance ID of the host | 
-| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud service provider account ID for the host | 
-| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider for the host | 
-| CrowdStrike.Vulnerability.host_info.service_provider | String | Operating system build | 
+| CrowdStrike.Vulnerability.host_info.hostname | String | Name of the machine | 
+| CrowdStrike.Vulnerability.host_info.instance_id | String | Cloud instance ID of the host | 
+| CrowdStrike.Vulnerability.host_info.service_provider_account_id | String | Cloud service provider account ID for the host | 
+| CrowdStrike.Vulnerability.host_info.service_provider | String | Cloud service provider for the host | 
 | CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build |
 | CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on | 
 | CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address |
@@ -4056,8 +4056,8 @@ An external data source might not use the same data retention policy, which can 
 | CrowdStrike.Vulnerability.cve.exploitability_score | String | Exploitability score of the CVE (float values from 1-4) |
 | CrowdStrike.Vulnerability.cve.impact_score | String | Impact score of the CVE (float values from 1-6) |
 | CrowdStrike.Vulnerability.cve.vector | String | Textual representation of the metric values used to score the vulnerability |
-| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability |
-| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | String | Filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities  |
+| CrowdStrike.Vulnerability.cve.remediation_level | String | CVSS remediation level of the vulnerability (U = Unavailable, or O = Official fix) |
+| CrowdStrike.Vulnerability.cve.cisa_info.is_cisa_kev | String | Whether to filter for vulnerabilities that are in the CISA Known Exploited Vulnerabilities (KEV) catalog |
 | CrowdStrike.Vulnerability.cve.cisa_info.due_date | String | Date before which CISA mandates subject organizations to patch the vulnerability |
 | CrowdStrike.Vulnerability.cve.spotlight_published_date | String | UTC timestamp with the date and time Spotlight enabled coverage for the vulnerability |
 | CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability |
@@ -4123,7 +4123,7 @@ An external data source might not use the same data retention policy, which can 
 | CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
 ### cs-falcon-spotlight-list-host-by-vulnerability
 ***
- Retrieve vulnerability details according to the selected filter with detailed information about host.
+Retrieve vulnerability details for a specific ID and host. Supported with the CrowdStrike Spotlight license.
 
 #### Base Command
 
@@ -4145,11 +4145,13 @@ An external data source might not use the same data retention policy, which can 
 | CrowdStrike.VulnerabilityHost.aid | String | Unique agent identifier (AID) of the sensor where the vulnerability was found | 
 | CrowdStrike.VulnerabilityHost.created_timestamp | String | UTC date and time that the vulnerability was created in Spotlight | 
 | CrowdStrike.VulnerabilityHost.updated_timestamp | String | UTC date and time of the last update made on the vulnerability | 
-| CrowdStrike.VulnerabilityHost.status | String | Vulnerability's current status. One of open, closed, reopen, or expired | 
+| CrowdStrike.VulnerabilityHost.status | String | Vulnerability's current status. Possible values are: open, closed, reopen, or expired. | 
 | CrowdStrike.VulnerabilityHost.apps.product_name_version | String | Name and version of the product associated with the vulnerability | 
 | CrowdStrike.VulnerabilityHost.apps.sub_status | String | Status of each product associated with the vulnerability | 
-| CrowdStrike.VulnerabilityHost.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability | 
-| CrowdStrike.VulnerabilityHost.host_info.hostname | String | Cloud instance ID of the host | 
+| CrowdStrike.VulnerabilityHost.apps.remediation.ids | String | Remediation ID of each product associated with the vulnerability |
+| CrowdStrike.VulnerabilityHost.apps.evaluation_logic.id | String | Unique system-assigned ID of the vulnerability evaluation logic |
+| CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed | String | Indicates if the vulnerability is suppressed by a suppression rule |
+| CrowdStrike.VulnerabilityHost.host_info.hostname | String | Name of the machine | 
 | CrowdStrike.VulnerabilityHost.host_info.instance_id | String | Cloud service provider account ID for the host | 
 | CrowdStrike.VulnerabilityHost.host_info.service_provider_account_id | String | Cloud service provider for the host | 
 | CrowdStrike.VulnerabilityHost.host_info.service_provider | String | Operating system build | 
@@ -4224,8 +4226,9 @@ An external data source might not use the same data retention policy, which can 
 | CVE ID | Host Info hostname | Host Info os Version | Host Info Product Type Desc | Host Info Local IP | Host Info ou | Host Info Machine Domain | Host Info Site Name | CVE Exploitability Score | CVE Vector |
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
+
 ### cve
-Returns indicator according to the cve_id that was entered.
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
 
 #### Base Command
 
