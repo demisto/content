@@ -1051,8 +1051,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
 
     return CommandResults(
         outputs_prefix=INDICATOR_TYPE_MAP[indicators_list[0]["type"]],
-        outputs=indicators_list,
-        indicators=indicators,
+        outputs=indicators_list
     )
 
 
