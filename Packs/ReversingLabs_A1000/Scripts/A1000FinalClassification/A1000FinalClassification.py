@@ -7,13 +7,13 @@ import traceback
 RELIABILITY = 'C - Fairly reliable'
 
 SCORE_DICT = {
-        "UNKNOWN": 0,
-        "UNCLASSIFIED": 0,
-        "KNOWN": 1,
-        "GOODWARE": 1,
-        "SUSPICIOUS": 2,
-        "MALICIOUS": 3
-    }
+    "UNKNOWN": 0,
+    "UNCLASSIFIED": 0,
+    "KNOWN": 1,
+    "GOODWARE": 1,
+    "SUSPICIOUS": 2,
+    "MALICIOUS": 3
+}
 
 
 def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
