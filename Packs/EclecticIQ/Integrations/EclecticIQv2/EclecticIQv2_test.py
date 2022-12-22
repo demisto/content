@@ -2,9 +2,9 @@ import pytest
 import demistomock as demisto
 from EclecticIQv2 import (
     Client,
-    lookup_observables,
-    create_sighting,
-    create_observable,
+    EclecticIQ_lookup_observables,
+    EclecticIQ_create_sighting,
+    EclecticIQ_create_observable,
     get_platform_permission_ids,
     authenticate_user,
     get_permission_name_from_id,
@@ -786,7 +786,7 @@ def test_get_entity_data(mocker):
 # Test cases for lookup observables
 
 
-def test_lookup_observables(mocker):
+def test_EclecticIQ_lookup_observables(mocker):
     """Test for lookup observables function."""
     mocker.patch("EclecticIQv2.Client.lookup_obs", lookup_obs_mock_response)
     mocker.patch("EclecticIQv2.Client.fetch_entity", fetch_entity_mock_response)
@@ -794,7 +794,7 @@ def test_lookup_observables(mocker):
     mocker.patch("EclecticIQv2.maliciousness_to_dbotscore", maliciousness_to_dbotscore_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001"}
-    result = lookup_observables(client, args)
+    result = EclecticIQ_lookup_observables(client, args)
     assert result.outputs_prefix == 'EclecticIQ'
     assert result.outputs_key_field == 'value'
 
@@ -802,7 +802,7 @@ def test_lookup_observables(mocker):
 # Test cases for lookup observables scenario
 
 
-def test_lookup_observables_scenario(mocker):
+def test_EclecticIQ_lookup_observables_scenario(mocker):
     """Test for lookup observables function."""
     mocker.patch("EclecticIQv2.Client.lookup_obs", lookup_obs_mock_response)
     mocker.patch("EclecticIQv2.Client.fetch_entity", fetch_entity_mock_response)
@@ -811,36 +811,36 @@ def test_lookup_observables_scenario(mocker):
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "24.161"}
     with pytest.raises(ValueError) as e_info:
-        lookup_observables(client, args)
+        EclecticIQ_lookup_observables(client, args)
         assert e_info == "Type does not match specified value"
 
 # mock response for lookup_observables
 
 
-def lookup_observables_scenario_mock_response(*args, **kwargs):
+def EclecticIQ_lookup_observables_scenario_mock_response(*args, **kwargs):
     return_value = {'id': 1}
     return return_value
 # Test cases for lookup observables scenario-1
 
 
-def test_lookup_observables_scenario_1(mocker):
-    """Test for lookup observables function."""
-    mocker.patch("EclecticIQv2.Client.lookup_obs", lookup_observables_scenario_mock_response)
+def test_EclecticIQ_lookup_observables_scenario_1(mocker):
+    """Test for EclecticIQ lookup observables function."""
+    mocker.patch("EclecticIQv2.Client.lookup_obs", EclecticIQ_lookup_observables_scenario_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001"}
-    result = lookup_observables(client, args)
+    result = EclecticIQ_lookup_observables(client, args)
     assert isinstance(result, str)
 
 # # Test cases for create sighting
 
 
-def test_create_sighting(mocker):
-    """Test for create sighting function."""
+def test_EclecticIQ_create_sighting(mocker):
+    """Test for EclecticIQ create sighting function."""
     mocker.patch("EclecticIQv2.Client.sighting", sighting_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001", "title": "EIQ", "tags": "cortex alert",
             "description": "sighting", "confidence_level": "medium"}
-    result = create_sighting(client, args)
+    result = EclecticIQ_create_sighting(client, args)
     assert isinstance(result.outputs['value'], str)
     assert result.outputs_prefix == 'Sighting.Data'
     assert result.outputs_key_field == 'value'
@@ -848,26 +848,26 @@ def test_create_sighting(mocker):
 # Test cases for create sighting scenario
 
 
-def test_create_sighting_scenario(mocker):
-    """Test for create sighting function."""
+def test_EclecticIQ_create_sighting_scenario(mocker):
+    """Test for EclecticIQ create sighting function."""
     mocker.patch("EclecticIQv2.Client.sighting", sighting_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "1124.161", "title": "EIQ", "tags": "cortex alert",
             "description": "sighting", "confidence_level": "medium"}
     with pytest.raises(ValueError) as e_info:
-        create_sighting(client, args)
+        EclecticIQ_create_sighting(client, args)
         assert e_info == "Type does not match specified value"
 
 
 # Test cases for lookup observables
 
 
-def test_create_observable(mocker):
+def test_EclecticIQ_create_observable(mocker):
     """Test for create observable function."""
     mocker.patch("EclecticIQv2.Client.observable", observable_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001", "maliciousness": "safe"}
-    result = create_observable(client, args)
+    result = EclecticIQ_create_observable(client, args)
     assert isinstance(result.outputs['value'], str)
     assert result.outputs_prefix == 'Observables.Data'
     assert result.outputs_key_field == 'value'
@@ -875,13 +875,13 @@ def test_create_observable(mocker):
 # Test cases for create observable scenario
 
 
-def test_create_observable_scenario(mocker):
+def test_EclecticIQ_create_observable_scenario(mocker):
     """Test for create observable function."""
     mocker.patch("EclecticIQv2.Client.observable", observable_mock_response)
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "2175.161", "maliciousness": "safe"}
     with pytest.raises(ValueError) as e_info:
-        create_observable(client, args)
+        EclecticIQ_create_observable(client, args)
         assert e_info == "Type does not match specified value"
 # Test cases for main function
 
@@ -894,9 +894,9 @@ def test_main(mocker):
             'apikey': api_key,
         }
     )
-    mocker.patch('EclecticIQv2.lookup_observables', return_value={'name': 'test'})
-    mocker.patch.object(demisto, 'command', return_value='create_sighting')
-    mocker.patch.object(demisto, 'command', return_value='create_observable')
+    mocker.patch('EclecticIQv2.EclecticIQ_lookup_observables', return_value={'name': 'test'})
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_sighting')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_observable')
     mocker.patch.object(
         demisto, 'command',
         return_value='test-module'
@@ -918,9 +918,9 @@ def test_main_scenario(mocker):
         }
     )
     mocker.patch('EclecticIQv2.data_ingestion', return_value="ok")
-    mocker.patch.object(demisto, 'command', return_value='create_sighting')
-    mocker.patch.object(demisto, 'command', return_value='create_observable')
-    mocker.patch.object(demisto, 'command', return_value='lookup_observables')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_sighting')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_observable')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_lookup_observables')
     mocker.patch('EclecticIQv2.Client.lookup_obs', return_value={
         "count": 1,
         "data": [
@@ -1023,9 +1023,9 @@ def test_main_scenario_1(mocker):
         }
     )
     mocker.patch('EclecticIQv2.data_ingestion', return_value="test")
-    mocker.patch.object(demisto, 'command', return_value='lookup_observables')
-    mocker.patch.object(demisto, 'command', return_value='create_observable')
-    mocker.patch.object(demisto, 'command', return_value='create_sighting')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_lookup_observables')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_observable')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_sighting')
     mocker.patch('EclecticIQv2.Client.sighting', return_value={
         "data": {
             "data": {
@@ -1070,9 +1070,9 @@ def test_main_scenario_2(mocker):
         }
     )
     mocker.patch('EclecticIQv2.data_ingestion', return_value="test")
-    mocker.patch.object(demisto, 'command', return_value='lookup_observables')
-    mocker.patch.object(demisto, 'command', return_value='create_sighting')
-    mocker.patch.object(demisto, 'command', return_value='create_observable')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_lookup_observables')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_sighting')
+    mocker.patch.object(demisto, 'command', return_value='EclecticIQ_create_observable')
     mocker.patch('EclecticIQv2.Client.observable', return_value={
         "count": 1,
         "data": [

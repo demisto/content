@@ -249,7 +249,7 @@ def data_ingestion(client: Client) -> Any:
     try:
         permissions_of_user = client.get_user_granted_permissions()
     except Exception:
-        return "Please provide valid API Key."
+        return "Please provide correct URL & API Key."
 
     permission_ids = []
     missing_permissions = ""
@@ -456,7 +456,7 @@ def validate_type(s_type: str, value: Any) -> Any:  # pylint: disable=R0911
         return False
 
 
-def lookup_observables(client: Client, args: Any) -> CommandResults:
+def EclecticIQ_lookup_observables(client: Client, args: Any) -> CommandResults:
     """lookup_observables command: Returns the observable
     :type client: ``Client``
     :param Client: EclecticIQ client to use
@@ -516,7 +516,7 @@ def lookup_observables(client: Client, args: Any) -> CommandResults:
     )
 
 
-def create_sighting(client: Client, args: Any) -> CommandResults:
+def EclecticIQ_create_sighting(client: Client, args: Any) -> CommandResults:
     """create_sighting command: Returns the sighting data
     :type client: ``Client``
     :param Client: EclecticIQ client to use
@@ -555,7 +555,7 @@ def create_sighting(client: Client, args: Any) -> CommandResults:
     )
 
 
-def create_observable(client: Client, args: Any) -> CommandResults:
+def EclecticIQ_create_observable(client: Client, args: Any) -> CommandResults:
     """create_observable command: Returns the observable data
     :type client: ``Client``
     :param Client: EclecticIQ client to use
@@ -615,14 +615,14 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             return_results(data_ingestion(client))
 
-        elif demisto.command() == 'lookup_observables':
-            return_results(lookup_observables(client, demisto.args()))
+        elif demisto.command() == 'EclecticIQ_lookup_observables':
+            return_results(EclecticIQ_lookup_observables(client, demisto.args()))
 
-        elif demisto.command() == 'create_sighting':
-            return_results(create_sighting(client, demisto.args()))
+        elif demisto.command() == 'EclecticIQ_create_sighting':
+            return_results(EclecticIQ_create_sighting(client, demisto.args()))
 
-        elif demisto.command() == 'create_observable':
-            return_results(create_observable(client, demisto.args()))
+        elif demisto.command() == 'EclecticIQ_create_observable':
+            return_results(EclecticIQ_create_observable(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
