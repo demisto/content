@@ -570,7 +570,7 @@ script:
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     polling: true
-  dockerimage: demisto/crypto:1.0.0.39526
+  dockerimage: demisto/crypto:1.0.0.40696
   isfetch: true
   runonce: false
   script: ''
