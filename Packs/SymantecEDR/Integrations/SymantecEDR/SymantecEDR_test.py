@@ -13,8 +13,9 @@ you are implementing with your integration
 import pytest
 import json
 import io
+import os
 from CommonServerPython import DemistoException
-from SymantecEDRDev import Client, get_file_instance_command
+from SymantecEDR import Client, get_file_instance_command
 
 
 def util_load_json(path):
@@ -24,16 +25,16 @@ def util_load_json(path):
 
 client = Client(
     base_url="http://host:port",
-    secret_key="test_123",
-    client_key="test@12345",
     verify=False,
-    proxy=False
+    proxy=False,
+    client_id="test_123",
+    client_secret="test@12345"
 )
 
 FILE_INSTANCE_RESPONSE = util_load_json('test_data/file_instance_data.json')
 
 @pytest.mark.parametrize('raw_response, expected', [(FILE_INSTANCE_RESPONSE,
-                                                    FILE_INSTANCE_RESPONSE
+                                                    FILE_INSTANCE_RESPONSE)])
 def test_get_file_instance_command(mocker, raw_response, expected):
     """
     Tests get_get_file_instance_command function.
@@ -50,9 +51,10 @@ def test_get_file_instance_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
+    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response] * 5)
     command_results = get_file_instance_command(client, args)
     # results is CommandResults list
     context_detail = command_results.to_context()['Contents']
-    assert context_detail == expected.get("result")
+    # print(f'Command Result: {context_detail}')
+    assert context_detail == expected.get("total")
 

@@ -711,7 +711,7 @@ def incident_readable_output(results: List[Dict], title: str):
             'incident_uuid': data.get('uuid'),
             'log_name': data.get('log_name'),
             'recommended_action': data.get('recommended_action'),
-            'summary': data.get('summary'),
+            # 'summary': data.get('summary'),
             'resolution': data.get('resolution'),
             'first_seen': data.get('first_event_seen'),
             'last_seen': data.get('last_event_seen')
@@ -1279,6 +1279,7 @@ def test_module(client: Client) -> str:
     message: str = ''
     endpoint = '/atpapi/v2/incidents'
     params: Dict = {
+        'verb': "query",
         'limit': 1
     }
     try:
@@ -1625,7 +1626,7 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
         action_desc = 'Add Comment'
         value = args.get('comment')
         if not value:
-            raise ValueError(f'Invalid argument. Specifies the Incident comment!!')
+            raise ValueError(f'Invalid argument. Specifies the Incident comment.')
 
         add_comment = {
                     'op': 'add',
