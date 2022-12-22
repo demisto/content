@@ -1466,7 +1466,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
+    description: "Creates a custom user schema to add custom fields to user profiles.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     execution: false
     name: gsuite-custom-user-schema-create
     outputs:
