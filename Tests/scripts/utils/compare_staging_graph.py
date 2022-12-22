@@ -9,16 +9,10 @@ import shutil
 from zipfile import ZipFile
 
 import difflib
-from contextlib import redirect_stdout
 import dictdiffer
-import io
 
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
-from typing import Tuple
-from demisto_sdk.commands.content_graph.content_graph_commands import create_content_graph
-from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
-
 
 yaml = YAML()
 
@@ -199,8 +193,7 @@ def compare_content_packs(
     missing = [
         path
         for path in list_files_id_set
-        if not Path(str(path).replace("id_set", "graph")).exists()
-        and "NonSupported" not in str(path)
+        if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
     ]
     message.append(f"Missing files in graph: {missing}")
 
@@ -229,63 +222,21 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
         optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
 
         if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
-            message.append(
-                f"Moved to optional dependencies for pack {pack}: "
-                f"{sorted(moved_to_optional)}"
-            )
-            with Neo4jContentGraphInterface() as graph:
-                for dep in moved_to_optional:
-                    message.append(
-                        f"Reason for moving {dep} to optional: "
-                        f"{graph.get_dependency_reason(pack, dep, False)}"
-                    )
+            message.append(f"Moved to optional dependencies for pack {pack}: " f"{sorted(moved_to_optional)}")
 
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
-            message.append(
-                f"Moved to mandatory dependencies for pack {pack}: "
-                f"{sorted(moved_to_mandatory)}"
-            )
-            with Neo4jContentGraphInterface() as graph:
-                for dep in moved_to_mandatory:
-                    message.append(
-                        f"Reason for moving {dep} to mandatory: "
-                        f"{graph.get_dependency_reason(pack, dep, True)}"
-                    )
+            message.append(f"Moved to mandatory dependencies for pack {pack}: " f"{sorted(moved_to_mandatory)}")
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(
-                f"Missing mandatory dependencies for pack {pack}: "
-                f"{sorted(missing_in_graph)}"
-            )
+            message.append(f"Missing mandatory dependencies for pack {pack}: " f"{sorted(missing_in_graph)}")
 
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(
-                f"Extra mandatory dependencies for pack {pack}: "
-                f"{sorted(extra_in_graph)}"
-            )
-            with Neo4jContentGraphInterface() as graph:
-                for dep in extra_in_graph:
-                    message.append(
-                        f"Reason for extra {dep} as mandatory: "
-                        f"{graph.get_dependency_reason(pack, dep, True)}"
-                    )
+            message.append(f"Extra mandatory dependencies for pack {pack}: " f"{sorted(extra_in_graph)}")
 
         if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(
-                f"Missing optional dependencies for pack {pack}: "
-                f"{sorted(missing_in_graph)}"
-            )
+            message.append(f"Missing optional dependencies for pack {pack}: " f"{sorted(missing_in_graph)}")
         if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(
-                f"Extra optional dependencies for pack {pack}: "
-                f"{sorted(extra_in_graph)}"
-            )
-            with Neo4jContentGraphInterface() as graph:
-                for dep in extra_in_graph:
-                    message.append(
-                        f"Reason for extra {dep} as optional: "
-                        f"{graph.get_dependency_reason(pack, dep, False)}"
-                    )
+            message.append(f"Extra optional dependencies for pack {pack}: " f"{sorted(extra_in_graph)}")
 
 
 def main():
@@ -299,8 +250,7 @@ def main():
     output_path = Path(args.output_path)
     slack_token = args.slack_token
     marketplace = args.marketplace
-    with Neo4jContentGraphInterface() as interface:
-        create_content_graph(interface)
+
     zip_id_set = artifacts / "uploaded_packs-id_set"
     zip_graph = artifacts / "uploaded_packs-graph"
 
