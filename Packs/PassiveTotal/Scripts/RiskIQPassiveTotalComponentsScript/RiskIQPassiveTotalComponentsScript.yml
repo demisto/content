@@ -10,21 +10,22 @@ comment: Enhancement script to enrich PassiveTotal components for Domain and IP 
 commonfields:
   id: RiskIQPassiveTotalComponentsScript
   version: -1
+dependson:
+  must:
+  - '|||pt-get-components'
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
+fromversion: 5.0.0
 name: RiskIQPassiveTotalComponentsScript
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - enhancement
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.7.24076
-runas: DBotWeakRole
-runonce: false
-dependson:
-  must:
-  - '|||pt-get-components'
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

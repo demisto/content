@@ -6,6 +6,7 @@ args:
   required: false
   secret: false
 - default: false
+  deprecated: true
   description: 'A comma-separated list of similar label keys. Comma separated value.
     Also supports allowing X different words between labels, within the following
     way: label_name:X, where X is the number of words. X can also be ''*'' for contains.
@@ -15,7 +16,6 @@ args:
   name: similarLabelsKeys
   required: false
   secret: false
-  deprecated: true
 - default: false
   description: A comma-separated list of similar context keys. Also supports allowing
     X different words between values (see the labels description).
@@ -24,13 +24,13 @@ args:
   required: false
   secret: false
 - default: false
+  deprecated: true
   description: A comma-separated list of Similar custom fields keys. Also supports
     allowing X different words between values (see the labels description).
   isArray: false
   name: similarCustomFields
   required: false
   secret: false
-  deprecated: true
 - auto: PREDEFINED
   default: false
   defaultValue: 'yes'
@@ -115,18 +115,28 @@ args:
   - 'no'
   required: false
   secret: false
-comment: |-
-  Finds similar incidents by common incident keys, labels, custom fields or context keys.
-  It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
-  For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+comment: 'Finds similar incidents by common incident keys, labels, custom fields or
+  context keys.
 
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  It''s highly recommended to use incident keys if possible (e.g., "type" for the
+  same incident type).
+
+  For best performance, it''s recommended to avoid using context keys if possible
+  (for example, if the value also appears in a label key, use label).
+
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: FindSimilarIncidents
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
+fromversion: 5.0.0
 name: FindSimilarIncidents
 outputs:
 - contextPath: similarIncident.rawId
@@ -141,17 +151,16 @@ outputs:
 - contextPath: similarIncident.name
   description: Similar incident name.
   type: string
-script: '-'
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - dedup
 - duplicate
 - incidents
-timeout: 300ns
-type: python
-dockerimage: demisto/python3:3.10.6.33415
-runonce: false
 tests:
 - Dedup - Generic v3
-fromversion: 5.0.0
+timeout: 300ns
+type: python

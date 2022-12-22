@@ -1,52 +1,58 @@
+args:
+- description: The incident type for which to return incident field names.
+  name: incident_type
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to shorten the incident field names. If "true", will cause
+    output to use shortened field names. The default value is "false".
+  name: short_names
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to only return non-system fields. If "true", will only output
+    non-system fields. The default value is "false".
+  name: exclude_system
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to only include fields that are explicitly associated to the
+    incident type. If "true", only fields which are explicitly associated to the incident
+    type will be included (i.e., excludes fields for which the "associate to any"
+    checkbox is selected). The default value is "false".
+  name: explicit_only
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Pretty-prints the output.
+  name: pprint
+  predefined:
+  - 'true'
+  - 'false'
+comment: Returns the incident field names associated to the specified incident type.
 commonfields:
   id: GetFieldsByIncidentType
   version: -1
-name: GetFieldsByIncidentType
-script: ''
-type: python
-tags: []
-comment: Returns the incident field names associated to the specified incident type.
-enabled: true
-args:
-- name: incident_type
-  required: true
-  description: The incident type for which to return incident field names.
-- name: short_names
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "false".
-  defaultValue: "false"
-- name: exclude_system
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
-  defaultValue: "false"
-- name: explicit_only
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to only include fields that are explicitly associated to the incident type. If "true", only fields which are explicitly associated to the incident type will be included (i.e., excludes fields for which the "associate to any" checkbox is selected). The default value is "false".
-  defaultValue: "false"
-- name: pprint
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Pretty-prints the output.
-  defaultValue: "true"
-scripttarget: 0
-subtype: python3
 dependson:
   must:
   - '|||demisto-api-get'
-runonce: false
 dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
+name: GetFieldsByIncidentType
 runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags: []
 tests:
 - No test - unit test
-fromversion: 5.0.0
+type: python

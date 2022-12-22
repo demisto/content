@@ -1,25 +1,26 @@
+args:
+- default: true
+  description: Input string to transform to JSON object
+  name: input
+  required: true
+comment: Loads a json from string input, and returns a json object result
 commonfields:
   id: LoadJSON
   version: -1
-name: LoadJSON
-script: ''
-type: python
-subtype: python3
-tags:
-- Utility
-comment: Loads a json from string input, and returns a json object result
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: input
-  required: true
-  default: true
-  description: Input string to transform to JSON object
+fromversion: 5.0.0
+name: LoadJSON
 outputs:
 - contextPath: JsonObject
   description: The JSON object loaded from input
-scripttarget: 0
 runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
 tests:
 - JSONtoCSV-Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+type: python

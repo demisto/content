@@ -1,26 +1,28 @@
+args:
+- default: true
+  description: An array for which to return the last value.
+  isArray: true
+  name: value
+  required: true
+comment: Returns the last element of an array. If the value passed is not an array,
+  it returns the original value that was passed.
 commonfields:
   id: LastArrayElement
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
 name: LastArrayElement
-script: ''
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - general
 - transformer
 - entirelist
-comment: Returns the last element of an array. If the value passed is not an array, it returns the original value that was passed.
-enabled: true
-args:
-- name: value
-  required: true
-  default: true
-  description: An array for which to return the last value.
-  isArray: true
-scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
 tests:
 - No test - unit test
-fromversion: 5.0.0
+type: python

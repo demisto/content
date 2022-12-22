@@ -4,15 +4,16 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.4.30607
 enabled: true
+fromversion: 6.0.0
 name: QRadarPrintEvents
 runas: DBotWeakRole
 runonce: false
-script: ''
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags:
 - dynamic-section
-type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+type: python

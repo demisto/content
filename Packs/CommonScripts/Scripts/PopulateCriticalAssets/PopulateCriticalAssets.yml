@@ -1,22 +1,25 @@
+args:
+- description: A list of all critical assets. Received as output from "Calculate Severity
+    - Critical Assets v2" playbook.
+  isArray: true
+  name: critical_assets
+  required: true
+comment: Populates critical assets in a grid field that has the section headers "Asset
+  Type" and "Asset Name".
 commonfields:
   id: PopulateCriticalAssets
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+fromversion: 5.0.0
 name: PopulateCriticalAssets
-comment: Populates critical assets in a grid field that has the section headers "Asset Type" and "Asset Name".
-script: '-'
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags: []
-enabled: true
-args:
-- name: critical_assets
-  required: true
-  description: A list of all critical assets. Received as output from "Calculate Severity - Critical Assets v2" playbook.
-  isArray: true
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
 tests:
 - Calculate Severity - Generic v2 - Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.7.24076
+type: python

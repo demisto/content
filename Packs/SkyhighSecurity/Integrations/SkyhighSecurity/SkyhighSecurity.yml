@@ -13,13 +13,15 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Maximum number of incidents to fetch every time. Default is 50. Maximum is 500.
-  defaultvalue: 50
+- defaultvalue: 50
+  display: Maximum number of incidents to fetch every time. Default is 50. Maximum
+    is 500.
   hidden: false
   name: max_fetch
   required: false
   type: 0
-- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
+- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours,
+    7 days). Default is 3 days.
   hidden: false
   name: first_fetch
   required: false
@@ -40,39 +42,48 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+defaultclassifier: Skyhigh Security Incident
+defaultmapperin: Skyhigh Security Incoming Mapper
+description: Skyhigh Security is a cloud-based, multi-tenant service that enables
+  Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 display: Skyhigh Security
+fromversion: 6.5.0
 name: Skyhigh Security
 script:
   commands:
   - arguments:
     - default: false
-      description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
+      description: Maximum number of items that will be returned within a single response.
+        Maximum is 500. If the limit value exceeds the 500 maximum, it will not be
+        flagged as an error but will also not increase results.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a large “limit” value.
+      description: "Pagination support for use with a large \u201Climit\u201D value."
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a large “limit” value. The maximum is 500.
+      description: "Pagination support for use with a large \u201Climit\u201D value.\
+        \ The maximum is 500."
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: true
       defaultValue: 3 days
-      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
+        or relative time (last X days).
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
+        or relative time (last X days).
       isArray: false
       name: end_time
       required: false
@@ -101,7 +112,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The categories of the incidents to retrieve. When defining the categories argument. the incident_types argument is ignored.
+      description: The categories of the incidents to retrieve. When defining the
+        categories argument. the incident_types argument is ignored.
       isArray: true
       name: categories
       predefined:
@@ -146,16 +158,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Update status of single/multiple incidents.
+    description: 'Update status of single/multiple incidents.
+
       Note!
+
       For multiple IDs, a single status will be applied for all IDs
-      e.g., 123, 456, 789 >> change status to >> closed.
+
+      e.g., 123, 456, 789 >> change status to >> closed.'
     execution: false
     name: skyhigh-security-incident-status-update
   - arguments:
     - default: false
-      description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
+      description: The anomaly ID from where to retrieve the activities. Only for
+        incidents of type anomaly (ANO-123).
       isArray: false
       name: anomaly_id
       required: true
@@ -284,19 +299,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Maximum number of policies that will be returned within a single response. Default is 50.
+      description: Maximum number of policies that will be returned within a single
+        response. Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a large “limit” value.
+      description: "Pagination support for use with a large \u201Climit\u201D value."
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a large “limit” value.
+      description: "Pagination support for use with a large \u201Climit\u201D value."
       isArray: false
       name: page_size
       required: false
@@ -335,7 +351,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
+      description: The value to be set in the dictionary for the given key-name. Multiple
+        values can be separated by commas.
       isArray: false
       name: content
       required: true
@@ -349,12 +366,11 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-defaultclassifier: Skyhigh Security Incident
-defaultmapperin: Skyhigh Security Incoming Mapper
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0

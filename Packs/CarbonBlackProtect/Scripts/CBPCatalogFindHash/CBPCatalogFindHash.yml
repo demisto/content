@@ -1,27 +1,28 @@
+args:
+- default: true
+  description: md5 hash to find
+  name: md5
+  required: true
+comment: Search the CBP/Bit9 file catalog for an md5 hash.
 commonfields:
   id: CBPCatalogFindHash
   version: -1
+dependson:
+  must:
+  - cbp-fileCatalog-search
+dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
 name: CBPCatalogFindHash
-script: ''
-type: python
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
+system: true
 tags:
 - carbon-black-protection
 - bit9
 - enhancement
-comment: Search the CBP/Bit9 file catalog for an md5 hash.
-system: true
-args:
-- name: md5
-  required: true
-  default: true
-  description: md5 hash to find
-scripttarget: 0
-dependson:
-  must:
-  - cbp-fileCatalog-search
-timeout: 0s
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No test
+timeout: 0s
+type: python

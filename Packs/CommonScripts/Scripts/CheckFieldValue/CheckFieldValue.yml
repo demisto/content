@@ -30,7 +30,9 @@ comment: This script checks that a field exists (and contains data), and optiona
 commonfields:
   id: CheckFieldValue
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 5.0.0
 name: CheckFieldValue
 outputs:
 - contextPath: CheckFieldValue.name
@@ -39,17 +41,16 @@ outputs:
 - contextPath: CheckFieldValue.exists
   description: Whether the field Exists.
   type: Unknown
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - evaluation
 - polling
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-runonce: false
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+timeout: '0'
+type: python

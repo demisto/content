@@ -15,7 +15,9 @@ comment: Checks if the supplied URLs are in the specified domains.
 commonfields:
   id: IsUrlPartOfDomain
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: IsUrlPartOfDomain
 outputs:
 - contextPath: IsUrlPartOfDomain.URL
@@ -27,12 +29,11 @@ outputs:
 - contextPath: IsUrlPartOfDomain.IsInternal
   description: Whether the URL is in the domain.
   type: Boolean
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.8.24399
 tests:
 - IsUrlPartOfDomain Test
-fromversion: 5.0.0
+timeout: '0'
+type: python

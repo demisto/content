@@ -1,21 +1,26 @@
+args:
+- description: The value to be represented.
+  name: value
+  required: true
+comment: Prints a raw representation of a string or object, visualising things likes
+  tabs and newlines.  For instance, '\n' will be displayed instead of a newline character,
+  or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues
+  where things aren't behaving as expected, such as when parsing a string with a regular
+  expression.
 commonfields:
   id: PrintRaw
   version: -1
-name: PrintRaw
-script: ''
-type: python
-tags: []
-comment: Prints a raw representation of a string or object, visualising things likes tabs and newlines.  For instance, '\n' will be displayed instead of a newline character, or a Windows CR will be displayed as '\r\n'.  This is useful for debugging issues where things aren't behaving as expected, such as when parsing a string with a regular expression.
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-args:
-- name: value
-  required: true
-  description: The value to be represented.
+fromversion: 5.0.0
+name: PrintRaw
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
-runas: DBotWeakRole
+tags: []
 tests:
 - No test - unit test
-fromversion: 5.0.0
+type: python

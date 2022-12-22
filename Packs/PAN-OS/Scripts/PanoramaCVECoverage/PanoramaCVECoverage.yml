@@ -1,51 +1,52 @@
-commonfields:
-  id: PanoramaCVECoverage
-  version: -1
-name: PanoramaCVECoverage
-comment: Check coverage given a list of CVEs.
-script: ''
-type: python
-tags: []
-enabled: true
 args:
-- name: CVE_List
+- description: A comma-separated list of CVEs to find.
+  name: CVE_List
   required: true
-  description: A comma-separated list of CVEs to find.
-- name: Result_file
+- description: Entry ID of the output file from the panorama command.
+  name: Result_file
   required: true
-  description: Entry ID of the output file from the panorama command.
-- name: outputFormat
+- auto: PREDEFINED
+  defaultValue: table
   description: Raw output into a file from the panorama command.
-  required: true
-  auto: PREDEFINED
+  name: outputFormat
   predefined:
   - table
   - paragraph
-  defaultValue: table
+  required: true
+comment: Check coverage given a list of CVEs.
+commonfields:
+  id: PanoramaCVECoverage
+  version: -1
+dockerimage: demisto/python3:3.10.4.30607
+enabled: true
+fromversion: 5.0.0
+name: PanoramaCVECoverage
 outputs:
-  - contextPath: Panorama.CVECoverage.CVE
-    description: The CVE value.
-    type: string
-  - contextPath: Panorama.CVECoverage.Coverage.threat_name
-    description: The threat name.
-    type: string
-  - contextPath: Panorama.CVECoverage.Coverage.link
-    description: Link address to the threat in CVE site.
-    type: string
-  - contextPath: Panorama.CVECoverage.Coverage.severity
-    description: The threat severity.
-    type: string
-  - contextPath: Panorama.CVECoverage.Coverage.threat_id
-    description: The threat ID.
-    type: Number
-  - contextPath: Panorama.CVECoverage.Coverage.default_action
-    description: The threat default action.
-    type: string
+- contextPath: Panorama.CVECoverage.CVE
+  description: The CVE value.
+  type: string
+- contextPath: Panorama.CVECoverage.Coverage.threat_name
+  description: The threat name.
+  type: string
+- contextPath: Panorama.CVECoverage.Coverage.link
+  description: Link address to the threat in CVE site.
+  type: string
+- contextPath: Panorama.CVECoverage.Coverage.severity
+  description: The threat severity.
+  type: string
+- contextPath: Panorama.CVECoverage.Coverage.threat_id
+  description: The threat ID.
+  type: Number
+- contextPath: Panorama.CVECoverage.Coverage.default_action
+  description: The threat default action.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.30607
-runas: DBotWeakRole
-fromversion: 5.0.0
+tags: []
 tests:
 - No tests (auto formatted)
+type: python

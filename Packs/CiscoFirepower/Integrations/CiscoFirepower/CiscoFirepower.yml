@@ -22,17 +22,18 @@ configuration:
 description: Use the Cisco Firepower integration for unified management of firewalls,
   application control, intrusion prevention, URL filtering, and advanced malware protection.
 display: Cisco Firepower
+fromversion: 5.0.0
 name: Cisco Firepower
 script:
   commands:
   - arguments:
-    - description: |-
-        The number of items to return.
-        The default is 50
+    - description: 'The number of items to return.
+
+        The default is 50'
       name: limit
-    - description: |-
-        Index of the first item to return.
-        The default is 0.
+    - description: 'Index of the first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all security zone objects.
     name: ciscofp-list-zones
@@ -54,13 +55,13 @@ script:
       type: String
   - arguments:
     - default: true
-      description: |-
-        The number of items to return.
-        The default is 50.
+      description: 'The number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        by default is 0
+    - description: 'Index of first item to return.
+
+        by default is 0'
       name: offset
     description: Retrieves list of all port objects.
     name: ciscofp-list-ports
@@ -80,13 +81,13 @@ script:
   - arguments:
     - default: true
       defaultValue: '50'
-      description: |-
-        The number of items to return.
-        The default is 50.
+      description: 'The number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all URL category objects.
     name: ciscofp-list-url-categories
@@ -100,13 +101,13 @@ script:
   - arguments:
     - description: Object ID.
       name: object_id
-    - description: |-
-        The number of items to return.
-        The default is 50.
+    - description: 'The number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves the network objects associated with the specified ID. If
       not supplied, retrieves a list of all network objects.
@@ -202,13 +203,13 @@ script:
   - arguments:
     - description: ID of the object group for which to return groups and addresses.
       name: id
-    - description: |-
-        The number of items to return.
-        The default is 50.
+    - description: 'The number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of the first item to return.
-        The default is 0.
+    - description: 'Index of the first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves the groups of network objects and addresses associated
       with the specified ID. If not supplied, retrieves a list of all network objects.
@@ -379,13 +380,13 @@ script:
   - arguments:
     - description: ID of the object for which to retrieve host objects.
       name: object_id
-    - description: |-
-        Number of items to return.
-        The default is 50
+    - description: 'Number of items to return.
+
+        The default is 50'
       name: limit
-    - description: |-
-        Index of the first item to return.
-        The default is 0.
+    - description: 'Index of the first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves the groups of host objects associated with the specified
       ID. If no ID is passed, the input ID retrieves a list of all network objects.
@@ -526,13 +527,13 @@ script:
   - arguments:
     - description: ID of the access policy.
       name: id
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves the access control policy associated with the specified
       ID. If no access policy ID is passed, all access control policies are returned.
@@ -620,13 +621,13 @@ script:
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50
+    - description: 'The maximum number of items to return.
+
+        The default is 50'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all custom security group tag objects.
     name: ciscofp-list-security-group-tags
@@ -641,13 +642,13 @@ script:
       description: The tag number.
       type: Number
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all ISE security group tag objects.
     name: ciscofp-list-ise-security-group-tag
@@ -662,13 +663,13 @@ script:
       description: The tag number.
       type: Number
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all vlantag objects.
     name: ciscofp-list-vlan-tags
@@ -692,13 +693,13 @@ script:
       description: End tag number.
       type: Number
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves a list of all vlan group tag objects.
     name: ciscofp-list-vlan-tags-group
@@ -734,13 +735,13 @@ script:
       description: End tag number.
       type: Number
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0
+    - description: 'Index of first item to return.
+
+        The default is 0'
       name: offset
     description: Retrieves a list of all application objects.
     name: ciscofp-list-applications
@@ -1157,10 +1158,12 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: |-
-        The method by which to update the rule. Can be "merge" or "override".
+      description: 'The method by which to update the rule. Can be "merge" or "override".
+
         If merge, will add the changes requested to the existing rule.
-        If override, will override the fields with the inputs provided and will delete any fields that were not provided.
+
+        If override, will override the fields with the inputs provided and will delete
+        any fields that were not provided.'
       name: update_strategy
       predefined:
       - merge
@@ -1540,13 +1543,13 @@ script:
       description: The object type.
       type: String
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50
+    - description: 'The maximum number of items to return.
+
+        The default is 50'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0
+    - description: 'Index of first item to return.
+
+        The default is 0'
       name: offset
     description: Retrieves a list of all policy assignments to target devices.
     name: ciscofp-list-policy-assignments
@@ -1647,13 +1650,13 @@ script:
       description: The targets type.
       type: String
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     - description: The container UUID.
       name: container_uuid
@@ -1698,13 +1701,13 @@ script:
       description: End time of the deployment.
       type: String
   - arguments:
-    - description: |-
-        The maximum number of items to return.
-        The default is 50.
+    - description: 'The maximum number of items to return.
+
+        The default is 50.'
       name: limit
-    - description: |-
-        Index of first item to return.
-        The default is 0.
+    - description: 'Index of first item to return.
+
+        The default is 0.'
       name: offset
     description: Retrieves list of all device records.
     name: ciscofp-get-device-records
@@ -1854,8 +1857,9 @@ script:
       description: Boolean indicating whether objects can be overridden.
       type: string
   dockerimage: demisto/python3:3.9.8.24399
+  nativeImage:
+  - '8.1'
   runonce: false
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0

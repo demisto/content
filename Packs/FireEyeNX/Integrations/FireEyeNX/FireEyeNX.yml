@@ -13,8 +13,8 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: The FireEye NX API calls timeout if the response is not
-    returned within the configured time interval. Default is 120 seconds.
+- additionalinfo: The FireEye NX API calls timeout if the response is not returned
+    within the configured time interval. Default is 120 seconds.
   defaultvalue: '120'
   display: HTTP(S) Request Timeout (in seconds)
   hidden: false
@@ -29,16 +29,17 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>,
-    e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
+- additionalinfo: The time range to consider for the initial data fetch.(<number>
+    <unit>, e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours.
+    The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: The maximum number of alerts to fetch. A maximum of 200
-    alerts is fetched. Default is 50.
+- additionalinfo: The maximum number of alerts to fetch. A maximum of 200 alerts is
+    fetched. Default is 50.
   defaultvalue: '50'
   display: Fetch Limit
   hidden: false
@@ -54,8 +55,8 @@ configuration:
   - IPS Events
   required: false
   type: 16
-- additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch
-    Types.
+- additionalinfo: Fetches MVX-correlated events only. Works only for events defined
+    in Fetch Types.
   display: Fetches MVX-correlated events only
   hidden: false
   name: fetch_mvx_correlated_events
@@ -95,18 +96,21 @@ configuration:
   name: proxy
   required: false
   type: 8
+defaultclassifier: FireEye NX - Classifier
+defaultmapperin: FireEye NX-mapper
 description: FireEye Network Security is an effective cyber threat protection solution
   that helps organizations minimize the risk of costly breaches by accurately detecting
   and immediately stopping advanced, targeted, and other evasive attacks hiding in
   internet traffic.
 display: FireEye NX
+fromversion: 5.0.0
 name: FireEyeNX
 script:
   commands:
   - arguments:
     - default: false
-      description: 'Universally unique ID (UUID) of the alert. To retrieve the UUID, execute the
-        fireeye-nx-get-alerts command.'
+      description: Universally unique ID (UUID) of the alert. To retrieve the UUID,
+        execute the fireeye-nx-get-alerts command.
       isArray: false
       name: uuid
       required: true
@@ -150,8 +154,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The output format of the report. Possible values are: "csv" and "pdf",
-        or both depending upon the report type.'
+      description: 'The output format of the report. Possible values are: "csv" and
+        "pdf", or both depending upon the report type.'
       isArray: false
       name: type
       predefined:
@@ -160,21 +164,21 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The start time of the search. The search occurs between the start
+      description: The start time of the search. The search occurs between the start
         and end times. When specifying a\ \ start_time value, you must specify both
         a start_time and an end_ time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN
         days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n
-        5 hours.'
+        5 hours.
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The end time of the search. The search occurs between the start
+      description: The end time of the search. The search occurs between the start
         and end times. When specifying an\ \ end_ time value, you must specify both
         a start_time and an end_time value.\n\ Formats:\nYYYY-MM-dd\nYYYY-MM-ddTHH:mm:ss\nN
         days \nN hours\nExample:\n 2020-05-01 \n 2020-05-01T00:00:00 \n 2 days \n
-        5 hours.'
+        5 hours.
       isArray: false
       name: end_time
       required: false
@@ -202,7 +206,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The maximum number (N) of items covered by each IPS Top N report. This argument is required only for IPS Top N reports. Possible values are: "25", "50", "75", and "100".'
+      description: 'The maximum number (N) of items covered by each IPS Top N report.
+        This argument is required only for IPS Top N reports. Possible values are:
+        "25", "50", "75", and "100".'
       isArray: false
       name: limit
       predefined:
@@ -214,7 +220,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The internet interface. Possible values are: "A", "B", "C", "D", "AB", and "All". This option is required only for IPS reports.'
+      description: 'The internet interface. Possible values are: "A", "B", "C", "D",
+        "AB", and "All". This option is required only for IPS reports.'
       isArray: false
       name: interface
       predefined:
@@ -227,7 +234,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: The alert ID. To retrieve the alert ID, execute the fireeye-nx-get-alerts command. Use the combination of infection_id and infection_type arguments to specify a unique alert to describe in the Alert Details Report. If one option is used alone and does not specify a unique alert, an error message
+      description: The alert ID. To retrieve the alert ID, execute the fireeye-nx-get-alerts
+        command. Use the combination of infection_id and infection_type arguments
+        to specify a unique alert to describe in the Alert Details Report. If one
+        option is used alone and does not specify a unique alert, an error message
         is produced.
       isArray: false
       name: infection_id
@@ -235,10 +245,11 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the infection. Use the combination of infection_id and infection_type arguments
-        to specify a unique alert to describe in the Alert Details Report. If one
-        option is used alone and does not specify a unique alert, an error message
-        is produced. Possible values are: "malware-object", "malware-callback", "infection-match", "domain-match", and "web-infection".'
+      description: 'The type of the infection. Use the combination of infection_id
+        and infection_type arguments to specify a unique alert to describe in the
+        Alert Details Report. If one option is used alone and does not specify a unique
+        alert, an error message is produced. Possible values are: "malware-object",
+        "malware-callback", "infection-match", "domain-match", and "web-infection".'
       isArray: false
       name: infection_type
       predefined:
@@ -265,8 +276,8 @@ script:
       description: The size of the file (in bytes).
       type: Number
     - contextPath: InfoFile.Type
-      description: The file type, as determined by libmagic (same as displayed in the
-        file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        the file entries).
       type: String
     - contextPath: InfoFile.Extension
       description: The file extension.
@@ -276,8 +287,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID number of the alert to retrieve. To retrieve the alert
-        ID, execute the fireeye-nx-get-alerts command without specifying the alert_id.
+      description: The ID number of the alert to retrieve. To retrieve the alert ID,
+        execute the fireeye-nx-get-alerts command without specifying the alert_id.
       isArray: false
       name: alert_id
       required: false
@@ -296,7 +307,12 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The time interval to search. This filter is used with either the start_time or end_time filter. If duration, start time, and end time are not specified, the system defaults to duration=12_hours, end_time=current_time. If only the duration is specified, the end_time defaults to the current_time. Possible values are: "1_hour", "2_hours", "6_hours", "12_hours", "24_hours", and "48_hours".'
+      description: 'The time interval to search. This filter is used with either the
+        start_time or end_time filter. If duration, start time, and end time are not
+        specified, the system defaults to duration=12_hours, end_time=current_time.
+        If only the duration is specified, the end_time defaults to the current_time.
+        Possible values are: "1_hour", "2_hours", "6_hours", "12_hours", "24_hours",
+        and "48_hours".'
       isArray: false
       name: duration
       predefined:
@@ -343,7 +359,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: concise
-      description: 'The level of information to retrieve. Possible values are: "concise", "normal", and "extended".'
+      description: 'The level of information to retrieve. Possible values are: "concise",
+        "normal", and "extended".'
       isArray: false
       name: info_level
       predefined:
@@ -360,7 +377,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type of the malware object to retrieve. Possible values are: "domain_match", "malware_callback", "malware_object", "web_infection", and "infection_match".'
+      description: 'The type of the malware object to retrieve. Possible values are:
+        "domain_match", "malware_callback", "malware_object", "web_infection", and
+        "infection_match".'
       isArray: false
       name: malware_type
       predefined:
@@ -372,7 +391,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The MD5 hash of the alert to retrieve. This filter is not time dependent; it does not default to duration=12_hours.
+      description: The MD5 hash of the alert to retrieve. This filter is not time
+        dependent; it does not default to duration=12_hours.
       isArray: false
       name: md5
       required: false
@@ -494,8 +514,8 @@ script:
       description: The entry offset of the bytes list in the heap spraying.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Entry.IsNOP
-      description: If entry NOP appears in the bytes list in the heap spraying then yes,
-        otherwise no.
+      description: If entry NOP appears in the bytes list in the heap spraying then
+        yes, otherwise no.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Heapspraying.BytesList.Distinct
       description: The distinct number of the byte list in the heap spraying.
@@ -537,7 +557,8 @@ script:
       description: The parent user account authentication ID of the process.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.ParentUserAccount.SuperPrivilegesPresent
-      description: If super privileges are present in this process then 1, otherwise 0.
+      description: If super privileges are present in this process then 1, otherwise
+        0.
       type: Number
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Parentname
       description: The path of the parent process.
@@ -585,7 +606,8 @@ script:
       description: The authentication ID of the user account for the process.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.UserAccount.SuperPrivilegesPresent
-      description: If super privileges are present in this user account then 1, otherwise 0.
+      description: If super privileges are present in this user account then 1, otherwise
+        0.
       type: Number
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Process.Timestamp
       description: The timestamp of the process.
@@ -708,8 +730,8 @@ script:
       description: The image path of the process in the network.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Tainted
-      description: If the process state is tainted then true, otherwise false for the
-        network.
+      description: If the process state is tainted then true, otherwise false for
+        the network.
       type: Boolean
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Network.Processinfo.Md5sum
       description: The md5sum of the process in the network.
@@ -787,10 +809,12 @@ script:
       description: The module name of the call stack entry in the exploit code.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.InstructionAddress
-      description: The instruction address of the call stack entry in the exploit code.
+      description: The instruction address of the call stack entry in the exploit
+        code.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Callstack.CallstackEntry.SymbolDisplacement
-      description: The symbol displacement of the call stack entry in the exploit code.
+      description: The symbol displacement of the call stack entry in the exploit
+        code.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Exploitcode.Params.Param.Id
       description: The ID parameter of the exploit code.
@@ -841,8 +865,8 @@ script:
       description: The PID of the process for the file.
       type: Number
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.Processinfo.Tainted
-      description: If the process state is tainted then true, otherwise false for the
-        file.
+      description: If the process state is tainted then true, otherwise false for
+        the file.
       type: Boolean
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.File.SrcThread
       description: The source thread name of the file.
@@ -983,7 +1007,8 @@ script:
       description: The dialog ID of the dismissed dialog.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Processinfo.Imagepath
-      description: The image path of the process for the Windows Management Instrumentation (WMI) query.
+      description: The image path of the process for the Windows Management Instrumentation
+        (WMI) query.
       type: String
     - contextPath: FireEyeNX.Alert.Explanation.OsChanges.Wmiquery.Processinfo.Md5sum
       description: The md5sum of the process for the WMI query.
@@ -1095,13 +1120,15 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The universally unique ID (UUID) of the alert. To get the UUID, execute the fireeye-nx-get-alerts command.
+      description: The universally unique ID (UUID) of the alert. To get the UUID,
+        execute the fireeye-nx-get-alerts command.
       isArray: false
       name: uuid
       required: true
       secret: false
     deprecated: false
-    description: Downloads malware artifacts data for the specified UUID as a zip file.
+    description: Downloads malware artifacts data for the specified UUID as a zip
+      file.
     execution: false
     name: fireeye-nx-get-artifacts-by-alert
     outputs:
@@ -1138,9 +1165,9 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The time interval to search. This filter is used with
-        the end_time filter. If the duration is not specified, the system defaults
-        to duration=12_hours, end_time=current_time.
+      description: The time interval to search. This filter is used with the end_time
+        filter. If the duration is not specified, the system defaults to duration=12_hours,
+        end_time=current_time.
       isArray: false
       name: duration
       predefined:
@@ -1174,8 +1201,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to include all IPS events or MVX-correlated
-        events only. Default: false'
+      description: 'Whether to include all IPS events or MVX-correlated events only.
+        Default: false'
       isArray: false
       name: mvx_correlated_only
       predefined:
@@ -1259,12 +1286,11 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - FireEyeNX-Test
-fromversion: 5.0.0
-defaultclassifier: FireEye NX - Classifier
-defaultmapperin: FireEye NX-mapper

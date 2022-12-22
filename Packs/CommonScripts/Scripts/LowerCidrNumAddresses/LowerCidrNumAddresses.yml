@@ -15,14 +15,15 @@ comment: Check if number of availble addresses in IPv4 CIDR is lower than given 
 commonfields:
   id: LowerCidrNumAddresses
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: false
+fromversion: 5.0.0
 name: LowerCidrNumAddresses
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - filter
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.0.0

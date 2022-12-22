@@ -1,29 +1,31 @@
+args:
+- default: true
+  description: URL to resolve
+  name: url
+  required: true
+- defaultValue: 'false'
+  description: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: Boolean
+comment: Resolve the original URL from the given shortened URL and place it in both
+  as output and in the context of a playbook. (https://unshorten.me/api)
 commonfields:
   id: ResolveShortenedURL
   version: -1
-name: ResolveShortenedURL
-script: ''
-type: python
-subtype: python3
-tags:
-- Utility
-comment: Resolve the original URL from the given shortened URL and place it in both as output and in the context of a playbook. (https://unshorten.me/api)
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
-args:
-- name: url
-  required: true
-  default: true
-  description: URL to resolve
-- name: insecure
-  required: false
-  type: Boolean
-  defaultValue: "false"
-  description: Trust any certificate (not secure)
+fromversion: 6.5.0
+name: ResolveShortenedURL
 outputs:
 - contextPath: URL.Data
   description: Shortened URL
+script:
+- '8.1'
 scripttarget: 0
+subtype: python3
+tags:
+- Utility
 tests:
-- "No test"
-fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.7.33922
+- No test
+type: python

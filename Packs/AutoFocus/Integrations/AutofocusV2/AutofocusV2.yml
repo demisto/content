@@ -3,7 +3,9 @@ commonfields:
   id: AutoFocus V2
   version: -1
 configuration:
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -30,10 +32,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Suppress errors for non found indicators
+- defaultvalue: 'true'
+  display: Suppress errors for non found indicators
   name: handle_error
   required: false
-  defaultvalue: 'true'
   type: 8
 - display: Additional malicious verdicts
   name: mark_as_malicious
@@ -48,6 +50,7 @@ configuration:
 description: Use the Palo Alto Networks AutoFocus integration to distinguish the most
   important threats from everyday commodity attacks.
 display: Palo Alto Networks AutoFocus v2
+fromversion: 5.0.0
 name: AutoFocus V2
 script:
   commands:
@@ -58,8 +61,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: The query for which to retrieve samples. For additional information
         on how to build your query using the AF GUI, see the detailed description
@@ -69,12 +72,12 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '60'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-      defaultValue: '60'
     - default: false
       defaultValue: '30'
       description: The number of results to return.
@@ -117,9 +120,9 @@ script:
       isArray: false
       name: scope
       predefined:
-        - Private
-        - Public
-        - Global
+      - Private
+      - Public
+      - Global
       required: true
       secret: false
     - default: false
@@ -177,7 +180,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return artifacts of samples.'
+      description: Whether to return artifacts of samples.
       isArray: false
       name: artifact
       predefined:
@@ -199,7 +202,6 @@ script:
       is recommended for querying and polling.
     execution: false
     name: autofocus-search-samples
-    polling: true
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
       description: The AutoFocus search ID. Use this ID to retrieve search results.
@@ -281,6 +283,7 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search
       type: String
+    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -288,15 +291,15 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
+      defaultValue: '60'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-      defaultValue: '60'
     - default: false
       description: The AF Cookie for retrieving the results of a previous search.
         The AF Cookie expires 120 seconds after the search completes.
@@ -352,8 +355,8 @@ script:
       isArray: false
       name: order
       predefined:
-        - Ascending
-        - Descending
+      - Ascending
+      - Descending
       required: false
       secret: false
     - default: false
@@ -382,24 +385,24 @@ script:
       secret: false
     - default: false
       description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS
-          where the first date is the beginning and the second is the end. Example:
-          2019-09-09T00:00:00,2019-09-09T23:01:59'
+        where the first date is the beginning and the second is the end. Example:
+        2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: time_range
       predefined:
-        - ''
+      - ''
       required: false
       secret: false
     - default: false
       description: 'The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-          Example: 2019-09-09T23:01:59'
+        Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_after
       required: false
       secret: false
     - default: false
       description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS
-          Example: 2019-09-09T23:01:59'
+        Example: 2019-09-09T23:01:59'
       isArray: false
       name: time_before
       required: false
@@ -407,10 +410,10 @@ script:
     deprecated: false
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
-      the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables handling the search in a single command,
-      rather than using the `Autofocus Query Samples, Sessions and Tags` Playbook.
+      the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables
+      handling the search in a single command, rather than using the `Autofocus Query
+      Samples, Sessions and Tags` Playbook.
     execution: false
-    polling: true
     name: autofocus-search-sessions
     outputs:
     - contextPath: AutoFocus.SessionsSearch.AFCookie
@@ -465,6 +468,7 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    polling: true
   - arguments:
     - default: false
       description: The AF Cookie for retrieving results of previous searches. The
@@ -784,8 +788,8 @@ script:
       isArray: false
       name: polling
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - default: false
       description: The AF Cookie for retrieving results of previous searches. The
         AF Cookie expires 120 seconds after the search completes.
@@ -794,12 +798,12 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: '40'
       description: Interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
       secret: false
-      defaultValue: '40'
     - auto: PREDEFINED
       default: false
       description: 'Tag class. - Malware Family: group of malware that have shared
@@ -873,7 +877,6 @@ script:
       Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     execution: false
     name: autofocus-top-tags-search
-    polling: true
     outputs:
     - contextPath: AutoFocus.TopTagsSearch.AFCookie
       description: AutoFocus search ID. Use this ID to get search results. The AF
@@ -900,6 +903,7 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    polling: true
   - arguments:
     - default: false
       description: 'The AF Cookie for retrieving results of previous search. Note:
@@ -1162,7 +1166,8 @@ script:
       description: Aliases of the tags.
       type: String
     - contextPath: File.Tags.PublicTagName
-      description: The public name of the tag. This is usually used as the ID of the tag.
+      description: The public name of the tag. This is usually used as the ID of the
+        tag.
       type: String
     - contextPath: File.Tags.TagName
       description: The simple name of the tag.
@@ -1227,8 +1232,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description:
-        The actual score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -1389,10 +1393,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - AutoFocus V2 test
-fromversion: 5.0.0

@@ -1,45 +1,51 @@
+args:
+- description: The employee email. We will send an email to his manager. If not provided
+    will be taken from incident label 'Email/from'
+  name: email
+- description: The manager attribute in Active Directory. Default is 'manager'.
+  name: manager
+- auto: PREDEFINED
+  description: If true, we will add an entitlement to the subject allowing manager
+    to reply to war room
+  name: allowReply
+  predefined:
+  - 'true'
+  - 'false'
+- description: The contents of the email body. It's a template that can include $empName
+    and $managerName which will be replaced with actual values.
+  name: body
+- description: The contents of the request from the manager. Will be added below the
+    body. If none is provided, incident details will be taken.
+  name: request
+- description: Tag to add on email reply entries
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or a persistent one
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+comment: Send an approval email to the manager of the employee with the given email
+  allowing the manager to reply directly into the incident
 commonfields:
   id: SendEmailToManager
   version: -1
-name: SendEmailToManager
-fromversion: 5.0.0
-script: '-'
-type: python
-subtype: python3
-tags:
-- communication
-comment: Send an approval email to the manager of the employee with the given email allowing the manager to reply directly into the incident
-system: true
-args:
-- name: email
-  description: The employee email. We will send an email to his manager. If not provided will be taken from incident label 'Email/from'
-- name: manager
-  description: The manager attribute in Active Directory. Default is 'manager'.
-- name: allowReply
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: If true, we will add an entitlement to the subject allowing manager to reply to war room
-- name: body
-  description: The contents of the email body. It's a template that can include $empName and $managerName which will be replaced with actual values.
-- name: request
-  description: The contents of the request from the manager. Will be added below the body. If none is provided, incident details will be taken.
-- name: replyEntriesTag
-  description: Tag to add on email reply entries
-- name: persistent
-  description: Indicates whether to use one-time entitlement or a persistent one
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  defaultValue: "false"
-scripttarget: 0
 dependson:
   must:
   - ad-search
   - send-mail
-timeout: 0s
+dockerimage: demisto/python3:3.10.7.33922
+fromversion: 5.0.0
+name: SendEmailToManager
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- communication
 tests:
 - No test
-dockerimage: demisto/python3:3.10.7.33922
+timeout: 0s
+type: python

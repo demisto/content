@@ -1,45 +1,47 @@
+args:
+- default: true
+  description: The URL to follow
+  name: url
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Should we use HEAD instead of GET. Safer but might not be the same
+    response.
+  name: useHead
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Use system proxy settings
+  name: use_system_proxy
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Trust any certificate (not secure)
+  name: trust_any_certificate
+  predefined:
+  - 'true'
+  - 'false'
+comment: List the redirects for a given URL
 commonfields:
   id: HTTPListRedirects
   version: -1
-name: HTTPListRedirects
-script: ''
-type: python
-subtype: python3
-tags:
-- Utility
-comment: List the redirects for a given URL
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
-args:
-- name: url
-  required: true
-  default: true
-  description: The URL to follow
-- name: useHead
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  defaultValue: "true"
-  description: Should we use HEAD instead of GET. Safer but might not be the same response.
-- name: use_system_proxy
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Use system proxy settings
-  defaultValue: "false"
-- name: trust_any_certificate
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Trust any certificate (not secure)
-  defaultValue: "false"
+fromversion: 5.0.0
+name: HTTPListRedirects
 outputs:
 - contextPath: URL.Data
   description: The URL redirects from the given URL
+script:
+- '8.1'
 scripttarget: 0
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+subtype: python3
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+type: python

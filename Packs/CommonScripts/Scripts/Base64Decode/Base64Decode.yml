@@ -1,20 +1,16 @@
+args:
+- default: true
+  description: The value to decode in Base64 format.
+  name: value
+  required: true
+comment: Decodes an input in Base64 format.
 commonfields:
   id: Base64Decode
   version: -1
-name: Base64Decode
-script: ''
-type: python
-tags:
-- Utility
-- transformer
-- string
-comment: Decodes an input in Base64 format.
+dockerimage: demisto/python3:3.10.7.35188
 enabled: true
-args:
-- name: value
-  required: true
-  default: true
-  description: The value to decode in Base64 format.
+fromversion: 5.0.0
+name: Base64Decode
 outputs:
 - contextPath: Base64.decoded
   description: The decoded output in Base64 format.
@@ -22,11 +18,16 @@ outputs:
 - contextPath: Base64.originalValue
   description: The passed value that was decoded.
   type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-runas: DBotWeakRole
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.35188
+tags:
+- Utility
+- transformer
+- string
 tests:
 - Base64Decode - Test
+type: python

@@ -7,13 +7,15 @@ configuration:
   name: with_error
   required: false
   type: 8
-- display: Proxy URL
-  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080). Will effect all commands except for the `ip` command."
+- additionalinfo: Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080).
+    Will effect all commands except for the `ip` command.
+  display: Proxy URL
   name: proxy_url
   required: false
   type: 0
-- display: Use system proxy settings
-  additionalinfo: "Effect the `ip` command and the other commands only if the Proxy URL is not set."
+- additionalinfo: Effect the `ip` command and the other commands only if the Proxy
+    URL is not set.
+  display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
@@ -32,8 +34,10 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+defaultEnabled: false
 description: Provides data enrichment for domains.
 display: Whois
+fromversion: 5.0.0
 name: Whois
 script:
   commands:
@@ -44,17 +48,19 @@ script:
       name: query
       required: true
       secret: false
-    - name: recursive
-      description: Whether to get the raw response from the whois servers recursively. Default value is True.
-      defaultValue: true
-    - name: verbose
-      description: Whether to add the raw response as a dictionary to the context. Default value is False.
-      required: False
-      defaultValue: false 
-      auto: PREDEFINED
+    - defaultValue: true
+      description: Whether to get the raw response from the whois servers recursively.
+        Default value is True.
+      name: recursive
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to add the raw response as a dictionary to the context.
+        Default value is False.
+      name: verbose
       predefined:
       - 'true'
       - 'false'
+      required: false
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -208,9 +214,10 @@ script:
       name: domain
       required: true
       secret: false
-    - name: recursive
-      description: Whether to get the raw response from the whois servers recursively. Default value is True.
-      defaultValue: true
+    - defaultValue: true
+      description: Whether to get the raw response from the whois servers recursively.
+        Default value is True.
+      name: recursive
     deprecated: false
     description: Provides data enrichment for domains.
     execution: false
@@ -439,7 +446,8 @@ script:
     name: ip
     outputs:
     - contextPath: Whois.IP.asn
-      description: Globally unique identifier used for routing information exchange with Autonomous Systems.
+      description: Globally unique identifier used for routing information exchange
+        with Autonomous Systems.
       type: string
     - contextPath: Whois.IP.asn_cidr
       description: Network routing block assigned to an ASN.
@@ -457,7 +465,8 @@ script:
       description: ASN assigned regional internet registry.
       type: string
     - contextPath: Whois.IP.entities
-      description: list of object names referenced by an RIR network. Map these to the objects dictionary keys.
+      description: list of object names referenced by an RIR network. Map these to
+        the objects dictionary keys.
       type: string
     - contextPath: Whois.IP.network.cidr
       description: Network routing block an IP address belongs to.
@@ -554,11 +563,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-defaultEnabled: false
 tests:
 - whois_test
-fromversion: 5.0.0

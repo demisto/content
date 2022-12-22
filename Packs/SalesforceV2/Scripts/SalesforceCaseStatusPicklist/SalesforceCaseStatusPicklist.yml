@@ -1,23 +1,24 @@
-comment: 'Retrieves and displays the case status values from Salesforce.'
+comment: Retrieves and displays the case status values from Salesforce.
 commonfields:
   id: SalesforceCaseStatusPicklist
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 dockerimage: demisto/python3:3.10.5.31928
 enabled: true
+fromversion: 6.2.0
 name: SalesforceCaseStatusPicklist
 runas: DBotWeakRole
 runonce: false
-script: ''
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags:
 - python
 - salesforce
 - field-display
-type: python
-fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
+type: python

@@ -1,13 +1,12 @@
+comment: After running DeleteContext, this script can repopulate all the file entries
+  in the ${File} context key
 commonfields:
   id: RepopulateFiles
   version: -1
-name: RepopulateFiles
-script: ''
-type: python
-tags:
-- Utility
-comment: After running DeleteContext, this script can repopulate all the file entries in the ${File} context key
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
+fromversion: 5.0.0
+name: RepopulateFiles
 outputs:
 - contextPath: File.Name
   description: Filename
@@ -63,11 +62,14 @@ outputs:
   description: showMediaFile
 - contextPath: AttachmentFile.Attachment.type
   description: File content type
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-runas: DBotWeakRole
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.5.31928
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+type: python

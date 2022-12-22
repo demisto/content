@@ -35,6 +35,7 @@ configuration:
   type: 0
 description: An Identity and Access Management integration template.
 display: Zoom_IAM
+fromversion: 6.0.0
 name: Zoom_IAM
 script:
   commands:
@@ -100,14 +101,15 @@ script:
   dockerimage: demisto/pyjwt3:1.0.0.29644
   feed: false
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   ismappable: true
   isremotesyncout: true
+  longRunning: false
+  longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - No tests
-fromversion: 6.0.0

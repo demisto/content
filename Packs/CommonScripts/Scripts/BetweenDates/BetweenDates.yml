@@ -1,25 +1,21 @@
+args:
+- description: Value to check
+  name: value
+  required: true
+- description: Lower date range
+  name: begin_date
+  required: true
+- description: Upper date range
+  name: end_date
+  required: true
+comment: Whether value is within a date range.
 commonfields:
   id: BetweenDates
   version: -1
-name: BetweenDates
-fromversion: 5.0.0
-comment: Whether value is within a date range.
-script: ''
-type: python
-tags:
-- transformer
-- date
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
-args:
-- name: value
-  required: true
-  description: Value to check
-- name: begin_date
-  required: true
-  description: Lower date range
-- name: end_date
-  required: true
-  description: Upper date range
+fromversion: 5.0.0
+name: BetweenDates
 outputs:
 - contextPath: BetweenDates.result
   description: Whether the input hour is between the given hours.
@@ -33,10 +29,15 @@ outputs:
 - contextPath: BetweenDates.end_date
   description: Upper date range.
   type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.7.33922
-runas: DBotWeakRole
+tags:
+- transformer
+- date
 tests:
 - No test
+type: python

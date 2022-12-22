@@ -1,18 +1,19 @@
+comment: Show indicator geo location on map
 commonfields:
   id: ShowLocationOnMap
   version: -1
-name: ShowLocationOnMap
-comment: Show indicator geo location on map
-script: '-'
-type: python
-tags:
-- dynamic-indicator-section
+dockerimage: demisto/python3:3.10.1.25933
 enabled: true
+fromversion: 5.0.0
+name: ShowLocationOnMap
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.1.25933
-runas: DBotWeakRole
-fromversion: 5.0.0
+tags:
+- dynamic-indicator-section
 tests:
 - No test
+type: python

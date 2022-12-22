@@ -1,22 +1,23 @@
+args:
+- default: true
+  description: The HTML to strip tags from
+  name: html
+  required: true
+comment: Extract regular text from the given HTML
 commonfields:
   id: TextFromHTML
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+enabled: true
+fromversion: 5.0.0
 name: TextFromHTML
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - Utility
-comment: Extract regular text from the given HTML
-enabled: true
-args:
-- name: html
-  required: true
-  default: true
-  description: The HTML to strip tags from
-scripttarget: 0
-runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - TextFromHTML_test_playbook
+type: python

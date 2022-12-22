@@ -29,8 +29,10 @@ configuration:
   name: timeZone
   required: false
   type: 0
-description: Query the Symantec Endpoint Protection Manager using the official REST API.
+description: Query the Symantec Endpoint Protection Manager using the official REST
+  API.
 display: Symantec Endpoint Protection v2
+fromversion: 5.0.0
 name: Symantec Endpoint Protection V2
 script:
   commands:
@@ -42,14 +44,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
+      description: Filters by the host name of the computer. A wild card search can
+        be done using '*' at the end of the query.
       isArray: false
       name: computerName
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
+      description: Indicates when a computer's status was last updated. The default
+        is "0", which returns all results.
       isArray: false
       name: lastUpdate
       required: false
@@ -94,7 +98,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*' at the end of the query.
+      description: The name of the group to which the endpoint belongs. A wild card
+        search can be done using '*' at the end of the query.
       isArray: false
       name: groupName
       required: false
@@ -294,7 +299,8 @@ script:
       description: The ID of the cloud group of the locations assigned to this policy.
       type: string
     - contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations
-      description: The list of location IDs belonging to a cloud group assigned to this policy.
+      description: The list of location IDs belonging to a cloud group assigned to
+        this policy.
       type: string
   - arguments:
     - default: false
@@ -380,7 +386,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
+      description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full",
+        or "ScanNow_Custom".
       isArray: false
       name: scanType
       predefined:
@@ -398,7 +405,8 @@ script:
       description: The ID of the command that was run.
       type: string
     - contextPath: SEPM.Scan.Type
-      description: The type of the scan. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
+      description: The type of the scan. Can be "ScanNow_Quick", "ScanNow_Full", or
+        "ScanNow_Custom".
       type: string
     - contextPath: SEPM.Scan.Endpoint
       description: The IP or hostname of the identifier of the endpoint.
@@ -446,13 +454,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
+      description: Filters by the host name of the computer. A wild card search can
+        be done using '*' at the end of the query.
       isArray: false
       name: computerName
       required: false
       secret: false
     - default: false
-      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
+      description: Indicates when a computer's status was last updated. The default
+        is "0", which returns all results.
       isArray: false
       name: lastUpdate
       required: false
@@ -470,7 +480,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
+      description: The name of the group to which the endpoint belongs. A wild card
+        search can be done using '*'at the end of the query.
       isArray: false
       name: groupName
       required: false
@@ -482,15 +493,17 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
+    description: Get endpoints for a running version that is different than the target
+      version or the desired version (if specified).
     execution: false
     name: sep-identify-old-clients
+  dockerimage: demisto/python3:3.10.6.33415
   isfetch: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  type: python
 tests:
 - SymantecEndpointProtection_Test
-fromversion: 5.0.0

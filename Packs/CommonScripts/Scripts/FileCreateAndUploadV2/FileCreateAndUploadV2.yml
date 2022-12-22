@@ -1,35 +1,38 @@
-commonfields:
-  id: FileCreateAndUploadV2
-  version: -1
-name: FileCreateAndUploadV2
-script: ''
-type: python
-tags:
-- Utility
-comment: |
-  Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
-enabled: true
 args:
-- name: filename
-  required: true
-  default: true
+- default: true
   description: The name of the file to be created.
-- name: data
-  description: Input data to write to the file.
-- name: entryId
-  description: Entry ID contents to write in the file.
-- name: data_encoding
-  auto: PREDEFINED
+  name: filename
+  required: true
+- description: Input data to write to the file.
+  name: data
+- description: Entry ID contents to write in the file.
+  name: entryId
+- auto: PREDEFINED
+  defaultValue: raw
+  description: Encoding type of the input data or contents.
+  name: data_encoding
   predefined:
   - raw
   - base64
-  description: Encoding type of the input data or contents.
-  defaultValue: raw
+comment: 'Creates a file (using the given data input or entry ID) and uploads it to
+  the current investigation War Room.
+
+  '
+commonfields:
+  id: FileCreateAndUploadV2
+  version: -1
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
+fromversion: 6.2.0
+name: FileCreateAndUploadV2
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.29342
-runas: DBotWeakRole
-fromversion: 6.2.0
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+type: python

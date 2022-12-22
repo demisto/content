@@ -6,9 +6,9 @@ args:
   isArray: false
   name: returnWidgetType
   predefined:
-    - scatter
-    - summary
-    - incidents
+  - scatter
+  - summary
+  - incidents
   required: false
   secret: false
 - default: false
@@ -46,7 +46,7 @@ args:
   isArray: false
   name: modelExpiration
   predefined:
-    - ''
+  - ''
   required: false
   secret: false
 - auto: PREDEFINED
@@ -56,8 +56,8 @@ args:
   isArray: false
   name: forceRetrain
   predefined:
-    - 'True'
-    - 'False'
+  - 'True'
+  - 'False'
   required: false
   secret: false
 - default: false
@@ -72,16 +72,17 @@ comment: Train clustering model on Cortex XDR incident type.
 commonfields:
   id: DBotGroupXDRIncidents
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: false
+fromversion: 6.2.0
 name: DBotGroupXDRIncidents
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
-  - widget
-timeout: 3.6µs
-type: python
+- widget
 tests:
-  - No tests (auto formatted)
-fromversion: 6.2.0
-dockerimage: demisto/python3:3.9.7.24076
+- No tests (auto formatted)
+timeout: "3.6\xB5s"
+type: python

@@ -1,21 +1,9 @@
-commonfields:
-  id: URLSSLVerification
-  version: -1
-name: URLSSLVerification
-script: ''
-type: python
-subtype: python3
-tags:
-- url
-- Enrichment
-comment: Verify URL SSL certificate
-system: true
 args:
-- name: url
-  required: true
-  default: true
+- default: true
   description: Comma separated list of URLs to verify.
   isArray: true
+  name: url
+  required: true
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
@@ -23,10 +11,17 @@ args:
   isArray: false
   name: set_http_as_suspicious
   predefined:
-   - 'false'
-   - 'true'
+  - 'false'
+  - 'true'
   required: false
   secret: false
+comment: Verify URL SSL certificate
+commonfields:
+  id: URLSSLVerification
+  version: -1
+dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
+name: URLSSLVerification
 outputs:
 - contextPath: URL
   description: The URL object
@@ -49,9 +44,15 @@ outputs:
 - contextPath: DBotScore.Score
   description: The reputation score
   type: number
-scripttarget: 0
 runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- url
+- Enrichment
 tests:
 - No tests (auto formatted)
+type: python

@@ -3,15 +3,16 @@ commonfields:
   id: Image OCR
   version: -1
 configuration:
-- display: A CSV of language codes of the language to use for OCR (leave empty to use defaults).
+- display: A CSV of language codes of the language to use for OCR (leave empty to
+    use defaults).
   name: langs
   required: false
   type: 0
+defaultEnabled: true
 description: Extracts text from images.
 display: Image OCR
-name: Image OCR
-defaultEnabled: true
 fromversion: 5.0.0
+name: Image OCR
 script:
   commands:
   - deprecated: false
@@ -26,7 +27,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
+      description: A CSV of language codes of the language to use for OCR. Overrides
+        the default configured language list.
       isArray: true
       name: langs
       required: false
@@ -41,7 +43,9 @@ script:
       type: String
   dockerimage: demisto/tesseract:1.0.0.40718
   isfetch: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python

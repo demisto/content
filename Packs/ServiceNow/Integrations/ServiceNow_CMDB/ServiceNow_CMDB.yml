@@ -27,9 +27,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes
-  service‑impacting changes, identifies issues, and eliminates outages.
+description: "ServiceNow CMDB is a service\u2011centric foundation that proactively\
+  \ analyzes service\u2011impacting changes, identifies issues, and eliminates outages."
 display: ServiceNow CMDB
+fromversion: 5.0.0
 name: ServiceNow CMDB
 script:
   commands:
@@ -445,6 +446,8 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
@@ -452,4 +455,3 @@ script:
 tests:
 - ServiceNow_CMDB_Test
 - ServiceNow_CMDB_OAuth_Test
-fromversion: 5.0.0

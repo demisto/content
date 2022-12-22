@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: RemoteAccess instance of the CheckPoint firewall appliances to back up.
+  description: RemoteAccess instance of the CheckPoint firewall appliances to back
+    up.
   isArray: false
   name: device
   required: true
@@ -9,14 +10,15 @@ comment: Downloads the Check Point policy backup to the Cortex XSOAR War Room.
 commonfields:
   id: CheckPointDownloadBackup
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: CheckPointDownloadBackup
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
-timeout: '0'
-type: python
-fromversion: 5.0.0
 tests:
 - No tests
-dockerimage: demisto/python3:3.9.8.24399
+timeout: '0'
+type: python

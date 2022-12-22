@@ -3,16 +3,16 @@ commonfields:
   id: CheckPointSandBlast
   version: -1
 configuration:
-- display: Server URL
+- additionalinfo: https://te.checkpoint.com
+  display: Server URL
   name: url
   required: true
   type: 0
-  additionalinfo: https://te.checkpoint.com
 - displaypassword: Authorization - API Key
+  hiddenusername: true
   name: credentials
   required: false
   type: 9
-  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -21,10 +21,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- name: integrationReliability
-  additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
+  name: integrationReliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -35,19 +35,24 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
-description: "Uploads files using polling. The service supports Microsoft Office files, as well as PDF, SWF, archives, and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Queries on existing IOCs, file status, analysis, and reports. Downloads files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x."
+description: Uploads files using polling. The service supports Microsoft Office files,
+  as well as PDF, SWF, archives, and executables. Active content will be cleaned from
+  any documents that you upload (Microsoft Office and PDF files only). Queries on
+  existing IOCs, file status, analysis, and reports. Downloads files from the database.
+  Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
 display: Check Point Threat Emulation (SandBlast)
+fromversion: 6.5.0
 name: CheckPointSandBlast
 script:
   commands:
-  - name: file
-    description: Runs reputation on files.
-    arguments:
-    - name: file
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
       isArray: true
+      name: file
+      required: true
+    description: Runs reputation on files.
+    name: file
     outputs:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -80,11 +85,13 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - description: Name of the file to query (recommend using). Without it, status will be "PARTIALLY_FOUND".
+    - description: Name of the file to query (recommend using). Without it, status
+        will be "PARTIALLY_FOUND".
       isArray: false
       name: file_name
       required: false
-    - description: "File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status."
+    - description: 'File hash to query. Accepted digests are: md5, sha1 and sha256.
+        Only md5 returns FOUND status.'
       isArray: false
       name: file_hash
       required: true
@@ -101,7 +108,8 @@ script:
       required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
-      description: A comma-separated list of supported report formats. Note - Simultaneous requests for PDF and summary reports is not supported.
+      description: A comma-separated list of supported report formats. Note - Simultaneous
+        requests for PDF and summary reports is not supported.
       isArray: true
       name: reports
       predefined:
@@ -120,8 +128,12 @@ script:
       - pdf
       required: false
     - auto: PREDEFINED
-      defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data
-      description: A comma-separated list of fields to be cleaned in the file. Only relevant if method = clean.
+      defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR
+        Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie
+        Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries,
+        Embedded Objects, Fast Save Data
+      description: A comma-separated list of fields to be cleaned in the file. Only
+        relevant if method = clean.
       isArray: true
       name: extracted_parts
       predefined:
@@ -143,7 +155,10 @@ script:
       - Summary Properties
       required: false
     deprecated: false
-    description: Use the Query API to have a client application look for either a specific file's analysis report on the Check Point Threat Prevention service databases or the status of a file, uploaded for analysis. It is recommended to add file_name.
+    description: Use the Query API to have a client application look for either a
+      specific file's analysis report on the Check Point Threat Prevention service
+      databases or the status of a file, uploaded for analysis. It is recommended
+      to add file_name.
     execution: false
     name: sandblast-query
     outputs:
@@ -160,7 +175,8 @@ script:
       description: The file SHA256.
       type: String
     - contextPath: SandBlast.Query.FileType
-      description: The file type, can be different from the one sent in the query request (according to the type to identify).
+      description: The file type, can be different from the one sent in the query
+        request (according to the type to identify).
       type: String
     - contextPath: SandBlast.Query.FileName
       description: The name of the file saved on the Check Point databases.
@@ -169,7 +185,8 @@ script:
       description: The features used.
       type: String
     - contextPath: SandBlast.Query.AntiVirus.SignatureName
-      description: The signature name. If the file is not detected by Anti-Virus, the signature name is empty.
+      description: The signature name. If the file is not detected by Anti-Virus,
+        the signature name is empty.
       type: String
     - contextPath: SandBlast.Query.AntiVirus.MalwareFamily
       description: 'The ID for the malware family, if available: {0-}.'
@@ -190,10 +207,16 @@ script:
       description: The method that was used.
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractResult
-      description: "The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY."
+      description: 'The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN
+        (returned if the POD did not receive an answer from the Threat Extraction
+        engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS,
+        CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE,
+        CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED,
+        CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY.'
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractedFileDownloadId
-      description: The download ID of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
+      description: The download ID of the extracted file, for download request. Only
+        sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.OutputFileName
       description: The clean file name.
@@ -223,7 +246,8 @@ script:
       description: The potentially malicious extracted content.
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractionData.ProtectionType
-      description: 'The protection done for scrub_method: Conversion to PDF | Content Removal.'
+      description: 'The protection done for scrub_method: Conversion to PDF | Content
+        Removal.'
       type: String
     - contextPath: SandBlast.Query.ThreatExtraction.ExtractionData.ProtocolVersion
       description: The protocol used.
@@ -250,47 +274,57 @@ script:
       description: The content that was removed.
       type: String
     - contextPath: SandBlast.Query.ThreatEmulation.Trust
-      description: The rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above.
+      description: The rating of the threat data and its relevance to this instance.
+        It is recommended to block threats with confidence medium and above.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Score
       description: The Threat Emulation score.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.CombinedVerdict
-      description: The combined verdict of all the images. Benign reports are not supported for local gateways.
+      description: The combined verdict of all the images. Benign reports are not
+        supported for local gateways.
       type: String
     - contextPath: SandBlast.Query.ThreatEmulation.Severity
-      description: The combined severity of threats found. If threats are not found, this field is not shown.
+      description: The combined severity of threats found. If threats are not found,
+        this field is not shown.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Images
-      description: The sandboxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      description: The sandboxes used in Threat Emulation. Information about image
+        types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm
+        under "Query API" -> "Query Response Format" -> "Images Object Format".
       type: String
     - contextPath: SandBlast.Query.ThreatEmulation.Confidence
-      description: Rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence 2 and above. 1 - low, 2 - medium, 3 - high.
+      description: Rating of the threat data and its relevance to this instance. It
+        is recommended to block threats with confidence 2 and above. 1 - low, 2 -
+        medium, 3 - high.
       type: Number
     - contextPath: SandBlast.Query.ThreatEmulation.Status
       description: The status of Threat Emulation on the requested file.
       type: String
   - arguments:
-    - description: The interval in seconds between each poll.
+    - defaultValue: '60'
+      description: The interval in seconds between each poll.
       isArray: false
       name: interval_in_seconds
       required: false
-      defaultValue: '60'
-    - description: The timeout in seconds until polling ends.
+    - defaultValue: '600'
+      description: The timeout in seconds until polling ends.
       isArray: false
       name: timeout_in_seconds
       required: false
-      defaultValue: '600'
-    - description: The ID of the file to upload, which will be taken from the uploaded file to Cortex XSOAR.
+    - description: The ID of the file to upload, which will be taken from the uploaded
+        file to Cortex XSOAR.
       isArray: false
       name: file_id
       required: true
-    - description: Rename the upload file. If empty, the uploaded file will keep its original name.
+    - description: Rename the upload file. If empty, the uploaded file will keep its
+        original name.
       isArray: false
       name: file_name
       required: false
-    - description: 'File hash to query. Accepted digests are: md5, sha1 and sha256. Only md5 returns FOUND status.'
-      deprecated: true
+    - deprecated: true
+      description: 'File hash to query. Accepted digests are: md5, sha1 and sha256.
+        Only md5 returns FOUND status.'
       isArray: false
       name: file_hash
       required: false
@@ -306,7 +340,11 @@ script:
       - All
       required: false
     - auto: PREDEFINED
-      description: 'The ID of available OS images. An image is an operating system configuration. Inputs must be of same length as image_revisions and will be paired according to position. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".'
+      description: The ID of available OS images. An image is an operating system
+        configuration. Inputs must be of same length as image_revisions and will be
+        paired according to position. Information about image types can be found in
+        https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm
+        under "Query API" -> "Query Response Format" -> "Images Object Format".
       isArray: true
       name: image_ids
       predefined:
@@ -318,13 +356,16 @@ script:
       - 6c453c9b-20f7-471a-956c-3198a868dc92
       - 10b4a9c6-e414-425c-ae8b-fe4dd7b25244
       required: false
-    - description: The revisions of available OS images. An image is an operating system configuration. Inputs must be of same length as image_ids and will be paired according to position.
+    - description: The revisions of available OS images. An image is an operating
+        system configuration. Inputs must be of same length as image_ids and will
+        be paired according to position.
       isArray: true
       name: image_revisions
       required: false
     - auto: PREDEFINED
       defaultValue: xml, summary
-      description: A comma-separated list of supported report formats. Note - Simultaneous requests for PDF and summary reports is not supported.
+      description: A comma-separated list of supported report formats. Note - Simultaneous
+        requests for PDF and summary reports is not supported.
       isArray: true
       name: reports
       predefined:
@@ -343,8 +384,12 @@ script:
       - pdf
       required: false
     - auto: PREDEFINED
-      defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries, Embedded Objects, Fast Save Data
-      description: A comma-separated list of fields to be cleaned in the file. Only relevant if method = clean.
+      defaultValue: Linked Objects, Macros and Code, Sensitive Hyperlinks, PDF GoToR
+        Actions, PDF Launch Actions, PDF URI Actions, PDF Sound Actions, PDF Movie
+        Actions, PDF JavaScript Actions, PDF Submit Form Actions, Database Queries,
+        Embedded Objects, Fast Save Data
+      description: A comma-separated list of fields to be cleaned in the file. Only
+        relevant if method = clean.
       isArray: true
       name: extracted_parts
       predefined:
@@ -366,10 +411,15 @@ script:
       - Summary Properties
       required: false
     deprecated: false
-    description: "Uses the Upload API to have a client application request for Check Point Threat Prevention modules to scan and analyze a file. When you upload a file to the service, the file is encrypted. It is un-encrypted during analysis and then deleted. This command uses polling with query. The stages of polling are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'. Once the command is done polling, it returns analyzed information about the file."
+    description: Uses the Upload API to have a client application request for Check
+      Point Threat Prevention modules to scan and analyze a file. When you upload
+      a file to the service, the file is encrypted. It is un-encrypted during analysis
+      and then deleted. This command uses polling with query. The stages of polling
+      are 'UPLOAD_SUCCESS', 'PENDING' and ends with 'FOUND' or 'PARTIALLY_FOUND'.
+      Once the command is done polling, it returns analyzed information about the
+      file.
     execution: false
     name: sandblast-upload
-    polling: true
     outputs:
     - contextPath: SandBlast.Upload.Status
       description: The status of requested features.
@@ -384,7 +434,8 @@ script:
       description: The file SHA256.
       type: String
     - contextPath: SandBlast.Upload.FileType
-      description: The file type can be different from the one sent in the upload request (according to the type to identify).
+      description: The file type can be different from the one sent in the upload
+        request (according to the type to identify).
       type: String
     - contextPath: SandBlast.Upload.FileName
       description: The name of the file saved on Check Point databases.
@@ -393,7 +444,8 @@ script:
       description: The features used.
       type: String
     - contextPath: SandBlast.Upload.AntiVirus.SignatureName
-      description: The signature name. If the file is not detected by Anti-Virus, the signature name is empty.
+      description: The signature name. If the file is not detected by Anti-Virus,
+        the signature name is empty.
       type: String
     - contextPath: SandBlast.Upload.AntiVirus.MalwareFamily
       description: 'The ID for the malware family, if available: {0-}.'
@@ -414,10 +466,16 @@ script:
       description: The method that was used.
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractResult
-      description: 'The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN (returned if the POD did not receive an answer from the Threat Extraction engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS, CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE, CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED, CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY.'
+      description: 'The result from the Threat Extraction engine. Default is CP_EXTRACT_RESULT_UNKNOWN
+        (returned if the POD did not receive an answer from the Threat Extraction
+        engine in 60 seconds). Possible values: CP_EXTRACT_RESULT_UNKNOWN, CP_EXTRACT_RESULT_SUCCESS,
+        CP_EXTRACT_RESULT_FAILURE, CP_EXTRACT_RESULT_TIMEOUT, CP_EXTRACT_RESULT_UNSUPPORTED_FILE,
+        CP_EXTRACT_RESULT_NOT_SCRUBBED, CP_EXTRACT_RESULT_INTERNAL_ERROR, CP_EXTRACT_RESULT_DISK_LIMIT_REACHED,
+        CP_EXTRACT_RESULT_ENCRYPTED_FILE, CP_EXTRACT_RESULT_DOCSEC_FILE, CP_EXTRACT_RESULT_OUT_OF_MEMORY.'
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractedFileDownloadId
-      description: The download ID of the extracted file, for download request. Only sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
+      description: The download ID of the extracted file, for download request. Only
+        sent when extract_result = CP_EXTRACT_RESULT_SUCCESS.
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.OutputFileName
       description: The clean file name.
@@ -447,7 +505,8 @@ script:
       description: The potentially malicious extracted content.
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractionData.ProtectionType
-      description: 'The protection done for scrub_method: Conversion to PDF | Content Removal.'
+      description: 'The protection done for scrub_method: Conversion to PDF | Content
+        Removal.'
       type: String
     - contextPath: SandBlast.Upload.ThreatExtraction.ExtractionData.ProtocolVersion
       description: The protocol used.
@@ -474,30 +533,38 @@ script:
       description: The content that was removed.
       type: String
     - contextPath: SandBlast.Upload.ThreatEmulation.Trust
-      description: The rating of the threat data and its relevance to this instance. It is recommended to block threats with confidence medium and above.
+      description: The rating of the threat data and its relevance to this instance.
+        It is recommended to block threats with confidence medium and above.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.Score
       description: The Threat Emulation score.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.CombinedVerdict
-      description: The combined verdict of all the images. Benign reports are not supported for local gateways.
+      description: The combined verdict of all the images. Benign reports are not
+        supported for local gateways.
       type: String
     - contextPath: SandBlast.Upload.ThreatEmulation.Severity
-      description: The combined severity of threats found. If threats are not found, this field is not shown.
+      description: The combined severity of threats found. If threats are not found,
+        this field is not shown.
       type: Number
     - contextPath: SandBlast.Upload.ThreatEmulation.Images
-      description: The sandboxes used in Threat Emulation. Information about image types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm under "Query API" -> "Query Response Format" -> "Images Object Format".
+      description: The sandboxes used in Threat Emulation. Information about image
+        types can be found in https://sc1.checkpoint.com/documents/TPAPI/CP_1.0_ThreatPreventionAPI_APIRefGuide/html_frameset.htm
+        under "Query API" -> "Query Response Format" -> "Images Object Format".
       type: String
     - contextPath: SandBlast.Upload.ThreatEmulation.Status
       description: The status of Threat Emulation on the requested file.
       type: String
+    polling: true
   - arguments:
-    - description: The ID of the file to download, taken from "Extractedfiledownloadid" from the "Threat Extraction" results.
+    - description: The ID of the file to download, taken from "Extractedfiledownloadid"
+        from the "Threat Extraction" results.
       isArray: false
       name: file_id
       required: true
     deprecated: false
-    description: Uses the Download API to download a scanned file from the ThreatCloud according to the file ID.
+    description: Uses the Download API to download a scanned file from the ThreatCloud
+      according to the file ID.
     execution: false
     name: sandblast-download
     outputs:
@@ -532,7 +599,9 @@ script:
       description: The file extension.
       type: String
   - deprecated: false
-    description: Uses the Quota API to have a client application get the current license and quota status of the API key used in the authorization of the other APIs. For cloud services only.
+    description: Uses the Quota API to have a client application get the current license
+      and quota status of the API key used in the authorization of the other APIs.
+      For cloud services only.
     execution: false
     name: sandblast-quota
     outputs:
@@ -595,10 +664,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - playbook-CheckPointSandBlast_Test
-fromversion: 6.5.0

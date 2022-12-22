@@ -1,25 +1,27 @@
+args:
+- description: Value of the indicator.
+  name: input
+- defaultValue: '0.3'
+  description: 'Malicious ratio threshold to set indicator as suspicious. '
+  name: threshold
+comment: 'Set indicator reputation to "suspicious" when malicious ratio is above threshold.
+
+  Malicious ratio is the ration between number of "bad" incidents to total number
+  of incidents the indicator appears in.'
 commonfields:
   id: MaliciousRatioReputation
   version: -1
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
+fromversion: 6.5.0
 name: MaliciousRatioReputation
-fromversion: "6.5.0"
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - reputation
-comment: |-
-  Set indicator reputation to "suspicious" when malicious ratio is above threshold.
-  Malicious ratio is the ration between number of "bad" incidents to total number of incidents the indicator appears in.
-enabled: true
-args:
-- name: input
-  description: Value of the indicator.
-- name: threshold
-  description: 'Malicious ratio threshold to set indicator as suspicious. '
-  defaultValue: "0.3"
-scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.10.7.33922
 tests:
 - No tests (auto formatted)
+type: python

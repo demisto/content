@@ -11,24 +11,25 @@ args:
   name: chars
   required: true
   secret: false
-comment: |-
-  Strip set of characters from prefix and/or suffix
-  e.g. StripChar value=~!!~www.mydomain.com~!~!~  chars=!~ will return www.mydomain.com
+comment: 'Strip set of characters from prefix and/or suffix
+
+  e.g. StripChar value=~!!~www.mydomain.com~!~!~  chars=!~ will return www.mydomain.com'
 commonfields:
   id: StripChars
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
+fromversion: 5.0.0
 name: StripChars
-script: '-'
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - transformer
 - string
-timeout: '0'
-type: python
-subtype: python3
-runonce: false
 tests:
 - stripChars - Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.7.24076
+timeout: '0'
+type: python

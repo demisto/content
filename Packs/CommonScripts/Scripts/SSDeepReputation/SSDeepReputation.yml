@@ -1,26 +1,28 @@
+args:
+- description: Ssdeep value.
+  name: input
+- defaultValue: '1'
+  description: Check similar values in this time frame (days).
+  name: timeFrameDays
+- defaultValue: '50'
+  description: Consider ssdeep similar above this threshold.
+  name: threshold
+comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity)
+  on the system.
 commonfields:
   id: SSDeepReputation
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+enabled: true
+fromversion: 5.0.0
 name: SSDeepReputation
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - reputation
-comment: Calculate ssdeep reputation based on similar files (by ssdeep similarity) on the system.
-enabled: true
-args:
-- name: input
-  description: Ssdeep value.
-- name: timeFrameDays
-  description: Check similar values in this time frame (days).
-  defaultValue: '1'
-- name: threshold
-  description: Consider ssdeep similar above this threshold.
-  defaultValue: '50'
-scripttarget: 0
-runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+type: python

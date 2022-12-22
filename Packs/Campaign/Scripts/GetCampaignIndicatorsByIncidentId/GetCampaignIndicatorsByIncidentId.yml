@@ -1,19 +1,20 @@
+comment: Gets the campaign indicators by the campaign incident ids as a MD table.
 commonfields:
   id: GetCampaignIndicatorsByIncidentId
   version: -1
+dockerimage: demisto/pandas:1.0.0.31117
+enabled: true
+fromversion: 5.5.0
 name: GetCampaignIndicatorsByIncidentId
-script: ''
-type: python
-comment: Gets the campaign indicators by the campaign incident ids as a MD table.
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
 tags:
 - field-display
 - dynamic-section
-enabled: true
-scripttarget: 0
-subtype: python3
-runonce: false
-dockerimage: demisto/pandas:1.0.0.31117
-runas: DBotWeakRole
-fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
+type: python

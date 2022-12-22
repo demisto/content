@@ -1,23 +1,26 @@
+args:
+- default: true
+  description: A comma-separated list of Attack Pattern IDs.
+  isArray: true
+  name: input
+comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the
+  Attack Pattern IDs, this script is executed and extracts the value (name) of the
+  Attack Pattern.
 commonfields:
   id: ExtractAttackPattern
   version: -1
-name: ExtractAttackPattern
-comment: Extract Attack Pattern Threat Intel Object. After auto extract extracts the Attack Pattern IDs, this script is executed and extracts the value (name) of the Attack Pattern.
-script: |2
-type: python
-tags:
-- indicator-format
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: input
-  description: A comma-separated list of Attack Pattern IDs.
-  default: true
-  isArray: true
+fromversion: 5.5.0
+name: ExtractAttackPattern
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
+tags:
+- indicator-format
 tests:
 - ExtractAttackPattern-Test
-fromversion: 5.5.0
+type: python

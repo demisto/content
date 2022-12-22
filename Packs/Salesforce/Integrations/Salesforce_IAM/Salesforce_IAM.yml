@@ -86,6 +86,7 @@ configuration:
 description: Integrate with Salesforce's services to perform Identity Lifecycle Management
   operations.
 display: Salesforce IAM
+fromversion: 6.0.0
 name: Salesforce IAM
 script:
   commands:
@@ -294,14 +295,15 @@ script:
   dockerimage: demisto/python3:3.10.5.31797
   feed: false
   isfetch: false
+  ismappable: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
-fromversion: 6.0.0

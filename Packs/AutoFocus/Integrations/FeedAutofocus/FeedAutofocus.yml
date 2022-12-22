@@ -3,10 +3,10 @@ commonfields:
   id: AutoFocus Feed
   version: -1
 configuration:
-- display: Fetch indicators
+- defaultvalue: 'true'
+  display: Fetch indicators
   name: feed
   required: false
-  defaultvalue: 'true'
   type: 8
 - display: Indicator Feed
   name: indicator_feeds
@@ -15,7 +15,9 @@ configuration:
   - Samples Feed
   required: true
   type: 16
-- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this
+    value pre-configured in their main account so no additional input is needed. To
+    use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
   required: false
@@ -35,20 +37,22 @@ configuration:
   - global
   required: false
   type: 15
-- additionalinfo: Relevant only for sample feeds. JSON styled AutoFocus query, an example can be found in the description (?) section. mandatory for Samples Feed.
+- additionalinfo: Relevant only for sample feeds. JSON styled AutoFocus query, an
+    example can be found in the description (?) section. mandatory for Samples Feed.
   display: Samples Feed Query
   name: sample_query
   required: false
   type: 0
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
   options:
-    - None
-    - Good
-    - Suspicious
-    - Bad
+  - None
+  - Good
+  - Suspicious
+  - Bad
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
@@ -64,7 +68,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -75,17 +80,17 @@ configuration:
   required: false
   type: 15
 - defaultvalue: suddenDeath
+  display: ''
   name: feedExpirationPolicy
-  display: ""
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -117,6 +122,7 @@ configuration:
   type: 0
 description: Use the AutoFocus Feeds integration to fetch indicators from AutoFocus.
 display: AutoFocus Feed
+fromversion: 5.5.0
 name: AutoFocus Feed
 script:
   commands:
@@ -144,8 +150,9 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0

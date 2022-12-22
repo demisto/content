@@ -1,17 +1,18 @@
+comment: Send email to all recipients from the selected campaign incidents.
 commonfields:
   id: SendEmailToCampaignRecipients
   version: -1
 dockerimage: demisto/python3:3.9.9.25564
 enabled: true
+fromversion: 5.0.0
 name: SendEmailToCampaignRecipients
 runas: DBotWeakRole
 runonce: false
-script: ''
-comment: Send email to all recipients from the selected campaign incidents.
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags: []
-type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+type: python

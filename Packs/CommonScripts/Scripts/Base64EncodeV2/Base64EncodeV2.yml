@@ -9,20 +9,21 @@ comment: Encodes an input to Base64 format.
 commonfields:
   id: Base64EncodeV2
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: Base64EncodeV2
 outputs:
 - contextPath: Base64.encoded
   description: The input encoded as Base64 format.
   type: string
-script: '-'
+script:
+- '8.1'
 subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
 system: false
 tags:
 - Utility
-timeout: '0'
-type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

@@ -1,24 +1,22 @@
+args:
+- description: Date to convert to UTC
+  name: date
+  required: true
+- defaultValue: '%Y-%m-%dT%H:%M:%S'
+  description: Default is "%Y-%m-%dT%H:%M:%S"
+  name: date_format
+- default: true
+  defaultValue: America/Los_Angeles
+  description: 'Timezone accepted by pytz. Default is America/Los_Angeles '
+  name: timezone
+comment: Converts a date from a different timezone to UTC timezone.
 commonfields:
   id: ConvertDatetoUTC
   version: -1
-name: ConvertDatetoUTC
-script: ''
-type: python
-tags:
-- Utility
-comment: Converts a date from a different timezone to UTC timezone.
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: date
-  required: true
-  description: Date to convert to UTC
-- name: date_format
-  description: Default is "%Y-%m-%dT%H:%M:%S"
-  defaultValue: '%Y-%m-%dT%H:%M:%S'
-- name: timezone
-  default: true
-  description: 'Timezone accepted by pytz. Default is America/Los_Angeles '
-  defaultValue: America/Los_Angeles
+fromversion: 5.0.0
+name: ConvertDatetoUTC
 outputs:
 - contextPath: UTCDate
   description: Converted Date in UTC timezone
@@ -26,11 +24,14 @@ outputs:
 - contextPath: UTCDateEpoch
   description: Date in Epoch (Unix time)
   type: Unknown
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-fromversion: 5.0.0
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+type: python

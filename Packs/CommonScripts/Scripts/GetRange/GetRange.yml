@@ -1,23 +1,26 @@
 args:
 - default: true
-  description: 'A comma-separated list of indexes or ranges of to retrieve (e.g., 0,1-3,6-7).'
+  description: A comma-separated list of indexes or ranges of to retrieve (e.g., 0,1-3,6-7).
   isArray: true
   name: range
   required: true
   secret: false
 - default: true
-  description: 'The list to transform.'
+  description: The list to transform.
   isArray: true
   name: value
   required: true
   secret: false
-comment: 'Gets specified indexes of a list.'
+comment: Gets specified indexes of a list.
 commonfields:
   id: GetRange
   version: -1
+dockerimage: demisto/python3:3.10.1.25933
 enabled: false
+fromversion: 5.5.0
 name: GetRange
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
@@ -26,5 +29,3 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
-fromversion: 5.5.0

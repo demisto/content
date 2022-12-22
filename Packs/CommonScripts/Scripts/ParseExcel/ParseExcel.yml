@@ -1,24 +1,25 @@
+args:
+- description: The entry id of the excel file
+  name: entryId
+  required: true
+comment: The automation takes Excel file (entryID) as an input and parses its content
+  to the war room and context
 commonfields:
   id: ParseExcel
   version: -1
-name: ParseExcel
-script: ''
-type: python
-subtype: python3
-tags: []
-comment: The automation takes Excel file (entryID) as an input and parses its content
-  to the war room and context
+dockerimage: demisto/py3-tools:0.0.1.30715
 enabled: true
-args:
-- name: entryId
-  required: true
-  description: The entry id of the excel file
+fromversion: 5.0.0
+name: ParseExcel
 outputs:
 - contextPath: ParseExcel
   description: ParseExcel
-scripttarget: 0
 runonce: false
-dockerimage: demisto/py3-tools:0.0.1.30715
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags: []
 tests:
 - ParseExcel-test
-fromversion: 5.0.0
+type: python

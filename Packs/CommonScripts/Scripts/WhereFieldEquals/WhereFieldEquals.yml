@@ -25,13 +25,13 @@ args:
   - ''
   required: false
   secret: false
-- name: stringify
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
+- auto: PREDEFINED
+  defaultValue: 'true'
   description: Whether the argument should be saved as a string (Optional).
-  defaultValue: "true"
+  name: stringify
+  predefined:
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: "Return all items from the list where their given 'field' attribute is equal\
@@ -43,19 +43,20 @@ comment: "Return all items from the list where their given 'field' attribute is 
 commonfields:
   id: WhereFieldEquals
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-name: WhereFieldEquals
 fromversion: 5.5.0
-script: '-'
+name: WhereFieldEquals
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - transformer
 - general
 - entirelist
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.7.24076
-runonce: false
 tests:
 - Email Address Enrichment - Generic v2.1 - Test
+timeout: '0'
+type: python

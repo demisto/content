@@ -1,52 +1,54 @@
+args:
+- default: true
+  description: The value of the email's "From" attribute.
+  name: from
+- description: The value of the email's "Subject" attribute.
+  name: subject
+- description: The value of the email's "attachmentName" attribute.
+  name: attachmentName
+- description: The value of the email's "Body" attribute.
+  name: body
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Limit the search to the current week (true/false).
+  name: searchThisWeek
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: Removes the prefix from the subject of reply and forward messages (e.g.,
+    FW:).
+  name: stripSubject
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Escape from colon (true/false).
+  name: escapeColons
+  predefined:
+  - 'true'
+  - 'false'
+comment: Returns an EWS query according to the automation's arguments.
 commonfields:
   id: BuildEWSQuery
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
 name: BuildEWSQuery
-script: ''
-type: python
-subtype: python3
-tags:
-- ews
-comment: Returns an EWS query according to the automation's arguments.
-system: true
-args:
-- name: from
-  default: true
-  description: The value of the email's "From" attribute.
-- name: subject
-  description: The value of the email's "Subject" attribute.
-- name: attachmentName
-  description: The value of the email's "attachmentName" attribute.
-- name: body
-  description: The value of the email's "Body" attribute.
-- name: searchThisWeek
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Limit the search to the current week (true/false).
-  defaultValue: "true"
-- name: stripSubject
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
-  defaultValue: "true"
-- name: escapeColons
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Escape from colon (true/false).
-  defaultValue: "false"
 outputs:
 - contextPath: EWS.Query
   description: The result query
   type: string
-scripttarget: 0
 runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- ews
 tests:
 - buildewsquery_test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+type: python

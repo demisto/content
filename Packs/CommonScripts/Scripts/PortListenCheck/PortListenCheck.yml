@@ -1,26 +1,27 @@
+args:
+- description: Hostname to check.
+  name: host
+  required: true
+- description: Port to check.
+  name: port
+  required: true
+comment: Checks whether a port was open on given host.
 commonfields:
   id: PortListenCheck
   version: -1
-name: PortListenCheck
-script: ''
-type: python
-subtype: python3
-tags: []
-comment: Checks whether a port was open on given host.
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
-args:
-- name: host
-  required: true
-  description: Hostname to check.
-- name: port
-  description: Port to check.
-  required: true
+fromversion: 5.0.0
+name: PortListenCheck
 outputs:
 - contextPath: portOpen
   description: Returns true if given port on host was open.
   type: boolean
+script:
+- '8.1'
 scripttarget: 0
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+subtype: python3
+tags: []
 tests:
 - No tests (auto formatted)
+type: python

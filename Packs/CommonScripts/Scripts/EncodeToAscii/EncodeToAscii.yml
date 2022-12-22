@@ -1,24 +1,26 @@
+args:
+- description: Data to be encoded
+  name: data
+  required: true
+comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted
+  as ASCII)
 commonfields:
   id: EncodeToAscii
   version: -1
-name: EncodeToAscii
-script: ''
-type: python
-subtype: python3
-tags: []
-comment: Input Text Data to Encode as ASCII (Ignores any chars that aren't interpreted as ASCII)
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
-args:
-- name: data
-  required: true
-  description: Data to be encoded
+fromversion: 5.0.0
+name: EncodeToAscii
 outputs:
 - contextPath: asciiencode.encoded
   description: Data encoded in ASCII
   type: string
-scripttarget: 0
 runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags: []
 tests:
 - No tests (auto formatted)
+type: python

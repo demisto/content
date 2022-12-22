@@ -22,9 +22,9 @@ configuration:
   required: true
   type: 0
 - displaypassword: API Key (Recommended)
+  hiddenusername: true
   name: credentials
   required: false
-  hiddenusername: true
   type: 9
 - display: Use system proxy settings
   name: proxy
@@ -34,13 +34,14 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: API Key (Deprecated)
-  additionalinfo: Use the "API Key (Recommended)" parameter instead.
+- additionalinfo: Use the "API Key (Recommended)" parameter instead.
+  display: API Key (Deprecated)
   name: api_key
   required: false
   type: 4
 description: Malware analysis sandboxing.
 display: VMRay
+fromversion: 5.0.0
 name: vmray
 script:
   commands:
@@ -1219,10 +1220,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0

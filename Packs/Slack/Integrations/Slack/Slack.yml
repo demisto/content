@@ -77,14 +77,15 @@ configuration:
   name: proxy_url
   required: false
   type: 0
-- display: Comma separated list of tags To filter the messages sent from demisto.
+- additionalinfo: Only supported in Demisto V6.1 and above.
+  display: Comma separated list of tags To filter the messages sent from demisto.
   hidden: false
   name: filtered_tags
   required: false
   type: 0
-  additionalinfo: Only supported in Demisto V6.1 and above.
 description: Send messages and notifications to your Slack team.
 display: Slack v2
+fromversion: 5.0.0
 name: SlackV2
 script:
   commands:
@@ -223,8 +224,8 @@ script:
     name: mirror-investigation
   - arguments:
     - default: true
-      description: "The message content. When mentioning another slack user, make\
-        \ sure to do so in the following format: <@user_name>."
+      description: 'The message content. When mentioning another slack user, make
+        sure to do so in the following format: <@user_name>.'
       isArray: false
       name: message
       required: false
@@ -529,11 +530,11 @@ script:
       description: The email address of the user.
       type: String
   - arguments: []
-    name: slack-get-integration-context
     description: Returns the integration context as a file. Use this command for debug
       purposes only.
     execution: false
     hidden: true
+    name: slack-get-integration-context
   - arguments:
     - default: false
       description: The name of a channel or a regex pattern
@@ -549,7 +550,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to include only archived channels, False to include only unarchived channels, or leave blank for no effect
+      description: Specify True to include only archived channels, False to include
+        only unarchived channels, or leave blank for no effect
       isArray: false
       name: is_archived
       predefined:
@@ -559,7 +561,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to find the general channel (if other filters also match), False to exclude the general channel, or leave blank for no effect
+      description: Specify True to find the general channel (if other filters also
+        match), False to exclude the general channel, or leave blank for no effect
       isArray: false
       name: is_general
       predefined:
@@ -569,7 +572,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Specify True to include only private channels, False to include only public channels, or leave blank for no effect
+      description: Specify True to include only private channels, False to include
+        only public channels, or leave blank for no effect
       isArray: false
       name: is_private
       predefined:
@@ -614,8 +618,9 @@ script:
   isfetch: false
   longRunning: true
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0

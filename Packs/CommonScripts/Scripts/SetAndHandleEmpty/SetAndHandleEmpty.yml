@@ -1,50 +1,59 @@
+args:
+- default: true
+  description: The key to set in context.
+  name: key
+  required: true
+- description: The value of the key to set in context. The value is usually a DQ expression.
+    Can be an array.
+  isArray: true
+  name: value
+- auto: PREDEFINED
+  description: Whether to append the new context key to the existing context key.
+    If "false", then the existing context key will be overwritten with the new context
+    key.
+  name: append
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to save the argument as a string. The default value is "false".
+  name: stringify
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to force the creation of the context. The default value is
+    "false".
+  name: force
+  predefined:
+  - 'true'
+  - 'false'
+comment: 'Set a value in context under the key you entered. If no value is entered,
+  the script doesn''t do anything.
+
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
+  For more information, see the section about permissions here:
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: SetAndHandleEmpty
   version: -1
-name: SetAndHandleEmpty
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
 fromversion: 5.0.0
-type: python
+name: SetAndHandleEmpty
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
 tags:
 - Utility
-comment: |-
-  Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-enabled: true
-args:
-- name: key
-  required: true
-  default: true
-  description: The key to set in context.
-- name: value
-  description: The value of the key to set in context. The value is usually a DQ expression. Can be an array.
-  isArray: true
-- name: append
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to append the new context key to the existing context key. If "false", then the existing context key will be overwritten with the new context key.
-- name: stringify
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to save the argument as a string. The default value is "false".
-  defaultValue: "false"
-- name: force
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Whether to force the creation of the context. The default value is "false".
-  defaultValue: "false"
-scripttarget: 0
-script: '-'
-subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.7.33922
 tests:
 - SetAndHandleEmpty test
+type: python

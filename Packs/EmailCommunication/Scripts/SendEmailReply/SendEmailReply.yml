@@ -7,45 +7,50 @@ args:
   description: Attachment
   isArray: true
   name: attachment
-- defaultValue:
+- defaultValue: null
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
   required: false
-- name: mail_sender_instance
-  required: false
+- defaultValue: null
   description: Name of the mail sender instance name for transmitting emails
-  defaultValue:
-- name: new_thread
+  name: mail_sender_instance
   required: false
-  auto: PREDEFINED
+- auto: PREDEFINED
+  defaultValue: n/a
+  description: Specify whether to reply to an existing thread or start a new one.  Default
+    value of 'n/a' is for 'Email Communication' type incidents only
+  name: new_thread
   predefined:
   - 'true'
   - 'false'
   - n/a
-  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
-  defaultValue: n/a
-comment: |-
-  Send email reply
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  required: false
+comment: 'Send email reply
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: SendEmailReply
   version: -1
-enabled: true
-name: SendEmailReply
-script: ''
-subtype: python3
-system: true
-type: python
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.5.31928
-tests:
-- No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-tags: []
-scripttarget: 0
-runonce: false
+dockerimage: demisto/python3:3.10.5.31928
+enabled: true
+fromversion: 5.0.0
+name: SendEmailReply
 runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags: []
+tests:
+- No tests (auto formatted)
+type: python

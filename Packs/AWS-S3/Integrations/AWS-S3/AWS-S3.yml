@@ -39,35 +39,36 @@ configuration:
   required: false
   type: 0
 - display: Access Key
+  displaypassword: Secret Key
   name: credentials
   required: false
   type: 9
-  displaypassword: Secret Key
 - display: Access Key
+  hidden: true
   name: access_key
   required: false
   type: 0
-  hidden: true
 - display: Secret Key
+  hidden: true
   name: secret_key
   required: false
   type: 4
-  hidden: true
-- display: Timeout
-  name: timeout
-  additionalinfo: The time in seconds till a timeout exception is reached. You can
+- additionalinfo: The time in seconds till a timeout exception is reached. You can
     specify just the read timeout (for example 60) or also the connect timeout followed
     after a comma (for example 60,10). If a connect timeout is not specified, a default
     of 10 second will be used.
   defaultvalue: 60,10
+  display: Timeout
+  name: timeout
   required: false
   type: 0
-- display: Retries
-  name: retries
+- additionalinfo: 'The maximum number of retry attempts when connection or throttling
+    errors are encountered. Set to 0 to disable retries. The default value is 5 and
+    the limit is 10. Note: Increasing the number of retries will increase the execution
+    time.'
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors
-  are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10.
-  Note: Increasing the number of retries will increase the execution time."
+  display: Retries
+  name: retries
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -80,6 +81,7 @@ configuration:
   type: 8
 description: Amazon Web Services Simple Storage Service (S3)
 display: AWS - S3
+fromversion: 5.0.0
 name: AWS - S3
 script:
   commands:
@@ -513,7 +515,8 @@ script:
     execution: false
     name: aws-s3-put-bucket-policy
   - arguments:
-    - description: The name of the bucket from which the server-side encryption configuration is retrieved.
+    - description: The name of the bucket from which the server-side encryption configuration
+        is retrieved.
       name: bucket
       required: true
     - description: The account ID of the exepcted bucket owner.
@@ -524,7 +527,9 @@ script:
       name: roleArn
     - description: An identifier for the assumed role session.
       name: roleSessionName
-    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+    - description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       name: roleSessionDuration
     description: Get AWS S3 Bucket Encryption
     name: aws-s3-get-bucket-encryption
@@ -625,39 +630,45 @@ script:
       required: true
       secret: false
     - default: false
-      description: Specifies whether Amazon S3 should block public access control lists (ACLs) for this bucket and objects in this bucket.
+      description: Specifies whether Amazon S3 should block public access control
+        lists (ACLs) for this bucket and objects in this bucket.
       isArray: false
       name: BlockPublicAcls
       required: true
       secret: false
     - default: false
-      description: Specifies whether Amazon S3 should ignore public ACLs for this bucket and objects in this bucket.
+      description: Specifies whether Amazon S3 should ignore public ACLs for this
+        bucket and objects in this bucket.
       isArray: false
       name: IgnorePublicAcls
       required: true
       secret: false
     - default: false
-      description: Specifies whether Amazon S3 should block public bucket policies for this bucket.
+      description: Specifies whether Amazon S3 should block public bucket policies
+        for this bucket.
       isArray: false
       name: BlockPublicPolicy
       required: true
       secret: false
     - default: false
-      description: Specifies whether Amazon S3 should restrict public bucket policies for this bucket.
+      description: Specifies whether Amazon S3 should restrict public bucket policies
+        for this bucket.
       isArray: false
       name: RestrictPublicBuckets
       required: true
       secret: false
     deprecated: false
-    description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+    description: Creates or modifies the PublicAccessBlock configuration for an Amazon
+      S3 bucket.
     execution: false
     name: aws-s3-put-public-access-block
   dockerimage: demisto/boto3py3:1.0.0.41271
   isfetch: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: ''
-  type: python
   subtype: python3
+  type: python
 tests:
 - AWS - S3 Test Playbook
-fromversion: 5.0.0

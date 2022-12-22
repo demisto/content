@@ -1,20 +1,21 @@
+args:
+- description: List name to check.
+  name: listName
+comment: Check if list exist in demisto lists.
 commonfields:
   id: IsListExist
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
 name: IsListExist
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - Condition
-comment: Check if list exist in demisto lists.
-enabled: true
-args:
-- name: listName
-  description: List name to check.
-scripttarget: 0
-runonce: false
 tests:
 - No test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+type: python

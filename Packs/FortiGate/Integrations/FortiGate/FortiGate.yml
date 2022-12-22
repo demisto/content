@@ -22,6 +22,7 @@ configuration:
   type: 8
 description: Manage FortiGate Firewall
 display: FortiGate
+fromversion: 5.0.0
 name: FortiGate
 script:
   commands:
@@ -705,10 +706,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Fortigate Test
-fromversion: 5.0.0

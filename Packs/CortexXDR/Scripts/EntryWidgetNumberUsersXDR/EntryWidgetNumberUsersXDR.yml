@@ -1,18 +1,20 @@
+comment: Entry widget that returns the number of users that participated in a specified
+  Cortex XDR incident.
 commonfields:
   id: EntryWidgetNumberUsersXDR
   version: -1
-name: EntryWidgetNumberUsersXDR
-script: ''
-type: python
-tags:
-- dynamic-section
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
+fromversion: 5.0.0
+name: EntryWidgetNumberUsersXDR
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
-runas: DBotWeakRole
-fromversion: 5.0.0
-comment: Entry widget that returns the number of users that participated in a specified Cortex XDR incident.
+tags:
+- dynamic-section
 tests:
 - No test - no need to test widget
+type: python

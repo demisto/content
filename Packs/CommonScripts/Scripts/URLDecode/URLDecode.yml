@@ -1,29 +1,32 @@
+args:
+- description: 'The input url '
+  name: value
+  required: true
+comment: 'Converts
+
+  https:%2F%2Fexample.com
+
+  into
+
+  https://example.com'
 commonfields:
   id: URLDecode
   version: -1
-name: URLDecode
-script: ''
-type: python
-subtype: python3
-tags:
-- transformer
-comment: |-
-  Converts
-  https:%2F%2Fexample.com
-  into
-  https://example.com
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
-args:
-- name: value
-  required: true
-  description: 'The input url '
+fromversion: 5.0.0
+name: URLDecode
 outputs:
 - contextPath: DecodedURL
   description: Parsed url as key/value
   type: string
-scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.9.7.24076
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
 tests:
 - URLDecode-Test
-fromversion: 5.0.0
+type: python

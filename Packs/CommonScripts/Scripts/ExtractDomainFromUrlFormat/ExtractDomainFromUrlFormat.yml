@@ -1,23 +1,24 @@
+args:
+- description: The URL(s) or Email(s) to process
+  isArray: true
+  name: input
+comment: Extract Domain(s) from URL(s) and/or Email(s)
 commonfields:
   id: ExtractDomainFromUrlAndEmail
   version: -1
+dockerimage: demisto/py3-tools:0.0.1.30715
+enabled: true
+fromversion: 5.0.0
 name: ExtractDomainFromUrlAndEmail
-script: ''
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
 tags:
 - indicator-format
-comment: Extract Domain(s) from URL(s) and/or Email(s)
-enabled: true
-args:
-- name: input
-  description: The URL(s) or Email(s) to process
-  isArray: true
-scripttarget: 0
-runonce: false
-dockerimage: demisto/py3-tools:0.0.1.30715
-runas: DBotWeakRole
-subtype: python3
 tests:
 - ExtractDomainFromEmailTest
 - ExtractDomainFromUrlAndEmail-Test
-fromversion: 5.0.0
+type: python

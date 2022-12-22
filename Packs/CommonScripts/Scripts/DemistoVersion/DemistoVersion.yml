@@ -1,14 +1,13 @@
+comment: Return the Demisto server version.
 commonfields:
   id: DemistoVersion
   id_x2: GetVersion
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+enabled: true
+fromversion: 5.0.0
 name: DemistoVersion
 name_x2: GetVersion
-script: ''
-type: python
-tags: []
-comment: Return the Demisto server version.
-enabled: true
 outputs:
 - contextPath: DemistoVersion.version
   description: The version of the Demisto server.
@@ -16,9 +15,11 @@ outputs:
 - contextPath: DemistoVersion.buildNumber
   description: The build number of the Demisto server.
   type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.6.33415
-runas: DBotWeakRole
-fromversion: 5.0.0
+tags: []
+type: python

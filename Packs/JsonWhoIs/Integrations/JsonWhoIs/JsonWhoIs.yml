@@ -17,6 +17,7 @@ configuration:
   type: 8
 description: Provides data enrichment for domains and IP addresses.
 display: JsonWhoIs
+fromversion: 5.0.0
 name: JsonWhoIs
 script:
   commands:
@@ -81,10 +82,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - JsonWhoIs-Test
-fromversion: 5.0.0

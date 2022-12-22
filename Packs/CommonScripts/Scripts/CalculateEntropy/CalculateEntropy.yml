@@ -16,7 +16,9 @@ comment: Calculates the entropy for the given data.
 commonfields:
   id: CalculateEntropy
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: CalculateEntropy
 outputs:
 - contextPath: EntropyResult.checked_value
@@ -25,12 +27,11 @@ outputs:
 - contextPath: EntropyResult.entropy
   description: The entropy score.
   type: Number
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - entropy
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
-fromversion: 5.0.0

@@ -1,40 +1,42 @@
-commonfields:
-  id: QualysCreateIncidentFromReport
-  version: -1
-name: QualysCreateIncidentFromReport
-script: ''
-type: python
-subtype: python3
-tags:
-- qualys
-comment: |-
-  Create incidents from a Qualys report (XML), based on the Qualys asset ID and vulnerability ID (QID).
-  Duplicate incidents are not created for the same asset ID and QID.
-system: true
 args:
-- name: entryID
+- description: War room entryID of the XML report.
+  name: entryID
   required: true
-  description: War room entryID of the XML report.
-- name: maxFileSize
-  description: Maximum file size to load, in bytes. Default is 1024 KB.
-- name: minSeverity
-  auto: PREDEFINED
+- description: Maximum file size to load, in bytes. Default is 1024 KB.
+  name: maxFileSize
+- auto: PREDEFINED
+  description: The minimum Qualys severity to create incidents for.
+  name: minSeverity
   predefined:
   - '1'
   - '2'
   - '3'
   - '4'
   - '5'
-  description: The minimum Qualys severity to create incidents for.
-- name: incidentType
-  description: The incident type to create incidents for. Default is "Vulnerability".
-scripttarget: 0
-runas: DBotWeakRole
-runonce: false
+- description: The incident type to create incidents for. Default is "Vulnerability".
+  name: incidentType
+comment: 'Create incidents from a Qualys report (XML), based on the Qualys asset ID
+  and vulnerability ID (QID).
+
+  Duplicate incidents are not created for the same asset ID and QID.'
+commonfields:
+  id: QualysCreateIncidentFromReport
+  version: -1
 dependson:
   must:
   - qualys-host-list
+dockerimage: demisto/python3:3.10.4.29342
+fromversion: 5.0.0
+name: QualysCreateIncidentFromReport
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- qualys
 tests:
 - No test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+type: python

@@ -22,13 +22,24 @@ args:
     closed)
   required: false
   secret: false
-comment: |-
-  This automation translates an endpoints hostname/IP to the Carbon Black sensor ID.
-  It then opens a session to the endpoint to download the given file paths and closes the session.
+comment: 'This automation translates an endpoints hostname/IP to the Carbon Black
+  sensor ID.
+
+  It then opens a session to the endpoint to download the given file paths and closes
+  the session.'
 commonfields:
   id: CBLiveGetFile_V2
   version: -1
+dependson:
+  must:
+  - cb-session-create-and-wait
+  - cb-session-close
+  - cb-get-file-from-endpoint
+  - cb-list-sensors
+  - cb-list-sessions
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: CBLiveGetFile_V2
 outputs:
 - contextPath: CbLiveResponse.Commands.CbCommandID
@@ -110,22 +121,14 @@ outputs:
 - contextPath: File.Extension
   description: The extension of the file.
   type: String
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - carbon-black
 - endpoint
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.8.24399
 tests:
 - No Test
-dependson:
-  must:
-  - cb-session-create-and-wait
-  - cb-session-close
-  - cb-get-file-from-endpoint
-  - cb-list-sensors
-  - cb-list-sessions
-fromversion: 5.0.0
+timeout: '0'
+type: python

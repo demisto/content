@@ -1,25 +1,27 @@
+args:
+- default: true
+  description: A JSON object mapping RemoteAccess instances to filepaths.
+  name: systems2files
+  required: true
+comment: Take a list of devices and pull a specific file (given by path) from each
+  using SCP
 commonfields:
   id: SCPPullFiles
   version: -1
-name: SCPPullFiles
-script: ''
-type: python
-subtype: python3
-tags:
-- Utility
-comment: Take a list of devices and pull a specific file (given by path) from each using SCP
-system: true
-args:
-- name: systems2files
-  required: true
-  default: true
-  description: A JSON object mapping RemoteAccess instances to filepaths.
-scripttarget: 0
 dependson:
   must:
   - copy-from
-timeout: 0s
-fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
+name: SCPPullFiles
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+timeout: 0s
+type: python

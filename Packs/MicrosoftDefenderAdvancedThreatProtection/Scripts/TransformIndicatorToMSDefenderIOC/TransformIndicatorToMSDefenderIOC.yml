@@ -37,13 +37,15 @@ args:
   required: false
   secret: false
 comment: Transform a XSOAR indicator into a Microsoft Defender for Endpoint IOC. The
-  output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation of the
-  indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update*
+  output (at TransformIndicatorToMSDefenderIOC.JsonOutput) is a json representation
+  of the indicators in MSDE format. This json can be the input for the *microsoft-atp-indicator-batch-update*
   command.
 commonfields:
   id: TransformIndicatorToMSDefenderIOC
   version: -1
+dockerimage: demisto/python3:3.10.4.30607
 enabled: false
+fromversion: 6.0.0
 name: TransformIndicatorToMSDefenderIOC
 outputs:
 - contextPath: TransformIndicatorToMSDefenderIOC.JsonOutput
@@ -90,8 +92,8 @@ outputs:
   description: Id the customer can submit in the request for custom correlation.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.sourceType
-  description: 'User in case the Indicator created by a user. "AadApp" in case it
-    submitted using automated application via the API.'
+  description: User in case the Indicator created by a user. "AadApp" in case it submitted
+    using automated application via the API.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.createdBySource
   description: The name of the user or application that submitted the indicator.
@@ -114,11 +116,10 @@ outputs:
   description: True if alert generation is required, False if this indicator should
     not generate an alert.
   type: String
-script: '-'
-system: false
-type: python
+script:
+- '8.1'
 subtype: python3
-dockerimage: demisto/python3:3.10.4.30607
-fromversion: 6.0.0
+system: false
 tests:
 - No tests (auto formatted)
+type: python

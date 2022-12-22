@@ -6,7 +6,8 @@ args:
   required: true
   secret: false
 - default: false
-  description: 'Name of the output file, for example: zipName="test" would result in output file "test.zip"'
+  description: 'Name of the output file, for example: zipName="test" would result
+    in output file "test.zip"'
   isArray: false
   name: zipName
   required: false
@@ -21,7 +22,9 @@ comment: Zip a file and upload to war room
 commonfields:
   id: ZipFile
   version: -1
+dockerimage: demisto/py3-tools:0.0.1.30715
 enabled: true
+fromversion: 5.0.0
 name: ZipFile
 outputs:
 - contextPath: ZipFile.ZippedFile
@@ -52,19 +55,19 @@ outputs:
   description: The ssdeep hash of the file (same as displayed in file entries).
   type: String
 - contextPath: File.Extension
-  description: "The file extension, for example: 'xls'."
+  description: 'The file extension, for example: ''xls''.'
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in file entries).
+  description: The file type, as determined by libmagic (same as displayed in file
+    entries).
   type: String
-script: '-'
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - Utility
 - file
 timeout: '0'
 type: python
-subtype: python3
-dockerimage: demisto/py3-tools:0.0.1.30715
-runonce: false
-fromversion: 5.0.0

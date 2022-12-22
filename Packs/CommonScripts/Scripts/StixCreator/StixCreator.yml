@@ -1,20 +1,24 @@
+args:
+- description: A JSON object of all indicators and their fields, indicator index mapped
+    to XSOAR common indicator fields. Indicator keys that don't match the XSOAR common
+    indicator names are also supported, if their key contains a common indicator name
+    (e.g. "special-ip" will be mapped to ip), or their value matches the expected
+    indicator value (e.g. 8.8.8.8 for ip).
+  name: indicators
+  required: true
+- default: true
+  defaultValue: 'true'
+  description: Adds a second backslash to all existing backslashes in the value field.
+  name: doubleBackslash
+comment: Gets a list of indicators from the indicators argument, and generates a JSON
+  file in STIX 2.0 format.
 commonfields:
   id: StixCreator
   version: -1
-name: StixCreator
-script: ''
-type: python
-tags: []
-comment: Gets a list of indicators from the indicators argument, and generates a JSON file in STIX 2.0 format.
+dockerimage: demisto/py3-tools:1.0.0.40800
 enabled: true
-args:
-- name: indicators
-  required: true
-  description: A JSON object of all indicators and their fields, indicator index mapped to XSOAR common indicator fields. Indicator keys that don't match the XSOAR common indicator names are also supported, if their key contains a common indicator name (e.g. "special-ip" will be mapped to ip), or their value matches the expected indicator value (e.g. 8.8.8.8 for ip).
-- name: doubleBackslash
-  default: true
-  description: Adds a second backslash to all existing backslashes in the value field.
-  defaultValue: "true"
+fromversion: 5.0.0
+name: StixCreator
 outputs:
 - contextPath: StixExportedIndicators.created
   description: The date/time that the indicator was created.
@@ -29,7 +33,8 @@ outputs:
   description: The STIX type (always exported as "indicator").
   type: string
 - contextPath: StixExportedIndicators.pattern
-  description: ' The type and value of indicators, for example: URL, IPv4, domain,email, and so on. '
+  description: ' The type and value of indicators, for example: URL, IPv4, domain,email,
+    and so on. '
   type: string
 - contextPath: StixExportedIndicators.score
   description: The STIX impact score ("High", "Medium", "None", or "Not Specified")
@@ -37,11 +42,13 @@ outputs:
 - contextPath: StixExportedIndicators.modified
   description: The date/time that the indicator was last seen.
   type: date
-scripttarget: 0
-runonce: false
-dockerimage: demisto/py3-tools:1.0.0.40800
-subtype: python3
 runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags: []
 tests:
 - StixCreator-Test
-fromversion: 5.0.0
+type: python

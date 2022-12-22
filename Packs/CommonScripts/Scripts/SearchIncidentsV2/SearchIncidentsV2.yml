@@ -12,31 +12,36 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses by which to filter the results. For example: assigned.'
+  description: 'A comma-separated list of incident statuses by which to filter the
+    results. For example: assigned.'
   isArray: true
   name: status
   required: false
   secret: false
 - default: false
-  description: 'A comma-separated list of incident statuses to exclude from the results.  For example: assigned.'
+  description: 'A comma-separated list of incident statuses to exclude from the results.  For
+    example: assigned.'
   isArray: true
   name: notstatus
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of incident close reasons by which to filter the results.
+  description: A comma-separated list of incident close reasons by which to filter
+    the results.
   isArray: true
   name: reason
   required: false
   secret: false
 - default: false
-  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  description: Filter by from date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00
+    or 2006-01-02T15:04:05Z)
   isArray: false
   name: fromdate
   required: false
   secret: false
 - default: false
-  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  description: Filter by to date (e.g. "3 days ago" or 2006-01-02T15:04:05+07:00 or
+    2006-01-02T15:04:05Z)
   isArray: false
   name: todate
   required: false
@@ -90,7 +95,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
+  description: Use free form query (use Lucene syntax) as filter. All other filters
+    will be ignored when this filter is used.
   isArray: false
   name: query
   required: false
@@ -102,14 +108,16 @@ args:
   required: false
   secret: false
 - default: false
-  description: |-
-    The number of events to return from the alert JSON. The default is 0, which returns all events.
-    Note that the count is from the head of the list, regardless of event time or other properties.
+  defaultValue: '0'
+  description: 'The number of events to return from the alert JSON. The default is
+    0, which returns all events.
+
+    Note that the count is from the head of the list, regardless of event time or
+    other properties.'
   isArray: false
   name: trimevents
   required: false
   secret: false
-  defaultValue: '0'
 - default: false
   description: Number of incidents per page (per fetch)
   isArray: false
@@ -123,21 +131,27 @@ args:
   required: false
   secret: false
 - default: false
-  description: If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.
+  description: If provided, the value of this argument will be set under the searchResultsLabel
+    context key for each incident found.
   isArray: false
   name: searchresultslabel
   required: false
   secret: false
-comment: |-
-  Searches Demisto incidents.
+comment: 'Searches Demisto incidents.
 
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: SearchIncidentsV2
   version: -1
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
+fromversion: 5.0.0
 name: SearchIncidentsV2
 outputs:
 - contextPath: foundIncidents.id
@@ -179,14 +193,13 @@ outputs:
 - contextPath: foundIncidents.searchResultsLabel
   description: The value provided in the searchresultslabel argument.
   type: String
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - Utility
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.10.8.37753
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

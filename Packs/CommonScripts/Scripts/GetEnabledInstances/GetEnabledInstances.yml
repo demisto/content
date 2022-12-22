@@ -4,17 +4,18 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.10.7.33922
 enabled: true
+fromversion: 6.0.0
 name: GetEnabledInstances
 outputs:
 - contextPath: EnabledInstances
   description: A list of integration instance names that are currently enabled.
 runas: DBotRole
 runonce: false
-script: ''
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags: []
-type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+type: python

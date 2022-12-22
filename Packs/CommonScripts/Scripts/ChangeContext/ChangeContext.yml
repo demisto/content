@@ -17,7 +17,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'A list of key-values to replace key for value in the following format: {"old_key1":"new_key1", "old_key2":"new_key2"}'
+  description: 'A list of key-values to replace key for value in the following format:
+    {"old_key1":"new_key1", "old_key2":"new_key2"}'
   isArray: false
   name: replace_dict
   required: false
@@ -34,25 +35,29 @@ args:
   required: false
   secret: false
 - default: false
-  description: The context path in which to output the results. Should be in the format of Context.Key.
+  description: The context path in which to output the results. Should be in the format
+    of Context.Key.
   isArray: false
   name: output_key
   required: true
   secret: false
-comment: 'Enables changing context in two ways. The first is to capitalize the first letter of each key in following level of the context key entered. The second is to change context keys to new values. '
+comment: 'Enables changing context in two ways. The first is to capitalize the first
+  letter of each key in following level of the context key entered. The second is
+  to change context keys to new values. '
 commonfields:
   id: ChangeContext
   version: -1
-enabled: true
-name: ChangeContext
-script: '-'
-system: false
-timeout: '0'
-type: python
 dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
+name: ChangeContext
 runas: DBotWeakRole
 runonce: false
+script:
+- '8.1'
 subtype: python3
-fromversion: 5.0.0
+system: false
 tags:
 - Utility
+timeout: '0'
+type: python

@@ -1,22 +1,21 @@
+args:
+- description: Optional incident ID to fetch entries from. If not specified, current
+    incident is used.
+  name: id
+- description: The list of tags
+  isArray: true
+  name: tags
+- description: The list of categories
+  isArray: true
+  name: categories
+comment: Collect entries matching to the conditions in the war room
 commonfields:
   id: GetEntries
   version: -1
-name: GetEntries
-script: ''
-type: python
-tags:
-- Utility
-comment: Collect entries matching to the conditions in the war room
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
-args:
-- name: id
-  description: Optional incident ID to fetch entries from. If not specified, current incident is used.
-- name: tags
-  description: The list of tags
-  isArray: true
-- name: categories
-  description: The list of categories
-  isArray: true
+fromversion: 6.5.0
+name: GetEntries
 outputs:
 - contextPath: Entry.ID
   description: Entry ID
@@ -30,11 +29,14 @@ outputs:
   description: Creation time of the entry
 - contextPath: Entry.Modified
   description: Last modified time of the entry
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.7.33922
-runas: DBotWeakRole
-fromversion: 6.5.0
+tags:
+- Utility
 tests:
 - No tests (auto formatted)
+type: python

@@ -1,33 +1,35 @@
+args:
+- default: true
+  description: A comma-separated list of strings to compare with the input string.
+  isArray: true
+  name: compareString
+  required: true
+- description: The input string(s) to compare.
+  name: inputString
+  required: true
+- defaultValue: '3'
+  description: Distance that is considered close.
+  name: distance
+comment: Get the string distance between inputString and compareString (compareString
+  can be a comma-separated list) based on Levenshtein Distance algorithm.
 commonfields:
   id: GetStringsDistance
   version: -1
+dockerimage: demisto/python3:3.10.7.33922
+fromversion: 5.0.0
 name: GetStringsDistance
-script: ''
-type: python
-subtype: python3
-tags:
-- server
-- phishing
-comment: Get the string distance between inputString and compareString (compareString can be a comma-separated list) based on Levenshtein Distance algorithm.
-system: true
-args:
-- name: compareString
-  required: true
-  isArray: true
-  default: true
-  description: A comma-separated list of strings to compare with the input string.
-- name: inputString
-  required: true
-  description: The input string(s) to compare.
-- name: distance
-  description: Distance that is considered close.
-  defaultValue: "3"
 outputs:
 - contextPath: LevenshteinDistance
   description: The closeness of the sender domain to our configured domains.
-scripttarget: 0
 runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- server
+- phishing
 tests:
 - GetStringsDistance - Test
+type: python

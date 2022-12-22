@@ -1,21 +1,18 @@
+args:
+- description: The time at which travel started.
+  name: start_time
+  required: true
+- description: The time at which travel ended.
+  name: end_time
+  required: true
+comment: Calculate the time difference, in minutes
 commonfields:
   id: CalculateTimeDifference
   version: -1
-name: CalculateTimeDifference
-type: python
-subtype: python3
-tags:
-- Utilities
-comment: Calculate the time difference, in minutes
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
-script: '-'
-args:
-- name: start_time
-  required: true
-  description: The time at which travel started.
-- name: end_time
-  required: true
-  description: The time at which travel ended.
+fromversion: 5.0.0
+name: CalculateTimeDifference
 outputs:
 - contextPath: Time.Difference
   description: Calculated time difference in minutes.
@@ -23,10 +20,14 @@ outputs:
   description: Start time.
 - contextPath: Time.End
   description: End time.
-scripttarget: 0
-runonce: false
 runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
 tests:
 - Impossible Traveler - Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+type: python

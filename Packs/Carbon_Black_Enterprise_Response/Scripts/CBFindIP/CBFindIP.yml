@@ -9,7 +9,11 @@ comment: Search Carbon Black for connection to specified IP addresses.
 commonfields:
   id: CBFindIP
   version: -1
+dependson:
+  must: []
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
+fromversion: 5.0.0
 name: CBFindIP
 outputs:
 - contextPath: Process.Path
@@ -28,28 +32,27 @@ outputs:
   description: Process name.
   type: String
 - contextPath: Process.CbSegmentID
-  description: Carbon Black "segment" where this process instance is stored. Required to fetch additional information for a process.
+  description: Carbon Black "segment" where this process instance is stored. Required
+    to fetch additional information for a process.
   type: String
 - contextPath: Process.CbID
-  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID) to fetch additional information for a process.
+  description: Carbon Black unique ID for this process instance. Required (together
+    with CbSegmentID) to fetch additional information for a process.
   type: String
 - contextPath: Process.Endpoint
   description: The endpoint of the process.
   type: String
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - carbon-black
 - endpoint
 - enhancement
-timeout: '0'
-type: python
-subtype: python3
-runas: DBotWeakRole
-runonce: false
 tests:
 - CBFindIP - Test
-dependson:
-  must: []
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+timeout: '0'
+type: python

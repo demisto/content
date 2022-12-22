@@ -1,25 +1,26 @@
+args:
+- default: true
+  description: Entry ID with PDF file
+  name: entryID
+  required: true
+- description: Password of PDF file
+  name: password
+  required: true
+  secret: true
+comment: Removing the password protection from a PDF file and adding a new file entry
+  with the unlocked PDF.
 commonfields:
   id: PDFUnlocker
   version: -1
+dockerimage: demisto/readpdf:1.0.0.33704
+enabled: true
+fromversion: 5.0.0
 name: PDFUnlocker
-script: ''
-type: python
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags: []
-comment: Removing the password protection from a PDF file and adding a new file entry
-  with the unlocked PDF.
-enabled: true
-args:
-- name: entryID
-  required: true
-  default: true
-  description: Entry ID with PDF file
-- name: password
-  required: true
-  secret: true
-  description: Password of PDF file
-scripttarget: 0
-dockerimage: demisto/readpdf:1.0.0.33704
-fromversion: 5.0.0
 tests:
-  - PDFUnlocker-Test
+- PDFUnlocker-Test
+type: python

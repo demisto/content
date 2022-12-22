@@ -27,45 +27,48 @@ configuration:
   name: proxy
   required: false
   type: 8
-- name: auth_type
-  display: Authentication Type
-  required: true
+- additionalinfo: Type of authentication - could be Authorization Code flow (recommended)
+    or Device Code flow.
   defaultvalue: Device Code
-  type: 15
-  additionalinfo: Type of authentication - could be Authorization Code flow (recommended) or Device Code flow.
+  display: Authentication Type
+  name: auth_type
   options:
   - Authorization Code
   - Device Code
-- name: tenant_id
+  required: true
+  type: 15
+- additionalinfo: ''
+  defaultvalue: null
   display: Tenant ID (for user-auth mode)
+  name: tenant_id
   required: false
-  defaultvalue:
   type: 0
-  additionalinfo: ""
-- name: credentials
+- additionalinfo: ''
+  defaultvalue: null
   display: Client Secret (for user-auth mode)
-  required: false
-  defaultvalue:
-  type: 9
-  additionalinfo: ""
   displaypassword: Client Secret (for user-auth mode)
   hiddenusername: true
-- name: redirect_uri
-  display: Application redirect URI (for user-auth mode)
+  name: credentials
   required: false
-  defaultvalue:
-  type: 0
-  additionalinfo: ""
-- name: auth_code
-  display: Authorization code
-  required: false
-  defaultvalue:
   type: 9
-  additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
+- additionalinfo: ''
+  defaultvalue: null
+  display: Application redirect URI (for user-auth mode)
+  name: redirect_uri
+  required: false
+  type: 0
+- additionalinfo: For user-auth mode - received from the authorization step. See Detailed
+    Instructions section.
+  defaultvalue: null
+  display: Authorization code
   displaypassword: Authorization code
   hiddenusername: true
+  name: auth_code
+  required: false
+  type: 9
 description: Deploy and manage storage accounts and blob services.
 display: Azure Storage Management
+fromversion: 5.0.0
 name: Azure Storage
 script:
   commands:
@@ -496,9 +499,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run this command to create or update a specific
-      account storage.
+    description: 'Run this command to create or update a specific
+
+      account storage.'
     execution: false
     name: azure-storage-account-create-update
     outputs:
@@ -810,9 +813,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run this command to set properties for
-      the blob service in a specific account storage
+    description: 'Run this command to set properties for
+
+      the blob service in a specific account storage'
     execution: false
     name: azure-storage-blob-service-properties-set
     outputs:
@@ -971,9 +974,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Run this command to update an specific
-      blob container.
+    description: 'Run this command to update an specific
+
+      blob container.'
     execution: false
     name: azure-storage-blob-containers-update
     outputs:
@@ -1095,10 +1098,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Azure Storage - Test
-fromversion: 5.0.0

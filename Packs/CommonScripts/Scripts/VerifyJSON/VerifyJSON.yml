@@ -1,33 +1,35 @@
 args:
 - default: false
-  description: 'JSON string to verify.'
+  description: JSON string to verify.
   isArray: false
   name: json
   required: true
   secret: false
 - default: false
-  description: 'Optional schema against which to validate the JSON input.'
+  description: Optional schema against which to validate the JSON input.
   isArray: false
   name: schema
   required: false
   secret: false
-comment: Verifies if the supplied JSON string is valid and optionally verifies against a provided schema. The script utilizes Powershell's Test-JSON cmdlet. 
+comment: Verifies if the supplied JSON string is valid and optionally verifies against
+  a provided schema. The script utilizes Powershell's Test-JSON cmdlet.
 commonfields:
   id: VerifyJSON
   version: -1
+dockerimage: demisto/powershell:7.1.3.22028
 enabled: false
+fromversion: 5.5.0
 name: VerifyJSON
-script: '-'
-system: false
 outputs:
-  - contextPath: VerifyJSON.Result
-    description: Whether the passed JSON was verified.
-    type: boolean
+- contextPath: VerifyJSON.Result
+  description: Whether the passed JSON was verified.
+  type: boolean
+script:
+- '8.1'
+system: false
 tags:
 - JSON
 - Utility
-type: powershell
-dockerimage: demisto/powershell:7.1.3.22028
-fromversion: 5.5.0
 tests:
 - VerifyJSON - Test
+type: powershell

@@ -1,36 +1,41 @@
+args:
+- description: List of IDs to poll
+  name: ids
+  required: true
+- description: Name of the polling command to run
+  name: pollingCommand
+  required: true
+- defaultValue: ids
+  description: Name of the argument of the polling command
+  name: pollingCommandArgName
+  required: true
+- description: Commas separated arguments of the polling command
+  name: additionalPollingCommandArgNames
+- description: Commas separated arguments values of the polling command
+  name: additionalPollingCommandArgValues
+comment: 'Runs a specified polling command one time. This is useful for initiating
+  a local playbook context before running a polling scheduled task.
+
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
+  For more information, see the section about permissions here:
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: RunPollingCommand
   version: -1
-name: RunPollingCommand
+dockerimage: demisto/python3:3.10.7.33922
+enabled: true
 fromversion: 5.0.0
-script: ''
-type: python
+name: RunPollingCommand
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags: []
-comment: |-
-  Runs a specified polling command one time. This is useful for initiating a local playbook context before running a polling scheduled task.
-
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-enabled: true
-args:
-- name: ids
-  required: true
-  description: List of IDs to poll
-- name: pollingCommand
-  required: true
-  description: Name of the polling command to run
-- name: pollingCommandArgName
-  required: true
-  description: Name of the argument of the polling command
-  defaultValue: ids
-- name: additionalPollingCommandArgNames
-  description: Commas separated arguments of the polling command
-- name: additionalPollingCommandArgValues
-  description: Commas separated arguments values of the polling command
-scripttarget: 0
-runonce: false
 tests:
 - No test
-dockerimage: demisto/python3:3.10.7.33922
+type: python

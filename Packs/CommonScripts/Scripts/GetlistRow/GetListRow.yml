@@ -42,7 +42,9 @@ comment: Parses a list by header and value.
 commonfields:
   id: GetListRow
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 5.0.0
 name: GetListRow
 outputs:
 - contextPath: GetListRow.Header
@@ -60,14 +62,13 @@ outputs:
 - contextPath: GetListRow.Results
   description: All parse results of the list.
   type: UnKnown
-script: '-'
-subtype: python3
-system: false
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.8.24399
 runas: DBotWeakRole
 runonce: false
+script:
+- '8.1'
+subtype: python3
+system: false
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
+timeout: '0'
+type: python

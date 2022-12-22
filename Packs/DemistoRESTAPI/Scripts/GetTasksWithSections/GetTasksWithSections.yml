@@ -5,18 +5,14 @@ args:
   name: investigation_id
   required: false
   secret: false
+comment: Groups all tasks for a specific incident according to the task headers (titles).
 commonfields:
   id: GetTasksWithSections
   version: -1
-name: GetTasksWithSections
-script: '-'
-type: python
-subtype: python3
 dockerimage: demisto/python3:3.10.4.30607
-tags:
-- Utility
-comment: Groups all tasks for a specific incident according to the task headers (titles).
 enabled: true
+fromversion: 6.0.0
+name: GetTasksWithSections
 outputs:
 - contextPath: Tasks
   description: The entire task object
@@ -36,7 +32,8 @@ outputs:
   description: Task owner
   type: string
 - contextPath: Tasks.state
-  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting, Blocked, and empty string for not started)
+  description: Task state (inprogress, Completed, WillNotBeExecuted, Error, Waiting,
+    Blocked, and empty string for not started)
   type: string
 - contextPath: Tasks.scriptId
   description: Task related script (empty if manual)
@@ -56,9 +53,14 @@ outputs:
 - contextPath: Tasks.completedBy
   description: Name of the user who completed the task
   type: string
-scripttarget: 0
 runonce: false
+script:
+- '8.1'
+scripttarget: 0
 sensitive: true
+subtype: python3
+tags:
+- Utility
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
-fromversion: 6.0.0
+type: python

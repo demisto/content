@@ -1,29 +1,31 @@
+args:
+- defaultValue: '10000'
+  description: Maximum number of indicators for malicious ratio calculation.
+  name: maxNumberOfIndicators
+- defaultValue: '3'
+  description: Minimum number of investigation the indicator has to appear in.
+  name: minimumNumberOfInvs
+- defaultValue: '100'
+  description: Maximum number of results to display.
+  name: maximumNumberOfResults
+comment: 'Find the top malicious ratio indicators.
+
+  Malicious ratio is defined by the ratio between the number of "bad" incidents divided
+  by the number of total number of incidents that the indicators appears in.'
 commonfields:
   id: TopMaliciousRatioIndicators
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
 name: TopMaliciousRatioIndicators
-fromversion: "5.0.0"
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - widget
-comment: |-
-  Find the top malicious ratio indicators.
-  Malicious ratio is defined by the ratio between the number of "bad" incidents divided by the number of total number of incidents that the indicators appears in.
-enabled: true
-args:
-- name: maxNumberOfIndicators
-  description: Maximum number of indicators for malicious ratio calculation.
-  defaultValue: "10000"
-- name: minimumNumberOfInvs
-  description: Minimum number of investigation the indicator has to appear in.
-  defaultValue: "3"
-- name: maximumNumberOfResults
-  description: Maximum number of results to display.
-  defaultValue: "100"
-scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
 tests:
 - No tests (auto formatted)
+type: python

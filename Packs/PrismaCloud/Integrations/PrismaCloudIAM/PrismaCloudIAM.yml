@@ -11,9 +11,9 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: Customer name
-  additionalinfo: If you are a multi-tenant user you will also need to provide the
+- additionalinfo: If you are a multi-tenant user you will also need to provide the
     customerName.
+  display: Customer name
   name: customer_name
   required: false
   type: 0
@@ -60,9 +60,10 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow
-  customers to perform CRUD operation on their user profiles.'
+description: The Prisma Cloud IAM API consists of a set of API endpoints that allow
+  customers to perform CRUD operation on their user profiles.
 display: PrismaCloud IAM
+fromversion: 6.0.0
 name: PrismaCloud IAM
 script:
   commands:
@@ -270,14 +271,15 @@ script:
     name: get-mapping-fields
   dockerimage: demisto/python3:3.10.4.30607
   isfetch: false
+  ismappable: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - No tests
-fromversion: 6.0.0

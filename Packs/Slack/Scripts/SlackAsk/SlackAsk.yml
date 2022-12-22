@@ -109,20 +109,21 @@ comment: Sends a message (question) to either user (in a direct message) or to a
 commonfields:
   id: SlackAsk
   version: -1
+dependson:
+  must:
+  - SlackV2|||send-notification
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
+fromversion: 5.0.0
 name: SlackAsk
-script: '-'
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - slack
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.7.24076
-runonce: false
 tests:
 - no test - Untestable
-dependson:
-  must:
-  - SlackV2|||send-notification
-fromversion: 5.0.0
+timeout: '0'
+type: python

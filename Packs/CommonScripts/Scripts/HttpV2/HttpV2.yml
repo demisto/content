@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: Specify where the request should be sent. Include the URI scheme ('http' or 'https').
+  description: Specify where the request should be sent. Include the URI scheme ('http'
+    or 'https').
   isArray: false
   name: url
   required: true
@@ -20,10 +21,11 @@ args:
   required: true
   secret: false
 - default: false
-  description: |-
-    Specify a hash of headers to send with the request.
+  description: 'Specify a hash of headers to send with the request.
+
     Headers can be of string type but need to be formatted in the following ways:
-    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`
+
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`'
   isArray: false
   name: headers
   required: false
@@ -37,27 +39,39 @@ args:
   secret: false
   type: textArea
 - default: false
-  description: |-
-    Specify the Content-Type header for the request.
+  description: 'Specify the Content-Type header for the request.
+
     Shorthands are provided for the following common content types:
+
     json (application/json)
+
     xml (text/xml)
+
     form (application/x-www-form-urlencoded)
+
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+
+    If you choose to define a different type, please include the full type name, e.g:
+    application/pdf'
   isArray: false
   name: request_content_type
   required: false
   secret: false
 - default: false
-  description: |-
-    Specify the Accept header for the request - the response content type.
+  description: 'Specify the Accept header for the request - the response content type.
+
     Shorthands are provided for the following common content types:
+
     json (application/json)
+
     xml (text/xml)
+
     form (application/x-www-form-urlencoded)
+
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+
+    If you choose to define a different type, please include the full type name, e.g:
+    application/pdf'
   isArray: false
   name: response_content_type
   required: false
@@ -76,7 +90,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'Basic authorization. Please set values in the format: username,password. For Bearer token please use the headers.'
+  description: 'Basic authorization. Please set values in the format: username,password.
+    For Bearer token please use the headers.'
   isArray: false
   name: auth_credentials
   required: false
@@ -90,7 +105,8 @@ args:
   type: keyValue
 - default: false
   defaultValue: '10'
-  description: Specify the timeout of the HTTP request in seconds. Defaults to 10 seconds.
+  description: Specify the timeout of the HTTP request in seconds. Defaults to 10
+    seconds.
   isArray: false
   name: timeout
   required: false
@@ -107,14 +123,16 @@ args:
   required: false
   secret: false
 - default: false
-  description: ' Specify the array of status codes that should cause a retry. For example: 301-303,400,402.'
+  description: ' Specify the array of status codes that should cause a retry. For
+    example: 301-303,400,402.'
   isArray: false
   name: retry_on_status
   required: false
   secret: false
 - default: false
   defaultValue: '3'
-  description: Specify the number or retries to be made in case of a failure. Defaults to 3.
+  description: Specify the number or retries to be made in case of a failure. Defaults
+    to 3.
   isArray: false
   name: retry_count
   required: false
@@ -128,13 +146,13 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: no
+  defaultValue: false
   description: Save the response in a file.
   isArray: false
   name: save_as_file
   predefined:
-  - yes
-  - no
+  - true
+  - false
   required: false
   secret: false
 - default: false
@@ -170,7 +188,9 @@ comment: Sends a HTTP request with advanced capabilities
 commonfields:
   id: HttpV2
   version: -1
+dockerimage: demisto/python3:3.10.4.30607
 enabled: false
+fromversion: 6.5.0
 name: HttpV2
 outputs:
 - contextPath: HttpRequest.Response.StatusCode
@@ -191,14 +211,13 @@ outputs:
 - contextPath: HttpRequest.Response.Body
   description: The response data.
   type: Unknown
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - basescript
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.10.4.30607
 tests:
 - HttpV2-test
-fromversion: 6.5.0
+timeout: '0'
+type: python

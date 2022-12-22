@@ -9,18 +9,19 @@ comment: 'Exports an existing ML model to a file. '
 commonfields:
   id: ExportMLModel
   version: -1
-enabled: true
-name: ExportMLModel
-script: '-'
-subtype: python3
-system: false
-timeout: '0'
-type: python
 dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+fromversion: 5.0.0
+name: ExportMLModel
 runas: DBotWeakRole
 runonce: false
+script:
+- '8.1'
+subtype: python3
+system: false
 tags:
 - ml
 tests:
 - No tests
-fromversion: 5.0.0
+timeout: '0'
+type: python

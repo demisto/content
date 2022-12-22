@@ -1,40 +1,41 @@
-fromversion: 5.0.0
+args:
+- auto: PREDEFINED
+  description: The old value of the field that was changed.
+  name: old
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+- auto: PREDEFINED
+  description: The new value of the field that was changed.
+  name: new
+  predefined:
+  - Low
+  - Medium
+  - High
+  - Critical
+comment: 'Changes the remediation SLA once a change in incident severity occurs.
+
+  This is done automatically and the changes can be configured to your needs.'
 commonfields:
   id: ChangeRemediationSLAOnSevChange
   version: -1
+dockerimage: demisto/python3:3.10.8.37753
+enabled: true
+fromversion: 5.0.0
+marketplaces:
+- xsoar
 name: ChangeRemediationSLAOnSevChange
-script: ''
-type: python
+runas: DBotRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - field-change-triggered
 - example
-comment: |-
-  Changes the remediation SLA once a change in incident severity occurs.
-  This is done automatically and the changes can be configured to your needs.
-enabled: true
-args:
-- name: old
-  auto: PREDEFINED
-  predefined:
-  - Low
-  - Medium
-  - High
-  - Critical
-  description: The old value of the field that was changed.
-- name: new
-  auto: PREDEFINED
-  predefined:
-  - Low
-  - Medium
-  - High
-  - Critical
-  description: The new value of the field that was changed.
-scripttarget: 0
-runonce: false
-runas: DBotRole
-marketplaces:
-- xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.8.37753
+type: python

@@ -1,26 +1,27 @@
-fromversion: 5.0.0
+args:
+- description: The old value of the changed field
+  name: old
+- description: The new value of the changed field
+  name: new
+comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
 commonfields:
   id: StopTimeToAssignOnOwnerChange
   version: -1
+dockerimage: demisto/python3:3.10.8.37753
+enabled: true
+fromversion: 5.0.0
+marketplaces:
+- xsoar
 name: StopTimeToAssignOnOwnerChange
-script: ''
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - field-change-triggered
 - example
-comment: Stops the "Time To Assign" timer if the owner of the incident was changed.
-enabled: true
-args:
-- name: old
-  description: The old value of the changed field
-- name: new
-  description: The new value of the changed field
-scripttarget: 0
-runonce: false
-runas: DBotWeakRole
-marketplaces:
-- xsoar
 tests:
 - SLA Scripts - Test
-dockerimage: demisto/python3:3.10.8.37753
+type: python

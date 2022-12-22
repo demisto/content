@@ -3,16 +3,16 @@ commonfields:
   id: ipinfo_v2
   version: -1
 configuration:
-- name: credentials
-  additionalinfo: The API key to use for the connection.
-  hiddenusername: true
+- additionalinfo: The API key to use for the connection.
   displaypassword: API Token
+  hiddenusername: true
+  name: credentials
   required: false
   type: 9
-- name: integrationReliability
-  additionalinfo: Reliability of the source providing the intelligence data.
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
+  name: integrationReliability
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -23,14 +23,14 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- name: base_url
-  defaultvalue: https://ipinfo.io
+- defaultvalue: https://ipinfo.io
   display: Base URL
   hidden: false
+  name: base_url
   required: true
   type: 0
-- name: insecure
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
@@ -39,6 +39,7 @@ configuration:
   type: 8
 description: Use the IPinfo.io API to get data about an IP address.
 display: IPinfo v2
+fromversion: 5.5.0
 name: ipinfo_v2
 script:
   commands:
@@ -50,7 +51,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Check IP reputation (when information is available, returns a JSON with details). Uses all configured Threat Intelligence feeds.
+    description: Check IP reputation (when information is available, returns a JSON
+      with details). Uses all configured Threat Intelligence feeds.
     execution: false
     name: ip
     outputs:
@@ -82,21 +84,25 @@ script:
       description: The IP location as <City, Region, Postal Code, Country>.
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Address
-      description: The physical address registered for receiving abuse reports for the IP. (Only available in some IPinfo.io plans).
+      description: The physical address registered for receiving abuse reports for
+        the IP. (Only available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Country
-      description: The country where abuse reports are received for the IP. (Only available in some IPinfo.io plans).
+      description: The country where abuse reports are received for the IP. (Only
+        available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Email
-      description: The email address for abuse reports provided by the IP. (Only available in some IPinfo.io plans).
+      description: The email address for abuse reports provided by the IP. (Only available
+        in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Name
-      description: The name of the abuse report handler received for the IP. (Only available in some IPinfo.io plans).
+      description: The name of the abuse report handler received for the IP. (Only
+        available in some IPinfo.io plans).
       type: String
     - contextPath: IPinfo.IP.Registrar.Abuse.Network
-      description: The IP range relevant for abuse inquiries provided for the IP. (Only available in some IPinfo.io plans).
+      description: The IP range relevant for abuse inquiries provided for the IP.
+        (Only available in some IPinfo.io plans).
       type: String
-
     - contextPath: IP.Address
       description: The IP address.
       type: String
@@ -165,10 +171,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - IPInfo_v2Test
-fromversion: 5.5.0

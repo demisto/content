@@ -5,24 +5,26 @@ args:
   name: value
   required: true
   secret: false
-comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example for number transformer.\n "
+comment: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis is an example\
+  \ for number transformer.\n "
 commonfields:
   id: SumList
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
+fromversion: 5.0.0
 name: SumList
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - transformer
 - number
 - entirelist
-timeout: '0'
-type: python
-runas: DBotWeakRole
-runonce: false
-subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
 tests:
 - sumList - Test
-fromversion: 5.0.0
+timeout: '0'
+type: python

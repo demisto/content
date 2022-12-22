@@ -10,16 +10,17 @@ comment: "Converts string to array. \nFor example: `http://example.com/?score:1,
 commonfields:
   id: StringToArray
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: false
+fromversion: 6.0.0
 name: StringToArray
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - transformer
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.7.24076
-fromversion: 6.0.0
 tests:
 - StringToArray_test
+timeout: '0'
+type: python

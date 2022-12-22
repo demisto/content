@@ -22,24 +22,26 @@ args:
   - 'false'
   required: false
   secret: false
-comment: |
-  Encode a file as base64 and store it in a Demisto list.
+comment: 'Encode a file as base64 and store it in a Demisto list.
+
+  '
 commonfields:
   id: FileToBase64List
   version: -1
+dockerimage: demisto/python3:3.10.7.33922
 enabled: true
+fromversion: 5.0.0
 name: FileToBase64List
-script: '-'
+runas: DBotWeakRole
+runonce: true
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - Utility
 - list
-timeout: '0'
-type: python
-subtype: python3
-runas: DBotWeakRole
-runonce: true
 tests:
 - No Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.33922
+timeout: '0'
+type: python

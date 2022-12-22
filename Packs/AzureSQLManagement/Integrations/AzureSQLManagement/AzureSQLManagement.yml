@@ -1,3 +1,4 @@
+beta: true
 category: IT Services
 commonfields:
   id: Azure SQL Management
@@ -19,14 +20,15 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended)
+    or Device Code Flow.
+  defaultvalue: Device Code
   display: Authentication Type
   name: auth_type
-  required: true
-  defaultvalue: Device Code
   options:
   - Authorization Code
   - Device Code
+  required: true
   type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
@@ -42,15 +44,16 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code
-  displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+- additionalinfo: for user-auth mode - received from the authorization step. see Detailed
     Instructions (?) section
+  display: Authorization code
+  displaypassword: Authorization code
   hiddenusername: true
   name: auth_code
   required: false
   type: 9
-- defaultvalue: https://login.microsoftonline.com
+- additionalinfo: Azure AD endpoint associated with a national cloud.
+  defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
   name: azure_ad_endpoint
@@ -61,7 +64,6 @@ configuration:
   - https://login.chinacloudapi.cn
   required: false
   type: 15
-  additionalinfo: Azure AD endpoint associated with a national cloud.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -70,8 +72,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
+description: Microsoft Azure SQL Management Integration manages the Auditing and Threat
+  Policies for Azure SQL.
 display: Azure SQL Management (Beta)
+fromversion: 5.0.0
 name: Azure SQL Management
 script:
   commands:
@@ -96,7 +100,8 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: (Int) The maximum number of servers returned to the War Room. Default is "50".
+      description: (Int) The maximum number of servers returned to the War Room. Default
+        is "50".
       isArray: false
       name: limit
       required: false
@@ -161,7 +166,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of databases returned to the War Room. Default is "50".
+      description: The maximum number of databases returned to the War Room. Default
+        is "50".
       isArray: false
       name: limit
       required: false
@@ -230,7 +236,7 @@ script:
       description: The number of read-only secondary replicas of the database.
       type: Number
     - contextPath: AzureSQL.DB.readScale
-      description: The read-only routing state. "Enabled" or "Disabled". 
+      description: The read-only routing state. "Enabled" or "Disabled".
       type: String
     - contextPath: AzureSQL.DB.requestedServiceObjectiveName
       description: The requested service objective name of the database.
@@ -259,8 +265,8 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of database audit policies returned to
-        the War Room. Default is "50".
+      description: The maximum number of database audit policies returned to the War
+        Room. Default is "50".
       isArray: false
       name: limit
       required: false
@@ -293,7 +299,8 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
-      description: 'Whether audit events are sent to Azure Monitor. Possible values: "True" (Enabled) or "False" (Disabled).'
+      description: 'Whether audit events are sent to Azure Monitor. Possible values:
+        "True" (Enabled) or "False" (Disabled).'
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
@@ -368,7 +375,8 @@ script:
       description: List of email addresses to which the alert is sent.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
-      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+      description: List of alerts that are disabled, or an empty string if no alerts
+        are disabled.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
       description: Whether to use the default server policy.
@@ -394,7 +402,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled is required.'
+      description: 'Set the state of the policy. Possible values: "Enable" or "Disable".
+        When state is enabled, storage_endpoint or is_azure_monitor_target_enabled
+        is required.'
       isArray: false
       name: state
       predefined:
@@ -403,15 +413,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated list of actions groups and actions to audit. For all possible
-        values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15.
+      description: Comma-separated list of actions groups and actions to audit. For
+        all possible values, see the integration documentation at https://docs.microsoft.com/en-us/sql/relational-databases/security/auditing/sql-server-audit-action-groups-and-actions?view=sql-server-ver15.
       isArray: true
       name: audit_actions_groups
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false".'
+      description: 'Whether audit events are sent to the Azure Monitor. Possible values:
+        "true" and "false".'
       isArray: false
       name: is_azure_monitor_target_enabled
       predefined:
@@ -421,8 +432,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the storage Account Access Key value is the storage''s secondary
-        key. Possible values: "true" and "false".'
+      description: 'Whether the storage Account Access Key value is the storage''s
+        secondary key. Possible values: "true" and "false".'
       isArray: false
       name: is_storage_secondary_key_in_use
       predefined:
@@ -456,7 +467,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
+      description: Storage endpoint. If the value for the state argument is enabled,
+        the value for the storage_endpoint or is_azure_monitor_target_enabled argument
+        is required.
       isArray: false
       name: storage_endpoint
       required: false
@@ -479,7 +492,8 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
-      description: Whether audit events are sent to the Azure Monitor. The value is "True" (Enabled) or "False" (Disabled).
+      description: Whether audit events are sent to the Azure Monitor. The value is
+        "True" (Enabled) or "False" (Disabled).
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
@@ -494,7 +508,8 @@ script:
       description: Audit actions and groups to audit.
       type: Unknown
     - contextPath: AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse
-      description: Whether the storage_account_access_key value is the storage's secondary key.
+      description: Whether the storage_account_access_key value is the storage's secondary
+        key.
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.queueDelayMs
       description: Time in milliseconds that can elapse before audit actions are forced
@@ -548,15 +563,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The blob storage endpoint. This blob storage will hold all Threat Detection audit logs.
+      description: The blob storage endpoint. This blob storage will hold all Threat
+        Detection audit logs.
       isArray: false
       name: storage_endpoint
       required: false
       secret: false
     - default: false
       description: 'Comma-separated list of alerts that are disabled. Possible values:
-        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and
-        "Unsafe_Action".'
+        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly",
+        "Data_Exfiltration", and "Unsafe_Action".'
       isArray: true
       name: disabled_alerts
       required: false
@@ -569,7 +585,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
+      description: 'Whether the alert is sent to the account administrators. Possible
+        values: "true" and "false".'
       isArray: false
       name: email_account_admins
       predefined:
@@ -579,7 +596,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to use the default server policy. Possible values: "Enabled" and "Disabled".'
+      description: 'Whether to use the default server policy. Possible values: "Enabled"
+        and "Disabled".'
       isArray: false
       name: use_server_default
       predefined:
@@ -629,7 +647,8 @@ script:
       description: List of email addresses to which the alert is sent.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
-      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
+      description: List of alerts that are disabled, or an empty string if no alerts
+        are disabled.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
       description: Whether to use the default server policy.
@@ -645,11 +664,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Azure SQL - Test
-fromversion: 5.0.0
-beta: true

@@ -1,27 +1,30 @@
+args:
+- default: true
+  description: ID of the war room entry containing the report file
+  name: reportentryid
+- description: Sections to show (comma-separated). Sections are "info", "statistics",
+    "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression",
+    "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
+  name: sections
+- description: Local file path to the report file
+  name: reportfilepath
+- description: 'The report to be parsed '
+  name: reportdata
+comment: Display the contents of a Cuckoo report file from a war room entry.
 commonfields:
   id: CuckooDisplayReport
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
 name: CuckooDisplayReport
-script: ''
-type: python
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
+system: true
 tags:
 - cuckoo
-comment: Display the contents of a Cuckoo report file from a war room entry.
-system: true
-args:
-- name: reportentryid
-  default: true
-  description: ID of the war room entry containing the report file
-- name: sections
-  description: Sections to show (comma-separated). Sections are "info", "statistics", "network", "dropped", "suricata", "debug", "procmemory", "signatures", "decompression", "malfamily", "behavior", "target", "malscore", "static", "feeds", "strings", "virustotal"
-- name: reportfilepath
-  description: Local file path to the report file
-- name: reportdata
-  description: 'The report to be parsed '
-scripttarget: 0
-timeout: 0s
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+timeout: 0s
+type: python

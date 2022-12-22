@@ -1,26 +1,27 @@
+args:
+- description: Jmespath expression
+  name: expression
+  required: true
+- description: Original input value
+  name: value
+  required: true
+comment: Performs a JMESPath search on an input JSON format, when using a transformer.
 commonfields:
   id: jmespath
   version: -1
+dockerimage: demisto/py3-tools:0.0.1.30715
+enabled: true
+fromversion: 5.0.0
 name: jmespath
-script: ''
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
 tags:
 - transformer
 - general
-comment: Performs a JMESPath search on an input JSON format, when using a transformer.
-enabled: true
-args:
-- name: expression
-  required: true
-  description: Jmespath expression
-- name: value
-  required: true
-  description: Original input value
-scripttarget: 0
-subtype: python3
-runonce: false
-dockerimage: demisto/py3-tools:0.0.1.30715
-runas: DBotWeakRole
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+type: python

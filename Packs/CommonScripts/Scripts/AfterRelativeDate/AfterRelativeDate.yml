@@ -16,20 +16,21 @@ comment: Checks the given datetime has occured after the provided relative time.
 commonfields:
   id: AfterRelativeDate
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 5.0.0
 name: AfterRelativeDate
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - date
 - filter
 - Condition
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-runonce: false
-fromversion: 5.0.0
 tests:
 - No tests (unit test)
+timeout: '0'
+type: python

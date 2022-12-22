@@ -1,30 +1,31 @@
+args:
+- default: true
+  description: The War Room entryID of the file to convert.
+  name: entry_id
+  required: true
+- defaultValue: pdf
+  description: 'Output format to which to convert. Can specify only file extension,
+    such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
+  name: format
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: If "yes", will return all generated files. If "no", will return only
+    the main file. Relevant for formats that might generate multiple files, such as
+    html (which will generate image files additionally to the main html file). Default
+    is "no".
+  name: all_files
+  predefined:
+  - 'yes'
+  - 'no'
+comment: 'Converts a file from one format to a different format by using the convert-to
+  function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
 commonfields:
   id: ConvertFile
   version: -1
-name: ConvertFile
-script: ''
-type: python
-subtype: python3
-fromversion: 5.0.0
-tags:
-- Utility
-comment: 'Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+dockerimage: demisto/office-utils:2.0.0.23094
 enabled: true
-args:
-- name: entry_id
-  required: true
-  default: true
-  description: The War Room entryID of the file to convert.
-- name: format
-  description: 'Output format to which to convert. Can specify only file extension, such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
-  defaultValue: pdf
-- name: all_files
-  auto: PREDEFINED
-  predefined:
-  - "yes"
-  - "no"
-  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant for formats that might generate multiple files, such as html (which will generate image files additionally to the main html file). Default is "no".
-  defaultValue: "no"
+fromversion: 5.0.0
+name: ConvertFile
 outputs:
 - contextPath: File.Name
   description: The name of the output file.
@@ -41,7 +42,12 @@ outputs:
 - contextPath: File.Type
   description: The file type.
   type: String
-scripttarget: 0
-runonce: false
-dockerimage: demisto/office-utils:2.0.0.23094
 runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python

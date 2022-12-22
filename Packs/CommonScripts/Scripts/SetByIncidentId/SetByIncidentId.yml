@@ -1,48 +1,54 @@
+args:
+- default: true
+  description: Incident to set context values in (Default is current incident)
+  name: id
+- description: The key to set
+  name: key
+  required: true
+- description: The value to set to the key. Can be an array. Usually, a dq expression.
+  name: value
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: If false then the context key will be overwritten. If set to true then
+    the script will append to existing context key
+  name: append
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Returns an error if not all of the incidents where modified.
+  name: errorUnfinished
+  predefined:
+  - 'true'
+  - 'false'
+comment: 'Works the same as the ''Set'' command, but can work across incidents by
+  specifying ''id'' as an argument.
+
+  Sets a value into the context with the given context key. Doesn''t append by default.
+
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
+  For more information, see the section about permissions here:
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: SetByIncidentId
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
 name: SetByIncidentId
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - DemistoAPI
-comment: |-
-  Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
-  Sets a value into the context with the given context key. Doesn't append by default.
-
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-enabled: true
-args:
-- name: id
-  default: true
-  description: Incident to set context values in (Default is current incident)
-- name: key
-  required: true
-  description: The key to set
-- name: value
-  required: true
-  description: The value to set to the key. Can be an array. Usually, a dq expression.
-- name: append
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: If false then the context key will be overwritten. If set to true then
-    the script will append to existing context key
-  defaultValue: "false"
-- name: errorUnfinished
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Returns an error if not all of the incidents where modified.
-  defaultValue: "false"
-scripttarget: 0
-runonce: false
 tests:
 - No test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.8.24399
+type: python

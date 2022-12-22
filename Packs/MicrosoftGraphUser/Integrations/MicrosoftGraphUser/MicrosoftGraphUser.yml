@@ -21,12 +21,14 @@ configuration:
   name: enc_key
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates
+    & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+- additionalinfo: Used for certificate authentication. The private key of the registered
+    certificate.
   display: Private Key
   name: private_key
   required: false
@@ -39,8 +41,8 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code (for Authorization Code flow mode - received from the authorization
-    step. see Detailed Instructions (?) section)
+- display: Authorization code (for Authorization Code flow mode - received from the
+    authorization step. see Detailed Instructions (?) section)
   name: auth_code
   required: false
   type: 4
@@ -54,14 +56,15 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Suppress Errors for Non Found Users
+- defaultvalue: 'true'
+  display: Suppress Errors for Non Found Users
   name: handle_error
   required: false
-  defaultvalue: 'true'
   type: 8
 description: Unified gateway to security insights - all from a unified Microsoft Graph
   User API.
 display: Azure Active Directory Users
+fromversion: 5.0.0
 name: Microsoft Graph User
 script:
   commands:
@@ -73,8 +76,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: |-
-      Deprecated. Use the msgraph-user-account-disable command instead.
+    description: Deprecated. Use the msgraph-user-account-disable command instead.
     execution: false
     name: msgraph-user-terminate-session
   - arguments:
@@ -85,10 +87,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
-      but does not terminate an existing session. Supported only in a self deployed app flow with the
-      Permission: Directory.AccessAsUser.All(Delegated)
+    description: 'Disables a user from all Office 365 applications, and prevents sign
+      in. Note: This command disables user,
+
+      but does not terminate an existing session. Supported only in a self deployed
+      app flow with the
+
+      Permission: Directory.AccessAsUser.All(Delegated)'
     execution: false
     name: msgraph-user-account-disable
   - arguments:
@@ -116,9 +121,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Updates the properties of a user object.
-      Permissions: - User.ReadWrite (Delegated & Application)
+    description: 'Updates the properties of a user object.
+
+      Permissions: - User.ReadWrite (Delegated & Application)'
     execution: false
     name: msgraph-user-update
     outputs:
@@ -163,9 +168,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Deletes an existing user.
-      Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)
+    description: 'Deletes an existing user.
+
+      Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application)'
     execution: true
     name: msgraph-user-delete
   - arguments:
@@ -218,9 +223,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Creates a new user.
-      Permissions: - User.ReadWrite.All (Delegated & Application)
+    description: 'Creates a new user.
+
+      Permissions: - User.ReadWrite.All (Delegated & Application)'
     execution: false
     name: msgraph-user-create
     outputs:
@@ -258,25 +263,25 @@ script:
       description: User's principal name.
       type: String
     - contextPath: Account.ID
-      description: User’s ID.
+      description: "User\u2019s ID."
       type: String
     - contextPath: Account.DisplayName
-      description: User’s display name.
+      description: "User\u2019s display name."
       type: String
     - contextPath: Account.Username
-      description: User’s principal name.
+      description: "User\u2019s principal name."
       type: String
     - contextPath: Account.JobTitle
-      description: User’s job title.
+      description: "User\u2019s job title."
       type: String
     - contextPath: Account.Email.Address
-      description: User’s mail address.
+      description: "User\u2019s mail address."
       type: String
     - contextPath: Account.TelephoneNumber
-      description: User’s mobile phone number.
+      description: "User\u2019s mobile phone number."
       type: String
     - contextPath: Account.Office
-      description: User’s office location.
+      description: "User\u2019s office location."
       type: String
     - contextPath: Account.Type
       description: The account entity type.
@@ -290,9 +295,11 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: |-
-      Deprecated. This command only returns a single page. Use the msgraph-user-list command instead, which gets newly created, updated, or deleted users without performing a full read of the entire user collection.
-      Permissions: - User.Read (Delegated) - User.Read.All (Application)
+    description: 'Deprecated. This command only returns a single page. Use the msgraph-user-list
+      command instead, which gets newly created, updated, or deleted users without
+      performing a full read of the entire user collection.
+
+      Permissions: - User.Read (Delegated) - User.Read.All (Application)'
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -344,9 +351,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-      Permissions: - User.Read (Delegated) - User.Read.All (Application)
+    description: 'Retrieves the properties and relationships of a user object. For
+      more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
+
+      Permissions: - User.Read (Delegated) - User.Read.All (Application)'
     execution: false
     name: msgraph-user-get
     outputs:
@@ -384,25 +392,25 @@ script:
       description: User's principal name.
       type: String
     - contextPath: Account.ID
-      description: User’s ID.
+      description: "User\u2019s ID."
       type: String
     - contextPath: Account.DisplayName
-      description: User’s display name.
+      description: "User\u2019s display name."
       type: String
     - contextPath: Account.Username
-      description: User’s principal name.
+      description: "User\u2019s principal name."
       type: String
     - contextPath: Account.JobTitle
-      description: User’s job title.
+      description: "User\u2019s job title."
       type: String
     - contextPath: Account.Email.Address
-      description: User’s mail address.
+      description: "User\u2019s mail address."
       type: String
     - contextPath: Account.TelephoneNumber
-      description: User’s mobile phone number.
+      description: "User\u2019s mobile phone number."
       type: String
     - contextPath: Account.Office
-      description: User’s office location.
+      description: "User\u2019s office location."
       type: String
     - contextPath: Account.Type
       description: The account entity type.
@@ -422,9 +430,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Retrieves a list of user objects.
-      Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)
+    description: 'Retrieves a list of user objects.
+
+      Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application)'
     execution: false
     name: msgraph-user-list
     outputs:
@@ -466,25 +474,25 @@ script:
         results.
       type: String
     - contextPath: Account.ID
-      description: User’s ID.
+      description: "User\u2019s ID."
       type: String
     - contextPath: Account.DisplayName
-      description: User’s display name.
+      description: "User\u2019s display name."
       type: String
     - contextPath: Account.Username
-      description: User’s principal name.
+      description: "User\u2019s principal name."
       type: String
     - contextPath: Account.JobTitle
-      description: User’s job title.
+      description: "User\u2019s job title."
       type: String
     - contextPath: Account.Email.Address
-      description: User’s mail address.
+      description: "User\u2019s mail address."
       type: String
     - contextPath: Account.TelephoneNumber
-      description: User’s mobile phone number.
+      description: "User\u2019s mobile phone number."
       type: String
     - contextPath: Account.Office
-      description: User’s office location.
+      description: "User\u2019s office location."
       type: String
     - contextPath: Account.Type
       description: The account entity type.
@@ -540,12 +548,13 @@ script:
       description: The user's surname (family name or last name).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
-      description: The user principal name (UPN) of the user. The UPN is an Internet-style
-        login name for the user based on the Internet standard RFC 822. By convention,
-        this should map to the user's email name. The general format is alias@domain,
-        where domain must be present in the tenant’s collection of verified domains.
-        This property is required when a user is created. The verified domains for
-        the tenant can be accessed from the verifiedDomains property of organization.
+      description: "The user principal name (UPN) of the user. The UPN is an Internet-style\
+        \ login name for the user based on the Internet standard RFC 822. By convention,\
+        \ this should map to the user's email name. The general format is alias@domain,\
+        \ where domain must be present in the tenant\u2019s collection of verified\
+        \ domains. This property is required when a user is created. The verified\
+        \ domains for the tenant can be accessed from the verifiedDomains property\
+        \ of organization."
       type: String
   - arguments:
     - default: false
@@ -556,7 +565,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Retrieves the properties from the manager of a user."
+    description: Retrieves the properties from the manager of a user.
     execution: false
     name: msgraph-user-get-manager
     outputs:
@@ -610,9 +619,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Assigns a manager to the specified user.
-      Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
+    description: 'Assigns a manager to the specified user.
+
+      Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)'
     execution: false
     name: msgraph-user-assign-manager
   - arguments:
@@ -651,9 +660,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Changes the user password.
-      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)
+    description: 'Changes the user password.
+
+      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)'
     execution: true
     name: msgraph-user-change-password
   - deprecated: false
@@ -668,9 +677,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Revoke a user session- Invalidates all the refresh tokens issued to applications for a user.
-      Permission: Directory.AccessAsUser.All(Delegated)
+    description: 'Revoke a user session- Invalidates all the refresh tokens issued
+      to applications for a user.
+
+      Permission: Directory.AccessAsUser.All(Delegated)'
     execution: false
     name: msgraph-user-session-revoke
   dockerimage: demisto/crypto:1.0.0.34720
@@ -678,10 +688,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Microsoft Graph User - Test
-fromversion: 5.0.0

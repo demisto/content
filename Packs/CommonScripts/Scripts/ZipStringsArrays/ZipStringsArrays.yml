@@ -1,35 +1,36 @@
+args:
+- description: The first list. list1 must be the same size as list2.
+  isArray: true
+  name: list1
+  required: true
+- description: "The format to join the lists by. For example, {1}-{2} joins the values\
+    \ for the same index in both lists, \nwhere {1} is replaced with the value from\
+    \ list1 and {2} is replaced with the value from list2."
+  name: format
+  required: false
+- description: The second list. list2 must be the same size as list1.
+  isArray: true
+  name: list2
+  required: true
+comment: Joins values from two lists by index according to a given format.
 commonfields:
   id: ZipStrings
   version: -1
-name: ZipStrings
-script: ''
-type: python
-tags: []
+dockerimage: demisto/python3:3.10.4.30607
 enabled: true
-args:
-- name: list1
-  isArray: true
-  required: true
-  description: The first list. list1 must be the same size as list2.
-- name: format
-  required: false
-  description: |-
-    The format to join the lists by. For example, {1}-{2} joins the values for the same index in both lists, 
-    where {1} is replaced with the value from list1 and {2} is replaced with the value from list2.
-- name: list2
-  isArray: true
-  required: true
-  description: The second list. list2 must be the same size as list1.
+fromversion: 6.0.0
+name: ZipStrings
 outputs:
 - contextPath: zipped_list
   description: A list of joined values as defined by the format.
   type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.30607
-runas: DBotWeakRole
-fromversion: 6.0.0
-comment: 'Joins values from two lists by index according to a given format.'
+tags: []
 tests:
 - No tests (auto formatted)
+type: python

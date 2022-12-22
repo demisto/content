@@ -6,7 +6,10 @@ args:
   required: true
   secret: false
 - default: false
-  description: JSON string of the ipPermissions. IpPermissions should have one or more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html) for example/reference.
+  description: JSON string of the ipPermissions. IpPermissions should have one or
+    more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer
+    to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
+    for example/reference.
   isArray: true
   name: ipPermissions
   required: true
@@ -23,13 +26,15 @@ args:
   required: true
   secret: false
 - default: false
-  description: Lower bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Lower bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: fromPort
   required: false
   secret: false
 - default: false
-  description: Upper bound port range to be checked. If fromPort and toPort are not specified, all ports will be included.
+  description: Upper bound port range to be checked. If fromPort and toPort are not
+    specified, all ports will be included.
   isArray: false
   name: toPort
   required: false
@@ -55,7 +60,9 @@ comment: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
 commonfields:
   id: AwsEC2GetPublicSGRules
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 5.0.0
 name: AwsEC2GetPublicSGRules
 outputs:
 - contextPath: AWS.EC2.SecurityGroup.PublicRules
@@ -79,14 +86,13 @@ outputs:
 - contextPath: AWS.EC2.SecurityGroup.PublicRules.region
   description: Region of the security group
   type: String
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - Amazon Web Services
 timeout: '0'
 type: python
-subtype: python3
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-runonce: false
-fromversion: 5.0.0

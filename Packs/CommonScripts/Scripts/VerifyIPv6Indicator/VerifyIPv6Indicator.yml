@@ -9,18 +9,19 @@ comment: Verify that the address is a valid IPv6 address.
 commonfields:
   id: VerifyIPv6Indicator
   version: -1
+dockerimage: demisto/python3:3.10.4.30607
 enabled: true
+fromversion: 5.5.0
 name: VerifyIPv6Indicator
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - indicator-format
-timeout: '0'
-type: python
-dockerimage: demisto/python3:3.10.4.30607
-runas: DBotWeakRole
-runonce: false
 tests:
 - No test
-fromversion: 5.5.0
+timeout: '0'
+type: python

@@ -5,31 +5,32 @@ args:
   name: attachments
 - description: Files
   name: files
-comment: |-
-  Preprocessing script for email communication layout.
-  This script checks if the incoming email contains an Incident ID to link the mail to an existing incident, and tags the email as "email-thread".
-  This script runs with elevated permissions. 
-  Cortex XSOAR recommends using the built-in RBAC functionality to limit access to only those users requiring access to this script.
-  For more information about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing
+comment: "Preprocessing script for email communication layout.\nThis script checks\
+  \ if the incoming email contains an Incident ID to link the mail to an existing\
+  \ incident, and tags the email as \"email-thread\".\nThis script runs with elevated\
+  \ permissions. \nCortex XSOAR recommends using the built-in RBAC functionality to\
+  \ limit access to only those users requiring access to this script.\nFor more information\
+  \ about the preprocessing rules, refer to: https://demisto.developers.paloaltonetworks.com/docs/incidents/incident-pre-processing"
 commonfields:
   id: PreprocessEmail
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.8.37753
 enabled: true
+fromversion: 5.0.0
 name: PreprocessEmail
-script: ''
+runas: DBotRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 system: true
 tags:
 - email
 - preProcessing
-type: python
-dockerimage: demisto/python3:3.10.8.37753
-runas: DBotRole
 tests:
 - No tests (auto formatted)
-fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ''
-scripttarget: 0
-runonce: false
+type: python

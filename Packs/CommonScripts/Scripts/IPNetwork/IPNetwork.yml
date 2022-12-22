@@ -5,21 +5,16 @@ args:
   name: cidr
   required: true
   secret: false
+comment: "Gather information regarding CIDR -\n    1. Broadcast_address\n    2. CIDR\n\
+  \    3. First_address\n    4. Last address\n    5. Max prefix len\n    6. Num addresses\n\
+  \    7. Private\n    8. Version\n"
 commonfields:
   id: IPNetwork
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: false
+fromversion: 5.0.0
 name: IPNetwork
-comment: |
-  Gather information regarding CIDR -
-      1. Broadcast_address
-      2. CIDR
-      3. First_address
-      4. Last address
-      5. Max prefix len
-      6. Num addresses
-      7. Private
-      8. Version
 outputs:
 - contextPath: Network.CIDR
   description: Network CIDR.
@@ -45,14 +40,13 @@ outputs:
 - contextPath: Network.Broadcast_address
   description: Broadcast address of CIDR.
   type: String
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - ip
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-runonce: false
-fromversion: 5.0.0

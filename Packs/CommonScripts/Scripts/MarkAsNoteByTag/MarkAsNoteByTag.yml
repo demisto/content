@@ -1,22 +1,23 @@
+args:
+- default: true
+  description: Entries with the given tag will be marked as notes
+  name: tag
+  required: true
+comment: Mark entries as notes if they are tagged with given tag
 commonfields:
   id: MarkAsNoteByTag
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
+enabled: true
+fromversion: 5.0.0
 name: MarkAsNoteByTag
-script: ''
-type: python
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags:
 - Utility
-comment: Mark entries as notes if they are tagged with given tag
-enabled: true
-args:
-- name: tag
-  required: true
-  default: true
-  description: Entries with the given tag will be marked as notes
-scripttarget: 0
-runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+type: python

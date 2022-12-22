@@ -32,6 +32,7 @@ configuration:
 description: Tanium endpoint security and systems management, filters out [current
   results unavailable] when returning question results
 display: Tanium v2
+fromversion: 5.0.0
 name: Tanium v2
 script:
   commands:
@@ -395,7 +396,8 @@ script:
     - contextPath: Tanium.SavedQuestionResult.Status
       description: 'Status of the question request. Can be: "Completed" or "Pending".'
       type: String
-  - description: Returns all client details.
+  - arguments: []
+    description: Returns all client details.
     name: tn-get-system-status
     outputs:
     - contextPath: Tanium.Client.ComputerId
@@ -421,7 +423,6 @@ script:
       description: 'The status of the client. Can be: "Blocked", "Leader" "Normal",
         "Slow link".'
       type: String
-    arguments: []
   - arguments:
     - description: The command to execute.
       name: command
@@ -1408,10 +1409,11 @@ script:
       description: The action results ID.
       type: String
   dockerimage: demisto/python3:3.10.8.37233
+  nativeImage:
+  - '8.1'
   runonce: false
   script: ''
   subtype: python3
   type: python
 tests:
 - Tanium v2 - Test
-fromversion: 5.0.0

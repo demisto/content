@@ -9,14 +9,15 @@ configuration:
   name: app_id
   required: true
   type: 0
-- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow.
+- additionalinfo: Type of authentication - could be Authorization Code Flow (recommended)
+    or Device Code Flow.
+  defaultvalue: Device Code
   display: Authentication Type
   name: auth_type
-  required: true
-  defaultvalue: Device Code
   options:
   - Authorization Code
   - Device Code
+  required: true
   type: 15
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
@@ -32,10 +33,10 @@ configuration:
   name: redirect_uri
   required: false
   type: 0
-- display: Authorization code
-  displaypassword: Authorization code
-  additionalinfo: for user-auth mode - received from the authorization step. see Detailed
+- additionalinfo: for user-auth mode - received from the authorization step. see Detailed
     Instructions (?) section
+  display: Authorization code
+  displaypassword: Authorization code
   hiddenusername: true
   name: auth_code
   required: false
@@ -50,7 +51,8 @@ configuration:
   name: resource_group_name
   required: true
   type: 0
-- defaultvalue: https://login.microsoftonline.com
+- additionalinfo: Azure AD endpoint associated with a national cloud.
+  defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
   name: azure_ad_endpoint
@@ -61,7 +63,6 @@ configuration:
   - https://login.chinacloudapi.cn
   required: false
   type: 15
-  additionalinfo: Azure AD endpoint associated with a national cloud.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -73,6 +74,7 @@ configuration:
 description: Deploy and manage containerized applications with a fully managed Kubernetes
   service.
 display: Azure Kubernetes Services
+fromversion: 5.0.0
 name: Azure Kubernetes Services
 script:
   commands:
@@ -153,7 +155,8 @@ script:
       description: The current deployment or provisioning state.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion
-      description: Version of the orchestrator specified when creating the managed cluster.
+      description: Version of the orchestrator specified when creating the managed
+        cluster.
       type: String
     - contextPath: AzureKS.ManagedCluster.properties.linuxProfile.adminUsername
       description: The name of the administrator account.
@@ -214,8 +217,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Resource location, Can be retrieved using
-        the azure-ks-clusters-list command.
+      description: Resource location, Can be retrieved using the azure-ks-clusters-list
+        command.
       isArray: false
       name: location
       predefined:
@@ -268,7 +271,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether to configure ingress with automatic public DNS name creation. Possible values: "true" and "false".'
+      description: 'Whether to configure ingress with automatic public DNS name creation.
+        Possible values: "true" and "false".'
       isArray: false
       name: http_application_routing_enabled
       predefined:
@@ -279,7 +283,8 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id
-        is not specified, will use the current configured workspace resource ID. Possible values: "true" and "false".'
+        is not specified, will use the current configured workspace resource ID. Possible
+        values: "true" and "false".'
       isArray: false
       name: monitoring_agent_enabled
       predefined:
@@ -289,8 +294,8 @@ script:
       secret: false
     - default: false
       description: The name of an existing Log Analytics workspace to use for storing
-        monitoring data. Can be retrieved in the Log Analytics workspace from the Azure
-        portal.
+        monitoring data. Can be retrieved in the Log Analytics workspace from the
+        Azure portal.
       isArray: false
       name: monitoring_resource_name
       required: false
@@ -304,8 +309,9 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0

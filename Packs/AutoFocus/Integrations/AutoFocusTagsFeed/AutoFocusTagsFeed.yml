@@ -2,33 +2,37 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
-defaultEnabled: false
 configuration:
-- display: AutoFocus Endpoint URL
+- defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
+  display: AutoFocus Endpoint URL
   name: url
-  defaultvalue: https://autofocus.paloaltonetworks.com/api/v1.0/
-  type: 0
   required: true
+  type: 0
 - displaypassword: API key
+  fromlicense: encrypted
   hidden: false
   hiddenusername: true
   name: api_key
   required: false
   type: 9
-  fromlicense: encrypted
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   required: false
   type: 8
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
-  display: Incremental Feed
-  name: feedIncremental
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+    been sent from the integration. As the determination if the indicator is new or
+    modified happens on the 3rd-party vendor's side, and only indicators that are
+    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+    are labeled new or modified.
   defaultvalue: 'true'
+  display: Incremental Feed
+  hidden: true
+  name: feedIncremental
   required: false
   type: 8
-  hidden: true
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -39,6 +43,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -50,8 +55,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-  defaultvalue: A - Completely reliable
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -66,14 +71,16 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-- name: feedExpirationPolicy
-  display: ''
+- display: ''
+  name: feedExpirationPolicy
   options:
   - never
   - interval
@@ -81,8 +88,8 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- name: feedExpirationInterval
-  display: ''
+- display: ''
+  name: feedExpirationInterval
   required: false
   type: 1
 - additionalinfo: Supports CSV values.
@@ -103,8 +110,11 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus Tags.
+defaultEnabled: false
+description: Use the AutoFocus Tags Feed integration to fetch indicators from AutoFocus
+  Tags.
 display: AutoFocus Tags Feed
+fromversion: 6.5.0
 name: AutoFocusTagsFeed
 script:
   commands:
@@ -125,10 +135,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - AutoFocusTagsFeed-test
-fromversion: 6.5.0

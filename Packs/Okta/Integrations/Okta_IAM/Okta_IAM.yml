@@ -93,9 +93,12 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+defaultclassifier: Okta IAM - App Sync (classifier)
+defaultmapperin: Okta IAM - App Sync (mapper)
 description: Integrate with Okta's Identity Access Management service to execute CRUD
   operations to employee lifecycle processes.
 display: Okta IAM
+fromversion: 6.0.0
 name: Okta IAM
 script:
   commands:
@@ -620,16 +623,15 @@ script:
   dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncout: true
 tests:
 - Okta IAM - Test Playbook
-defaultmapperin: Okta IAM - App Sync (mapper)
-defaultclassifier: Okta IAM - App Sync (classifier)
-fromversion: 6.0.0

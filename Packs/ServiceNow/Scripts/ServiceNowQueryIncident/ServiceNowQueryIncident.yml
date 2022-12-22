@@ -17,14 +17,21 @@ args:
   name: assignee
   required: false
   secret: false
-comment: |-
-  This script is used to wrap the generic query-table command in ServiceNow.
-  You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
-  code and work with the records easily.
+comment: 'This script is used to wrap the generic query-table command in ServiceNow.
+
+  You can add fields that you want to use as inputs and outputs from the record as
+  script arguments or in the
+
+  code and work with the records easily.'
 commonfields:
   id: ServiceNowQueryIncident
   version: -1
+dependson:
+  must:
+  - servicenow-query-table
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
+fromversion: 5.0.0
 name: ServiceNowQueryIncident
 outputs:
 - contextPath: ServiceNow.Incident.ID
@@ -39,19 +46,15 @@ outputs:
 - contextPath: ServiceNow.Incident.Caller
   description: Incident caller
   type: string
-script: '-'
+runonce: false
+script:
+- '8.1'
+subtype: python3
+system: false
 tags:
 - servicenow
 - servicenow v2
-system: false
-timeout: '0'
-type: python
-subtype: python3
-runonce: false
 tests:
 - No test - Hibernating instance
-dependson:
-  must:
-  - servicenow-query-table
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+timeout: '0'
+type: python

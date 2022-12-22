@@ -1,41 +1,47 @@
-name: LookupCSV
-script: '-'
-type: python
-tags:
-- file
-- csv
-- Utility
-comment: Parses a CSV and looks for a specific value in a specific column, returning a dict of the entire matching row. If no column value is specified, the entire CSV is read into the context.
-enabled: true
 args:
-- name: entryID
+- description: EntryID of CSV file.
+  name: entryID
   required: true
-  description: EntryID of CSV file.
-- name: header_row
+- auto: PREDEFINED
   description: CSV file has a header row.
-  auto: PREDEFINED
+  name: header_row
   predefined:
-  - "true"
-  - "false"
-- name: column
-  description: Column to search for value in, if not specified, entire CSV is parsed into the context.
-- name: value
-  description: value to search for
-- name: add_header_row
-  description: Extra row, in CSV format, to function as header if original does not contain headers
+  - 'true'
+  - 'false'
+- description: Column to search for value in, if not specified, entire CSV is parsed
+    into the context.
+  name: column
+- description: value to search for
+  name: value
+- description: Extra row, in CSV format, to function as header if original does not
+    contain headers
+  name: add_header_row
+comment: Parses a CSV and looks for a specific value in a specific column, returning
+  a dict of the entire matching row. If no column value is specified, the entire CSV
+  is read into the context.
+commonfields:
+  id: LookupCSV
+  version: -1
+dockerimage: demisto/python3:3.9.7.24076
+enabled: true
+fromversion: 5.0.0
+name: LookupCSV
 outputs:
 - contextPath: LookupCSV.result
-  description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
+  description: List of result objects; either a list of dicts (with header_row) or
+    a list of lists (no header row)
 - contextPath: LookupCSV.FoundResult
   description: Boolean, for whether the result was found in the CSV or not.
 - contextPath: LookupCSV.SearchValue
   description: The value that was searched.
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.7.24076
-runas: DBotWeakRole
-commonfields:
-  id: LookupCSV
-  version: -1
-fromversion: 5.0.0
+tags:
+- file
+- csv
+- Utility
+type: python

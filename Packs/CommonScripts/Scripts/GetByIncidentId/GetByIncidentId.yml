@@ -1,26 +1,28 @@
+args:
+- default: true
+  description: The ID of the incident from which to get context values. The default
+    is the current incident.
+  name: incident_id
+- description: The key to get
+  name: get_key
+  required: true
+- description: The key to set. The default is "get_key".
+  name: set_key
+comment: Gets a value from the specified incident's context.
 commonfields:
   id: GetByIncidentId
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+fromversion: 5.0.0
 name: GetByIncidentId
-script: '-'
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 tags: []
-comment: Gets a value from the specified incident's context.
-enabled: true
-args:
-- name: incident_id
-  default: true
-  description: The ID of the incident from which to get context values. The default is the current incident.
-- name: get_key
-  required: true
-  description: The key to get
-- name: set_key
-  description: The key to set. The default is "get_key".
-scripttarget: 0
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
 tests:
 - No test - tested with unittest
-fromversion: 5.0.0
+type: python

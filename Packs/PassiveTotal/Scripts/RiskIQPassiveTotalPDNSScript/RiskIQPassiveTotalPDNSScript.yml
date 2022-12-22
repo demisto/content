@@ -9,19 +9,20 @@ comment: Enhancement script to enrich PDNS information for Domain and IP type of
 commonfields:
   id: RiskIQPassiveTotalPDNSScript
   version: -1
-enabled: false
-name: RiskIQPassiveTotalPDNSScript
-script: '-'
-subtype: python3
 dependson:
   must:
   - '|||pt-get-pdns-details'
+dockerimage: demisto/python3:3.9.7.24076
+enabled: false
+fromversion: 5.0.0
+name: RiskIQPassiveTotalPDNSScript
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - enhancement
-timeout: '0'
-type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-dockerimage: demisto/python3:3.9.7.24076
+timeout: '0'
+type: python

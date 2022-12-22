@@ -60,9 +60,12 @@ comment: This is a thin wrapper around the `dateutil.parser.parse` function. It 
 commonfields:
   id: DateStringToISOFormat
   version: -1
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 5.0.0
 name: DateStringToISOFormat
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
@@ -70,5 +73,3 @@ tags:
 - date
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
-fromversion: 5.0.0

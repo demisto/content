@@ -63,7 +63,9 @@ comment: Predict phishing URLs using a pre-trained model.
 commonfields:
   id: DBotPredictURLPhishing
   version: -1
+dockerimage: demisto/mlurlphishing:1.0.0.28347
 enabled: true
+fromversion: 6.0.0
 name: DBotPredictURLPhishing
 outputs:
 - contextPath: DBotPredictURLPhishing.URL
@@ -100,16 +102,15 @@ outputs:
 - contextPath: DBotScore.Score
   description: Severity score
   type: Number
-script: '-'
+runas: DBotRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - ml
-timeout: 480ns
-type: python
-dockerimage: demisto/mlurlphishing:1.0.0.28347
-runas: DBotRole
-runonce: false
 tests:
 - DBotPredictURLPhishing_test
-fromversion: 6.0.0
+timeout: 480ns
+type: python

@@ -1,33 +1,36 @@
+args:
+- description: The json to transform to a markdown table.
+  isArray: true
+  name: value
+  required: true
+- description: The markdown title.
+  name: title
+- description: Comma-separated list of table header values. Default will include all
+    available table headers.
+  name: headers
+- description: Try transforming complex JSON automatically.
+  name: is_auto_json_transform
+- description: 'Transformation JSON from value to strings. The syntax is: `{"header_key":
+    {"keys": [<item1>, ...], "is_nested": true/false}}` '
+  name: json_transform_properties
+comment: Accepts a json object and returns a markdown.
 commonfields:
   id: JsonToTable
   version: -1
+dockerimage: demisto/python3:3.10.4.29342
+enabled: true
 fromversion: 5.5.0
 name: JsonToTable
-script: ''
-type: python
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
 tags:
 - transformer
 - entirelist
 - general
-comment: Accepts a json object and returns a markdown.
-enabled: true
-args:
-- name: value
-  required: true
-  description: The json to transform to a markdown table.
-  isArray: true
-- name: title
-  description: The markdown title.
-- name: headers
-  description: Comma-separated list of table header values. Default will include all available table headers.
-- name: is_auto_json_transform
-  description: Try transforming complex JSON automatically.
-- name: json_transform_properties
-  description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}` '
-scripttarget: 0
-subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.29342
-runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook
+type: python

@@ -8,14 +8,15 @@ commonfields:
   version: -1
 dockerimage: demisto/python3:3.9.8.24399
 enabled: true
+fromversion: 6.0.0
 name: GetIndicatorDBotScoreFromCache
 runas: DBotWeakRole
 runonce: false
-script: ''
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags: []
-type: python
-fromversion: 6.0.0
 tests:
 - GetIndicatorDBotScoreFromCache-Test
+type: python

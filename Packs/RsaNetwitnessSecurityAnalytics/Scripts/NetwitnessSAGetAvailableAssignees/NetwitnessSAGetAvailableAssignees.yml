@@ -1,20 +1,21 @@
+comment: Returns the available NetWitness SA users to be assigned to incidents
 commonfields:
   id: NetwitnessSAGetAvailableAssignees
   version: -1
-name: NetwitnessSAGetAvailableAssignees
-script: ''
-type: python
-subtype: python3
-tags:
-- RSA NetWitness Security Analytics
-comment: Returns the available NetWitness SA users to be assigned to incidents
-system: true
-scripttarget: 0
 dependson:
   must:
   - netwitness-im-get-available-assignees
-timeout: 0s
-fromversion: 5.0.0
 dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
+name: NetwitnessSAGetAvailableAssignees
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags:
+- RSA NetWitness Security Analytics
 tests:
 - No tests (auto formatted)
+timeout: 0s
+type: python

@@ -6,13 +6,16 @@ args:
   required: true
   secret: false
 - default: false
-  description: Values to compare the tested_time against. The script checks each value and determines whether it's before/after/equal to the tested_time.
+  description: Values to compare the tested_time against. The script checks each value
+    and determines whether it's before/after/equal to the tested_time.
   isArray: true
   name: values_to_compare
   required: true
   secret: false
 - default: false
-  description: "Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z"
+  description: 'Time format of the times you entered. By default, the script uses
+    automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing
+    will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z'
   isArray: false
   name: time_format
   required: false
@@ -21,7 +24,9 @@ comment: Compares a single timestamp to a list of timestamps.
 commonfields:
   id: TimeStampCompare
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: false
+fromversion: 5.0.0
 name: TimeStampCompare
 outputs:
 - contextPath: TimeStampCompare.TestedTime
@@ -31,13 +36,13 @@ outputs:
   description: The compared time
   type: Date
 - contextPath: TimeStampCompare.Result
-  description: Whether the tested time was before, after, or equal to the comapred time.
+  description: Whether the tested time was before, after, or equal to the comapred
+    time.
   type: String
-script: '-'
+script:
+- '8.1'
 subtype: python3
 system: false
 tags: []
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
-fromversion: 5.0.0

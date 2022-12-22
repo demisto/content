@@ -1,21 +1,20 @@
+args:
+- description: Left list
+  isArray: true
+  name: left
+  required: true
+- description: Right list
+  isArray: true
+  name: right
+  required: true
+comment: Compare  two lists and put the differences in context.
 commonfields:
   id: CompareLists
   version: -1
-name: CompareLists
-comment: Compare  two lists and put the differences in context.
-script: ''
-type: python
-tags: []
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: left
-  required: true
-  description: Left list
-  isArray: true
-- name: right
-  required: true
-  description: Right list
-  isArray: true
+fromversion: 5.0.0
+name: CompareLists
 outputs:
 - contextPath: ListCompare.LeftOnly
   description: Items only found within the list in the left argument
@@ -23,9 +22,11 @@ outputs:
   description: Items only found within the list in the right argument
 - contextPath: ListCompare.Both
   description: Common items that were found in both lists
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-runas: DBotWeakRole
-fromversion: 5.0.0
+tags: []
+type: python

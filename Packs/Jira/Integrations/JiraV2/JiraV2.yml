@@ -16,18 +16,20 @@ configuration:
   required: false
   type: 4
 - displaypassword: API token (Recommended)
+  hiddenusername: true
   name: credentials
   required: false
   type: 9
-  hiddenusername: true
-- defaultvalue: OauthKey
-  additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
+- additionalinfo: This field is ignored if other required fields are not provided
+    (for example both the access token and the private key).
+  defaultvalue: OauthKey
   display: Consumer key (OAuth 1.0)
   name: consumerKey
   required: false
   type: 0
-- display: Access Token
-  additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
+- additionalinfo: This token is used for both OAuth 1.0 and personal access token
+    authentication methods.
+  display: Access Token
   name: accessToken
   required: false
   type: 0
@@ -105,15 +107,17 @@ configuration:
   name: fetch_attachments
   required: false
   type: 8
-- display: API token (Deprecated)
+- additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  display: API token (Deprecated)
   name: APItoken
   required: false
   type: 4
-  additionalinfo: Use the "API Token (Recommended)" parameter instead.
+defaultmapperin: classifier-mapper-incoming-JiraV2
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
-  from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to
-  existing issue incidents in Cortex XSOAR.
+  from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also
+  mirrors issues to existing issue incidents in Cortex XSOAR.
 display: Atlassian Jira v2
+fromversion: 5.0.0
 name: jira-v2
 script:
   commands:
@@ -133,8 +137,8 @@ script:
     - default: false
       description: The maximum number of users to fetch when searching for a matching
         user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
+        'jira.search.views.default.max'. If you specify a value greater than this
+        number, your search results are truncated.
       isArray: false
       name: maxResults
       required: false
@@ -200,27 +204,28 @@ script:
       type: Date
   - arguments:
     - default: false
-      description: The user attribute value. Can be the username or email address. For OAuth 1.0, only the username works.
+      description: The user attribute value. Can be the username or email address.
+        For OAuth 1.0, only the username works.
       isArray: false
       name: attribute
       required: true
       secret: false
     - default: false
-      predefined:
-          - 'true'
-          - 'false'
       defaultValue: 'false'
       description: Whether the server is on prem and uses the REST v2 API.
       isArray: false
       name: is_jirav2api
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - default: false
       defaultValue: '50'
       description: The maximum number of users to fetch when searching for a matching
         user (default is 50). The maximum allowed value is dictated by the Jira property
-        'jira.search.views.default.max'. If you specify a value greater than
-        this number, your search results are truncated.
+        'jira.search.views.default.max'. If you specify a value greater than this
+        number, your search results are truncated.
       isArray: false
       name: max_results
       required: false
@@ -295,20 +300,18 @@ script:
       description: The ticket status.
       type: Unknown
     - contextPath: File.Size
-      description: The file size (Jira attachments are saved as files in Cortex
-        XSOAR).
+      description: The file size (Jira attachments are saved as files in Cortex XSOAR).
       type: Unknown
     - contextPath: File.SHA256
-      description: The file SHA256 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
-      type: Unknown
-    - contextPath: File.Name
-      description: The file name (Jira attachments are saved as files in Cortex
+      description: The file SHA256 hash (Jira attachments are saved as files in Cortex
         XSOAR).
       type: Unknown
+    - contextPath: File.Name
+      description: The file name (Jira attachments are saved as files in Cortex XSOAR).
+      type: Unknown
     - contextPath: File.SHA1
-      description: The file SHA1 hash (Jira attachments are saved as files
-        in Cortex XSOAR).
+      description: The file SHA1 hash (Jira attachments are saved as files in Cortex
+        XSOAR).
       type: Unknown
     - contextPath: Ticket.Priority
       description: The ticket priority.
@@ -429,7 +432,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      description: A text field for describing the environment in which the issue
+        occurred. For example environment="IE9 on Windows 7".
       isArray: false
       name: environment
       required: false
@@ -506,8 +510,8 @@ script:
     name: jira-issue-add-comment
   - arguments:
     - default: false
-      description: If a globalId is provided and a remote issue link exists with
-        that globalId, the remote issue link is updated.
+      description: If a globalId is provided and a remote issue link exists with that
+        globalId, the remote issue link is updated.
       isArray: false
       name: globalId
       required: false
@@ -543,14 +547,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The application type of the linked remote application. For example "com.atlassian.confluence".
+      description: The application type of the linked remote application. For example
+        "com.atlassian.confluence".
       isArray: false
       name: applicationType
       required: false
       secret: false
     - default: false
-      description: The application name of the linked remote application. For example "My
-        Confluence Instance".
+      description: The application name of the linked remote application. For example
+        "My Confluence Instance".
       isArray: false
       name: applicationName
       required: false
@@ -630,7 +635,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A text field for describing the environment in which the issue occurred. For example environment="IE9 on Windows 7".
+      description: A text field for describing the environment in which the issue
+        occurred. For example environment="IE9 on Windows 7".
       isArray: false
       name: environment
       required: false
@@ -678,36 +684,37 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The field object (in JSON format). For example {"customfield_10037": "New value"}'
+      description: 'The field object (in JSON format). For example {"customfield_10037":
+        "New value"}'
       isArray: false
       name: field_json
       required: true
       secret: false
     deprecated: false
-    description: |-
-      Modifies a specific field in an issue in Jira by appending to it instead of replacing its content. 
-      Field must be either of type string (appending by using ',') or array.
+    description: "Modifies a specific field in an issue in Jira by appending to it\
+      \ instead of replacing its content. \nField must be either of type string (appending\
+      \ by using ',') or array."
     execution: false
     name: jira-append-to-field
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: Unknown
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: Unknown
-      - contextPath: Ticket.Assignee
-        description: The user assigned to the ticket.
-        type: Unknown
-      - contextPath: Ticket.Creator
-        description: The user who created the ticket.
-        type: Unknown
-      - contextPath: Ticket.Summary
-        description: The ticket summary.
-        type: Unknown
-      - contextPath: Ticket.Status
-        description: The ticket status.
-        type: Unknown
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: Unknown
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: Unknown
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: Unknown
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: Unknown
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: Unknown
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: Unknown
   - arguments:
     - default: false
       description: The ID of the issue to edit.
@@ -722,29 +729,28 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: |-
-      Gets specific fields from a Jira issue and adds it to context dynamically.
+    description: Gets specific fields from a Jira issue and adds it to context dynamically.
     execution: false
     name: jira-get-specific-field
     outputs:
-      - contextPath: Ticket.Id
-        description: The ticket ID.
-        type: Unknown
-      - contextPath: Ticket.Key
-        description: The ticket key.
-        type: Unknown
-      - contextPath: Ticket.Assignee
-        description: The user assigned to the ticket.
-        type: Unknown
-      - contextPath: Ticket.Creator
-        description: The user who created the ticket.
-        type: Unknown
-      - contextPath: Ticket.Summary
-        description: The ticket summary.
-        type: Unknown
-      - contextPath: Ticket.Status
-        description: The ticket status.
-        type: Unknown
+    - contextPath: Ticket.Id
+      description: The ticket ID.
+      type: Unknown
+    - contextPath: Ticket.Key
+      description: The ticket key.
+      type: Unknown
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+      type: Unknown
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+      type: Unknown
+    - contextPath: Ticket.Summary
+      description: The ticket summary.
+      type: Unknown
+    - contextPath: Ticket.Status
+      description: The ticket status.
+      type: Unknown
   - arguments:
     - default: false
       description: The ID of the issue from which to get the comments.
@@ -794,8 +800,8 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
-        modified after the last update time.
+      description: The UTC timestamp in seconds of the last update. The incident is
+        only updated if it was modified after the last update time.
       isArray: false
       name: lastUpdate
       required: false
@@ -810,8 +816,8 @@ script:
     execution: false
     name: get-mapping-fields
   - deprecated: false
-    description: Gets incident changes. This method is only used for debugging 
-      and does not update the current incident.
+    description: Gets incident changes. This method is only used for debugging and
+      does not update the current incident.
     execution: false
     name: update-remote-system
   - arguments:
@@ -846,11 +852,11 @@ script:
   isremotesyncout: true
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - Jira-v2-Test
-defaultmapperin: classifier-mapper-incoming-JiraV2
-fromversion: 5.0.0

@@ -1,18 +1,19 @@
+comment: Generate profileId by user data.
 commonfields:
   id: generate_profile_id
   version: -1
-name: generate_profile_id
-script: ''
-type: python
-tags:
-- transformer
-comment: Generate profileId by user data.
+dockerimage: demisto/python3:3.10.4.31492
 enabled: true
+fromversion: 6.0.0
+name: generate_profile_id
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.10.4.31492
-runas: DBotWeakRole
-fromversion: 6.0.0
+tags:
+- transformer
 tests:
 - No tests
+type: python

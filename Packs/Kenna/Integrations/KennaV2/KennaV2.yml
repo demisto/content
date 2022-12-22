@@ -25,6 +25,7 @@ configuration:
 description: Use the Kenna v2 integration to search and update vulnerabilities, schedule
   a run connector, and manage tags and attributes.
 display: Kenna v2
+fromversion: 5.0.0
 name: Kennav2
 script:
   commands:
@@ -585,8 +586,9 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0

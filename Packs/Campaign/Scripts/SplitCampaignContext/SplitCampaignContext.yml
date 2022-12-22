@@ -1,24 +1,28 @@
+args:
+- defaultValue: '0.8'
+  description: The similarity value on which to split the context campaign data.
+  name: similarity_threshold
+  required: true
+comment: 'Splits incidents in the context data to below and above a similarity threshold.
+
+  If a low similarity incident was already added to the campaign,
+
+  then it will also be considered in the higher similarity incidents list.
+
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+
+  For more information, see the section about permissions here:
+
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html'
 commonfields:
   id: SplitCampaignContext
   version: -1
-name: SplitCampaignContext
-script: ''
-type: python
-comment: |-
-  Splits incidents in the context data to below and above a similarity threshold.
-  If a low similarity incident was already added to the campaign,
-  then it will also be considered in the higher similarity incidents list.
-
-  This automation runs using the default Limited User role, unless you explicitly change the permissions.
-  For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-tags: []
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: similarity_threshold
-  required: true
-  defaultValue: "0.8"
-  description: The similarity value on which to split the context campaign data.
+fromversion: 5.5.0
+name: SplitCampaignContext
 outputs:
 - contextPath: EmailCampaign.incidents.id
   description: The IDs of the incidents involved in the campaign.
@@ -62,10 +66,12 @@ outputs:
     in the campaign. The list is comprised of the following fields, "Email To", "Email
     CC", "Email BCC".
   type: Unknown
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-dockerimage: demisto/python3:3.9.8.24399
-fromversion: 5.5.0
+tags: []
 tests:
 - No tests (auto formatted)
+type: python

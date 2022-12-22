@@ -1,40 +1,46 @@
+args:
+- auto: PREDEFINED
+  default: true
+  description: A comma-separated list of hostnames to check.
+  isArray: true
+  name: hostName
+  predefined:
+  - ''
+  - ''
+  required: true
+- description: The regex pattern for the organization's hostname for example \w\w\w\d$|\w\w\w$.
+    for hosts that look like pcx1 or pcx.
+  name: internalRegex
+- description: 'The domain name for the organization. For a single domain use this
+    format: "bla.com". For multiple domains use this format: (bla.com|blabla.com),
+    where the pipe and the brackets are the OR condition for regex.'
+  name: domainName
+  required: true
+comment: Checks if the supplied hostnames match either the organization's internal
+  naming convention or the domain suffix.
 commonfields:
   id: IsInternalHostName
   version: -1
-name: IsInternalHostName
-script: ''
-type: python
-fromversion: 5.0.0
-tags:
-- Utility
-comment: Checks if the supplied hostnames match either the organization's internal naming convention or the domain suffix.
+dockerimage: demisto/python3:3.9.8.24399
 enabled: true
-args:
-- name: hostName
-  required: true
-  default: true
-  auto: PREDEFINED
-  predefined:
-  - ""
-  - ""
-  description: A comma-separated list of hostnames to check.
-  isArray: true
-- name: internalRegex
-  description: The regex pattern for the organization's hostname for example \w\w\w\d$|\w\w\w$. for hosts that look like pcx1 or pcx.
-- name: domainName
-  required: true
-  description: 'The domain name for the organization. For a single domain use this format: "bla.com". For multiple domains use this format: (bla.com|blabla.com), where the pipe and the brackets are the OR condition for regex.'
+fromversion: 5.0.0
+name: IsInternalHostName
 outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname.
   type: string
 - contextPath: Endpoint.IsInternal
-  description: Whether the supplied hostnames match the organization's naming convention. Can be "true" or "false".
+  description: Whether the supplied hostnames match the organization's naming convention.
+    Can be "true" or "false".
   type: string
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
-runonce: false
-runas: DBotWeakRole
+tags:
+- Utility
 tests:
 - IsInternalHostName Test
-dockerimage: demisto/python3:3.9.8.24399
+type: python

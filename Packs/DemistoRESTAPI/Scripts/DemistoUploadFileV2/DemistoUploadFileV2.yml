@@ -1,12 +1,3 @@
-commonfields:
-  id: DemistoUploadFileV2
-  id_x2: UploadFileV2
-  version: -1
-enabled: true
-name: DemistoUploadFileV2
-name_x2: UploadFileV2
-fromversion: 5.0.0
-script: '-'
 args:
 - default: false
   description: File entry ID
@@ -30,31 +21,45 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: 'war room entry'
-  description: |-
-    Where to upload the file
+  defaultValue: war room entry
+  description: 'Where to upload the file
+
     - Available options are:
+
     - `war room entry`: the file will be uploaded as war room entry.
+
     - `incident attachment`: the file will be uploaded as incident attachment.
-    - default are `war room entry`
+
+    - default are `war room entry`'
   isArray: false
   name: target
   predefined:
-  - 'war room entry'
-  - 'incident attachment'
+  - war room entry
+  - incident attachment
   required: false
   secret: false
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
-subtype: python3
-dockerimage: demisto/python3:3.10.6.33415
-system: false
-tags:
-- DemistoAPI
-timeout: '0'
-type: python
-runonce: false
+comment: "Copies a file from this incident to the specified incident. The file is\
+  \ recorded as an entry in the specified incident\u2019s War Room."
+commonfields:
+  id: DemistoUploadFileV2
+  id_x2: UploadFileV2
+  version: -1
 dependson:
   must:
   - demisto-api-multipart
+dockerimage: demisto/python3:3.10.6.33415
+enabled: true
+fromversion: 5.0.0
+name: DemistoUploadFileV2
+name_x2: UploadFileV2
+runonce: false
+script:
+- '8.1'
+subtype: python3
+system: false
+tags:
+- DemistoAPI
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

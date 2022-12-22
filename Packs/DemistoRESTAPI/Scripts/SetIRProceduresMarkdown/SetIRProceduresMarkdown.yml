@@ -1,19 +1,21 @@
-comment: Creates markdown tables based on information from the GetTasksWithSection command.
+comment: Creates markdown tables based on information from the GetTasksWithSection
+  command.
 commonfields:
   id: SetIRProceduresMarkdown
   version: -1
+dockerimage: demisto/python3:3.10.4.30607
 enabled: false
+fromversion: 6.0.0
 name: SetIRProceduresMarkdown
-script: '-'
+runas: DBotRole
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - dynamic-section
-timeout: '0'
-type: python
-runas: DBotRole
-runonce: false
-subtype: python3
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
-dockerimage: demisto/python3:3.10.4.30607
-fromversion: 6.0.0
+timeout: '0'
+type: python

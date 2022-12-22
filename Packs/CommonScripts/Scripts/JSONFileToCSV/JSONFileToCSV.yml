@@ -22,7 +22,9 @@ comment: Script to convert a War Room output JSON File to a CSV file.
 commonfields:
   id: JSONFileToCSV
   version: -1
+dockerimage: demisto/python3:3.10.6.33415
 enabled: true
+fromversion: 5.0.0
 name: JSONFileToCSV
 outputs:
 - contextPath: File.Name
@@ -43,14 +45,13 @@ outputs:
 - contextPath: File.SHA256
   description: SHA256 hash of the file (only in case of report type=json)
   type: Unknown
-script: '-'
-system: false
-timeout: 600ns
-type: python
-subtype: python3
 runonce: false
+script:
+- '8.1'
+subtype: python3
+system: false
 tags: []
 tests:
 - JSONtoCSV-Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
+timeout: 600ns
+type: python

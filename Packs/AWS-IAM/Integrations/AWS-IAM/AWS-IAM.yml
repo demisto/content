@@ -1,3 +1,4 @@
+beta: false
 category: IT Services
 commonfields:
   id: AWS - IAM
@@ -39,20 +40,20 @@ configuration:
   required: false
   type: 0
 - display: Access Key
+  displaypassword: Secret Key
   name: credentials
   required: false
   type: 9
-  displaypassword: Secret Key
 - display: Access Key
+  hidden: true
   name: access_key
   required: false
   type: 0
-  hidden: true
 - display: Secret Key
+  hidden: true
   name: secret_key
   required: false
   type: 4
-  hidden: true
 - additionalinfo: The time in seconds till a timeout exception is reached. You can
     specify just the read timeout (for example 60) or also the connect timeout followed
     after a comma (for example 60,10). If a connect timeout is not specified, a default
@@ -81,6 +82,7 @@ configuration:
   type: 8
 description: Amazon Web Services Identity and Access Management (IAM)
 display: AWS - Identity and Access Management
+fromversion: 5.0.0
 name: AWS - IAM
 script:
   commands:
@@ -2310,8 +2312,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display.
       defaultValue: '50'
+      description: Number of results to display.
       isArray: false
       name: limit
       required: false
@@ -2330,8 +2332,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Starting item of the next page to view. Retrieved from a previous run of the command
-        (InlinePoliciesMarker).
+      description: Starting item of the next page to view. Retrieved from a previous
+        run of the command (InlinePoliciesMarker).
       isArray: false
       name: marker
       required: false
@@ -2361,8 +2363,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display.
       defaultValue: '50'
+      description: Number of results to display.
       isArray: false
       name: limit
       required: false
@@ -2415,8 +2417,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of results to display.
       defaultValue: '50'
+      description: Number of results to display.
       isArray: false
       name: limit
       required: false
@@ -2485,11 +2487,11 @@ script:
   isfetch: false
   longRunning: false
   longRunningPort: false
+  nativeImage:
+  - '8.1'
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
 - AWS - IAM Test Playbook
-fromversion: 5.0.0
-beta: false

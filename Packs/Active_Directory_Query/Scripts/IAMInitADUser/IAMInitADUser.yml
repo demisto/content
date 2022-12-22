@@ -17,47 +17,66 @@ args:
   name: inc_id
 - description: The subject of the email sent to IT.
   name: email_subject
-- name: min_lcase
-  description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
-- name: max_lcase
-  description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
-- name: min_ucase
-  description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
-- name: max_ucase
-  description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
-- name: min_digits
-  description: Minimum number of digits to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
-- name: max_digits
-  description: Maximum number of digits to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
-- name: min_symbols
-  description: Minimum number of symbols to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
-- name: max_symbols
-  description: Maximum number of symbols to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
-comment: |-
-  Generates password,
+- defaultValue: '0'
+  description: Minimum number of lower case characters to include in password. Used
+    with the GeneratePassword script.
+  name: min_lcase
+- defaultValue: '10'
+  description: Maximum number of lower case characters to include in password. Used
+    with the GeneratePassword script.
+  name: max_lcase
+- defaultValue: '0'
+  description: Minimum number of upper case characters to include in password. Used
+    with the GeneratePassword script.
+  name: min_ucase
+- defaultValue: '10'
+  description: Maximum number of upper case characters to include in password. Used
+    with the GeneratePassword script.
+  name: max_ucase
+- defaultValue: '0'
+  description: Minimum number of digits to include in password. Used with the GeneratePassword
+    script.
+  name: min_digits
+- defaultValue: '10'
+  description: Maximum number of digits to include in password. Used with the GeneratePassword
+    script.
+  name: max_digits
+- defaultValue: '0'
+  description: Minimum number of symbols to include in password. Used with the GeneratePassword
+    script.
+  name: min_symbols
+- defaultValue: '10'
+  description: Maximum number of symbols to include in password. Used with the GeneratePassword
+    script.
+  name: max_symbols
+comment: 'Generates password,
+
   Set an AD user account with this password.
+
   Enable the account.
+
   Send mail to the user with the account information.
-  This script is running `send-mail` command, make sure there is a matching Integration configurated.
+
+  This script is running `send-mail` command, make sure there is a matching Integration
+  configurated.'
 commonfields:
   id: IAMInitADUser
   version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.9.40422
 enabled: true
+fromversion: 5.0.0
 name: IAMInitADUser
 outputs:
 - contextPath: IAM.InitADUser.success
-  description: True if the Active Directory user was successfully activated, false otherwise.
+  description: True if the Active Directory user was successfully activated, false
+    otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.sentMail
-  description: True if the mail containing the information about the user activation and its auto-generated password was successfully sent to IT, false otherwise.
+  description: True if the mail containing the information about the user activation
+    and its auto-generated password was successfully sent to IT, false otherwise.
   type: Boolean
 - contextPath: IAM.InitADUser.errorDetails
   description: The error details, if exists.
@@ -65,21 +84,17 @@ outputs:
 - contextPath: IAM.InitADUser.sendMailError
   description: The error received from send-mail command, if exists.
   type: String
-script: ''
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
 system: true
 tags:
 - IAM
 - active directory
 - Utility
-type: python
-dockerimage: demisto/python3:3.10.9.40422
-runas: DBotWeakRole
-runonce: false
 tests:
 - Active Directory Test
-fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-scripttarget: 0
+type: python

@@ -23,30 +23,32 @@ args:
   - ascii
   required: false
   secret: false
-- name: output_data_type
-  auto: PREDEFINED
+- auto: PREDEFINED
+  defaultValue: raw
+  description: The data type to which the output data is converted.
+  isArray: false
+  name: output_data_type
   predefined:
   - raw
   - base64
   - json
-  isArray: false
-  description: The data type to which the output data is converted.
-  defaultValue: raw
   secret: false
-- name: output_metadata
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  isArray: false
+- auto: PREDEFINED
+  defaultValue: 'false'
   description: Set true in order to output additional metadata on the file, to context.
-  defaultValue: "false"
+  isArray: false
+  name: output_metadata
+  predefined:
+  - 'true'
+  - 'false'
   secret: false
 comment: Load the contents of a file into context.
 commonfields:
   id: ReadFile
   version: -1
+dockerimage: demisto/python3:3.10.8.39276
 enabled: true
+fromversion: 5.0.0
 name: ReadFile
 outputs:
 - contextPath: FileData
@@ -64,17 +66,16 @@ outputs:
 - contextPath: ReadFile.EOF
   description: Whether the file has reached end-of-file.
   type: boolean
-script: ''
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
+subtype: python3
 system: false
 tags:
 - Utility
 - ingestion
-timeout: '0'
-type: python
-subtype: python3
-runas: DBotWeakRole
-runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.8.39276
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

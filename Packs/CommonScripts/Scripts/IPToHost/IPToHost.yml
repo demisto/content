@@ -1,18 +1,15 @@
+args:
+- default: true
+  description: The IP to check
+  name: ip
+  required: true
+comment: Try to get the hostname correlated with the input IP.
 commonfields:
   id: IPToHost
   version: -1
+dockerimage: demisto/python3:3.10.4.28442
+fromversion: 5.0.0
 name: IPToHost
-script: ''
-type: python
-subtype: python3
-tags: []
-comment: Try to get the hostname correlated with the input IP.
-system: true
-args:
-- name: ip
-  required: true
-  default: true
-  description: The IP to check
 outputs:
 - contextPath: Endpoint
   description: The endpoint object.
@@ -22,9 +19,13 @@ outputs:
 - contextPath: Endpoint.IP
   description: The endpoint IP.
   type: string
-scripttarget: 0
 runonce: false
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.28442
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+system: true
+tags: []
 tests:
 - IPToHost - Test
+type: python

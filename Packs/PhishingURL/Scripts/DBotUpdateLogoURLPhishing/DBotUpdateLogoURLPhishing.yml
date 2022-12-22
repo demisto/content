@@ -35,18 +35,19 @@ comment: Add, remove, or modify logos from the URL Phishing model.
 commonfields:
   id: DBotUpdateLogoURLPhishing
   version: -1
+dockerimage: demisto/mlurlphishing:1.0.0.28347
 enabled: true
+fromversion: 6.0.0
 name: DBotUpdateLogoURLPhishing
-script: '-'
+runas: DBotRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - ml
-timeout: '0'
-type: python
-dockerimage: demisto/mlurlphishing:1.0.0.28347
-runas: DBotRole
-runonce: false
 tests:
 - DBotUpdateLogoURLPhishing_test
-fromversion: 6.0.0
+timeout: '0'
+type: python

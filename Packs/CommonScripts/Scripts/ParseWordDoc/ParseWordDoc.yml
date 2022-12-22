@@ -1,21 +1,26 @@
+args:
+- default: true
+  description: Docx file to parse
+  name: entryID
+  required: true
+comment: Takes an input docx file (entryID) as an input and saves an output text file
+  (file entry) with the original file's contents.
 commonfields:
   id: ParseWordDoc
   version: -1
-name: ParseWordDoc
-comment: Takes an input docx file (entryID) as an input and saves an output text file
-  (file entry) with the original file's contents.
-script: ''
-type: python
-subtype: python3
-tags: [word, docx, doc, parser]
-enabled: true
-args:
-- name: entryID
-  required: true
-  default: true
-  description: Docx file to parse
-scripttarget: 0
 dockerimage: demisto/docxpy:1.0.0.40261
+enabled: true
 fromversion: 5.0.0
+name: ParseWordDoc
+script:
+- '8.1'
+scripttarget: 0
+subtype: python3
+tags:
+- word
+- docx
+- doc
+- parser
 tests:
-  - ParseWordDoc-Test
+- ParseWordDoc-Test
+type: python

@@ -1,44 +1,42 @@
 args:
-- name: data
-  required: true
-  default: true
+- default: true
   description: The text data from which to extract from.
-- name: regex
+  name: data
   required: true
-  description: The regex to match and extract. Take into account that data taken from
+- description: The regex to match and extract. Take into account that data taken from
     context data contains special characters which are not visible, such as \n and
     \b.
-- name: group
-  description: The matching group to return. If no group is provided the full match
+  name: regex
+  required: true
+- description: The matching group to return. If no group is provided the full match
     will be returned. The group value should start at 1.
-- name: contextKey
-  description: The context key to populate with the result.
-- name: flags
+  name: group
+- description: The context key to populate with the result.
+  name: contextKey
+- defaultValue: gim
   description: The regex flags to match. Default is "gim".
-  defaultValue: gim
+  name: flags
 comment: Extracts regex data from the provided text. The script support groups and
   looping.
 commonfields:
   id: MatchRegexV2
   version: -1
+dockerimage: demisto/python3:3.9.7.24076
 enabled: false
+fromversion: 5.0.0
 name: MatchRegexV2
 outputs:
 - contextPath: MatchRegex.results
   description: List of regex matches.
   type: string
-script: '-'
+script:
+- '8.1'
 scripttarget: 0
+subtype: python3
 system: false
 tags:
 - Utility
-timeout: '0'
-type: python
-subtype: python3
-dockerimage: demisto/python3:3.9.7.24076
-
-
-
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+timeout: '0'
+type: python

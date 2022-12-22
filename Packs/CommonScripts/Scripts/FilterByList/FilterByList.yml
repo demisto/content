@@ -7,7 +7,8 @@ args:
   secret: false
 - default: false
   defaultValue: Indicators Whitelist
-  description: Name of the list against which to check the value. The default is the Indicators Whitelist.
+  description: Name of the list against which to check the value. The default is the
+    Indicators Whitelist.
   isArray: false
   name: listname
   required: false
@@ -15,7 +16,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to ignore the case of the item for which you are searching. Default is "No".
+  description: Whether to ignore the case of the item for which you are searching.
+    Default is "No".
   isArray: false
   name: ignorecase
   predefined:
@@ -26,7 +28,8 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to match the exact item in the list, or look for any string that contains it. Default is "No".
+  description: Whether to match the exact item in the list, or look for any string
+    that contains it. Default is "No".
   isArray: false
   name: matchexact
   predefined:
@@ -36,16 +39,20 @@ args:
   secret: false
 - default: false
   defaultValue: ','
-  description: A one-character string used to delimit fields. For example, a comma "," should match the list separator configuration.
+  description: A one-character string used to delimit fields. For example, a comma
+    "," should match the list separator configuration.
   isArray: false
   name: delimiter
   required: false
   secret: false
-comment: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
+comment: Checks whether the specified item is in a list. The default list is the Demisto
+  Indicators Whitelist.
 commonfields:
   id: FilterByList
   version: -1
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
+fromversion: 5.0.0
 name: FilterByList
 outputs:
 - contextPath: List.ListName
@@ -57,16 +64,15 @@ outputs:
 - contextPath: List.NotIn
   description: The list of items not in the list.
   type: Unknown
-script: '-'
+runas: DBotWeakRole
+runonce: false
+script:
+- '8.1'
 subtype: python3
 system: false
 tags:
 - whitelist
-timeout: '0'
-type: python
-runas: DBotWeakRole
-runonce: false
 tests:
 - FilterByList - Test
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.29342
+timeout: '0'
+type: python

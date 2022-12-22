@@ -4,14 +4,16 @@ args:
   name: assets
 - defaultValue: id,cloudType,resourceName,resourceType,regionId,accountId,accountName,hasAlert,service,ip,fqdn
   description: Fields to be returned (comma separated string).
-  name: fields
   isArray: true
-comment: Recursively extracts specified fields from provided list of assets for Prisma Cloud attribution use case.
+  name: fields
+comment: Recursively extracts specified fields from provided list of assets for Prisma
+  Cloud attribution use case.
 commonfields:
   id: PrismaCloudAttribution
   version: -1
 dockerimage: demisto/python3:3.10.4.30607
 enabled: true
+fromversion: 6.0.0
 name: PrismaCloudAttribution
 outputs:
 - contextPath: PrismaCloud.Attribution.accountId
@@ -38,11 +40,11 @@ outputs:
   description: Cloud Service
 runas: DBotWeakRole
 runonce: false
-script: ''
+script:
+- '8.1'
 scripttarget: 0
 subtype: python3
 tags: []
-type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+type: python

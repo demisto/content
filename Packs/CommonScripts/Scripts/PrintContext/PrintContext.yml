@@ -1,22 +1,23 @@
+args:
+- default: true
+  description: Output format - table, json or markdown. If omitted, default is markdown.
+  name: outputformat
+comment: Pretty-print the contents of the playbook context
 commonfields:
   id: PrintContext
   version: -1
+dependson: {}
+dockerimage: demisto/python3:3.10.6.33415
+fromversion: 5.0.0
 name: PrintContext
-script: ''
-type: python
+script:
+- '8.1'
+scripttarget: 0
 subtype: python3
+system: true
 tags:
 - Utility
-comment: Pretty-print the contents of the playbook context
-system: true
-args:
-- name: outputformat
-  default: true
-  description: Output format - table, json or markdown. If omitted, default is markdown.
-scripttarget: 0
-dependson: {}
-timeout: 0s
-fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.6.33415
 tests:
 - No tests (auto formatted)
+timeout: 0s
+type: python
