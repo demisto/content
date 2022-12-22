@@ -6657,7 +6657,7 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
                     },
                     {
                         "caption": "none",
-                        "id": "${list.group.none}"
+                        "id": "${list.group}"
                     },
                     {
                         "caption": "Support",
@@ -6682,7 +6682,7 @@ List all filters. Cortex XSOAR recommends filtering the results by the desired f
 >| request_user | Request user | list | 3: Adi Dmst,<br/>1: sysaid-dmst,<br/>2: Test User |
 >| problem_type | Category | nested | problem_type: problem_type |
 >| archive | Archive | boolean |  |
->| assigned_group | Admin Group | list | ${list.group.all}: All Groups,<br/>${list.group.none}: none,<br/>1: Support |
+>| assigned_group | Admin Group | list | ${list.group.all}: All Groups,<br/>${list.group}: none,<br/>1: Support |
 
 
 ### sysaid-user-list

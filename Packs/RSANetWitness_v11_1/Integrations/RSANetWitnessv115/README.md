@@ -825,7 +825,7 @@ Provides snapshot details of the given host for the specified snapshot time. It 
 | RSANetWitness115.SnapshotDetailsGet.timeAccessed | Date | The timestamp when the file was last accessed. | 
 | RSANetWitness115.SnapshotDetailsGet.attributes | String | The list of file attributes. | 
 | RSANetWitness115.SnapshotDetailsGet.accessMode | Number | The file access mode. | 
-| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.nonExe | Number | The number of non-exe files in the same directory as the file. | 
+| RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCountsxe | Number | The number of non-exe files in the same directory as the file. | 
 | RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exe | Number | The number of exe files in the same directory as the file. | 
 | RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.subFolder | Number | The number of sub-folders in the same directory as the file. | 
 | RSANetWitness115.SnapshotDetailsGet.sameDirectoryFileCounts.exeSameCompany | Number | The number of executables with the same company name in the same directory as the file. | 
