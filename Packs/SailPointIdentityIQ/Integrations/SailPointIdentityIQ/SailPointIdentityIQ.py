@@ -335,8 +335,10 @@ def fetch_incidents(client: Client, last_run, first_fetch_str):
     next_run = {'last_fetch': now}
     return next_run, incidents
 
+# Updated by Vipul Kaneriya. Risk filter is not supported by IIQ in FT, Adding custom filter to find owner of service account
 
-def search_identities(client: Client, id: str, email: str, risk: int, active: bool):
+
+def search_identities(client: Client, id: str, email: str, risk: int, active: bool, filter: str):
     """
     Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
     Command: identityiq-search-identities
@@ -366,16 +368,25 @@ def search_identities(client: Client, id: str, email: str, risk: int, active: bo
     else:
         url = IIQ_SCIM_USERS_EXT
         filter_list = []
-        if email is not None:
-            filter_list.append(''.join(('emails.value eq "', email, '"')))
-        if risk is not None:
-            filter_list.append(''.join(('urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ', str(risk))))
-        if active is not None:
-            filter_list.append(''.join(('active eq ', str(active).lower())))
+
+        # use custom filter
+        if filter is not None:
+            filter_list.append(filter)
+        else:
+            if email is not None:
+                filter_list.append(''.join(('emails.value eq "', email, '"')))
+            if active is not None:
+                filter_list.append(''.join(('active eq ', str(active).lower())))
+            # if risk is not None:
+            #     filter_list.append(''.join(('urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore ge ', str(risk))))
+
         # Combine the filters
         if filter_list is not None and len(filter_list) > 0:
             filter_string = ' and '.join(filter_list)
             params = {'filter': filter_string}
+
+        LOG(f"VIPUL: params = {params}")
+        print(f"VIPUL: params = {params}")
     return client.send_request(url, "GET", params, None)
 
 
@@ -477,6 +488,7 @@ def get_accounts(client: Client, id: str, display_name: str, last_refresh: str, 
         if filter_list is not None and len(filter_list) > 0:
             filter_string = ' and '.join(filter_list)
             params = {'filter': filter_string}
+        print(params)
     return client.send_request(url, "GET", params, None)
 
 
@@ -702,12 +714,15 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
+        # Updated by Vipul Kaneriya. Risk filter is not supported by IIQ in FT, Adding custom filter to find owner of service account
+
         elif demisto.command() == 'identityiq-search-identities':
             id = demisto.args().get('id', None)
             email = demisto.args().get('email', None)
-            risk = demisto.args().get('risk', 0)
             active = demisto.args().get('active', True)
-            response = search_identities(client, id, email, risk, active)
+            risk = demisto.args().get('risk', 0)
+            filter = demisto.args().get('filter', None)
+            response = search_identities(client, id, email, risk, active, filter)
             results = build_results('IdentityIQ.Identity', 'id', response)
 
         elif demisto.command() == 'identityiq-get-policyviolations':
@@ -733,19 +748,19 @@ def main():
                                     application_name)
             results = build_results('IdentityIQ.Account', 'id', response)
 
-        elif demisto.command() == 'identityiq-disable-account':
-            id = demisto.args().get('id', None)
-            response = change_account_status(client, id, False)
-            results = build_results('IdentityIQ.Account', 'id', response)
+        # elif demisto.command() == 'identityiq-disable-account':
+        #     id = demisto.args().get('id', None)
+        #     response = change_account_status(client, id, False)
+        #     results = build_results('IdentityIQ.Account', 'id', response)
 
-        elif demisto.command() == 'identityiq-enable-account':
-            id = demisto.args().get('id', None)
-            response = change_account_status(client, id, True)
-            results = build_results('IdentityIQ.Account', 'id', response)
+        # elif demisto.command() == 'identityiq-enable-account':
+        #     id = demisto.args().get('id', None)
+        #     response = change_account_status(client, id, True)
+        #     results = build_results('IdentityIQ.Account', 'id', response)
 
-        elif demisto.command() == 'identityiq-delete-account':
-            id = demisto.args().get('id', None)
-            results = delete_account(client, id)
+        # elif demisto.command() == 'identityiq-delete-account':
+        #     id = demisto.args().get('id', None)
+        #     results = delete_account(client, id)
 
         elif demisto.command() == 'identitytiq-get-launched-workflows':
             id = demisto.args().get('id', None)
@@ -767,11 +782,11 @@ def main():
             response = get_alerts(client, id)
             results = build_results('IdentityIQ.Alert', 'id', response)
 
-        elif demisto.command() == 'identityiq-create-alert':
-            display_name = demisto.args().get('display_name', None)
-            attribute = demisto.args().get('attribute', None)
-            response = create_alert(client, display_name, attribute)
-            results = build_results('IdentityIQ.Alert', 'id', response)
+        # elif demisto.command() == 'identityiq-create-alert':
+        #     display_name = demisto.args().get('display_name', None)
+        #     attribute = demisto.args().get('attribute', None)
+        #     response = create_alert(client, display_name, attribute)
+        #     results = build_results('IdentityIQ.Alert', 'id', response)
 
         return_results(results)
 
