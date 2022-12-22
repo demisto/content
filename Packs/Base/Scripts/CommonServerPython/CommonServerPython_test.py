@@ -2124,6 +2124,7 @@ class TestCommandResults:
             'IndicatorTimeline': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
+            'Tags': [],
             'Note': False
         }
 
@@ -2210,6 +2211,7 @@ class TestCommandResults:
             },
             'IndicatorTimeline': [],
             'Relationships': [],
+            'Tags': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -2242,6 +2244,7 @@ class TestCommandResults:
             },
             'IndicatorTimeline': [],
             'Relationships': [],
+            'Tags': [],
             'IgnoreAutoExtract': False,
             'Note': False
         }
@@ -2276,6 +2279,7 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
+            'Tags': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
             'Note': False
@@ -5205,7 +5209,8 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
+            'Tags': []
         }
 
     def test_create_domain(self):
@@ -5359,7 +5364,8 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
-            'Relationships': []
+            'Relationships': [],
+            'Tags': []
         }
 
     def test_create_url(self):
@@ -5469,6 +5475,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
+            'Tags': [],
             'Relationships': []
         }
 
@@ -5591,6 +5598,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
+            'Tags': [],
             'Relationships': []
         }
 
@@ -5665,6 +5673,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
+            'Tags': [],
             'Relationships': []
         }
 
@@ -5766,6 +5775,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
             'Note': False,
+            'Tags': [],
             'Relationships': []
         }
 
@@ -6170,6 +6180,7 @@ class TestCommonTypes:
             'IndicatorTimeline': [],
             'Relationships': [],
             'IgnoreAutoExtract': False,
+            'Tags': [],
             'Note': False
         }
 
@@ -6267,6 +6278,7 @@ class TestCommonTypes:
             },
             'IndicatorTimeline': [],
             'IgnoreAutoExtract': False,
+            'Tags': [],
             'Note': False,
             'Relationships': []
         }
