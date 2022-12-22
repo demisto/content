@@ -117,8 +117,8 @@ configuration:
   required: false
   type: 8
 deprecated: true
-description: Deprecated. use OpenCTI Feed 4.X instead.
-display: OpenCTI Feed 3.X
+description: Deprecated. Use OpenCTI Feed 4.X instead.
+display: OpenCTI Feed 3.X (Deprecated)
 name: OpenCTI Feed
 script:
   commands:

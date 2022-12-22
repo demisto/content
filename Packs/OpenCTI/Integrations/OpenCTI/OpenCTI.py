@@ -1,7 +1,5 @@
 import copy
 from typing import List, Optional
-from io import StringIO
-import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
