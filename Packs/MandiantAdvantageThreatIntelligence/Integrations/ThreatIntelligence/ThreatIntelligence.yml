@@ -157,7 +157,8 @@ display: Mandiant Advantage Threat Intelligence
 name: Mandiant Advantage Threat Intelligence
 script:
   commands:
-  - arguments:
+  - name: threat-intelligence-get-indicators
+    arguments:
     - default: true
       description: Update context.
       isArray: false
@@ -207,8 +208,8 @@ script:
     deprecated: false
     description: Get Mandiant indicators
     execution: false
-    name: threat-intelligence-get-indicators
-  - arguments:
+  - name: get-indicator
+    arguments:
     - default: true
       description: Value of the indicator to look up.  Can be URL, domain name, IP
         address, or file hash
@@ -217,10 +218,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Mandiant indicator
+    description: Get information about a single Indicator of Compromise from Mandiant
     execution: false
-    name: get-indicator
-  - arguments:
+  - name: get-actor
+    arguments:
     - default: true
       description: Name of the actor to look up
       isArray: false
@@ -228,10 +229,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Mandiant Threat Actor
+    description: Get information about a Threat Actor from Mandiant
     execution: false
-    name: get-actor
-  - arguments:
+  - name: get-malware
+    arguments:
     - default: true
       description: Name of the malware family to look up
       isArray: false
@@ -239,10 +240,10 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get Mandiant Malware Family
+    description: Get information about a Malware Family from Mandiant
     execution: false
-    name: get-malware
-  - arguments:
+  - name: file
+    arguments:
     - default: true
       description: List of files.
       isArray: true
@@ -250,9 +251,10 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve information about a File Hash from Mandiant
     execution: false
-    name: file
-  - arguments:
+  - name: ip
+    arguments:
     - default: true
       description: List of IPs.
       isArray: true
@@ -260,9 +262,10 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve information about an IP Address from Mandiant
     execution: false
-    name: ip
-  - arguments:
+  - name: url
+    arguments:
     - default: true
       description: List of URLs.
       isArray: true
@@ -270,9 +273,10 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve information about a URL from Mandiant
     execution: false
-    name: url
-  - arguments:
+  - name: domain
+    arguments:
     - default: true
       description: List of domains.
       isArray: true
@@ -280,9 +284,10 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve information about an FQDN from Mandiant
     execution: false
-    name: domain
-  - arguments:
+  - name: cve
+    arguments:
     - default: true
       description: List of CVEs.
       isArray: true
@@ -290,8 +295,8 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve information about a Vulnerability (by CVE) from Mandiant
     execution: false
-    name: cve
   dockerimage: demisto/python3:3.10.5.31797
   feed: true
   isfetch: false
