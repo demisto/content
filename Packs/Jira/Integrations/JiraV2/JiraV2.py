@@ -697,6 +697,7 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
             issue['fields']['reporter'] = {}
         issue['fields']['reporter']['name'] = issue_args['reporter']
 
+    demisto.debug(f'The issue after updating relevant fields: {issue}')
     return issue
 
 
@@ -760,7 +761,6 @@ def create_issue_command():
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    demisto.debug(f'issue after get is: {issue}')
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
@@ -1271,7 +1271,7 @@ def update_remote_system_command(args):
                           f'incident {remote_id}')
             # take the val from data as it's the updated value
             delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
-            demisto.debug(f"yuval delta {delta}")
+            demisto.debug(f'sending the following date to edit the issue with: {delta}')
             edit_issue_command(remote_id, mirroring=True, **delta)
 
         else:
