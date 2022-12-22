@@ -27,6 +27,6 @@ if [ ! -f "$FILE" ]; then
     exit
 fi
 
-sudo git config --system http.sslCAInfo $FILE
+git config --system http.sslCAInfo $FILE
 
 
