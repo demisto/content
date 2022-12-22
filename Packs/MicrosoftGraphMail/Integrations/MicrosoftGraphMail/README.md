@@ -13,12 +13,12 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Application ID or Client ID | See the Help tab. | False |
     | Token or Tenant ID | See the Help tab. | False |
     | Key or Client Secret | See the Help tab. | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Fetch incidents | Whether to fetch incidents. | False |
     | Email address from which to fetch incidents | For example, "example@demisto.com" | False |
     | Name of the folder or sub-folder from which to fetch incidents | Supports folder ID and sub-folders, for example Inbox/Phishing. | False |
-    | First fetch timestamp | &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, for example 12 hours, 7 days. | False |
+    | First fetch timestamp | \<number\> /<time unit\>, for example 12 hours, 7 days. | False |
     | HTTP Timeout | The timeout of the HTTP requests sent to Microsoft Graph API \(in seconds\). | False |
     | Maximum number of emails to pull per fetch |  | False |
     | Trust any certificate (not secure) |  | False |
@@ -32,7 +32,7 @@ This integration was integrated and tested with version v1 of Microsoft Graph.
     | Token or Tenant ID - see Detailed Instructions (?) (Deprecated) |  | False |
     | Display full email body | If not active, only a preview of the email will be fetched. |  |
     | Mark fetched emails as read | Relevant only if fetch incidents is active. |  |
-    | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Advanced: Time in minutes to look back when fetching emails | Use this parameter to determine how far backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
