@@ -221,7 +221,7 @@ script:
     description: Running a sql query
     execution: false
     name: sql-command
-  dockerimage: demisto/genericsql:1.1.0.26235
+  dockerimage: demisto/genericsql:1.1.0.41601
   feed: false
   isfetch: true
   longRunning: false
