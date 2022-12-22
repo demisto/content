@@ -7,7 +7,7 @@
     "prevName": "Impersonation \u0026 Infringement",
     "color": "#FF979A",
     "sla": 168,
-    "playbookId": "1979fb0c-0ebd-4ae6-891b-676804c6450c",
+    "playbookId": "DeCYFIR - v1",
     "hours": 0,
     "days": 0,
     "weeks": 1,
@@ -21,10 +21,11 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "bc2ed073-cd14-478d-8691-cad5a0bde183",
+    "layout": "DeCYFIR-Layout",
     "detached": false,
     "extractSettings": {
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.2.0"
 }

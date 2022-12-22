@@ -1,23 +1,23 @@
-# Partner Contributed Integration
-Integration Author:  ***Cyfirma Team***. 
+DeCYFIR API's provides External Threat Landscape Management insights.
+This integration was integrated and tested with version xx of decyfir
 
-#### DeCYFIR API's provides External Threat Landscape Management insights. 
+## Configure DeCYFIR on Cortex XSOAR
 
-#### Integrations:
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for DeCYFIR.
+3. Click **Add instance** to create and configure a new integration instance.
 
-  - Get attack surface, impersonation and breach, data breach and web monitoring, and social and public risk data from DeCYFIR.
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Incident type | False |
+    | Server URL (e.g. https://example.net) | True |
+    | Username | True |
+    | Password | True |
+    | DeCYFIR API key | True |
+    | Fetch incidents | False |
+    | Trust any certificate (not secure) | False |
+    | Use system proxy settings | False |
+    | How much time before the first fetch to retrieve incidents | False |
+    | None | False |
 
-#### Authorization:
-
-To obtain a trial or commercial DeCYFIR API Key, please contact ***contact@cyfirma.com***. 
-
-Your API key carries all your privileges, so keep it secure and don’t share it with anyone.
-
-
-##### ***Note*:**
-
-_DeCYFIR allows the following  incident types:_
-* _Attack Surface,_
-* _Impersonation & Infringement,_
-* _Data Breach & Web Monitoring,_
-* _Social & Public Exposure_
+4. Click **Test** to validate the URLs, token, and connection.

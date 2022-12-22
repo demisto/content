@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "3a6a714e-c879-4a33-89b0-4f7fa0dbaf9b",
+    "id": "DeCYFIR - Incoming Mapper",
     "mapping": {
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": true,
