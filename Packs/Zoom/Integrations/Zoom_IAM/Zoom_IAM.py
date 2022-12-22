@@ -296,29 +296,11 @@ def get_error_details(res: Dict[str, Any]) -> str:
 '''COMMAND FUNCTIONS'''
 
 
-def test_module(
-    verify,
-    proxy,
-    api_key,
-    api_secret,
-    account_id,
-    client_id,
-    client_secret,
-):
+def test_module(client: Client):
     """Tests connectivity with the client.
     Takes as an argument all client arguments to create a new client
     """
     try:
-        client = Client(
-            base_url=BASE_URL,
-            verify=verify,
-            proxy=proxy,
-            api_key=api_key,
-            api_secret=api_secret,
-            account_id=account_id,
-            client_id=client_id,
-            client_secret=client_secret,
-        )
         client.test()
     except DemistoException as e:
         error_message = e.message
@@ -378,17 +360,6 @@ def main():  # pragma: no cover
     try:
         check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
 
-        if command == 'test-module':
-            return_results(test_module(
-                verify=verify_certificate,
-                proxy=proxy,
-                api_key=api_key,
-                api_secret=api_secret,
-                account_id=account_id,
-                client_id=client_id,
-                client_secret=client_secret,
-            ))
-
         client = Client(
             base_url=BASE_URL,
             verify=verify_certificate,
@@ -399,6 +370,9 @@ def main():  # pragma: no cover
             client_id=client_id,
             client_secret=client_secret,
         )
+
+        if command == 'test-module':
+            return_results(test_module(client=client))
 
         demisto.debug(f'Command being called is {command}')
 

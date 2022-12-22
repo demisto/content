@@ -760,9 +760,7 @@ def main():  # pragma: no cover
         )
 
         if command == 'test-module':
-            return_results(test_module(
-                client=client,
-            ))
+            return_results(test_module(client=client))
 
         demisto.debug(f'Command being called is {command}')
 
