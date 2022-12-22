@@ -2421,6 +2421,8 @@ def sub_main():
             is_test_module = True
             demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
+            if args.get('upn_mailbox'):
+                params['default_target_mailbox'] = args.get('upn_mailbox')
             last_run = demisto.getLastRun()
             incidents = fetch_emails_as_incidents(client, last_run)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
