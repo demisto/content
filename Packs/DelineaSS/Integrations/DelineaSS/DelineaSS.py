@@ -477,40 +477,23 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
     )
 
 
-def user_fetch_command(client, secretids):
-    credentials = fetch_credentials(client, secretids)
-    markdown = tableToMarkdown('Credentials to fetch', credentials)
- 
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix="Delinea.User.Fetch.Credentials",
-        outputs_key_field="credentials",
-        raw_response=credentials,
-        outputs=credentials
-    )
-
-
 def fetch_credentials(client, secretids):
-    credentials: List[Any] = []
-    finalsecretsid: List[Any]= []
-    finalcredentials: List[Any] = []
+    credentials = []
+
     try:
         secretsid = argToList(secretids)
-    except DemistoException as e:
+    except Exception as e:
         demisto.debug(f"Could not fetch credentials: Provide valid secret id.{e}")
         credentials = []
 
-    for id in secretsid:
-        if id not in finalsecretsid:
-            finalsecretsid.append(id)
+    if len(secretsid) == 0:
 
-    if not finalsecretsid :
-        credentials.clear()
         demisto.credentials(credentials)
-        demisto.debug("Could not fetch credentials: Enter a valid secret ID to fetch credentials.\n For multiple ID use ',' (e.g. 1,2)")
+        demisto.debug(
+            f"Could not fetch credentials: Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
         credentials = []
     else:
-        for secret_id in finalsecretsid:
+        for secret_id in secretsid:
             secret = client.getSecret(secret_id)
             items = secret.get('items')
             for item in items:
@@ -524,10 +507,9 @@ def fetch_credentials(client, secretids):
                         "name": str(secret.get('id'))
                     }
                     credentials.append(obj)
-                    finalcredentials.append(obj)
+
     demisto.credentials(credentials)
-    credentials.clear()
-    return finalcredentials
+    return credentials
 
 
 def main():
@@ -562,8 +544,7 @@ def main():
         'delinea-user-create': user_create_command,
         'delinea-user-search': user_search_command,
         'delinea-user-update': user_update_command,
-        'delinea-user-delete': user_delete_command,
-        'delinea-fetch-users': user_fetch_command
+        'delinea-user-delete': user_delete_command
     }
     command = demisto.command()
     try:
@@ -573,14 +554,9 @@ def main():
                         proxy=proxy,
                         verify=verify)
         if command in delinea_commands:
-            if command == "delinea-fetch-users":
-                return_results(
-                    delinea_commands[command](client, secretids)  # type: ignore[operator]
-                )
-            else:
-                return_results(
-                    delinea_commands[command](client, **demisto.args())  # type: ignore[operator]
-                )
+            return_results(
+                delinea_commands[command](client, **demisto.args())  # type: ignore[operator]
+            )
         if command == 'fetch-credentials':
             return_results(
                 fetch_credentials(client, secretids)

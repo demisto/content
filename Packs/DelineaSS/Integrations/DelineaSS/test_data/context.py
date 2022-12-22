@@ -412,3 +412,14 @@ SECRET_RPC_CHANGE_PASSWORD_CONTEXT = {
         "hasLauncher": "false"
     }
 }
+
+SECRET_GET_CREDENTIALS_CONTEXT = {
+    'Delinea.User.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
+        {
+            'name': '4',
+            'password': 'test00111',
+            'user': 'andy'
+        }
+    ]
+
+}
