@@ -85,6 +85,20 @@ configuration:
   - Start TLS
   required: true
   type: 15
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
+  defaultvalue: None
+  display: SSL Version
+  hidden: false
+  name: ssl_version
+  options:
+  - None
+  - TLS
+  - TLSv1
+  - TLSv1_1
+  - TLSv1_2
+  - TLS_CLIENT
+  required: false
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -197,7 +211,7 @@ script:
     description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.37249
+  dockerimage: demisto/py3-tools:1.0.0.40800
   feed: false
   isfetch: false
   longRunning: false
