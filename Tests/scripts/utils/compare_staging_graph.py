@@ -16,6 +16,8 @@ import io
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
 from typing import Tuple
+from demisto_sdk.commands.content_graph.content_graph_commands import create_content_graph
+from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 
 yaml = YAML()
 
@@ -220,30 +222,31 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
     first_level_dependencies_idset = deps_idset["dependencies"]
     first_level_dependencies_graph = deps_graph["dependencies"]
     if first_level_dependencies_idset != first_level_dependencies_graph:
-        message.append(f"Differences in dependencies for pack {pack}")
         mandatory_deps_idset = {dep for dep, data in first_level_dependencies_idset.items() if data.get("mandatory")}
         mandatory_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if data.get("mandatory")}
-        if missing_in_graph := (mandatory_deps_idset - mandatory_deps_graph):
+        optional_deps_idset = {dep for dep, data in first_level_dependencies_idset.items() if not data.get("mandatory")}
+        optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
+
+        if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
+            message.append(
+                f"Moved to optional dependencies for pack {pack}: "
+                f"{moved_to_optional}"
+            )
+
+        if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
+            message.append(
+                f"Moved to mandatory dependencies for pack {pack}: "
+                f"{moved_to_mandatory}"
+            )
+
+        if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(
                 f"Missing mandatory dependencies for pack {pack}: "
                 f"{missing_in_graph}"
             )
-        if extra_in_graph := (mandatory_deps_graph - mandatory_deps_idset):
+        if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(
                 f"Extra mandatory dependencies for pack {pack}: "
-                f"{extra_in_graph}"
-            )
-
-        optional_deps_idset = {dep for dep, data in first_level_dependencies_idset.items() if not data.get("mandatory")}
-        optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
-        if missing_in_graph := (optional_deps_idset - optional_deps_graph):
-            message.append(
-                f"Missing optional dependencies for pack {pack}: "
-                f"{missing_in_graph}"
-            )
-        if extra_in_graph := (optional_deps_graph - optional_deps_idset):
-            message.append(
-                f"Extra optional dependencies for pack {pack}: "
                 f"{extra_in_graph}"
             )
 
@@ -254,13 +257,13 @@ def main():
     parser.add_argument("--marketplace", "--mp", help="Marketplace to use")
     parser.add_argument("--output-path", help="Output path")
     parser.add_argument("--slack-token", "-s", help="Slack token", required=False)
-
     args = parser.parse_args()
     artifacts = Path(args.artifacts)
     output_path = Path(args.output_path)
     slack_token = args.slack_token
     marketplace = args.marketplace
-
+    with Neo4jContentGraphInterface() as interface:
+        create_content_graph(interface)
     zip_id_set = artifacts / "uploaded_packs-id_set"
     zip_graph = artifacts / "uploaded_packs-graph"
 
