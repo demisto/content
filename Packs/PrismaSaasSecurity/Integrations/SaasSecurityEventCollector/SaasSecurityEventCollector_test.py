@@ -60,6 +60,27 @@ def test_module(mocker, mock_client):
     assert test_module(client=mock_client) == 'ok'
 
 
+def test_get_new_access_token(mocker, mock_client):
+    mocker.patch.object(mock_client, 'get_token_request', return_value=('123', '100'))
+    access_token = mock_client.get_access_token()
+    assert access_token == '123'
+
+
+def test_get_existing_access_token(mocker, mock_client):
+    mocker.patch.object(
+        demisto,
+        'getIntegrationContextVersioned',
+        return_value={
+            'context': {
+                'access_token': '123', 'token_initiate_time': '10000.941587', 'token_expiration_seconds': '7200'
+            }
+        }
+    )
+    mocker.patch.object(time, 'time', return_value=16999.941587)
+    access_token = mock_client.get_access_token()
+    assert access_token == '123'
+
+
 class TestFetchEvents:
 
     EVENTS_DATA = [

@@ -64,8 +64,8 @@ class Client(BaseClient):
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
 
         if access_token and not is_token_expired(
-                token_initiate_time=float(token_initiate_time),
-                token_expiration_seconds=float(token_expiration_seconds)
+            token_initiate_time=float(token_initiate_time),
+            token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
 
