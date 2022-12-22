@@ -16,6 +16,7 @@ Build text from a template that can include DT expressions.
 | --- | --- |
 | value | The context to refer a value with $\{.xxx\} if \`template\` is not empty, otherwise the template text. |
 | template | The template text |
+| template_type | The template type |
 | ctx_data | Context Data: Input . \(single dot\) on \`From previous tasks\` to enable to extract the context data. |
 | ctx_inputs | \`inputs\` context: Input 'inputs' \(no quotation\) on \`From previous tasks\` to enable $\{inputs.\} expression in DT. |
 | ctx_inc | \`demisto\` context: Input 'incident' \(no quotation\) on \`From previous tasks\` to enable $\{incident.\} expression in DT. |
@@ -46,6 +47,7 @@ By default, a variable name starts with `${` and ends with `}` . You can change 
 | --- | --- | --- |
 | value | | Any value |
 | template | My name is ${first_name} ${last_name}. | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -74,6 +76,7 @@ My name is John Doe.
 | --- | --- | --- |
 | value | *See the value* | |
 | template | My name is ${.first_name} ${.last_name}. | |
+| template_type | | |
 | ctx_data | | |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -102,6 +105,7 @@ My name is John Doe.
 | --- | --- | --- |
 | value | My name is ${first_name} ${last_name}. | |
 | template | | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -130,6 +134,7 @@ My name is John Doe.
 | --- | --- | --- |
 | value | | Any value |
 | template | My name is %first_name% %last_name%. | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -158,6 +163,7 @@ My name is John Doe.
 | --- | --- | --- |
 | value | | Any value |
 | template | My name is $first_name $last_name. | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -186,6 +192,7 @@ My name is John Doe.
 | --- | --- | --- |
 | value | | Any value |
 | template | My name is ${first_name} ${last_name}. | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -213,6 +220,7 @@ My name is John ${last_name}
 | --- | --- | --- |
 | value | | Any value |
 | template | My name is ${first_name=val.toUpperCase()} ${last_name=val.toUpperCase()}. | |
+| template_type | | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -241,6 +249,55 @@ My name is JOHN DOE.
 | --- | --- | --- |
 | value | | Any value |
 | template | *See the template* | |
+| template_type | | |
+| ctx_data | . | Make sure that **From previous tasks** is selected |
+| ctx_inputs | | |
+| ctx_inc | | |
+| variable_markers | | |
+| keep_symbol_to_null | | |
+
+#### template (structured)
+```
+{
+  "1": "First name is ${first_name}",
+  "2": "Last name is ${last_name}",
+  "3": [
+    "First name is ${first_name}",
+    "Last name is ${last_name}"
+  ]
+}
+```
+
+#### Context Data
+```
+{
+  "first_name": "John",
+  "last_name": "Doe"
+}
+```
+
+#### Output
+```
+{
+  "1": "First name is John",
+  "2": "Last name is Doe",
+  "3": [
+    "First name is John",
+    "Last name is Doe"
+  ]
+}
+```
+
+---
+
+### Convert all the values in a JSON text
+
+#### Parameters
+| **Argument Name** | **Value** | **Note** |
+| --- | --- | --- |
+| value | | Any value |
+| template | *See the template* | |
+| template_type | json | |
 | ctx_data | . | Make sure that **From previous tasks** is selected |
 | ctx_inputs | | |
 | ctx_inc | | |
@@ -278,4 +335,3 @@ My name is JOHN DOE.
   ]
 }
 ```
-
