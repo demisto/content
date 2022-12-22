@@ -1180,7 +1180,6 @@ script:
     - defaultValue: '50'
       description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
       name: limit
-      type: string
     - auto: PREDEFINED
       description: 'The order the results are returned in. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc".'
       name: sort
