@@ -4,7 +4,7 @@ on:
     types: [opened, edited]
   schedule:
     - cron: '0 11 * * *'
-    - cron: '35 13 * * *'
+    - cron: '00 14 * * *'
 
 permissions:
   pull-requests: write
