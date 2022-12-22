@@ -12,7 +12,7 @@ sudo chown -R demisto $HOME
 
 echo "Setting up git certificate"
 
-sudo git config --system http.sslCAInfo /usr/local/share/ca-certificates/certs.crt
+curl -I https://github.com || sudo git config --system http.sslCAInfo /usr/local/share/ca-certificates/certs.crt
 
 echo "Setting up VSCode paths"
 
