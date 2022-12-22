@@ -4030,6 +4030,7 @@ def validate_integration_context() -> None:
         safely_update_context_data(cleared_ctx, context_version, should_force_update=True)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
     if MIRRORED_OFFENSES_FETCHED_CTX_KEY not in context_data:
+        print_debug_msg(f"Adding {MIRRORED_OFFENSES_FETCHED_CTX_KEY} to context")
         new_ctx[MIRRORED_OFFENSES_FETCHED_CTX_KEY] = {}
         safely_update_context_data(new_ctx, context_version, should_force_update=True)
 
