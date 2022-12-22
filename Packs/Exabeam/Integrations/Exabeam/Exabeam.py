@@ -5,8 +5,6 @@ from typing import Tuple, Dict, List, Any, Optional, Union
 import requests
 import dateparser
 import urllib3
-from pytz import utc
-from dateutil import parser
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -726,7 +724,7 @@ class Client(BaseClient):
         return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
                                   headers=headers)
 
-    def get_incidents(self, query: Dict[str, str]):
+    def get_incidents(self, query: Dict[str, Any]):
         headers = {**self._headers}
         return self._http_request(
             'POST',
@@ -1139,10 +1137,19 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
-def format_fetch_time_to_timestamp(start_time: Optional[str], end_time: Optional[str]) -> Tuple[int, int]:
+def order_time_as_milisecound_for_fetch(start_time, end_time) -> tuple[str, str]:
 
-    return (int(dateparser.parse(start_time).replace(tzinfo=utc).timestamp() * 1000.0),
-            int(dateparser.parse(end_time).replace(tzinfo=utc).timestamp() * 1000.0))
+    return str(convert_date_to_unix((
+        datetime.strptime(
+            start_time, '%Y-%m-%dT%H:%M:%S.%f'
+        )).strftime(
+            '%Y-%m-%dT%H:%M:%S.%f')
+    )), str(convert_date_to_unix((
+            datetime.strptime(
+                end_time, '%Y-%m-%dT%H:%M:%S.%f'
+            )).strftime(
+                '%Y-%m-%dT%H:%M:%S.%f')
+    ))
 
 
 ''' COMMANDS '''
@@ -1967,50 +1974,6 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
-def fetch_ir_as_incidents(client: Client, args: Dict[str, str]):
-    query = args.get('query')
-    incident_type = args.get('incident_type')
-    priority = args.get('priority')
-    status = args.get('status')
-
-    incidents = []
-
-    last_run = demisto.getLastRun()
-
-    if last_run and 'start_time' in last_run:
-        start_time = parser.parse(last_run.get('start_time'))
-    else:
-        start_time = datetime.now() - timedelta(days=int(DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS))
-
-    raw_response = client.get_list_incidents(query, incident_type, priority, status)
-    raw_incidents = raw_response['incidents']
-
-    page_size = raw_response['count']
-    query_run = 1
-
-    while raw_response['count'] > 0 and len(raw_incidents) < raw_response['totalCount']:
-        raw_response = client.get_list_incidents(query, incident_type, priority, status,
-                                                 limit=raw_response['totalCount'], page_size=page_size,
-                                                 page_number=query_run)
-        raw_incidents += raw_response['incidents']
-        query_run += 1
-
-    max_start_time = start_time
-    for incident in raw_incidents:
-        incident_start_time = parser.parse(convert_unix_to_date(incident["fields"]["startedDate"]))
-        if not start_time or incident_start_time > start_time:
-            incidents.append(format_single_incident(incident))
-
-        if incident_start_time > start_time:
-            max_start_time = incident_start_time
-
-    if incidents:
-        demisto.setLastRun({'start_time': max_start_time.isoformat()})
-
-    # this command will create incidents in Demisto
-    demisto.incidents(incidents)
-
-
 def list_incidents(client: Client, args: Dict[str, str]):
     incident_ids = argToList(args.get('incident_id'))
     query = args.get('query')
@@ -2052,33 +2015,45 @@ def list_incidents(client: Client, args: Dict[str, str]):
 def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     last_run = demisto.getLastRun()
-    demisto.debug(last_run)
+    demisto.debug(f"Last run before the fetch run: {last_run}")
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
         look_back=1,
-        date_format='%Y-%m-%dT%H:%M:%S.%fZ',
+        date_format='%Y-%m-%dT%H:%M:%S.%f',
     )
 
-    start_time_as_milisecound, end_time_as_milisecound = format_fetch_time_to_timestamp(start_time, end_time)
+    demisto.debug(start_time, end_time)
+    start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
+
     # query = args.get('query')
-    incident_type = args.get('incident_type')
-    priority = args.get('priority')
-    status = args.get('status')
+    incident_type = argToList(args.get('incident_type'))
+    priority = argToList(args.get('priority'))
+    status = argToList(args.get('status'))
     limit = arg_to_number(args.get('max_fetch', 50))
-
-    q = assign_params(
-        incidentType=incident_type,
-        priority=priority,
-        status=status,
-        startedDate=[start_time_as_milisecound, end_time_as_milisecound],
-        offset=0,
-        length=50,
-        sortBy='createdAt'
-    )
+    q = {
+        "queryMap": {
+            "status": status,
+            "incidentType": incident_type,
+            "priority": priority,
+            "startedDate": [
+                start_time_as_milisecound,
+                end_time_as_milisecound
+            ],
+        },
+        "sortBy": "createdAt",
+        "sortOrder": "asc",
+        "idOnly": False,
+        "offset": 0,
+        "length": last_run.get('limit') or limit
+    }
 
     resp = client.get_incidents(q)
     incidents_res: List[dict] = resp.get('incidents', [])
+    for i in range(len(incidents_res)):
+        incidents_res[i].update({
+            'createdAt': datetime.fromtimestamp(
+                incidents_res[i].get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2104,10 +2079,10 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
         look_back=1,
         created_time_field='createdAt',
         id_field='incidentId',
-        date_format='%Y-%m-%dT%H:%M:%S',
+        date_format='%Y-%m-%dT%H:%M:%S.%f',
         increase_last_run_time=True
     )
-
+    demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
 
 
@@ -2173,8 +2148,8 @@ def main():
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
             incidents, next_run = fetch_incidents(client, demisto.params())
-            demisto.incidents(incidents)
             demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif command == 'test-module':
             return_outputs(*commands[command](client, demisto.args(), demisto.params()))
         elif command in commands:

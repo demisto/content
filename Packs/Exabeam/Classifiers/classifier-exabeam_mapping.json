@@ -1,83 +1,58 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "exabeam_mapping",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 1,
-	"mapping": {
-		"Exabeam Incident": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Close Time": {
-					"simple": "fields.closedAt"
-				},
-				"Description": {
-					"simple": "fields.desc"
-				},
-				"Exabeam Id": {
-					"simple": "incidentId"
-				},
-				"Exabeam Queue": {
-					"simple": "fields.queue"
-				},
-				"Exabeam Source": {
-					"simple": "fields.source"
-				},
-				"Exabeam Source Id": {
-					"simple": "fields.sourceId"
-				},
-				"Item Owner": {
-					"simple": "fields.owner"
-				},
-				"Last Update Time": {
-					"simple": "fields.updatedAt"
-				},
-				"Source Category": {
-					"simple": "fields.incidentType"
-				},
-				"Source Create time": {
-					"simple": "fields.createdAt"
-				},
-				"Source Created By": {
-					"simple": "fields.createdBy"
-				},
-				"Source Priority": {
-					"simple": "fields.priority"
-				},
-				"Source Status": {
-					"simple": "fields.status"
-				},
-				"Source Updated by": {
-					"simple": "fields.updatedBy"
-				},
-				"Start Time": {
-					"simple": "fields.startedDate"
-				},
-				"Title": {
-					"simple": "name"
-				}
-			}
-		}
-	},
-	"name": "exabeam_mapping",
-	"nameRaw": "exabeam_mapping",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "Exabeam mapping",
+    "mapping": {
+        "Exabeam Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Close Time": {
+                    "simple": "baseFields.closedDate"
+                },
+                "Description": {
+                    "simple": "baseFields.description"
+                },
+                "Exabeam Id": {
+                    "simple": "incidentId"
+                },
+                "Exabeam Queue": {
+                    "simple": "baseFields.queue"
+                },
+                "Item Owner": {
+                    "simple": "baseFields.owner"
+                },
+                "Last Update Time": {
+                    "simple": "baseFields.updatedAt"
+                },
+                "Source Category": {
+                    "simple": "baseFields.incidentType"
+                },
+                "Source Create time": {
+                    "simple": "createdAt"
+                },
+                "Source Created By": {
+                    "simple": "baseFields.createdBy"
+                },
+                "Source Priority": {
+                    "simple": "baseFields.priority"
+                },
+                "Source Status": {
+                    "simple": "baseFields.status"
+                },
+                "Source Updated by": {
+                    "simple": "baseFields.updatedBy"
+                },
+                "Start Time": {
+                    "simple": "baseFields.startedDate"
+                },
+                "Title": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "Exabeam mapping",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
 }
