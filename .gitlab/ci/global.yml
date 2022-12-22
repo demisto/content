@@ -12,6 +12,14 @@
       - .npm/
     policy: pull
 
+.default-rule:
+    - changes:
+      - .devcontainer/**
+      - .vscode/**
+      - .circleci/**
+      - README.md
+      - .gitignore
+      when: never
 
 .setup-network-certs: &setup-network-certs
   - source .gitlab/helper_functions.sh
@@ -181,7 +189,7 @@
   extends:
     - .default-cache
     - .default-before-script
-
+    - .default-rule
 
 .trigger-slack-notification:
   stage: .post
