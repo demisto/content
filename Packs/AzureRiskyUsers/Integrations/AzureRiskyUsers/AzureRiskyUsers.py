@@ -1,12 +1,12 @@
-# type: ignore
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from typing import Any, Dict, Optional, Union
+from urllib.parse import parse_qs, urlparse
 
+import demistomock as demisto  # noqa: F401
 import requests
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
-from typing import Dict, Optional, Any, Union
+from CommonServerPython import *  # noqa: F401
+
+# type: ignore
+
 
 CLIENT_CREDENTIALS_FLOW = 'Client Credentials'
 DEVICE_FLOW = 'Device Code'
@@ -104,9 +104,13 @@ class Client:
         Returns:
             response (dict): API response from AzureRiskyUsers.
         """
+        detectedDateTimeBefore = None
+        detectedDateTimeAfter = None
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
+                                        '$filter': build_query_filter(risk_state, risk_level,
+                                                                      detectedDateTimeBefore,
+                                                                      detectedDateTimeAfter)})
 
         return self.ms_client.http_request(method='GET',
                                            url_suffix="identityProtection/riskyUsers",
@@ -125,8 +129,10 @@ class Client:
         return self.ms_client.http_request(method='GET',
                                            url_suffix=f'identityProtection/riskyUsers/{id}')
 
-    def risk_detections_list_request(self, risk_state: Optional[str], risk_level: Optional[str],
-                                     limit: int, skip_token: str = None) -> dict:
+    def risk_detections_list_request(self, limit: int, risk_state: Optional[str], risk_level: Optional[str], orderBy: Optional[str],
+                                     detectedDateTimeBefore: Optional[str],
+                                     detectedDateTimeAfter: Optional[str],
+                                     skip_token: str = None) -> dict:
         """
         Get a list of the Risk Detection objects and their properties.
 
@@ -139,10 +145,15 @@ class Client:
         return:
             Response (dict): API response from AzureRiskyUsers.
         """
+        LOG(f'VIPUL: PARAM BEFORE EMPTY  limit= {limit}, risk_state = {risk_state}, risk_level= {risk_level}, orderBy= {orderBy}, detectedDateTimeBefore= {detectedDateTimeBefore}, detectedDateTimeAfter= {detectedDateTimeAfter}, skip_token= {skip_token}')
         params = remove_empty_elements({'$top': limit,
                                         '$skiptoken': skip_token,
-                                        '$filter': build_query_filter(risk_state, risk_level)})
-
+                                        '$orderby': orderBy,
+                                        '$filter': build_query_filter(risk_state, risk_level,
+                                                                      detectedDateTimeBefore,
+                                                                      detectedDateTimeAfter)
+                                        })
+        LOG(f'VIPUL: remove_empty_elements params = {params}')
         return self.ms_client.http_request(method='GET',
                                            url_suffix="/identityProtection/riskDetections",
                                            params=params)
@@ -161,7 +172,7 @@ class Client:
                                            url_suffix=f'/identityProtection/riskDetections/{id}')
 
 
-def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> Optional[str]:
+def build_query_filter(risk_state: Optional[str], risk_level: Optional[str], detectedDateTimeBefore: Optional[str], detectedDateTimeAfter: Optional[str]) -> Optional[str]:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.
@@ -173,12 +184,32 @@ def build_query_filter(risk_state: Optional[str], risk_level: Optional[str]) -> 
     Returns:
         str: Query filter string for API call.
     """
-    if risk_state and risk_level:
-        return f"riskState eq '{risk_state}' and riskLevel eq '{risk_level}'"
+    if risk_state and risk_level and detectedDateTimeBefore and detectedDateTimeAfter:
+        return f"riskState eq '{risk_state}' and riskLevel ge '{risk_level}' and detectedDateTime ge {detectedDateTimeAfter} and detectedDateTime le {detectedDateTimeBefore}"
+    elif risk_state and detectedDateTimeBefore and detectedDateTimeAfter:
+        return f"riskState eq '{risk_state}' and detectedDateTime ge {detectedDateTimeAfter} and detectedDateTime le {detectedDateTimeBefore}"
+    elif risk_state and risk_level and detectedDateTimeAfter:
+        return f"riskState eq '{risk_state}' and riskLevel ge '{risk_level}' and detectedDateTime ge {detectedDateTimeAfter}"
+    elif risk_state and detectedDateTimeBefore:
+        return f"riskState eq '{risk_state}' and detectedDateTime le {detectedDateTimeBefore}"
+    elif risk_state and detectedDateTimeAfter:
+        return f"riskState eq '{risk_state}' and detectedDateTime ge {detectedDateTimeAfter}"
+    elif risk_level and detectedDateTimeBefore and detectedDateTimeAfter:
+        return f"riskLevel ge '{risk_level}' and detectedDateTime ge {detectedDateTimeAfter} and detectedDateTime le {detectedDateTimeBefore}"
+    elif risk_level and detectedDateTimeBefore:
+        return f"riskLevel ge '{risk_level}' and detectedDateTime le {detectedDateTimeBefore}"
+    elif risk_level and detectedDateTimeAfter:
+        return f"riskLevel ge '{risk_level}' and detectedDateTime ge {detectedDateTimeAfter}"
+    elif detectedDateTimeBefore and detectedDateTimeAfter:
+        return f"detectedDateTime ge {detectedDateTimeAfter} and detectedDateTime le {detectedDateTimeBefore}"
+    elif detectedDateTimeBefore:
+        return f"detectedDateTime le {detectedDateTimeBefore}"
+    elif detectedDateTimeAfter:
+        return f"detectedDateTime ge {detectedDateTimeAfter}"
     elif risk_state:
         return f"riskState eq '{risk_state}'"
     elif risk_level:
-        return f"riskLevel eq '{risk_level}'"
+        return f"riskLevel ge '{risk_level}'"
     else:
         return None
 
@@ -209,6 +240,11 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    # added by Vipul Kaneriya
+    # orderBy = args.get('orderBy')
+    # riskLastUpdatedDateTimeStart = args.get('riskLastUpdatedDateTimeStart')
+    # riskLastUpdatedDateTimeEnd = args.get('riskLastUpdatedDateTimeEnd')
+    # End
     skip_token = None
 
     if page > 1:
@@ -216,6 +252,9 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
 
         raw_response = client.risky_users_list_request(risk_state,
                                                        risk_level,
+                                                       #    orderBy,
+                                                       #    riskLastUpdatedDateTimeStart,
+                                                       #    riskLastUpdatedDateTimeEnd,
                                                        offset)
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
@@ -229,6 +268,9 @@ def risky_users_list_command(client: Client, args: Dict[str, str]) -> CommandRes
     raw_response = client.risky_users_list_request(risk_state,
                                                    risk_level,
                                                    limit,
+                                                   #    orderBy,
+                                                   #    riskLastUpdatedDateTimeStart,
+                                                   #    riskLastUpdatedDateTimeEnd,
                                                    skip_token)
 
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
@@ -270,7 +312,8 @@ def risky_user_get_command(client: Client, args: Dict[str, Any]) -> CommandResul
     table_headers = ['id', 'userDisplayName', 'userPrincipalName', 'riskLevel',
                      'riskState', 'riskDetail', 'riskLastUpdatedDateTime']
 
-    outputs = {key: raw_response.get(key) for key in raw_response if key in table_headers}
+    outputs = {key: raw_response.get(key)
+               for key in raw_response if key in table_headers}
 
     readable_output = tableToMarkdown(name=f'Found Risky User With ID: {raw_response.get("id")}',
                                       t=outputs,
@@ -300,13 +343,28 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
     page = arg_to_number(args.get('page', 1))
     risk_state = args.get('risk_state')
     risk_level = args.get('risk_level')
+    # added by Vipul Kaneriya
+    orderBy = args.get('orderBy')
+    detectedDateTimeBefore = args.get('detectedDateTimeBefore')
+    detectedDateTimeAfter = args.get('detectedDateTimeAfter')
+    LOG(f'VIPUL: GET ARGS  limit= {limit}, page= {page}, risk_state = {risk_state}, risk_level= {risk_level}, orderBy= {orderBy}, detectedDateTimeBefore= {detectedDateTimeBefore}, detectedDateTimeAfter= {detectedDateTimeAfter}')
+    # End
     skip_token = None
 
     if page > 1:
         offset = limit * (page - 1)
-        raw_response = client.risk_detections_list_request(risk_state,
+
+        LOG(f'VIPUL: IN page > 1 risk_detections_list_command limit= {limit}, page= {page}, risk_state = {risk_state}, risk_level= {risk_level}, offset= {offset} orderBy= {orderBy}, detectedDateTimeBefore= {detectedDateTimeBefore}, detectedDateTimeAfter= {detectedDateTimeAfter}, offset= {offset}')
+
+        raw_response = client.risk_detections_list_request(limit,
+                                                           risk_state,
                                                            risk_level,
+                                                           orderBy,
+                                                           detectedDateTimeBefore,
+                                                           detectedDateTimeAfter,
                                                            offset)
+
+        # LOG(f'VIPUL: risk_detections_list_command.raw_response  {raw_response}')
 
         next_link = raw_response.get('@odata.nextLink')
         skip_token = get_skip_token(next_link=next_link,
@@ -317,14 +375,20 @@ def risk_detections_list_command(client: Client, args: Dict[str, Any]) -> Comman
         if type(skip_token) != str:
             return skip_token
 
-    raw_response = client.risk_detections_list_request(risk_state,
+    LOG(f'VIPUL: OUT risk_detections_list_command. limit= {limit}, page= {page}, risk_state = {risk_state}, risk_level= {risk_level}, orderBy= {orderBy}, detectedDateTimeBefore= {detectedDateTimeBefore}, detectedDateTimeAfter= {detectedDateTimeAfter}, skip_token= {skip_token}')
+
+    raw_response = client.risk_detections_list_request(limit,
+                                                       risk_state,
                                                        risk_level,
-                                                       limit,
+                                                       orderBy,
+                                                       detectedDateTimeBefore,
+                                                       detectedDateTimeAfter,
                                                        skip_token)
+    # LOG(f'VIPUL: 2 risk_detections_list_command.raw_response  {raw_response}')
 
     table_headers = ['id', 'userId', 'userDisplayName', 'userPrincipalName', 'riskDetail',
                      'riskEventType', 'riskLevel', 'riskState', 'riskDetail', 'lastUpdatedDateTime',
-                     'ipAddress']
+                     'detectedDateTime', 'ipAddress']
 
     outputs = raw_response.get('value', {})
 
@@ -362,7 +426,8 @@ def risk_detection_get_command(client: Client, args: Dict[str, Any]) -> CommandR
                      'riskEventType', 'riskLevel', 'riskState', 'ipAddress',
                      'detectionTimingType', 'lastUpdatedDateTime', 'location']
 
-    outputs = {key: raw_response.get(key) for key in raw_response if key in table_headers}
+    outputs = {key: raw_response.get(key)
+               for key in raw_response if key in table_headers}
 
     readable_output = tableToMarkdown(name=f'Found Risk Detection with ID: '
                                            f'{raw_response.get("id")}',
@@ -476,6 +541,7 @@ def main():
 
 from MicrosoftApiModule import *  # noqa: E402
 
-
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('AzureRiskyUsers', 'end', __line__())
