@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![DeCYFIR - v1.png](DeCYFIR%20-%20v1.png)
+![Author_image.png](..%2FAuthor_image.png)
