@@ -10,16 +10,16 @@ This playbook enables threat hunting for IOCs in your enterprise. It currently s
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* QRadar Indicator Hunting V2
-* Microsoft 365 Defender - Threat Hunting Generic
 * Splunk Indicator Hunting
+* Microsoft 365 Defender - Threat Hunting Generic
+* QRadar Indicator Hunting V2
 * Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 This playbook does not use any commands.
@@ -96,7 +96,8 @@ This playbook does not use any commands.
 | Microsoft365Defender.RetrievedEmails.SenderMailFromAddress | Sender email address in the MAIL FROM header, also known as the envelope sender or the Return-Path address. | string |
 | Microsoft365Defender.RetrievedEmails.Subject | Subject of the email. | string |
 | Microsoft365Defender.RetrievedEmails.ThreatTypes | Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats. | unknown |
+| HasResults | Indicates whether any results were retrieved for the threat hunting queries. | unknown |
 
 ## Playbook Image
 ---
-![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic_6_5.png)
+![Threat Hunting - Generic](../doc_files/Threat_Hunting_-_Generic.png)

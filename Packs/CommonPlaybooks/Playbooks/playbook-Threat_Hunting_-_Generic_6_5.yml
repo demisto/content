@@ -54,7 +54,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       IPAddress:
         simple: ${inputs.IPAddress}
@@ -120,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       IPAddresses:
         simple: ${inputs.IPAddress}
@@ -177,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 440
+          "y": 890
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       IPAddress:
         simple: ${inputs.IPAddress}
@@ -271,7 +271,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "7"
     scriptarguments:
       IPAddress:
         complex:
@@ -312,13 +312,272 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "7":
+    id: "7"
+    taskid: 3541bc13-e553-4e43-8677-8c8baed46647
+    type: title
+    task:
+      id: 3541bc13-e553-4e43-8677-8c8baed46647
+      version: -1
+      name: Check Hunting Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 43330f15-d191-4c2c-8204-a94b0ce1dea7
+    type: condition
+    task:
+      id: 43330f15-d191-4c2c-8204-a94b0ce1dea7
+      version: -1
+      name: Were Any Hunting Results Retrieved?
+      description: Checks if any hunting results were retrieved.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender
+                accessor: RetrievedEmails
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Microsoft365Defender.RetrievedEmails
+                accessor: NetworkMessageId
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedUsers
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedInternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedExternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedInternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: QRadar
+                accessor: DetectedExternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedUsers
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedInternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedExternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedInternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PANWHunting
+                accessor: DetectedExternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedUsers
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedInternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedExternalIPs
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedInternalHosts
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedExternalHosts
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ce35ec55-01f0-422e-8f51-9bef6c15e5ea
+    type: regular
+    task:
+      id: ce35ec55-01f0-422e-8f51-9bef6c15e5ea
+      version: -1
+      name: Set 'HasResults' to True
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: HasResults
+      value:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8ca9338a-e63b-41fd-8cfe-f55a0103f337
+    type: regular
+    task:
+      id: 8ca9338a-e63b-41fd-8cfe-f55a0103f337
+      version: -1
+      name: Set 'HasResults' to False
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: HasResults
+      value:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 445,
+        "height": 895,
         "width": 1640,
         "x": -400,
         "y": 60
@@ -537,6 +796,9 @@ outputs:
   type: string
 - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
   description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
+  type: unknown
+- contextPath: HasResults
+  description: Indicates whether any results were retrieved for the threat hunting queries.
   type: unknown
 tests:
 - No tests (auto formatted)
