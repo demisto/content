@@ -298,272 +298,272 @@ script:
     - contextPath: GSuite.ChromeOSDevices.PageToken.NextPageToken
       description: The token of the next page.
       type: String
-    - contextPath: GSuite.ChromeOSDevices.ChromeOSDevices
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects
       description: A list of ChromeOS device objects.
       type: List
-    - contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceId
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceId
       description: The unique ID of the ChromeOS device.
       type: String
-    - contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.serialNumber
+    - contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.serialNumber
       description: The ChromeOS device serial number entered when the device was enabled.
       type: String
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.status
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.status
       description: Status of the ChromeOS device.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastSync
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastSync
       description: The date and time the ChromeOS device was last synchronized with the policy settings in the Admin console.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.supportEndDate
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.supportEndDate
       description: The final date the ChromeOS device will be supported.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.annotatedUser
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedUser
       description: The user of the ChromeOS device as noted by the administrator.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.annotatedLocation
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedLocation
       description: The address or location of the ChromeOS device as noted by the administrator.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.notes
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.notes
       description: Notes about this ChromeOS device added by the administrator.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.model
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.model
       description: The ChromeOS device's model information.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.meid
-      description: The Mobile Equipment Identifier (MEID) or the International Mobile Equipment Identity (IMEI) for the 3G mobile card in a mobile device.
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.meid
+      description: The Mobile Equipment Identifier (MEID) or the International Mobile Equipment Identity (IMEI) for the 3G mobile card in a ChromeOS device.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.orderNumber
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orderNumber
       description: The ChromeOS device's order number.
     - type: Boolean
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.willAutoRenew
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.willAutoRenew
       description: Determines if the ChromeOS device will auto renew its support after the support end date.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osVersion
       description: The ChromeOS device's operating system version.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.platformVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.platformVersion
       description: The ChromeOS device's platform version.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.firmwareVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firmwareVersion
       description: The ChromeOS device's firmware version.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.macAddress
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.macAddress
       description: The ChromeOS device's wireless MAC address.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.bootMode
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.bootMode
       description: The boot mode for the ChromeOS device.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastEnrollmentTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastEnrollmentTime
       description: The date and time the ChromeOS device was last enrolled.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.kind
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.kind
       description: The type of resource.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers
       description: A list of recent ChromeOS device users, in descending order, by last login time.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.type
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.type
       description: The type of the user.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.email
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.email
       description: The user's email address.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges
       description: A list of active time ranges.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.activeTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.activeTime
       description: Duration of usage in milliseconds.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.date
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.date
       description: Date of usage.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress
       description: The ChromeOS device's MAC address on the ethernet network interface.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.annotatedAssetId
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedAssetId
       description: The asset identifier as noted by an administrator or specified during enrollment.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.etag
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.etag
       description: ETag of the resource.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports
       description: Reports of disk space and other info about mounted/connected volumes.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo
       description: Disk volumes.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.volumeId
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.volumeId
       description: Volume ID.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageTotal
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageTotal
       description: Total disk space [in bytes].
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageFree
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageFree
       description: Free disk space [in bytes].
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamTotal
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamTotal
       description: Total RAM on the ChromeOS device in bytes.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports
       description: Reports of CPU utilization and temperature.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.reportTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.reportTime
       description: Date and time the report was received.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuUtilizationPercentageInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuUtilizationPercentageInfo
       description: The CPU utilization percentage.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo
       description: A list of CPU temperature samples.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.temperature
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.temperature
       description: Temperature in Celsius degrees.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.label
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.label
       description: CPU label.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo
       description: Information regarding CPU specs in the device.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.model
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.model
       description: The CPU model name.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.architecture
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.architecture
       description: The CPU architecture.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.maxClockSpeedKhz
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.maxClockSpeedKhz
       description: The maximum CPU clock speed in kHz.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus
       description: Information for the logical CPUs.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.maxScalingFrequencyKhz
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz
       description: Maximum frequency the CPU is allowed to run at, by policy.
     - type: Integer
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.currentScalingFrequencyKhz
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz
       description: Current frequency the CPU is running at.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.idleDuration
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.idleDuration
       description: Idle time since last boot.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates
       description: The power consumption state of the CPU. For more information, see the documentation published by the CPU maker.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.displayName
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.displayName
       description: Name of the state.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.sessionDuration
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.sessionDuration
       description: Time spent in the state since the last reboot.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles
       description: A list of device files to download.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.name
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.name
       description: File name.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.type
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.type
       description: File type.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.downloadUrl
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.downloadUrl
       description: File download URL.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime
       description: Date and time the file was created.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports
       description: Reports of amounts of available RAM memory.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.reportTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.reportTime
       description: Date and time the report was received.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.systemRamFreeInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.systemRamFreeInfo
       description: Report of free RAM memory.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork
       description: Contains last known network.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.ipAddress
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.ipAddress
       description: The IP address.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.wanIpAddress
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.wanIpAddress
       description: The WAN IP address.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.autoUpdateExpiration
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.autoUpdateExpiration
       description: The timestamp after which the device will stop receiving Chrome updates or support.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress0
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress0
       description: MAC address used by the Chromebook's internal ethernet port, and for onboard network (ethernet) interface. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.dockMacAddress
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.dockMacAddress
       description: Built-in MAC address for the docking station that the device connected to. Factory sets Media Access Control address (MAC address) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve (12) hexadecimal digits without any delimiter (uppercase letters). This is only relevant for some devices.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.manufactureDate
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.manufactureDate
       description: The date the device was manufactured in yyyy-mm-dd format.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitPath
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitPath
       description: The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /.
     - type: Object
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo
       description: Trusted Platform Module (TPM).
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.family
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.family
       description: TPM family, using the TPM 2.0 style encoding.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.specLevel
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.specLevel
       description: TPM specification level.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.manufacturer
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.manufacturer
       description: TPM manufacturer code.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.tpmModel
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.tpmModel
       description: TPM model number.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.firmwareVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.firmwareVersion
       description: TPM firmware version.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.vendorSpecific
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.vendorSpecific
       description: Vendor-specific information such as vendor ID.
     - type: List
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles
       description: A list of screenshot files to download.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.name
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.name
       description: File name.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.type
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.type
       description: File type.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.downloadUrl
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.downloadUrl
       description: File download URL.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.createTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.createTime
       description: Date and time the file was created.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitId
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitId
       description: The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit.
     - type: Object
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus
       description: The status of the operating system updates for the device.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.state
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.state
       description: The update state of an operating system update.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetOsVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetOsVersion
       description: New platform version of the operating system image being downloaded and applied.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetKioskAppVersion
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetKioskAppVersion
       description: New required platform version from the pending updated kiosk app.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateTime
       description: Date and time of the last successful operating system update.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateCheckTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateCheckTime
       description: Date and time of the last update check.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.rebootTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.rebootTime
       description: Date and time of the last reboot.
     - type: String
-      contextPath: GSuite.ChromeOSDevices.ChromeOSDevices.firstEnrollmentTime
+      contextPath: GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime
       description: Date and time for the first time the device was enrolled.
   - arguments:
     - default: false

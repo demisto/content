@@ -1727,96 +1727,96 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GSuite.ChromeOSDevices.PageToken.NextPageToken | String | The token of the next page. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices | List | A list of Chrome OS Device objects. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceId | String | The unique ID of the Chrome device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.serialNumber | String | The Chrome device serial number entered when the device was enabled. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.status | String | Status of the device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.lastSync | String | The date and time the device was last synchronized with the policy settings in the Admin console. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.supportEndDate | String | The final date the device will be supported. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedUser | String | The user of the device as noted by the administrator. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedLocation | String | The address or location of the device as noted by the administrator. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.notes | String | Notes about this device added by the administrator. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.model | String | The device's model information. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.meid | String | The Mobile Equipment Identifier \(MEID\) or the International Mobile Equipment Identity \(IMEI\) for the 3G mobile card in a mobile device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.orderNumber | String | The device's order number. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.willAutoRenew | Boolean | Determines if the device will auto renew its support after the support end date. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osVersion | String | The Chrome device's operating system version. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.platformVersion | String | The Chrome device's platform version. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.firmwareVersion | String | The Chrome device's firmware version. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.macAddress | String | The device's wireless MAC address. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.bootMode | String | The boot mode for the device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.lastEnrollmentTime | String | The date and time the device was last enrolled. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.kind | String | The type of resource. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers | List | A list of recent device users, in descending order, by last login time. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.type | String | The type of the user. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.recentUsers.email | String | The user's email address. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges | List | A list of active time ranges. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.activeTime | Integer | Duration of usage in milliseconds. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.activeTimeRanges.date | Integer | Date of usage. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress | String | The device's MAC address on the ethernet network interface. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.annotatedAssetId | String | The asset identifier as noted by an administrator or specified during enrollment. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.etag | String | ETag of the resource. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports | List | Reports of disk space and other info about mounted/connected volumes. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo | List | Disk volumes. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.volumeId | String | Volume id. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageTotal | String | Total disk space \[in bytes\]. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.diskVolumeReports.volumeInfo.storageFree | String | Free disk space \[in bytes\]. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamTotal | String | Total RAM on the device in bytes. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports | List | Reports of CPU utilization and temperature. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.reportTime | String | Date and time the report was received. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuUtilizationPercentageInfo | List | The CPU utilization percentage. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo | List | A list of CPU temperature samples. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.temperature | Integer | Temperature in Celsius degrees. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuStatusReports.cpuTemperatureInfo.label | String | CPU label. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo | List | Information regarding CPU specs in the device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.model | String | The CPU model name. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.architecture | String | The CPU architecture. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.maxClockSpeedKhz | Integer | The max CPU clock speed in kHz. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus | List | Information for the Logical CPUs. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.maxScalingFrequencyKhz | Integer | Maximum frequency the CPU is allowed to run at, by policy. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.currentScalingFrequencyKhz | Integer | Current frequency the CPU is running at. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.idleDuration | String | Idle time since last boot. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates | List | C-States indicate the power consumption state of the CPU. For more information look at documentation published by the CPU maker. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.displayName | String | Name of the state. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.cpuInfo.logicalCpus.cStates.sessionDuration | String | Time spent in the state since the last reboot. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles | List | A list of device files to download. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.name | String | File name. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.type | String | File type. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.downloadUrl | String | File download URL. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime | String | Date and time the file was created. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.deviceFiles.createTime | String | Date and time the file was created. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports | List | Reports of amounts of available RAM memory. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.reportTime | String | Date and time the report was received. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.systemRamFreeReports.systemRamFreeInfo | List | Report of free RAM memory. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork | List | Contains last known network. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.ipAddress | String | The IP address. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.lastKnownNetwork.wanIpAddress | String | The WAN IP address. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.autoUpdateExpiration | String | The timestamp after which the device will stop receiving Chrome updates or support. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.ethernetMacAddress0 | String | MAC address used by the Chromebook's internal ethernet port, and for onboard network \(ethernet\) interface. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.dockMacAddress | String | Built-in MAC address for the docking station that the device connected to. Factory sets Media access control address \(MAC address\) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.manufactureDate | String | The date the device was manufactured in yyyy-mm-dd format. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitPath | String | The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo | Object | Trusted Platform Module \(TPM\). | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.family | String | TPM family, using the TPM 2.0 style encoding. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.specLevel | String | TPM specification level. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.manufacturer | String | TPM manufacturer code. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.tpmModel | String | TPM model number. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.firmwareVersion | String | TPM firmware version. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.tpmVersionInfo.vendorSpecific | String | Vendor-specific information such as Vendor ID. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles | List | A list of screenshot files to download. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.name | String | File name. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.type | String | File type. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.downloadUrl | String | File download URL. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.screenshotFiles.createTime | String | Date and time the file was created. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.orgUnitId | String | The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus | Object | The status of the OS updates for the device. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.state | String | The update state of an OS update. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetOsVersion | String | New platform version of the OS image being downloaded and applied. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.targetKioskAppVersion | String | New required platform version from the pending updated kiosk app. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateTime | String | Date and time of the last successful OS update. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.updateCheckTime | String | Date and time of the last update check. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.osUpdateStatus.rebootTime | String | Date and time of the last reboot. | 
-| GSuite.ChromeOSDevices.ChromeOSDevices.firstEnrollmentTime | String | Date and time for the first time the device was enrolled. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects | List | A list of Chrome OS Device objects. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceId | String | The unique ID of the Chrome device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.serialNumber | String | The Chrome device serial number entered when the device was enabled. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.status | String | Status of the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastSync | String | The date and time the device was last synchronized with the policy settings in the Admin console. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.supportEndDate | String | The final date the device will be supported. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedUser | String | The user of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedLocation | String | The address or location of the device as noted by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.notes | String | Notes about this device added by the administrator. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.model | String | The device's model information. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.meid | String | The Mobile Equipment Identifier \(MEID\) or the International Mobile Equipment Identity \(IMEI\) for the 3G mobile card in a ChromeOS device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orderNumber | String | The device's order number. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.willAutoRenew | Boolean | Determines if the device will auto renew its support after the support end date. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osVersion | String | The Chrome device's operating system version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.platformVersion | String | The Chrome device's platform version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.firmwareVersion | String | The Chrome device's firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.macAddress | String | The device's wireless MAC address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.bootMode | String | The boot mode for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastEnrollmentTime | String | The date and time the device was last enrolled. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.kind | String | The type of resource. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers | List | A list of recent device users, in descending order, by last login time. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.type | String | The type of the user. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.recentUsers.email | String | The user's email address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges | List | A list of active time ranges. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.activeTime | Integer | Duration of usage in milliseconds. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.activeTimeRanges.date | Integer | Date of usage. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress | String | The device's MAC address on the ethernet network interface. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.annotatedAssetId | String | The asset identifier as noted by an administrator or specified during enrollment. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.etag | String | ETag of the resource. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports | List | Reports of disk space and other info about mounted/connected volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo | List | Disk volumes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.volumeId | String | Volume id. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageTotal | String | Total disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.diskVolumeReports.volumeInfo.storageFree | String | Free disk space \[in bytes\]. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamTotal | String | Total RAM on the device in bytes. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports | List | Reports of CPU utilization and temperature. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuUtilizationPercentageInfo | List | The CPU utilization percentage. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo | List | A list of CPU temperature samples. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.temperature | Integer | Temperature in Celsius degrees. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuStatusReports.cpuTemperatureInfo.label | String | CPU label. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo | List | Information regarding CPU specs in the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.model | String | The CPU model name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.architecture | String | The CPU architecture. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.maxClockSpeedKhz | Integer | The max CPU clock speed in kHz. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus | List | Information for the Logical CPUs. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.maxScalingFrequencyKhz | Integer | Maximum frequency the CPU is allowed to run at, by policy. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.currentScalingFrequencyKhz | Integer | Current frequency the CPU is running at. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.idleDuration | String | Idle time since last boot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates | List | C-States indicate the power consumption state of the CPU. For more information look at documentation published by the CPU maker. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.displayName | String | Name of the state. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.cpuInfo.logicalCpus.cStates.sessionDuration | String | Time spent in the state since the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles | List | A list of device files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.deviceFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports | List | Reports of amounts of available RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.reportTime | String | Date and time the report was received. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.systemRamFreeReports.systemRamFreeInfo | List | Report of free RAM memory. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork | List | Contains last known network. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.ipAddress | String | The IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.lastKnownNetwork.wanIpAddress | String | The WAN IP address. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.autoUpdateExpiration | String | The timestamp after which the device will stop receiving Chrome updates or support. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.ethernetMacAddress0 | String | MAC address used by the Chromebook's internal ethernet port, and for onboard network \(ethernet\) interface. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.dockMacAddress | String | Built-in MAC address for the docking station that the device connected to. Factory sets Media access control address \(MAC address\) assigned for use by a dock. It is reserved specifically for MAC pass through device policy. The format is twelve \(12\) hexadecimal digits without any delimiter \(uppercase letters\). This is only relevant for some devices. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.manufactureDate | String | The date the device was manufactured in yyyy-mm-dd format. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitPath | String | The full parent path with the organizational unit's name associated with the device. Path names are case insensitive. If the parent organizational unit is the top-level organization, it is represented as a forward slash, /. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo | Object | Trusted Platform Module \(TPM\). | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.family | String | TPM family, using the TPM 2.0 style encoding. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.specLevel | String | TPM specification level. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.manufacturer | String | TPM manufacturer code. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.tpmModel | String | TPM model number. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.firmwareVersion | String | TPM firmware version. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.tpmVersionInfo.vendorSpecific | String | Vendor-specific information such as Vendor ID. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles | List | A list of screenshot files to download. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.name | String | File name. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.type | String | File type. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.downloadUrl | String | File download URL. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.screenshotFiles.createTime | String | Date and time the file was created. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.orgUnitId | String | The unique ID of the organizational unit. orgUnitPath is the human readable version of orgUnitId. While orgUnitPath may change by renaming an organizational unit within the path, orgUnitId is unchangeable for one organizational unit. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus | Object | The status of the OS updates for the device. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.state | String | The update state of an OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetOsVersion | String | New platform version of the OS image being downloaded and applied. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.targetKioskAppVersion | String | New required platform version from the pending updated kiosk app. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateTime | String | Date and time of the last successful OS update. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.updateCheckTime | String | Date and time of the last update check. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.osUpdateStatus.rebootTime | String | Date and time of the last reboot. | 
+| GSuite.ChromeOSDevices.ChromeOSListObjects.firstEnrollmentTime | String | Date and time for the first time the device was enrolled. | 
 
 #### Command example
 ```!gsuite-chromeosdevice-list customer_id=my_customer limit=2 admin_email=adminemail@domain.com```
