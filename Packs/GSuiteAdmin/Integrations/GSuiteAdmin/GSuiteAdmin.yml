@@ -1606,7 +1606,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided.
+    description: "Updates a custom user schema.\nNote: field_raw_json has higher precedence when both field_raw_json and field_json_entry_id are provided."
     execution: false
     name: gsuite-custom-user-schema-update
     outputs:
