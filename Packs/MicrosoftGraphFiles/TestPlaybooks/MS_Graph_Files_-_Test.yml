@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 136
+version: 139
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -16,7 +16,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "62"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 2265
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2380
+          "y": 4450
         }
       }
     note: false
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2730
+          "y": 4800
         }
       }
     note: false
@@ -163,7 +163,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "8"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2905
+          "y": 4975
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4100
+          "y": 6025
         }
       }
     note: false
@@ -283,37 +283,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 8f374269-4e05-4f75-8084-210ea8caa44b
-    type: title
-    task:
-      id: 8f374269-4e05-4f75-8084-210ea8caa44b
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "46"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -560,
-          "y": 2260
+          "y": 6375
         }
       }
     note: false
@@ -350,7 +320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3225
+          "y": 5150
         }
       }
     note: false
@@ -369,7 +339,7 @@ tasks:
       version: -1
       name: Save File ID
       description: Sets key/value pair in incident's context
-      script: SetContext
+      scriptName: SetContext
       type: regular
       iscommand: false
       brand: ""
@@ -389,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3575
+          "y": 5500
         }
       }
     note: false
@@ -426,7 +396,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3750
+          "y": 5675
         }
       }
     note: false
@@ -488,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4800
+          "y": 6725
         }
       }
     note: false
@@ -518,7 +488,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4975
+          "y": 6900
         }
       }
     note: false
@@ -558,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5120
+          "y": 7045
         }
       }
     note: false
@@ -622,7 +592,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5295
+          "y": 7220
         }
       }
     note: false
@@ -641,7 +611,7 @@ tasks:
       version: -1
       name: Save Folder ID In Context
       description: Sets key/value pair in incident's context
-      script: SetContext
+      scriptName: SetContext
       type: regular
       iscommand: false
       brand: ""
@@ -661,7 +631,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5790
+          "y": 7715
         }
       }
     note: false
@@ -691,7 +661,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5470
+          "y": 7395
         }
       }
     note: false
@@ -730,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6315
+          "y": 8240
         }
       }
     note: false
@@ -767,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6140
+          "y": 8065
         }
       }
     note: false
@@ -812,7 +782,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6490
+          "y": 8415
         }
       }
     note: false
@@ -842,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6840
+          "y": 8765
         }
       }
     note: false
@@ -874,7 +844,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 3780
         }
       }
     note: false
@@ -935,7 +905,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 4130
         }
       }
     note: false
@@ -965,7 +935,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 4305
         }
       }
     note: false
@@ -1001,7 +971,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 350
+          "y": 2440
         }
       }
     note: false
@@ -1069,7 +1039,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 2790
         }
       }
     note: false
@@ -1099,7 +1069,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 2965
         }
       }
     note: false
@@ -1138,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1020
+          "y": 3110
         }
       }
     note: false
@@ -1192,7 +1162,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 3460
         }
       }
     note: false
@@ -1222,7 +1192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 3635
         }
       }
     note: false
@@ -1262,7 +1232,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7335
+          "y": 9260
         }
       }
     note: false
@@ -1281,7 +1251,7 @@ tasks:
       version: -1
       name: Save File DriveID
       description: Sets key/value pair in incident's context
-      script: SetContext
+      scriptName: SetContext
       type: regular
       iscommand: false
       brand: ""
@@ -1301,7 +1271,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3400
+          "y": 5325
         }
       }
     note: false
@@ -1320,7 +1290,7 @@ tasks:
       version: -1
       name: Save Folder Parent ID
       description: Sets key/value pair in incident's context
-      script: SetContext
+      scriptName: SetContext
       type: regular
       iscommand: false
       brand: ""
@@ -1340,7 +1310,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5965
+          "y": 7890
         }
       }
     note: false
@@ -1380,7 +1350,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6985
+          "y": 8910
         }
       }
     note: false
@@ -1415,7 +1385,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 2615
         }
       }
     note: false
@@ -1450,7 +1420,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6665
+          "y": 8590
         }
       }
     note: false
@@ -1485,7 +1455,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4275
+          "y": 6200
         }
       }
     note: false
@@ -1520,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4625
+          "y": 6550
         }
       }
     note: false
@@ -1555,7 +1525,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 3285
         }
       }
     note: false
@@ -1590,7 +1560,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 3955
         }
       }
     note: false
@@ -1625,7 +1595,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2555
+          "y": 4625
         }
       }
     note: false
@@ -1660,7 +1630,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3925
+          "y": 5850
         }
       }
     note: false
@@ -1695,7 +1665,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7160
+          "y": 9085
         }
       }
     note: false
@@ -1722,7 +1692,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7510
+          "y": 9435
         }
       }
     note: false
@@ -1757,7 +1727,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5615
+          "y": 7540
         }
       }
     note: false
@@ -1780,14 +1750,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 4100
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -1827,8 +1797,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2370
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -1883,8 +1853,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2670
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -1924,8 +1894,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2970
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -1976,8 +1946,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 3520
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -2017,8 +1987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 3760
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -2054,8 +2024,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 3150
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -2102,8 +2072,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2825
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -2141,8 +2111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 3910
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -2182,8 +2152,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 3330
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -2217,8 +2187,43 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -560,
-          "y": 2500
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f1b060ed-34b2-4e59-887e-da7ecfd3b3ef
+    type: regular
+    task:
+      id: f1b060ed-34b2-4e59-887e-da7ecfd3b3ef
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -2233,9 +2238,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7525,
-        "width": 990,
-        "x": -560,
+        "height": 9450,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
