@@ -797,6 +797,9 @@ outputs:
 - contextPath: Microsoft365Defender.RetrievedEmails.ThreatTypes
   description: Verdict from the email filtering stack on whether the email contains malware, phishing, or other threats.
   type: unknown
+- contextPath: HasResults
+  description: Indicates whether any results were retrieved for the threat hunting queries.
+  type: unknown
 tests:
 - Calculate Severity - Generic v2 - Test
 - Wait Until Datetime - Test
