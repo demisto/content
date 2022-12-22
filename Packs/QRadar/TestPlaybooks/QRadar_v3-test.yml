@@ -1471,7 +1471,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "75"
+      - "34"
     scriptarguments:
       ref_name:
         simple: Test-Reference-Name_2
@@ -1520,7 +1520,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6410
+          "y": 6360
         }
       }
     note: false
@@ -2540,7 +2540,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "69"
+      - "78"
     scriptarguments:
       all:
         simple: "yes"
@@ -2550,7 +2550,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9820
+          "y": 9770
         }
       }
     note: false
@@ -2591,7 +2591,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9995
+          "y": 10095
         }
       }
     note: false
@@ -2603,10 +2603,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 3249eea1-4808-4f48-8812-97547a2ad626
+    taskid: 34cc1305-f1d5-42f3-881b-e170afd16a04
     type: regular
     task:
-      id: 3249eea1-4808-4f48-8812-97547a2ad626
+      id: 34cc1305-f1d5-42f3-881b-e170afd16a04
       version: -1
       name: Remote network cidrs List
       description: Retrieves the list of staged remote networks.
@@ -2628,7 +2628,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10170
+          "y": 10250
         }
       }
     note: false
@@ -2669,7 +2669,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 10345
+          "y": 10395
         }
       }
     note: false
@@ -2814,41 +2814,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
-    taskid: 24742322-b4cc-4450-8250-06de025ead31
-    type: regular
-    task:
-      id: 24742322-b4cc-4450-8250-06de025ead31
-      version: -1
-      name: Wait for reference deletion
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      seconds:
-        simple: "30"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 6280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "76":
     id: "76"
     taskid: 43547791-9ce6-4b47-85ff-8eab2e8863e9
@@ -2885,13 +2850,84 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 67c26e3f-9e40-4d68-8dfd-1e6219197c49
+    type: regular
+    task:
+      id: 67c26e3f-9e40-4d68-8dfd-1e6219197c49
+      version: -1
+      name: Delete Remote network cidrs
+      description: Deletes an existing staged remote network.
+      script: '|||qradar-remote-network-cidr-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      id:
+        simple: ${QRadar.RemoteNetworkCIDR.id}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 27d895f9-def8-4dd5-8a5f-c402ec7b2d5d
+    type: regular
+    task:
+      id: 27d895f9-def8-4dd5-8a5f-c402ec7b2d5d
+      version: -1
+      name: Remote network cidrs List
+      description: Retrieves the list of staged remote networks.
+      script: '|||qradar-remote-network-cidr-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      name:
+        simple: playbook-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 9880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 11060,
-        "width": 380,
+        "width": 780,
         "x": 50,
         "y": 50
       }
