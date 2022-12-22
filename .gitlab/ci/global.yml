@@ -13,6 +13,7 @@
     policy: pull
 
 .default-rule:
+  rules:
     - changes:
       - .devcontainer/**
       - .vscode/**
