@@ -171,14 +171,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.26.34"
+version = "1.26.35"
 description = "The AWS SDK for Python"
 category = "dev"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.34,<1.30.0"
+botocore = ">=1.29.35,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -187,7 +187,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.34"
+version = "1.29.35"
 description = "Low-level, data-driven core of boto 3."
 category = "dev"
 optional = false
@@ -517,8 +517,8 @@ build = ["gsutil (==5.14)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "52872252f2cd66f3b9713aa2df28f45bac5eeaf2"
-resolved_reference = "52872252f2cd66f3b9713aa2df28f45bac5eeaf2"
+reference = "3c72ce81a2d61549bee5e78f38fc1d4a4f9cecb5"
+resolved_reference = "3c72ce81a2d61549bee5e78f38fc1d4a4f9cecb5"
 
 [[package]]
 name = "deprecated"
@@ -931,7 +931,7 @@ python-versions = "*"
 
 [[package]]
 name = "isort"
-version = "5.11.3"
+version = "5.11.4"
 description = "A Python utility / library to sort Python imports."
 category = "dev"
 optional = false
@@ -2384,7 +2384,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "7617cf2edd06299a8325b7a483c6bca1c17d6aaa4882e472cde16fa524dc9b26"
+content-hash = "766d81a4b7167642c5c86bfa8e8f78fbcea58edd90b062182f69b645e79d2431"
 
 [metadata.files]
 aiohttp = [
@@ -2559,12 +2559,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.26.34-py3-none-any.whl", hash = "sha256:30b09bed9d2b0807674466e2cb4fd43ad4a880cf76b708ae42f234cb0b636309"},
-    {file = "boto3-1.26.34.tar.gz", hash = "sha256:0d6fcb87cd998bcebb0705967508539012a671ef0b1e2a888809fb6781e65b9f"},
+    {file = "boto3-1.26.35-py3-none-any.whl", hash = "sha256:f786a12eb036bbe6f473a351182275fd5c43c4e9c523cb8ec9b1946b18830d0d"},
+    {file = "boto3-1.26.35.tar.gz", hash = "sha256:282c9aa0af39fc3f0fac9c91e05f43145ff3d5fee29189b5343490131555981a"},
 ]
 botocore = [
-    {file = "botocore-1.29.34-py3-none-any.whl", hash = "sha256:652a749e0649d1eacd8c43ae1493a773ff4e4e4ea4bc7e69f6787d28237dca20"},
-    {file = "botocore-1.29.34.tar.gz", hash = "sha256:a9dbd06b6cad50208cdc5b8db542505c8792b5acdf7d31ed8a7e99db5746ea79"},
+    {file = "botocore-1.29.35-py3-none-any.whl", hash = "sha256:fc329d2772284dcffdf947023de589eaf72a4eb4737505114b1c0f3a1063b3b6"},
+    {file = "botocore-1.29.35.tar.gz", hash = "sha256:ca673347f46f03fb5f1e56326adc9c696daba860838dffbe85e9bb16a8c54d67"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -3074,8 +3074,8 @@ iniconfig = [
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
 ]
 isort = [
-    {file = "isort-5.11.3-py3-none-any.whl", hash = "sha256:83155ffa936239d986b0f190347a3f2285f42a9b9e1725c89d865b27dd0627e5"},
-    {file = "isort-5.11.3.tar.gz", hash = "sha256:a8ca25fbfad0f7d5d8447a4314837298d9f6b23aed8618584c894574f626b64b"},
+    {file = "isort-5.11.4-py3-none-any.whl", hash = "sha256:c033fd0edb91000a7f09527fe5c75321878f98322a77ddcc81adbd83724afb7b"},
+    {file = "isort-5.11.4.tar.gz", hash = "sha256:6db30c5ded9815d813932c04c2f85a360bcdd35fed496f4d8f35495ef0a261b6"},
 ]
 jinja2 = [
     {file = "Jinja2-3.1.2-py3-none-any.whl", hash = "sha256:6088930bfe239f0e6710546ab9c19c9ef35e29792895fed6e6e31a023a182a61"},
