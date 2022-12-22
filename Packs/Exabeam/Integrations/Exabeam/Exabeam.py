@@ -706,7 +706,7 @@ class Client(BaseClient):
                                              status, limit=None, page_number=None, page_size=None):
         params = {'incidentType': incident_type, 'priority': priority, 'status': status}
         if query:
-            for key, val in params:
+            for key, val in params.items():
                 if val:
                     query += f' AND {key}:{val}'
             params = {'query': query}
@@ -2151,7 +2151,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
-            return_outputs(*commands[command](client, demisto.args(), demisto.params()))
+            return_outputs(*commands[command](client, demisto.args(), demisto.params()))  # type: ignore
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
