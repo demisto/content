@@ -4,7 +4,6 @@ import demistomock as demisto
 import pytest
 from CommonServerPython import *
 
-
 integration_params = {
     "url": "https://localhost",
     "APItoken": "token",
@@ -913,7 +912,20 @@ def test_edit_issue_status(mocker):
     mocker.patch("JiraV2.get_issue", return_value=True)
     mocker.patch(
         "JiraV2.list_transitions_data_for_issue",
-        return_value={"transitions": [{"name": "To Do", "id": 1}]},
+        return_value={"transitions": [{"name": "To Do", "id": 1, "to": {
+            "self": "https: //demistodev.atlassian.net/rest/api/2/status/10000",
+            "description": "",
+            "iconUrl": "https://demistodev.atlassian.net/images/icons/status_generic.gif",
+            "name": "To Do",
+            "id": "10000",
+            "statusCategory": {
+                "self": "https://demistodev.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "To Do"
+            }
+        }}]},
     )
     mocked_return_error = mocker.patch("JiraV2.return_error", return_value=None)
     mocked_edit_transition = mocker.patch("JiraV2.edit_transition", return_value=None)

@@ -843,7 +843,7 @@ def edit_status(issue_id, status, issue):
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     # When changing the status we search the transition that leads to this status
-    transitions = [transition.get('to').get('name') for transition in j_res.get('transitions')]
+    transitions = [transition.get('to', {}).get('name', '') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
