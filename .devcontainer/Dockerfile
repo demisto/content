@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install dos2unix git python2 -y \
     && rm -rf /features \
     && git clone https://github.com/devcontainers/features.git /features \
     && cd /features \
+    # locking to the latest master commit in this repo to prevent breaking changes
+    # We should update this commit hash from time to time to
     && git checkout 42e5a013cc914f87d0ff7bf613a1f80d9ff57579
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
