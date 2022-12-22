@@ -1,5 +1,6 @@
 import demistomock as demisto
 import urllib3
+import time
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from typing import Dict, Tuple
@@ -12,6 +13,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 MAX_EVENTS_PER_REQUEST = 100
 VENDOR = 'paloaltonetworks'
 PRODUCT = 'saassecurity'
+
 
 ''' CLIENT CLASS '''
 
@@ -62,8 +64,8 @@ class Client(BaseClient):
         token_expiration_seconds = integration_context.get('token_expiration_seconds')
 
         if access_token and not is_token_expired(
-                token_initiate_time=float(token_initiate_time),
-                token_expiration_seconds=float(token_expiration_seconds)
+            token_initiate_time=float(token_initiate_time),
+            token_expiration_seconds=float(token_expiration_seconds)
         ):
             return access_token
 
@@ -156,17 +158,24 @@ def test_module(client: Client):
 
 
 def get_events_command(
-        client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR,
-        product=PRODUCT) -> Union[str, CommandResults]:
+    client: Client, args: Dict, max_fetch: Optional[int], vendor=VENDOR, product=PRODUCT
+) -> Union[str, CommandResults]:
     """
     Fetches events from the saas-security queue and return them to the war-room.
     in case should_push_events is set to True, they will be also sent to XSIAM.
     """
     should_push_events = argToBoolean(args.get('should_push_events'))
+    events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch)
+    if exception:
+        raise exception
 
-    if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
+    if events:
         if should_push_events:
-            send_events_to_xsiam(events=events, vendor=vendor, product=product)
+            try:
+                send_events_to_xsiam(events=events, vendor=vendor, product=product)
+            except Exception as e:
+                demisto.setLastRun({'events': events})
+                raise e
         return CommandResults(
             readable_output=tableToMarkdown(
                 'SaaS Security Logs',
@@ -183,29 +192,38 @@ def get_events_command(
     return 'No events were found.'
 
 
-def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> List[Dict]:
+def fetch_events_from_saas_security(client: Client, max_fetch: Optional[int] = None) -> Tuple[List[Dict], Exception | None]:
     """
     Fetches events from the saas-security queue.
+
+    timeouts (204) docs:
+    https://docs.paloaltonetworks.com/saas-security/saas-security-admin/saas-security-api/syslog-and-api-integration/
+    api-client-integration/public-api-references/log-events-api#id2bfde842-f708-4e0b-bc41-9809903a6021_id8089db72-8f30-
+    4cce-93d2-e39446be650d
     """
     events: List[Dict] = []
     under_max_fetch = True
 
     #  if max fetch is None, all events will be fetched until there aren't anymore in the queue (until we get 204)
-    while under_max_fetch:
-        response = client.get_events_request()
-        if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
-            break
-        fetched_events = response.json().get('events') or []
-        demisto.info(f'fetched events length: ({len(fetched_events)})')
-        demisto.debug(f'fetched events: ({fetched_events})')
-        events.extend(fetched_events)
-        if max_fetch:
-            under_max_fetch = len(events) < max_fetch
+    try:
+        while under_max_fetch:
+            response = client.get_events_request()
+            if response.status_code == 204:  # if we got 204, it means there aren't events in the queue, hence breaking.
+                break
+            fetched_events = response.json().get('events') or []
+            demisto.info(f'fetched events length: ({len(fetched_events)})')
+            demisto.info(f'fetched the following events: {fetched_events}')
+            events.extend(fetched_events)
+            if max_fetch:
+                under_max_fetch = len(events) < max_fetch
+    except Exception as exc:
+        demisto.info(f'Got error get_events: {exc}')
+        return events, exc
 
-    return events
+    return events, None
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     client_id: str = params.get('credentials', {}).get('identifier', '')
     client_secret: str = params.get('credentials', {}).get('password', '')
@@ -226,21 +244,31 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
         )
-
         if command == 'test-module':
-            return_results(test_module(client=client))
+            return_results(test_module(client))
         elif command == 'fetch-events':
-            send_events_to_xsiam(
-                events=fetch_events_from_saas_security(client=client, max_fetch=max_fetch),
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            last_run = demisto.getLastRun()
+            if not last_run.get('events'):
+                events, exception = fetch_events_from_saas_security(client=client, max_fetch=max_fetch)
+                if len(events) == 0 and exception:
+                    raise exception
+            else:
+                events = last_run.get('events')
+            try:
+                demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
+                send_events_to_xsiam(
+                    events=events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
+                demisto.setLastRun({})
+            except Exception as e:
+                demisto.setLastRun({'events': events})
+                raise e
         elif command == 'saas-security-get-events':
-            return_results(get_events_command(
-                client=client, args=args, max_fetch=max_fetch)
-            )
+            return_results(get_events_command(client, args, max_fetch=max_fetch))
         else:
-            raise ValueError(f'Command {command} is not implemented in saas-security integration.')
+            raise NotImplementedError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
