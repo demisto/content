@@ -9,11 +9,6 @@ sudo chown demisto node_modules
 sudo chown demisto /workspaces
 sudo chown -R demisto $HOME
 
-
-echo "Setting up git certificate"
-
-curl -I https://github.com || sudo git config --system http.sslCAInfo /usr/local/share/ca-certificates/certs.crt
-
 echo "Setting up VSCode paths"
 
 cp .devcontainer/settings.json .vscode/settings.json 

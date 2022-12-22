@@ -5,6 +5,12 @@
 # It tries to connect to a server (for instance, github), show the local certificates and save it to a file.
 
 # We connect to a random server and not paloaltonetworks.com to get external certificates. 
+curl -I https://github.com
+if [  $? -eq 0 ]; then
+    echo "No need to update certificate"
+    exit
+fi
+
 CONNECT_SERVER="github.com:443"
 
 FILE=$1
@@ -20,4 +26,7 @@ if [ ! -f "$FILE" ]; then
     echo "Failed getting the certificates, no output file was created."
     exit
 fi
+
+sudo git config --system http.sslCAInfo $FILE
+
 

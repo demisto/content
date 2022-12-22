@@ -9,7 +9,7 @@ ADD createCerts.sh .
 RUN apt-get update && apt-get install dos2unix git python2 -y \
     && dos2unix /createCerts.sh \
     && chmod +x /createCerts.sh \ 
-    && /createCerts.sh /usr/local/share/ca-certificates/certs.crt \
+    && /createCerts.sh $NODE_EXTRA_CA_CERTS \
     && update-ca-certificates \
     && rm -rf /features \
     && git clone https://github.com/devcontainers/features.git /features \
