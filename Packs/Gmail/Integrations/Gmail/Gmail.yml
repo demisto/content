@@ -631,7 +631,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: This is a list of accounts where the search will take place.
+      description: Accounts to search in.
       name: list_accounts
       required: false
       secret: false
@@ -641,7 +641,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searches the Gmail records for all Google users. (When there is more than 2500 accounts please use with the Search all mailboxes - Gmail with polling playbook)
+    description: Searches the Gmail records for all Google users. (For more than 2500 accounts, please use with the `Search all mailboxes - Gmail with polling` playbook)
     execution: false
     polling: true
     name: gmail-search-all-mailboxes

@@ -408,7 +408,7 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
+def mailboxes_to_entry(mailboxes: list) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
     result = []
     unsearched_accounts = []
@@ -759,15 +759,19 @@ def get_millis_from_date(date, arg_name):
 
 def cutting_for_batches(list_accounts: list) -> List[list]:
 
-    batch_size = int(len(list_accounts) / BATCH_DIVIDER)
-    rest = len(list_accounts) % BATCH_DIVIDER
-
     accounts: list = []
-    for i in range(1, BATCH_DIVIDER + 1):
-        accounts.append(list_accounts[batch_size * (i - 1):batch_size * i])
+    rest_accounts: list = []
 
-    if rest > 0:
-        accounts[0].extend(list_accounts[batch_size * BATCH_DIVIDER:])
+    batch_size = int(len(list_accounts) / BATCH_DIVIDER)
+    if rest := len(list_accounts) % BATCH_DIVIDER:
+        rest_accounts = list_accounts[-rest:]
+        list_accounts = list_accounts[:-rest]
+
+    for b in batch(list_accounts, batch_size):
+        accounts.append(b)
+
+    if rest_accounts:
+        accounts[0].extend(rest_accounts)
 
     return accounts
 
@@ -776,14 +780,14 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
 
     accounts_batches = cutting_for_batches(accounts)
 
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     args = {k: v for k, v in demisto.args().items()}
     for batch in accounts_batches:
 
         args.update({'list_accounts': batch})
         command_results.append(
             CommandResults(
-                readable_output='Please wait... serching...',
+                readable_output='Serching mailboxes, please wait...',
                 scheduled_command=ScheduledCommand(
                     command='gmail-search-all-mailboxes',
                     next_run_in_seconds=10,
@@ -792,7 +796,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
                 )
             )
         )
-        del args['list_accounts']
+        args.pop('list_accounts', None)
     if next_page_token:
         command_results.append(
             CommandResults(
@@ -1252,17 +1256,16 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_in_mailboxes(list_accounts, receive_only_accounts):
+def search_in_mailboxes(list_accounts: list[str], receive_only_accounts: bool) -> None:
 
+    futures = []
+    entries = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        futures = []
-        entries = []
         for user in list_accounts:
             futures.append(executor.submit(search_command, mailbox=user,
                                            receive_only_accounts=receive_only_accounts))
         for future in concurrent.futures.as_completed(futures):
-            entry = future.result()
-            if entry:
+            if entry := future.result():
                 entries.append(entry)
 
         if entries:
@@ -1285,7 +1288,7 @@ def search_all_mailboxes():
     else:
         # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
         if next_page_token:
-            del demisto.args()['page-token']
+            demisto.args().pop('page-token', None)
 
         # Get the accounts that will be searched, maximum accounts is set by MAX_USERS.
         all_accounts, next_page_token = get_mailboxes(MAX_USERS, next_page_token)
@@ -1305,7 +1308,7 @@ def search_all_mailboxes():
             search_all_mailboxes()
 
 
-def search_command(mailbox=None, receive_only_accounts=False):
+def search_command(mailbox: str = None, receive_only_accounts: bool = False) -> dict[str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
