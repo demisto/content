@@ -222,21 +222,21 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
         optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
 
         if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
-            message.append(f"Moved to optional dependencies for pack {pack}: " f"{sorted(moved_to_optional)}")
+            message.append(f"Moved to optional dependencies for pack {pack}: {sorted(moved_to_optional)}")
 
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
-            message.append(f"Moved to mandatory dependencies for pack {pack}: " f"{sorted(moved_to_mandatory)}")
+            message.append(f"Moved to mandatory dependencies for pack {pack}: {sorted(moved_to_mandatory)}")
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(f"Missing mandatory dependencies for pack {pack}: " f"{sorted(missing_in_graph)}")
+            message.append(f"Missing mandatory dependencies for pack {pack}: {sorted(missing_in_graph)}")
 
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(f"Extra mandatory dependencies for pack {pack}: " f"{sorted(extra_in_graph)}")
+            message.append(f"Extra mandatory dependencies for pack {pack}: {sorted(extra_in_graph)}")
 
         if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(f"Missing optional dependencies for pack {pack}: " f"{sorted(missing_in_graph)}")
+            message.append(f"Missing optional dependencies for pack {pack}: {sorted(missing_in_graph)}")
         if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(f"Extra optional dependencies for pack {pack}: " f"{sorted(extra_in_graph)}")
+            message.append(f"Extra optional dependencies for pack {pack}: {sorted(extra_in_graph)}")
 
 
 def main():
