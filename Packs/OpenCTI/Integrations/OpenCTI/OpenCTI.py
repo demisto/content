@@ -1,5 +1,7 @@
 import copy
 from typing import List, Optional
+from io import StringIO
+import sys
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -239,6 +241,7 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         Returns:
             readable_output, raw_response
         """
+    redirect_std_out = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
     indicator_type = args.get("type")
     created_by = args.get("created_by")
     marking_id = args.get("marking_id")
@@ -261,6 +264,8 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         simple_observable_value = value
     try:
         # cti code prints to stdout so we need to catch it.
+        if redirect_std_out:
+            sys.stdout = StringIO()
         result = client.stix_cyber_observable.create(
             simple_observable_key=simple_observable_key,
             simple_observable_value=simple_observable_value,
@@ -270,6 +275,8 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
             simple_observable_description=description,
             x_opencti_score=score, observableData=data
         )
+        if redirect_std_out:
+            sys.stdout = sys.__stdout__
     except KeyError as e:
         raise DemistoException(f'Missing argument at data {e}')
 

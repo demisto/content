@@ -22,6 +22,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- name: redirect_std_out
+  display: Redirect stdout
+  required: false
+  type: 8
+  additionalinfo: Used for troubleshooting purposes.
 description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
 display: OpenCTI
 name: OpenCTI
