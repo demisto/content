@@ -58,9 +58,10 @@ script:
           auto: PREDEFINED
           predefined:
             - Basic
-            - Pro
+            - Licensed
             - Corporate
-          description: The type of the newly created user
+          description: >
+            The type of the newly created user. Note: the type "Corporate" is not sopprted in Zoom v2 and above.
           defaultValue: Basic
       outputs:
         - contextPath: Zoom.User.id

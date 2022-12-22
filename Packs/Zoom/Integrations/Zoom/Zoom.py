@@ -15,10 +15,13 @@ TOKEN_LIFE_TIME = timedelta(minutes=58)
 # maximun records that the api can return in one request
 MAX_RECORDS_PER_PAGE = 300
 
+# Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
+# Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
 USER_TYPE_MAPPING = {
-    "Basic": "Basic",
-    2: "Pro",
-    3: "Corp"
+    "Basic": 1,
+    "Pro": 2,
+    "Licensed": 2,
+    "Corporate": 3
 }
 '''CLIENT CLASS'''
 
@@ -125,15 +128,7 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
 
-    def zoom_user_create(self, user_type: str, email: str, first_name: str, last_name: str):
-        ut = user_type
-        USER_TYPE_MAPPING.get(ut)
-        user_type = 1  # Basic
-        if ut == 'Pro':
-            user_type = 2
-        elif ut == 'Corporate':
-            user_type = 3
-
+    def zoom_user_create(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self._http_request(
             method='POST',
             url_suffix='users',
@@ -142,7 +137,7 @@ class Client(BaseClient):
                 'action': 'create',
                 'user_info': {
                     'email': email,
-                    'type': user_type,
+                    'type': user_type_num,
                     'first_name': first_name,
                     'last_name': last_name}},
         )
@@ -159,8 +154,8 @@ class Client(BaseClient):
         if limit:
             limit = arg_to_number(limit)
             # "page_size" is specific referring to demisto.args,
-            # because the error raising, i need to distinguish
-            # between a user argument and the default argument
+            # because of the error raising, i need to distinguish
+            # between a argument the user entered and the default argument
             args = demisto.args()
             if limit and ("page_size" in args or next_page_token or user_id):
                 # arguments collision
@@ -219,138 +214,15 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def zoom_meeting_create(self, user_id: str,
-                            topic: str,
-                            host_video: bool | str = True,
-                            jbh_time: int | str | None = None,
-                            start_time: str = None,
-                            timezone: str = None,
-                            type: str = "instant",
-                            auto_recording: str = "none",
-                            encryption_type: str = "enhanced_encryption",
-                            join_before_host: bool | str = False,
-                            meeting_authentication: bool | str = False,
-                            waiting_room: bool | str = False,
-                            end_date_time: str | None = None,
-                            end_times: int | str = 1,
-                            monthly_day: int | str = 1,
-                            monthly_week: int | str | None = None,
-                            monthly_week_day: int | str | None = None,
-                            repeat_interval: int | str | None = None,
-                            recurrence_type: int | str | None = None,
-                            weekly_days: int | str = 1
-                            ):
-
-        # converting
-        host_video = argToBoolean(host_video)
-        join_before_host = argToBoolean(join_before_host)
-        meeting_authentication = argToBoolean(meeting_authentication)
-        waiting_room = argToBoolean(waiting_room)
-        end_times = arg_to_number(end_times)
-        monthly_day = arg_to_number(monthly_day)
-        monthly_week = arg_to_number(monthly_week)
-        monthly_week_day = arg_to_number(monthly_week_day)
-        repeat_interval = arg_to_number(repeat_interval)
-        weekly_days = arg_to_number(weekly_days)
-
-        if recurrence_type == "Daily":
-            recurrence_type = 1
-        elif recurrence_type == "Weekly":
-            recurrence_type = 2
-        elif recurrence_type == "Monthly":
-            recurrence_type = 3
-
-        num_type = 1  # "instant"
-        if type == "scheduled":
-            num_type = 2
-        elif type == "recurring meeting with fixed time":
-            num_type = 8
-
-        # argument checking
-        # for arguments that have a default value, i use demisto.args to trigger an exception if user entered a value.
-        args = demisto.args()
-        if type == "instant" and (timezone or start_time):
-            raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
-
-        if jbh_time and not join_before_host:
-            raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
-
-        if waiting_room and join_before_host:
-            raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
-
-        if args.get("end_times") and end_date_time:
-            raise DemistoException(
-                "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time.")
-
-        if num_type != 8 and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
-                                 monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
-            raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
-
-        if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
-                                                           monthly_week, monthly_week_day)):
-            raise DemistoException(
-                "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
-
-        if num_type == 8 and recurrence_type == 3 and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
-            raise DemistoException(
-                """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
-                must have the fallowing arguments: monthly_week and monthly_week_day""")
-
-        if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
-            raise DemistoException("Weekly_days is for weekly recurrence_type only")
-
-        if num_type == 8 and not recurrence_type:
-            raise DemistoException(
-                "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type")
-
-        # converting separately after the argument checking, because 0 as an int is equaled to false
-        jbh_time = arg_to_number(jbh_time)
-
-        if start_time:
-            check_start_time_format(start_time)
-
-        json_all_data = {}
-
-        # special section for recurring meeting with fixed time
-        if num_type == 8:
-            json_all_data.update({"recurrence": {
-                "end_date_time": end_date_time,
-                "end_times": end_times,
-                "monthly_day": monthly_day,
-                "monthly_week": monthly_week,
-                "monthly_week_day": monthly_week_day,
-                "repeat_interval": repeat_interval,
-                "type": recurrence_type,
-                "weekly_days": weekly_days
-            }})
-        json_all_data.update({
-            "settings": {
-                "auto_recording": auto_recording,
-                "encryption_type": encryption_type,
-                "host_video": host_video,
-                "jbh_time": jbh_time,
-                "join_before_host": join_before_host,
-                "meeting_authentication": meeting_authentication,
-                "waiting_room": waiting_room
-            },
-            "start_time": start_time,
-            "timezone": timezone,
-            "type": num_type,
-            "topic": topic,
-        })
+    def zoom_meeting_create(self, url_suffix: str, json_data: dict):
         return self._http_request(
             method='POST',
-            url_suffix=f"users/{user_id}/meetings",
+            url_suffix=url_suffix,
             headers={'authorization': f'Bearer {self.access_token}'},
-            # remove all keys with val of None
-            json_data=remove_None_values_from_dict(json_all_data))
+            json_data=json_data)
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str | None = None,
                          show_previous_occurrences: bool | str = False):
-        # converting
-        # if show_previous_occurrences != None:
-        show_previous_occurrences = argToBoolean(show_previous_occurrences)
-
         return self._http_request(
             method='GET',
             url_suffix=f"/meetings/{meeting_id}",
@@ -571,7 +443,8 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
 
 
 def zoom_user_create_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
-    raw_data = client.zoom_user_create(user_type, email, first_name, last_name)
+    user_type_num = USER_TYPE_MAPPING.get(user_type)
+    raw_data = client.zoom_user_create(user_type_num, email, first_name, last_name)
     return CommandResults(
         outputs_prefix='Zoom.User',
         readable_output=f"User created successfully with ID: {raw_data.get('id')}",
@@ -610,22 +483,109 @@ def zoom_meeting_create_command(
         repeat_interval: int | str | None = None,
         recurrence_type: int | str | None = None,
         weekly_days: int | str = 1) -> CommandResults:
-    # preprocess
-    raw_data = client.zoom_meeting_create(user_id, topic, host_video, jbh_time,
-                                          start_time, timezone, type,
-                                          auto_recording,
-                                          encryption_type,
-                                          join_before_host,
-                                          meeting_authentication,
-                                          waiting_room,
-                                          end_date_time,
-                                          end_times,
-                                          monthly_day,
-                                          monthly_week,
-                                          monthly_week_day,
-                                          repeat_interval,
-                                          recurrence_type,
-                                          weekly_days)
+
+    # converting
+    host_video = argToBoolean(host_video)
+    join_before_host = argToBoolean(join_before_host)
+    meeting_authentication = argToBoolean(meeting_authentication)
+    waiting_room = argToBoolean(waiting_room)
+    end_times = arg_to_number(end_times)
+    monthly_day = arg_to_number(monthly_day)
+    monthly_week = arg_to_number(monthly_week)
+    monthly_week_day = arg_to_number(monthly_week_day)
+    repeat_interval = arg_to_number(repeat_interval)
+    weekly_days = arg_to_number(weekly_days)
+
+    num_type = 1  # "instant"
+    if type == "scheduled":
+        num_type = 2
+    elif type == "recurring meeting with fixed time":
+        num_type = 8
+
+    # argument checking
+    # for arguments that have a default value, i use demisto.args to trigger an exception if user entered a value.
+    args = demisto.args()
+    if type == "instant" and (timezone or start_time):
+        raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
+
+    if jbh_time and not join_before_host:
+        raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
+
+    if waiting_room and join_before_host:
+        raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
+
+    if args.get("end_times") and end_date_time:
+        raise DemistoException(
+            "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time.")
+
+    if num_type != 8 and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
+                              monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
+        raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
+
+    if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
+                                                       monthly_week, monthly_week_day)):
+        raise DemistoException(
+            "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
+
+    if num_type == 8 and recurrence_type == 3 and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
+        raise DemistoException(
+            """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
+            must have the fallowing arguments: monthly_week and monthly_week_day""")
+
+    if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
+        raise DemistoException("Weekly_days is for weekly recurrence_type only")
+
+    if num_type == 8 and not recurrence_type:
+        raise DemistoException(
+            "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type")
+
+    # converting separately after the argument checking, because 0 as an int is equaled to false
+    jbh_time = arg_to_number(jbh_time)
+
+    if start_time:
+        check_start_time_format(start_time)
+
+    json_all_data = {}
+
+    # special section for recurring meeting with fixed time
+    if num_type == 8:
+        if recurrence_type == "Daily":
+            recurrence_type = 1
+        elif recurrence_type == "Weekly":
+            recurrence_type = 2
+        elif recurrence_type == "Monthly":
+            recurrence_type = 3
+        json_all_data.update({"recurrence": {
+            "end_date_time": end_date_time,
+            "end_times": end_times,
+            "monthly_day": monthly_day,
+            "monthly_week": monthly_week,
+            "monthly_week_day": monthly_week_day,
+            "repeat_interval": repeat_interval,
+            "type": recurrence_type,
+            "weekly_days": weekly_days
+        }})
+    json_all_data.update({
+        "settings": {
+            "auto_recording": auto_recording,
+            "encryption_type": encryption_type,
+            "host_video": host_video,
+            "jbh_time": jbh_time,
+            "join_before_host": join_before_host,
+            "meeting_authentication": meeting_authentication,
+            "waiting_room": waiting_room
+        },
+        "start_time": start_time,
+        "timezone": timezone,
+        "type": num_type,
+        "topic": topic,
+    })
+    # remove all keys with val of None
+    json_data = remove_None_values_from_dict(json_all_data)
+    url_suffix = f"users/{user_id}/meetings"
+    # call the API
+    raw_data = client.zoom_meeting_create(url_suffix=url_suffix, json_data=json_data)
+    # parsing the response
     if type == "recurring meeting with fixed time":
         basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
                                   'type', 'status',
@@ -657,6 +617,7 @@ def zoom_meeting_create_command(
 
 
 def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResults:
+    # call the API
     raw_data = client.zoom_recording_get(meeting_id)
     return CommandResults(
         # outputs_prefix='Zoom',
@@ -667,7 +628,11 @@ def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResult
 
 def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
                              show_previous_occurrences: bool = True) -> CommandResults:
+    # converting
+    show_previous_occurrences = argToBoolean(show_previous_occurrences)
+    # call the API
     raw_data = client.zoom_meeting_get(meeting_id, occurrence_id, show_previous_occurrences)
+    # parsing the response
     md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
                                                          'type', 'status', 'start_time', 'duration',
                                                          'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
