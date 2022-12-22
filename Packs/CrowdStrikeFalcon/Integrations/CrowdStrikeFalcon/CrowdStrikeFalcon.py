@@ -1318,6 +1318,7 @@ def search_custom_iocs(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
+        after: Optional[str] = None,
 ) -> dict:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
@@ -1327,6 +1328,10 @@ def search_custom_iocs(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param after: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
+                  To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     filter_list = []
     if types:
@@ -1343,6 +1348,7 @@ def search_custom_iocs(
         'sort': sort,
         'offset': offset,
         'limit': limit,
+        'after': after,
     }
 
     return http_request('GET', '/iocs/combined/indicator/v1', params=params)
@@ -2300,7 +2306,8 @@ def search_custom_iocs_command(
         limit: str = '50',
         sort: Optional[str] = None,
         offset: Optional[str] = None,
-) -> dict:
+        next_page_token: Optional[str] = None,
+) -> List[dict]:
     """
     :param types: A list of indicator types. Separate multiple types by comma.
     :param values: Comma-separated list of indicator values
@@ -2309,6 +2316,10 @@ def search_custom_iocs_command(
     :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
     :param sort: The order of the results. Format
     :param offset: The offset to begin the list from
+    :param next_page_token: A pagination token used with the limit parameter to manage pagination of results.
+                  On your first request, don't provide an 'after' token. On subsequent requests, provide
+                  the 'after' token from the previous response to continue from that place in the results.
+                  To access more than 10k indicators, use the 'after' parameter instead of 'offset'.
     """
     raw_res = search_custom_iocs(
         types=argToList(types),
@@ -2318,17 +2329,30 @@ def search_custom_iocs_command(
         offset=offset,
         expiration=expiration,
         limit=limit,
+        after=next_page_token,
     )
     iocs = raw_res.get('resources')
+    meta = raw_res.get('meta')
+    if meta:
+        pagination_token = meta['pagination'].get('after')
+    else:
+        pagination_token = None
     if not iocs:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
     handle_response_errors(raw_res)
+    entry_objects_list = []
     ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
-    return create_entry_object(
+    entry_objects_list.append(create_entry_object(
         contents=raw_res,
         ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
         hr=tableToMarkdown('Indicators of Compromise', ec, headers=IOC_HEADERS),
-    )
+    ))
+    entry_objects_list.append(create_entry_object(
+        contents=raw_res,
+        ec={'CrowdStrike.NextPageToken': pagination_token},
+        hr=tableToMarkdown('Pagination Info', pagination_token, headers=['Next Page Token']),
+    ))
+    return entry_objects_list
 
 
 def get_custom_ioc_command(
