@@ -45,7 +45,6 @@ SKIPPED_PACKS = ['NonSupported', 'ApiModules']
 NO_PROXY = ','.join([
     'oproxy.demisto.ninja',
     'oproxy-dev.demisto.ninja',
-    '*.sharepoint.com'
 ])
 NO_PROXY_CONFIG = {'python.pass.extra.keys': f'--env##no_proxy={NO_PROXY}'}  # noqa: E501
 DOCKER_HARDENING_CONFIGURATION = {
