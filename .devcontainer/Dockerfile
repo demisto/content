@@ -6,7 +6,7 @@ ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
 
 ADD createCerts.sh .
-RUN apt-get update && apt-get install dos2unix git python2 -y \
+RUN apt-get update && apt-get install dos2unix git python2 curl -y \
     && dos2unix /createCerts.sh \
     && chmod +x /createCerts.sh \ 
     && /createCerts.sh $NODE_EXTRA_CA_CERTS \
