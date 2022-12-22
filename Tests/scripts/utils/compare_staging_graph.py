@@ -212,7 +212,6 @@ def compare_dependencies(
     for pack_idset, deps_idset in dependencies_id_set.items():
         deps_graph = dependencies_graph.get(pack_idset)
         if not deps_graph:
-            message.append(f"Missing pack {pack_idset} in dependencies graph")
             continue
         compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, message)
 
