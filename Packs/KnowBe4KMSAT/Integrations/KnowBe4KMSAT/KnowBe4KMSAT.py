@@ -13,11 +13,9 @@ This is an empty structure file. Check an example at;
 https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
 
 """
-
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-
+import traceback
 import urllib3
 from typing import Dict, Any
 
@@ -41,28 +39,30 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+    def __init__(self, base_url, verify, proxy, headers=None, max_fetch=None):
+        self.max_fetch = max_fetch        
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def kmsat_account_info(self):
+        return self._http_request(method='GET', url_suffix='/account', resp_type='json',  ok_codes=(200,))
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
 ''' COMMAND FUNCTIONS '''
+
+
+def get_account_info(client: Client) -> CommandResults:
+    response = client.kmsat_account_info()
+    account_info = demisto.get(response)
+    print(account_info)
+    if account_info is None:
+        raise DemistoException('Translation failed: the response from server did not include `account_info`.',res=account_info)
+    return CommandResults(outputs_prefix='KMSAT_Account_Info_Returned',
+                          outputs_key_field='Account_Info',
+                          raw_response=response, 
+                          readable_output=tableToMarkdown(name='Account_Info', t=outputs))
 
 
 def test_module(client: Client) -> str:
@@ -93,22 +93,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
@@ -120,7 +105,12 @@ def main() -> None:
     :return:
     :rtype:
     """
-
+    
+    command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()    
+    demisto.debug(f'Command being called is {command}')
+    
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/v1')
 
@@ -137,12 +127,11 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
     
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
         headers: Dict = {
-        'Authorization': 'Bearer ' + key,
-        'Content-Type': 'application/json'
+            'Authorization': 'Bearer ' + key,
+            'Content-Type': 'application/json'
         }
 
         client = Client(
@@ -151,18 +140,18 @@ def main() -> None:
             headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif command == 'get-account-info':
+            return_results(get_account_info(client, **args))
+        else:
+            raise NotImplementedError(f"command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
