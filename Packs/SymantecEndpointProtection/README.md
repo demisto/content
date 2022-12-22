@@ -3,12 +3,12 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 
 1. Log in to Symantec Endpoint Protection Manager.
-2. In the console, go to Admin --> Servers.
+2. In the console, go to **Admin** > **Servers**.
 3. Click the local site or remote site that you want to export log data from.
-4. Click Configure External Logging.
-5. There fill in all the needed information like the Syslog Server's IP and the frequency for sending the logs. 
+4. Click **Configure External Logging**.
+5. Fill in all the needed information such as the Syslog Server's IP and the frequency for sending the logs. 
 
-For more information, you can visit the next link: 
+For more information, see the following: 
 https://techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-protection/all/Monitoring-Reporting-and-Enforcing-Compliance/viewing-logs-v7522439-d37e464/exporting-data-to-a-syslog-server-v8442743-d15e1107.html
 ## Collect Events from Vendor
 
