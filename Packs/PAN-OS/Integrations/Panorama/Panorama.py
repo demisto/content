@@ -13084,7 +13084,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]
 
     return queries_dict
     
-def main():
+def main(): # pragma: no cover
     try:
         args = demisto.args()
         params = demisto.params()
