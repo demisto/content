@@ -1,7 +1,7 @@
 [MODEL: dataset="delinea_sercretserver_raw"]
-xdm.target.user.username=cs2,
+alter xdm.target.user.username=cs2,
 xdm.target.file.directory=cs3,
-xdm.event.description=msg
+xdm.event.description=msg,
 xdm.source.ipv4=src,
 xdm.target.user.identifier=duid,
 xdm.source.user.identifier=suid,
