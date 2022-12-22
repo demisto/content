@@ -3452,7 +3452,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: 'Type of rule to dynamically tagging host.
+      description: 'Type of rule to dynamically, tagging host.
 
         The Rule Type argument determines the type of the Rule Text argument that
         is acceptable.'
