@@ -350,9 +350,9 @@ Lists all of the attachments of given email
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The email message id. | Required | 
-| folder_id | The id of the folder. | Optional | 
-| ran_once_flag | flag for rate limit retry. | Optional | 
+| message_id | The email message ID. | Required | 
+| folder_id | The ID of the folder. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -377,7 +377,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The unique ID of the email. You cannot use the the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
+| message_id | The unique ID of the email. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 
 
 #### Context Output
