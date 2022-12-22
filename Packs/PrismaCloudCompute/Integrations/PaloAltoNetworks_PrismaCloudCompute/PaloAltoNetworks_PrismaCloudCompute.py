@@ -418,6 +418,7 @@ def fetch_incidents(client):
     """
     incidents = []
     if is_command_is_fetch():
+        demisto.info("reached the if part")
         alerts = client.list_incidents()
 
         if alerts:
@@ -470,14 +471,19 @@ def fetch_incidents(client):
                     'severity': severity,
                     'rawJSON': json.dumps(a)
                 })
-        demisto.setLastRun(datetime.now())
+        demisto.info(f"got incidents: {incidents}")
+        demisto.setLastRun({"id": "a"})
+        demisto.info("continued")
         ctx = demisto.getIntegrationContext()
         incidents_to_update = incidents or ctx.get('fetched_incidents_list')
+        demisto.info(f"got incidents_to_update: {incidents_to_update}")
         ctx.update({'fetched_incidents_list': incidents_to_update})
         demisto.setIntegrationContext(ctx)
         return incidents
 
     else:
+        demisto.info("reached the else part")
+        demisto.info(f"fetched_incidents_list: {demisto.getIntegrationContext().get('fetched_incidents_list', [])}")
         return demisto.getIntegrationContext().get('fetched_incidents_list', [])
 
 
