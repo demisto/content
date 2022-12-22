@@ -917,7 +917,10 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug('Exclude ID list: {}'.format(exclude_ids))
-
+    qs.chunk_size = MAX_FETCH
+    qs.page_size = MAX_FETCH
+    demisto.debug('Before iterating on queryset')
+    demisto.debug('Size of the queryset object in fetch-incidents:{}'.format(sys.getsizeof(qs)))
     for item in qs:
         demisto.debug('Looking on subject={}, message_id={}, created={}, received={}'.format(
             item.subject, item.message_id, item.datetime_created, item.datetime_received))
@@ -1109,9 +1112,13 @@ def parse_incident_from_item(item, is_fetch):
         # handle attachments
         if item.attachments:
             incident['attachment'] = []
+            demisto.debug('parsing {} attachments for item with id {}'.format(len(item.attachments), item.id))
+            attachment_counter = 0
             for attachment in item.attachments:
                 if attachment is not None:
-                    attachment.parent_item = item
+                    attachment_counter += 1
+                    demisto.debug('retrieving attachment number {} of email with id {}'.format(
+                        attachment_counter, item.id))
                     file_result = None
                     label_attachment_type = None
                     label_attachment_id_type = None
@@ -1124,6 +1131,8 @@ def parse_incident_from_item(item, is_fetch):
 
                                 # save the attachment
                                 file_name = get_attachment_name(attachment.name)
+                                demisto.debug("saving content number {}, of size {}, of email with id {}".
+                                              format(attachment_counter, sys.getsizeof(attachment.content), item.id))
                                 file_result = fileResult(file_name, attachment.content)
 
                                 # check for error
