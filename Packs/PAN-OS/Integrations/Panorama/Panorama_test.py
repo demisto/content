@@ -10,7 +10,9 @@ from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+from datetime import datetime
 import dateparser
+
 
 integration_firewall_params = {
     'port': '443',
@@ -5855,7 +5857,6 @@ def test_pan_os_create_address_main_flow_error(args):
 # EDITING: fetch incidents helper functions UT's
 
 class TestFetchIncidentsHelperFunctions:
-    
     case_first_fetch = ('', '2022/01/01 12:00', dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
     case_last_fetch_time_bigger = ('2022/01/01 12:00', '2022/01/01 11:00',
                                    dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'}))
@@ -5895,44 +5896,47 @@ class TestFetchIncidentsHelperFunctions:
         with pytest.raises(DemistoException, match='Could not parse example.'):
             calculate_fetch_start_datetime('example', 'example')
 
-    case_empty_queries: tuple[str, dict] = ('', {})
-    case_valid_queries = ('Log_name:(query example)', {'Log_name': '(query example)'})
-    case_not_capitalized_log_name = ('log_name:(query example)', {'Log_name': '(query example)'})
-    test_parse_queries_args = (case_empty_queries, case_valid_queries, case_not_capitalized_log_name)
+    case_empty_log_type = ({}, {})
+    case_all_log_type_queries_selected = ({'log_types': ['All'], 'traffic_query': 'traffic query',
+                                           'threat_query': 'threat query', 'url_query': 'url query',
+                                           'data_query': 'data query', 'correlation_query': 'correlation query',
+                                           'system_query': 'system query', 'wildfire_query': 'wildfire query',
+                                           'decryption_query': 'decryption query'}, {'Traffic': 'traffic query',
+                                                                                     'Threat': 'threat query',
+                                                                                     'Url': 'url query',
+                                                                                     'Data': 'data query',
+                                          'Correlation': 'correlation query', 'System': 'system query',
+                                          'Wildfire': 'wildfire query', 'Decryption': 'decryption query'})
+    case_one_valid_log_type_query_selected = (
+        {'log_types': ['All'], 'traffic_query': 'traffic query'}, {'Traffic': 'traffic query'})
+    case_one_invalid_log_type_query_selected = (
+        {'log_types': ['Traffic'], 'traffic_query': 'Please input a query, example: (traffic query)'}, {})
+    case_one_valid_log_type_query_one_invalid_log_type_query_selected = (
+        {'log_types': ['Traffic', 'URL'], 'traffic_query': 'traffic query',
+            'url_query': 'Please input a query, example: (url query)'},
+        {'Traffic': 'traffic query'}
+    )
 
-    @pytest.mark.parametrize('queries, expected_result', test_parse_queries_args)
-    def test_parse_queries(self, queries, expected_result):
+    test_parse_queries_args = [case_empty_log_type, case_all_log_type_queries_selected,
+                               case_one_valid_log_type_query_selected,
+                               case_one_invalid_log_type_query_selected,
+                               case_one_valid_log_type_query_one_invalid_log_type_query_selected]
+
+    @pytest.mark.parametrize('params, expected_result', test_parse_queries_args)
+    def test_log_types_queries_to_dict(self, params, expected_result):
         """
         Given:
-        - valid queries paramter
+        - valid paramters dictionary
 
         When:
-        - parse_queries function is called
+        - test_log_types_queries_to_dict function is called
 
         Then:
-        - assert that the returned queries parameter transformed into a python dictionary is valid
+        - assert that the returned queries_dict value is valid
         """
-        from Panorama import parse_queries
-        assert parse_queries(queries) == expected_result   
+        from Panorama import log_types_queries_to_dict
+        assert log_types_queries_to_dict(params) == expected_result
 
-    test_parse_queries_error_args = [(':(query example)'), ('Log_name:'), (':'), ('Log_name:query example)'),
-                                    ('Log_name:(query example'), ('Log_name:query example')]
-
-    @pytest.mark.parametrize('queries', test_parse_queries_error_args)
-    def test_parse_queries_error(self, queries):
-        """
-        Given:
-        - invalid queries paramter
-
-        When:
-        - parse_queries function is called
-
-        Then:
-        - raise DemistoExeption with an informative message
-        """
-        from Panorama import parse_queries
-        with pytest.raises(DemistoException, match='Query parameter pattern is invalid.'):
-            parse_queries(queries)
 
     def test_filter_incident_entries(self):
         """
@@ -5947,7 +5951,10 @@ class TestFetchIncidentsHelperFunctions:
         - assert that the returned filterd list of dictioneries representing incident entries is valid
         """
         from Panorama import filter_incident_entries
-        assert filter_incident_entries([{'time_generated': '2022/01/01 11:00'}, {'time_generated': '2022/01/01 12:00'}, {'time_generated': '2022/01/01 13:00'}], dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})) == [{'time_generated': '2022/01/01 13:00'}]
+        assert filter_incident_entries([{'time_generated': '2022/01/01 11:00'},
+                                        {'time_generated': '2022/01/01 12:00'},
+                                        {'time_generated': '2022/01/01 13:00'}],
+                                       dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})) == [{'time_generated': '2022/01/01 13:00'}]
 
     def test_incident_entry_to_incident_context(self):
         """
@@ -5991,28 +5998,58 @@ class TestFetchIncidentsHelperFunctions:
 
 
 class TestFetchIncidentsFlows:
-    
-    def test_first_fetch_with_no_incidents_flow(self, mocker, capfd):
-        """
-        First fetch with no incidents returned
-        """
-        
+    def assert_datetime_objects(self, returned: datetime, expected: datetime):
+        assert returned.year == expected.year
+        assert returned.month == expected.month
+        assert returned.day == expected.day
+        assert returned.hour == expected.hour
+        assert returned.minute == expected.minute
+
     def test_first_fetch_with_no_incidents_flow(self, mocker):
         """
-        First fetch with no incidents returned
+        Flow: First fetch cycle with no incidents
         """
         from Panorama import fetch_incidents
-        first_fetch= '24 hours'
-        queries= "X_log_type:(receive_time geq '2021/01/22 08:00:00')"
-        log_types= ['All']
-        max_fetch= 10
-        last_run= {}
+        last_run = {}
+        first_fetch = '24 hours'
+        queries_dict = {'X_log_type': "(receive_time geq '2021/01/22 08:00:00)"}
+        max_fetch = 10
+
         mocker.patch('Panorama.get_query_entries', return_value={})
-        
-        last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries, log_types, max_fetch)
-        
-        
-        
-        
-        
+
+        last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
+        parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values()
+                                        for incident in incident_list]
+
+        last_fetch = dateparser.parse(last_fetch_dict.get('X_log_type', ''), settings={'TIMEZONE': 'UTC'})
+        expected_time = dateparser.parse('24 hours', settings={'TIMEZONE': 'UTC'})
+
+        assert parsed_incident_entries_dict == []
+        if (last_fetch and expected_time) and (isinstance(last_fetch, datetime) and isinstance(last_fetch, datetime)):
+            self.assert_datetime_objects(last_fetch, expected_time)
+
+    def test_first_fetch_with_one_incident_flow(self, mocker):
+        """
+        Flow: First fetch cycle with one incidents
+        """
+        from Panorama import fetch_incidents
+        last_run = {}
+        first_fetch = '24 hours'
+        queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
+        max_fetch = 10
+
+        raw_entries = {'@logid': '123456789', 'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
+        expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
+                                            'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
+        fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
+
+        mocker.patch('Panorama.get_query_entries', return_value=[raw_entries])
+        mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
+
+        last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
+        parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values()
+                                        for incident in incident_list]
+
+        assert parsed_incident_entries_dict[0] == expected_parsed_incident_entries
+        assert last_fetch_dict.get('X_log_type', '')
         

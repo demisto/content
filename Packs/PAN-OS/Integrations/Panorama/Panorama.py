@@ -49,7 +49,6 @@ UNICODE_PASS = u'\U00002714\U0000FE0F'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
-QUERY_PARAMETER_PATTERN = r'.+:\(.+\)'
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
 
 XPATH_SECURITY_RULES = ''
@@ -5001,18 +5000,18 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 
 
 @logger
-def panorama_query_logs(log_types: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
+def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, action: str,
                         port_dst: str, rule: str, url: str, filedigest: str):
     params = {
         'type': 'log',
-        'log-type': log_types,
+        'log-type': log_type,
         'key': API_KEY
     }
 
-    if filedigest and log_types != 'wildfire':
+    if filedigest and log_type != 'wildfire':
         raise Exception('The filedigest argument is only relevant to wildfire log type.')
-    if url and log_types == 'traffic':
+    if url and log_type == 'traffic':
         raise Exception('The url argument is not relevant to traffic log type.')
 
     if query:
@@ -5045,7 +5044,7 @@ def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
-    log_types = args.get('log-type')
+    log_type = args.get('log-type')
     number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
     address_src = args.get('addr-src')
@@ -5070,7 +5069,7 @@ def panorama_query_logs_command(args: dict):
 
         result: PanosResponse = PanosResponse(
             panorama_query_logs(
-                log_types, number_of_logs, query, address_src, address_dst, ip_,
+                log_type, number_of_logs, query, address_src, address_dst, ip_,
                 zone_src, zone_dst, time_generated, action,
                 port_dst, rule, url, filedigest
             ),
@@ -5087,7 +5086,7 @@ def panorama_query_logs_command(args: dict):
         query_logs_output = {
             'JobID': result.ns.response.result.job,
             'Status': 'Pending',
-            'LogType': log_types,
+            'LogType': log_type,
             'Message': result.ns.response.result.msg.line
         }
 
@@ -5103,13 +5102,13 @@ def panorama_query_logs_command(args: dict):
             continue_to_poll=True,
             args_for_next_run={
                 'query_log_job_id': result.ns.response.result.job,
-                'log-type': log_types,
+                'log-type': log_type,
                 'polling': argToBoolean(args.get('polling', 'false')),
                 'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
                 'timeout': arg_to_number(args.get('timeout', 120))
             },
             partial_result=CommandResults(
-                readable_output=f"Fetching {log_types} logs for job ID {result.ns.response.result.job}...",
+                readable_output=f"Fetching {log_type} logs for job ID {result.ns.response.result.job}...",
                 raw_response=result.raw
             )
         )
@@ -5137,19 +5136,19 @@ def panorama_query_logs_command(args: dict):
         
         query_logs_output = {
             'JobID': job_id,
-            'LogType': log_types
+            'LogType': log_type
         }
         readable_output = None
         if parsed.ns.response.result.job.status.upper() == 'FIN':
             query_logs_output['Status'] = 'Completed'
             if parsed.ns.response.result.log.logs.count == '0':
-                readable_output = f'No {log_types} logs matched the query.'
+                readable_output = f'No {log_type} logs matched the query.'
                 query_logs_output['Logs'] = []
             else:
                 pretty_logs = prettify_logs(parsed.get_nested_key('response.result.log.logs.entry'))
                 query_logs_output['Logs'] = pretty_logs
                 readable_output = tableToMarkdown(
-                    f'Query {log_types} Logs:',
+                    f'Query {log_type} Logs:',
                     pretty_logs,
                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
                     removeNull=True
@@ -5311,9 +5310,9 @@ def panorama_get_logs_command(args: dict):
         result = panorama_get_traffic_logs(job_id)
         log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
         if isinstance(log_type_dt, list):
-            log_types = log_type_dt[0]
+            log_type = log_type_dt[0]
         else:
-            log_types = log_type_dt
+            log_type = log_type_dt
 
         if result['response']['@status'] == 'error':
             if 'msg' in result['response'] and 'line' in result['response']['msg']:
@@ -5350,11 +5349,11 @@ def panorama_get_logs_command(args: dict):
 
             logs = result['response']['result']['log']['logs']
             if logs['@count'] == '0':
-                human_readable = f'No {log_types} logs matched the query.'
+                human_readable = f'No {log_type} logs matched the query.'
             else:
                 pretty_logs = prettify_logs(logs['entry'])
                 query_logs_output['Logs'] = pretty_logs
-                human_readable = tableToMarkdown('Query ' + log_types + ' Logs:', query_logs_output['Logs'],
+                human_readable = tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
                                                  ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
                                                   'Action', 'Rule', 'URLOrFilename'], removeNull=True)
             return_results({
@@ -9892,8 +9891,8 @@ class HygieneLookups:
 
                 required_log_types = ["traffic", "threat"]
                 for log_forwarding_profile_match_list in match_list_list:
-                    if log_forwarding_profile_match_list.log_types in required_log_types:
-                        required_log_types.remove(log_forwarding_profile_match_list.log_types)
+                    if log_forwarding_profile_match_list.log_type in required_log_types:
+                        required_log_types.remove(log_forwarding_profile_match_list.log_type)
 
                 for missing_required_log_type in required_log_types:
                     issues.append(ConfigurationHygieneIssue(
@@ -13062,7 +13061,6 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
 
     return last_fetch_dict, incident_entries_dict
     
-
 
 def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]]:
     """converts chosen log type queries to a queries dictionary.
