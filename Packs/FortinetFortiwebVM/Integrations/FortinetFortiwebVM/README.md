@@ -214,7 +214,7 @@ Create IP List.
 | name | IP List Group Name. | Required | 
 | action | Select which action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). Default is Alert deny. | Optional | 
 | block_period | Enter the number of seconds that you want to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. Default is 600. | Optional | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers:LowMediumHighSupports API version 2 only. Possible values are: Low, Medium, High, Info. Default is Low. | Optional | 
+| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers.Supports API version 2 only. Possible values are: Low, Medium, High, Info. Default is Low. | Optional | 
 | ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. Default is disable. | Optional | 
 | trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 2 only. | Optional | 
 
@@ -222,6 +222,16 @@ Create IP List.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-ip-list-group-create name=example```
+#### Human Readable Output
+
+>### IP List group successfully created!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-ip-list-group-update
 ***
 Update IP List.
@@ -237,7 +247,7 @@ Update IP List.
 | name | IP list group name. | Required | 
 | action | Select which action FortiWeb will take when it detects a violation of the rule. Supports API version 2 only. Possible values are: Alert deny, Block period, Deny (no log). | Optional | 
 | block_period | Enter the number of seconds that you want to block subsequent requests from a client after FortiWeb detects that the client has violated the rule. The valid range is 1–3,600 seconds. Supports API version 2 only. | Optional | 
-| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers:LowMediumHighSupports API version 2 only. Possible values are: Low, Medium, High, Info. | Optional | 
+| severity | Select which severity level the FortiWeb appliance will use when a blacklisted IP address attempts to connect to your web servers. Supports API version 2 only. Possible values are: Low, Medium, High, Info. | Optional | 
 | ignore_x_forwarded_for | enable Ignore X-Forwarded-For so that the IP addresses will be scanned at the TCP layer instead of HTTP layer. Supports API version 2 only. Possible values are: enable, disable. | Optional | 
 | trigger_policy | Select which trigger, if any, that the FortiWeb appliance will use when it logs and/or sends an alert email about a blacklisted IP address’s attempt to connect to your web serversSupports API version 2 only. | Optional | 
 
@@ -279,6 +289,30 @@ Supports API versions 1 & 2.
 | FortiwebVM.IpListGroup.trigger_policy | String | IP list group Trigger Policy Name. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.severity | String | IP list group Severity. Supports API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-ip-list-group-list name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "IpListGroup": {
+            "can_delete": true,
+            "id": "example",
+            "ip_list_count": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IP Lists Groups:
+>Showing 1 rows out of 1.
+>|Id|Ip List Count|
+>|---|---|
+>| example | 0 |
+
+
 ### fortiwebvm-ip-list-member-create
 ***
 Supports API versions 1 & 2.
@@ -304,6 +338,27 @@ Supports API versions 1 & 2.
 | --- | --- | --- |
 | FortiwebVM.IpListMember.id | Number | IP List Policy Member ID | 
 
+#### Command example
+```!fortiwebvm-ip-list-member-create group_name=example ip_address=1.2.3.4 type="Black IP"```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "IpListMember": {
+            "id": "1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IP List member successfully created!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-ip-list-member-update
 ***
 Update IP List Policy Member (IP List Policy Member is a member of IP List).
@@ -327,6 +382,16 @@ Update IP List Policy Member (IP List Policy Member is a member of IP List).
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-ip-list-member-update group_name=example member_id=1 ip_address=1.2.3.6```
+#### Human Readable Output
+
+>### IP List member successfully updated!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-ip-list-member-list
 ***
 List the IP List Policy Member(IP List Policy Member is a member of IP List).
@@ -357,6 +422,37 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 | FortiwebVM.IpListMember.Members.trigger_policy | String | IP list Member Trigger Policy. Supports API version 1 only. | 
 | FortiwebVM.IpListMember.Members.ip | String | IP list Member IP Address. | 
 
+#### Command example
+```!fortiwebvm-ip-list-member-list group_name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "IpListMember": {
+            "Members": [
+                {
+                    "id": "1",
+                    "ip": "1.2.3.4",
+                    "severity": "Medium",
+                    "trigger_policy": "",
+                    "type": "Black IP"
+                }
+            ],
+            "group_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### IP Lists Members:
+>Showing 1 rows out of 1.
+>|Id|Type|Ip|Severity|Trigger Policy|
+>|---|---|---|---|---|
+>| 1 | Black IP | 1.2.3.4 | Medium |  |
+
+
 ### fortiwebvm-ip-list-member-delete
 ***
 Delete IP List Policy Member (IP List Policy Member is a member of IP List).
@@ -376,6 +472,16 @@ Delete IP List Policy Member (IP List Policy Member is a member of IP List).
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-ip-list-member-delete group_name=example member_id=1```
+#### Human Readable Output
+
+>### IP List member successfully deleted!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-ip-list-group-delete
 ***
 Supports API versions 1 & 2.
@@ -394,28 +500,19 @@ Supports API versions 1 & 2.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-ip-list-group-delete name=example```
+#### Human Readable Output
+
+>### IP List group successfully deleted!
+>|Id|
+>|---|
+>| example |
+
+
 ### fortiwebvm-custom-predefined-whitelist-update
 ***
 Update Custom Predefined Global Whitelist.
-
-
-#### Base Command
-
-`fortiwebvm-custom-predefined-whitelist-update`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | Predefined Global White List ID. | Required | 
-| status | Status. Possible values are: enable, disable. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### fortiwebvm-custom-predefined-whitelist-list
-***
-Get Custom Predefined Global Whitelist.
 
 
 #### Base Command
@@ -1073,8 +1170,9 @@ Create Server Policy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Policy Name. | Required | 
-| deployment_mode | Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Required | 
-| virtual_server | Enter the name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Required | 
+| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration . | Optional | 
+| deployment_mode | Deployment Mode. Specify the distribution method that FortiWeb uses when it forwards connections accepted by this policy. Possible values are: HTTP Content Routing, Single Server/Server Balance. | Optional | 
+| virtual_server | Enter the name of a virtual server that provides the IP address and network interface of incoming traffic that FortiWeb routes and to which the policy applies a protection profile. The maximum length is 63 characters. | Optional | 
 | mach_once | Match once enabled.Required when: deployment_mode = "HTTP Content Routing". Possible values are: enable, disable. Default is disable. | Optional | 
 | server_pool | Enter the name of the server pool whose members receive the connections. Required when: deployment_mode = "Single Server/Server Balance". | Optional | 
 | protected_hostnames | Protected hostnames group name. Enter the name of a protected hosts group to allow or reject connections based upon whether the Host. | Optional | 
@@ -1158,6 +1256,7 @@ Update Server Policy.
 | scripting_list | Not documented. Supports API version 2 only.Required  when: scripting-on is enable. | Optional | 
 | allow_list | Not documented. Required when: scripting is enable. Supports API version 2 only. | Optional | 
 | replacemsg | Select the replacement message to apply to the policy. Supports API version 2 only. | Optional | 
+| json_template_id | Allows the use of the server policy JSON template. All of the arguments listed below will be overridden. For an example, see the integration . | Optional | 
 
 
 #### Context Output
