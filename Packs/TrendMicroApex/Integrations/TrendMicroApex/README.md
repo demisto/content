@@ -709,7 +709,7 @@ Retrieves a list of all investigation results.
 | TrendMicroApex.InvestigationResult.progressInfo.riskCount | Number | Number of agents with "Matched" status. | 
 | TrendMicroApex.InvestigationResult.progressInfo.pendingCount | Number | Number of agents with "Pending" status. | 
 | TrendMicroApex.InvestigationResult.progressInfo.timeoutCount | Number | Number of agents with "Timeout" status. | 
-| TrendMicroApex.InvestigationResult.progressInfoCount | Number | Number of agents with "None" status. | 
+| TrendMicroApex.InvestigationResult.progressInfo.noneCount | Number | Number of agents with "None" status. | 
 | TrendMicroApex.InvestigationResult.progressInfo.processingCount | Number | Number of agents with "Processing" status. | 
 | TrendMicroApex.InvestigationResult.progressInfo.errorCount | Number | Number of agents with errors. | 
 | TrendMicroApex.InvestigationResult.progressInfo.abortCount | Number | Number of aborted agents. | 

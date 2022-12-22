@@ -323,7 +323,7 @@ Creates a group with a group name and its description.
 | GSuite.Group.description | String | An extended description to help users determine the purpose of a group. | 
 | GSuite.Group.adminCreated | Boolean | Value is true if this group was created by an administrator rather than a user. | 
 | GSuite.Group.aliases | String | List of a group's alias email addresses. | 
-| GSuite.GroupditableAliases | String | List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains. | 
+| GSuite.Group.nonEditableAliases | String | List of the group's non-editable alias email addresses that are outside of the account's primary domain or subdomains. | 
 
 
 #### Command Example
@@ -1095,7 +1095,7 @@ Updates a user.
 | GSuite.User.sshPublicKeys.expirationTimeUsec | String | An expiration time in microseconds since epoch. | 
 | GSuite.User.sshPublicKeys.fingerprint | String | A SHA-256 fingerprint of the SSH public key. | 
 | GSuite.User.aliases | Unknown | List of the user's alias email addresses. | 
-| GSuite.UserditableAliases | Unknown | List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain. | 
+| GSuite.User.nonEditableAliases | Unknown | List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain. | 
 | GSuite.User.websites.value | String | The URL of the website. | 
 | GSuite.User.websites.primary | Boolean | If this is user's primary website or not. | 
 | GSuite.User.websites.type | String | The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type. | 
