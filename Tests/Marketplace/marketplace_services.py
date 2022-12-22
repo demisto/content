@@ -2339,6 +2339,18 @@ class Pack(object):
                             layout_metadata['description'] = layout_description
                         folder_collected_items.append(layout_metadata)
 
+                    elif current_directory == PackFolders.XSIAM_LAYOUT_RULES.value and pack_file_name.startswith("external-"):
+                        self.add_pack_type_tags(content_item, 'XSIAMLayoutRule')
+                        layout_rule_metadata = {
+                            'id': content_item.get('id', ''),
+                            'name': content_item.get('name', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
+                        layout_rule_description = content_item.get('description')
+                        if layout_rule_description is not None:
+                            layout_rule_metadata['description'] = layout_rule_description
+                        folder_collected_items.append(layout_rule_metadata)
+
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
 
