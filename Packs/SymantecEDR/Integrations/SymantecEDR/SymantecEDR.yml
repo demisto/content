@@ -1236,9 +1236,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: "Specifes the operation to take on specifed incident.\n- add_comment\
-        \ : Add Comments to Incident.\n- close_incident: Closed Incident. \n- update_resolution:\
-        \ Update Resolution of closed Incident."
+      description: "Specifes the operation to take on specifed incident.\n- add_comment : Add Comments to Incident.\n- close_incident: Closed Incident. \n- update_resolution: Update Resolution of closed Incident."
       isArray: false
       name: action_type
       predefined:
@@ -1288,8 +1286,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Incidents Patch command for the close incident, update resolution
-      of closed incident or add comments to incident.
+    description: Incidents Patch command for the close incident, update resolution of closed incident or add comments to incident.
     execution: false
     name: symantec-edr-incident-update
   - arguments:

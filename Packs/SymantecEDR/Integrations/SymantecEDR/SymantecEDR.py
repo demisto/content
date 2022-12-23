@@ -410,9 +410,9 @@ def file_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     return file_dict
 
 
-def process_sub_object(data: Dict[str, Any]) -> Dict:
-    # Process object also refer to event_actor
-    return event_actor_sub_object(data)
+# def process_sub_object(data: Dict[str, Any]) -> Dict:
+#     # Process object also refer to event_actor
+#     return event_actor_sub_object(data)
 
 
 def monitor_source_sub_object(data: Dict[str, Any]) -> Dict:
@@ -905,7 +905,7 @@ def query_search_condition(q_type: str, q_value: str, ignore_validation=False) -
     """
     condition = None
     if not q_type or not q_value:
-        Demisto.debug('No search type and search value found. Return None')
+        demisto.debug('No search type and search value found. Return None')
         return condition
 
     list_value = argToList(q_value, ',')
