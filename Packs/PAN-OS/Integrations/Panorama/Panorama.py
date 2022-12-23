@@ -51,6 +51,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+DEFAULT_QUERY_PRIFIX = "Please input a query, example:"
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -12891,7 +12892,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
 
 
 def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
-    """append time filter paramter to original query.
+    """append time filter parameter to original query.
 
     Args:
         query (str): a string representing a query
@@ -12933,26 +12934,26 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[date
     """parses raw incident entries of a specific log type query into basic context incidents.
     
     Args:
-        incident_entries (list[dict[str,Any]]): list of dictioneries representing raw incident entries
+        incident_entries (list[dict[str,Any]]): list of dictionaries representing raw incident entries
 
     Returns:
-        (datetime, List[Dict[str, Any]]): updated last fatch time, parsed incident tuple
+        (datetime, List[Dict[str, Any]]): (updated last fetch time, parsed incident list) tuple
     """
     # if no new incidents are available, return empty list of incidents
     if not incident_entries:
         demisto.debug(f'{len(incident_entries)} parsed incidents returned from parse_incident_entries function')
         return None, incident_entries
 
-    # calaulate largest last fetch time for each log type query
+    # calculate largest last fetch time for each log type query
     last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
-    new_fatch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
+    new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
-    # convert incedent entries to incident context
+    # convert incident entries to incident context
     parsed_incidents: list[dict[str, Any]] = [incident_entry_to_incident_context(
         incident_entry) for incident_entry in incident_entries]
     demisto.debug(f'{len(parsed_incidents)} parsed incidents returned from parse_incident_entries function')
 
-    return new_fatch_datetime, parsed_incidents
+    return new_fetch_datetime, parsed_incidents
 
 
 def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
@@ -13016,19 +13017,19 @@ def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
 
 def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]]:
     """converts chosen log type queries from parameters to a queries dictionary.
-    Exmaple: 
+    Example:
     for parameters: log_type='X_log_type', X_log_type_query='(example query for X_log_type)'
     the dictionary returned is: {'X_log_type':'(example query for X_log_type)'}
 
     Args:
-        params (Dict[str, str]): instance configuration parameters
+        params (Dict[str, str]): instance configuration parameters 
 
     Returns:
         Optional[Dict[str, str]]: queries per log type dictionary
     """
     queries_dict = {}
     if log_types := params.get('log_types'):
-        # if 'All' is chosen in Log Type (log_types) paramerter then all query parameters are used, else only the chosen query parameters are used.
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
             log_type_query = params.get(f'{log_type.lower()}_query', "")
