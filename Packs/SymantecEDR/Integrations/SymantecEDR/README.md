@@ -29,7 +29,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### symantec-edr-endpoint-isolate
 ***
-"isolate_endpoint" - Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint Device IDs
+"isolate_endpoint" - Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint Device IDs.
 
 
 #### Base Command
@@ -39,7 +39,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | For "isolate_endpoint"  the field is strings representing a device ID of the target computer . Possible values are: . | Required | 
+| device_id | For "isolate_endpoint"  the field is strings representing a device ID of the target computer. | Required | 
 
 
 #### Context Output
@@ -47,21 +47,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.Command.isolate_endpoint.command_id | String | Command ID | 
-| SymantecEDR.Command.isolate_endpoint.error_code | Number | This represents the status of the command action. Values: 
-
--1 = Error 
-0 = Command isolate_endpoint successfully requested 
-1 = Commandisolate_endpoint not supported for target command type 
-2 = Command isolate_endpoint failed because the target command is already in terminal state \(i.e., completed, error, or cancelled\) 
-3 = Command isolate_endpoint is already in progress for the target command  | 
-| SymantecEDR.Command.isolate_endpoint.message | String | Message explaining error code. 
-
-Values: 
--1 = Error  
-0 = Command isolate_endpoint successfully requested  
-1 = Command isolate_endpoint not supported for target command type  
-2 = Command isolate_endpoint failed because the target command is already in terminal state  
-3 = Command isolate_endpoint is already in progress for the target command  | 
+| SymantecEDR.Command.isolate_endpoint.error_code | Number | This represents the status of the command action. Values: -1 = Error, 0 = Command isolate_endpoint successfully requested, 1 = Commandisolate_endpoint not supported for target command type, 2 = Command isolate_endpoint failed because the target command is already in terminal state \(i.e., completed, error, or cancelled\), 3 = Command isolate_endpoint is already in progress for the target command. | 
+| SymantecEDR.Command.isolate_endpoint.message | String | Message explaining error code. | 
 
 #### Command example
 ```!symantec-edr-endpoint-isolate device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
@@ -71,7 +58,7 @@ Values:
     "SymantecEDR": {
         "Command": {
             "isolate_endpoint": {
-                "command_id": "88f4ead1befb4a4297b8dc214ff9bd4a-2022-12-20",
+                "command_id": "90fb880256bd4baca41dc301af102248-2022-12-22",
                 "error_code": 0,
                 "message": "Command isolate_endpoint successfully requested"
             }
@@ -85,7 +72,7 @@ Values:
 >### Command isolate_endpoint
 >|Message|Command ID|Error Code|
 >|---|---|---|
->| Command isolate_endpoint successfully requested | 88f4ead1befb4a4297b8dc214ff9bd4a-2022-12-20 | 0 |
+>| Command isolate_endpoint successfully requested | 90fb880256bd4baca41dc301af102248-2022-12-22 | 0 |
 
 
 ### symantec-edr-domain-file-association-list
@@ -112,36 +99,48 @@ List of Domain and File association
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.DomainFileAssociation.data_source_url | String | The URL that was accessed 
+| SymantecEDR.DomainFileAssociation.data_source_url | String | The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe". | 
+| SymantecEDR.DomainFileAssociation.data_source_url_domain | String | Domain name of the accessed URL. Example: "westfallave.com". | 
+| SymantecEDR.DomainFileAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1". | 
+| SymantecEDR.DomainFileAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020". | 
+| SymantecEDR.DomainFileAssociation.device_uid | String | Unique ID of the endpoint that downloaded the file from the URL. Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4". | 
+| SymantecEDR.DomainFileAssociation.frst_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z". | 
+| SymantecEDR.DomainFileAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z". | 
+| SymantecEDR.DomainFileAssociation.name | String | The file name of the downloadedfilee. This attribute doesn’t include the path of the file. Example: "cloudcar\[2\].exe". | 
+| SymantecEDR.DomainFileAssociation.sha2 | String | The SHA256 checksum of the file \(hex string\) that was downloaded from the URL. Example: "3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5". | 
+| SymantecEDR.DomainFileAssociation.signature_company_name | String | The signer company name of the downloaded file. Example: "Microsoft Windows". | 
 
-Example: "http://www.westfallave.com/insight/cloudcar.exe" | 
-| SymantecEDR.DomainFileAssociation.data_source_url_domain | String | Domain name of the accessed URL 
+#### Command example
+```!symantec-edr-domain-file-association-list limit=1```
+#### Context Example
+```json
+{
+    "SymantecEDR": {
+        "DomainFileAssociation": [
+            {
+                "data_source_url": "http://msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d",
+                "data_source_url_domain": "msedge.b.tlu.dl.delivery.mp.microsoft.com",
+                "device_ip": "127.0.0.1",
+                "device_name": "win-tfb8l7bi77h",
+                "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+                "first_seen": "2022-10-22T11:23:26.561Z",
+                "last_seen": "2022-10-22T11:23:26.561Z",
+                "name": "microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe",
+                "sha2": "1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc",
+                "signature_company_name": "Microsoft Corporation"
+            }
+        ]
+    }
+}
+```
 
-Example: "westfallave.com" | 
-| SymantecEDR.DomainFileAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated 
+#### Human Readable Output
 
-Example: "10.212.24.159" | 
-| SymantecEDR.DomainFileAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated 
+>### Domain File Association List
+>|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|Sha2|Name|SignatureCompanyName|DeviceUid|DeviceIp|DeviceName|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2022-10-22T11:23:26.561Z | 2022-10-22T11:23:26.561Z | http:<span>//</span>msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d | msedge.b.tlu.dl.delivery.mp.microsoft.com | 1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc | microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe | Microsoft Corporation | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 127.0.0.1 | win-tfb8l7bi77h |
 
-Example: "170915-000020" | 
-| SymantecEDR.DomainFileAssociation.device_uid | String | Unique ID of the endpoint that downloaded the file from the URL 
-
-Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4" | 
-| SymantecEDR.DomainFileAssociation.frst_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association 
-
-Example: "2018-01-30T04:13:10.669Z" | 
-| SymantecEDR.DomainFileAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association 
-
-Example: "2018-01-30T04:13:10.669Z" | 
-| SymantecEDR.DomainFileAssociation.name | String | The file name of the downloadedfilee. This attribute doesn’t include the path of the file 
-
-Example: "cloudcar\[2\].exe" | 
-| SymantecEDR.DomainFileAssociation.sha2 | String | The SHA256 checksum of the file \(hex string\) that was downloaded from the URL 
-
-Example: "3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5" | 
-| SymantecEDR.DomainFileAssociation.signature_company_name | String | The signer company name of the downloaded file. 
-
-Example: "Microsoft Windows" | 
 
 ### symantec-edr-endpoint-domain-association-list
 ***
@@ -167,27 +166,13 @@ List of Endpoint and Domain association
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SymantecEDR.EndpointDomainAssociation.data_source_url | String | The URL that was accessed 
-
-Example: "http://www.westfallave.com/insight/cloudcar.exe" | 
-| SymantecEDR.EndpointDomainAssociation.data_source_url_domain | String | Domain name of the accessed URL 
-
-Example: "westfallave.com" | 
-| SymantecEDR.EndpointDomainAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated 
-
-Example: "10.212.24.159" | 
-| SymantecEDR.EndpointDomainAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated 
-
-Example: "170915-000020" | 
-| SymantecEDR.EndpointDomainAssociation.device_uid | String | Unique ID of the endpoint that accessed this URL 
-
-Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4" | 
-| SymantecEDR.EndpointDomainAssociation.frst_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association 
-
-Example: "2018-01-30T04:13:10.669Z" | 
-| SymantecEDR.EndpointDomainAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association 
-
-Example: "2018-01-30T04:13:10.669Z"  | 
+| SymantecEDR.EndpointDomainAssociation.data_source_url | String | The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe | 
+| SymantecEDR.EndpointDomainAssociation.data_source_url_domain | String | Domain name of the accessed URL. Example: "westfallave.com" | 
+| SymantecEDR.EndpointDomainAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1" | 
+| SymantecEDR.EndpointDomainAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020" | 
+| SymantecEDR.EndpointDomainAssociation.device_uid | String | Unique ID of the endpoint that accessed this URL. Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4" | 
+| SymantecEDR.EndpointDomainAssociation.frst_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z" | 
+| SymantecEDR.EndpointDomainAssociation.last_seen | String | The timestamp \(in ISO 8601 format\) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z" | 
 
 #### Command example
 ```!symantec-edr-endpoint-domain-association-list limit=1```
@@ -199,7 +184,7 @@ Example: "2018-01-30T04:13:10.669Z"  |
             {
                 "data_source_url": "http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4",
                 "data_source_url_domain": "ctldl.windowsupdate.com",
-                "device_ip": "172.16.14.42",
+                "device_ip": "127.0.0.1",
                 "device_name": "WIN-TFB8L7BI77H",
                 "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
                 "first_seen": "2022-10-21T19:06:39.998Z",
@@ -215,7 +200,7 @@ Example: "2018-01-30T04:13:10.669Z"  |
 >### Endpoint Domain Association List
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|
->| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | WIN-TFB8L7BI77H |
+>| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 127.0.0.1 | WIN-TFB8L7BI77H |
 
 
 ### symantec-edr-endpoint-file-association-list
@@ -244,7 +229,7 @@ List of Domain and File association
 | --- | --- | --- |
 | SymantecEDR.EndpointFileAssociation.device_ip | String | The IPv6 or IPv4 address of the endpoint when this association was last updated 
 
-Example: "10.212.24.159" | 
+Example: "127.0.0.1" | 
 | SymantecEDR.EndpointFileAssociation.device_name | String | The host name or, if unavailable, the IP address of the endpoint when this association was last updated 
 
 Example: "170915-000020" | 
@@ -266,36 +251,6 @@ Example: "sc.exe" |
 | SymantecEDR.EndpointFileAssociation.sha2 | String | The SHA256 checksum of the file \(hex string\) 
 
 Example: "eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31" | 
-
-#### Command example
-```!symantec-edr-endpoint-file-association-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "EndpointFileAssociation": [
-            {
-                "device_ip": "172.16.14.42",
-                "device_name": "win-tfb8l7bi77h",
-                "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-                "first_seen": "2022-10-21T07:00:17.831Z",
-                "folder": "csidl_profile\\appdata\\roaming\\microsoft\\windows\\recent\\automaticdestinations",
-                "last_seen": "2022-12-09T10:03:21.866Z",
-                "name": "3353b940c074fd0c.automaticdestinations-ms",
-                "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoint File Association List
->|FirstSeen|LastSeen|Sha2|Name|Folder|DeviceUid|DeviceIp|DeviceName|
->|---|---|---|---|---|---|---|---|
->| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
-
 
 ### symantec-edr-domain-instance-list
 ***
@@ -320,7 +275,7 @@ Get Domain Instances
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.DomainInstance.data_source_url | String | Last URL accessed on this domain 
-Example: "http://www.skyscan.com/shample/shample.exe" | 
+Example: "http://www.<domain>.com/shample/shample.exe" | 
 | SymantecEDR.DomainInstance.data_source_url_domain | String | The name of the domain. 
 Example: "skyscan.com"  | 
 | SymantecEDR.DomainInstance.disposition | Number | Domain disposition: 
@@ -337,33 +292,7 @@ Example: "2018-01-30T04:13:10.669Z" |
 Example: "2018-01-30T04:13:10.669Z"  | 
 | SymantecEDR.DomainInstance.external_ip | String | The IP address \(IPv4 or IPv6\) of the device/machine that accepted the connection. 
 
-Example: "85.158.136.166" | 
-
-#### Command example
-```!symantec-edr-domain-instance-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "DomainInstances": [
-            {
-                "data_source_url_domain": "dmd.metaservices.microsoft.com",
-                "disposition": 1,
-                "first_seen": "2022-10-21T13:05:38.000Z",
-                "last_seen": "2022-12-20T13:09:20.000Z"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Domain Instances List
->|DataSourceUrlDomain|FirstSeen|LastSeen|Disposition|
->|---|---|---|---|
->| dmd.metaservices.microsoft.com | 2022-10-21T13:05:38.000Z | 2022-12-20T13:09:20.000Z | unknown (1) |
-
+Example: "127.0.0.1" | 
 
 ### symantec-edr-endpoint-instance-list
 ***
@@ -401,32 +330,6 @@ Example: "2018-01-15T14:05:57.127Z"  |
 Example: "Administrator"  | 
 | SymantecEDR.EndpointInstance.ip_addresses | Unknown | Array of all the IP addresses \(IPv4 or IPv6\) associated with the endpoint. 
  Example: \["192.168.0.250"\] | 
-
-#### Command example
-```!symantec-edr-endpoint-instance-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "EndpointInstances": [
-            {
-                "device_ip": "172.16.14.58",
-                "device_name": "172.16.14.58",
-                "device_uid": "c0e1b083-9aba-48c0-9ba1-39c0c37c5851",
-                "time": "2022-11-28T10:29:47.251Z"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Endpoint Instances List
->|DeviceUid|DeviceName|DeviceIp|Time|
->|---|---|---|---|
->| c0e1b083-9aba-48c0-9ba1-39c0c37c5851 | 172.16.14.58 | 172.16.14.58 | 2022-11-28T10:29:47.251Z |
-
 
 ### symantec-edr-file-instance-list
 ***
@@ -467,57 +370,6 @@ Example: "virus.exe"  |
 
 Example: "eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31" | 
 
-#### Command example
-```!symantec-edr-file-instance-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "FileInstance": {
-            "first_seen": "2022-10-21T07:00:17.831Z",
-            "folder": "csidl_profile\\appdata\\roaming\\microsoft\\windows\\recent\\automaticdestinations",
-            "last_seen": "2022-12-09T10:03:21.866Z",
-            "name": "3353b940c074fd0c.automaticdestinations-ms",
-            "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### File Instances List
->|FirstSeen|LastSeen|Sha2|Name|Folder|
->|---|---|---|---|---|
->| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations |
-
-
-#### Command example
-```!symantec-edr-file-instance-list file_sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "FileInstance": {
-            "first_seen": "2022-10-21T19:31:20.770Z",
-            "folder": "c:\\program files\\google\\chrome\\application\\106.0.5249.119",
-            "last_seen": "2022-12-20T17:10:50.090Z",
-            "name": "elevation_service.exe",
-            "sha2": "302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### File Instances List
->|FirstSeen|LastSeen|Sha2|Name|Folder|
->|---|---|---|---|---|
->| 2022-10-21T07:00:39.964Z | 2022-12-20T17:10:50.090Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
->| 2022-10-21T19:31:20.770Z | 2022-12-20T17:10:50.090Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
-
-
 ### symantec-edr-system-activity-list
 ***
 Command to get System Activities
@@ -546,7 +398,7 @@ Command to get System Activities
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.SystemActivity.device_time | String | The timestamp \(in ISO 8601 format\) that specifes the time at which the event occurred. | 
-| SymantecEDR.SystemActivity.type_id  | Number | The unique identifier for an event. Following this events link and Summary Type IDs:
+| SymantecEDR.SystemActivity.type_id | Number | The unique identifier for an event. Following this events link and Summary Type IDs:
 https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html
 
 System Activity Log Event Type: 
@@ -559,7 +411,7 @@ Viewing Symantec EDR appliance activities in the System Activity log \(broadcom.
 4 = major 
 5 = critical 
 6 = fatal  | 
-| SymantecEDR.SystemActivity.message | String | Human-readable \(possibly multi-line\) event message or description of the event.  | 
+| SymantecEDR.SystemActivity.message | String | Human-readable \(possibly multi-line\) event message or description of the event. | 
 | SymantecEDR.SystemActivity.device_ip | String | The IPv6 or IPv4 address of the device that originated the event. | 
 | SymantecEDR.SystemActivity.atp_node_role | Number | The role of the ATP appliance that generated the event. Possible values are: 
 
@@ -572,7 +424,7 @@ Viewing Symantec EDR appliance activities in the System Activity log \(broadcom.
 | SymantecEDR.SystemActivity.category_id | String | The event type category. 
 
 4 = Audit  | 
-| SymantecEDR.SystemActivity.device_cap  | String | Name or caption of ATP appliance that generated the event. | 
+| SymantecEDR.SystemActivity.device_cap | String | Name or caption of ATP appliance that generated the event. | 
 | SymantecEDR.SystemActivity.device_name | String | The device name \(i.e., the name of the endpoint or appliance associated with an event\). | 
 | SymantecEDR.SystemActivity.feature_name | String | The name of the feature that originated the event. 
 Applicable events : 1, 20, 21, 1000 
@@ -651,43 +503,6 @@ Applicable events : 1000
 Example : 8081  | 
 | SymantecEDR.SystemActivity.data_sepm_server_db_name | String | SymantecEDR.SystemActivity.data.eventdata.sepm_server.db_name | 
 
-#### Command example
-```!symantec-edr-system-activity-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "SystemActivity": {
-            "atp_node_role": 5,
-            "device_cap": "EDR",
-            "device_ip": "192.168.20.8",
-            "device_name": "localhost.localdomain",
-            "device_time": "2022-12-20T17:34:50.341Z",
-            "event_actor_pid": 12358,
-            "feature_name": "AdministratorTask",
-            "log_name": "atp_system_log-2022-12-20",
-            "log_time": "2022-12-20T17:34:50.492Z",
-            "message": "Command submit_to_sandbox with command id f7a34794462448d383ad1736010d034c-2022-12-20 completed.",
-            "product_name": "Symantec Endpoint Detection and Response",
-            "product_ver": "4.6.8-8",
-            "severity_id": 1,
-            "status_id": 1,
-            "timezone": 0,
-            "type_id": 1,
-            "uuid": "9b0c6150-808c-11ed-f8a3-0000000309aa"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### System Activities List
->|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|
->|---|---|---|---|---|---|
->| 2022-12-20T17:34:50.341Z | 1 | 1 | Command submit_to_sandbox with command id f7a34794462448d383ad1736010d034c-2022-12-20 completed. | 192.168.20.8 | 5 |
-
-
 ### symantec-edr-audit-event-list
 ***
 Get  Audit Events
@@ -712,49 +527,6 @@ Get  Audit Events
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!symantec-edr-audit-event-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "AuditEvent": {
-            "atp_node_role": 5,
-            "category_id": 4,
-            "device_cap": "EDR",
-            "device_ip": "192.168.20.8",
-            "device_name": "localhost.localdomain",
-            "device_time": "2022-12-20T10:56:56.264Z",
-            "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
-            "feature_name": "UserSession",
-            "id": 2,
-            "log_name": "atp_audit_log-2022-12",
-            "log_time": "2022-12-20T10:56:56.759Z",
-            "message": "User pavani has logged out",
-            "product_name": "Symantec Endpoint Detection and Response",
-            "product_ver": "4.6.8-8",
-            "severity_id": 1,
-            "status_detail": "Success",
-            "status_id": 1,
-            "timezone": 0,
-            "type_id": 20,
-            "user_agent_ip": "172.16.11.157",
-            "user_name": "Pavani",
-            "user_uid": "pavani",
-            "uuid": "04fd5480-8055-11ed-ddbd-000000030629"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Audit Event List
->|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|
->|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-20T10:56:56.264Z | 20 | UserSession | User pavani has logged out | 172.16.11.157 | Pavani | 1 | localhost.localdomain | 192.168.20.8 | 04fd5480-8055-11ed-ddbd-000000030629 |
-
-
 ### symantec-edr-event-list
 ***
 Used to get events from EDR on-premise
@@ -780,65 +552,6 @@ Used to get events from EDR on-premise
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!symantec-edr-event-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "Event": {
-            "attacks_tactic_ids_0": "2",
-            "attacks_tactic_uids_0": "TA0002",
-            "attacks_technique_name_0": "Windows Management Instrumentation",
-            "attacks_technique_uid_0": "T1047",
-            "device_domain": "WORKGROUP",
-            "device_ip": "172.16.14.42",
-            "device_name": "WIN-TFB8L7BI77H",
-            "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-20T17:34:33.921Z",
-            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-            "enriched_data_category_id": 3,
-            "enriched_data_category_name": "Process Termination",
-            "enriched_data_rule_name": "eProcessClose",
-            "event_actor_cmd_line": "C:\\Windows\\sysWOW64\\wbem\\wmiprvse.exe -secured -Embedding",
-            "event_actor_file_md5": "3ff0bb6eacc39958042b74ca04e202a6",
-            "event_actor_file_modified": "2018-09-15T07:13:00.192Z",
-            "event_actor_file_name": "wmiprvse.exe",
-            "event_actor_file_normalized_path": "CSIDL_SYSTEMX86\\wbem\\wmiprvse.exe",
-            "event_actor_file_original_name": "Wmiprvse.exe",
-            "event_actor_file_path": "c:\\windows\\syswow64\\wbem\\wmiprvse.exe",
-            "event_actor_file_sha2": "158075d730a7a6acbe7739251ee9bea4349268597ca576b3e0cb8442140865fd",
-            "event_actor_file_signature_company_name": "Microsoft Windows",
-            "event_actor_integrity_id": 6,
-            "event_actor_pid": 17268,
-            "event_actor_signature_level_id": 60,
-            "event_actor_start_time": "2022-12-20T17:33:10.008Z",
-            "event_actor_uid": "D924C11C-807D-F1ED-8217-98261F32744E",
-            "event_actor_user_name": "NETWORK SERVICE",
-            "event_actor_user_sid": "S-1-5-20",
-            "log_name": "epmp_events-fdr-2022-12-20",
-            "log_time": "2022-12-20T05:07:27.053Z",
-            "operation": 2,
-            "ref_uid": "FCC3D702-8A31-40F1-B0F0-AD928AC7622F",
-            "severity_id": 1,
-            "type_id": 8001,
-            "user_domain": "NT AUTHORITY",
-            "user_name": "NETWORK SERVICE",
-            "user_sid": "S-1-5-20",
-            "uuid": "9142e310-808c-11ed-ce21-0000000303d9"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Event List
->|Time|TypeId|Description|DeviceName|Severity|DeviceIp|Operation|DeviceDomain|UserName|
->|---|---|---|---|---|---|---|---|---|
->| 2022-12-20T17:34:33.921Z | 8001 | wmiprvse.exe logged:  | WIN-TFB8L7BI77H | 1 | 172.16.14.42 | 2 | WORKGROUP | NETWORK SERVICE |
-
-
 ### symantec-edr-incident-event-list
 ***
 Command is used to get Events for Incidents
@@ -864,71 +577,6 @@ Command is used to get Events for Incidents
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!symantec-edr-incident-event-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "IncidentEvent": {
-            "attacks_tactic_ids_0": "2",
-            "attacks_tactic_uids_0": "TA0002",
-            "attacks_technique_name_0": "Command and Scripting Interpreter",
-            "attacks_technique_uid_0": "T1059",
-            "correlation_uid": "787E05EE-71B8-11ED-8217-78E3B5B300F9",
-            "device_domain": "WORKGROUP",
-            "device_ip": "172.16.14.42",
-            "device_name": "WIN-TFB8L7BI77H",
-            "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-01T21:43:44.218Z",
-            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-            "enriched_data_category_id": 2,
-            "enriched_data_category_name": "Process Launch",
-            "enriched_data_rule_description": "Generic process launch event",
-            "enriched_data_rule_name": "eGenericProcessLaunch",
-            "enriched_data_suspicion_score": 0,
-            "event_actor_cmd_line": "C:\\Windows\\system32\\cmd.exe /d /c \"C:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\14.3.8268.5000.105\\Data\\Definitions\\WebExtDefs\\20221129.017\\webextbridge.exe\" chrome-extension://pamolibmfebkknkdmfabpjebifbffbec/ --parent-window=0 < \\\\.\\pipe\\chrome.nativeMessaging.in.90abb4245fc8fa0a > \\\\.\\pipe\\chrome.nativeMessaging.out.90abb4245fc8fa0a",
-            "event_actor_file_md5": "975b45b669930b0cc773eaf2b414206f",
-            "event_actor_file_modified": "2019-09-07T00:29:00.561Z",
-            "event_actor_file_name": "cmd.exe",
-            "event_actor_file_normalized_path": "CSIDL_SYSTEM\\cmd.exe",
-            "event_actor_file_original_name": "Cmd.Exe",
-            "event_actor_file_path": "c:\\windows\\system32\\cmd.exe",
-            "event_actor_file_sha2": "3656f37a1c6951ec4496fabb8ee957d3a6e3c276d5a3785476b482c9c0d32ea2",
-            "event_actor_file_signature_company_name": "Microsoft Windows",
-            "event_actor_integrity_id": 5,
-            "event_actor_pid": 14468,
-            "event_actor_signature_level_id": 60,
-            "event_actor_start_time": "2022-12-01T21:43:29.835Z",
-            "event_actor_uid": "787E05ED-71B8-F1ED-8217-98261F32744E",
-            "event_actor_user_name": "Administrator",
-            "event_actor_user_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
-            "event_source": 3,
-            "event_uuid": "3a7beba0-71c1-11ed-fd2d-000000010f00",
-            "incident": "9d6f2100-7158-11ed-da26-000000000001",
-            "log_name": "epmp_incident-2022-12-01",
-            "log_time": "2022-12-01T09:54:47.909Z",
-            "operation": 1,
-            "ref_uid": "09FB7038-0A5E-4048-A3D5-E88885323F2E",
-            "severity_id": 1,
-            "type_id": 8001,
-            "user_domain": "WIN-TFB8L7BI77H",
-            "user_name": "Administrator",
-            "user_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
-            "uuid": "30de6860-715e-11ed-e069-000000000015"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Event for Incident List
->|Time|TypeId|Description|DeviceName|Severity|DeviceIp|EventUuid|Incident|Operation|DeviceDomain|UserName|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-01T21:43:44.218Z | 8001 | cmd.exe logged: Generic process launch event | WIN-TFB8L7BI77H | 1 | 172.16.14.42 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
-
-
 ### symantec-edr-incident-list
 ***
 Command is used to get incidents from Symantec EDR on-premise API
@@ -997,42 +645,6 @@ Example : "483e3fde-4556-4800-81b1-e8da5ee394b6" |
 5 = BENIGN. The incident detected the activity as expected but is not a security threat.
 6 = TEST. The incident was generated due to internal security testing. | 
 
-#### Command example
-```!symantec-edr-incident-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "Incident": {
-            "atp_incident_id": 100010,
-            "atp_rule_id": "AdvancedAttackTechniqueIncident",
-            "detection_type": "Advanced Attack Techniques",
-            "device_time": "2022-12-01T09:14:53.072Z",
-            "first_event_seen": "2022-12-01T21:44:15.000Z",
-            "last_event_seen": "2022-12-01T21:44:21.000Z",
-            "log_name": "epmp_incident-2022-12-01",
-            "priority_level": 3,
-            "recommended_action": "Remove or blacklist developer utilities that aren't needed on target systems.\nEnsure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.\nRemove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment.",
-            "resolution": 4,
-            "rule_name": "Advanced Attack Technique",
-            "state": 4,
-            "summary": "win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution",
-            "time": "2022-12-01T09:14:53.072Z",
-            "updated": "2022-12-08T10:40:21.750Z",
-            "uuid": "9d6f2100-7158-11ed-da26-000000000001"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Incident List
->|IncidentId|Description|IncidentCreated|DetectionType|LastUpdated|Priority|IncidentState|AtpRuleId|RuleName|IncidentUuid|LogName|RecommendedAction|Summary|Resolution|FirstSeen|LastSeen|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100010 | win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution | 2022-12-01T09:14:53.072Z | Advanced Attack Techniques | 2022-12-08T10:40:21.750Z | High | Close | AdvancedAttackTechniqueIncident | Advanced Attack Technique | 9d6f2100-7158-11ed-da26-000000000001 | epmp_incident-2022-12-01 | Remove or blacklist developer utilities that aren't needed on target systems.<br/>Ensure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.<br/>Remove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment. | win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution | 4 | 2022-12-01T21:44:15.000Z | 2022-12-01T21:44:21.000Z |
-
-
 ### symantec-edr-incident-comment-get
 ***
 Get Incident Comments based on Incident UUID
@@ -1062,33 +674,6 @@ Get Incident Comments based on Incident UUID
 | SymantecEDR.IncidentComment.time | String | The timestamp \(in ISO 8601 format\) that specifies the time at which the comment was added to incident  | 
 | SymantecEDR.IncidentComment.user_id | String | The user id who registered the comment. 
 Example: 100000 | 
-
-#### Command example
-```!symantec-edr-incident-comment-get incident_id=100010 limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "IncidentComment": [
-            {
-                "comment": "Comment added as part of testing xsoar command examples",
-                "incident_id": "100010",
-                "incident_responder_name": "SEDR API",
-                "time": "2022-12-20T17:07:43.785Z",
-                "user_id": 100000
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Incident Comment List
->|IncidentId|Comment|Time|UserId|IncidentResponderName|
->|---|---|---|---|---|
->| 100010 | Comment added as part of testing xsoar command examples | 2022-12-20T17:07:43.785Z | 100000 | SEDR API |
-
 
 ### symantec-edr-deny-list-policy-get
 ***
@@ -1131,38 +716,6 @@ enum \("ip", "domain", "url", "sha256", "incident_trigger_sig_id"\) |
 
 Example: "1.1.1.1"  | 
 
-#### Command example
-```!symantec-edr-deny-list-policy-get limit=10```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "DenyListPolicy": [
-            {
-                "comment": "Used for API testing",
-                "id": "5",
-                "target_type": "url",
-                "target_value": "https://facebook.com"
-            },
-            {
-                "id": "6",
-                "target_type": "sha256",
-                "target_value": "8c12399112cfd22e7d44845ee457b7cf1be7a1a8b780d5a47a70cdbdad9da270"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Deny List Policy List
->|Id|TargetType|TargetValue|Comment|
->|---|---|---|---|
->| 5 | url | https:<span>//</span>facebook.com | Used for API testing |
->| 6 | sha256 | 8c12399112cfd22e7d44845ee457b7cf1be7a1a8b780d5a47a70cdbdad9da270 |  |
-
-
 ### symantec-edr-allow-list-policy-get
 ***
 Get Allow List Policies
@@ -1201,32 +754,6 @@ Example: "ip"  |
 | SymantecEDR.AllowListPolicy.target_value | String | Specifies value of this allow list policy. 
 
 Example: "1.1.1.1" | 
-
-#### Command example
-```!symantec-edr-allow-list-policy-get limit=10```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "AllowListPolicy": [
-            {
-                "comment": "Allow List for API testing",
-                "id": "1",
-                "target_type": "url",
-                "target_value": "https://twitter.com/"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Allow List Policy List
->|Id|TargetType|TargetValue|Comment|
->|---|---|---|---|
->| 1 | url | https:<span>//</span>twitter.com/ | Allow List for API testing |
-
 
 ### file
 ***
@@ -1269,16 +796,6 @@ Incidents Patch command for the close incident, update resolution of closed inci
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!symantec-edr-incident-update incident_id=100010 operation=add comment="Comment added as part of testing xsoar command examples"```
-#### Human Readable Output
-
->### Patch Incident Add Comment
->|incident_id|status|Message|value|
->|---|---|---|---|
->| 100010 | 204 | Successfully added | Comment added as part of testing xsoar command examples |
-
-
 ### symantec-edr-endpoint-status
 ***
 Command Status is used to query command status
@@ -1333,37 +850,6 @@ File Not Found In FileStore \(9007\) |
 4 = Cancel requested | 
 | SymantecEDR.CommandStatus.status.target | String | The target feld represents SHA256 of a fle | 
 
-#### Command example
-```!symantec-edr-endpoint-status command_id=b44a351058454c81af41ca98a20d622c-2022-12-18```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "CommandStatus": {
-            "Command Issuer Name": "ATP API",
-            "Next": null,
-            "Total": 1,
-            "error_code": 301,
-            "message": "File was not found on endpoint",
-            "state": "completed",
-            "target": {
-                "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-                "hash": "302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4"
-            },
-            "target_state": 0
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Command Status
->|State|Command Issuer Name|Total|Target|TargetState|Message|ErrorCode|
->|---|---|---|---|---|---|---|
->| completed | ATP API | 1 | hash: 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4<br/>device_uid: 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 0 | File was not found on endpoint | 301 |
-
-
 ### symantec-edr-endpoint-rejoin
 ***
 Rejoins endpoints by re-establishing connections that the endpoint(s) has to internal networks and external networks, based on the endpoint IDs
@@ -1399,31 +885,6 @@ Values:
 1 = Command rejoin_endpoint not supported for target command type  
 2 = Command rejoin_endpoint failed because the target command is already in terminal state  
 3 = Command rejoin_endpoint is already in progress for the target command | 
-
-#### Command example
-```!symantec-edr-endpoint-rejoin device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "Command": {
-            "rejoin_endpoint": {
-                "command_id": "ba5e3467e48e45f8aafcba262fb17fff-2022-12-20",
-                "error_code": 0,
-                "message": "Command rejoin_endpoint successfully requested"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Command rejoin_endpoint
->|Message|Command ID|Error Code|
->|---|---|---|
->| Command rejoin_endpoint successfully requested | ba5e3467e48e45f8aafcba262fb17fff-2022-12-20 | 0 |
-
 
 ### symantec-edr-endpoint-delete-file
 ***
@@ -1461,31 +922,6 @@ Possible Values:
 2 = Command delete_endpoint_file failed because the target command is already in terminal state  
 3 = Commanddelete_endpoint_file is already in progress for the target command | 
 
-#### Command example
-```!symantec-edr-endpoint-delete-file device_id=393b8e82-fe40-429f-8e5e-c6b79a0f2b1c sha2=302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "Command": {
-            "delete_endpoint_file": {
-                "command_id": "d59f218e9b9b43cf9ac516bdf5091c44-2022-12-20",
-                "error_code": 0,
-                "message": "Command delete_endpoint_file successfully requested"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Command delete_endpoint_file
->|Message|Command ID|Error Code|
->|---|---|---|
->| Command delete_endpoint_file successfully requested | d59f218e9b9b43cf9ac516bdf5091c44-2022-12-20 | 0 |
-
-
 ### symantec-edr-endpoint-cancel-command
 ***
 Cancel a command that is already in progress. Cancel the command execution on all the endpoints where it is still in progress. 
@@ -1519,28 +955,3 @@ Only one command can be cancelled at a time.
 1 = Command cancel not supported for target command type  
 2 = Command cancel failed because the target command is already in terminal state  
 3 = Command cancel is already in progress for the target command | 
-
-#### Command example
-```!symantec-edr-endpoint-cancel-command command_id=bee3647b420f4e1bab822ca283fbeb00-2022-12-18```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "Command": {
-            "cancel_command": {
-                "command_id": "bee3647b420f4e1bab822ca283fbeb00-2022-12-18",
-                "error_code": 1,
-                "message": "Command cancel_command not supported for target command type."
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Command cancel_command
->|Message|Command ID|Error Code|
->|---|---|---|
->| Command cancel_command not supported for target command type. | bee3647b420f4e1bab822ca283fbeb00-2022-12-18 | 1 |
-

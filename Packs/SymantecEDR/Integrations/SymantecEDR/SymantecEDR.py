@@ -34,7 +34,7 @@ INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filt
                           'or explicitly use only "query" argument'
 COMMAND_ACTION = ['isolate_endpoint', 'rejoin_endpoint', 'cancel_command', 'delete_endpoint_file']
 SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
-INCIDENT_SEVERITY = {
+INCIDENT_PRIORITY_LEVEL = {
     1: 'Low',
     2: 'Medium',
     3: 'High'
@@ -45,6 +45,16 @@ INCIDENT_STATUS = {
     2: 'Waiting',
     3: 'In-Progress',
     4: 'Close'
+}
+
+INCIDENT_RESOLUTION = {
+    0: 'INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.',
+    1: 'SECURITY_RISK. The incident indicates a true security threat.',
+    2: 'FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.',
+    3: 'MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.',
+    4: 'NOT_SET. The incident resolution was not set.',
+    5: 'BENIGN. The incident detected the activity as expected but is not a security threat.',
+    6: 'TEST. The incident was generated due to internal security testing.'
 }
 
 EVENT_SEVERITY = {
@@ -203,7 +213,7 @@ def http_request_error_handler(response: requests.Response):
          DemistoException
     """
     if response.status_code >= 400:
-        error_message = f'{response.json().get("error")}, {response.json().get("message")}'
+        error_message = f'{response.json().get("error")},{response.json().get("message")}'
         raise DemistoException(error_message)
 
 
@@ -703,7 +713,7 @@ def incident_readable_output(results: List[Dict], title: str):
             'incident_created': data.get('device_time', ''),
             'detection_type': data.get('detection_type', ''),
             'last_updated': data.get('updated', ''),
-            'priority': INCIDENT_SEVERITY.get(priority),
+            'priority': INCIDENT_PRIORITY_LEVEL.get(priority),
             # ------------------
             'incident_state': INCIDENT_STATUS.get(state),
             'atp_rule_id': data.get('atp_rule_id'),
@@ -712,7 +722,7 @@ def incident_readable_output(results: List[Dict], title: str):
             'log_name': data.get('log_name'),
             'recommended_action': data.get('recommended_action'),
             # 'summary': data.get('summary'),
-            'resolution': data.get('resolution'),
+            'resolution': INCIDENT_RESOLUTION.get(data.get('resolution')),
             'first_seen': data.get('first_event_seen'),
             'last_seen': data.get('last_event_seen')
          }
@@ -723,7 +733,7 @@ def incident_readable_output(results: List[Dict], title: str):
     column_order = list(camelize_string(column) for column in headers)
     # , headers=headers,
     markdown = tableToMarkdown(title, camelize(summary_data_sorted, '_'), headers=column_order, removeNull=True)
-    return markdown
+    return markdown, summary_data
 
 
 def audit_event_readable_output(results: List[Dict], title: str):
@@ -952,19 +962,19 @@ def get_incident_filter_query(args: Dict[str, Any]) -> str:
     incident_severity_dict = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
     ids = arg_to_number(args.get('incident_id'))
-    severity = incident_severity_dict.get(args.get('severity'))
+    priority = incident_severity_dict.get(args.get('priority'))
     status = incident_status_dict.get(args.get('status'))
     query = args.get('query')
 
-    if query and (ids or severity or status):
+    if query and (ids or priority or status):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
 
     condition = None
     if ids:
         condition = f'atp_incident_id: {ids}'
 
-    if severity:
-        condition = f'priority_level: {severity}' if not condition else f'{condition} AND priority_level: {severity}'
+    if priority:
+        condition = f'priority_level: {priority}' if not condition else f'{condition} AND priority_level: {priority}'
 
     if status:
         condition = f'state: {status}' if not condition else f'{condition} AND state: {status}'
@@ -1285,11 +1295,16 @@ def test_module(client: Client) -> str:
     try:
         client.query_request_api(endpoint, params)
         message = 'ok'
+
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Unauthorized' in str(e):
-            message = 'Authorization Error: make sure Client ID and Client Secret are correctly set'
+        if 'Authorization Error' in str(e) or 'Unauthorized' in str(e):
+            message = f'Make sure Client ID and Client Secret are correctly set. {e}'
+        elif 'Timeout Error' in str(e):
+            message = f'Server URL Invalid. {e}'
         else:
-            raise e
+            message = f'Either Client ID or Client Secret is Invalid. {e}'
+        raise DemistoException(message)
+
     return message
 
 
@@ -1500,6 +1515,15 @@ def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get Event for Incident List
+    Args:
+        client: Symantec EDR on-premise client objectd to use.
+        args: all command arguments, usually passed from ``demisto.args()``.
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+            result.
+    """
     endpoint = '/atpapi/v2/incidentevents'
 
     page = arg_to_number(args.get('page', 1), arg_name='page')
@@ -1530,6 +1554,16 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
 
 
 def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get Incident List
+    Args:
+        client: Symantec EDR on-premise client objectd to use.
+        args: all command arguments, usually passed from ``demisto.args()``.
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+            result.
+    """
+    context_data: List = []
     endpoint = '/atpapi/v2/incidents'
 
     page = arg_to_number(args.get('page', 1), arg_name='page')
@@ -1545,7 +1579,7 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     result = raw_response.get('result', [])
     page_result = get_data_of_current_page(offset, page_limit, result)
     if page_result:
-        readable_output = incident_readable_output(page_result, title)
+        readable_output, context_data = incident_readable_output(page_result, title)
     else:
         readable_output = f'No Incidents data to present.'
 
@@ -1553,7 +1587,7 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Incident',
         outputs_key_field='apt_incident_id',
-        outputs=page_result,
+        outputs=context_data,
         raw_response=raw_response
     )
 

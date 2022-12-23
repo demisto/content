@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: SymantecEDRDev
+  id: SymantecEDRStage
   version: -1
 configuration:
 - additionalinfo: Symantec EDR (On Prem) Appliance URL
@@ -12,6 +12,7 @@ configuration:
 - additionalinfo: OAuth Client ID and Client Secret for authorizes third-party applications to communicate with Symantec EDR
   display: Client ID
   name: credentials
+  displaypassword: Client Secret
   required: true
   type: 9
 - defaultvalue: 'true'
@@ -73,20 +74,19 @@ configuration:
   type: 13
 description: Symantec EDR (On Prem) endpoints help to detect threats on your network by filter endpoints data to find Indicators of Compromise (IoCs) and take actions to remediate the threat(s). EDR on-premise capabilities allow incident responders to quickly search, identify and contain all impacted endpoints while investigating threats using a choice of on-premises
 display: Symantec Endpoint Detection and Response (EDR) - On Prem
-name: SymantecEDRDev
+name: SymantecEDRStage
 script:
   commands:
   - arguments:
     - default: false
-      description: 'For "isolate_endpoint"  the field is strings representing a device ID of the target computer '
+      description: For "isolate_endpoint"  the field is strings representing a device ID of the target computer.
       isArray: true
       name: device_id
-      predefined:
-      - ''
       required: true
       secret: false
     deprecated: false
-    description: '"isolate_endpoint" - Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint Device IDs'
+    description: |-
+      "isolate_endpoint" - Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint Device IDs.
     execution: false
     name: symantec-edr-endpoint-isolate
     outputs:
@@ -94,10 +94,12 @@ script:
       description: Command ID
       type: String
     - contextPath: SymantecEDR.Command.isolate_endpoint.error_code
-      description: "This represents the status of the command action. Values: \n\n-1 = Error \n0 = Command isolate_endpoint successfully requested \n1 = Commandisolate_endpoint not supported for target command type \n2 = Command isolate_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled) \n3 = Command isolate_endpoint is already in progress for the target command "
+      description: |-
+        This represents the status of the command action. Values: -1 = Error, 0 = Command isolate_endpoint successfully requested, 1 = Commandisolate_endpoint not supported for target command type, 2 = Command isolate_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled), 3 = Command isolate_endpoint is already in progress for the target command.
       type: Number
     - contextPath: SymantecEDR.Command.isolate_endpoint.message
-      description: "Message explaining error code. \n\nValues: \n-1 = Error  \n0 = Command isolate_endpoint successfully requested  \n1 = Command isolate_endpoint not supported for target command type  \n2 = Command isolate_endpoint failed because the target command is already in terminal state  \n3 = Command isolate_endpoint is already in progress for the target command "
+      description: |-
+        Message explaining error code.
       type: String
   - arguments:
     - default: false
@@ -156,34 +158,44 @@ script:
     name: symantec-edr-domain-file-association-list
     outputs:
     - contextPath: SymantecEDR.DomainFileAssociation.data_source_url
-      description: "The URL that was accessed \n\nExample: \"http://www.westfallave.com/insight/cloudcar.exe\""
+      description: |-
+        The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.data_source_url_domain
-      description: "Domain name of the accessed URL \n\nExample: \"westfallave.com\""
+      description: |-
+        Domain name of the accessed URL. Example: "westfallave.com".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
+      description: |-
+        The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
+      description: |-
+        The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.device_uid
-      description: "Unique ID of the endpoint that downloaded the file from the URL \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
+      description: |-
+        Unique ID of the endpoint that downloaded the file from the URL. Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
+      description: |-
+        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.last_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
+      description: |-
+        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.name
-      description: "The file name of the downloadedfilee. This attribute doesn’t include the path of the file \n\nExample: \"cloudcar[2].exe\""
+      description: |-
+        The file name of the downloadedfilee. This attribute doesn’t include the path of the file. Example: "cloudcar[2].exe".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.sha2
-      description: "The SHA256 checksum of the file (hex string) that was downloaded from the URL \n\nExample: \"3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5\""
+      description: |-
+        The SHA256 checksum of the file (hex string) that was downloaded from the URL. Example: "3559378c933cdd434af2083f7535460843d2462033de74ec7c70dbe5f70124f5".
       type: String
     - contextPath: SymantecEDR.DomainFileAssociation.signature_company_name
-      description: "The signer company name of the downloaded file. \n\nExample: \"Microsoft Windows\""
+      description: |-
+        The signer company name of the downloaded file. Example: "Microsoft Windows".
       type: String
   - arguments:
     - default: false
@@ -236,25 +248,32 @@ script:
     name: symantec-edr-endpoint-domain-association-list
     outputs:
     - contextPath: SymantecEDR.EndpointDomainAssociation.data_source_url
-      description: "The URL that was accessed \n\nExample: \"http://www.westfallave.com/insight/cloudcar.exe\""
+      description: |-
+        The URL that was accessed. Example: "http://www.westfallave.com/insight/cloudcar.exe
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.data_source_url_domain
-      description: "Domain name of the accessed URL \n\nExample: \"westfallave.com\""
+      description: |-
+        Domain name of the accessed URL. Example: "westfallave.com"
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
+      description: |-
+        The IPv6 or IPv4 address of the endpoint when this association was last updated. Example: "127.0.0.1"
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.device_name
-      description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
+      description: |-
+        The host name or, if unavailable, the IP address of the endpoint when this association was last updated. Example: "170915-000020"
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.device_uid
-      description: "Unique ID of the endpoint that accessed this URL \n\nExample: \"04cfc04b-5c7a-4aa8-b95b-79be23f768f4\""
+      description: |-
+        Unique ID of the endpoint that accessed this URL. Example: "04cfc04b-5c7a-4aa8-b95b-79be23f768f4"
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.frst_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\""
+      description: |-
+        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z"
       type: String
     - contextPath: SymantecEDR.EndpointDomainAssociation.last_seen
-      description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association \n\nExample: \"2018-01-30T04:13:10.669Z\" "
+      description: |-
+        The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: "2018-01-30T04:13:10.669Z"
       type: String
   - arguments:
     - default: false
@@ -309,7 +328,7 @@ script:
     name: symantec-edr-endpoint-file-association-list
     outputs:
     - contextPath: SymantecEDR.EndpointFileAssociation.device_ip
-      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"10.212.24.159\""
+      description: "The IPv6 or IPv4 address of the endpoint when this association was last updated \n\nExample: \"127.0.0.1\""
       type: String
     - contextPath: SymantecEDR.EndpointFileAssociation.device_name
       description: "The host name or, if unavailable, the IP address of the endpoint when this association was last updated \n\nExample: \"170915-000020\""
@@ -369,7 +388,7 @@ script:
     name: symantec-edr-domain-instance-list
     outputs:
     - contextPath: SymantecEDR.DomainInstance.data_source_url
-      description: "Last URL accessed on this domain \nExample: \"http://www.skyscan.com/shample/shample.exe\""
+      description: "Last URL accessed on this domain \nExample: \"http://www.<domain>.com/shample/shample.exe\""
       type: String
     - contextPath: SymantecEDR.DomainInstance.data_source_url_domain
       description: "The name of the domain. \nExample: \"skyscan.com\" "
@@ -384,7 +403,7 @@ script:
       description: "The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the update of this instance. \n\nExample: \"2018-01-30T04:13:10.669Z\" "
       type: String
     - contextPath: SymantecEDR.DomainInstance.external_ip
-      description: "The IP address (IPv4 or IPv6) of the device/machine that accepted the connection. \n\nExample: \"85.158.136.166\""
+      description: "The IP address (IPv4 or IPv6) of the device/machine that accepted the connection. \n\nExample: \"127.0.0.1\""
       type: String
   - arguments:
     - default: false
@@ -917,9 +936,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the incident  severity/priority level \nLow (1) \nMedium (2) \nHigh (3)"
+      description: "Specifies the incident  severity/priority level \nLow \nMedium \nHigh (3)"
       isArray: false
-      name: severity
+      name: priority
       predefined:
       - High
       - Medium
@@ -928,7 +947,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the incident status: \nOpen (1) \nWaiting (2) \nIn-Progress(3) \nClose (4)"
+      description: "Specifies the incident status: \nOpen \nWaiting \nIn-Progress \nClose"
       isArray: false
       name: status
       predefined:
@@ -957,10 +976,7 @@ script:
       type: String
     - contextPath: SymantecEDR.Incident.priority_level
       description: |-
-        Priority level of the incident. Possible values are:
-        1 = LOW
-        2 = MED
-        3 =HIGH
+        Priority level of the incident. Possible values are: Low, Medium, High
       type: Number
     - contextPath: SymantecEDR.Incident.resultt.last_event_seen
       description: |-
@@ -982,11 +998,7 @@ script:
       type: Date
     - contextPath: SymantecEDR.Incident.state
       description: |-
-        The current state of the incident. Possible values are:
-        1 = OPEN
-        2 =WAITING
-        3 = IN_WORK
-        4 = CLOSED
+        The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed
       type: Number
     - contextPath: SymantecEDR.Incident.detection_type
       description: Incident Detection Type
@@ -1228,6 +1240,7 @@ script:
       description: Hash of the file to query. Supports SHA256
       isArray: true
       name: file
+      polling: true
       required: true
       secret: false
     deprecated: false

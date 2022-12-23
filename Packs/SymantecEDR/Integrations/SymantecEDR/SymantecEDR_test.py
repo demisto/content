@@ -33,6 +33,7 @@ client = Client(
 
 FILE_INSTANCE_RESPONSE = util_load_json('test_data/file_instance_data.json')
 
+
 @pytest.mark.parametrize('raw_response, expected', [(FILE_INSTANCE_RESPONSE,
                                                     FILE_INSTANCE_RESPONSE)])
 def test_get_file_instance_command(mocker, raw_response, expected):
@@ -51,10 +52,10 @@ def test_get_file_instance_command(mocker, raw_response, expected):
             -  Checks the output of the command function with the expected output.
     """
     args = {"limit": 1}
-    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response] * 5)
+    mocker.patch.object(client, 'query_request_api', side_effect=[raw_response])
     command_results = get_file_instance_command(client, args)
     # results is CommandResults list
-    context_detail = command_results.to_context()['Contents']
+    context_detail = command_results.to_context()['Contents']['result']
     # print(f'Command Result: {context_detail}')
-    assert context_detail == expected.get("total")
+    assert context_detail == expected.get("result")
 
