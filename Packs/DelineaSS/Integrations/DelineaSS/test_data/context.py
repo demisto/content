@@ -1,3 +1,6 @@
+import collections
+
+Credentials = collections.namedtuple('Credentials', ['name', 'user', 'password'])
 GET_PASSWORD_BY_ID_CONTEXT = {
     'Delinea.Secret.Password(val.secret_password && val.secret_password == obj.secret_password)': {
         "Delinea": {
@@ -414,7 +417,7 @@ SECRET_RPC_CHANGE_PASSWORD_CONTEXT = {
 }
 
 SECRET_GET_CREDENTIALS_CONTEXT = {
-    'Delinea.User.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
+    'Delinea.Secret.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)': [
         {
             'name': '4',
             'password': 'test00111',

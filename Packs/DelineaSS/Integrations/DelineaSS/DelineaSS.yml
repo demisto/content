@@ -33,6 +33,15 @@ display: DelineaSS
 name: DelineaSS
 script:
   commands:
+  - arguments: []
+    deprecated: false
+    description: Extracting the credentials from secret
+    execution: false
+    name: delinea-fetch-users
+    outputs:
+    - contextPath: Delinea.User.Credentials
+      description: credentials from secrets
+      type: String
   - arguments:
     - default: false
       description: Secret ID
@@ -1094,7 +1103,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary
       type: String
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.7.33922
   feed: false
   isfetch: false
   longRunning: false

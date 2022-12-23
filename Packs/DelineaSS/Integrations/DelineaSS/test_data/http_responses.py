@@ -451,3 +451,4 @@ SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
         'secretTemplateName': 'Unix Account (SSH)',
         'responseCodes': []
 }
+

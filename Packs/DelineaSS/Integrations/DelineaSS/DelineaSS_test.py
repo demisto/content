@@ -7,7 +7,7 @@ from DelineaSS import Client, \
     secret_delete_command, folder_create_command, \
     folder_delete_command, folder_update_command, \
     user_delete_command, secret_create_command, user_create_command, \
-    user_update_command, secret_rpc_changepassword_command, user_fetch_command
+    user_update_command, secret_rpc_changepassword_command, fetch_credentials_command
 from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, \
     GET_USERNAME_BY_ID_CONTENT, SECRET_GET_CONTENT, \
     SECRET_PASSWORD_UPDATE_CONTEXT, SECRET_CHECKOUT_CONTEXT, \
@@ -66,7 +66,7 @@ SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
     (user_update_command, USER_UPDATE_ARGS, USER_UPDATE_RAW_RESPONSE, USER_UPDATE_CONTEXT),
     (secret_rpc_changepassword_command, SECRET_RPC_CHANGE_PASSWORD_ARGS,
      SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_CONTEXT),
-    (user_fetch_command, SECRET_GET_CREDENTIALS_ARGS, SECRET_GET_CREDENTIALS_RAW_RESPONSE,
+    (fetch_credentials_command, SECRET_GET_CREDENTIALS_ARGS, SECRET_GET_CREDENTIALS_RAW_RESPONSE,
      SECRET_GET_CREDENTIALS_CONTEXT)
 ])
 def test_delinea_commands(command, args, http_response, context, mocker):
@@ -80,3 +80,4 @@ def test_delinea_commands(command, args, http_response, context, mocker):
     results = outputs.to_context()
 
     assert results.get("EntryContext") == context
+
