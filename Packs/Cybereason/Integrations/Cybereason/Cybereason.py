@@ -540,16 +540,16 @@ def query_malops_command(client: Client, args: dict):
         outputs_key_field='GUID',
         outputs=outputs)
 
-def rest_malops(start_time):
+def rest_malops(client: Client,start_time):
     end_time = round(datetime.now().timestamp())*1000
     json_body = {"startTime":start_time,"endTime":end_time}
-    api_response = http_request('POST', '/rest/detection/inbox', json_body=json_body) 
+    api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body) 
     demisto.debug(f"length of rest dectection malops : {len(api_response)}")
     return api_response
 
 
-def get_non_edr_list(start_time):
-    malop_list = rest_malops(start_time)
+def get_non_edr_list(client:Client,start_time):
+    malop_list = rest_malops(client,start_time)
     edr_malop_guid = list()
     non_edr_list = list()
     demisto.info(f"start time in get_non_edr_list: {start_time}")
@@ -1534,7 +1534,7 @@ def fetch_incidents(client: Client):
     else:
         # In first run
         last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
-    edr,non_edr = get_non_edr_list(last_update_time)
+    edr,non_edr = get_non_edr_list(client,last_update_time)
     if IS_EPP_ENABLED:
         demisto.info(f"EPP value: {IS_EPP_ENABLED}")
         for non_edr_malops in non_edr:
