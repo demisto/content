@@ -7808,7 +7808,7 @@ class TestFetchWithLookBack:
             self.INCIDENTS = incidents
 
     @pytest.mark.parametrize(
-        '',
+        'args1, expected_results1, args2, expected_results2, args3, expected_results3',
         [
             (
                 {
@@ -7913,7 +7913,7 @@ class TestFetchWithLookBack:
                 {
                     'time': '2022-04-02T10:12:00',
                     'limit': 3,
-                    'found_incident_ids': {'4': '', '5': ''}
+                    'found_incident_ids': {'1': '', '2': '', '3': '', '4': '', '5': ''}
                 },
                 {
                     'incidents': [
@@ -7939,7 +7939,7 @@ class TestFetchWithLookBack:
             )
         ]
     )
-    def test_update_last_run_object(args1, expected_results1, args2, expected_results2, args3, expected_results3):
+    def test_update_last_run_object(self, args1, expected_results1, args2, expected_results2, args3, expected_results3):
 
         from CommonServerPython import update_last_run_object
 
