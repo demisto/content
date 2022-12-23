@@ -12,10 +12,10 @@ Configuring the EclecticIQ integration requires API credentials generated in Ecl
 6. Navigate to **API token** and click on **add**
 7. Provide the **description** and click on **generate token**.
 
-## Configure EclecticIQ v2 Platform on Cortex XSOAR
+## Configure EclecticIQ Platform v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for EclecticIQ
+2. Search for EclecticIQ Platform v2
 3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
@@ -30,9 +30,9 @@ Configuring the EclecticIQ integration requires API credentials generated in Ecl
 * Execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. create_observable: create observable in the EclecticIQ Intelligence Center Platform
-2. create_sighting: create sighting in the EclecticIQ Intelligence Center Platform
-3. lookup_observables: lookup observables from EclecticIQ Intelligence Center Platform
+1. EclecticIQ_create_observable: create observable in the EclecticIQ Intelligence Center Platform
+2. EclecticIQ_create_sighting: create sighting in the EclecticIQ Intelligence Center Platform
+3. EclecticIQ_lookup_observables: lookup observables from EclecticIQ Intelligence Center Platform
 
 
 

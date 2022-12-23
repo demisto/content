@@ -18,14 +18,14 @@ This integration was integrated and tested with version of EclecticIQ Platform v
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### lookup_observables
+### EclecticIQ_lookup_observables
 ***
 Lookup observables from EclecticIQ Intelligence Center Platform
 
 
 #### Base Command
 
-`lookup_observables`
+`EclecticIQ_lookup_observables`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -44,7 +44,7 @@ Lookup observables from EclecticIQ Intelligence Center Platform
 | EclecticIQ.Entity.title | string | EclecticIQ Entity Title | 
 
 #### Command Example
-```!lookup_observables type="ipv4" value="001.001.001.001"```
+```!EclecticIQ_lookup_observables type="ipv4" value="001.001.001.001"```
 #### Context Example
 ```json
 {
@@ -98,13 +98,13 @@ Lookup observables from EclecticIQ Intelligence Center Platform
 |:--------     |:-------     |------|------|---------|--------|------|
 |`low`	|creationofsighting|	{'type': 'ipv4', 'value': '001.001.001.001, 'classification': 'low'}|   |   |	2022-08-25T04:50:56+00:00|sighting|
 
-### create_sighting
+### EclecticIQ_create_sighting
 ***
 create sighting in the EclecticIQ Intelligence Center Platform 
 
 #### Base Command
 
-`create_sighting`
+`EclecticIQ_create_sighting`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -128,7 +128,7 @@ create sighting in the EclecticIQ Intelligence Center Platform
 | Sighting.Data.value | string | Sighting Value | 
 
 #### Command Example
-```!create_sighting  type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"```
+```!EclecticIQ_create_sighting  type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"```
 
 #### Context Example
 ```json
@@ -156,13 +156,13 @@ create sighting in the EclecticIQ Intelligence Center Platform
 |`title`|	sighting|
 |`value`|	001.001.001.001|
 
-### create_observable
+### EclecticIQ_create_observable
 ***
 create observable in the EclecticIQ Intelligence Center Platform 
 
 #### Base Command
 
-`create_observable`
+`EclecticIQ_create_observable`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -181,7 +181,7 @@ create observable in the EclecticIQ Intelligence Center Platform
 | Observables.Data.maliciousness | string | Observable maliciousness | 
 
 #### Command Example
-```!create_observable  type="ipv4" value="001.001.001.001" maliciousness="high"```
+```!EclecticIQ_create_observable  type="ipv4" value="001.001.001.001" maliciousness="high"```
 #### Context Example
 ```json
 {
