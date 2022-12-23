@@ -478,7 +478,7 @@ def secret_rpc_changepassword_command(client, secret_id: str = '', newpassword: 
 
 
 def fetch_credentials_command(client, secretids):
-    credentials = []
+    credentials: List[Any] = []
     try:
         secretsid = argToList(secretids)
     except Exception as e:
