@@ -33,6 +33,7 @@ INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: ' \
 INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filter in lieu of "query" ' \
                           'or explicitly use only "query" argument'
 COMMAND_ACTION = ['isolate_endpoint', 'rejoin_endpoint', 'cancel_command', 'delete_endpoint_file']
+INCIDENT_PATCH_ACTION = ['add_comment', 'close_incident', 'update_resolution']
 SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
 INCIDENT_PRIORITY_LEVEL = {
     1: 'Low',
@@ -58,18 +59,12 @@ INCIDENT_RESOLUTION = {
 }
 
 EVENT_SEVERITY = {
-    'info': 1,
-    'warning': 2,
-    'minor': 3,
-    'major': 4,
-    'critical': 5,
-    'fatal': 6
-}
-
-EVENT_STATUS = {
-    'Unknown': 0,
-    'Success': 1,
-    'Failure': 2
+    1: 'Info',
+    2: 'Warning',
+    3: 'Minor',
+    4: 'Major',
+    5: 'Critical',
+    6: 'Fatal'
 }
 
 SANDBOX_STATE = {
@@ -788,6 +783,7 @@ def incident_event_readable_output(results: List[Dict], title: str):
     summary_data = []
     for data in results:
         event_dict = event_object_data(data)
+        event_dict['severity_id'] = EVENT_SEVERITY.get(event_dict.get('severity_id'))
         # ---- Display Data ----
         new = {
             'time': event_dict.get('device_time', ''),
@@ -795,7 +791,7 @@ def incident_event_readable_output(results: List[Dict], title: str):
             'description': f'{event_dict.get("event_actor_file_name", "")} '
                            f'logged: {event_dict.get("enriched_data_rule_description", "")}',
             'device_name': event_dict.get('device_name', ''),
-            'severity': event_dict.get('severity_id', ''),
+            'severity_id': event_dict.get('severity_id'),
             'device_ip': event_dict.get('device_ip', ''),
             'event_uuid': event_dict.get('event_uuid', ''),
             'incident': event_dict.get('incident', ''),
@@ -994,12 +990,19 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         Return string.
     """
     # Activity query Parameters
+    event_severity_mapping = {
+        'info': 1,
+        'warning': 2,
+        'minor': 3,
+        'major': 4,
+        'critical': 5,
+        'fatal': 6
+    }
     event_type_id = arg_to_number(args.get('type_id'))
-    severity = EVENT_SEVERITY.get(args.get('severity'))
-    status = EVENT_STATUS.get(args.get('status'))
+    severity = event_severity_mapping.get((args.get('severity')))
     query = args.get('query')
 
-    if query and (event_type_id or severity or status):
+    if query and (event_type_id or severity):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
 
     condition = None
@@ -1008,9 +1011,6 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
 
     if severity:
         condition = f'severity_id: {severity}' if not condition else f'{condition} AND severity_id: {severity}'
-
-    if status:
-        condition = f'status_id: {status}' if not condition else f'{condition} AND status_id: {status}'
 
     if query:
         condition = query
@@ -1050,7 +1050,7 @@ def get_association_filter_query(args: Dict) -> str:
     Returns:
         Return string.
     """
-    query_type = args.get('search_query')
+    query_type = args.get('search_object')
     query_value = args.get('search_value')
     query = args.get('query')
 
@@ -1433,7 +1433,9 @@ def get_endpoint_file_association_list_command(client: Client, args: Dict[str, A
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointFileAssociation',
         outputs_key_field='',
-        outputs=page_result
+        outputs=page_result,
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1650,25 +1652,29 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
           CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
               result.
     """
-    incident_status_dict = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
     endpoint = f'/atpapi/v2/incidents'
     # Get UUID based on incident_id
     device_uuid = get_incident_uuid(endpoint, client, args)
-    action = args.get('operation')
-    action_list = []
-    if action == 'add':
-        action_desc = 'Add Comment'
-        value = args.get('comment')
-        if not value:
-            raise ValueError(f'Invalid argument. Specifies the Incident comment.')
+    action = args.get('action_type')
+    value = args.get('value')
+    if action not in INCIDENT_PATCH_ACTION:
+        raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
+    action_list = []
+    # Incident Add Comment
+    if action == 'add_comment':
+        if not value:
+            raise ValueError(f'Incident comments not found. Enter comments to add')
+        action_desc = 'Add Comment'
         add_comment = {
                     'op': 'add',
                     'path': f'/{device_uuid}/comments',
-                    'value': value
+                    'value': value[:512]
                 }
         action_list.append(add_comment)
-    elif action == 'close':
+
+    # Incident Close Incident
+    if action == 'closed':
         action_desc = 'Close Incident'
         close_action = {
                     'op': 'replace',
@@ -1676,38 +1682,33 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
                     'value': 4
                 }
         action_list.append(close_action)
-    elif action == 'update':
+
+    # Incident Update Resolution
+    if action == 'update_resolution':
         action_desc = 'Update Status'
-        status = incident_status_dict.get(args.get('update_status'))
-        close_action = {
-                    'op': 'replace',
-                    'path': f'/{device_uuid}/state',
-                    'value': 4
-                }
-        action_list.append(close_action)
+        if not value.isnumeric():
+            raise ValueError(f'Invalid Incident Resolution value, it must be integer: The Support values {INCIDENT_RESOLUTION}')
         update_state = {
                     'op': 'replace',
                     'path': f'/{device_uuid}/resolution',
-                    'value': status
+                    'value': arg_to_number(value)
                 }
         action_list.append(update_state)
-    else:
-        raise DemistoException(f'Invalid Action. Supported Incident action are "add, update, close"')
 
     response = client.query_patch_api(endpoint, json.dumps(action_list))
+    title = f"Incident {action_desc}"
 
-    title = f"Patch Incident {action_desc}"
+    if response.get('status') == 204:
+        summary_data = {
+            'incident_id': args.get('incident_id'),
+            'Message': f'Successfully Updated',
+        }
+        headers = list(summary_data.keys())
+        readable_output = tableToMarkdown(title, summary_data, headers=headers, removeNull=True)
+    else:
+        readable_output = f'Failed {action}. Response from endpoint {response.get("status")}'
 
-    summary_data = {
-        'incident_id': args.get('incident_id'),
-        'status': response.get('status'),
-        'Message': f'Successfully {action}ed' if action == 'add' else f'Successfully {action}d',
-        'value': args.get('comment') if action == 'add' else args.get('update_status')
-    }
-    headers = list(summary_data.keys())
-    return CommandResults(
-        readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True)
-    )
+    return CommandResults(readable_output=readable_output)
 
 
 def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1839,7 +1840,8 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointInstances',
         outputs_key_field='',
         outputs=page_result,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=False
     )
 
 
@@ -2000,7 +2002,7 @@ def get_endpoint_command(client: Client, args: Dict[str, Any], action: str) -> C
 
     if action_type == 'delete_endpoint_file':
         if not device_uid or not file_sha2:
-            raise DemistoException(f'Invalid Arguments. Both arguments "device_id" and file "sha2" require '
+            raise DemistoException(f'Invalid Arguments. Both arguments "device_id" and file "sha2" required'
                                    f'for delete the endpoint file')
         payload = {
             'action': action_type,
@@ -2016,8 +2018,7 @@ def get_endpoint_command(client: Client, args: Dict[str, Any], action: str) -> C
 
     summary_data = {
             "Message": raw_response.get('message'),
-            "Command ID": raw_response.get('command_id'),
-            "Error Code": raw_response.get('error_code')
+            "CommandId": raw_response.get('command_id')
         }
 
     headers = list(summary_data.keys())
@@ -2025,7 +2026,9 @@ def get_endpoint_command(client: Client, args: Dict[str, Any], action: str) -> C
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Command.{action_type}',
         outputs_key_field='command_id',
         outputs=raw_response,
-        readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True)
+        readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True),
+        raw_response=raw_response,
+        ignore_auto_extract=False
     )
 
 
@@ -2051,15 +2054,13 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
     summary_data = {
             "state": raw_response.get('state'),
             "Command Issuer Name": raw_response.get('command_issuer_name'),
-            "Next": raw_response.get('next'),
-            "Total": raw_response.get('total')
         }
 
     # headers = list(summary_data.keys())
     result = raw_response.get('status', [])
     if len(result) >= 1:
         for status in result:
-            summary_data['target'] = status.get('target')
+            # summary_data['target'] = status.get('target')
             summary_data['target_state'] = status.get('state')
             summary_data['message'] = status.get('message')
             summary_data['error_code'] = status.get('error_code')
@@ -2074,7 +2075,9 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.CommandStatus',
         outputs_key_field='',
-        outputs=summary_data
+        outputs=summary_data,
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 

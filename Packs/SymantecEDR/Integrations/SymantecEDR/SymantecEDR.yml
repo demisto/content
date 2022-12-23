@@ -140,7 +140,7 @@ script:
         Specific a filters option in lieu of “query”. These filters will improve query performance.
         Search query type are  domain  and sha256
       isArray: false
-      name: search_query
+      name: search_object
       predefined:
       - domain
       - sha256
@@ -230,7 +230,7 @@ script:
       default: false
       description: "Specific a filters option in lieu of “query”. These filters will improve query performance. \nSearch query type are  domain  and device_uid"
       isArray: false
-      name: search_query
+      name: search_object
       predefined:
       - domain
       - device_uid
@@ -310,7 +310,7 @@ script:
         Specific a filters option in lieu of “query”. These filters will improve query performance.
         Search query type are  device_uid  and sha256
       isArray: false
-      name: search_query
+      name: search_object
       predefined:
       - device_uid
       - sha256
@@ -752,16 +752,12 @@ script:
       description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
       isArray: false
       name: start_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
       description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -776,13 +772,11 @@ script:
       description: 'Specifies  Type Id. Refer to event summary Type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html '
       isArray: false
       name: type_id
-      predefined:
-      - ''
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Specifies the severity from following:  \ninfo (1) \nwarning (2) \nminor (3) \nmajor (4) \ncritical (5) \nfatal (6) "
+      description: "Specifies the severity from following:  \ninfo \nwarning \nminor \nmajor \ncritical \nfatal"
       isArray: false
       name: severity
       predefined:
@@ -827,8 +821,6 @@ script:
 
       isArray: false
       name: start_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -836,8 +828,6 @@ script:
         From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -905,8 +895,6 @@ script:
 
       isArray: false
       name: start_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -914,8 +902,6 @@ script:
         From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
       isArray: false
       name: end_time
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -1031,7 +1017,7 @@ script:
         0 =INSUFFICIENT_DATA. The incident does not have sufcient information to make a determination.
         1 = SECURITY_RISK. The incident indicates a true security threat.
         2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.
-        3 =MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
+        3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
         4 = NOT_SET. The incident resolution was not set.
         5 = BENIGN. The incident detected the activity as expected but is not a security threat.
         6 = TEST. The incident was generated due to internal security testing.
@@ -1240,35 +1226,26 @@ script:
       description: Hash of the file to query. Supports SHA256
       isArray: true
       name: file
-      polling: true
       required: true
       secret: false
     deprecated: false
     description: Issue Sandbox Command of specific SHA2
     execution: false
     name: file
+    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: "Specifes the operation to take on specifed incident.\n- Add : Add Comments to Incident.\n- Close: Closed Incident. \n- Update: Update status either Open or Close Incident."
+      description: "Specifes the operation to take on specifed incident.\n- add_comment\
+        \ : Add Comments to Incident.\n- close_incident: Closed Incident. \n- update_resolution:\
+        \ Update Resolution of closed Incident."
       isArray: false
-      name: operation
+      name: action_type
       predefined:
-      - add
-      - close
-      - update
+      - add_comment
+      - close_incident
+      - update_resolution
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Update Close or Open Incident with status. value is any one of the state integer e.g.  (1 = open, 2 = waiting, 3 In-progress).  The type is integer. example "value=2"
-      isArray: false
-      name: update_status
-      predefined:
-      - Open
-      - Waiting
-      - In-Progress
-      required: false
       secret: false
     - default: false
       description: 'Specifies an incident ID for specific operation '
@@ -1278,25 +1255,41 @@ script:
       secret: false
     - default: false
       description: |
-        Add Comments to Incident. "comment=<free text>". The maximum length of comment is 512 characters
+        For add comments : The value should contain user defined comment. The maximum length of comment is 512 characters
+
+        for update resolution of Closed incident: Any one of supported Resolution Value
+        0 = INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.
+        1 = SECURITY_RISK. The incident indicates a true security threat.
+        2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.
+        3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
+        4 = NOT_SET. The incident resolution was not set.
+        5 = BENIGN. The incident detected the activity as expected but is not a security threat.
+        6 = TEST. The incident was generated due to internal security testing.
       isArray: false
-      name: comment
+      name: value
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: |-
+        The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+
+        Note : Only can provide if incidents is older then 30 days
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: |-
+        From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+
+        Note : Only can provide if incidents is older then 30 days
       isArray: false
       name: end_time
       required: false
       secret: false
     deprecated: false
-    description: Incidents Patch command for the close incident, update resolution of closed incident or add comments to incident.
+    description: Incidents Patch command for the close incident, update resolution
+      of closed incident or add comments to incident.
     execution: false
     name: symantec-edr-incident-update
   - arguments:
