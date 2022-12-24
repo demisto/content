@@ -21,4 +21,4 @@ For more information about creating an OAuth app click [here](https://marketplac
     API Key
     API Secret
 
-For more information about creating an OAuth app click [here](https://marketplace.zoom.us/docs/guides/build/jwt-app/).
+For more information about creating an JWT app click [here](https://marketplace.zoom.us/docs/guides/build/jwt-app/).
