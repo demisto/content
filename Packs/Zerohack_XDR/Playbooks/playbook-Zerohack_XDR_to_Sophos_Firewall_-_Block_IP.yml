@@ -1,14 +1,7 @@
 id: Zerohack XDR_Sophos Firewall_Block IP
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: Sophos XG Firewall
-    itemVersion: 1.1.3
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Zerohack XDR_Sophos Firewall_Block IP
 description: |-
   This playbook adds the IP address to a pre-configured firewall rule. (The target firewall rule can be changed as requested.)
@@ -27,6 +20,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -116,6 +110,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -204,14 +199,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Analyst Alert
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -401,9 +396,7 @@ tasks:
       id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
       version: -1
       name: Is Error?
-      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -480,6 +473,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -557,9 +551,7 @@ tasks:
       id: 14550d6b-210f-48de-818b-ff2673b3ba69
       version: -1
       name: Is Error?
-      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return yes
-        if one of the entries returned an error.
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -619,14 +611,14 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: Analyst Alert
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -729,6 +721,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -839,13 +832,14 @@ inputs:
       accessor: attacker_ip
   required: true
   description: Array of IP addresses required to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IPHostGroup
   value:
     simple: Sophos Block Group
   required: false
-  description: IP Host Group which was pre-configured for the purpose of using this
-    playbook in order to block one or more IP addresses.
-  playbookInputQuery: null
+  description: IP Host Group which was pre-configured for the purpose of using this playbook in order to block one or more IP addresses.
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 8463857c-c101-4aba-8f5a-27e133494ed9
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
