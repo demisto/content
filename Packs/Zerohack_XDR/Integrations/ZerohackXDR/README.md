@@ -19,20 +19,20 @@ This integration was integrated and tested with version xx of Zerohack XDR
 2. Click on Create API key.  
 
 
-    ![Setup Account](./Readme_images/createAPI1.1.png)
+    ![Setup Account](./../../doc_imgs/createAPI1.1.png)
 
 
 3. Click on Drop down of Select application.
 
 
-    ![Setup Account](./Readme_images/createAPI_2.1.png)
+    ![Setup Account](./../../doc_imgs/createAPI_2.1.png)
 
 
 4. Click on Palo Alto XSOAR.
 
 
 
-    ![Setup Account](./Readme_images/createAPI_3.1.png)
+    ![Setup Account](./../../doc_imgs/createAPI_3.1.png)
 
 
 
@@ -41,36 +41,36 @@ This integration was integrated and tested with version xx of Zerohack XDR
 5. Select API Type "Full Control".
 
 
-   ![Setup Account](./Readme_images/createAPI_4.1.png)
+   ![Setup Account](./../../doc_imgs/createAPI_4.1.png)
 
 
 
 6. Click on Create Api.
 
 
-   ![Setup Account](./Readme_images/createAPI_5.1.png)
+   ![Setup Account](./../../doc_imgs/createAPI_5.1.png)
 
 
 7. Copy your API key.   
 
 
-   ![Setup Account](./Readme_images/createAPI_6.1.png)
+   ![Setup Account](./../../doc_imgs/createAPI_6.1.png)
  
 ## Configure Zerohack XDR on Cortex XSOAR
 
 1. Navigate to **Settings** on bottom left corner of dashboard > **Integrations** > **Servers & Services**.
 
-![Setup Account](./Readme_images/xsoar_dash.png)
+![Setup Account](./../../doc_imgs/xsoar_dash.png)
 
 
 2. Search for Zerohack XDR.
 
-![Setup Account](./Readme_images/settings_integrations.png)
+![Setup Account](./../../doc_imgs/settings_integrations.png)
 
 
 3. Click **Add instance** to create and configure a new integration instance.
 
-   ![Setup Account](./Readme_images/settings_integrations.png)
+   ![Setup Account](./../../doc_imgs/settings_integrations.png)
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
@@ -87,21 +87,21 @@ This integration was integrated and tested with version xx of Zerohack XDR
 
 
 
-![Setup Account](./Readme_images/settings_integrations2.png)
+![Setup Account](./../../doc_imgs/settings_integrations2.png)
 
 
 5. Click **Test** to validate the URLs, token, and connection.
 
 
-![Setup Account](./Readme_images/test_results.png)
+![Setup Account](./../../doc_imgs/test_results.png)
 
 6. Access the Fetch results.
 
 
-![Setup Account](./Readme_images/settings_integrations1.png)
+![Setup Account](./../../doc_imgs/settings_integrations1.png)
 
 
-![Setup Account](./Readme_images/latest_fetch_history.png)   
+![Setup Account](./../../doc_imgs/latest_fetch_history.png)   
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -122,7 +122,7 @@ Fetch a single incident of your choice of severity level to study the incidents 
 
 
 
-![Setup Account](./Readme_images/CLI_command_execute.png)
+![Setup Account](./../../doc_imgs/CLI_command_execute.png)
 
 
 #### Context Output
@@ -176,4 +176,4 @@ Fetch a single incident of your choice of severity level to study the incidents 
     ]
 
 
-![Setup Account](./Readme_images/command_result.png)
+![Setup Account](./../../doc_imgs/command_result.png)
