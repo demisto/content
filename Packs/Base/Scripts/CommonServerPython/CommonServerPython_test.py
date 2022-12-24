@@ -7913,7 +7913,7 @@ class TestFetchWithLookBack:
                 {
                     'time': '2022-04-02T10:12:00',
                     'limit': 3,
-                    'found_incident_ids': {'1': '', '2': '', '3': '', '4': '', '5': ''}
+                    'found_incident_ids': {'4': '', '5': ''}
                 },
                 {
                     'incidents': [
@@ -7936,6 +7936,60 @@ class TestFetchWithLookBack:
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
                 }
+            ),
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-06T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-02T10:12:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-07T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                }
             )
         ]
     )
@@ -7951,6 +8005,8 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results1.get('found_incident_ids')
 
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
         args2.update({'last_run': results})
         results = update_last_run_object(**args2)
 
@@ -7959,6 +8015,8 @@ class TestFetchWithLookBack:
         for id_ in results.get('found_incident_ids').keys():
             assert id_ in expected_results2.get('found_incident_ids')
 
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
         args3.update({'last_run': results})
         results = update_last_run_object(**args3)
 
