@@ -12926,7 +12926,7 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
             if fetch_start_time:
                 query = add_time_filter_to_query_parameter(query, fetch_start_time)
                 response_entries = get_query_entries(log_type, query, max_fetch)
-                demisto.debug(f'{len(response_entries)} raw incidents (entries) found for {log_type} log type.')
+                demisto.debug(f'{log_type} log type: {len(response_entries)} raw incidents (entries) found for {log_type} log type.')
                 entries[log_type] = response_entries
     return entries
 
@@ -12950,7 +12950,7 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[date
     new_fetch_datetime = dateparser.parse(last_fetch_string, settings={'TIMEZONE': 'UTC'})
 
     # convert incident entries to incident context
-    parsed_incidents: list[dict[str, Any]] = [incident_entry_to_incident_context(
+    parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(
         incident_entry) for incident_entry in incident_entries]
     demisto.debug(f'{len(parsed_incidents)} parsed incidents returned from parse_incident_entries function')
 
@@ -13055,6 +13055,7 @@ def filter_incidents_entries_by_time_generated(
         _type_: dictionary of raw incident entries per log type filtered by time_generated attribute
     """
     for log_type, incident_entries in incident_entries_dict.items():
+        filtered = 0
         fetch_start_time = fetch_start_datetime_dict.get(log_type)
 
         if not fetch_start_time:
@@ -13065,8 +13066,12 @@ def filter_incidents_entries_by_time_generated(
             incident_generated_time = dateparser.parse(incident.get('time_generated'), settings={'TIMEZONE': 'UTC'})
             if incident_generated_time and (incident_generated_time > fetch_start_time):
                 filtered_incidents.append(incident)
+            else:
+                filtered += 1
 
         incident_entries_dict[log_type] = filtered_incidents
+        demisto.debug(f'{log_type} log type: {len(filtered_incidents)} incidents passed filtration by time_generated attribute.')
+        demisto.debug(f'{log_type} log type: {filtered} incidents filtered out by time_generated attribute.')
     return incident_entries_dict
 
 
@@ -13091,8 +13096,10 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
     demisto.debug(f'updated last fetch per log type: {fetch_start_datetime_dict=}.')
 
     incident_entries_dict = fetch_incidents_request(queries_dict, max_fetch, fetch_start_datetime_dict)
+    demisto.debug('raw incident entries fetching has completed.')
 
     incident_entries_dict = filter_incidents_entries_by_time_generated(incident_entries_dict, fetch_start_datetime_dict)
+    demisto.debug('raw incident entries filtration has completed.')
 
     # for each log type incident entries array, parse the raw incidents into context incidents and, if necessary, update the latest fetch time.
     for log_type, incident_entries in incident_entries_dict.items():
@@ -13100,6 +13107,7 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
         incident_entries_dict[log_type] = incidents
         if updated_last_fetch:
             last_fetch_dict[log_type] = updated_last_fetch.isoformat()
+        demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}')
 
     # flatten incident_entries_dict to a single list of dictionaries representing context entries
     parsed_incident_entries_list = [incident for incident_list in incident_entries_dict.values()

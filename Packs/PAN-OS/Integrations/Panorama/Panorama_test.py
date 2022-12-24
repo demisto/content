@@ -5857,16 +5857,17 @@ def test_pan_os_create_address_main_flow_error(args):
 """ FETCH INCIDENTS """
 
 
-def assert_datetime_objects(returned: datetime, expected: datetime):
-    assert returned.year == expected.year
-    assert returned.month == expected.month
-    assert returned.day == expected.day
-    assert returned.hour == expected.hour
-    assert returned.minute == expected.minute
-
-
 class TestFetchIncidentsHelperFunctions:
-    global assert_datetime_objects
+
+    def assert_datetime_objects(self, returned: datetime | None, expected: datetime | None):
+        if not returned or not expected:
+            return False
+        return all(
+            [(returned.year == expected.year),
+             (returned.month == expected.month),
+             (returned.day == expected.day),
+             (returned.hour == expected.hour),
+             (returned.minute == expected.minute)])
 
     utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})
     case_query_with_time_filter = ('(query with time_generated geq some_time)',
@@ -5958,7 +5959,8 @@ class TestFetchIncidentsHelperFunctions:
 
     case_first_fetch = (
         {},
-        first_fetch, {'X_log_type': '(X_log_type query)', 'Y_log_type': '(Y_log_type query)'},
+        first_fetch,
+        {'X_log_type': '(X_log_type query)', 'Y_log_type': '(Y_log_type query)'},
         {'X_log_type': dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}),
          'Y_log_type': dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'})})
 
@@ -5995,36 +5997,80 @@ class TestFetchIncidentsHelperFunctions:
         """
         from Panorama import get_fetch_start_datetime_dict
         result_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)
-        assert_datetime_objects(result_dict.get('X_log_type'), expected_result.get('X_log_type'))
-        assert_datetime_objects(result_dict.get('Y_log_type'), expected_result.get('Y_log_type'))
+        assert self.assert_datetime_objects(result_dict.get('X_log_type'), expected_result.get('X_log_type'))
+        assert self.assert_datetime_objects(result_dict.get('Y_log_type'), expected_result.get('Y_log_type'))
 
-
-    case_no_incidents = ({},{})
+    case_no_incidents = ({}, {})
 
     utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})
     one_incident = [{'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}]
-    one_incident_result = (utc_time_twelve, [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat(), 'rawJSON': one_incident, 'type': 'X_log_type'}])
+    one_incident_result = (
+        utc_time_twelve,
+        [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat(),
+          'rawJSON': one_incident, 'type': 'X_log_type'}])
     case_one_incident = (one_incident, one_incident_result)
-    
+
     utc_time_eleven = dateparser.parse('2022/01/01 11:00', settings={'TIMEZONE': 'UTC'})
     two_incidents = [
         {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'},
         {'seqno': '00000000002', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00'}
     ]
-    two_incidents_result = (utc_time_twelve, [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat(), 'rawJSON': two_incidents[0], 'type': 'X_log_type'},
-                                              {'name': '00000000001', 'occurred': utc_time_eleven.isoformat(), 'rawJSON': two_incidents[1], 'type': 'X_log_type'}])
-
+    two_incidents_result = (
+        utc_time_twelve,
+        [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat(),
+          'rawJSON': two_incidents[0],
+          'type': 'X_log_type'},
+         {'name': '00000000001', 'occurred': utc_time_eleven.isoformat(),
+          'rawJSON': two_incidents[1],
+          'type': 'X_log_type'}])
     case_two_incident = (two_incidents, two_incidents_result)
 
     test_parse_incident_entries_args = [case_no_incidents, case_one_incident, case_two_incident]
-    
-    
+
     @pytest.mark.parametrize('incident_entries, expected_result', test_parse_incident_entries_args)
     def test_parse_incident_entries(self, incident_entries, expected_result):
         from Panorama import parse_incident_entries
-        
+
         parse_incident_entries(incident_entries) == expected_result
-        
+
+    utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})
+    fetch_start_datetime_dict = {'X_log_type': utc_time_twelve}
+
+    incident_one = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00'}
+    incident_two = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}
+    incident_three = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:00:00'}
+    incident_four = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:01:00'}
+
+    case_no_incidents_entries = ({}, {'X_log_type': utc_time_twelve}, {})
+    case_incident_with_smaller_time_generated_than_last_fetch = (
+        {'X_log_type': [incident_one]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
+        {'X_log_type': [incident_one, incident_three]}, {'X_log_type': utc_time_twelve}, {'X_log_type': [incident_three]})
+    case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch = (
+        {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
+        {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    case_two_incidents_with_larger_time_generated_than_last_fetch = (
+        {'X_log_type': [incident_three, incident_four]},
+        {'X_log_type': utc_time_twelve},
+        {'X_log_type': [incident_three, incident_four]})
+
+    filter_incidents_entries_by_time_generated_args = [
+        case_no_incidents_entries,
+        case_incident_with_smaller_time_generated_than_last_fetch,
+        case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
+        case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch,
+        case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
+        case_two_incidents_with_larger_time_generated_than_last_fetch]
+
+    @pytest.mark.parametrize('incident_entries_dict, fetch_start_datetime_dict ,expected_result',
+                             filter_incidents_entries_by_time_generated_args)
+    def test_filter_incidents_entries_by_time_generated(
+            self, incident_entries_dict, fetch_start_datetime_dict, expected_result):
+        from Panorama import filter_incidents_entries_by_time_generated
+        assert filter_incidents_entries_by_time_generated(
+            incident_entries_dict, fetch_start_datetime_dict) == expected_result
+
 
 class TestFetchIncidentsFlows:
     global assert_datetime_objects
