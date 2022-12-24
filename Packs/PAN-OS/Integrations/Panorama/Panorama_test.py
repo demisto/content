@@ -6027,6 +6027,8 @@ class TestFetchIncidentsHelperFunctions:
         
 
 class TestFetchIncidentsFlows:
+    global assert_datetime_objects
+    
     def assert_datetime_objects(self, returned: datetime, expected: datetime):
         assert returned.year == expected.year
         assert returned.month == expected.month
@@ -6037,7 +6039,7 @@ class TestFetchIncidentsFlows:
     def test_first_fetch_with_no_incidents_flow(self, mocker):
         """
         Flow: First fetch cycle with no incidents
-        Expected result: no incidents should be returnd.
+        Expected result: no incidents should be returned.
         """
         from Panorama import fetch_incidents
         last_run = {}
@@ -6048,13 +6050,11 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_query_entries', return_value={})
 
         last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
-        parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values()
-                                        for incident in incident_list]
 
         last_fetch = dateparser.parse(last_fetch_dict.get('X_log_type', ''), settings={'TIMEZONE': 'UTC'})
         expected_time = dateparser.parse('24 hours', settings={'TIMEZONE': 'UTC'})
 
-        assert parsed_incident_entries_dict == []
+        assert incident_entries_dict == []
         if (last_fetch and expected_time) and (isinstance(last_fetch, datetime) and isinstance(last_fetch, datetime)):
             self.assert_datetime_objects(last_fetch, expected_time)
 
@@ -6062,7 +6062,7 @@ class TestFetchIncidentsFlows:
         """
         Flow: First fetch cycle with one incident.
         Expected result:
-            - The only incident should be returend.
+            - The only incident should be returned.
             - X_log_type last fetch should be created.
         """
         from Panorama import fetch_incidents
@@ -6071,8 +6071,7 @@ class TestFetchIncidentsFlows:
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = 10
 
-        raw_entries = {'@logid': '123456789', 'seqno': '000000001',
-                       'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
+        raw_entries = {'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'}
         expected_parsed_incident_entries = {'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
                                             'rawJSON': json.dumps(raw_entries), 'type': 'X_log_type'}
         fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
@@ -6081,10 +6080,8 @@ class TestFetchIncidentsFlows:
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
-        parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values()
-                                        for incident in incident_list]
 
-        assert parsed_incident_entries_dict[0] == expected_parsed_incident_entries
+        assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '')
 
     def test_second_fetch_with_two_incidents_with_same_log_type_flow(self, mocker):
@@ -6093,7 +6090,7 @@ class TestFetchIncidentsFlows:
             - First incident has earlier generated time than last run fetch time.
             - Second incident has later generated time than last run fetch time.
         Expected result:
-            - Only Second incident should be returend.
+            - Only Second incident should be returned.
             - X_log_type last fetch should be created.
         """
         from Panorama import fetch_incidents
@@ -6102,21 +6099,21 @@ class TestFetchIncidentsFlows:
         queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
         max_fetch = 10
 
-        raw_entries = [{'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 11:00:00'},
+        raw_entries = [{'seqno': '000000001', 'type': 'X_log_type', 'time_generated': '2022/1/1 12:00:00'},
                        {'seqno': '000000002', 'type': 'X_log_type', 'time_generated': '2022/1/1 13:00:00'}]
 
-        expected_parsed_incident_entries = {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
-                                            'rawJSON': json.dumps(raw_entries[1]), 'type': 'X_log_type'}
-        fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 11:00:00', settings={'TIMEZONE': 'UTC'})}
+        expected_parsed_incident_entries = [{'name': '000000001', 'occurred': '2022-01-01T12:00:00Z',
+                                            'rawJSON': json.dumps(raw_entries[1]), 'type': 'X_log_type'},
+                                            {'name': '000000002', 'occurred': '2022-01-01T13:00:00Z',
+                                            'rawJSON': json.dumps(raw_entries[1]), 'type': 'X_log_type'}]
+        fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
 
         mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
         mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
 
         last_fetch_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
-        parsed_incident_entries_dict = [incident for incident_list in incident_entries_dict.values()
-                                        for incident in incident_list]
 
-        assert parsed_incident_entries_dict[0] == expected_parsed_incident_entries
+        assert incident_entries_dict[0] == expected_parsed_incident_entries
         assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T13:00:00'
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
