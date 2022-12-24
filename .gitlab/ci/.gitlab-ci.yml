@@ -9,7 +9,7 @@ default:
 
 stages:
   - unittests-and-validations
-  - create-instances
+  - prepare-testing-bucket
   - run-instances
   - stage-compare
   - upload-to-marketplace

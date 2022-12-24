@@ -83,7 +83,7 @@ demisto_sdk_nightly:check_idset_dependent_commands:
     - section_end "Calculate Packs Dependencies"
 
 
-demisto-sdk-nightly:create-instance:
+demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   tags:
     - gke
   extends:
@@ -95,7 +95,7 @@ demisto-sdk-nightly:create-instance:
   cache:
     policy: pull-push
   needs: []
-  stage: create-instances
+  stage: prepare-testing-bucket
   script:
     - !reference [.download-demisto-conf]
     - |

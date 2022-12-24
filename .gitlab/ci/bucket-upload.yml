@@ -44,9 +44,9 @@ run-unittests-and-lint-upload-flow:
     - .bucket-upload-rule
 
 
-create-instances-upload-flow:
+xsoar-prepare-testing-bucket-upload-flow:
   extends:
-    - create-instances
+    - prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
@@ -56,9 +56,9 @@ create-instances-upload-flow:
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
-prepare-testing-bucket-mpv2-upload-flow:
+mpv2-prepare-testing-bucket-upload-flow:
  extends:
-   - prepare-testing-bucket-mpv2
+   - mpv2-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -69,9 +69,9 @@ prepare-testing-bucket-mpv2-upload-flow:
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 
-prepare-testing-bucket-xpanse-upload-flow:
+xpanse-prepare-testing-bucket-upload-flow:
  extends:
-   - prepare-testing-bucket-xpanse
+   - xpanse-prepare-testing-bucket
  variables:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
@@ -85,7 +85,7 @@ prepare-testing-bucket-xpanse-upload-flow:
 .install_packs_in_xsoar_server:
   tags:
     - gke
-  needs: ["create-instances-upload-flow"]
+  needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -149,7 +149,7 @@ install-packs-in-server-master:
 .install-mpv2-packs-on-xsiam-instances:
   tags:
     - gke
-  needs: ["prepare-testing-bucket-mpv2-upload-flow"]
+  needs: ["mpv2-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
     expire_in: 48 hrs
@@ -294,7 +294,7 @@ upload-packs-to-marketplace:
 upload-packs-to-marketplace-v2:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-mpv2-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -351,7 +351,7 @@ upload-packs-to-marketplace-v2:
 upload-packs-to-xpanse-marketplace:
   tags:
     - gke
-  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "prepare-testing-bucket-xpanse-upload-flow"] # "install-packs-in-xpanse-dev"
+  needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
     expire_in: 48 hrs
@@ -410,7 +410,7 @@ force-pack-upload:
   tags:
     - gke
   stage: upload-to-marketplace
-  needs: ["create-instances-upload-flow"]
+  needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   rules:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
   extends:

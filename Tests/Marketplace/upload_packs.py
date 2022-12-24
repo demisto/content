@@ -23,7 +23,7 @@ from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
     SKIPPED_STATUS_CODES
-from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
+from demisto_sdk.commands.common.tools import run_command, str2bool
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -1042,14 +1042,10 @@ def main():
     packs_artifacts_path = option.packs_artifacts_path
     id_set = None
     try:
-        id_set = open_id_set_file(option.id_set_path)
-    except IOError:
-        logging.warning("No ID_SET file, will try to use graph")
-        try:
-            with Neo4jContentGraphInterface():
-                pass
-        except Exception:
-            raise Exception("Database is not ready")
+        with Neo4jContentGraphInterface():
+            pass
+    except Exception:
+        raise Exception("Database is not ready")
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
