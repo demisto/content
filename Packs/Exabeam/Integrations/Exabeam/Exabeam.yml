@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam Dev
+  id: Exabeam
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -15,7 +15,7 @@ configuration:
 - defaultvalue: "generic,abnormalAuth,accountManipulation,accountTampering,ueba,bruteForce,compromisedCredentials,
     cryptomining,dataAccessAbuse,dataExfiltration,dlp,departedEmployee,dataDestruction,evasion,lateralMovement,alertTriage,
     malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
-  display: 
+  display: Incident type
   name: incident_type
   options:
   - generic
@@ -45,7 +45,7 @@ configuration:
   required: false
   type: 16
 - defaultvalue: low,medium,high,critical
-  display: 
+  display: Priority
   name: priority
   options:
   - low
@@ -55,7 +55,7 @@ configuration:
   required: false
   type: 16
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
-  display: 
+  display: Status
   name: status
   options:
   - closed
@@ -93,8 +93,8 @@ configuration:
   required: false
   type: 8
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam Dev
-name: Exabeam Dev
+display: Exabeam
+name: Exabeam
 script:
   commands:
   - arguments:
@@ -2090,7 +2090,7 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The sequence event type.
       type: String
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   longRunning: false
   longRunningPort: false

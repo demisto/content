@@ -1152,6 +1152,15 @@ def order_time_as_milisecound_for_fetch(start_time, end_time) -> tuple[str, str]
     ))
 
 
+def convert_all_unix_keys_to_date(incident: dict) -> dict:
+    keys = ['createdAt', 'startedDate', 'closedDate', 'updatedAt']
+    if 'baseFields' in incident:
+        for key in keys:
+            if key in incident['baseFields']:
+                incident['baseFields'][key] = convert_unix_to_date(incident['baseFields'][key]).split('.')[0] + 'Z'
+    return incident
+
+
 ''' COMMANDS '''
 
 
@@ -2064,9 +2073,10 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     incidents: List[dict] = []
     for incident in incidents_filtered:
+        incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
-            'occurred': convert_unix_to_date(incident.get('baseFields', {}).get('createdAt')).split('.')[0] + 'Z',
+            'occurred': incident.get('baseFields', {}).get('createdAt'),
             'rawJSON': json.dumps(incident)
         })
 

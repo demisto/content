@@ -2,7 +2,7 @@ import pytest
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
-    get_notable_sequence_event_types, delete_context_table_records, list_incidents, fetch_incidents
+    get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -188,28 +188,45 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
 
 
 @pytest.mark.parametrize(
-    'params',
+    'incident, expected_results',
     [
         (
             {
-                'incident_type': 'test',
-                'priority': 'test',
-                'status': 'test',
-                'fetch_limit': '5',
-                'first_fetch': '1 day'
+                'id': 123,
+                'baseFields': {
+                    'createdAt': 1670420803000,
+                    'startedDate': 1670421189876,
+                    'closedDate': 1671421199904,
+                    'updatedAt': 1670421199904,
+                }
+            },
+            {
+                'createdAt': '2022-12-07T15:46:43Z',
+                'startedDate': '2022-12-07T15:53:09Z',
+                'closedDate': '2022-12-19T05:39:59Z',
+                'updatedAt': '2022-12-07T15:53:19Z',
+            }
+        ),
+(
+            {
+                'id': 123,
+                'baseFields': {
+                    'createdAt': 1670420803000,
+                    'startedDate': 1670421189876,
+                    'updatedAt': 1670421199904,
+                }
+            },
+            {
+                'createdAt': '2022-12-07T15:46:43Z',
+                'startedDate': '2022-12-07T15:53:09Z',
+                'updatedAt': '2022-12-07T15:53:19Z',
             }
         )
     ]
 )
-def test_fetch_incidents(mocker, params):
+def test_convert_all_unix_keys_to_date(incident, expected_results):
 
-    # check_for_fetch_tun_time = mocker.patch('Exabeam.get_fetch_run_time_range')
-    check_for_fetch_time_to_timestamp = mocker.patch('Exabeam.format_fetch_time_to_timestamp')
-    mocker.patch.object(Client, '_login', return_value=None)
-    mocker.patch.object(Client, 'get_incidents', return_valut=INCIDENTS)
-    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
-                    headers={})
+    results = convert_all_unix_keys_to_date(incident)
 
-    incidents, next_run = fetch_incidents(client, params)
-
-    pass
+    for key in expected_results:
+        assert results['baseFields'][key] == expected_results[key]
