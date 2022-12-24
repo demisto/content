@@ -2,7 +2,7 @@
 
 The companion integration for Zerohack XDR.
 Current versions allow the user to collect data from the XDR and later versions will support data exfiltration to XDR.
-This integration was integrated and tested with version xx of Zerohack XDR
+This integration was integrated and tested with version 1.0 of Zerohack XDR
 
 
 ## Create API key on Zerohack XDR for Cortex XSOAR
