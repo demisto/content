@@ -10,7 +10,7 @@ This integration was integrated and tested with version xx of Zerohack XDR
 1. Navigate to **Side Panel** > **Administration** > **Integration** > **Create API**.
 
 
-    ![Setup Account](./../../doc_files/dashboard_sidepanel.png)
+    ![Setup Account](./../../doc_imgs/dashboard_sidepanel.png)
 
 
 
