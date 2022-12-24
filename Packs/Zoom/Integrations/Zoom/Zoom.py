@@ -13,7 +13,7 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
 # maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 5
+MAX_RECORDS_PER_PAGE = 300
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
@@ -307,17 +307,16 @@ def check_start_time_format(start_time):
             "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' ") from e
 
 
-def manual_user_list_pagination(client: Client, next_page_token: str = None, page_size: int = None,
-                                limit: int = None, status: str = None, role_id: str = None):
+def manual_user_list_pagination(client: Client, next_page_token: str, page_size: int,
+                                limit: int, status: str, role_id: str):
     res = []
+    if limit < MAX_RECORDS_PER_PAGE:
+        # i dont need the maximum
+        page_size = limit
+    else:
+        # i need the maximum. for this API, page_size must be a const while using next_page_token.
+        page_size = MAX_RECORDS_PER_PAGE
     while limit > 0 and next_page_token != '':
-        if limit < MAX_RECORDS_PER_PAGE:
-            # i dont need the maximum
-            page_size = limit
-        else:
-            # i need the maximum
-            page_size = MAX_RECORDS_PER_PAGE
-
         basic_request = client.zoom_user_list(page_size=page_size, status=status,
                                               next_page_token=next_page_token,
                                               role_id=role_id, url_suffix="users")
@@ -332,14 +331,13 @@ def manual_user_list_pagination(client: Client, next_page_token: str = None, pag
 def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None, page_size: int,
                                    limit: int, type: str):
     res = []
+    if limit < MAX_RECORDS_PER_PAGE:
+        # i dont need the maximum
+        page_size = limit
+    else:
+        # i need the maximum. for this API, page_size must be a const while using next_page_token.
+        page_size = MAX_RECORDS_PER_PAGE
     while limit > 0 and next_page_token != '':
-        if limit < MAX_RECORDS_PER_PAGE:
-            # i dont need the maximum
-            page_size = limit
-        else:
-            # i need the maximum
-            page_size = MAX_RECORDS_PER_PAGE
-
         basic_request = client.zoom_meeting_list(user_id=user_id,
                                                  next_page_token=next_page_token,
                                                  page_size=page_size,
@@ -386,6 +384,9 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
                 page = raw_data[pages].get("users")
                 for record in range(len(page)):
                     all_info.append(page[record])
+                    # since page_zise must be a const, i may need to return only part of the response
+                    if len(all_info) >= limit:
+                        break
 
             md = tableToMarkdown('Users', all_info, ['id', 'email',
                                                      'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
@@ -645,6 +646,8 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
 
                 for record in range(len(page)):
                     all_info.append(page[record])
+                    if len(all_info) >= limit:
+                        break
             md = tableToMarkdown("Meeting list", all_info, ['uuid', 'id',
                                                             'host_id', 'topic', 'type', 'start time', 'duration',
                                                             'timezone', 'created_at', 'join_url'
