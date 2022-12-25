@@ -46,7 +46,7 @@ run-unittests-and-lint-upload-flow:
 
 xsoar-prepare-testing-bucket-upload-flow:
   extends:
-    - prepare-testing-bucket
+    - xsoar-prepare-testing-bucket
   variables:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
