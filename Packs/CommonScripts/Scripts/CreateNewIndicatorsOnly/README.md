@@ -1,4 +1,4 @@
-Create new indicators to the Threat Intel database only if they are not registered.
+Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
 
 ## Script Data
 ---
@@ -14,12 +14,12 @@ Create new indicators to the Threat Intel database only if they are not register
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| indicator_values | The indicator values. |
+| indicator_values | The indicator values |
 | type | The indicator type of the indicators. |
 | source | The indicator source. |
 | verdict | The indicator reputation. |
 | tags | The tags to add to the new indicators. |
-| verbose | Output additional messages as readable output. |
+| verbose | Whether to output additional messages as readable output. |
 
 ## Outputs
 ---
@@ -30,7 +30,7 @@ Create new indicators to the Threat Intel database only if they are not register
 | CreateNewIndicatorsOnly.Value | The indicator value. | string |
 | CreateNewIndicatorsOnly.Type | The indicator type. | string |
 | CreateNewIndicatorsOnly.Score | The indicator score. | number |
-| CreateNewIndicatorsOnly.CreationStatus | The status of the indicator requested to add.  Value is either new, existing, or unavailable. | string |
+| CreateNewIndicatorsOnly.CreationStatus | The status of the indicator requested to add. Value is either new, existing, or unavailable. | string |
 
 ## Notice
 ---
