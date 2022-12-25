@@ -745,7 +745,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     command = demisto.command()
 
-    # this is because the arguments given as <a-b>, i.e "user-list"
+    # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
