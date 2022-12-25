@@ -66,12 +66,12 @@ def test_get_session(mocker, mcafeensmv2_client):
 records_list1 = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')[:2]
 records_list2 = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')[2:]
 records_list2 = records_list2[:2]
-test_pagination_params = [(records_list1, 2, 1),
-                          (records_list2, 2, 2)]
+test_pagination_params = [(records_list1, 50, 1, 2),
+                          (records_list2, 50, 2, 2)]
 
 
-@pytest.mark.parametrize('expected_records_list, limit, page', test_pagination_params)
-def test_pagination(expected_records_list, limit, page):
+@pytest.mark.parametrize('expected_records_list, limit, page, page_size', test_pagination_params)
+def test_pagination(expected_records_list, limit, page, page_size):
     """
         Given:
             - A list.
@@ -82,7 +82,7 @@ def test_pagination(expected_records_list, limit, page):
     """
     from McAfeeNSMv2 import pagination
     records_list = util_load_json('test_data/commands_test_data.json').get('get_list_firewall_policy')
-    wanted_records_list = pagination(records_list, limit, page)
+    wanted_records_list = pagination(records_list, limit, page, page_size)
     assert wanted_records_list == expected_records_list
 
 
@@ -97,7 +97,7 @@ def test_alerts_list_pagination():
     """
     from McAfeeNSMv2 import alerts_list_pagination
     records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output')
-    limit = 1050
+    page_size = 1050
     page = 1
     time_period = None
     start_time = None
@@ -105,11 +105,11 @@ def test_alerts_list_pagination():
     state = None
     search = None
     filter_arg = None
-    total_alerts_count = 3
     client = None
     domain_id = 0
-    result_list = alerts_list_pagination(records_list, limit, page, time_period, start_time, end_time, state, search,
-                                         filter_arg, total_alerts_count, client, domain_id)
+    limit = 50
+    result_list = alerts_list_pagination(records_list, limit, page, page_size, time_period, start_time, end_time, state,
+                                         search, filter_arg, client, domain_id)
     assert records_list == result_list
 
 

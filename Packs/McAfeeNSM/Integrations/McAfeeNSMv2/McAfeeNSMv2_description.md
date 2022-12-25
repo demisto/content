@@ -1,8 +1,3 @@
-## BaseIntegration Help
+## McAfee NSM Integration Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+* McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
