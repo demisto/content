@@ -27,7 +27,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Required |
 | InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | inputs.InternalRange | Optional |
-| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\). | inputs.ResolveIP.None | Required |
+| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\). | inputs.ResolveIP | Required |
 | threshold | Defines the minimum score to set indicators as malicious | inputs.threshold | Optional |
 
 ## Playbook Outputs
