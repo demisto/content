@@ -1396,6 +1396,7 @@ def wildfire_get_file_report(file_hash: str, args: dict):
             headers=DEFAULT_HEADERS,
             params=PARAMS_DICT
         )
+        demisto.info(f"The json_res is {json_res}")
         # we get the report and file info from the XML object
         reports = json_res.get('wildfire', {}).get('task_info', {}).get('report')
         file_info = json_res.get('wildfire', {}).get('file_info')
