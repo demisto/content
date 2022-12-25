@@ -470,4 +470,4 @@ upload-id-set-bucket:
     # This is needed because we still use id_set.json in other repos
     - !reference [.create-id-set-xsoar]
     - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY"
-    - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/$STORAGE_BASE_PATH/id_set.json"
+    - gsutil cp $ARTIFACTS_FOLDER/id_set.json "gs://$GCS_MARKET_BUCKET/content/id_set.json"
