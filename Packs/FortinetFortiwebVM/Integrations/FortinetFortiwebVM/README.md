@@ -1712,15 +1712,64 @@ Get Policy Status.
 
 There are no input arguments for this command.
 
-#### Context Output
-
-There is no context output for this command.
 #### Command example
 ```!fortiwebvm-system-policy-status-get```
-#### Human Readable Output
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "SystemPolicy": {
+            "connction_per_second": 0,
+            "http_port": 80,
+            "https_port": null,
+            "id": "example",
+            "mode": "Single Server/Server Pool",
+            "name": "example",
+            "session_count": 0,
+            "status": "enable",
+            "vserver": "1.0.0.0/32/"
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 1
 
 >### Policy status:
->**No entries.**
+>|Id|Name|Status|Vserver|Http Port|Https Port|Mode|Session Count|Connction Per Second|
+>|---|---|---|---|---|---|---|---|---|
+>| example | example | enable | 1.0.0.0/32/ | 80 |  | Single Server/Server Pool | 0 | 0 |
+
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "SystemPolicy": {
+            "app_response_time": 0,
+            "client_rtt": 0,
+            "connction_per_second": 0,
+            "http_port": "80",
+            "https_port": null,
+            "id": "example",
+            "mode": "Single Server/Server Pool",
+            "name": "example",
+            "policy": 1099,
+            "protocol": "HTTP",
+            "server_rtt": 0,
+            "session_count": 0,
+            "status": "enable",
+            "vserver": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 2
+
+>### Policy status:
+>|Id|Name|Status|Vserver|Http Port|Https Port|Mode|Session Count|Connction Per Second|Policy|Client Rtt|Server Rtt|App Response Time|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| example | example | enable |  | 80 |  | Single Server/Server Pool | 0 | 0 | 1099 | 0 | 0 | 0 |
 
 
 ### fortiwebvm-system-status-get
@@ -1918,11 +1967,24 @@ List the Trigger Policies Rules.
 
 #### Command example
 ```!fortiwebvm-trigger-policy-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "TriggerPolicy": {
+            "id": "trigger1"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Content Routing Policy:
->Showing 0 rows out of 0.
->**No entries.**
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| trigger1 |
 
 
 ### fortiwebvm-certificate-intermediate-group-list
@@ -1950,11 +2012,24 @@ List the Certificate intermediate groups.
 
 #### Command example
 ```!fortiwebvm-certificate-intermediate-group-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CertificateIntermediateGroup": {
+            "id": "group"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Content Routing Policy:
->Showing 0 rows out of 0.
->**No entries.**
+>Showing 1 rows out of 3.
+>|Id|
+>|---|
+>| group |
 
 
 ### fortiwebvm-server-pool-list
@@ -1982,11 +2057,24 @@ List the Server Pools.
 
 #### Command example
 ```!fortiwebvm-server-pool-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPool": {
+            "id": "Strong Dev"
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Server pool:
->Showing 0 rows out of 0.
->**No entries.**
+>Showing 1 rows out of 2.
+>|Id|
+>|---|
+>| Strong Dev |
 
 
 ### fortiwebvm-http-service-list
