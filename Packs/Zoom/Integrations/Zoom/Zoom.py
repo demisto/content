@@ -128,7 +128,7 @@ class Client(BaseClient):
                                          status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
                                          empty_valid_codes, **kwargs)
 
-    def zoom_user_create(self, user_type_num: int, email: str, first_name: str, last_name: str):
+    def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self._http_request(
             method='POST',
             url_suffix='users',
@@ -142,9 +142,9 @@ class Client(BaseClient):
                     'last_name': last_name}},
         )
 
-    def zoom_user_list(self, page_size: int, status: str = "active",
-                       next_page_token: str = None,
-                       role_id: str = None, url_suffix: str = None):
+    def zoom_list_users(self, page_size: int, status: str = "active",
+                        next_page_token: str = None,
+                        role_id: str = None, url_suffix: str = None):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -155,7 +155,7 @@ class Client(BaseClient):
                 'next_page_token': next_page_token,
                 'role_id': role_id})
 
-    def zoom_user_delete(self, user_id: str, action: str):
+    def zoom_delete_user(self, user_id: str, action: str):
         return self._http_request(
             method='DELETE',
             url_suffix='users/' + user_id,
@@ -165,7 +165,7 @@ class Client(BaseClient):
             return_empty_response=True
         )
 
-    def zoom_meeting_create(self, url_suffix: str, json_data: dict):
+    def zoom_create_meeting(self, url_suffix: str, json_data: dict):
         return self._http_request(
             method='POST',
             url_suffix=url_suffix,
@@ -194,49 +194,49 @@ class Client(BaseClient):
                 'next_page_token': next_page_token,
                 'page_size': page_size
             })
+# this part is waiting for a paid zoom account
+    # def zoom_fetch_recording(self, meeting_id: str):
+    #     succeed = []
+    #     failed = []
+    #     meeting = meeting_id
+    #     try:
+    #         data = self._http_request(
+    #             method='GET',
+    #             url_suffix=f'meetings/{meeting}/recordings',
+    #             headers={'authorization': f'Bearer {self.access_token}'},
+    #         )
+    #         recording_files = data['recording_files']
+    #         for file in recording_files:
+    #             download_BASE_URL = file['download_BASE_URL']
+    #             try:
+    #                 r = self._http_request(
+    #                     method='GET',
+    #                     full_url=download_BASE_URL,
+    #                     stream=True
+    #                 )
+    #                 filename = f'recording_{meeting}_{file["id"]}.mp4'
+    #                 with open(filename, 'wb') as f:
+    #                     r.raw.decode_content = True
+    #                     shutil.copyfileobj(r.raw, f)
 
-    def zoom_recording_get(self, meeting_id: str):
-        succeed = []
-        failed = []
-        meeting = meeting_id
-        try:
-            data = self._http_request(
-                method='GET',
-                url_suffix=f'meetings/{meeting}/recordings',
-                headers={'authorization': f'Bearer {self.access_token}'},
-            )
-            recording_files = data['recording_files']
-            for file in recording_files:
-                download_BASE_URL = file['download_BASE_URL']
-                try:
-                    r = self._http_request(
-                        method='GET',
-                        full_url=download_BASE_URL,
-                        stream=True
-                    )
-                    filename = f'recording_{meeting}_{file["id"]}.mp4'
-                    with open(filename, 'wb') as f:
-                        r.raw.decode_content = True
-                        shutil.copyfileobj(r.raw, f)
+    #                 succeed.append(file_result_existing_file(filename))
+    #             except DemistoException as e:
+    #                 raise DemistoException(
+    #                     f'Unable to download recording for meeting {meeting}: [{e.res.status_code}] - {e.res.text}')
+    #             try:
+    #                 self._http_request(
+    #                     method='DELETE',
+    #                     url_suffix=f'meetings/{meeting}/recordings/{file["id"]}',
+    #                     headers={'authorization': f'Bearer {self.access_token}'},
+    #                 )
+    #                 succeed.append('File ' + filename + ' was moved to trash.')
+    #             except DemistoException:
+    #                 failed.append('Failed to delete file ' + filename + '.')
 
-                    succeed.append(file_result_existing_file(filename))
-                except DemistoException as e:
-                    raise DemistoException(
-                        f'Unable to download recording for meeting {meeting}: [{e.res.status_code}] - {e.res.text}')
-                try:
-                    self._http_request(
-                        method='DELETE',
-                        url_suffix=f'meetings/{meeting}/recordings/{file["id"]}',
-                        headers={'authorization': f'Bearer {self.access_token}'},
-                    )
-                    succeed.append('File ' + filename + ' was moved to trash.')
-                except DemistoException:
-                    failed.append('Failed to delete file ' + filename + '.')
+    #             return (succeed, failed)
 
-                return (succeed, failed)
-
-        except DemistoException as e:
-            raise DemistoException(f'Unable to reach the recording: [{e.res.status_code}] - {e.res.text}')
+    #     except DemistoException as e:
+    #         raise DemistoException(f'Unable to reach the recording: [{e.res.status_code}] - {e.res.text}')
 
 
 '''HELPER FUNCTIONS'''
@@ -263,7 +263,7 @@ def test_module(client: Client):
     """
     try:
         # running an arbitrary command to test the connection
-        client.zoom_user_list(1, None, 'active')
+        client.zoom_list_users(page_size=1, url_suffix="users")
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
@@ -307,7 +307,7 @@ def check_start_time_format(start_time):
             "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' ") from e
 
 
-def manual_user_list_pagination(client: Client, next_page_token: str, page_size: int,
+def manual_list_user_pagination(client: Client, next_page_token: str, page_size: int,
                                 limit: int, status: str, role_id: str):
     res = []
     if limit < MAX_RECORDS_PER_PAGE:
@@ -317,9 +317,9 @@ def manual_user_list_pagination(client: Client, next_page_token: str, page_size:
         # i need the maximum. for this API, page_size must be a const while using next_page_token.
         page_size = MAX_RECORDS_PER_PAGE
     while limit > 0 and next_page_token != '':
-        basic_request = client.zoom_user_list(page_size=page_size, status=status,
-                                              next_page_token=next_page_token,
-                                              role_id=role_id, url_suffix="users")
+        basic_request = client.zoom_list_users(page_size=page_size, status=status,
+                                               next_page_token=next_page_token,
+                                               role_id=role_id, url_suffix="users")
         next_page_token = basic_request.get("next_page_token")
         # collect all the results together
         res.append(basic_request)
@@ -353,9 +353,9 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 '''FORMATTING FUNCTIONS'''
 
 
-def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = None,
-                           status: str = "active", next_page_token: str = None,
-                           role_id: str = None, limit: int = None) -> CommandResults:
+def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = None,
+                            status: str = "active", next_page_token: str = None,
+                            role_id: str = None, limit: int = None) -> CommandResults:
     # preprocessing
     if not user_id:
         url_suffix = 'users'
@@ -375,7 +375,7 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
                                        don't enter a user_id or page_size or next_page_token""")
         else:
             # multiple requests are needed
-            raw_data = manual_user_list_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
+            raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
                                                    page_size=page_size,  # type: ignore[arg-type]
                                                    limit=limit, status=status, role_id=role_id)     # type: ignore[arg-type]
             # parsing the data
@@ -394,9 +394,9 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
             raw_data = raw_data[0]
     else:
         # only one request is needed
-        raw_data = client.zoom_user_list(page_size=page_size, status=status,                      # type: ignore[arg-type]
-                                         next_page_token=next_page_token,
-                                         role_id=role_id, url_suffix=url_suffix)
+        raw_data = client.zoom_list_users(page_size=page_size, status=status,                      # type: ignore[arg-type]
+                                          next_page_token=next_page_token,
+                                          role_id=role_id, url_suffix=url_suffix)
         # parsing the data according to the different given arguments
         if user_id:
             md = tableToMarkdown('User', [raw_data], ['id', 'email',
@@ -420,9 +420,9 @@ def zoom_user_list_command(client: Client, page_size: int = 30, user_id: str = N
     )
 
 
-def zoom_user_create_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
+def zoom_create_user_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
     user_type_num = USER_TYPE_MAPPING.get(user_type)
-    raw_data = client.zoom_user_create(user_type_num, email, first_name, last_name)
+    raw_data = client.zoom_create_user(user_type_num, email, first_name, last_name)
     return CommandResults(
         outputs_prefix='Zoom.User',
         readable_output=f"User created successfully with ID: {raw_data.get('id')}",
@@ -431,15 +431,15 @@ def zoom_user_create_command(client: Client, user_type: str, email: str, first_n
     )
 
 
-def zoom_user_delete_command(client: Client, user_id: str, action: str) -> CommandResults:
-    client.zoom_user_delete(user_id, action)
+def zoom_delete_user_command(client: Client, user_id: str, action: str) -> CommandResults:
+    client.zoom_delete_user(user_id, action)
     return CommandResults(
         outputs_prefix='Zoom',
         readable_output=f'User {user_id} was deleted successfully',
     )
 
 
-def zoom_meeting_create_command(
+def zoom_create_meeting_command(
         client: Client,
         user_id: str,
         topic: str,
@@ -562,7 +562,7 @@ def zoom_meeting_create_command(
     json_data = remove_None_values_from_dict(json_all_data)
     url_suffix = f"users/{user_id}/meetings"
     # call the API
-    raw_data = client.zoom_meeting_create(url_suffix=url_suffix, json_data=json_data)
+    raw_data = client.zoom_create_meeting(url_suffix=url_suffix, json_data=json_data)
     # parsing the response
     if type == "recurring meeting with fixed time":
         basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
@@ -591,14 +591,40 @@ def zoom_meeting_create_command(
     )
 
 
-def zoom_recording_get_command(client: Client, meeting_id: str) -> CommandResults:
-    # call the API
-    raw_data = client.zoom_recording_get(meeting_id)
-    return CommandResults(
-        # outputs_prefix='Zoom',
-        readable_output=raw_data,
-        raw_response=raw_data
-    )
+def zoom_fetch_recording_command():
+    # this is the original code with no changes at all. waiting for a paid account
+    URL = 'https://api.zoom.us/v2/'
+    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
+    PARAMS = {'access_token': ACCESS_TOKEN}
+    HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+    USE_SSL = not demisto.params().get('insecure', False)
+    meeting = demisto.getArg('meeting_id')
+    res = requests.get(URL + 'meetings/%s/recordings' % meeting, headers=HEADERS, params=PARAMS, verify=USE_SSL)
+    if res.status_code == requests.codes.ok:
+        data = res.json()
+        recording_files = data['recording_files']
+        for file in recording_files:
+            download_url = file['download_url']
+            r = requests.get(download_url, stream=True)
+            if r.status_code < 200 or r.status_code > 299:
+                return_error('Unable to download recording for meeting %s: [%d] - %s' % (meeting, r.status_code, r.text))
+
+            filename = 'recording_%s_%s.mp4' % (meeting, file['id'])
+            with open(filename, 'wb') as f:
+                r.raw.decode_content = True
+                shutil.copyfileobj(r.raw, f)
+
+            demisto.results(file_result_existing_file(filename))
+            rf = requests.delete(URL + 'meetings/%s/recordings/%s' % (meeting, file['id']), headers=HEADERS,
+                                 params=PARAMS, verify=USE_SSL)
+            if rf.status_code == 204:
+                demisto.results('File ' + filename + ' was moved to trash.')
+            else:
+                demisto.results('Failed to delete file ' + filename + '.')
+        else:
+            return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
+    else:
+        return_error('Unrecognized command: ' + demisto.command())
 
 
 def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
@@ -704,7 +730,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     command = demisto.command()
 
-    # this is for BC, because the arguments given as <a-b>, i.e "user-list"
+    # this is because the arguments given as <a-b>, i.e "user-list"
     args = {key.replace('-', '_'): val for key, val in args.items()}
 
     try:
@@ -727,20 +753,20 @@ def main():  # pragma: no cover
         demisto.debug(f'Command being called is {command}')
 
         '''CRUD commands'''
-        if command == 'zoom-user-create':
-            results = zoom_user_create_command(client, **args)
-        elif command == 'zoom-meeting-create':
-            results = zoom_meeting_create_command(client, **args)
+        if command == 'zoom-create-user':
+            results = zoom_create_user_command(client, **args)
+        elif command == 'zoom-create-meeting':
+            results = zoom_create_meeting_command(client, **args)
         elif command == 'zoom-meeting-get':
             results = zoom_meeting_get_command(client, **args)
         elif command == 'zoom-meeting-list':
             results = zoom_meeting_list_command(client, **args)
-        elif command == 'zoom-user-delete':
-            results = zoom_user_delete_command(client, **args)
-        elif command == 'zoom-recording-get':
-            results = zoom_recording_get_command(client, **args)
-        elif command == 'zoom-user-list':
-            results = zoom_user_list_command(client, **args)
+        elif command == 'zoom-delete-user':
+            results = zoom_delete_user_command(client, **args)
+        elif command == 'zoom-fetch-recording':
+            results = zoom_fetch_recording_command()
+        elif command == 'zoom-list-users':
+            results = zoom_list_users_command(client, **args)
         else:
             return_error('Unrecognized command: ' + demisto.command())
         return_results(results)

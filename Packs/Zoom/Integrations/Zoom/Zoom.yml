@@ -43,7 +43,7 @@ configuration:
 script:
   type: python
   commands:
-    - name: zoom-user-create
+    - name: zoom-create-user
       arguments:
         - name: first_name
           required: true
@@ -84,7 +84,7 @@ script:
           type: number
       description: Create a new user in zoom account
       execution: true
-    - name: zoom-meeting-create
+    - name: zoom-create-meeting
       arguments:
         - name: type
           required: true
@@ -247,7 +247,7 @@ script:
           description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
           type: number
       description: Create a new zoom meeting (scheduled ,instant, or recurring)
-    - name: zoom-recording-get
+    - name: zoom-fetch-recording
       arguments:
         - name: meeting_id
           required: true
@@ -284,7 +284,7 @@ script:
           description: Attachment's SSDeep hash
           type: Unknown
       description: Get meeting record and save as file in the warroom
-    - name: zoom-user-list
+    - name: zoom-list-users
       arguments:
         - name: status
           default: false
@@ -367,7 +367,7 @@ script:
           description: Groups user belongs to
           type: string
       description: List the existing users
-    - name: zoom-user-delete
+    - name: zoom-delete-user
       arguments:
         - name: user_id
           required: true
