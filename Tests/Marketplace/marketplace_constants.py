@@ -221,6 +221,7 @@ class PackFolders(enum.Enum):
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
+    LAYOUT_RULES = 'LayoutRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -233,7 +234,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
             PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES
         }
 
     @classmethod
@@ -252,7 +253,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
-            PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
 
@@ -305,6 +306,7 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.TRIGGERS.value: "Triggers",
     PackFolders.WIZARDS.value: "Wizards",
     PackFolders.XDRC_TEMPLATES.value: "XDRCTemplates",
+    PackFolders.LAYOUT_RULES.value: "LayoutRules"
 }
 
 
@@ -388,6 +390,7 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
+    'Layout Rules': 'LayoutRules'
 }
 
 
@@ -420,6 +423,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
+    PackFolders.LAYOUT_RULES.value: "layoutrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
