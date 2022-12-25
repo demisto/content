@@ -140,7 +140,7 @@ configuration:
   name: close_incident
   required: false
   type: 8
-- additionalinfo: Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
@@ -150,12 +150,18 @@ configuration:
   - resolved
   required: false
   type: 15
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
-  defaultvalue: 'false'
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
+  defaultvalue: ''
+  display: Mirrored ServiceNow Ticket custom close state code
+  name: close_custom_state
+  required: false
+  type: 0
+- defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
@@ -168,7 +174,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: Incidents Fetch Interval
+  display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
