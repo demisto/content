@@ -79,16 +79,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Run as a separate process (protects against memory depletion)
+- display: Run as a separate process (protects against memory depletion)
   name: separate_process
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Use a self deployed Azure Application
-  hidden: false
   name: self_deployed
   required: false
   type: 8
+  hidden: false
 - additionalinfo: Use the "ID" parameter instead.
   display: ID / Application ID (Deprecated)
   name: client_id
@@ -1170,7 +1170,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.39859
+  dockerimage: demisto/py3ews:1.0.0.40920
   feed: false
   isfetch: true
   longRunning: false
