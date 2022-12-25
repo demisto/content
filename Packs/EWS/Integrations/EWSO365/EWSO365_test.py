@@ -299,7 +299,6 @@ def test_fetch_and_mark_as_read(mocker):
     fetch_emails_as_incidents(client, {})
     assert mark_item_as_read.called is False
 
-
     client.mark_as_read = True
     fetch_emails_as_incidents(client, {})
     assert mark_item_as_read.called is True
