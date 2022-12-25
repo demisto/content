@@ -412,7 +412,7 @@ def test_zoom_create_meeting__too_meny_arguments(mocker):
        Given -
           client
        When -
-           asking for a meeting with jbh_time ant not  join_before_host
+           asking for a meeting with jbh_time ant not join_before_host
        Then -
            Validate that the right error will return
     """
@@ -453,6 +453,50 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
     assert e.value.message == "Too money arguments. start_time and timezone are for scheduled meetings only."
 
 
+def test_zoom_create_meeting_command__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a instant meeting with end_times and monthly_week :
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "zoom_create_meeting", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_create_meeting_command
+    with pytest.raises(DemistoException) as e:
+        zoom_create_meeting_command(client=client,
+                                    type="instant", recurrence_type=3, topic="nonsense", user_id="mock@moker.com",
+                                    end_date_time="2022-10-04T15:59:00Z", monthly_week=2, monthly_week_day=3, end_times=7)
+    assert e.value.message == "One or more arguments that were filed are used for recurring meeting with fixed time only"
+
+
+
+def test_zoom_create_meeting_command__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a recurring meeting with fixed time and recurrence_type = 3,
+            with no monthly_week :
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "zoom_create_meeting", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_create_meeting_command
+    with pytest.raises(DemistoException) as e:
+        zoom_create_meeting_command(client=client,
+                                    type="recurring meeting with fixed time", recurrence_type=3, topic="nonsense", user_id="mock@moker.com",
+                                    end_date_time="2022-10-04T15:59:00Z", monthly_week=2, end_times=7)
+    assert e.value.message == "Missing arguments. recurring meeting with fixed time and monthly recurrence_type\n            must have the fallowing arguments: monthly_week and monthly_week_day"
 
 def test_meeting_get__show_previous_occurrences_is_false(mocker):
     """
