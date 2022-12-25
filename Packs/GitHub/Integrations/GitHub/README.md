@@ -2848,3 +2848,26 @@ Deletes a comment.
 #### Context Output
 
 There is no context output for this command.
+
+### GitHub-add-assignee
+***
+Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
+
+
+#### Base Command
+
+`GitHub-add-assignee`
+#### Input
+
+| **Argument Name** | **Description**                                          | **Required** |
+|-------------------|----------------------------------------------------------|--------------|
+| assignee          | Users to assign, can be a list of users | Required     | 
+| PR                |The number of PR/Issue to assign users to | Required     | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitHub.Assignees.assignees | String | assignees to the issue | 
+| GitHub.Assignees.assignees.login | String | login of assigned user | 
