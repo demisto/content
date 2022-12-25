@@ -59,6 +59,7 @@ class TestNormalCommands:
             self.proxy = ""
             self.account = self.MockAccount()
             self.protocol = ""
+            self.mark_as_read = ""
 
         def get_account(self, target_mailbox=None, access_type=None):
             return self.account
