@@ -13,6 +13,13 @@ args:
   description: The key to set. Can be a full path such as "Key.ID". If using append=true can also use a DT selector such as "Data(val.ID == obj.ID)".
 - name: template
   description: The template text which can include DT expressions such as ${value}.
+- name: template_type
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - json
+  description: The template type
+  defaultValue: raw
 - name: append
   auto: PREDEFINED
   predefined:
@@ -52,7 +59,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.8.39276
+dockerimage: demisto/python3:3.10.9.40422
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
