@@ -879,7 +879,8 @@ def test_parse_demisto_comments__default():
     assert _parse_demisto_comments(
         ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}]},
         comment_field_name=Client.xsoar_comments_field,
-        comments_as_tags=False) == comment_value
+        comments_as_tags=False
+    ) == comment_value
 
 
 def test_parse_demisto_comments__default_empty():
@@ -892,12 +893,13 @@ def test_parse_demisto_comments__default_empty():
     assert _parse_demisto_comments(
         ioc={},
         comment_field_name=Client.xsoar_comments_field,
-        comments_as_tags=False) is None
+        comments_as_tags=False
+    ) is None
 
 
 def test_parse_demisto_comments__default_as_tag():
     """
-    Given   a custom field name, and comma-separated comments in it
+    Given   a custom field name
     When    parsing a comment of the default comment field, passing comments_as_tags=True
     Then    make sure an appropriate exception is raised
     """
