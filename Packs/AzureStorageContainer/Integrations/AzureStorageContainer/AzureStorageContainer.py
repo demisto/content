@@ -887,6 +887,8 @@ def main() -> None:
     global storage_account_name
     account_sas_token = params['credentials']['password']
     storage_account_name = params['credentials']['identifier']
+    # supported api versions can be found here:
+    # https://learn.microsoft.com/en-us/rest/api/storageservices/previous-azure-storage-service-versions
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.blob.core.windows.net/'
 
