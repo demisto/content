@@ -2627,6 +2627,16 @@ def mock_topology(mock_panorama, mock_firewall):
 
 
 @pytest.fixture
+def mock_firewall_topology(mock_firewall):
+    from Panorama import Topology
+    topology = Topology()
+    topology.firewall_objects = {
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
+    }
+    return topology
+
+
+@pytest.fixture
 def mock_single_device_topology(mock_panorama):
     from Panorama import Topology
     topology = Topology()
@@ -3088,16 +3098,18 @@ class TestFirewallCommand:
                 assert value is not None
 
     @patch("Panorama.run_op_command")
-    def test_get_ha_status_firewall(self, patched_run_op_command, mock_topology):
-        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+    def test_get_ha_status_firewall(self, patched_run_op_command, mock_firewall_topology):
+        """
+        Given the XML output for a HA firewall which is enabled, ensure the data class is parsed correctly
+        """
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
-        result = FirewallCommand.get_ha_status(mock_topology)
-        # Check all attributes of result data have values
-        for result_dataclass in result:
-            for value in result_dataclass.__dict__.values():
-                # Attribute may be int 0
-                assert value is not None
+        result = FirewallCommand.get_ha_status(mock_firewall_topology)
+
+        assert result.status != 'HA Not enabled.'
+        assert result.active is not None
+        assert result.hostid is not None
+        assert result.peer is not None
 
     @patch("Panorama.run_op_command")
     def test_get_ha_status_panorama(self, patched_run_op_command, mock_topology):
