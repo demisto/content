@@ -475,7 +475,6 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
     assert e.value.message == "One or more arguments that were filed are used for recurring meeting with fixed time only"
 
 
-
 def test_zoom_create_meeting_command__too_meny_arguments(mocker):
     """
        Given -
@@ -498,6 +497,7 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
                                     end_date_time="2022-10-04T15:59:00Z", monthly_week=2, end_times=7)
     assert e.value.message == "Missing arguments. recurring meeting with fixed time and monthly recurrence_type\n            must have the fallowing arguments: monthly_week and monthly_week_day"
 
+
 def test_zoom_create_meeting_command__too_meny_arguments(mocker):
     """
        Given -
@@ -518,27 +518,29 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
         zoom_create_meeting_command(client=client,
                                     type="recurring meeting with fixed time", topic="nonsense", user_id="mock@moker.com")
     assert e.value.message == "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type"
-    
+
+
 def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
        Given -
           client
        When -
-           asking to get a meeting, but not the previous_occurrences
+           asking to get a meeting, and the previous_occurrences
        Then -
            Validate that the right argument is sent in the API
     """
-    returned_dict = {'uuid': 'u=', 'id': 847, 'host_id': 'u', 'host_email': 'example@example.com', 'assistant_id': '', 'topic': 'My Meeting', 'type': 2, 'status': 'waiting', 'start_time': '5Z', 'duration': 60, 'timezone': 'lem', 'agenda': '', 'created_at': '48Z', 'start_url': '.2-dio1Se7o'}
+    returned_dict = {'uuid': 'u=', 'id': 847, 'host_id': 'u', 'host_email': 'example@example.com', 'assistant_id': '', 'topic': 'My Meeting', 'type': 2,
+                     'status': 'waiting', 'start_time': '5Z', 'duration': 60, 'timezone': 'lem', 'agenda': '', 'created_at': '48Z', 'start_url': '.2-dio1Se7o'}
     zoom_meeting_get_mocker = mocker.patch.object(Client, "zoom_meeting_get", return_value=returned_dict)
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_meeting_get_command
-    zoom_meeting_get_command(client=client, meeting_id="1234", show_previous_occurrences= True)
+    zoom_meeting_get_command(client=client, meeting_id="1234", show_previous_occurrences=True)
     assert zoom_meeting_get_mocker.call_args[0][2] == True
 
 
-def test_zoom_meeting_list__limit(mocker):
+def test_zoom_meeting_list_command__limit(mocker):
     """
         Given -
            client
@@ -548,17 +550,16 @@ def test_zoom_meeting_list__limit(mocker):
             Validate that a func that runs a pagination has been called
     """
 
-    manual_meeting_list_pagination_mock = mocker.patch.object(Client, "manual_meeting_list_pagination")
-    mocker.patch.object(Client, "meeting_list_basic_request")
+    manual_meeting_list_pagination_mock = mocker.patch.object(Zoom, "manual_meeting_list_pagination")
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-
-    client.zoom_meeting_list("mock@moker.com", limit=50)
+    from Zoom import zoom_meeting_list_command
+    zoom_meeting_list_command(client=client, user_id="blabla", limit=50)
     assert manual_meeting_list_pagination_mock.called
 
 
-def test_zoom_meeting_list__no_limit(mocker):
+def test_zoom_meeting_list_command__no_limit(mocker):
     """
         Given -
            client
@@ -567,18 +568,19 @@ def test_zoom_meeting_list__no_limit(mocker):
         Then -
             Validate that a func that runs a pagination has not been called
             Validate that a func that returns the first page is called
-            Validate that the API call will be for a specific user
     """
-    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_meeting_list_pagination")
-    user_list_basic_request_mock = mocker.patch.object(Client, "meeting_list_basic_request")
+    manual_meeting_list_pagination_mock = mocker.patch.object(Zoom, "manual_meeting_list_pagination")
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
+    returned_dict = {'uuid': 'u=', 'id': 847, 'host_id': 'u', 'host_email': 'example@example.com', 'assistant_id': '', 'topic': 'My Meeting', 'type': 2,
+                     'status': 'waiting', 'start_time': '5Z', 'duration': 60, 'timezone': 'lem', 'agenda': '', 'created_at': '48Z', 'start_url': '.2-dio1Se7o'}
+    zoom_meeting_list_mock = mocker.patch.object(Client, "zoom_meeting_list", return_value=returned_dict)
 
-    client.zoom_meeting_list("mock@moker.com")
-    assert not manual_user_list_pagination_mock.called
-    assert user_list_basic_request_mock.called
-    user_list_basic_request_mock.call_args[0][0] == 'mock@moker.com'
+    from Zoom import zoom_meeting_list_command
+    zoom_meeting_list_command(client=client, user_id="blabla")
+    assert not manual_meeting_list_pagination_mock.called
+    assert zoom_meeting_list_mock.called
 
 
 def test_manual_meeting_list_pagination__small_limit(mocker):
@@ -591,13 +593,17 @@ def test_manual_meeting_list_pagination__small_limit(mocker):
             Validate that the page_size == limit
     """
     mocker.patch.object(Client, "generate_oauth_token")
-    basic_request_mocker = mocker.patch.object(Client, "meeting_list_basic_request", return_value={"next_page_token": "mockmock"})
+    returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
+                     'total_records': 2, 'next_page_token': '', 'users': [{'id': '1234', 'first_name': 'as', 'last_name': 'bla', 'email': 'example@example.com', 'type': 1, 'pmi': 1234, 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': ''}]}
+    zoom_meeting_list_mocker = mocker.patch.object(Client, "zoom_meeting_list", return_value=returned_dict)
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    limit = 20
-    client.manual_meeting_list_pagination(user_id='mock@moker.com', next_page_token=None, page_size=1, limit=limit,
-                                          type=None)
-    assert basic_request_mocker.call_args[0][2] == limit
+    limit = 5
+    from Zoom import manual_meeting_list_pagination
+    manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
+                                   page_size=1, limit=limit, type="all")
+    assert zoom_meeting_list_mocker.call_args[1].get('page_size') == limit
+
 
 
 def test_manual_meeting_list_pagination__large_limit(mocker):
@@ -607,16 +613,19 @@ def test_manual_meeting_list_pagination__large_limit(mocker):
         When -
             limit >  MAX_RECORDS_PER_PAGE
         Then -
-            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300) % limit
+            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300)
     """
     mocker.patch.object(Client, "generate_oauth_token")
-    basic_request_mocker = mocker.patch.object(Client, "meeting_list_basic_request", return_value={"next_page_token": "mockmock"})
+    returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
+                     'total_records': 2, 'next_page_token': '', 'users': [{'id': '1234', 'first_name': 'as', 'last_name': 'bla', 'email': 'example@example.com', 'type': 1, 'pmi': 1234, 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': ''}]}
+    zoom_meeting_list_mocker = mocker.patch.object(Client, "zoom_meeting_list", return_value=returned_dict)
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
     limit = 2000
-    client.manual_meeting_list_pagination(user_id='mock@moker.com', next_page_token=None, page_size=1, limit=limit,
-                                          type="mock")
-    assert basic_request_mocker.call_args[0][2] == 200
+    from Zoom import manual_meeting_list_pagination
+    manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
+                                   page_size=1, limit=limit, type="all")
+    assert zoom_meeting_list_mocker.call_args[1].get('page_size') == 300
 
 
 def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
@@ -684,15 +693,15 @@ def test_zoom_user_list_command__when_user_id(mocker):
     to_md = {'id': 'C', 'first_name': 'Ye', 'last_name': 'Ro', 'email': 'y@gmail.com', 'type': 1, 'role_name': 'Member', 'pmi': 9, 'use_pmi': False,
              'personal_meeting_url': 'hts://us0', 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': '', 'created_at': '2022-12-01T07:40:02Z', 'last_login_time': '2022-12-14T08:14:29Z'}
 
-    mocker.patch.object(Client, "zoom_user_list", return_value=to_md)
+    mocker.patch.object(Client, "zoom_list_users", return_value=to_md)
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    res = Zoom.zoom_user_list_command(client, user_id="bla")
+    from Zoom import zoom_list_users_command
+    res = zoom_list_users_command(client, user_id="bla")
     assert len(res.readable_output) == 159
 
 # i dont like this test:(
-
 
 def test_zoom_meeting_list_command__when_user_id(mocker):
     """
@@ -710,8 +719,9 @@ def test_zoom_meeting_list_command__when_user_id(mocker):
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-    res = Zoom.zoom_meeting_list_command(client, user_id="bla")
-    assert len(res.readable_output) == 114
+    from Zoom import zoom_meeting_list_command
+    res = zoom_meeting_list_command(client, user_id="bla")
+    assert len(res.readable_output) == 133
 
 
 def test_remove_None_values_from_dict():
