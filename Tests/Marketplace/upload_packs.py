@@ -23,7 +23,7 @@ from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.marketplace_constants import PackStatus, Metadata, GCPConfig, BucketUploadFlow, \
     CONTENT_ROOT_PATH, PACKS_FOLDER, PACKS_FULL_PATH, IGNORED_FILES, IGNORED_PATHS, LANDING_PAGE_SECTIONS_PATH, \
     SKIPPED_STATUS_CODES
-from demisto_sdk.commands.common.tools import run_command, str2bool
+from demisto_sdk.commands.common.tools import run_command, str2bool, open_id_set_file
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
@@ -998,6 +998,7 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -1044,7 +1045,8 @@ def main():
         with Neo4jContentGraphInterface():
             pass
     except Exception:
-        raise Exception("Database is not ready")
+        logging.warning("Database is not ready, using id_set.json instead.")
+        id_set = open_id_set_file(option.id_set_path)
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
