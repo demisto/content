@@ -1340,7 +1340,7 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> C
 
 
 def chromeos_device_list_create_query_parameters(projection: str, query: str, include_child_org_units: bool, order_by: str,
-                                                 sort_order: str, org_unit_path: str) -> dict:
+                                                 sort_order: str, org_unit_path: str) -> dict:  # pragma: no cover
     """This function takes in the arguments from the user and creates a dictionary that will hold
     the query arguments for the chromeos-device-list request.
 
@@ -1361,7 +1361,7 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
 
 
 @ logger
-def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:  # pragma: no cover
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
