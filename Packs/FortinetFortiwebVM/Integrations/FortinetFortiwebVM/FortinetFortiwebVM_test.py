@@ -2003,72 +2003,95 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
     assert OutputTitles.SERVER_POLICY_CREATE in str(result.readable_output)
 
 
-@pytest.mark.parametrize(
-    ('version', 'endpoint', 'args', 'jsonpath', 'error_msg'),
-    (
-        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-        }, 'server_policy/v1_create_success.json', ERRORS.PROTOCOL),
-        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-            'name': 'check',
-            'deployment_mode': 'wrong',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-        }, 'server_policy/v1_exist.json', ERRORS.DEPLOYMENT_MODE),
-        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-            'name': 'check',
-            'deployment_mode': 'Single Server/Server Balance',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-        }, 'server_policy/v1_exist.json', ERRORS.SERVER_POOL),
-        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-        }, 'server_policy/v1_exist.json', ERRORS.ALREADY_EXIST),
-        (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-        }, 'server_policy/v1_wrong_parameters.json', ERRORS.ARGUMENTS),
-        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP'
-        }, 'server_policy/v2_exist.json', ERRORS.ALREADY_EXIST),
-        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-            'scripting': 'wrong'
-        }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING),
-        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-            'scripting': 'enable'
-        }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING_LIST),
-        (ClientV2.API_VER, 'cmdb/server-policy/policy', {
-            'name': 'check',
-            'deployment_mode': 'HTTP Content Routing',
-            'server_pool': 'server1',
-            'virtual_server': 'virtual1',
-            'http_service': 'HTTP',
-        }, 'server_policy/v2_wrong_parameters.json', ERRORS.ARGUMENTS), ))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+    }, 'server_policy/v1_create_success.json', ERRORS.PROTOCOL),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'wrong',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_exist.json', ERRORS.DEPLOYMENT_MODE),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'Single Server/Server Balance',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_exist.json', ERRORS.SERVER_POOL),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_exist.json', ERRORS.ALREADY_EXIST),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v1_wrong_parameters.json', ERRORS.ARGUMENTS),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP'
+    }, 'server_policy/v2_exist.json', ERRORS.ALREADY_EXIST),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'scripting': 'wrong'
+    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'client_real_ip': 'wrong'
+    }, 'server_policy/v2_exist.json', ERRORS.CLIENT_REAL_IP),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'mach_once': 'wrong'
+    }, 'server_policy/v2_exist.json', ERRORS.MACH_ONCE),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'monitor_mode': 'wrong'
+    }, 'server_policy/v2_exist.json', ERRORS.MONITOR_MODE),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+        'scripting': 'enable'
+    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING_LIST),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy', {
+        'name': 'check',
+        'deployment_mode': 'HTTP Content Routing',
+        'server_pool': 'server1',
+        'virtual_server': 'virtual1',
+        'http_service': 'HTTP',
+    }, 'server_policy/v2_wrong_parameters.json', ERRORS.ARGUMENTS),
+))
 def test_fail_server_policy_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            args: Dict[str, Any], jsonpath: str, error_msg: str):
     """
@@ -2134,6 +2157,7 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
     requests_mock.put(url=url, json=json_response)
     result = server_policy_update_command(mock_client, args)
     assert OutputTitles.SERVER_POLICY_UPDATE in str(result.readable_output)
+
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/123456789', {
