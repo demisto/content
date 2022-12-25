@@ -1,6 +1,7 @@
 .push-rule:
   rules:
-    - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 
 trigger-private-build:
   tags:
@@ -12,8 +13,8 @@ trigger-private-build:
   rules:
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
-    - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
-    - if: "$NIGHTLY"
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
   script:
     - echo "====Trigger Private Build===="
     - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
@@ -38,12 +39,13 @@ run-unittests-and-lint:
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
 
+
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
 run-validations:
   extends:
     - .run-validations
   rules:
-    - if: "$NIGHTLY"
+    - if: '$NIGHTLY'
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -82,12 +84,11 @@ validate-content-conf:
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
-    policy: pull
+    policy: pull-push
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
   needs: []
   stage: prepare-testing-bucket
-  allow_failure: true
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
@@ -184,7 +185,6 @@ xsoar-prepare-testing-bucket:
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
   rules:
     - if: $INSTANCE_TESTS
-  stage: prepare-testing-bucket
   extends:
     - .generic-prepare-testing-bucket
 
