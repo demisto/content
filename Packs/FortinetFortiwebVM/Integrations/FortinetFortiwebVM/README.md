@@ -38,16 +38,6 @@ Create Protected Hostname Group.
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-protected-hostname-group-create name=ronhadad```
-#### Human Readable Output
-
->### Hostname group successfully created!
->|Name|
->|---|
->| ronhadad |
-
-
 ### fortiwebvm-protected-hostname-group-update
 ***
 Update Protected Hostname Group.
@@ -67,16 +57,6 @@ Update Protected Hostname Group.
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-protected-hostname-group-update name=ronhadad default_action=Deny```
-#### Human Readable Output
-
->### Hostname group successfully updated!
->|Name|
->|---|
->| ronhadad |
-
-
 ### fortiwebvm-protected-hostname-group-list
 ***
 List the Protected Hostname groups.
@@ -104,31 +84,6 @@ List the Protected Hostname groups.
 | FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | Protected Hostname Group members number. | 
 | FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Can deleted flag. Supports API version 1 only. | 
 
-#### Command example
-```!fortiwebvm-protected-hostname-group-list name=ronhadad```
-#### Context Example
-```json
-{
-    "FortiwebVM": {
-        "ProtectedHostnameGroup": {
-            "can_delete": true,
-            "default_action": "Allow",
-            "id": "ronhadad",
-            "protected_hostname_count": 0
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Protected Hostnames Groups:
->Showing 1 rows out of 1.
->|Id|Default Action|Protected Hostname Count|Can Delete|
->|---|---|---|---|
->| ronhadad | Allow | 0 | true |
-
-
 ### fortiwebvm-protected-hostname-member-create
 ***
 Create Protected Hostname Member (Protected Hostname Member is a sub-object of Protected Hostname Group).
@@ -154,27 +109,6 @@ Create Protected Hostname Member (Protected Hostname Member is a sub-object of P
 | --- | --- | --- |
 | FortiwebVM.ProtectedHostnameMember.id | String | Protected Hostname Member ID | 
 
-#### Command example
-```!fortiwebvm-protected-hostname-member-create group_name=ronhadad host=1.2.3.4```
-#### Context Example
-```json
-{
-    "FortiwebVM": {
-        "ProtectedHostnameMember": {
-            "id": "1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Hostname member successfully created!
->|Id|
->|---|
->| 1 |
-
-
 ### fortiwebvm-protected-hostname-member-update
 ***
 Update protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
@@ -198,16 +132,6 @@ Update protected Hostname Member (Protected Hostname Member is a member of Prote
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-protected-hostname-member-update group_name=ronhadad member_id=1 ignore_port=disable```
-#### Human Readable Output
-
->### Hostname member successfully updated!
->|Id|
->|---|
->| 1 |
-
-
 ### fortiwebvm-protected-hostname-member-list
 ***
 List all the Protected Hostname Members (Protected Hostname Member is a member of Protected Hostname).
@@ -238,35 +162,6 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 | FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Protected Hostname Member Ignore Port. Supports API version 2 only. | 
 | FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Protected Hostname Member Include Subdomains. Supports API version 2 only. | 
 
-#### Command example
-```!fortiwebvm-protected-hostname-member-list group_name=ronhadad member_id=1```
-#### Context Example
-```json
-{
-    "FortiwebVM": {
-        "ProtectedHostnameMember": {
-            "Members": [
-                {
-                    "action": "Allow",
-                    "host": "1.2.3.4",
-                    "id": "1"
-                }
-            ],
-            "group_name": "ronhadad"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Protected Hostnames Members:
->Showing 1 rows out of 1.
->|Id|Action|Host|
->|---|---|---|
->| 1 | Allow | 1.2.3.4 |
-
-
 ### fortiwebvm-protected-hostname-member-delete
 ***
 Delete Protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
@@ -286,16 +181,6 @@ Delete Protected Hostname Member (Protected Hostname Member is a member of Prote
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-protected-hostname-member-delete group_name=ronhadad member_id=1```
-#### Human Readable Output
-
->### Hostname member successfully deleted!
->|Id|
->|---|
->| 1 |
-
-
 ### fortiwebvm-protected-hostname-group-delete
 ***
 Delete Protected Hostname.
@@ -314,16 +199,6 @@ Delete Protected Hostname.
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!fortiwebvm-protected-hostname-group-delete name=ronhadad```
-#### Human Readable Output
-
->### Hostname group successfully deleted!
->|Name|
->|---|
->| ronhadad |
-
-
 ### fortiwebvm-ip-list-group-create
 ***
 Create IP List.
@@ -1047,6 +922,28 @@ List the Virtual Servers.
 | --- | --- | --- |
 | FortiwebVM.VirtualServer.id | String | Virtual Server Name. | 
 
+#### Command example
+```!fortiwebvm-virtual-server-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualServer": {
+            "id": "virtual1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Servers:
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| virtual1 |
+
+
 ### fortiwebvm-geo-exception-list
 ***
 List the Geo Exception Groups.
@@ -1069,6 +966,15 @@ List the Geo Exception Groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.GeoExceptionGroup.id | String | Geo Exception Group Name. | 
+
+#### Command example
+```!fortiwebvm-geo-exception-list limit=1```
+#### Human Readable Output
+
+>### Geo exception:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-trigger-policy-list
 ***
@@ -1093,6 +999,15 @@ List the Trigger Policies Rules.
 | --- | --- | --- |
 | FortiwebVM.TriggerPolicy.id | String | Trigger Policy Name. | 
 
+#### Command example
+```!fortiwebvm-trigger-policy-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-certificate-intermediate-group-list
 ***
 List the Certificate intermediate groups.
@@ -1115,6 +1030,15 @@ List the Certificate intermediate groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.CertificateIntermediateGroup.id | String | Certificate Intermediate Group Name. | 
+
+#### Command example
+```!fortiwebvm-certificate-intermediate-group-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-server-pool-list
 ***
@@ -1139,6 +1063,15 @@ List the Server Pools.
 | --- | --- | --- |
 | FortiwebVM.ServerPool.id | String | Server Pool Name. | 
 
+#### Command example
+```!fortiwebvm-server-pool-list limit=1```
+#### Human Readable Output
+
+>### Server pool:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-http-service-list
 ***
 List the  HTTP Services.
@@ -1162,6 +1095,28 @@ List the  HTTP Services.
 | --- | --- | --- |
 | FortiwebVM.HttpServiceList.id | String | HTTP Service Name. | 
 
+#### Command example
+```!fortiwebvm-http-service-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpServiceList": {
+            "id": "HTTP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP services:
+>Showing 1 rows out of 5.
+>|Id|
+>|---|
+>| HTTP |
+
+
 ### fortiwebvm-inline-protection-profile-list
 ***
 List the Inline Protection Profiles.
@@ -1184,6 +1139,28 @@ List the Inline Protection Profiles.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.InlineProtectionProfile.id | String | Inline protection profile name. | 
+
+#### Command example
+```!fortiwebvm-inline-protection-profile-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "InlineProtectionProfile": {
+            "id": "Inline High Level Security"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Inline Protection Profile:
+>Showing 1 rows out of 10.
+>|Id|
+>|---|
+>| Inline High Level Security |
+
 
 ### fortiwebvm-server-policy-create
 ***
@@ -1380,6 +1357,15 @@ List the HTTP Content Routing Policies.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.HttpContentRoutingPolicy.id | String | Policy Name. | 
+
+#### Command example
+```!fortiwebvm-content-routing-policy-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-http-content-routing-member-add
 ***
