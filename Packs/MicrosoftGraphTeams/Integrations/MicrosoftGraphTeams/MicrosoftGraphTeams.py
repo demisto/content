@@ -459,7 +459,7 @@ def test_function(client, _):
             raise Exception("When using a self-deployed configuration, "
                             "Please enable the integration and run the !msgraph-teams-test command in order to test it")
 
-    client.ms_client.http_request(method='GET', url_suffix='users/')
+    client.ms_client.http_request(method='GET', url_suffix='chats')
     return response, None, None
 
 
