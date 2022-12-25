@@ -1496,7 +1496,7 @@ Get Geo IP list.
 
 #### Command example
 ```!fortiwebvm-geo-ip-group-list name=example```
-#### Context Example
+#### Context Example - API Version 1
 ```json
 {
     "FortiwebVM": {
@@ -1512,7 +1512,7 @@ Get Geo IP list.
 }
 ```
 
-#### Human Readable Output
+#### Human Readable Output - API Version 1
 
 >### Geo IP group:
 >Showing 1 rows out of 1.
@@ -1520,6 +1520,31 @@ Get Geo IP list.
 >|---|---|---|---|---|
 >| example | 0 |  | Low |  |
 
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "GeoIpGroup": {
+            "action": "Block period",
+            "block_period": 600,
+            "count": 0,
+            "except": "",
+            "id": "example",
+            "ignore_x_forwarded_for": "disable",
+            "severity": "Low",
+            "trigger_policy": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 2
+
+>### Geo IP group:
+>Showing 1 rows out of 1.
+>|Id|Count|Trigger Policy|Severity|Except|Action|Block Period|Ignore X Forwarded For|
+>|---|---|---|---|---|---|---|---|
+>| example | 0 |  | Low |  | Block period | 600 | disable |
 
 ### fortiwebvm-system-operation-status-get
 ***
