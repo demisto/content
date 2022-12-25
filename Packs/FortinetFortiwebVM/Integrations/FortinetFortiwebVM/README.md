@@ -1664,6 +1664,28 @@ List the Virtual Servers.
 | --- | --- | --- |
 | FortiwebVM.VirtualServer.id | String | Virtual Server Name. | 
 
+#### Command example
+```!fortiwebvm-virtual-server-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualServer": {
+            "id": "virtual1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Servers:
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| virtual1 |
+
+
 ### fortiwebvm-geo-exception-list
 ***
 List the Geo Exception Groups.
@@ -1686,6 +1708,15 @@ List the Geo Exception Groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.GeoExceptionGroup.id | String | Geo Exception Group Name. | 
+
+#### Command example
+```!fortiwebvm-geo-exception-list limit=1```
+#### Human Readable Output
+
+>### Geo exception:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-trigger-policy-list
 ***
@@ -1710,6 +1741,15 @@ List the Trigger Policies Rules.
 | --- | --- | --- |
 | FortiwebVM.TriggerPolicy.id | String | Trigger Policy Name. | 
 
+#### Command example
+```!fortiwebvm-trigger-policy-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-certificate-intermediate-group-list
 ***
 List the Certificate intermediate groups.
@@ -1732,6 +1772,15 @@ List the Certificate intermediate groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.CertificateIntermediateGroup.id | String | Certificate Intermediate Group Name. | 
+
+#### Command example
+```!fortiwebvm-certificate-intermediate-group-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-server-pool-list
 ***
@@ -1756,6 +1805,15 @@ List the Server Pools.
 | --- | --- | --- |
 | FortiwebVM.ServerPool.id | String | Server Pool Name. | 
 
+#### Command example
+```!fortiwebvm-server-pool-list limit=1```
+#### Human Readable Output
+
+>### Server pool:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-http-service-list
 ***
 List the  HTTP Services.
@@ -1779,6 +1837,28 @@ List the  HTTP Services.
 | --- | --- | --- |
 | FortiwebVM.HttpServiceList.id | String | HTTP Service Name. | 
 
+#### Command example
+```!fortiwebvm-http-service-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpServiceList": {
+            "id": "HTTP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP services:
+>Showing 1 rows out of 5.
+>|Id|
+>|---|
+>| HTTP |
+
+
 ### fortiwebvm-inline-protection-profile-list
 ***
 List the Inline Protection Profiles.
@@ -1801,6 +1881,28 @@ List the Inline Protection Profiles.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.InlineProtectionProfile.id | String | Inline protection profile name. | 
+
+#### Command example
+```!fortiwebvm-inline-protection-profile-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "InlineProtectionProfile": {
+            "id": "Inline High Level Security"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Inline Protection Profile:
+>Showing 1 rows out of 10.
+>|Id|
+>|---|
+>| Inline High Level Security |
+
 
 ### fortiwebvm-server-policy-create
 ***
