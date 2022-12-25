@@ -17,7 +17,9 @@ trigger-private-build:
     - if: '$NIGHTLY'
   script:
     - echo "====Trigger Private Build===="
-    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN
+    - git ls-remote --exit-code --heads "https://uesr:$GITHUB_TOKEN@github.com/demisto/content-private.git" "refs/heads/$CI_COMMIT_BRANCH" >> /dev/null && PRIVATE_BRANCH_NAME=$CI_COMMIT_BRANCH
+    - "[ -z $PRIVATE_BRANCH_NAME ] && PRIVATE_BRANCH_NAME='master'"
+    - python3 Utils/trigger_private_build.py --github-token $GITHUB_TOKEN --private-branch-name $PRIVATE_BRANCH_NAME
     - sleep 60
     - python3 Utils/get_private_build_status.py --github-token $GITHUB_TOKEN
   timeout: 2 hours
