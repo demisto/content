@@ -38,6 +38,16 @@ Create Protected Hostname Group.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-group-create name=example```
+#### Human Readable Output
+
+>### Hostname group successfully created!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-protected-hostname-group-update
 ***
 Update Protected Hostname Group.
@@ -57,6 +67,16 @@ Update Protected Hostname Group.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-group-update name=example default_action=Deny```
+#### Human Readable Output
+
+>### Hostname group successfully updated!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-protected-hostname-group-list
 ***
 List the Protected Hostname groups.
@@ -84,6 +104,55 @@ List the Protected Hostname groups.
 | FortiwebVM.ProtectedHostnameGroup.protected_hostname_count | Number | Protected Hostname Group members number. | 
 | FortiwebVM.ProtectedHostnameGroup.can_delete | Boolean | Can deleted flag. Supports API version 1 only. | 
 
+#### Command example
+```!fortiwebvm-protected-hostname-group-list name=example```
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "ProtectedHostnameGroup": {
+            "can_delete": true,
+            "default_action": "Allow",
+            "id": "example",
+            "protected_hostname_count": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 1
+
+>### Protected Hostnames Groups:
+>Showing 1 rows out of 1.
+>|Id|Default Action|Protected Hostname Count|Can Delete|
+>|---|---|---|---|
+>| example | Allow | 0 | true |
+
+#### Context Example - API Version 2
+
+```json
+{
+    "FortiwebVM": {
+        "ProtectedHostnameGroup": {
+            "default_action": "Allow",
+            "id": "example",
+            "protected_hostname_count": 0
+        }
+    }
+}
+```
+
+
+#### Human Readable Output - API Version 2
+
+
+>### Protected Hostnames Groups:
+>Showing 1 rows out of 1.
+>|Id|Default Action|Protected Hostname Count|
+>|---|---|---|
+>| example | Allow | 0 |
+
+
 ### fortiwebvm-protected-hostname-member-create
 ***
 Create Protected Hostname Member (Protected Hostname Member is a sub-object of Protected Hostname Group).
@@ -109,6 +178,27 @@ Create Protected Hostname Member (Protected Hostname Member is a sub-object of P
 | --- | --- | --- |
 | FortiwebVM.ProtectedHostnameMember.id | String | Protected Hostname Member ID | 
 
+#### Command example
+```!fortiwebvm-protected-hostname-member-create group_name=example host=1.2.3.4 action=Deny```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ProtectedHostnameMember": {
+            "id": "1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Hostname member successfully created!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-protected-hostname-member-update
 ***
 Update protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
@@ -132,6 +222,16 @@ Update protected Hostname Member (Protected Hostname Member is a member of Prote
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-member-update group_name=example member_id=1 action=Allow```
+#### Human Readable Output
+
+>### Hostname member successfully updated!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-protected-hostname-member-list
 ***
 List all the Protected Hostname Members (Protected Hostname Member is a member of Protected Hostname).
@@ -162,6 +262,35 @@ List all the Protected Hostname Members (Protected Hostname Member is a member o
 | FortiwebVM.ProtectedHostnameMember.Members.ignore_port | String | Protected Hostname Member Ignore Port. Supports API version 2 only. | 
 | FortiwebVM.ProtectedHostnameMember.Members.include_subdomains | String | Protected Hostname Member Include Subdomains. Supports API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-protected-hostname-member-list group_name=example member_id=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ProtectedHostnameMember": {
+            "Members": [
+                {
+                    "action": "Deny",
+                    "host": "1.2.3.4",
+                    "id": "1"
+                }
+            ],
+            "group_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Protected Hostnames Members:
+>Showing 1 rows out of 1.
+>|Id|Action|Host|
+>|---|---|---|
+>| 1 | Deny | 1.2.3.4 |
+
+
 ### fortiwebvm-protected-hostname-member-delete
 ***
 Delete Protected Hostname Member (Protected Hostname Member is a member of Protected Hostname).
@@ -181,6 +310,16 @@ Delete Protected Hostname Member (Protected Hostname Member is a member of Prote
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-member-delete group_name=example member_id=1```
+#### Human Readable Output
+
+>### Hostname member successfully deleted!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-protected-hostname-group-delete
 ***
 Delete Protected Hostname.
@@ -197,6 +336,17 @@ Delete Protected Hostname.
 
 
 #### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-group-delete name=example```
+#### Human Readable Output
+
+>### Hostname group successfully deleted!
+>|Name|
+>|---|
+>| example |
+
 
 There is no context output for this command.
 ### fortiwebvm-ip-list-group-create
@@ -299,9 +449,30 @@ Supports API versions 1 & 2.
 | FortiwebVM.IpListGroup.trigger_policy | String | IP list group Trigger Policy Name. Supports API version 2 only. | 
 | FortiwebVM.IpListGroup.severity | String | IP list group Severity. Supports API version 2 only. | 
 
-#### Command example
+#### Command example - API Version 1
 ```!fortiwebvm-ip-list-group-list name=example```
 #### Context Example
+```json
+{
+    "FortiwebVM": {
+        "IpListGroup": {
+            "can_delete": true,
+            "id": "example",
+            "ip_list_count": 0
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 1
+
+>### IP Lists Groups:
+>Showing 1 rows out of 1.
+>|Id|Ip List Count|
+>|---|---|
+>| example | 0 |
+
+#### Context Example - API Version 2
 ```json
 {
     "FortiwebVM": {
@@ -321,7 +492,7 @@ Supports API versions 1 & 2.
 }
 ```
 
-#### Human Readable Output
+#### Human Readable Output - API Version 2
 
 >### IP Lists Groups:
 >Showing 1 rows out of 1.
@@ -441,7 +612,36 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 
 #### Command example
 ```!fortiwebvm-ip-list-member-list group_name=example```
-#### Context Example
+#### Context Example - API Version 1
+```json
+{
+    "FortiwebVM": {
+        "IpListMember": {
+            "Members": [
+                {
+                    "id": "1",
+                    "ip": "1.2.3.4",
+                    "severity": "Medium",
+                    "trigger_policy": "",
+                    "type": "Black IP"
+                }
+            ],
+            "group_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 1
+
+>### IP Lists Members:
+>Showing 1 rows out of 1.
+>|Id|Type|Ip|Severity|Trigger Policy|
+>|---|---|---|---|---|
+>| 1 | Black IP | 1.2.3.4 | Medium |  |
+
+
+#### Context Example - API Version 2
 ```json
 {
     "FortiwebVM": {
@@ -459,14 +659,13 @@ List the IP List Policy Member(IP List Policy Member is a member of IP List).
 }
 ```
 
-#### Human Readable Output
+#### Human Readable Output - API Version 2
 
 >### IP Lists Members:
 >Showing 1 rows out of 1.
 >|Id|Type|Ip|
 >|---|---|---|
 >| 1 | Black IP | 1.2.3.4 |
-
 
 ### fortiwebvm-ip-list-member-delete
 ***
@@ -516,7 +715,7 @@ Supports API versions 1 & 2.
 
 There is no context output for this command.
 #### Command example
-```!fortiwebvm-ip-list-group-delete name=example!fortiwebvm-geo-ip-group-create name=example```
+```!fortiwebvm-ip-list-group-delete name=example```
 #### Human Readable Output
 
 >### IP List group successfully deleted!
@@ -544,6 +743,16 @@ Update Custom Predefined Global Whitelist.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-custom-predefined-whitelist-update id=10002 status=disable```
+#### Human Readable Output
+
+>### Custom predifined whitelist member successfully updated!
+>|Id|
+>|---|
+>| 10002 |
+
+
 ### fortiwebvm-custom-predefined-whitelist-list
 ***
 Get Custom Predefined Global Whitelist.
@@ -573,6 +782,32 @@ Get Custom Predefined Global Whitelist.
 | FortiwebVM.CustomPredefinedGlobalWhitelist.domain | String | Predefined Global White List Member Domain. | 
 | FortiwebVM.CustomPredefinedGlobalWhitelist.status | Boolean | Predefined Global White List Member Status. | 
 
+#### Command example
+```!fortiwebvm-custom-predefined-whitelist-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CustomPredefinedGlobalWhitelist": {
+            "domain": "",
+            "id": 100002,
+            "name": "",
+            "path": "/browserconfig.xml",
+            "status": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom whitelist members:
+>Showing 1 rows out of 36.
+>|Id|Name|Path|Domain|Status|
+>|---|---|---|---|---|
+>| 100002 |  | /browserconfig.xml |  | true |
+
+
 ### fortiwebvm-custom-whitelist-url-create
 ***
 Create Custom Global White List URL Object (Custom Global White List URL Object is an object of Custom Global White List).
@@ -594,6 +829,27 @@ Create Custom Global White List URL Object (Custom Global White List URL Object 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+
+#### Command example
+```!fortiwebvm-custom-whitelist-url-create request_url=/123```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CustomGlobalWhitelist": {
+            "id": 1
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom whitelist URL member succesfuly created!
+>|Id|
+>|---|
+>| 1 |
+
 
 ### fortiwebvm-custom-whitelist-parameter-create
 ***
@@ -623,6 +879,27 @@ Create Custom Global White List Parameter Object (Custom Global White List Param
 | --- | --- | --- |
 | FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
 
+#### Command example
+```!fortiwebvm-custom-whitelist-parameter-create name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CustomGlobalWhitelist": {
+            "id": 2
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom whitelist Parameter member succesfuly created!
+>|Id|
+>|---|
+>| 2 |
+
+
 ### fortiwebvm-custom-whitelist-cookie-create
 ***
 Create Custom Global White List Cookie Object (Custom Global White List Cookie  Object is an object of Custom Global White List).
@@ -645,6 +922,27 @@ Create Custom Global White List Cookie Object (Custom Global White List Cookie  
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.CustomGlobalWhitelist.id | Number | Custom Global Whitelist ID | 
+
+#### Command example
+```!fortiwebvm-custom-whitelist-cookie-create name=example domain=abc path=/abc```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CustomGlobalWhitelist": {
+            "id": 2
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom whitelist Cookie member succesfuly created!
+>|Id|
+>|---|
+>| 2 |
+
 
 ### fortiwebvm-custom-whitelist-header-field-create
 ***
@@ -692,6 +990,16 @@ Update Custom Global White List URL Object (Custom Global White List URL Object 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-custom-whitelist-url-update id=1 status=disable```
+#### Human Readable Output
+
+>### Custom whitelist URL member succesfuly updated!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-custom-whitelist-parameter-update
 ***
 Update Custom Global White List Parameter Object (Custom Global White List Parameter Object is an object of Custom Global White List).
@@ -719,6 +1027,16 @@ Update Custom Global White List Parameter Object (Custom Global White List Param
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-custom-whitelist-parameter-update id=2 status=disable```
+#### Human Readable Output
+
+>### Custom whitelist Parameter member succesfuly updated!
+>|Id|
+>|---|
+>| 2 |
+
+
 ### fortiwebvm-custom-whitelist-cookie-update
 ***
 Update Custom Global White List Cookie Object (Custom Global White List Cookie  Object is an object of Custom Global White List).
@@ -741,6 +1059,16 @@ Update Custom Global White List Cookie Object (Custom Global White List Cookie  
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-custom-whitelist-cookie-update id=3 status=disable```
+#### Human Readable Output
+
+>### Custom whitelist Cookie member succesfuly updated!
+>|Id|
+>|---|
+>| 3 |
+
+
 ### fortiwebvm-custom-whitelist-header-field-update
 ***
 Update Custom Global White List Header Field Object (Custom Global White List Header Field Object is an object of Custom Global White List). Supports API version 2 only.
@@ -822,6 +1150,35 @@ List the Custom Global Whitelist Objects.
 | FortiwebVM.CustomGlobalWhitelist.value | String | Custom Global Whitelist object Value. Supports API version 2 only. | 
 | FortiwebVM.CustomGlobalWhitelist.value_status | String | Custom Global Whitelist object Value Status. Supports API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-custom-whitelist-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "CustomGlobalWhitelist": {
+            "domain": "",
+            "id": 1,
+            "name": "",
+            "path": "",
+            "request_type": "Simple String",
+            "request_url": "/123",
+            "status": false,
+            "type": "URL"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom whitelist members:
+>Showing 1 rows out of 3.
+>|Id|Name|Request Url|Path|Domain|Status|
+>|---|---|---|---|---|---|
+>| 1 |  | /123 |  |  | false |
+
+
 ### fortiwebvm-geo-ip-member-add
 ***
 Create Geo IP Member (Geo IP Member is a member of Geo IP).
@@ -841,6 +1198,28 @@ Create Geo IP Member (Geo IP Member is a member of Geo IP).
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-geo-ip-member-add group_name=example countries=Algeria```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "GeoIpMember": {
+            "country": "Algeria",
+            "id": "1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Geo IP member successfully added!
+>|Id|Country|
+>|---|---|
+>| 1 | Algeria |
+
+
 ### fortiwebvm-geo-ip-member-delete
 ***
 Delete Geo IP Member (Geo IP Member is a member of Geo IP).
@@ -860,6 +1239,16 @@ Delete Geo IP Member (Geo IP Member is a member of Geo IP).
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-geo-ip-member-delete group_name=example member_id=1```
+#### Human Readable Output
+
+>### Geo IP member succesfuly deleted!
+>|Member Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-geo-ip-member-list
 ***
 Get Geo IP Member (Geo IP Member is a member of Geo IP).
@@ -887,6 +1276,34 @@ Get Geo IP Member (Geo IP Member is a member of Geo IP).
 | FortiwebVM.GeoIpMember.countries.id | String | Geo IP Member ID. | 
 | FortiwebVM.GeoIpMember.countries.country | Number | Geo IP Member Country Name. | 
 
+#### Command example
+```!fortiwebvm-geo-ip-member-list group_name=example member_id=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "GeoIpMember": {
+            "countries": [
+                {
+                    "country": "Algeria",
+                    "id": "1"
+                }
+            ],
+            "group_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Geo IP member:
+>Showing 1 rows out of 1.
+>|Id|Country|
+>|---|---|
+>| 1 | Algeria |
+
+
 ### fortiwebvm-geo-ip-group-create
 ***
 Create Geo IP.
@@ -911,6 +1328,16 @@ Create Geo IP.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-geo-ip-group-create name=example```
+#### Human Readable Output
+
+>### Geo IP group successfully created!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-geo-ip-group-update
 ***
 Update Geo IP.
@@ -935,6 +1362,16 @@ Update Geo IP.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-geo-ip-group-update name=example```
+#### Human Readable Output
+
+>### Geo IP group successfully updated!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-geo-ip-group-delete
 ***
 Delete Geo IP.
@@ -953,6 +1390,16 @@ Delete Geo IP.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-geo-ip-group-delete name=example```
+#### Human Readable Output
+
+>### Geo IP group successfully deleted!
+>|Id|
+>|---|
+>| example |
+
+
 ### fortiwebvm-geo-ip-group-list
 ***
 Get Geo IP list.
@@ -985,6 +1432,33 @@ Get Geo IP list.
 | FortiwebVM.GeoIpGroup.block_period | Number | Geo IP Group Block Period. Supports API version 2 only. | 
 | FortiwebVM.GeoIpGroup.ignore_x_forwarded_for | String | Geo IP Group Ignore X-Forwarded-For flag. Supports API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-geo-ip-group-list name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "GeoIpGroup": {
+            "can_delete": true,
+            "count": 0,
+            "except": "",
+            "id": "example",
+            "severity": "Low",
+            "trigger_policy": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Geo IP group:
+>Showing 1 rows out of 1.
+>|Id|Count|Trigger Policy|Severity|Except|
+>|---|---|---|---|---|
+>| example | 0 |  | Low |  |
+
+
 ### fortiwebvm-system-operation-status-get
 ***
 Get Operation Status
@@ -1000,6 +1474,145 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-operation-status-get```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SystemOperation": [
+            {
+                "alias": "",
+                "id": "port1",
+                "ip_netmask": "192.168.30.137/24",
+                "label": 1,
+                "link": "Up",
+                "name": "port1",
+                "rx": 582306,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 18115
+            },
+            {
+                "alias": "",
+                "id": "port2",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 2,
+                "link": "Up",
+                "name": "port2",
+                "rx": 571254,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port3",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 3,
+                "link": "Up",
+                "name": "port3",
+                "rx": 571338,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port4",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 4,
+                "link": "Up",
+                "name": "port4",
+                "rx": 571252,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port5",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 5,
+                "link": "Up",
+                "name": "port5",
+                "rx": 571246,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port6",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 6,
+                "link": "Up",
+                "name": "port6",
+                "rx": 571245,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port7",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 7,
+                "link": "Up",
+                "name": "port7",
+                "rx": 571239,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port8",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 8,
+                "link": "Up",
+                "name": "port8",
+                "rx": 571283,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port9",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 9,
+                "link": "Up",
+                "name": "port9",
+                "rx": 572431,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port10",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 10,
+                "link": "Up",
+                "name": "port10",
+                "rx": 572083,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Operation networks:
+>|Id|Name|Label|Alias|Ip Netmask|Speed Duplex|Tx|Rx|Link|
+>|---|---|---|---|---|---|---|---|---|
+>| port1 | port1 | 1 |  | 192.168.30.137/24 | 10000 Mbps/Full Duplex | 18115 | 582306 | Up |
+>| port2 | port2 | 2 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571254 | Up |
+>| port3 | port3 | 3 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571338 | Up |
+>| port4 | port4 | 4 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571252 | Up |
+>| port5 | port5 | 5 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571246 | Up |
+>| port6 | port6 | 6 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571245 | Up |
+>| port7 | port7 | 7 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571239 | Up |
+>| port8 | port8 | 8 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571283 | Up |
+>| port9 | port9 | 9 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572431 | Up |
+>| port10 | port10 | 10 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572083 | Up |
+
+
 ### fortiwebvm-system-policy-status-get
 ***
 Get Policy Status.
@@ -1015,6 +1628,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-policy-status-get```
+#### Human Readable Output
+
+>### Policy status:
+>**No entries.**
+
+
 ### fortiwebvm-system-status-get
 ***
 Get System Status.
@@ -1030,6 +1651,84 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-status-get```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SystemStatus": {
+            "administrativeDomain": "Disabled",
+            "antivirusService": {
+                "anti_expired": "Expired (1969-12-31)",
+                "anti_expired_text": "[Renew]",
+                "anti_expired_url": "http://support.fortinet.com/",
+                "anti_update_text": "[Update]",
+                "anti_update_url": "#navigate/SignatureUpdate",
+                "antivirusLastUpdateMethod": "Manual",
+                "antivirusLastUpdateTime": "1969-12-31",
+                "exVirusDatabaseVersion": "1.00000",
+                "regularVirusDatabaseVersion": "1.00000"
+            },
+            "bufferSizeMax": 102400,
+            "credentialStuffingDefense": {
+                "databaseVersion": "0.00000",
+                "expired": "Expired (1969-12-31)",
+                "expired_text": "[Renew]",
+                "expired_url": "http://support.fortinet.com/",
+                "lastUpdateTime": "1969-12-31"
+            },
+            "fileUploadLimitMax": 102400,
+            "fipcc": "Disabled",
+            "firmwareVersion": "FortiWeb-VM 6.12,build0421(GA),191218",
+            "firmware_partition": 2,
+            "haStatus": "Standalone",
+            "hostName": "FortiWeb",
+            "logDisk": "Available",
+            "operationMode": "Reverse Proxy",
+            "readonly": false,
+            "registration": {
+                "label": "[Unregistered]",
+                "text": "[Register]",
+                "url": "https://support.fortinet.com"
+            },
+            "reputationService": {
+                "reputationBuildNumber": "1.00020",
+                "reputationLastUpdateMethod": "Manual",
+                "reputationLastUpdateTime": "1969-12-31",
+                "reputation_expired": "Expired (1969-12-31)",
+                "reputation_expired_text": "[Renew]",
+                "reputation_expired_url": "http://support.fortinet.com/",
+                "reputation_update_text": "[Update]",
+                "reputation_update_url": "#navigate/SignatureUpdate"
+            },
+            "securityService": {
+                "buildNumber": "0.00240",
+                "expired": "Expired (1969-12-31)",
+                "expired_text": "[Renew]",
+                "expired_url": "http://support.fortinet.com/",
+                "lastUpdateMethod": "Manual",
+                "lastUpdateTime": "1969-12-31",
+                "update_text": "[Update]",
+                "update_url": "#navigate/SignatureUpdate"
+            },
+            "serialNumber": "FVVM00UNLICENSED",
+            "systemTime": "Sun Dec 25 01:01:32 2022\n",
+            "systemUptime": "2 day(s) 20 hour(s) 7 min(s)",
+            "vmLicense": "invalid"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### System Status:
+>|High Ability Status|Host Name|Serial Number|Operation Mode|System Time|Firmware Version|Administrative Domain|System Uptime|Fips And Cc Mode|Log Disk|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Standalone | FortiWeb | FVVM00UNLICENSED | Reverse Proxy | Sun Dec 25 01:01:32 2022<br/> | FortiWeb-VM 6.12,build0421(GA),191218 | Disabled | 2 day(s) 20 hour(s) 7 min(s) | Disabled | Available |
+
+
 ### fortiwebvm-virtual-server-list
 ***
 List the Virtual Servers.
@@ -1052,6 +1751,28 @@ List the Virtual Servers.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.VirtualServer.id | String | Virtual Server Name. | 
+
+#### Command example
+```!fortiwebvm-virtual-server-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "VirtualServer": {
+            "id": "virtual1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Virtual Servers:
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| virtual1 |
+
 
 ### fortiwebvm-geo-exception-list
 ***
@@ -1076,6 +1797,15 @@ List the Geo Exception Groups.
 | --- | --- | --- |
 | FortiwebVM.GeoExceptionGroup.id | String | Geo Exception Group Name. | 
 
+#### Command example
+```!fortiwebvm-geo-exception-list limit=1```
+#### Human Readable Output
+
+>### Geo exception:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-trigger-policy-list
 ***
 List the Trigger Policies Rules.
@@ -1098,6 +1828,15 @@ List the Trigger Policies Rules.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.TriggerPolicy.id | String | Trigger Policy Name. | 
+
+#### Command example
+```!fortiwebvm-trigger-policy-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-certificate-intermediate-group-list
 ***
@@ -1122,6 +1861,15 @@ List the Certificate intermediate groups.
 | --- | --- | --- |
 | FortiwebVM.CertificateIntermediateGroup.id | String | Certificate Intermediate Group Name. | 
 
+#### Command example
+```!fortiwebvm-certificate-intermediate-group-list limit=1```
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 0 rows out of 0.
+>**No entries.**
+
+
 ### fortiwebvm-server-pool-list
 ***
 List the Server Pools.
@@ -1144,6 +1892,15 @@ List the Server Pools.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.ServerPool.id | String | Server Pool Name. | 
+
+#### Command example
+```!fortiwebvm-server-pool-list limit=1```
+#### Human Readable Output
+
+>### Server pool:
+>Showing 0 rows out of 0.
+>**No entries.**
+
 
 ### fortiwebvm-http-service-list
 ***
@@ -1168,6 +1925,28 @@ List the  HTTP Services.
 | --- | --- | --- |
 | FortiwebVM.HttpServiceList.id | String | HTTP Service Name. | 
 
+#### Command example
+```!fortiwebvm-http-service-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpServiceList": {
+            "id": "HTTP"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP services:
+>Showing 1 rows out of 5.
+>|Id|
+>|---|
+>| HTTP |
+
+
 ### fortiwebvm-inline-protection-profile-list
 ***
 List the Inline Protection Profiles.
@@ -1190,6 +1969,28 @@ List the Inline Protection Profiles.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.InlineProtectionProfile.id | String | Inline protection profile name. | 
+
+#### Command example
+```!fortiwebvm-inline-protection-profile-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "InlineProtectionProfile": {
+            "id": "Inline High Level Security"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Inline Protection Profile:
+>Showing 1 rows out of 10.
+>|Id|
+>|---|
+>| Inline High Level Security |
+
 
 ### fortiwebvm-server-policy-create
 ***
@@ -1242,6 +2043,16 @@ Create Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-create name=example virtual_server=virtual1 http_service=HTTP deployment_mode="HTTP Content Routing"```
+#### Human Readable Output
+
+>### Server Policy succesfuly created!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-update
 ***
 Update Server Policy.
@@ -1296,6 +2107,16 @@ Update Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-update name=example```
+#### Human Readable Output
+
+>### Server Policy succesfuly updated!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-delete
 ***
 Delete Server Policy.
@@ -1314,6 +2135,16 @@ Delete Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-delete name=example```
+#### Human Readable Output
+
+>### Server Policy succesfuly deleted!
+>|Id|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-list
 ***
 List the Server Policies.
@@ -1364,6 +2195,46 @@ List the Server Policies.
 | FortiwebVM.ServerPolicy.allow_list | String | Server Policy Allow List. Supports API version 2 only. | 
 | FortiwebVM.ServerPolicy.replace_msg | String | Server Policy replacement message. Supports API version 2 only. API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-server-policy-list name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPolicy": {
+            "certificate": "",
+            "certificate_intermediate_group": "",
+            "client_real_ip": false,
+            "comments": "",
+            "deployment_mode": "HTTP Content Routing",
+            "half_open_thresh": 8192,
+            "http2": false,
+            "http_service": "HTTP",
+            "https_service": "",
+            "monitor_mode": false,
+            "name": "example",
+            "protected_hostnames": "",
+            "protocol": "HTTP",
+            "redirect_to_https": false,
+            "server_pool": "",
+            "syn_cookie": false,
+            "url_case_sensitivity": false,
+            "virtual_server": "virtual1",
+            "web_protection_profile": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server Policies:
+>Showing 1 rows out of 1.
+>|Name|Deployment Mode|Virtual Server|Protocol|Web Protection Profile|Monitor Mode|
+>|---|---|---|---|---|---|
+>| example | HTTP Content Routing | virtual1 | HTTP |  | false |
+
+
 ### fortiwebvm-content-routing-policy-list
 ***
 List the HTTP Content Routing Policies.
@@ -1386,6 +2257,28 @@ List the HTTP Content Routing Policies.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.HttpContentRoutingPolicy.id | String | Policy Name. | 
+
+#### Command example
+```!fortiwebvm-content-routing-policy-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingPolicy": {
+            "id": "content1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| content1 |
+
 
 ### fortiwebvm-http-content-routing-member-add
 ***
@@ -1413,6 +2306,27 @@ Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 | --- | --- | --- |
 | FortiwebVM.HttpContentRoutingMember.id | Number | Http Content Routing Member ID. | 
 
+#### Command example
+```!fortiwebvm-http-content-routing-member-add policy_name=example http_content_routing_policy=content1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingMember": {
+            "id": "1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly created!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-update
 ***
 Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -1437,6 +2351,16 @@ Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-http-content-routing-member-update policy_name=example id=1```
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly updated!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-delete
 ***
 Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -1456,6 +2380,16 @@ Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-http-content-routing-member-delete policy_name=example id=1```
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly deleted!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-list
 ***
 List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -1486,3 +2420,34 @@ List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member
 | FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP Content Routing inherit web protection profile flag. | 
 | FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP Content Routing Profile. | 
 | FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP Content Routing Status. Supports API version 2 only. | 
+
+#### Command example
+```!fortiwebvm-http-content-routing-member-list policy_name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingMember": {
+            "Members": [
+                {
+                    "default": "No",
+                    "http_content_routing_policy": "content1",
+                    "id": "1",
+                    "inherit_web_protection_profile": false,
+                    "profile": ""
+                }
+            ],
+            "policy_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Content Routing Policy Members:
+>Showing 1 rows out of 1.
+>|Id|Default|Http Content Routing Policy|Inherit Web Protection Profile|Profile|
+>|---|---|---|---|---|
+>| 1 | No | content1 | false |  |
+
