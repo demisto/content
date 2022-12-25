@@ -1820,3 +1820,67 @@ def test_converts_state_close_reason(ticket_state, expected_res):
         - return the matching XSOAR incident state.
     """
     assert converts_state_close_reason(ticket_state) == expected_res
+
+
+def ticket_fields_mocker(*args, **kwargs):
+    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
+    fields = {'close_notes': 'This is closed', 'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3',
+              'priority': '4', 'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - Low',
+              'short_description': 'Post parcel', 'sla_due': '0001-01-01T00:00:00Z', 'urgency': '3', 'state': state,
+              'work_start': '0001-01-01T00:00:00Z'}
+    assert fields == args[0]
+    return fields
+
+
+@pytest.mark.parametrize('ticket_type, ticket_state, close_custom_state, result_close_state, update_call_count',
+                         [
+                             # case 1 - SIR ticket closed by custom state
+                             ('sn_si_incident', '16', '90', '90', 1),
+                             # case 2 - custom state doesn't exist, closed by default state code - '3'
+                             ('sn_si_incident', '16', '90', '3', 2),
+                             # case 3 - ticket closed by custom state
+                             ('incident', '1', '88', '88', 1),
+                             # case 4 - custom state doesn't exist, closed by default state code - '7'
+                             ('incident', '1', '88', '7', 2),
+                         ], ids=['case - 1', 'case - 2', 'case - 3', 'case - 4'])
+def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, close_custom_state, result_close_state,
+                                         update_call_count):
+    """
+    Given:
+    -  ServiceNow client
+    -  ServiceNow ticket of type sn_si_incident
+    -  ServiceNow ticket of type incident
+    -  close_custom_state exist/not exist in ServiceNow
+    When
+        - running update_remote_system_command.
+    Then
+        - The state is changed accordingly
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type=ticket_type, get_attachments=False, incident_name='description')
+    params = {'ticket_type': ticket_type, 'close_ticket_multiple_options': 'None', 'close_ticket': True,
+              'close_custom_state': close_custom_state}
+
+    TICKET_FIELDS['state'] = ticket_state
+    args = {'remoteId': '1234', 'data': TICKET_FIELDS, 'entries': [], 'incidentChanged': True, 'delta': {},
+            'status': 2}
+
+    def update_ticket_mocker(*args):
+        # Represents only the response of the last call to client.update
+        # In case the custom state doesn't exist -
+        # in the first call will return the ticket's state as before (in case2 - '16', case4 - '1')
+        return {'result': {'short_description': 'Post parcel', 'close_notes': 'This is closed',
+                           'closed_at': '2020-10-29T13:19:07.345995+02:00', 'impact': '3', 'priority': '4',
+                           'resolved_at': '2020-10-29T13:19:07.345995+02:00', 'severity': '1 - High - Low',
+                           'sla_due': '0001-01-01T00:00:00Z', 'state': result_close_state, 'urgency': '3',
+                           'work_start': '0001-01-01T00:00:00Z'}}
+
+    mocker.patch('ServiceNowv2.get_ticket_fields', side_effect=ticket_fields_mocker)
+    mocker_update = mocker.patch.object(client, 'update', side_effect=update_ticket_mocker)
+    update_remote_system_command(client, args, params)
+    # assert the state argument in the last call to client.update
+    assert mocker_update.call_args[0][2]['state'] == result_close_state
+    assert mocker_update.call_count == update_call_count
