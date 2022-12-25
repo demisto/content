@@ -1,0 +1,12 @@
+{
+    "next": "MSwyMDIyLTEyLTI1VDIzOjIwOjMxLjgwMVo=",
+    "result": [
+        {
+            "comment": "added as part of testing xsoar command examples",
+            "time": "2022-12-25T20:16:17.630Z",
+            "user_id": 100000,
+            "incident_responder_name": "SEDR API"
+        }
+    ],
+    "total": 28
+}

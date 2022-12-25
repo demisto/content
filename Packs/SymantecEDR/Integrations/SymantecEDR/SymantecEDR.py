@@ -767,8 +767,7 @@ def audit_event_readable_output(results: List[Dict], title: str):
     summary_data: List[Dict[str, Any]] = []
     for data in results:
         event_dict = event_object_data(data)
-        severity_id = event_dict.get('severity_id', '')
-        event_dict['severity_id'] = EVENT_SEVERITY.get(str(severity_id), '')
+        event_dict['severity_id'] = EVENT_SEVERITY.get(str(event_dict.get('severity_id')))
         event_dict['status_id'] = EVENT_STATUS.get(str(event_dict.get('status_id')))
         # ---- Display Data ----
         new = {

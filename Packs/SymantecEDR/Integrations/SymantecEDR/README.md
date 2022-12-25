@@ -58,7 +58,7 @@ After you successfully execute a command, a DBot message appears in the War Room
     "SymantecEDR": {
         "Command": {
             "isolate_endpoint": {
-                "command_id": "1fdcc9c6c7484e37ba844eaa20461db5-2022-12-24",
+                "command_id": "b9ae2f8759804123a1cb19148fc2bc59-2022-12-25",
                 "error_code": 0,
                 "message": "Command isolate_endpoint successfully requested"
             }
@@ -72,7 +72,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 >### Command isolate_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command isolate_endpoint successfully requested | 1fdcc9c6c7484e37ba844eaa20461db5-2022-12-24 |
+>| Command isolate_endpoint successfully requested | b9ae2f8759804123a1cb19148fc2bc59-2022-12-25 |
 
 
 ### symantec-edr-domain-file-association-list
@@ -332,10 +332,12 @@ Example: "127.0.0.1" |
     "SymantecEDR": {
         "DomainInstances": [
             {
-                "data_source_url_domain": "edgedl.me.gvt1.com",
-                "disposition": 1,
+                "data_source_url": "",
+                "data_source_url_domain": "ctldl.windowsupdate.com",
+                "disposition": "Healthy",
+                "external_ip": "",
                 "first_seen": "2022-10-21T13:05:38.000Z",
-                "last_seen": "2022-12-24T13:09:20.000Z"
+                "last_seen": "2022-12-25T13:09:20.000Z"
             }
         ]
     }
@@ -345,9 +347,9 @@ Example: "127.0.0.1" |
 #### Human Readable Output
 
 >### Domain Instances List
->|DataSourceUrlDomain|FirstSeen|LastSeen|
->|---|---|---|
->| edgedl.me.gvt1.com | 2022-10-21T13:05:38.000Z | 2022-12-24T13:09:20.000Z |
+>|DataSourceUrlDomain|FirstSeen|LastSeen|Disposition|
+>|---|---|---|---|
+>| ctldl.windowsupdate.com | 2022-10-21T13:05:38.000Z | 2022-12-25T13:09:20.000Z | Healthy |
 
 
 ### symantec-edr-endpoint-instance-list
@@ -486,7 +488,7 @@ Example: "eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31" |
         "FileInstance": {
             "first_seen": "2022-10-21T19:31:20.770Z",
             "folder": "c:\\program files\\google\\chrome\\application\\106.0.5249.119",
-            "last_seen": "2022-12-21T09:25:08.082Z",
+            "last_seen": "2022-12-24T17:35:44.692Z",
             "name": "elevation_service.exe",
             "sha2": "302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4"
         }
@@ -499,8 +501,8 @@ Example: "eaab690ebd8ddf9ae452de1bc03b73c8154264dbd7a292334733b47a668ebf31" |
 >### File Instances List
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
->| 2022-10-21T07:00:39.964Z | 2022-12-21T09:25:08.082Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
->| 2022-10-21T19:31:20.770Z | 2022-12-21T09:25:08.082Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T07:00:39.964Z | 2022-12-24T17:35:44.692Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T19:31:20.770Z | 2022-12-24T17:35:44.692Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
 
 
 ### symantec-edr-system-activity-list
@@ -643,23 +645,23 @@ Example : 8081  |
 {
     "SymantecEDR": {
         "SystemActivity": {
-            "atp_node_role": 5,
+            "atp_node_role": "All in One",
             "device_cap": "EDR",
             "device_ip": "192.168.20.8",
             "device_name": "localhost.localdomain",
-            "device_time": "2022-12-24T17:19:31.585Z",
+            "device_time": "2022-12-25T20:13:56.592Z",
             "feature_name": "AdministratorTask",
-            "log_name": "atp_system_log-2022-12-24",
-            "log_time": "2022-12-24T17:19:32.293Z",
-            "message": "Command delete_file with command id 9fd531765ce8437badd590ea15c6da07-2022-12-24 has started.",
+            "log_name": "atp_system_log-2022-12-25",
+            "log_time": "2022-12-25T20:13:56.607Z",
+            "message": "Command delete_file with command id c455fe32df7f49d19999c896cb8e0181-2022-12-25 has started.",
             "pid": 12358,
             "product_name": "Symantec Endpoint Detection and Response",
             "product_ver": "4.6.8-8",
-            "severity_id": 1,
-            "status_id": 1,
+            "severity_id": "Info",
+            "status_id": "Success",
             "timezone": 0,
             "type_id": 1,
-            "uuid": "21145710-83af-11ed-d374-00000003264b"
+            "uuid": "a91f6f00-8490-11ed-d5f8-000000032d27"
         }
     }
 }
@@ -668,9 +670,9 @@ Example : 8081  |
 #### Human Readable Output
 
 >### System Activities List
->|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|
->|---|---|---|---|---|---|
->| 2022-12-24T17:19:31.585Z | 1 | 1 | Command delete_file with command id 9fd531765ce8437badd590ea15c6da07-2022-12-24 has started. | 192.168.20.8 | 5 |
+>|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
+>|---|---|---|---|---|---|---|
+>| 2022-12-25T20:13:56.592Z | 1 | Info | Command delete_file with command id c455fe32df7f49d19999c896cb8e0181-2022-12-25 has started. | 192.168.20.8 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
@@ -697,49 +699,6 @@ Get  Audit Events
 #### Context Output
 
 There is no context output for this command.
-#### Command example
-```!symantec-edr-audit-event-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "AuditEvent": {
-            "atp_node_role": 5,
-            "category_id": 4,
-            "device_cap": "EDR",
-            "device_ip": "192.168.20.8",
-            "device_name": "localhost.localdomain",
-            "device_time": "2022-12-23T16:12:03.886Z",
-            "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
-            "feature_name": "UserSession",
-            "id": 2,
-            "log_name": "atp_audit_log-2022-12",
-            "log_time": "2022-12-23T16:12:04.154Z",
-            "message": "User admin has logged out",
-            "product_name": "Symantec Endpoint Detection and Response",
-            "product_ver": "4.6.8-8",
-            "severity_id": 1,
-            "status_detail": "Success",
-            "status_id": 1,
-            "timezone": 0,
-            "type_id": 20,
-            "user_agent_ip": "172.16.11.107",
-            "user_name": "admin",
-            "user_uid": "admin",
-            "uuid": "8a0cbce0-82dc-11ed-c3de-000000031fd4"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Audit Event List
->|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|
->|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-23T16:12:03.886Z | 20 | UserSession | User admin has logged out | 172.16.11.107 | admin | 1 | localhost.localdomain | 192.168.20.8 | 8a0cbce0-82dc-11ed-c3de-000000031fd4 |
-
-
 ### symantec-edr-event-list
 ***
 Used to get events from EDR on-premise
@@ -777,7 +736,7 @@ There is no context output for this command.
             "device_ip": "172.16.14.42",
             "device_name": "WIN-TFB8L7BI77H",
             "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-24T17:19:20.885Z",
+            "device_time": "2022-12-25T20:15:58.332Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
             "enriched_data_category_id": 3,
             "enriched_data_category_name": "Process Termination",
@@ -792,26 +751,26 @@ There is no context output for this command.
             "event_actor_file_sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
             "event_actor_file_signature_company_name": "Microsoft Windows",
             "event_actor_integrity_id": 6,
-            "event_actor_pid": 14264,
+            "event_actor_pid": 9124,
             "event_actor_signature_level_id": 60,
-            "event_actor_start_time": "2022-12-24T17:19:14.828Z",
-            "event_actor_uid": "8B652EF0-839B-F1ED-8217-98261F32744E",
+            "event_actor_start_time": "2022-12-25T20:15:53.280Z",
+            "event_actor_uid": "94C07839-848A-F1ED-8217-98261F32744E",
             "event_actor_use: List[str] = []r_name": "SYSTEM",
             "event_actor_use: List[str] = []r_sid": "S-1-5-18",
             "integrity_id": 6,
-            "log_name": "epmp_events-fdr-2022-12-24",
-            "log_time": "2022-12-24T04:52:06.423Z",
+            "log_name": "epmp_events-fdr-2022-12-25",
+            "log_time": "2022-12-25T07:49:18.642Z",
             "operation": 2,
-            "pid": 14264,
-            "ref_uid": "4FA92FDF-2187-4813-9B5C-3A873000A98C",
-            "severity_id": "",
+            "pid": 9124,
+            "ref_uid": "84D284C1-A400-4014-A674-F5772EBF94D8",
+            "severity_id": "Info",
             "signature_level_id": 60,
             "type_id": 8001,
-            "uid": "8B652EF0-839B-F1ED-8217-98261F32744E",
+            "uid": "94C07839-848A-F1ED-8217-98261F32744E",
             "user_domain": "NT AUTHORITY",
             "user_name": "SYSTEM",
             "user_sid": "S-1-5-18",
-            "uuid": "1ab3a650-83af-11ed-f263-00000003234c"
+            "uuid": "f1af7bc0-8490-11ed-cc94-000000032a3d"
         }
     }
 }
@@ -820,9 +779,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Event List
->|Time|TypeId|Description|DeviceName|DeviceIp|Operation|DeviceDomain|UserName|
->|---|---|---|---|---|---|---|---|
->| 2022-12-24T17:19:20.885Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
+>|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
+>|---|---|---|---|---|---|---|---|---|
+>| 2022-12-25T20:15:58.332Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
 
 
 ### symantec-edr-incident-event-list
@@ -899,7 +858,7 @@ There is no context output for this command.
             "operation": 1,
             "pid": 14468,
             "ref_uid": "09FB7038-0A5E-4048-A3D5-E88885323F2E",
-            "severity_id": "",
+            "severity_id": "Info",
             "signature_level_id": 60,
             "type_id": 8001,
             "uid": "787E05ED-71B8-F1ED-8217-98261F32744E",
@@ -915,9 +874,9 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Event for Incident List
->|Time|TypeId|Description|DeviceName|DeviceIp|EventUuid|Incident|Operation|DeviceDomain|UserName|
->|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-01T21:43:44.218Z | 8001 | chrome.exe logged: Generic process launch event | WIN-TFB8L7BI77H | 172.16.14.42 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
+>|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|EventUuid|Incident|Operation|DeviceDomain|UserName|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2022-12-01T21:43:44.218Z | 8001 | chrome.exe logged: Generic process launch event | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
 
 
 ### symantec-edr-incident-list
@@ -994,14 +953,14 @@ Example : "483e3fde-4556-4800-81b1-e8da5ee394b6" |
             "first_seen": "2022-12-01T21:44:15.000Z",
             "incident_created": "2022-12-01T09:14:53.072Z",
             "incident_id": 100010,
-            "incident_state": "",
+            "incident_state": "Close",
             "incident_uuid": "9d6f2100-7158-11ed-da26-000000000001",
             "last_seen": "2022-12-01T21:44:21.000Z",
             "last_updated": "2022-12-21T12:56:37.283Z",
             "log_name": "epmp_incident-2022-12-01",
-            "priority": "",
+            "priority": "High",
             "recommended_action": "Remove or blacklist developer utilities that aren't needed on target systems.\nEnsure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.\nRemove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment.",
-            "resolution": "",
+            "resolution": "SECURITY_RISK. The incident indicates a true security threat.",
             "rule_name": "Advanced Attack Technique"
         }
     }
@@ -1011,9 +970,9 @@ Example : "483e3fde-4556-4800-81b1-e8da5ee394b6" |
 #### Human Readable Output
 
 >### Incident List
->|IncidentId|Description|IncidentCreated|DetectionType|LastUpdated|AtpRuleId|RuleName|IncidentUuid|LogName|RecommendedAction|FirstSeen|LastSeen|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 100010 | win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution | 2022-12-01T09:14:53.072Z | Advanced Attack Techniques | 2022-12-21T12:56:37.283Z | AdvancedAttackTechniqueIncident | Advanced Attack Technique | 9d6f2100-7158-11ed-da26-000000000001 | epmp_incident-2022-12-01 | Remove or blacklist developer utilities that aren't needed on target systems.<br/>Ensure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.<br/>Remove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment. | 2022-12-01T21:44:15.000Z | 2022-12-01T21:44:21.000Z |
+>|IncidentId|Description|IncidentCreated|DetectionType|LastUpdated|Priority|IncidentState|AtpRuleId|RuleName|IncidentUuid|LogName|RecommendedAction|Resolution|FirstSeen|LastSeen|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 100010 | win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution | 2022-12-01T09:14:53.072Z | Advanced Attack Techniques | 2022-12-21T12:56:37.283Z | High | Close | AdvancedAttackTechniqueIncident | Advanced Attack Technique | 9d6f2100-7158-11ed-da26-000000000001 | epmp_incident-2022-12-01 | Remove or blacklist developer utilities that aren't needed on target systems.<br/>Ensure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.<br/>Remove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment. | SECURITY_RISK. The incident indicates a true security threat. | 2022-12-01T21:44:15.000Z | 2022-12-01T21:44:21.000Z |
 
 
 ### symantec-edr-incident-comment-get
@@ -1054,10 +1013,10 @@ Example: 100000 |
     "SymantecEDR": {
         "IncidentComment": [
             {
-                "comment": "Comment added as part of testing xsoar command examples",
+                "comment": "added as part of testing xsoar command examples",
                 "incident_id": "100010",
                 "incident_responder_name": "SEDR API",
-                "time": "2022-12-21T09:21:29.708Z",
+                "time": "2022-12-24T19:04:11.853Z",
                 "user_id": 100000
             }
         ]
@@ -1070,7 +1029,7 @@ Example: 100000 |
 >### Incident Comment List
 >|IncidentId|Comment|Time|UserId|IncidentResponderName|
 >|---|---|---|---|---|
->| 100010 | Comment added as part of testing xsoar command examples | 2022-12-21T09:21:29.708Z | 100000 | SEDR API |
+>| 100010 | added as part of testing xsoar command examples | 2022-12-24T19:04:11.853Z | 100000 | SEDR API |
 
 
 ### symantec-edr-deny-list-policy-get
@@ -1251,6 +1210,26 @@ Incidents Patch command for the close incident, update resolution of closed inci
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!symantec-edr-incident-update action_type=add_comment incident_id=100010 value="added as part of testing xsoar command examples"```
+#### Human Readable Output
+
+>### Incident Add Comment
+>|incident_id|Message|
+>|---|---|
+>| 100010 | Successfully Updated |
+
+
+#### Command example
+```!symantec-edr-incident-update action_type=update_resolution incident_id=100011 value=3```
+#### Human Readable Output
+
+>### Incident Update Status
+>|incident_id|Message|
+>|---|---|
+>| 100011 | Successfully Updated |
+
+
 ### symantec-edr-endpoint-status
 ***
 Command Status is used to query command status
@@ -1373,7 +1352,7 @@ Values:
     "SymantecEDR": {
         "Command": {
             "rejoin_endpoint": {
-                "command_id": "a39cb054c549469db70a061affa4ac88-2022-12-24",
+                "command_id": "7917f784363141a98ce71a4b8b2b1303-2022-12-25",
                 "error_code": 0,
                 "message": "Command rejoin_endpoint successfully requested"
             }
@@ -1387,7 +1366,7 @@ Values:
 >### Command rejoin_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command rejoin_endpoint successfully requested | a39cb054c549469db70a061affa4ac88-2022-12-24 |
+>| Command rejoin_endpoint successfully requested | 7917f784363141a98ce71a4b8b2b1303-2022-12-25 |
 
 
 ### symantec-edr-endpoint-delete-file
@@ -1434,7 +1413,7 @@ Possible Values:
     "SymantecEDR": {
         "Command": {
             "delete_endpoint_file": {
-                "command_id": "9fd531765ce8437badd590ea15c6da07-2022-12-24",
+                "command_id": "c455fe32df7f49d19999c896cb8e0181-2022-12-25",
                 "error_code": 0,
                 "message": "Command delete_endpoint_file successfully requested"
             }
@@ -1448,7 +1427,7 @@ Possible Values:
 >### Command delete_endpoint_file
 >|Message|CommandId|
 >|---|---|
->| Command delete_endpoint_file successfully requested | 9fd531765ce8437badd590ea15c6da07-2022-12-24 |
+>| Command delete_endpoint_file successfully requested | c455fe32df7f49d19999c896cb8e0181-2022-12-25 |
 
 
 ### symantec-edr-endpoint-cancel-command
