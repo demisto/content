@@ -184,6 +184,7 @@ xsoar-prepare-testing-bucket:
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
   rules:
     - if: $INSTANCE_TESTS
+  stage: prepare-testing-bucket
   extends:
     - .generic-prepare-testing-bucket
 
