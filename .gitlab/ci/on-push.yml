@@ -183,7 +183,7 @@ xsoar-prepare-testing-bucket:
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
   rules:
-    if: $INSTANCE_TESTS
+    - if: $INSTANCE_TESTS
   extends:
     - .generic-prepare-testing-bucket
 
