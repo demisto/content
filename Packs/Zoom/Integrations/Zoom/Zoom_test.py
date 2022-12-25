@@ -498,22 +498,44 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
                                     end_date_time="2022-10-04T15:59:00Z", monthly_week=2, end_times=7)
     assert e.value.message == "Missing arguments. recurring meeting with fixed time and monthly recurrence_type\n            must have the fallowing arguments: monthly_week and monthly_week_day"
 
-def test_meeting_get__show_previous_occurrences_is_false(mocker):
+def test_zoom_create_meeting_command__too_meny_arguments(mocker):
+    """
+       Given -
+          client
+       When -
+           asking for a recurring meeting with fixed time and recurrence_type = 3,
+            with no monthly_week :
+       Then -
+           Validate that the right error will return
+    """
+    mocker.patch.object(Client, "zoom_create_meeting", return_value={"bla": "bla"})
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+
+    from Zoom import zoom_create_meeting_command
+    with pytest.raises(DemistoException) as e:
+        zoom_create_meeting_command(client=client,
+                                    type="recurring meeting with fixed time", topic="nonsense", user_id="mock@moker.com")
+    assert e.value.message == "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type"
+    
+def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
        Given -
           client
        When -
            asking to get a meeting, but not the previous_occurrences
        Then -
-           Validate that the right argument is sent in the http_request
+           Validate that the right argument is sent in the API
     """
+    returned_dict = {'uuid': 'u=', 'id': 847, 'host_id': 'u', 'host_email': 'example@example.com', 'assistant_id': '', 'topic': 'My Meeting', 'type': 2, 'status': 'waiting', 'start_time': '5Z', 'duration': 60, 'timezone': 'lem', 'agenda': '', 'created_at': '48Z', 'start_url': '.2-dio1Se7o'}
+    zoom_meeting_get_mocker = mocker.patch.object(Client, "zoom_meeting_get", return_value=returned_dict)
     mocker.patch.object(Client, "generate_oauth_token")
-    http_request_mocker = mocker.patch.object(Client, "_http_request", return_value=None)
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-
-    client.zoom_meeting_get("1234", "123", False)
-    assert not http_request_mocker.call_args[1].get("params").get("show_previous_occurrences")
+    from Zoom import zoom_meeting_get_command
+    zoom_meeting_get_command(client=client, meeting_id="1234", show_previous_occurrences= True)
+    assert zoom_meeting_get_mocker.call_args[0][2] == True
 
 
 def test_zoom_meeting_list__limit(mocker):
