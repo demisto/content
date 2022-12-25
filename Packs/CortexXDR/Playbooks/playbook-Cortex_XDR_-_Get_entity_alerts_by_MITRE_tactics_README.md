@@ -1,4 +1,4 @@
-This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook search alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE Tactics.
+This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE Tactics.
 Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details.
 
 ## Dependencies
