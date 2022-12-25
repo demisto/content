@@ -868,25 +868,118 @@ def test_severity_validate(value: str):
         validate_fix_severity_value(value)
 
 
+def test_parse_demisto_comments__default():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check the output values
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_value = 'here be comment'
+    assert _parse_demisto_comments(
+        ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}]},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False) == comment_value
+
+
+def test_parse_demisto_comments__default_empty():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field
+    Then    check parsing a comment results in None.
+    """
+    from XDR_iocs import _parse_demisto_comments
+    assert _parse_demisto_comments(
+        ioc={},
+        comment_field_name=Client.xsoar_comments_field,
+        comments_as_tags=False) is None
+
+
+def test_parse_demisto_comments__default_as_tag():
+    """
+    Given   a custom field name, and comma-separated comments in it
+    When    parsing a comment of the default comment field, passing comments_as_tags=True
+    Then    make sure an appropriate exception is raised
+    """
+    from XDR_iocs import _parse_demisto_comments
+    with pytest.raises(DemistoException) as exc:
+        _parse_demisto_comments(
+            ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': 'whatever'}]},
+            comment_field_name=Client.xsoar_comments_field,
+            comments_as_tags=True
+        )
+    assert exc.value.message == "When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."\
+                                "Set a different value."
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+@pytest.mark.parametrize('comment_value,expected', (
+    ('hello', 'hello'),
+    ('hello,world', 'hello,world'),
+))
+def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_tags: bool, expected: str):
+    """
+    Given   a custom field name
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: comment_value}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) == expected
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_empty_value(comments_as_tags: bool):
+    """
+    Given   a custom field name, and an empty value as
+    When    parsing a comment of a non-default comment field
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+    comment_field = 'comment_field'
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {comment_field: ''}},
+        comment_field_name=comment_field,
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
+@pytest.mark.parametrize('comments_as_tags', (True, False))
+def test_parse_demisto_comments__custom_field_missing(comments_as_tags: bool):
+    """
+    Given   a custom field name, which does not exist in the IOC
+    When    parsing a comment
+    Then    make sure the comment is parsed as expected
+    """
+    from XDR_iocs import _parse_demisto_comments
+
+    assert _parse_demisto_comments(
+        ioc={'CustomFields': {}},
+        comment_field_name='comment_field',
+        comments_as_tags=comments_as_tags
+    ) is None
+
+
 @pytest.mark.parametrize(
-    'comment_value,expected_comment',
-    (('hello', 'hello'),
-     ('hello,world', 'hello,world'),
-     (['hello', 'world'], 'hello,world'),
-     ([], None),
-     ('', None),
-     ))
-def test_xsoar_comments__csv(comment_value: str | list[str], expected_comment: str | None):
+    'raw_comment,comments_as_tags,expected_comment', (
+        ('hello', True, ['hello']),
+        ('hello', False, ['hello']),
+        ('hello,world', True, ['hello', 'world']),
+        ('hello,world', False, ['hello,world']),
+        ('', True, []),
+        ('', False, []),
+    ))
+def test_parse_xdr_comments(raw_comment: str | list[str], comments_as_tags: bool, expected_comment: str | None):
     """
     Given   a custom field name, and comma-separated comments in it
     When    converting an XSOAR IOC to XDR
     Then    check the output values
     """
-    custom_comments_field = 'custom_comments_field'
-
-    Client.xsoar_comments_field = custom_comments_field
-    xdr_ioc = demisto_ioc_to_xdr({
-        'value': '1.1.1.1', 'indicator_type': 'FILE',
-        'CustomFields': {custom_comments_field: comment_value}
-    })
-    assert xdr_ioc.get('comment') == expected_comment, xdr_ioc
+    from XDR_iocs import _parse_xdr_comments
+    assert _parse_xdr_comments(raw_comment, comments_as_tags) == expected_comment

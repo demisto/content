@@ -235,8 +235,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
         return (last_comment).get('content')
 
     else:  # custom comments field
-        raw_comments = ioc.get('CustomFields', {}).get(comment_field_name, ())
-        return ','.join(argToList(raw_comments)) or None if comments_as_tags else raw_comments
+        return ioc.get('CustomFields', {}).get(comment_field_name, ()) or None
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
@@ -397,7 +396,7 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
 def _parse_xdr_comments(raw_comment: str, comments_as_tags: bool) -> list[str]:
     if not raw_comment:
         return []
-    
+
     if comments_as_tags:
         return raw_comment.split(',')
 
