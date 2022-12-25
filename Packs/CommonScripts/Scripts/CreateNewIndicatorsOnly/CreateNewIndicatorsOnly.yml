@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Create indicators to the Threat Intel DB only if they are not registered.
+comment: Create indicators to the Threat Intel DB only if they are not registered. When using the script with many indicators, or when the TIM DB is highly populated this script may have low preformence issue.
 enabled: true
 args:
 - name: indicator_values
