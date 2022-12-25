@@ -88,7 +88,7 @@ validate-content-conf:
   variables:
     KUBERNETES_CPU_REQUEST: 2000m
   needs: []
-  stage: prepare-testing-bucket
+  stage: create-instances
   script:
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]

@@ -95,7 +95,7 @@ demisto-sdk-nightly:xsoar-prepare-testing-bucket:
   cache:
     policy: pull-push
   needs: []
-  stage: prepare-testing-bucket
+  stage: create-instances
   script:
     - !reference [.download-demisto-conf]
     - |
