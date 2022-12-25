@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 139
+version: 151
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2265
+          "y": 2965
         }
       }
     note: false
@@ -96,7 +96,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4450
+          "y": 5150
         }
       }
     note: false
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4800
+          "y": 5500
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4975
+          "y": 5675
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6025
+          "y": 6725
         }
       }
     note: false
@@ -283,7 +283,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6375
+          "y": 7075
         }
       }
     note: false
@@ -320,7 +320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5150
+          "y": 5850
         }
       }
     note: false
@@ -359,7 +359,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5500
+          "y": 6200
         }
       }
     note: false
@@ -396,7 +396,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5675
+          "y": 6375
         }
       }
     note: false
@@ -458,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6725
+          "y": 7425
         }
       }
     note: false
@@ -488,7 +488,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6900
+          "y": 7600
         }
       }
     note: false
@@ -528,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7045
+          "y": 7745
         }
       }
     note: false
@@ -592,7 +592,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7220
+          "y": 7920
         }
       }
     note: false
@@ -631,7 +631,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7715
+          "y": 8415
         }
       }
     note: false
@@ -661,7 +661,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7395
+          "y": 8095
         }
       }
     note: false
@@ -700,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8240
+          "y": 8940
         }
       }
     note: false
@@ -737,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8065
+          "y": 8765
         }
       }
     note: false
@@ -782,7 +782,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8415
+          "y": 9115
         }
       }
     note: false
@@ -812,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8765
+          "y": 9465
         }
       }
     note: false
@@ -844,7 +844,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3780
+          "y": 4480
         }
       }
     note: false
@@ -905,7 +905,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4130
+          "y": 4830
         }
       }
     note: false
@@ -935,7 +935,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4305
+          "y": 5005
         }
       }
     note: false
@@ -971,7 +971,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2440
+          "y": 3140
         }
       }
     note: false
@@ -1039,7 +1039,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2790
+          "y": 3490
         }
       }
     note: false
@@ -1069,7 +1069,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2965
+          "y": 3665
         }
       }
     note: false
@@ -1108,7 +1108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 3810
         }
       }
     note: false
@@ -1162,7 +1162,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 4160
         }
       }
     note: false
@@ -1192,7 +1192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 4335
         }
       }
     note: false
@@ -1232,7 +1232,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9260
+          "y": 9960
         }
       }
     note: false
@@ -1271,7 +1271,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5325
+          "y": 6025
         }
       }
     note: false
@@ -1310,7 +1310,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7890
+          "y": 8590
         }
       }
     note: false
@@ -1350,7 +1350,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8910
+          "y": 9610
         }
       }
     note: false
@@ -1385,7 +1385,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2615
+          "y": 3315
         }
       }
     note: false
@@ -1420,7 +1420,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8590
+          "y": 9290
         }
       }
     note: false
@@ -1455,7 +1455,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6200
+          "y": 6900
         }
       }
     note: false
@@ -1490,7 +1490,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6550
+          "y": 7250
         }
       }
     note: false
@@ -1525,7 +1525,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3285
+          "y": 3985
         }
       }
     note: false
@@ -1560,7 +1560,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3955
+          "y": 4655
         }
       }
     note: false
@@ -1595,7 +1595,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4625
+          "y": 5325
         }
       }
     note: false
@@ -1630,7 +1630,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5850
+          "y": 6550
         }
       }
     note: false
@@ -1665,7 +1665,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9085
+          "y": 9785
         }
       }
     note: false
@@ -1692,7 +1692,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9435
+          "y": 10135
         }
       }
     note: false
@@ -1727,7 +1727,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7540
+          "y": 8240
         }
       }
     note: false
@@ -1757,7 +1757,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2820
         }
       }
     note: false
@@ -1810,10 +1810,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 7cde5d53-dd8d-476b-80ab-0b4afad04282
+    taskid: a750fde7-bc6f-4518-8706-4b616e7bef65
     type: regular
     task:
-      id: 7cde5d53-dd8d-476b-80ab-0b4afad04282
+      id: a750fde7-bc6f-4518-8706-4b616e7bef65
       version: -1
       name: 'upload  new file '
       description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
@@ -1823,7 +1823,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "56"
+      - "49"
     scriptarguments:
       entry_id:
         complex:
@@ -1839,7 +1839,7 @@ tasks:
                   simple: "7450762"
           accessor: EntryID
       file_name:
-        simple: file_image.jpg
+        simple: ${FileName}
       object_type:
         simple: sites
       object_type_id:
@@ -1849,47 +1849,6 @@ tasks:
       retry-count:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: e586e671-1499-45b9-8086-1174a6b8ba72
-    type: condition
-    task:
-      id: e586e671-1499-45b9-8086-1174a6b8ba72
-      version: -1
-      name: Verify Results
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "55"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: MsGraphFiles.UploadedFiles.Name
-            iscontext: true
-          right:
-            value:
-              simple: file_image.jpg
     continueonerrortype: ""
     view: |-
       {
@@ -1905,12 +1864,53 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 1dca8110-2885-48c6-803f-15a394c62b77
+    type: condition
+    task:
+      id: 1dca8110-2885-48c6-803f-15a394c62b77
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MsGraphFiles.UploadedFiles.Name
+            iscontext: true
+          right:
+            value:
+              simple: ${FileName}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: cd781ca9-52aa-4cb7-8769-5443385c781f
+    taskid: 077c9db8-fbc1-4cc9-8df8-59b26884c858
     type: regular
     task:
-      id: cd781ca9-52aa-4cb7-8769-5443385c781f
+      id: 077c9db8-fbc1-4cc9-8df8-59b26884c858
       version: -1
       name: Replace existing file
       description: Replaces the content of the file in the specified MS Graph resource.
@@ -1942,12 +1942,13 @@ tasks:
       object_type_id:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
     separatecontext: false
-    continueonerrortype: ""
+    continueonerror: true
+    continueonerrortype: errorPath
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2295
         }
       }
     note: false
@@ -1959,10 +1960,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 798faf51-36c0-4044-81be-107a5c9d2344
+    taskid: d9866de0-1354-4ec7-89bc-cf9c0dd89453
     type: condition
     task:
-      id: 798faf51-36c0-4044-81be-107a5c9d2344
+      id: d9866de0-1354-4ec7-89bc-cf9c0dd89453
       version: -1
       name: Verify Results
       type: condition
@@ -1982,13 +1983,13 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: file_image.jpg
+              simple: ${FileName}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2470
         }
       }
     note: false
@@ -2000,10 +2001,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 428ade40-1028-48ea-88fe-ff7430864320
+    taskid: 07de5351-236e-462f-8264-f9e992c7e0e0
     type: regular
     task:
-      id: 428ade40-1028-48ea-88fe-ff7430864320
+      id: 07de5351-236e-462f-8264-f9e992c7e0e0
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -2018,14 +2019,14 @@ tasks:
       all:
         simple: "yes"
       keysToKeep:
-        simple: id_image
+        simple: id_image,FileName
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1945
         }
       }
     note: false
@@ -2050,7 +2051,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "49"
+      - "63"
     scriptarguments:
       key:
         simple: id_image
@@ -2073,7 +2074,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1420
         }
       }
     note: false
@@ -2085,10 +2086,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: afac137e-fc94-4519-869a-fb7139642f67
+    taskid: f15d7eb1-13dd-4a09-8ace-1d02c579b102
     type: regular
     task:
-      id: afac137e-fc94-4519-869a-fb7139642f67
+      id: f15d7eb1-13dd-4a09-8ace-1d02c579b102
       version: -1
       name: delete file
       description: Deletes an item from OneDrive.
@@ -2112,7 +2113,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2645
         }
       }
     note: false
@@ -2153,7 +2154,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 2120
         }
       }
     note: false
@@ -2178,7 +2179,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "65"
     scriptarguments:
       seconds:
         simple: "30"
@@ -2233,12 +2234,180 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 3650df55-95f3-4a38-81b9-d710bc85c020
+    type: regular
+    task:
+      id: 3650df55-95f3-4a38-81b9-d710bc85c020
+      version: -1
+      name: list site content
+      description: Returns a list of files and folders in the specified drive.
+      script: '|||msgraph-list-drive-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      object_type:
+        simple: sites
+      object_type_id:
+        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: dbd3fec5-fc12-4298-8b8e-9976d3ad6eba
+    type: condition
+    task:
+      id: dbd3fec5-fc12-4298-8b8e-9976d3ad6eba
+      version: -1
+      name: Verify Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MsGraphFiles.ListChildren.Children.Value.Name
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MsGraphFiles.ListChildren.Children.Value.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${FileName}
+            iscontext: true
+          right:
+            value:
+              simple: ${FileName}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: f6d84ae2-aa29-4128-8e5b-17bda2ee6038
+    type: regular
+    task:
+      id: f6d84ae2-aa29-4128-8e5b-17bda2ee6038
+      version: -1
+      name: Generate_file_name
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "2"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: e5fb896a-f93e-4747-86ad-0ea10cebd301
+    type: regular
+    task:
+      id: e5fb896a-f93e-4747-86ad-0ea10cebd301
+      version: -1
+      name: save file name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      key:
+        simple: FileName
+      value:
+        simple: ${RandomString}.jpeg
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9450,
+        "height": 10150,
         "width": 380,
         "x": 50,
         "y": 50
