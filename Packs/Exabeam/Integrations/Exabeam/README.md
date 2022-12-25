@@ -28,6 +28,14 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | --- | --- | --- |
     | Server URL (e.g https://100.24.16.156:8484) |  | True |
     | Username | In order to authenticate with a Cluster Authentication Token, insert \`__token\` in the "Username" textbox, and the token itself in the "Password" textbox. | True |
+    | Password |  | True |
+    | Exabeam Incident Type | Incident type to filter in exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
+    | Priority | Incident priority to filter in exabeam. Possible values are: low, medium, high, critical. | False |
+    | Status | Incident status to filter in exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
+    | Fetch incidents |  | False |
+    | Max incidents per fetch |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

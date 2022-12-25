@@ -2071,7 +2071,7 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
     for incident in incidents_filtered:
         incident.update({
             'createdAt': datetime.fromtimestamp(
-                incidents_res[i].get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
+                incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
         incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
