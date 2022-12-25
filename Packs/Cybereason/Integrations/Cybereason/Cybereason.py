@@ -1,5 +1,5 @@
-import demistomock as demisto
-from CommonServerPython import *
+import demistomock as demisto 
+from CommonServerPython import *  
 
 ''' IMPORTS '''
 import requests
@@ -543,7 +543,7 @@ def query_malops_command(client: Client, args: dict):
 def rest_malops(client: Client,start_time):
     end_time = round(datetime.now().timestamp())*1000
     json_body = {"startTime":start_time,"endTime":end_time}
-    api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body) 
+    api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
     demisto.debug(f"length of rest dectection malops : {len(api_response)}")
     return api_response
 
@@ -1539,7 +1539,7 @@ def fetch_incidents(client: Client):
         demisto.info(f"EPP value: {IS_EPP_ENABLED}")
         for non_edr_malops in non_edr:
             malop_update_time = non_edr_malops['lastUpdateTime']
-        
+
             if malop_update_time > max_update_time:
                 max_update_time = malop_update_time
 
@@ -2062,3 +2062,5 @@ def main():
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
+
+
