@@ -52,4 +52,3 @@ include:
   - local: .gitlab/ci/instance-test.yml
   - local: .gitlab/ci/sdk-nightly.yml
   - local: .gitlab/ci/miscellaneous.yml
-  - local: .gitlab/ci/staging.yml
