@@ -1007,7 +1007,7 @@ class Client:
 
         headers = self.cs_client._headers
 
-        response = self.cs_client.http_request('get', 'devices/entities/devices/v1', params=params, headers=headers)
+        response = self.cs_client.http_request('get', 'devices/entities/devices/v2', params=params, headers=headers)
 
         return response
 
