@@ -289,35 +289,38 @@ xsoar_server_master:
   #  No need to trigger in case of release branch
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-    - if: "$NIGHTLY"
+    - if: '$NIGHTLY'
       when: always
   variables:
     INSTANCE_ROLE: "Server Master"
+
 
 fan-in-nightly:
   tags:
     - gke
   stage: fan-in
   rules:
-    - if: "$NIGHTLY"
+    - if: '$NIGHTLY'
       when: always
   script:
     - echo "fan in"
+
 
 slack-notify-nightly-build:
   extends:
     - .trigger-slack-notification
   rules:
-    - if: "$NIGHTLY"
+    - if: '$NIGHTLY'
       when: always
   variables:
     PIPELINE_TO_QUERY: $CI_PIPELINE_ID
-    WORKFLOW: "Content Nightly"
-    JOB_NAME: "fan-in-nightly"
+    WORKFLOW: 'Content Nightly'
+    JOB_NAME: 'fan-in-nightly'
     # Passes the environment variable from the parent pipeline to the child which can be useful for cases
     # when triggering pipeline with alternate env variable value passed in the API call
     SLACK_CHANNEL: $SLACK_CHANNEL
-    SLACK_JOB: "true"
+    SLACK_JOB: 'true'
+
 
 .test_content_on_xsiam_server_instances_base:
   tags:
@@ -346,6 +349,7 @@ slack-notify-nightly-build:
         exit $EXIT_CODE
       fi
     - section_end "Are there tests to run?"
+
     - section_start "Lock XSIAM Machine" --collapsed
     - cp "$ARTIFACTS_FOLDER/filter_file.txt" "./artifacts/filter_file.txt"
     - echo "Authenticating GCP"
@@ -376,6 +380,7 @@ slack-notify-nightly-build:
         cp ./Tests/succeeded_tests.txt $ARTIFACTS_FOLDER/succeeded_tests.txt
       fi
     - section_end "Run Tests"
+
     - section_start "XSIAM Machine information"
     - ./Tests/scripts/print_xsiam_machine_details.sh
     - section_end "XSIAM Machine information"
@@ -392,6 +397,7 @@ slack-notify-nightly-build:
     - section_end "After script"
     - exit $EXIT_CODE
 
+
 #xsiam_server_dev:
 #  extends:
 #    - .test_content_on_xsiam_server_instances_base
@@ -404,12 +410,13 @@ slack-notify-nightly-build:
 #    GCS_QUEUE_FILE: "queue-master"
 #    TEST_MACHINES_LIST: "test-machines-master"
 
+
 xsiam_server_ga:
   extends:
     - .test_content_on_xsiam_server_instances_base
   rules:
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-    - if: "$NIGHTLY"
+    - if: '$NIGHTLY'
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM 1.2"
