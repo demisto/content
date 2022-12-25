@@ -1955,6 +1955,16 @@ Create Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-create name=example virtual_server=virtual1 http_service=HTTP deployment_mode="HTTP Content Routing"```
+#### Human Readable Output
+
+>### Server Policy succesfuly created!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-update
 ***
 Update Server Policy.
@@ -2009,6 +2019,16 @@ Update Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-update name=example```
+#### Human Readable Output
+
+>### Server Policy succesfuly updated!
+>|Name|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-delete
 ***
 Delete Server Policy.
@@ -2027,6 +2047,16 @@ Delete Server Policy.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-server-policy-delete name=example```
+#### Human Readable Output
+
+>### Server Policy succesfuly deleted!
+>|Id|
+>|---|
+>| example |
+
+
 ### fortiwebvm-server-policy-list
 ***
 List the Server Policies.
@@ -2077,6 +2107,46 @@ List the Server Policies.
 | FortiwebVM.ServerPolicy.allow_list | String | Server Policy Allow List. Supports API version 2 only. | 
 | FortiwebVM.ServerPolicy.replace_msg | String | Server Policy replacement message. Supports API version 2 only. API version 2 only. | 
 
+#### Command example
+```!fortiwebvm-server-policy-list name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "ServerPolicy": {
+            "certificate": "",
+            "certificate_intermediate_group": "",
+            "client_real_ip": false,
+            "comments": "",
+            "deployment_mode": "HTTP Content Routing",
+            "half_open_thresh": 8192,
+            "http2": false,
+            "http_service": "HTTP",
+            "https_service": "",
+            "monitor_mode": false,
+            "name": "example",
+            "protected_hostnames": "",
+            "protocol": "HTTP",
+            "redirect_to_https": false,
+            "server_pool": "",
+            "syn_cookie": false,
+            "url_case_sensitivity": false,
+            "virtual_server": "virtual1",
+            "web_protection_profile": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Server Policies:
+>Showing 1 rows out of 1.
+>|Name|Deployment Mode|Virtual Server|Protocol|Web Protection Profile|Monitor Mode|
+>|---|---|---|---|---|---|
+>| example | HTTP Content Routing | virtual1 | HTTP |  | false |
+
+
 ### fortiwebvm-content-routing-policy-list
 ***
 List the HTTP Content Routing Policies.
@@ -2099,6 +2169,28 @@ List the HTTP Content Routing Policies.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | FortiwebVM.HttpContentRoutingPolicy.id | String | Policy Name. | 
+
+#### Command example
+```!fortiwebvm-content-routing-policy-list limit=1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingPolicy": {
+            "id": "content1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Content Routing Policy:
+>Showing 1 rows out of 1.
+>|Id|
+>|---|
+>| content1 |
+
 
 ### fortiwebvm-http-content-routing-member-add
 ***
@@ -2126,6 +2218,27 @@ Create Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 | --- | --- | --- |
 | FortiwebVM.HttpContentRoutingMember.id | Number | Http Content Routing Member ID. | 
 
+#### Command example
+```!fortiwebvm-http-content-routing-member-add policy_name=example http_content_routing_policy=content1```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingMember": {
+            "id": "1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly created!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-update
 ***
 Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -2150,6 +2263,16 @@ Update Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-http-content-routing-member-update policy_name=example id=1```
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly updated!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-delete
 ***
 Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -2169,6 +2292,16 @@ Delete Server Policy HTTP Content Routing Member (HTTP Content Routing Member is
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-http-content-routing-member-delete policy_name=example id=1```
+#### Human Readable Output
+
+>### HTTP content routing member succesfuly deleted!
+>|Id|
+>|---|
+>| 1 |
+
+
 ### fortiwebvm-http-content-routing-member-list
 ***
 List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member is a member of HTTP Content Routing).
@@ -2199,3 +2332,34 @@ List the Server Policy HTTP Content Routing Members (HTTP Content Routing Member
 | FortiwebVM.HttpContentRoutingMember.Members.inherit_web_protection_profile | Boolean | HTTP Content Routing inherit web protection profile flag. | 
 | FortiwebVM.HttpContentRoutingMember.Members.profile | String | HTTP Content Routing Profile. | 
 | FortiwebVM.HttpContentRoutingMember.Members.status | String | HTTP Content Routing Status. Supports API version 2 only. | 
+
+#### Command example
+```!fortiwebvm-http-content-routing-member-list policy_name=example```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "HttpContentRoutingMember": {
+            "Members": [
+                {
+                    "default": "No",
+                    "http_content_routing_policy": "content1",
+                    "id": "1",
+                    "inherit_web_protection_profile": false,
+                    "profile": ""
+                }
+            ],
+            "policy_name": "example"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HTTP Content Routing Policy Members:
+>Showing 1 rows out of 1.
+>|Id|Default|Http Content Routing Policy|Inherit Web Protection Profile|Profile|
+>|---|---|---|---|---|
+>| 1 | No | content1 | false |  |
+
