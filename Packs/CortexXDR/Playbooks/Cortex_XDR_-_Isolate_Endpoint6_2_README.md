@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Cortex XDR - Isolate Endpoint](../doc_files/Cortex_XDR_-_Isolate_Endpoint.png)
+![Cortex XDR - Isolate Endpoint](../doc_files/Cortex_XDR_-_Isolate_Endpoint6_2.png)
