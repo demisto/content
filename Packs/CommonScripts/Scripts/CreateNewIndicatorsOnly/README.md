@@ -35,5 +35,4 @@ Create new indicators to the Threat Intel DB only if they are not registered.
 ## Notice
 ---
 
-In the situation that so many indicators are in the Threat Intel DB, the script may have an impact on the performace of the server by the reason why it searches the entire DB for the indicator.
-Please be careful when adding so many indicators with the script in bulk. 
+When using the script with many indicators, or when the TIM DB is highly populated this script may have low preformence issue. 
