@@ -76,6 +76,8 @@ def encrypt_email_body(client: Client, args: Dict):
         args: Dict
 
     """
+    from M2Crypto import BIO, SMIME, X509, m2
+    print("TEST")
     message_body = args.get('message', '').encode('utf-8')
     buf = makebuf(message_body)
 
