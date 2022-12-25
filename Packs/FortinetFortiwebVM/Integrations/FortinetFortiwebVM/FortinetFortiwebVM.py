@@ -92,6 +92,19 @@ class ERRORS:
     NAME_INSERT = 'Please insert name.'
     DEPLOYMENT_MODE_INSERT = 'Please insert deployment mode.'
     VIRTUAL_SERVER = 'Please insert virtual server.'
+    CLIENT_REAL_IP = 'client_real_ip should be enable/disable'
+    MACH_ONCE = 'mach_once should be enable/disable'
+    MONITOR_MODE = 'monitor_mode should be enable/disable'
+    REDIRECT_2_HTTPS = 'redirect_to_https should be enable/disable'
+    RETRY_ON = 'retry_on should be enable/disable'
+    RETRY_ON_HTTP_LAYER = 'retry_on_http_layer should be enable/disable'
+    RETRY_ON_CONNECT_FAILURE = 'retry_on_connect_failure should be enable/disable'
+    SYN_COOKIE = 'syn_cookie should be enable/disable'
+    URL_CASE_SENSITIVITY = 'url_case_sensitivity should be enable/disable'
+    HALF_OPEN_THRESH = 'half_open_thresh should be a number in range of 10-10,000.'
+    RETRY_TIMES_ON_CONNECT = 'retry_times_on_connect_failure should be a number in range of 1-5.'
+    RETRY_TIMES_ON_HTTP = 'retry_times_on_http_layer should be a number in range of 1-5.'
+    RETRY_ON_HTTP_RESPONSE_CODES = 'Please insert codes from the list.'
 
 
 class Parser:
@@ -4760,40 +4773,38 @@ def server_policy_validation(version: str, args: Dict[str, Any]):
         ]:
             raise DemistoException(ERRORS.CERTIFICATE_TYPE)
         if args.get('client_real_ip') and args['client_real_ip'] not in ['enable', 'disable']:
-            raise DemistoException('client_real_ip should be enable/disable')
+            raise DemistoException(ERRORS.CLIENT_REAL_IP)
         if args.get('mach_once') and args['mach_once'] not in ['enable', 'disable']:
-            raise DemistoException('mach_once should be enable/disable')
+            raise DemistoException(ERRORS.MACH_ONCE)
         if args.get('monitor_mode') and args['monitor_mode'] not in ['enable', 'disable']:
-            raise DemistoException('monitor_mode should be enable/disable')
+            raise DemistoException(ERRORS.MONITOR_MODE)
         if args.get('redirect_to_https') and args['redirect_to_https'] not in ['enable', 'disable']:
-            raise DemistoException('redirect_to_https should be enable/disable')
-        if args.get('redirect_to_https') and args['redirect_to_https'] not in ['enable', 'disable']:
-            raise DemistoException('redirect_to_https should be enable/disable')
+            raise DemistoException(ERRORS.REDIRECT_2_HTTPS)
         if args.get('retry_on') and args['retry_on'] not in ['enable', 'disable']:
-            raise DemistoException('retry_on should be enable/disable')
+            raise DemistoException(ERRORS.RETRY_ON)
         if args.get('retry_on_http_layer') and args['retry_on_http_layer'] not in ['enable', 'disable']:
-            raise DemistoException('retry_on_http_layer should be enable/disable')
+            raise DemistoException(ERRORS.RETRY_ON_HTTP_LAYER)
         if args.get('retry_on_connect_failure') and args['retry_on_connect_failure'] not in ['enable', 'disable']:
-            raise DemistoException('retry_on_connect_failure should be enable/disable')
+            raise DemistoException(ERRORS.RETRY_ON_CONNECT_FAILURE)
         if args.get('syn_cookie') and args['syn_cookie'] not in ['enable', 'disable']:
-            raise DemistoException('syn_cookie should be enable/disable')
+            raise DemistoException(ERRORS.SYN_COOKIE)
         if args.get('url_case_sensitivity') and args['url_case_sensitivity'] not in ['enable', 'disable']:
-            raise DemistoException('url_case_sensitivity should be enable/disable')
+            raise DemistoException(ERRORS.URL_CASE_SENSITIVITY)
         half_open_thresh = arg_to_number(args.get('half_open_thresh'))
         if half_open_thresh and not 10 <= half_open_thresh <= 10000:
-            raise DemistoException('half_open_thresh should be a number in range of 10-10,000.')
+            raise DemistoException(ERRORS.HALF_OPEN_THRESH)
         arg_to_number(args.get('retry_on_cache_size'))
         retry_times_on_connect_failure = arg_to_number(args.get('retry_times_on_connect_failure'))
         if retry_times_on_connect_failure and not 1 <= retry_times_on_connect_failure <= 5:
-            raise DemistoException('retry_times_on_connect_failure should be a number in range of 1-5.')
+            raise DemistoException(ERRORS.RETRY_TIMES_ON_CONNECT)
         retry_times_on_http_layer = arg_to_number(args.get('retry_times_on_http_layer'))
         if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
-            raise DemistoException('retry_times_on_http_layer should be a number in range of 1-5.')
+            raise DemistoException(ERRORS.RETRY_TIMES_ON_HTTP)
         retry_on_http_response_codes = [
             arg_to_number(code) for code in argToList(args.get('retry_on_http_response_codes'))
         ]
         if not set(retry_on_http_response_codes).issubset(set([404, 408, 500, 501, 502, 503, 504])):
-            raise DemistoException('Please insert codes from the list.')
+            raise DemistoException(ERRORS.RETRY_ON_HTTP_RESPONSE_CODES)
 
 
 def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
