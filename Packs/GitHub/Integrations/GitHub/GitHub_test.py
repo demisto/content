@@ -396,3 +396,35 @@ def test_list_issue_comments_since(mocker):
     list_issue_comments(issue_number, since_date)
     request_args = patched_request.call_args
     assert 'since' in request_args.kwargs['params']
+
+
+@pytest.mark.parametrize('args, response_code, response_content, expected_result', [
+    ({'assignee': 'user1', 'PR': '1'}, 201, b'{"message": "success"}', "The request to assign users: ['user1'] to PR #1 was sent successfully"),
+    ({'assignee': 'user1', 'PR': '200000000'}, 404, b'{"message": "PR not found"}', "The request wasn't sent. Please check your PR number")
+])
+def test_assignee(mocker, requests_mock, args, response_code, response_content, expected_result):
+    """
+    Given:
+      - Case 1: credentials with no sshkey.
+    When:
+      - all the required parameters are missing.
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Insert api token or private key" error message.
+    """
+    mocker.patch.object(demisto, 'args', return_value=args)
+    GitHub.USER_SUFFIX = '/repos/user/repo'
+    # url = f'{REGULAR_BASE_URL}/repos/user/repo/issues/{args.get("PR")}/assignees'
+    # requests_mock.post(url, status_code=response_code, content=response_content)
+    mocker.patch('GitHub.http_request', side_effect=test_assignee_mock_http_request)
+    mocker_results = mocker.patch('GitHub.return_results')
+    GitHub.github_add_assignee_command()
+    #assert mocker_results.call_args[0][0] == expected_result
+    assert mocker_results.call_args == expected_result
+
+
+def test_assignee_mock_http_request(method, url_suffix, params=None, data=None, headers=None, is_raw_response=False):
+    if url_suffix == '/repos/user/repo/issues/1/assignees':
+        return True
+    else:
+        raise Exception()

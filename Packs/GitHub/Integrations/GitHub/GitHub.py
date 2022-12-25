@@ -1981,6 +1981,40 @@ def fetch_incidents_command():
     demisto.incidents(incidents)
 
 
+def github_add_assignee_command():
+    assigned_users = ""
+    not_assigned_users = ""
+    args = demisto.args()
+    assignee = args.get('assignee')
+    pr_number = args.get('PR')
+    assignee_list = argToList(assignee)
+    suffix = f'{USER_SUFFIX}/issues/{pr_number}/assignees'
+    post_data = {"assignees": assignee_list}
+    response = http_request('POST', url_suffix=suffix, data=post_data)
+    for user in assignee_list:
+        user_to_look = f'\'login\': \'{user}\''
+        if user_to_look in str(response):
+            if assigned_users == "":
+                assigned_users = user
+            else:
+                assigned_users = assigned_users + ", "+ user
+        else:
+            if not_assigned_users == "":
+                not_assigned_users = user
+            else:
+                not_assigned_users = not_assigned_users + ", "+ user
+    #return_results(f' assigned_user: {assigned_users}, not assigned users {not_assigned_users} response:\n {response}')
+    if not_assigned_users == "":
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees',outputs_key_field='login', outputs=response, raw_response=response,
+                                      readable_output=f'The following users {assigned_users} were assigned successfully to PR #{pr_number}'))
+    elif assigned_users == "":
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees',outputs=response,outputs_key_field='login', raw_response=response,
+                                      readable_output=f'The following users {not_assigned_users} were not assigned to PR #{pr_number}, please check that user exists and you have the correct permissions'))
+    else:
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response, raw_response=response,
+                                      readable_output=f'The following users {assigned_users} were assigned successfully to PR #{pr_number}, the following users {not_assigned_users} were not assigned, please check user exists and you have the correct permissions'))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -2026,6 +2060,7 @@ COMMANDS = {
     'GitHub-releases-list': github_releases_list_command,
     'GitHub-update-comment': github_update_comment_command,
     'GitHub-delete-comment': github_delete_comment_command,
+    'GitHub-add-assignee': github_add_assignee_command,
 }
 
 
