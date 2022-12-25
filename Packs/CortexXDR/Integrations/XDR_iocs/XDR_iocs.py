@@ -425,14 +425,14 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
                                    comments_as_tags=Client.comments_as_tags)
 
     if Client.xsoar_comments_field == 'tags':
-        extra_fields = {"tags": list_of_single_to_str(dedupe_keep_order(filter(None, comments + [Client.tag])))}
+        tag_comment_fields = {"tags": list_of_single_to_str(dedupe_keep_order(filter(None, comments + [Client.tag])))}
     else:
-        extra_fields = {
+        tag_comment_fields = {
             "tags": Client.tag,
             Client.xsoar_comments_field: list_of_single_to_str(comments)
         }
 
-    extra_fields = {k: v for k, v in extra_fields.items() if v}
+    tag_comment_fields = {k: v for k, v in tag_comment_fields.items() if v}  # ommits falsey values
 
     entry: Dict = {
         "value": indicator,
@@ -442,7 +442,7 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
             "xdrstatus": ioc.get('RULE_STATUS', '').lower(),
             "expirationdate": xdr_expiration_to_demisto(ioc.get('RULE_EXPIRATION_TIME')),
             Client.xsoar_severity_field: severity,
-        } | extra_fields,
+        } | tag_comment_fields,
         "rawJSON": ioc
     }
     if Client.tlp_color:

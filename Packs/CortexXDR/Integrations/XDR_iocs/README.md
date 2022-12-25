@@ -25,7 +25,7 @@ An API key of type **Advanced** with an **Administrator** role.
 | query | Sync Query | True |  
 | insecure | Trust any certificate \(not secure\) | False |  
 | xsoar_severity_field | The XSOAR indicator field used as severity. | True |  
-| xsoar_comments_field | The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string. | True |  
+| xsoar_comments_field | The XSOAR field where comments are stored. Default is `comments`, expecting an XSOAR IOC format of a comment (nested dictionary). See `Comments As Tags` for more.| True |  
 | comments_as_tags | Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`. | True |  
 | proxy | Use system proxy settings | False |  
 | feedReputation | Indicator Reputation | False |  
