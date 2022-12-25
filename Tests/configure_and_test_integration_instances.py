@@ -191,7 +191,7 @@ class Build(ABC):
         self._proxy = None
         self.is_xsiam = False
         self.xsiam_machine = None
-        self.servers: list[Server] = []
+        self.servers = []
         self.server_numeric_version = ''
         self.git_sha1 = options.git_sha1
         self.branch_name = options.branch
