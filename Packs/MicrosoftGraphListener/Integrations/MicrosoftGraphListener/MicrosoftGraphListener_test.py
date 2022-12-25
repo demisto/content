@@ -544,6 +544,41 @@ def test_get_email_as_eml(mocker):
     assert get_email_as_eml_command_results['File'] == 'id.eml'
 
 
+@pytest.mark.parametrize("args",
+                         [
+                             ({"message_ids": "EMAIL1", "status": "Read"}),
+                             ({"message_ids": "EMAIL1", "folder_id": "Inbox", "status": "Read"}),
+                             ({"message_ids": "EMAIL1", "status": "Unread"}),
+                             ({"message_ids": "EMAIL1", "folder_id": "Inbox", "status": "Unread"}),
+                         ])
+def test_update_email_status_command(mocker, args: dict):
+    from MicrosoftGraphListener import MicrosoftClient, build_folders_path, update_email_status_command
+
+    mark_as_read = (args["status"].lower() == 'read')
+
+    client = self_deployed_client()
+    http_request = mocker.patch.object(MicrosoftClient, "http_request", return_value={})
+
+    result = update_email_status_command(client=client, args=args)
+
+    if "folder_id" in args:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{client._mailbox_to_fetch}/"
+                       f"{build_folders_path(args['folder_id'])}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    else:
+        http_request.assert_called_with(
+            method="PATCH",
+            url_suffix=f"/users/{client._mailbox_to_fetch}/messages/{args['message_ids']}",
+            json_data={'isRead': mark_as_read},
+        )
+
+    assert result.outputs is None
+
+
 class MockedResponse:
 
     def __init__(self, status_code):
