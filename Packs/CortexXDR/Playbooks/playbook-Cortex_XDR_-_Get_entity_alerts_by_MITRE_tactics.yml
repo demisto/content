@@ -2,8 +2,8 @@ id: Cortex XDR - Get entity alerts by MITRE tactics
 version: -1
 name: Cortex XDR - Get entity alerts by MITRE tactics
 description: |-
-  This playbook is part of the ‘Cortex XDR by Palo Alto Networks’ pack. This playbook search alerts related to specific entity  from Cortex XDR , on a given timeframe, based on MITRE Tactics.
-  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+  This playbook is part of the Cortex XDR by Palo Alto Networks’ pack. This playbook searches alerts related to specific entities from Cortex XDR, on a given timeframe, based on MITRE tactics.
+  Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
 starttaskid: "0"
 tasks:
   "0":
@@ -44,7 +44,7 @@ tasks:
       id: 3da757cf-6459-42ac-87cf-ef4e020e43ad
       version: -1
       name: Should hunt for Discovery techniques?
-      description: Whether to hunt for discovery techniques.
+      description: Whether to hunt for Discovery techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -90,7 +90,7 @@ tasks:
       id: bcf53717-1e45-4306-8344-d0f52b07a6e1
       version: -1
       name: Should hunt for Persistence techniques?
-      description: Whether to hunt for persistence techniques.
+      description: Whether to hunt for Persistence techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -136,7 +136,7 @@ tasks:
       id: 5856960b-1e9f-4b4b-8755-5e380d5557ad
       version: -1
       name: Should hunt for Initial Access techniques?
-      description: Whether to hunt for initial access techniques.
+      description: Whether to hunt for Initial Access techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -182,7 +182,7 @@ tasks:
       id: ec48b402-f820-4f9e-8945-6c6dfc169f1e
       version: -1
       name: Should hunt for Privilege Escalation techniques?
-      description: Whether to hunt for privilege escalation techniques.
+      description: Whether to hunt for Privilege Escalation techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -228,7 +228,7 @@ tasks:
       id: 42d80a92-e1d2-4c30-8c39-d664ba3668e0
       version: -1
       name: Should hunt for Defense Evasion techniques?
-      description: Whether to hunt for defense evasion techniques.
+      description: Whether to hunt for Defense Evasion techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -274,7 +274,7 @@ tasks:
       id: 49c89def-cbd9-4ec9-8197-1642c687f51d
       version: -1
       name: Should hunt for Execution techniques?
-      description: Whether to hunt for execution techniques.
+      description: Whether to hunt for Execution techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -320,7 +320,7 @@ tasks:
       id: 283d3e90-3798-4a94-825d-8ebe5234572b
       version: -1
       name: Should hunt for Lateral Movement techniques?
-      description: Whether to hunt for lateral movement techniques.
+      description: Whether to hunt for Lateral Movement techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -366,7 +366,7 @@ tasks:
       id: 6c4bd98c-f2df-4e66-81c3-f95bce31787e
       version: -1
       name: Should hunt for Collection techniques?
-      description: Whether to hunt for collection techniques.
+      description: Whether to hunt for Collection techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -443,7 +443,7 @@ tasks:
       id: 440037aa-c32f-4376-8857-1fee67c21e4d
       version: -1
       name: Hunt Persistence techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -720,7 +720,7 @@ tasks:
       id: 9d88f8c7-fa4d-4b2f-86b9-a88dc466eb75
       version: -1
       name: Should hunt for CnC techniques?
-      description: Whether to hunt for command and control techniques.
+      description: Whether to hunt for Command and Control techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -766,7 +766,7 @@ tasks:
       id: d40c9049-5927-4e44-8f96-086d435b7ca9
       version: -1
       name: Should hunt for Impact techniques?
-      description: Whether to hunt for impact techniques.
+      description: Whether to hunt for Impact techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -874,7 +874,7 @@ tasks:
       id: 7e1ea21c-493d-443d-8f87-88a59bf237d0
       version: -1
       name: Should hunt for suspicious Reconnaissance techniques?
-      description: Whether to hunt for reconnaissance techniques.
+      description: Whether to hunt for Reconnaissance techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -951,7 +951,7 @@ tasks:
       id: de4fd91a-a7f9-4293-8a6a-7d5de66f46e9
       version: -1
       name: Hunt Reconnaissance techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1011,7 +1011,7 @@ tasks:
       id: 0c938021-0384-4df3-8d3d-53f82bcd58f6
       version: -1
       name: Hunt Initial Access techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1071,7 +1071,7 @@ tasks:
       id: b3768c4c-2d01-4270-8f4e-15ca232402dc
       version: -1
       name: Hunt Execution techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1131,7 +1131,7 @@ tasks:
       id: 988d760d-3672-41c3-89df-d831f7df2def
       version: -1
       name: Hunt Privilege Escalation techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1191,7 +1191,7 @@ tasks:
       id: 52f3cdfe-4d58-4279-8367-875e748828a6
       version: -1
       name: Hunt Defense Evasion techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1251,7 +1251,7 @@ tasks:
       id: 25ea0a69-89a1-4c30-87db-ea9cff4ebc59
       version: -1
       name: Hunt Discovery techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1311,7 +1311,7 @@ tasks:
       id: 3fc4a7bb-cf46-448c-8a33-3d15d82a0a2d
       version: -1
       name: Hunt Lateral Movement techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1371,7 +1371,7 @@ tasks:
       id: f9311151-0f3d-441b-89b6-289a8841a277
       version: -1
       name: Hunt Collection techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1429,7 +1429,7 @@ tasks:
       id: 3f439bc7-0627-48a5-80e2-ba44096083b8
       version: -1
       name: Hunt Command and Control techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1489,7 +1489,7 @@ tasks:
       id: efc4d25a-ce92-444f-8dc4-38d383d67b76
       version: -1
       name: Hunt Impact techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1606,7 +1606,7 @@ tasks:
       id: 4dc85afd-df87-481b-8232-acb1e067abad
       version: -1
       name: Run all Hunting Queries on Mitre Tactics?
-      description: Run all Hunting Queries on Mitre Tactics?
+      description: Run all hunting queries on Mitre tactics?
       type: condition
       iscommand: false
       brand: ""
@@ -1662,7 +1662,7 @@ tasks:
       id: 70d127c4-ca66-42ba-8a53-6cc8ee476f7d
       version: -1
       name: Count Relevant Alerts
-      description: Count an array size
+      description: Count the array size.
       scriptName: CountArraySize
       type: regular
       iscommand: false
@@ -1736,7 +1736,7 @@ tasks:
       id: 998a5710-4743-48bf-8e31-53ff61230593
       version: -1
       name: Should hunt for Credential Access techniques?
-      description: Whether to hunt for discovery techniques.
+      description: Whether to hunt for Credential Access techniques.
       type: condition
       iscommand: false
       brand: ""
@@ -1812,7 +1812,7 @@ tasks:
       id: a67b85d8-ed7c-45c4-810e-476bca9c31a1
       version: -1
       name: Hunt Credential Access techniques
-      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
       script: '|||xdr-get-alerts'
       type: regular
       iscommand: true
@@ -1889,7 +1889,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for identified alerts with MITRE Access techniques.
+  description: Set to True to hunt for identified alerts with MITRE Initial Access techniques.
   playbookInputQuery:
 - key: HuntExecutionTechniques
   value:
@@ -1931,7 +1931,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Set to True to hunt for MITRE Collection techniques identified alerts.
+  description: Set to True to hunt for identified alerts with MITRE Collection techniques .
   playbookInputQuery:
 - key: HuntCnCTechniques
   value:
@@ -1970,19 +1970,19 @@ inputs:
 - key: EntityType
   value: {}
   required: false
-  description: Entity type to search on xdr-get-alers custom filters
+  description: Entity type to search on xdr-get-alerts custom filters.
   playbookInputQuery:
 - key: entityID
   value: {}
   required: false
-  description: Entity value
+  description: Entity value.
   playbookInputQuery:
 outputs:
 - contextPath: PaloAltoNetworksXDR.Alert
-  description: Alerts found
+  description: Alerts found.
   type: unknown
 - contextPath: ArraySize
-  description: Array size
+  description: Array size.
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
