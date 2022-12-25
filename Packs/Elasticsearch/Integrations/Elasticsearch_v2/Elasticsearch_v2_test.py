@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -81,7 +82,7 @@ ES_V7_RESPONSE = {
     }
 }
 
-MOCK_ES7_SEARCH_CONTEXT = str({
+MOCK_ES7_SEARCH = {
     'Server': '',
     'Index': 'customer',
     'Query': 'check',
@@ -110,7 +111,10 @@ MOCK_ES7_SEARCH_CONTEXT = str({
             '_source': {'Date': '2019-08-27T18:01:25.343212Z'}
         }
     ]
-})
+}
+
+
+MOCK_ES7_SEARCH_CONTEXT = str(MOCK_ES7_SEARCH)
 
 MOCK_ES7_HIT_CONTEXT = str([
     {
@@ -915,3 +919,26 @@ def test_get_mapping_fields_command(mocker, indexes, response, expected_result):
     mocker.patch('Elasticsearch_v2.requests.get', return_value=ResponseMockObject())
     result = Elasticsearch_v2.get_mapping_fields_command()
     assert result == expected_result
+
+
+def test_search_command_with_query_dsl(mocker):
+    """
+    Given
+      - index to the search command
+
+    When
+    - executing the search command
+
+    Then
+     - make sure that the index is being taken from the command arguments and not from integration parameters
+
+    """
+    import Elasticsearch_v2
+    Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
+    mocker.patch.object(
+        demisto, 'args', return_value={'index': 'index from arg', 'query_dsl': 'test', 'size': '5', 'page': '0'}
+    )
+    search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, 'search', return_value=ES_V7_RESPONSE)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, '__init__', return_value=None)
+    Elasticsearch_v2.search_command({})
+    assert search_mock.call_args.kwargs['index'] == 'index from arg'

@@ -261,7 +261,9 @@ def search_command(proxies):
                                          time_field=timestamp_field)
 
     if query_dsl:
-        response = execute_raw_query(es, query_dsl, index)
+
+        response = execute_raw_query(es, query_dsl)
+
     else:
         que = QueryString(query=query)
         search = Search(using=es, index=index).query(que)[base_page:base_page + size]
@@ -669,14 +671,14 @@ def get_time_range(last_fetch: Union[str, None] = None, time_range_start=FETCH_T
     return {'range': {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None):
+def execute_raw_query(es, raw_query):
     try:
         raw_query = json.loads(raw_query)
     except Exception as e:
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
 
     body = {"query": raw_query}
-    response = es.search(index=index or FETCH_INDEX, body=body)
+    response = es.search(index=FETCH_INDEX, body=body)
     return response
 
 
