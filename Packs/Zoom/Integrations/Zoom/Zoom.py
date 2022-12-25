@@ -7,7 +7,6 @@ from datetime import datetime
 import dateparser
 
 
-# BASE_URL = 'https://api.zoom.us/v2/'
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.

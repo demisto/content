@@ -18,7 +18,6 @@ TOKEN_LIFE_TIME = timedelta(minutes=58)
 ERROR_CODES_TO_SKIP = [
     404
 ]
-BASE_URL = 'https://api.zoom.us/v2/'
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 
 '''CLIENT CLASS'''
@@ -333,6 +332,7 @@ def check_authentication_type_arguments(api_key: str, api_secret: str,
 def main():  # pragma: no cover
     user_profile = None
     params = demisto.params()
+    base_url = params.get('url')
     api_key = params.get('api_key')
     api_secret = params.get('api_secret')
     account_id = params.get('account_id')
@@ -361,7 +361,7 @@ def main():  # pragma: no cover
         check_authentication_type_arguments(api_key, api_secret, account_id, client_id, client_secret)
 
         client = Client(
-            base_url=BASE_URL,
+            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             api_key=api_key,

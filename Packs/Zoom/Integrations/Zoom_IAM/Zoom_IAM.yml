@@ -3,6 +3,11 @@ commonfields:
   id: Zoom_IAM Dev
   version: -1
 configuration:
+  - defaultvalue: "https://api.zoom.us/v2/"
+    display: Server URL (e.g. 'https://api.zoom.us/v2/')
+    name: url
+    required: true
+    type: 0
   - display: Account ID (OAuth)
     name: account_id
     type: 0
