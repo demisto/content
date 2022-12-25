@@ -520,7 +520,7 @@ def get_chat_command(client: MsGraphClient, args):
     chat_id = args.get('chat_id')
 
     raw_response = client.get_chat(chat_id, user_id=user_id)
-    chat_context = build_chat_object(raw_response, user_id)
+    chat_context: dict = build_chat_object(raw_response, user_id)
     entry_context = {}
     if chat_context:
         entry_context = {'MSGraphTeamsChat(val.ID === obj.ID)': chat_context}  # human_readable builder
@@ -719,9 +719,6 @@ def main():
 
     except Exception as e:
         return_error(str(e))
-
-
-from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ["builtins", "__main__"]:
     main()
