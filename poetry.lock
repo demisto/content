@@ -86,7 +86,7 @@ python-versions = ">=3.5"
 dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
 docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
 tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
+tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "autopep8"
@@ -209,17 +209,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "bs4"
-version = "0.0.1"
-description = "Dummy package for Beautiful Soup"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-beautifulsoup4 = "*"
-
-[[package]]
 name = "cachetools"
 version = "5.2.0"
 description = "Extensible memoizing collections and decorators"
@@ -271,7 +260,7 @@ optional = false
 python-versions = ">=3.6.0"
 
 [package.extras]
-unicode_backport = ["unicodedata2"]
+unicode-backport = ["unicodedata2"]
 
 [[package]]
 name = "click"
@@ -430,7 +419,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.8.0"
+version = "1.8.1"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -439,7 +428,7 @@ python-versions = ">=3.8,<3.11"
 [package.dependencies]
 autopep8 = ">=1.6.0,<2.0.0"
 bandit = ">=1.7.4,<2.0.0"
-bs4 = ">=0.0.1,<0.0.2"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
 click = ">=8.0.0,<9.0.0"
 colorama = ">=0.4.4,<0.5.0"
@@ -481,7 +470,7 @@ prettytable = ">=3.2.0,<4.0.0"
 pydantic = ">=1.9.2,<2.0.0"
 pykwalify = ">=1.8.0,<2.0.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.26.0,<2.0.0"
+PyPDF2 = ">=1.28.6,<2.0.0"
 pyspellchecker = ">=0.6.3,<0.7.0"
 pytest-freezegun = ">=0.4.2,<0.5.0"
 python-dotenv = ">=0.20.0,<0.21.0"
@@ -733,7 +722,7 @@ six = ">=1.9.0"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0dev)", "requests (>=2.20.0,<3.0.0dev)"]
-enterprise_cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
+enterprise-cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["cryptography (>=38.0.3)", "pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 
@@ -1133,7 +1122,7 @@ tqdm = "*"
 [package.extras]
 all = ["matplotlib", "numpy", "pyparsing", "python-crfsuite", "requests", "scikit-learn", "scipy", "twython"]
 corenlp = ["requests"]
-machine_learning = ["numpy", "python-crfsuite", "scikit-learn", "scipy"]
+machine-learning = ["numpy", "python-crfsuite", "scikit-learn", "scipy"]
 plot = ["matplotlib"]
 tgrep = ["pyparsing"]
 twitter = ["twython"]
@@ -1738,7 +1727,7 @@ urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)"]
-use_chardet_on_py3 = ["chardet (>=3.0.2,<6)"]
+use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "requests-mock"
@@ -2387,7 +2376,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "64f06a01bf9fa084443473b6672e6f0a6be6875509261f734fe2469677f046b7"
+content-hash = "20f0bf2a0ee4dcf7c999527f14f7169f10d17337074b14843a09ffc86739d903"
 
 [metadata.files]
 aiohttp = [
@@ -2572,9 +2561,6 @@ botocore = [
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
     {file = "bracex-2.3.post1.tar.gz", hash = "sha256:e7b23fc8b2cd06d3dec0692baabecb249dda94e06a617901ff03a6c56fd71693"},
-]
-bs4 = [
-    {file = "bs4-0.0.1.tar.gz", hash = "sha256:36ecea1fd7cc5c0c6e4a1ff075df26d50da647b75376626cc186e2212886dd3a"},
 ]
 cachetools = [
     {file = "cachetools-5.2.0-py3-none-any.whl", hash = "sha256:f9f17d2aec496a9aa6b76f53e3b614c965223c061982d434d160f930c698a9db"},
@@ -2768,8 +2754,8 @@ demisto-py = [
     {file = "demisto_py-3.2.4-py3-none-any.whl", hash = "sha256:2ca229d440166d75d6a8abb48a1947eca06c319099e66597775732357af3b62b"},
 ]
 demisto-sdk = [
-    {file = "demisto_sdk-1.8.0-py3-none-any.whl", hash = "sha256:0f784d20b838de9a14b3b3f9e8a1fb80070a4140d80dc52c5ba6652c4da42c35"},
-    {file = "demisto_sdk-1.8.0.tar.gz", hash = "sha256:16349c92c4bb240e89a751a699b1cfa46c76d377255f3b73191ceb871204b9f7"},
+    {file = "demisto_sdk-1.8.1-py3-none-any.whl", hash = "sha256:4f92efabe82ad74bad2eba37ead4a877960dc2cf5dc3405126631760e7d4d191"},
+    {file = "demisto_sdk-1.8.1.tar.gz", hash = "sha256:5db13786806f3271ed4bf4f92b1d56a84bde0fd06cfacda63c2e7a088ffe5faa"},
 ]
 Deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
