@@ -1386,6 +1386,145 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-operation-status-get```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SystemOperation": [
+            {
+                "alias": "",
+                "id": "port1",
+                "ip_netmask": "192.168.30.137/24",
+                "label": 1,
+                "link": "Up",
+                "name": "port1",
+                "rx": 582306,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 18115
+            },
+            {
+                "alias": "",
+                "id": "port2",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 2,
+                "link": "Up",
+                "name": "port2",
+                "rx": 571254,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port3",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 3,
+                "link": "Up",
+                "name": "port3",
+                "rx": 571338,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port4",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 4,
+                "link": "Up",
+                "name": "port4",
+                "rx": 571252,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port5",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 5,
+                "link": "Up",
+                "name": "port5",
+                "rx": 571246,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port6",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 6,
+                "link": "Up",
+                "name": "port6",
+                "rx": 571245,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port7",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 7,
+                "link": "Up",
+                "name": "port7",
+                "rx": 571239,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port8",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 8,
+                "link": "Up",
+                "name": "port8",
+                "rx": 571283,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port9",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 9,
+                "link": "Up",
+                "name": "port9",
+                "rx": 572431,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            },
+            {
+                "alias": "",
+                "id": "port10",
+                "ip_netmask": "0.0.0.0/0",
+                "label": 10,
+                "link": "Up",
+                "name": "port10",
+                "rx": 572083,
+                "speed_duplex": "10000 Mbps/Full Duplex",
+                "tx": 141
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Operation networks:
+>|Id|Name|Label|Alias|Ip Netmask|Speed Duplex|Tx|Rx|Link|
+>|---|---|---|---|---|---|---|---|---|
+>| port1 | port1 | 1 |  | 192.168.30.137/24 | 10000 Mbps/Full Duplex | 18115 | 582306 | Up |
+>| port2 | port2 | 2 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571254 | Up |
+>| port3 | port3 | 3 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571338 | Up |
+>| port4 | port4 | 4 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571252 | Up |
+>| port5 | port5 | 5 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571246 | Up |
+>| port6 | port6 | 6 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571245 | Up |
+>| port7 | port7 | 7 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571239 | Up |
+>| port8 | port8 | 8 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 571283 | Up |
+>| port9 | port9 | 9 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572431 | Up |
+>| port10 | port10 | 10 |  | 0.0.0.0/0 | 10000 Mbps/Full Duplex | 141 | 572083 | Up |
+
+
 ### fortiwebvm-system-policy-status-get
 ***
 Get Policy Status.
@@ -1401,6 +1540,14 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-policy-status-get```
+#### Human Readable Output
+
+>### Policy status:
+>**No entries.**
+
+
 ### fortiwebvm-system-status-get
 ***
 Get System Status.
@@ -1416,6 +1563,84 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-system-status-get```
+#### Context Example
+```json
+{
+    "FortiwebVM": {
+        "SystemStatus": {
+            "administrativeDomain": "Disabled",
+            "antivirusService": {
+                "anti_expired": "Expired (1969-12-31)",
+                "anti_expired_text": "[Renew]",
+                "anti_expired_url": "http://support.fortinet.com/",
+                "anti_update_text": "[Update]",
+                "anti_update_url": "#navigate/SignatureUpdate",
+                "antivirusLastUpdateMethod": "Manual",
+                "antivirusLastUpdateTime": "1969-12-31",
+                "exVirusDatabaseVersion": "1.00000",
+                "regularVirusDatabaseVersion": "1.00000"
+            },
+            "bufferSizeMax": 102400,
+            "credentialStuffingDefense": {
+                "databaseVersion": "0.00000",
+                "expired": "Expired (1969-12-31)",
+                "expired_text": "[Renew]",
+                "expired_url": "http://support.fortinet.com/",
+                "lastUpdateTime": "1969-12-31"
+            },
+            "fileUploadLimitMax": 102400,
+            "fipcc": "Disabled",
+            "firmwareVersion": "FortiWeb-VM 6.12,build0421(GA),191218",
+            "firmware_partition": 2,
+            "haStatus": "Standalone",
+            "hostName": "FortiWeb",
+            "logDisk": "Available",
+            "operationMode": "Reverse Proxy",
+            "readonly": false,
+            "registration": {
+                "label": "[Unregistered]",
+                "text": "[Register]",
+                "url": "https://support.fortinet.com"
+            },
+            "reputationService": {
+                "reputationBuildNumber": "1.00020",
+                "reputationLastUpdateMethod": "Manual",
+                "reputationLastUpdateTime": "1969-12-31",
+                "reputation_expired": "Expired (1969-12-31)",
+                "reputation_expired_text": "[Renew]",
+                "reputation_expired_url": "http://support.fortinet.com/",
+                "reputation_update_text": "[Update]",
+                "reputation_update_url": "#navigate/SignatureUpdate"
+            },
+            "securityService": {
+                "buildNumber": "0.00240",
+                "expired": "Expired (1969-12-31)",
+                "expired_text": "[Renew]",
+                "expired_url": "http://support.fortinet.com/",
+                "lastUpdateMethod": "Manual",
+                "lastUpdateTime": "1969-12-31",
+                "update_text": "[Update]",
+                "update_url": "#navigate/SignatureUpdate"
+            },
+            "serialNumber": "FVVM00UNLICENSED",
+            "systemTime": "Sun Dec 25 01:01:32 2022\n",
+            "systemUptime": "2 day(s) 20 hour(s) 7 min(s)",
+            "vmLicense": "invalid"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### System Status:
+>|High Ability Status|Host Name|Serial Number|Operation Mode|System Time|Firmware Version|Administrative Domain|System Uptime|Fips And Cc Mode|Log Disk|
+>|---|---|---|---|---|---|---|---|---|---|
+>| Standalone | FortiWeb | FVVM00UNLICENSED | Reverse Proxy | Sun Dec 25 01:01:32 2022<br/> | FortiWeb-VM 6.12,build0421(GA),191218 | Disabled | 2 day(s) 20 hour(s) 7 min(s) | Disabled | Available |
+
+
 ### fortiwebvm-virtual-server-list
 ***
 List the Virtual Servers.
