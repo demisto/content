@@ -1,0 +1,2871 @@
+id: Threat Hunting - Set Indicators
+version: -1
+name: Threat Hunting - Set Indicators
+description: "The playbooks process a variety of indicators by parsing and storing them as arrays under newly created context keys.\nThe playbook outputs can then be used to improve the efficiency of various threat hunting playbooks.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). \n\nThe following IOCs are included in the playbook:\nMD5\nSHA1\nSHA256\nIP Address\nURLDomain\nRegistry Value\nRegistry Key\nRegistry Hives\nCommand Line\nFile Name\nProcess Name\nHTTP Request Methods\nUser Agent\nPort Number\nFile Path\nGeolocation\nEmail Address\nCIDR\nURI\nJa3\nFileType "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c41c9df9-6e0b-48cd-8176-e1d02115eeb1
+    type: start
+    task:
+      id: c41c9df9-6e0b-48cd-8176-e1d02115eeb1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: cb3d6b25-086b-4bcb-89e6-799b3375adaf
+    type: title
+    task:
+      id: cb3d6b25-086b-4bcb-89e6-799b3375adaf
+      version: -1
+      name: Identify the indicators available for search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+      - "26"
+      - "27"
+      - "28"
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bc8d8aba-b382-4c4a-8e4b-69b02da059b8
+    type: condition
+    task:
+      id: bc8d8aba-b382-4c4a-8e4b-69b02da059b8
+      version: -1
+      name: MD5 input exists?
+      description: Checks whether MD5 input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      MD5 exists:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: MD5 exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4413a94c-a4b6-449b-8167-2d1fed5e8711
+    type: condition
+    task:
+      id: 4413a94c-a4b6-449b-8167-2d1fed5e8711
+      version: -1
+      name: SHA1 input exists?
+      description: Checks whether SHA1 input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      SHA1 exists:
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: SHA1 exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 062a75e7-0b0b-420d-85dd-17f94ad17902
+    type: condition
+    task:
+      id: 062a75e7-0b0b-420d-85dd-17f94ad17902
+      version: -1
+      name: SHA256 input exists?
+      description: Checks whether SHA256 input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      SHA256 exists:
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: SHA256 exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 559ec1c2-e6f3-4bca-8030-0dc28057667a
+    type: condition
+    task:
+      id: 559ec1c2-e6f3-4bca-8030-0dc28057667a
+      version: -1
+      name: IPAddress input exists?
+      description: Checks whether IPAddress input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      IPAddress exists:
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: IPAddress exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2690,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6b18b306-c1c0-4b33-808e-a4df3ca611c5
+    type: condition
+    task:
+      id: 6b18b306-c1c0-4b33-808e-a4df3ca611c5
+      version: -1
+      name: URLDomain input exists?
+      description: Checks whether URLDomain input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      URLDomain exists:
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: URLDomain exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3120,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fc6ddb3b-9de9-48f5-84dd-06bd549cbd6d
+    type: condition
+    task:
+      id: fc6ddb3b-9de9-48f5-84dd-06bd549cbd6d
+      version: -1
+      name: RegistryValue input exists?
+      description: Checks whether RegistryValue input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      RegistryValue exists:
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: RegistryValue exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryValue
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 63a3ec89-d039-4df3-8a74-c4d29e7ec2a9
+    type: condition
+    task:
+      id: 63a3ec89-d039-4df3-8a74-c4d29e7ec2a9
+      version: -1
+      name: RegistryKey input exists?
+      description: Checks whether RegistryKey input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      RegistryKey exists:
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: RegistryKey exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryKey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4fd2bc36-11a6-4d69-8306-856e1a234422
+    type: condition
+    task:
+      id: 4fd2bc36-11a6-4d69-8306-856e1a234422
+      version: -1
+      name: RegistryHives input exists?
+      description: Checks whether RegistryHives input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      RegistryHives exists:
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: RegistryHives exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.RegistryHives
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2910,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 462f87d3-a207-43a7-8499-98a6ed592722
+    type: condition
+    task:
+      id: 462f87d3-a207-43a7-8499-98a6ed592722
+      version: -1
+      name: CommandLine input exists?
+      description: Checks whether CommandLine input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      CommandLine exists:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: CommandLine exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CommandLine
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3330,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0d0f05f7-41f1-4711-819b-df18c5e69324
+    type: condition
+    task:
+      id: 0d0f05f7-41f1-4711-819b-df18c5e69324
+      version: -1
+      name: FileName input exists?
+      description: Checks whether FileName input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      FileName exists:
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: FileName exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 1e8b139c-417c-48e6-8be4-a49dca2f18e3
+    type: condition
+    task:
+      id: 1e8b139c-417c-48e6-8be4-a49dca2f18e3
+      version: -1
+      name: ProcessName input exists?
+      description: Checks whether ProcessName input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      ProcessName exists:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: ProcessName exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProcessName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4110,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b84b4bdd-86b9-4dd2-896c-5ed131c37b8e
+    type: condition
+    task:
+      id: b84b4bdd-86b9-4dd2-896c-5ed131c37b8e
+      version: -1
+      name: HTTPRequestMethods input exists?
+      description: Checks whether HTTPRequestMethods input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      HTTPRequestMethods exists:
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: HTTPRequestMethods exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HTTPRequestMethods
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9e9cb0dc-4b87-406e-846c-0d2500564843
+    type: condition
+    task:
+      id: 9e9cb0dc-4b87-406e-846c-0d2500564843
+      version: -1
+      name: UserAgent input exists?
+      description: Checks whether UserAgent input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      UserAgent exists:
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: UserAgent exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserAgent
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 359771f0-560e-4555-856e-1f3f59e77c15
+    type: condition
+    task:
+      id: 359771f0-560e-4555-856e-1f3f59e77c15
+      version: -1
+      name: PortNumber input exists?
+      description: Checks whether PortNumber input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      PortNumber exists:
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: PortNumber exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.PortNumber
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4560,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 98388799-3b81-4dd5-82ec-d463d7a5c505
+    type: condition
+    task:
+      id: 98388799-3b81-4dd5-82ec-d463d7a5c505
+      version: -1
+      name: FilePath input exists?
+      description: Checks whether FilePath input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      FilePath exists:
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: FilePath exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FilePath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7308de90-d536-42bc-81af-3a5088c4eac9
+    type: condition
+    task:
+      id: 7308de90-d536-42bc-81af-3a5088c4eac9
+      version: -1
+      name: Geolocation input exists?
+      description: Checks whether Geolocation input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      Geolocation exists:
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: Geolocation exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Geolocation
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5010,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 4b1ddb94-acd8-4cbe-80ef-865525a41b12
+    type: condition
+    task:
+      id: 4b1ddb94-acd8-4cbe-80ef-865525a41b12
+      version: -1
+      name: EmailAddress input exists?
+      description: Checks whether EmailAddress input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      EmailAddress exists:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: EmailAddress exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4140,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: dffe8350-48ab-4848-8c8a-db259b2952d3
+    type: condition
+    task:
+      id: dffe8350-48ab-4848-8c8a-db259b2952d3
+      version: -1
+      name: CIDR input exists?
+      description: Checks whether CIDR input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      CIDR exists:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: CIDR exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CIDR
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3550,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1c914be1-4b1d-4d53-8e4e-710ca6feb86e
+    type: condition
+    task:
+      id: 1c914be1-4b1d-4d53-8e4e-710ca6feb86e
+      version: -1
+      name: URI input exists?
+      description: Checks whether URI input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      URI exists:
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: URI exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URI
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 32aff7b0-629e-42ca-8852-355a17729aa7
+    type: condition
+    task:
+      id: 32aff7b0-629e-42ca-8852-355a17729aa7
+      version: -1
+      name: Ja3 input exists?
+      description: Checks whether Ja3 input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      Ja3 exists:
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: Ja3 exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Ja3
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1560,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: cbeb8bfa-9b61-446d-868d-4b825d747c6a
+    type: condition
+    task:
+      id: cbeb8bfa-9b61-446d-868d-4b825d747c6a
+      version: -1
+      name: FileType input exists?
+      description: Checks whether FileType input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      FileType exists:
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: FileType exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileType
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 7ff2eba2-f3de-42fc-8b7b-7f58087e560d
+    type: title
+    task:
+      id: 7ff2eba2-f3de-42fc-8b7b-7f58087e560d
+      version: -1
+      name: Traffic associated indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+      - "8"
+      - "19"
+      - "20"
+      - "21"
+      - "17"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3860,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: b6b46055-5dd1-4186-8241-4b98b7a50472
+    type: title
+    task:
+      id: b6b46055-5dd1-4186-8241-4b98b7a50472
+      version: -1
+      name: Files associated indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "4"
+      - "6"
+      - "13"
+      - "24"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6ba765ed-bf22-486d-8531-b0f09383e0ef
+    type: title
+    task:
+      id: 6ba765ed-bf22-486d-8531-b0f09383e0ef
+      version: -1
+      name: HTTP requests associated indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+      - "15"
+      - "16"
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1280,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 1b4bbae0-494e-44cd-8b4e-84332c71780a
+    type: title
+    task:
+      id: 1b4bbae0-494e-44cd-8b4e-84332c71780a
+      version: -1
+      name: Execution flow associated indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "11"
+      - "9"
+      - "10"
+      - "14"
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3700,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0fc2ccea-591a-4673-8160-dcfee202edf4
+    type: regular
+    task:
+      id: 0fc2ccea-591a-4673-8160-dcfee202edf4
+      version: -1
+      name: Set Geolocation search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: GeolocationParsed
+      value:
+        complex:
+          root: inputs.Geolocation
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Geolocation
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5000,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 2ffd9e8f-8e28-4871-82f5-331006a40e82
+    type: regular
+    task:
+      id: 2ffd9e8f-8e28-4871-82f5-331006a40e82
+      version: -1
+      name: Set PortNumber search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: PortNumberParsed
+      value:
+        complex:
+          root: inputs.PortNumber
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.PortNumber
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4570,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f0470cfc-62ff-4919-8859-002d28c6c356
+    type: regular
+    task:
+      id: f0470cfc-62ff-4919-8859-002d28c6c356
+      version: -1
+      name: Set EmailAddress search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: EmailAddressParsed
+      value:
+        complex:
+          root: inputs.EmailAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.EmailAddress
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4140,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 162a76d3-9aa8-4842-8771-c6973d5dda99
+    type: regular
+    task:
+      id: 162a76d3-9aa8-4842-8771-c6973d5dda99
+      version: -1
+      name: Set CIDR search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: CIDRParsed
+      value:
+        complex:
+          root: inputs.CIDR
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.CIDR
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3550,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: affa2845-1620-453c-8d87-d8e6d5c28594
+    type: regular
+    task:
+      id: affa2845-1620-453c-8d87-d8e6d5c28594
+      version: -1
+      name: Set URLDomain search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: URLDomainParsed
+      value:
+        complex:
+          root: inputs.URLDomain
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.URLDomain
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3120,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: e6e7910a-cb5b-4844-8001-7a8dc667b5dc
+    type: regular
+    task:
+      id: e6e7910a-cb5b-4844-8001-7a8dc667b5dc
+      version: -1
+      name: Set IPAddress search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: IPAddressParsed
+      value:
+        complex:
+          root: inputs.IPAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IPAddress
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2690,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 33bc9e2a-c883-4db8-8944-e3751ca614ed
+    type: regular
+    task:
+      id: 33bc9e2a-c883-4db8-8944-e3751ca614ed
+      version: -1
+      name: Set FileType search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: FileTypeParsed
+      value:
+        complex:
+          root: inputs.FileType
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileType
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 05fd7440-bf7d-4ecd-83ba-e88dfe4c81b5
+    type: regular
+    task:
+      id: 05fd7440-bf7d-4ecd-83ba-e88dfe4c81b5
+      version: -1
+      name: Set SHA256 search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: SHA256Parsed
+      value:
+        complex:
+          root: inputs.SHA256
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f9cfe5ea-a17b-4d5e-86d4-fd92635b5c31
+    type: regular
+    task:
+      id: f9cfe5ea-a17b-4d5e-86d4-fd92635b5c31
+      version: -1
+      name: Set MD5 search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: MD5Parsed
+      value:
+        complex:
+          root: inputs.MD5
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 442fc1ce-31eb-43c4-8ce5-10668e493640
+    type: regular
+    task:
+      id: 442fc1ce-31eb-43c4-8ce5-10668e493640
+      version: -1
+      name: Set FileName search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: FileNameParsed
+      value:
+        complex:
+          root: inputs.FileName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileName
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f6eecd7a-e213-4334-86fd-8c02fd1fddf1
+    type: regular
+    task:
+      id: f6eecd7a-e213-4334-86fd-8c02fd1fddf1
+      version: -1
+      name: Set FilePath search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: FilePathParsed
+      value:
+        complex:
+          root: inputs.FilePath
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 9e3b0c47-ae35-4a05-8369-c8a4712e3ee3
+    type: regular
+    task:
+      id: 9e3b0c47-ae35-4a05-8369-c8a4712e3ee3
+      version: -1
+      name: Set SHA1 search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      key:
+        simple: SHA1Parsed
+      value:
+        complex:
+          root: inputs.SHA1
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.SHA1
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9fdded7c-8dbb-4f3e-8b15-1e071f1b537f
+    type: regular
+    task:
+      id: 9fdded7c-8dbb-4f3e-8b15-1e071f1b537f
+      version: -1
+      name: Set RegistryKey search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: RegistryKeyParsed
+      value:
+        complex:
+          root: inputs.RegistryKey
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryKey
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: e5ad834c-c093-4704-8883-b5346e2f6826
+    type: regular
+    task:
+      id: e5ad834c-c093-4704-8883-b5346e2f6826
+      version: -1
+      name: Set HTTPRequestMethods search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: HTTPRequestMethodsParsed
+      value:
+        complex:
+          root: inputs.HTTPRequestMethods
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.HTTPRequestMethods
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1980,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: d7b4cb01-4c47-4eff-89d4-d000a2666ec2
+    type: regular
+    task:
+      id: d7b4cb01-4c47-4eff-89d4-d000a2666ec2
+      version: -1
+      name: Set Ja3 search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: Ja3Parsed
+      value:
+        complex:
+          root: inputs.Ja3
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Ja3
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1560,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 240006d4-bd2b-4789-82cd-8babfd145074
+    type: regular
+    task:
+      id: 240006d4-bd2b-4789-82cd-8babfd145074
+      version: -1
+      name: Set UserAgent search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: UserAgentParsed
+      value:
+        complex:
+          root: inputs.UserAgent
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.UserAgent
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1000,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0eb8123a-6750-41b8-8aec-724675ce0215
+    type: regular
+    task:
+      id: 0eb8123a-6750-41b8-8aec-724675ce0215
+      version: -1
+      name: Set URI search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: URIParsed
+      value:
+        complex:
+          root: inputs.URI
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.URI
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 153c9a68-b246-4866-898a-5063d6ea5db8
+    type: regular
+    task:
+      id: 153c9a68-b246-4866-898a-5063d6ea5db8
+      version: -1
+      name: Set CommandLine search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: CommandLineParsed
+      value:
+        complex:
+          root: inputs.CommandLine
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.CommandLine
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3330,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: fc79075c-ceee-4167-8251-da82d036b5a5
+    type: regular
+    task:
+      id: fc79075c-ceee-4167-8251-da82d036b5a5
+      version: -1
+      name: Set RegistryHives search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: RegistryHivesParsed
+      value:
+        complex:
+          root: inputs.RegistryHives
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryHives
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2910,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 2bcae97e-3133-4790-86cd-d2bf44c376e0
+    type: regular
+    task:
+      id: 2bcae97e-3133-4790-86cd-d2bf44c376e0
+      version: -1
+      name: Set RegistryValue search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: RegistryValueParsed
+      value:
+        complex:
+          root: inputs.RegistryValue
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.RegistryValue
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2490,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: fd90aef1-202a-43e5-88b5-ee41b28fd851
+    type: regular
+    task:
+      id: fd90aef1-202a-43e5-88b5-ee41b28fd851
+      version: -1
+      name: Set ProcessName search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: ProcessNameParsed
+      value:
+        complex:
+          root: inputs.ProcessName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.ProcessName
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4110,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 176167e1-550d-42f4-8bbd-b3f4975ece88
+    type: title
+    task:
+      id: 176167e1-550d-42f4-8bbd-b3f4975ece88
+      version: -1
+      name: Set Traffic Indicators - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3860,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: d9b28527-5978-46da-88a5-563d4de18fb8
+    type: title
+    task:
+      id: d9b28527-5978-46da-88a5-563d4de18fb8
+      version: -1
+      name: Set Files Indicators - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 962f75b7-11d7-4aba-8d5e-bc181cc3ff20
+    type: title
+    task:
+      id: 962f75b7-11d7-4aba-8d5e-bc181cc3ff20
+      version: -1
+      name: Set HTTP Request Methods Indicators - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 5b1a2638-1018-44ce-8b42-601c99a38b54
+    type: title
+    task:
+      id: 5b1a2638-1018-44ce-8b42-601c99a38b54
+      version: -1
+      name: Set Execution Flow Indicators - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3700,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: fd47667c-65e2-4f2b-8983-9b13d42f77b8
+    type: title
+    task:
+      id: fd47667c-65e2-4f2b-8983-9b13d42f77b8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 6e4ccb51-ec09-4c04-87f5-86318e9757bc
+    type: condition
+    task:
+      id: 6e4ccb51-ec09-4c04-87f5-86318e9757bc
+      version: -1
+      name: Application input exists?
+      description: Checks whether RegistryKey input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      Application exists:
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: Application exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Application
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 0a6998ee-6953-4775-863f-534745ed6d5f
+    type: regular
+    task:
+      id: 0a6998ee-6953-4775-863f-534745ed6d5f
+      version: -1
+      name: Set Application search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: ApplicationParsed
+      value:
+        complex:
+          root: inputs.Application
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Application
+                iscontext: true
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6545be76-6a7b-425e-8fe8-27fbaf733094
+    type: condition
+    task:
+      id: 6545be76-6a7b-425e-8fe8-27fbaf733094
+      version: -1
+      name: Geolocation input exists?
+      description: Checks whether Geolocation input exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Geolocation exists:
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: Geolocation exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Geolocation
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5470,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 1d2b0220-3fc8-4f98-8bb2-745312b16c35
+    type: regular
+    task:
+      id: 1d2b0220-3fc8-4f98-8bb2-745312b16c35
+      version: -1
+      name: Set Geolocation search argument
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      key:
+        simple: CVE_IDParsed
+      value:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Geolocation
+                iscontext: true
+          accessor: CVE_ID
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5470,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 8ec44c43-4788-4ee1-8aab-0ea05168af21
+    type: title
+    task:
+      id: 8ec44c43-4788-4ee1-8aab-0ea05168af21
+      version: -1
+      name: Vulnerability associated indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5470,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 5c321bf4-a189-4f47-8779-13376d2ef1fb
+    type: title
+    task:
+      id: 5c321bf4-a189-4f47-8779-13376d2ef1fb
+      version: -1
+      name: Set Vulnerability Indicators - Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5470,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_53_#default#": 0.25,
+      "11_53_#default#": 0.26,
+      "12_53_#default#": 0.44,
+      "13_51_#default#": 0.28,
+      "14_53_#default#": 0.41,
+      "15_52_#default#": 0.28,
+      "16_52_#default#": 0.52,
+      "17_50_#default#": 0.28,
+      "18_51_#default#": 0.18,
+      "19_50_#default#": 0.2,
+      "20_50_#default#": 0.53,
+      "21_50_#default#": 0.49,
+      "22_52_#default#": 0.28,
+      "23_52_#default#": 0.49,
+      "24_51_#default#": 0.19,
+      "4_51_#default#": 0.51,
+      "55_53_#default#": 0.17,
+      "5_51_#default#": 0.27,
+      "6_51_#default#": 0.48,
+      "7_50_#default#": 0.19,
+      "8_50_#default#": 0.27,
+      "9_53_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 10820,
+        "x": -4970,
+        "y": -80
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value: {}
+  required: false
+  description: |-
+    A single or multiple MD5 file hashes to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA1 file hashes to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA256
+  value: {}
+  required: false
+  description: |-
+    A single or multiple SHA256 file hashes to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to parse and set for future use within hunting playbooks. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: RegistryValue
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry values to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: RegistryKey
+  value: {}
+  required: false
+  description: |-
+    A single or multiple registry keys to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: RegistryHives
+  value: {}
+  required: false
+  description: |-
+    Only relevant for hunting on Windows hosts.
+    A single or multiple registry hives to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: CommandLine
+  value: {}
+  required: false
+  description: |-
+    A single or multiple command lines to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file names to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: ProcessName
+  value: {}
+  required: false
+  description: |-
+    A single or multiple process names to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: HTTPRequestMethods
+  value: {}
+  required: false
+  description: |-
+    A single or multiple HTTP requests methods to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: UserAgent
+  value: {}
+  required: false
+  description: |-
+    A single or multiple user agents to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: PortNumber
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to parse and set for future use within hunting playbooks. Used for both source and destination ports.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file paths to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Geolocation
+  value: {}
+  required: false
+  description: |-
+    A single or multiple country names or codes to parse and set for future use within hunting playbooks. Used for both source and destination geolocations.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: EmailAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple email addresses to parse and set for future use within hunting playbooks. Used for both sender and recipient email addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: CIDR
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP ranges to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URI
+  value: {}
+  required: false
+  description: |-
+    A single or multiple URIs to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Ja3
+  value: {}
+  required: false
+  description: |-
+    JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.
+    A single or multiple Ja3's to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Application
+  value: {}
+  required: false
+  description: |-
+    A single or multiple applications name to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: CVE_ID
+  value: {}
+  required: false
+  description: |-
+    Hunt for assets with a given CVE using available tools.
+    A single or multiple CVE IDs to parse and set for future use within hunting playbooks.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+outputs:
+- contextPath: RegistryKeyParsed
+  description: An array of parsed registry key indicators.
+  type: unknown
+- contextPath: ProcessNameParsed
+  description: An array of parsed process name indicators.
+  type: unknown
+- contextPath: CommandLineParsed
+  description: An array of parsed CommandLine indicators.
+  type: unknown
+- contextPath: RegistryHivesParsed
+  description: An array of parsed registry hives indicators.
+  type: unknown
+- contextPath: RegistryValueParsed
+  description: An array of parsed registry value indicators.
+  type: unknown
+- contextPath: HTTPRequestMethodsParsed
+  description: An array of parsed HTTP request methods indicators.
+  type: unknown
+- contextPath: Ja3Parsed
+  description: An array of parsed Ja3 indicators.
+  type: unknown
+- contextPath: UserAgentParsed
+  description: An array of parsed user agent indicators.
+  type: unknown
+- contextPath: URIParsed
+  description: An array of parsed URI indicators.
+  type: unknown
+- contextPath: FilePathParsed
+  description: An array of parsed file paths indicators.
+  type: unknown
+- contextPath: SHA1Parsed
+  description: An array of parsed SHA1 indicators.
+  type: unknown
+- contextPath: SHA256Parsed
+  description: An array of parsed SHA256 indicators.
+  type: unknown
+- contextPath: MD5Parsed
+  description: An array of parsed MD5 indicators.
+  type: unknown
+- contextPath: FileNameParsed
+  description: An array of parsed file names indicators.
+  type: unknown
+- contextPath: FileTypeParsed
+  description: An array of parsed file types indicators.
+  type: unknown
+- contextPath: IPAddressParsed
+  description: An array of parsed IP addresses indicators.
+  type: unknown
+- contextPath: URLDomainParsed
+  description: An array of parsed URLDomain indicators.
+  type: unknown
+- contextPath: CIDRParsed
+  description: An array of parsed CIDR indicators.
+  type: unknown
+- contextPath: EmailAddressParsed
+  description: An array of parsed email addresses indicators.
+  type: unknown
+- contextPath: PortNumberParsed
+  description: An array of parsed port numbers indicators.
+  type: unknown
+- contextPath: GeolocationParsed
+  description: An array of parsed geolocation indicators.
+  type: unknown
+- contextPath: ApplicationParsed
+  description: An array of parsed application indicators.
+  type: unknown
+- contextPath: CVE_IDParsed
+  description: An array of parsed CVE IDs
+  type: unknown
+tests:
+- Calculate Severity - Generic v2 - Test
+- Wait Until Datetime - Test
+- URL Enrichment - Generic v2 - Test
+- File Enrichment - Generic v2 - Test
+- Domain Enrichment - Generic v2 - Test
+- Account Enrichment - Generic v2.1 - Test
+- Detonate URL - Generic Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+fromversion: 6.5.0
