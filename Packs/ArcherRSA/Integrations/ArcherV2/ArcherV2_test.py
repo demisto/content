@@ -69,6 +69,150 @@ VALUE_LIST_RES = {
     "IsSuccessful": True, "ValidationMessages": []
 }
 
+NESTED_VALUE_LIST_RES = {
+ "Links": [],
+ "RequestedObject": {
+  "Children": [
+   {
+    "Data": {
+     "Id": 83998,
+     "Name": "Corporate (Reportable)",
+     "IsSelectable": False,
+    },
+    "Children": [
+     {
+      "Data": {
+       "Id": 88888,
+       "Name": "level 2",
+       "IsSelectable": False
+      },
+      "Depth": 1
+     }
+    ],
+    "Depth": 0
+   },
+   {
+    "Data": {
+     "Id": 83999,
+     "Name": "Group & Other Non-Healthcare (Reportable)",
+     "IsSelectable": False,
+     "Generation": 0,
+    },
+    "Children": [
+     {
+      "Data": {
+       "Id": 84000,
+       "Name": "Group D&L, Run-off Businesses (Operating)",
+       "IsSelectable": False,
+      },
+      "Children": [],
+      "Depth": 1
+     }
+    ],
+    "Depth": 0
+   },
+   {
+    "Data": {
+     "Id": 84001,
+     "Name": "Health Services (Reportable)",
+     "IsSelectable": False,
+    },
+    "Children": [
+     {
+      "Data": {
+       "Id": 84002,
+       "Name": "Pharmacy Operations (Operating)",
+       "IsSelectable": False,
+       "Generation": 1,
+      },
+      "Children": [
+       {
+        "Data": {
+         "Id": 84003,
+         "Name": "Cigna Home Delivery (Sub Segments)",
+         "IsSelectable": False,
+        },
+        "Children": [],
+        "Depth": 2
+       },
+       {
+        "Data": {
+         "Id": 84004,
+         "Name": "ESI PBM (including Evicore) (Sub Segments)",
+         "IsSelectable": False,
+        },
+        "Children": [],
+        "Depth": 2
+       }
+      ],
+      "Depth": 1
+     }
+    ],
+    "Depth": 0
+   },
+   {
+    "Data": {
+     "Id": 84005,
+     "Name": "Integrated Medical (Reportable)",
+     "IsSelectable": False,
+    },
+    "Children": [
+     {
+      "Data": {
+       "Id": 84006,
+       "Name": "Commercial (Operating)",
+       "IsSelectable": False,
+      },
+      "Children": [
+       {
+        "Data": {
+         "Id": 84007,
+         "Name": "Behavioral (Sub Segments)",
+         "IsSelectable": False,
+        },
+        "Children": [],
+        "Depth": 2
+       },
+      ],
+      "Depth": 1
+     },
+     {
+      "Data": {
+       "Id": 84012,
+       "Name": "Government (Operating)",
+       "IsSelectable": False,
+      },
+      "Children": [
+       {
+        "Data": {
+         "Id": 84013,
+         "Name": "CareAllies (Sub Segments)",
+         "IsSelectable": False,
+        },
+        "Children": [],
+        "Depth": 2
+       },
+      ],
+      "Depth": 1
+     }
+    ],
+    "Depth": 0
+   },
+   {
+    "Data": {
+     "Id": 107694,
+     "Name": "US Commercial",
+     "IsSelectable": False,
+    },
+    "Children": [],
+    "Depth": 0
+   },
+  ]
+ },
+ "IsSuccessful": "true",
+ "ValidationMessages": []
+}
+
 VALUE_LIST_RES_FOR_SOURCE = {
     "RequestedObject": {
         "Children": [
@@ -80,9 +224,9 @@ VALUE_LIST_RES_FOR_SOURCE = {
 
 VALUE_LIST_FIELD_DATA = {
     "FieldId": 304, "ValuesList": [
-        {"Id": 471, "Name": "Low", "IsSelectable": True},
-        {"Id": 472, "Name": "Medium", "IsSelectable": True},
-        {"Id": 473, "Name": "High", "IsSelectable": True}]}
+        {"Id": 471, "Name": "Low", "IsSelectable": True, 'Parent': 'root', 'Depth': None},
+        {"Id": 472, "Name": "Medium", "IsSelectable": True, 'Parent': 'root', 'Depth': None},
+        {"Id": 473, "Name": "High", "IsSelectable": True, 'Parent': 'root', 'Depth': None}]}
 
 RES_WITH_ERRORS = {
     'ValidationMessages': [
@@ -344,7 +488,7 @@ class TestArcherV2:
                            json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
         requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
         client = Client(BASE_URL, '', '', '', '', 400)
-        record, res, errors = client.get_record(75, 1010)
+        record, res, errors = client.get_record(75, 1010, {"depth": 1})
         assert errors == 'No resource found.'
         assert res
         assert record == {}
@@ -356,7 +500,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
-        record, res, errors = client.get_record(1, 1010)
+        record, res, errors = client.get_record(1, 1010, {"depth": 1})
         assert errors is None
         assert res
         assert record == {'Device Name': 'The device name', 'Id': 1010}
@@ -418,12 +562,64 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_data = client.get_field_value_list(304)
+        field_data = client.get_field_value_list(304, {"depth": 1})
         assert VALUE_LIST_FIELD_DATA == field_data
+
+    RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
+    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+    RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
+    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False, 'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False, 'Parent': 'Health Services (Reportable)', 'Depth': 1},
+     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+    RES_DEPTH_3 = {'FieldId': 304, 'ValuesList':
+        [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+         {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+         {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+         {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False, 'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+         {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+         {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False, 'Parent': 'Health Services (Reportable)', 'Depth': 1},
+         {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False, 'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+         {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False, 'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+         {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+         {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+         {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)', 'Depth': 2},
+         {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+         {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)', 'Depth': 2},
+         {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+    @pytest.mark.parametrize('args, expected_response', [({'depth': 1}, RES_DEPTH_1), ({'depth': 2}, RES_DEPTH_2),
+                                                         ({'depth': 3}, RES_DEPTH_3)])
+    def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
+
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': True})
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=NESTED_VALUE_LIST_RES)
+        client = Client(BASE_URL, '', '', '', '', 400)
+        field_data = client.get_field_value_list(304, args)
+        assert field_data.get('FieldId') == expected_response.get('FieldId')
+        for expected, result in zip(expected_response.get('ValuesList'), field_data.get('ValuesList')):
+            assert expected == result
 
     def test_generate_field_value_text_input(self):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
+        field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto", {"depth": 1})
         assert field_key == 'Value'
         assert field_value == 'Demisto'
 
@@ -438,7 +634,7 @@ class TestArcherV2:
         requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
+        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"], {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [473]}
 
@@ -446,7 +642,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "", {'Type': 7},
                                                       [{"value": "github", "link": "https://github.com"},
-                                                       {"value": "google", "link": "https://google.com"}])
+                                                       {"value": "google", "link": "https://google.com"}],
+                                                       {"depth": 1})
         assert field_key == 'Value'
         assert field_value == [{"Name": "github", "URL": "https://github.com"},
                                {"Name": "google", "URL": "https://google.com"}]
@@ -464,7 +661,7 @@ class TestArcherV2:
 
         """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
+        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]}, {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
 
@@ -482,7 +679,7 @@ class TestArcherV2:
         """
         client = Client(BASE_URL, '', '', '', '', 400)
         with pytest.raises(DemistoException) as e:
-            generate_field_value(client, "test", {'Type': 8}, 'user1, user2')
+            generate_field_value(client, "test", {'Type': 8}, 'user1, user2', {"depth": 1})
         assert "The value of the field: test must be a dictionary type and include a list under \"users\" key or " \
                "\"groups\" key e.g: {\"Policy Owner\":{\"users\":[20],\"groups\":[30]}}" in str(e.value)
 
@@ -492,13 +689,13 @@ class TestArcherV2:
     ])
     def test_generate_field_cross_reference_input(self, field_value, result):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value)
+        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value, {"depth": 1})
         assert field_key == 'Value'
         assert field_value == result
 
     def test_generate_field_ip_address_input(self):
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
+        field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1', {"depth": 1})
         assert field_key == 'IpAddressBytes'
         assert field_value == '127.0.0.1'
 
@@ -523,7 +720,7 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "Source",
                                                       {'FieldId': '16172', 'IsRequired': False, 'Name':
-                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight')
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight', {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [471]}
 
