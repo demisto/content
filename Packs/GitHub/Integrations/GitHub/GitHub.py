@@ -1997,22 +1997,27 @@ def github_add_assignee_command():
             if assigned_users == "":
                 assigned_users = user
             else:
-                assigned_users = assigned_users + ", "+ user
+                assigned_users = assigned_users + ", " + user
         else:
             if not_assigned_users == "":
                 not_assigned_users = user
             else:
-                not_assigned_users = not_assigned_users + ", "+ user
-    #return_results(f' assigned_user: {assigned_users}, not assigned users {not_assigned_users} response:\n {response}')
+                not_assigned_users = not_assigned_users + ", " + user
+    readable_success = f'The following users: {assigned_users} were assigned successfully to PR #{pr_number}'
+    readable_failure = f'The following users: {not_assigned_users} were not assigned to PR #{pr_number}. Please check that ' \
+                       f'user exists and you have the correct permissions'
+    readable_partial = f'The following users: {assigned_users} were assigned successfully to PR #{pr_number}, the following ' \
+                       f'users: {not_assigned_users} were not assigned. Please check user exists and you have the' \
+                       f'correct permissions'
     if not_assigned_users == "":
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees',outputs_key_field='login', outputs=response, raw_response=response,
-                                      readable_output=f'The following users {assigned_users} were assigned successfully to PR #{pr_number}'))
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
+                                      raw_response=response, readable_output=readable_success))
     elif assigned_users == "":
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees',outputs=response,outputs_key_field='login', raw_response=response,
-                                      readable_output=f'The following users {not_assigned_users} were not assigned to PR #{pr_number}, please check that user exists and you have the correct permissions'))
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs=response, outputs_key_field='login',
+                                      raw_response=response, readable_output=readable_failure))
     else:
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response, raw_response=response,
-                                      readable_output=f'The following users {assigned_users} were assigned successfully to PR #{pr_number}, the following users {not_assigned_users} were not assigned, please check user exists and you have the correct permissions'))
+        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
+                                      raw_response=response, readable_output=readable_partial))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
