@@ -55,6 +55,7 @@ xsoar-prepare-testing-bucket-upload-flow:
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+  
 
 mpv2-prepare-testing-bucket-upload-flow:
  extends:
