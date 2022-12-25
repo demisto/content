@@ -2035,7 +2035,6 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
     demisto.debug(start_time, end_time)
     start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
 
-    # query = args.get('query')
     incident_type = argToList(args.get('incident_type'))
     priority = argToList(args.get('priority'))
     status = argToList(args.get('status'))

@@ -2,7 +2,8 @@ import pytest
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
-    get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date
+    get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date, \
+    fetch_incidents
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -11,6 +12,7 @@ from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABEL
     EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA, \
     EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS, \
     EXPECTED_RESULT_AFTER_RECORD_DELETION, EXPECTED_INCIDENT_LIST
+from test_data.response_incidents import INCIDENTS, EXPECTED_INCIDENTS, EXPECTED_LAST_RUN, EXPECTED_CALL_ARGS
 
 
 def test_contents_append_notable_user_info():
@@ -229,3 +231,59 @@ def test_convert_all_unix_keys_to_date(incident, expected_results):
 
     for key in expected_results:
         assert results['baseFields'][key] == expected_results[key]
+
+
+@pytest.mark.parametrize(
+    'params, incidents, expected_incidents, expected_last_run',
+    [
+        (
+            {'max_fetch': 3, 'incident_type': 'generic,abnormalAuth', 'status': 'new', 'priority': 'medium'},
+            INCIDENTS,
+            EXPECTED_INCIDENTS,
+            EXPECTED_LAST_RUN,
+        )
+    ]
+)
+def test_fetch_incdents(mocker, params, incidents, expected_incidents, expected_last_run):
+
+    mocker.patch.object(Client, '_login', return_value=None)
+    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False,
+                    headers={})
+    request_get_incidents = mocker.patch.object(client, 'get_incidents', return_value=incidents)
+    mocker.patch('Exabeam.demisto.getLastRun', return_value={})
+    mocker.patch('Exabeam.get_fetch_run_time_range', return_value=("2022-12-22T13:53:05.195302", "2022-12-25T13:53:05.145561"))
+    results, last_run = fetch_incidents(client, params)
+
+    for i in range(len(results)):
+        assert results[i]['Name'] == expected_incidents['first_fetch'][i]['name']
+        assert results[i]['occurred'] == expected_incidents['first_fetch'][i]['baseFields']['createdAt']
+
+    assert last_run['limit'] == expected_last_run['first_fetch']['limit']
+    assert last_run['time'] == expected_last_run['first_fetch']['time']
+    for id_ in expected_last_run['first_fetch']['found_incident_ids']:
+        assert id_ in last_run['found_incident_ids']
+
+    assert EXPECTED_CALL_ARGS == request_get_incidents.call_args_list[0][0][0]
+    mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
+    results, last_run = fetch_incidents(client, params)
+
+    for i in range(len(results)):
+        assert results[i]['Name'] == expected_incidents['second_fetch'][i]['name']
+        assert results[i]['occurred'] == expected_incidents['second_fetch'][i]['baseFields']['createdAt']
+
+    assert last_run['limit'] == expected_last_run['second_fetch']['limit']
+    assert last_run['time'] == expected_last_run['second_fetch']['time']
+    for id_ in expected_last_run['second_fetch']['found_incident_ids']:
+        assert id_ in last_run['found_incident_ids']
+
+    mocker.patch('Exabeam.demisto.getLastRun', return_value=last_run)
+    results, last_run = fetch_incidents(client, params)
+
+    for i in range(len(results)):
+        assert results[i]['Name'] == expected_incidents['third_fetch'][i]['name']
+        assert results[i]['occurred'] == expected_incidents['third_fetch'][i]['baseFields']['createdAt']
+
+    assert last_run['limit'] == expected_last_run['third_fetch']['limit']
+    assert last_run['time'] == expected_last_run['third_fetch']['time']
+    for id_ in expected_last_run['third_fetch']['found_incident_ids']:
+        assert id_ in last_run['found_incident_ids']
