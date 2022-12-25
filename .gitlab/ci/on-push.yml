@@ -185,7 +185,7 @@ xsoar-prepare-testing-bucket:
   rules:
     if: $INSTANCE_TESTS
   extends:
-    - .generic-graph-prepare-testing-bucket
+    - .generic-prepare-testing-bucket
 
 xpanse-prepare-testing-bucket:
   variables:
@@ -194,7 +194,7 @@ xpanse-prepare-testing-bucket:
     PRODUCT_NAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
-    - .generic-graph-prepare-testing-bucket
+    - .generic-prepare-testing-bucket
 
 mpv2-prepare-testing-bucket:
   variables:
@@ -202,7 +202,7 @@ mpv2-prepare-testing-bucket:
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
   extends:
-    - .generic-graph-prepare-testing-bucket
+    - .generic-prepare-testing-bucket
 
 .test_content_on_xsoar_server_instances_base:
   tags:
