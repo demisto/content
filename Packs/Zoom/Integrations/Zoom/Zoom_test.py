@@ -138,8 +138,8 @@ def test_http_request___when_raising_invalid_token_message(mocker):
         client = Client(base_url='https://test.com', account_id="mockaccount",
                         client_id="mockclient", client_secret="mocksecret")
         # a command that uses http_request
-        client.meeting_list_basic_request("bla", "bla", 4,
-                                          "bla")
+        client.zoom_list_users("bla", "bla", 4,
+                               "bla")
     except Exception:
         pass
     assert m.call_count == 2
@@ -155,15 +155,13 @@ def test_zoom_user_list__limit(mocker):
         Then -
             Validate that a func that runs a pagination has been called
     """
-
-    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
-    mocker.patch.object(Client, "user_list_basic_request")
+    manual_list_user_pagination_mock = mocker.patch.object(Zoom, "manual_list_user_pagination")
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
-
-    client.zoom_user_list(limit=50)
-    assert manual_user_list_pagination_mock.called
+    from Zoom import zoom_list_users_command
+    zoom_list_users_command(client=client, limit=50)
+    assert manual_list_user_pagination_mock.called
 
 
 def test_zoom_user_list__no_limit(mocker):
@@ -176,15 +174,17 @@ def test_zoom_user_list__no_limit(mocker):
             Validate that a func that runs a pagination has not been called
             Validate that a func that returns the first page is called
     """
-    manual_user_list_pagination_mock = mocker.patch.object(Client, "manual_user_list_pagination")
-    user_list_basic_request_mock = mocker.patch.object(Client, "user_list_basic_request")
+    manual_list_user_pagination_mock = mocker.patch.object(Zoom, "manual_list_user_pagination", return_value=None)
+    zoom_list_users_mock = mocker.patch.object(Client, "zoom_list_users", return_value=None)
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
 
-    client.zoom_user_list()
-    assert not manual_user_list_pagination_mock.called
-    assert user_list_basic_request_mock.called
+    from Zoom import zoom_list_users_command
+    zoom_list_users_command(client=client, page_size=30, user_id=None, status="active",
+                            next_page_token=None, role_id=None, limit=None)
+    assert not manual_list_user_pagination_mock.called
+    assert zoom_list_users_mock.called
 
 
 def test_zoom_user_list__limit_and_page_size(mocker):
@@ -537,8 +537,8 @@ def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
     """
     with pytest.raises(DemistoException) as e:
         Zoom.check_authentication_type_parameters(account_id="mockaccount",
-                                                 client_id="mockclient", client_secret="mocksecret",
-                                                 api_key="blabla", api_secret="")
+                                                  client_id="mockclient", client_secret="mocksecret",
+                                                  api_key="blabla", api_secret="")
     assert e.value.message == """Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""
@@ -555,8 +555,8 @@ def test_check_authentication_type_parameters__with_extra_AOuth_member():
     """
     with pytest.raises(DemistoException) as e:
         Zoom.check_authentication_type_parameters(account_id="",
-                                                 client_id="", client_secret="mocksecret",
-                                                 api_key="blabla", api_secret="ertert")
+                                                  client_id="", client_secret="mocksecret",
+                                                  api_key="blabla", api_secret="ertert")
     assert e.value.message == """Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""

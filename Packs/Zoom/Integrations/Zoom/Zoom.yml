@@ -59,9 +59,11 @@ script:
           predefined:
             - Basic
             - Licensed
+            - pro
             - Corporate
           description: >
-            The type of the newly created user. Note: the type "Corporate" is not sopprted in Zoom v2 and above.
+            The type of the newly created user. 
+            Note: the old type "pro" in now called "Licensed", and the type "Corporate" is not sopprted in Zoom v2 and above.
           defaultValue: Basic
       outputs:
         - contextPath: Zoom.User.id
@@ -148,7 +150,7 @@ script:
             For recurring meetings with a Weekly recurrence_type only.
 
             State a specific day in a week when the weekly meeting should recur. Allowed: 1┃2┃3┃4┃5┃6┃7  Default = 1.
-        - name: auto_recording
+        - name: auto-record-meeting
           auto: PREDEFINED
           predefined:
             - local
@@ -208,7 +210,7 @@ script:
             - false
             - true
           description: This allows the host to control when a participant joins the meeting. The default is False.
-        - name: start_time
+        - name: start-time
           description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
         - name: timezone
           description: "Timezone to format start_time. For example, “America/Los_Angeles”. For scheduled meetings only. "
@@ -296,7 +298,7 @@ script:
             - pending
           description: Which status of users to list
           defaultValue: active
-        - name: page_size
+        - name: page-size
           description: Number of users to return. Max 300. The default is 30.
           type: int
         - name: next_page_token
@@ -304,6 +306,12 @@ script:
             The next page token is used to get the next page. IMPORTENT: You must pass the same page size that you pased at the first call.
           type: string
           required: false
+        - name: page-number
+          defaultValue: 1
+          description: >
+            Which page of results to return. 
+
+            Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
         - name: limit
           required: false
           description: The total amunt of results to show.
@@ -442,6 +450,12 @@ script:
         - name: page_size
           default: false
           description: Number of users to return. Default = 30. Max = 300.
+        - name: page_number
+          defaultValue: 1
+          description: >
+            Which page of results to return.
+
+            Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
         - name: next_page_token
           description: >
             The next page token is used to paginate te the next page. IMPORTENT: You must pass the same page size that you pased at the first call.

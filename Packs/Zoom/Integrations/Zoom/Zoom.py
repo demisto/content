@@ -143,7 +143,8 @@ class Client(BaseClient):
 
     def zoom_list_users(self, page_size: int, status: str = "active",
                         next_page_token: str = None,
-                        role_id: str = None, url_suffix: str = None):
+                        role_id: str = None, url_suffix: str = None,
+                        page_number: int = None):
         return self._http_request(
             method='GET',
             url_suffix=url_suffix,
@@ -151,6 +152,7 @@ class Client(BaseClient):
             params={
                 'status': status,
                 'page_size': page_size,
+                'page_number': page_number,
                 'next_page_token': next_page_token,
                 'role_id': role_id})
 
@@ -183,7 +185,7 @@ class Client(BaseClient):
             })
 
     def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
-                          limit: int | str | None = None, type: str = None):
+                          limit: int | str | None = None, type: str = None, page_number: int = None):
         return self._http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
@@ -191,9 +193,11 @@ class Client(BaseClient):
             params={
                 'type': type,
                 'next_page_token': next_page_token,
-                'page_size': page_size
+                'page_size': page_size,
+                'page_number': page_number
             })
 # this part is waiting for a paid zoom account
+
     # def zoom_fetch_recording(self, meeting_id: str):
     #     succeed = []
     #     failed = []
@@ -354,7 +358,7 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 
 def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = None,
                             status: str = "active", next_page_token: str = None,
-                            role_id: str = None, limit: int = None) -> CommandResults:
+                            role_id: str = None, limit: int = None, page_number: int = None) -> CommandResults:
     # preprocessing
     if not user_id:
         url_suffix = 'users'
@@ -362,6 +366,7 @@ def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = 
         url_suffix = f'users/{user_id}'
 
     page_size = arg_to_number(page_size)
+    page_number = arg_to_number(page_number)
     if limit:
         limit = arg_to_number(limit)
         # "page_size" is specific referring to demisto.args,
@@ -395,7 +400,7 @@ def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = 
         # only one request is needed
         raw_data = client.zoom_list_users(page_size=page_size, status=status,                      # type: ignore[arg-type]
                                           next_page_token=next_page_token,
-                                          role_id=role_id, url_suffix=url_suffix)
+                                          role_id=role_id, url_suffix=url_suffix, page_number=page_number)
         # parsing the data according to the different given arguments
         if user_id:
             md = tableToMarkdown('User', [raw_data], ['id', 'email',
@@ -447,7 +452,7 @@ def zoom_create_meeting_command(
         start_time: str = None,
         timezone: str = None,
         type: str = "instant",
-        auto_recording: str = "none",
+        auto_record_meeting: str = "none",
         encryption_type: str = "enhanced_encryption",
         join_before_host: bool | str = False,
         meeting_authentication: bool | str = False,
@@ -544,7 +549,7 @@ def zoom_create_meeting_command(
         }})
     json_all_data.update({
         "settings": {
-            "auto_recording": auto_recording,
+            "auto_recording": auto_record_meeting,
             "encryption_type": encryption_type,
             "host_video": host_video,
             "jbh_time": jbh_time,
@@ -647,16 +652,17 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
 
 
 def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str = None,
-                              page_size: int = 30, limit: int = None, type: str = None) -> CommandResults:
+                              page_size: int = 30, limit: int = None, type: str = None, page_number: int = None) -> CommandResults:
     # converting
     page_size = arg_to_number(page_size)
+    page_number = arg_to_number(page_number)
     limit = arg_to_number(limit)
     args = demisto.args()
     # "page_size" is specific referring to demisto.args,
     # because the error raising, i need to distinguish
     # between a user argument and the defult argument
     if limit:
-        if "page_size" in args or next_page_token:
+        if "page_size" in args or next_page_token or page_number:
             # arguments collision
             raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size or next_page_token")
         else:
@@ -683,13 +689,13 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
     else:
         # one request in needed
         raw_data = client.zoom_meeting_list(user_id=user_id, next_page_token=next_page_token,
-                                            page_size=page_size, limit=limit, type=type)
+                                            page_size=page_size, limit=limit, type=type, page_number=page_number)
         # parsing the data
         md = tableToMarkdown("Meeting list", raw_data.get("meetings"), ['uuid', 'id',
                                                                         'host_id', 'topic', 'type', 'start_time', 'duration',
                                                                         'timezone', 'created_at', 'join_url'
                                                                         ])
-        md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'total_records'])
+        md += "\n" + tableToMarkdown('Metadata', [raw_data], ['next_page_token', 'page_size', 'page_number', 'total_records'])
 
     return CommandResults(
         outputs_prefix='Zoom',
@@ -715,8 +721,6 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
 
 
 def main():  # pragma: no cover
-    # TODO do i need this line?
-    results: Union[CommandResults, str, List[CommandResults]]
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
@@ -773,8 +777,6 @@ def main():  # pragma: no cover
     except DemistoException as e:
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
-        # TODO maybe refer to specific parts, like "e.res.status_code, e.res.text"
-        # and the error line shuld be modified to feet all kinds of error
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
