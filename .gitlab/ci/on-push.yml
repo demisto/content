@@ -184,6 +184,8 @@ validate-content-conf:
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
+    - echo "create instances done" > "$ARTIFACTS_FOLDER/create_instances_done.txt"
+
 
 
 xsoar-prepare-testing-bucket:
