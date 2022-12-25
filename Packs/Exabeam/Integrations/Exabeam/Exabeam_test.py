@@ -11,7 +11,6 @@ from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABEL
     EXPECTED_ASSET_DATA, EXPECTED_SESSION_INFO, EXPECTED_MODEL_DATA, EXPECTED_NOTABLE_ASSET_DATA, \
     EXPECTED_NOTABLE_SESSION_DETAILS, EXPECTED_NOTABLE_SEQUENCE_DETAILS, EXPECTED_NOTABLE_SEQUENCE_EVENTS, \
     EXPECTED_RESULT_AFTER_RECORD_DELETION, EXPECTED_INCIDENT_LIST
-from test_data.response_incidents import INCIDENTS
 
 
 def test_contents_append_notable_user_info():
@@ -201,13 +200,13 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
                 }
             },
             {
-                'createdAt': '2022-12-07T15:46:43Z',
-                'startedDate': '2022-12-07T15:53:09Z',
-                'closedDate': '2022-12-19T05:39:59Z',
-                'updatedAt': '2022-12-07T15:53:19Z',
+                'createdAt': '2022-12-07T13:46:43Z',
+                'startedDate': '2022-12-07T13:53:09Z',
+                'closedDate': '2022-12-19T03:39:59Z',
+                'updatedAt': '2022-12-07T13:53:19Z',
             }
         ),
-(
+        (
             {
                 'id': 123,
                 'baseFields': {
@@ -217,9 +216,9 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
                 }
             },
             {
-                'createdAt': '2022-12-07T15:46:43Z',
-                'startedDate': '2022-12-07T15:53:09Z',
-                'updatedAt': '2022-12-07T15:53:19Z',
+                'createdAt': '2022-12-07T13:46:43Z',
+                'startedDate': '2022-12-07T13:53:09Z',
+                'updatedAt': '2022-12-07T13:53:19Z',
             }
         )
     ]

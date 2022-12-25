@@ -28,7 +28,7 @@
                     "simple": "baseFields.incidentType"
                 },
                 "Source Create time": {
-                    "simple": "createdAt"
+                    "simple": "baseFields.createdAt"
                 },
                 "Source Created By": {
                     "simple": "baseFields.createdBy"

@@ -2059,10 +2059,6 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     resp = client.get_incidents(q)
     incidents_res: List[dict] = resp.get('incidents', [])
-    for i in range(len(incidents_res)):
-        incidents_res[i].update({
-            'createdAt': datetime.fromtimestamp(
-                incidents_res[i].get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
 
     incidents_filtered = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents_res,
@@ -2073,6 +2069,9 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     incidents: List[dict] = []
     for incident in incidents_filtered:
+        incident.update({
+            'createdAt': datetime.fromtimestamp(
+                incidents_res[i].get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
         incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
