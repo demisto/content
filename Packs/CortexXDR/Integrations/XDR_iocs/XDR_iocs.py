@@ -58,6 +58,7 @@ class Client:
     severity: str = ''  # used when override_severity is True
     xsoar_severity_field: str = 'sourceoriginalseverity'  # used when override_severity is False
     xsoar_comments_field: str = 'comments'
+    comments_as_tags: bool = False
     tag = 'Cortex XDR'
     tlp_color = None
     error_codes: Dict[int, str] = {
@@ -221,8 +222,12 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str) -> str | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> str | None:
     if comment_field_name == 'comments':
+        if comments_as_tags:
+            raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
+                                   "Set a different value.")
+
         # default behavior, take last comment's content value where type==IndicatorCommentRegular
         last_comment: dict = next(
             filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', ()))), {}
@@ -230,8 +235,8 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str) -> str | None:
         return (last_comment).get('content')
 
     else:  # custom comments field
-        return ','.join(argToList(ioc.get('CustomFields', {}).get(comment_field_name, ()))) or None
-
+        raw_comments = ioc.get('CustomFields', {}).get(comment_field_name, ())
+        return ','.join(argToList(raw_comments)) or None if comments_as_tags else raw_comments
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
@@ -247,7 +252,8 @@ def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
             xdr_ioc['reliability'] = aggregated_reliability[0]
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
-        if (comment := _parse_demisto_comments(ioc, comment_field_name=Client.xsoar_comments_field)):
+        if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
+                                               comments_as_tags=Client.comments_as_tags)):
             xdr_ioc['comment'] = comment
 
         custom_fields = ioc.get('CustomFields', {})
@@ -388,12 +394,13 @@ def xdr_expiration_to_demisto(expiration) -> Union[str, None]:
     return None
 
 
-def _parse_xdr_comments(raw_comment: str) -> list[str]:
+def _parse_xdr_comments(raw_comment: str, comments_as_tags: bool) -> list[str]:
     if not raw_comment:
         return []
-
-    if ',' in raw_comment:
+    
+    if comments_as_tags:
         return raw_comment.split(',')
+
     return [raw_comment]
 
 
@@ -414,7 +421,8 @@ def xdr_ioc_to_demisto(ioc: Dict) -> Dict:
     score = get_indicator_xdr_score(indicator, xdr_server_score)
     severity = Client.severity if Client.override_severity else xdr_severity_to_demisto[ioc['RULE_SEVERITY']]
 
-    comments = _parse_xdr_comments(ioc.get('RULE_COMMENT', ''))
+    comments = _parse_xdr_comments(raw_comment=ioc.get('RULE_COMMENT', ''),
+                                   comments_as_tags=Client.comments_as_tags)
 
     if Client.xsoar_comments_field == 'tags':
         extra_fields = {"tags": list_of_single_to_str(dedupe_keep_order(filter(None, comments + [Client.tag])))}
@@ -583,11 +591,12 @@ def validate_fix_severity_value(severity: str, indicator_value: Optional[str] = 
 
 def main():  # pragma: no cover
     params = demisto.params()
+    # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     Client.severity = params.get('severity', '')
     Client.override_severity = argToBoolean(params.get('override_severity', True))
     Client.tlp_color = params.get('tlp_color')
+    Client.comments_as_tags = argToBoolean(params.get('comments_as_tags', False))
 
-    # In this integration, parameters are set in the *class level*, the defaults are in the class definition.
     if query := params.get('query'):
         Client.query = query
     if tag := (params.get('feedTags') or params.get('tag')):

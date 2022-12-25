@@ -129,6 +129,12 @@ configuration:
   name: xsoar_comments_field
   required: false
   type: 0
+- defaultvalue: 'false'
+  additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
+  display: Comments as tags (CSV)
+  name: comments_as_tags
+  required: false
+  type: 8
 - additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
   name: override_severity
