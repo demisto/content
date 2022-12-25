@@ -2422,7 +2422,7 @@ List the Server Policies.
 
 #### Command example
 ```!fortiwebvm-server-policy-list name=example```
-#### Context Example
+#### Context Example - API Version 1
 ```json
 {
     "FortiwebVM": {
@@ -2451,7 +2451,7 @@ List the Server Policies.
 }
 ```
 
-#### Human Readable Output
+#### Human Readable Output - API Version 1
 
 >### Server Policies:
 >Showing 1 rows out of 1.
@@ -2459,6 +2459,53 @@ List the Server Policies.
 >|---|---|---|---|---|---|
 >| example | HTTP Content Routing | virtual1 | HTTP |  | false |
 
+#### Context Example - API Version 2
+```json
+{
+    "FortiwebVM": {
+        "ServerPolicy": {
+            "allow_list": "",
+            "certificate": "",
+            "certificate_intermediate_group": "",
+            "client_real_ip": "disable",
+            "comments": "",
+            "deployment_mode": "HTTP Content Routing",
+            "half_open_thresh": 8192,
+            "http2": "disable",
+            "http_service": "HTTP",
+            "https_service": "",
+            "monitor_mode": "disable",
+            "name": "example",
+            "protected_hostnames": "",
+            "protocol": "HTTP",
+            "redirect_to_https": "disable",
+            "replace_msg": "Predefined",
+            "retry_on": "disable",
+            "retry_on_cache_size": 512,
+            "retry_on_connect_failure": "disable",
+            "retry_on_http_layer": "disable",
+            "retry_on_http_response_codes": "",
+            "retry_times_on_connect_failure": 3,
+            "retry_times_on_http_layer": 3,
+            "scripting": "disable",
+            "scripting_list": "",
+            "server_pool": "",
+            "syn_cookie": "disable",
+            "url_case_sensitivity": "disable",
+            "virtual_server": "virtual1",
+            "web_protection_profile": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output - API Version 2
+
+>### Server Policies:
+>Showing 1 rows out of 1.
+>|Name|Deployment Mode|Virtual Server|Protocol|Web Protection Profile|Monitor Mode|
+>|---|---|---|---|---|---|
+>| example | HTTP Content Routing | virtual1 | HTTP |  | disable |
 
 ### fortiwebvm-content-routing-policy-list
 ***
