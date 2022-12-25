@@ -214,8 +214,8 @@ mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
-  needs: ["xsoar-prepare-testing-bucket"]
   stage: run-instances
+  needs: ["xsoar-prepare-testing-bucket"]
   script:
     - '[[ "create instances done" = $(cat "$ARTIFACTS_FOLDER/create_instances_done.txt" 2> /dev/null) ]] || (echo "this is a known issue with GitLab pipline please mention @esharf in your PR" && exit 1)'
     - EXIT_CODE=0
