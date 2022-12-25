@@ -183,8 +183,6 @@ xsoar-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
     MARKETPLACE_VERSION: "xsoar"
     MARKETPLACE_BUCKET: "$GCS_MARKET_BUCKET"
-  rules:
-    - if: $INSTANCE_TESTS
   extends:
     - .generic-prepare-testing-bucket
 
