@@ -234,15 +234,16 @@ def get_results_command(client: Client, args: Dict):
         'Checks': job_checks,
         'Status': status
     }}
-    human_readable = tableToMarkdown('BPA Results', job_checks)
+    headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed',
+               'check_type', 'check_severity']
+    human_readable = tableToMarkdown('BPA Results', job_checks, headers=headers, headerTransform=string_to_table_header)
 
     return human_readable, context, results
 
 
 def download_report_handler(client: Client, task_id):
     downloaded_report = client.get_download_results_request(task_id)
-    demisto.results(
-        fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
+    demisto.results(fileResult(task_id + DOWNLOADED_REPORT_NAME_SUFFIX, downloaded_report, entryTypes['entryInfoFile']))
 
 
 def test_module(client, panorama):
