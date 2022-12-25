@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
 - Utility
-comment: Create indicators to the Threat Intel DB only if they are not registered. When using the script with many indicators, or when the TIM DB is highly populated this script may have low preformence issue.
+comment: Create indicators to the Threat Intel database only if they are not registered. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
 enabled: true
 args:
 - name: indicator_values
@@ -31,9 +31,9 @@ args:
   - Host
   - ssdeep
   - Registry Key
-  description: The indicator type of the indicators
+  description: The indicator type of the indicators.
 - name: source
-  description: The indicator source
+  description: The indicator source.
 - name: verdict
   auto: PREDEFINED
   predefined:
@@ -41,31 +41,31 @@ args:
   - Benign
   - Suspicious
   - Malicious
-  description: The indicator reputation
+  description: The indicator reputation.
 - name: tags
-  description: The tags to add to the new indicators
+  description: The tags to add to the new indicators.
   isArray: true
 - name: verbose
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Output additional messages as readable output
+  description: Whether to output additional messages as readable output.
 outputs:
 - contextPath: CreateNewIndicatorsOnly.ID
-  description: The indicator ID
+  description: The indicator ID.
   type: string
 - contextPath: CreateNewIndicatorsOnly.Value
-  description: The indicator value
+  description: The indicator value.
   type: string
 - contextPath: CreateNewIndicatorsOnly.Type
-  description: The indicator type
+  description: The indicator type.
   type: string
 - contextPath: CreateNewIndicatorsOnly.Score
-  description: The indicator score
+  description: The indicator score.
   type: number
 - contextPath: CreateNewIndicatorsOnly.CreationStatus
-  description: The status of the indicator requested to add, which states either one of new, existing or unavailable.
+  description: The status of the indicator requested to add. Value is either new, existing, or unavailable.
   type: string
 scripttarget: 0
 subtype: python3
