@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 from requests.auth import HTTPBasicAuth
-from typing import Tuple, List, Dict, Callable
+from typing import Tuple, List, Dict, Callable, Union
 import urllib3
 
 # Disable insecure warnings
@@ -15,8 +15,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DEFAULT_INTERVAL = 60
-DEFAULT_TIMEOUT = 600
+DEFAULT_INTERVAL = 30
+DEFAULT_TIMEOUT = 180
 XSOAR_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SYMANTEC_ISO_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 INTEGRATION_CONTEXT_NAME = 'SymantecEDR'
@@ -35,42 +35,65 @@ INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filt
 COMMAND_ACTION = ['isolate_endpoint', 'rejoin_endpoint', 'cancel_command', 'delete_endpoint_file']
 INCIDENT_PATCH_ACTION = ['add_comment', 'close_incident', 'update_resolution']
 SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
-INCIDENT_PRIORITY_LEVEL = {
-    1: 'Low',
-    2: 'Medium',
-    3: 'High'
+INCIDENT_PRIORITY_LEVEL: Dict[str, str] = {
+    '1': 'Low',
+    '2': 'Medium',
+    '3': 'High'
 }
 
-INCIDENT_STATUS = {
-    1: 'Open',
-    2: 'Waiting',
-    3: 'In-Progress',
-    4: 'Close'
+INCIDENT_STATUS: Dict[str, str] = {
+    '1': 'Open',
+    '2': 'Waiting',
+    '3': 'In-Progress',
+    '4': 'Close'
 }
 
-INCIDENT_RESOLUTION = {
-    0: 'INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.',
-    1: 'SECURITY_RISK. The incident indicates a true security threat.',
-    2: 'FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.',
-    3: 'MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.',
-    4: 'NOT_SET. The incident resolution was not set.',
-    5: 'BENIGN. The incident detected the activity as expected but is not a security threat.',
-    6: 'TEST. The incident was generated due to internal security testing.'
+INCIDENT_RESOLUTION: Dict[str, str] = {
+    '0': 'INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.',
+    '1': 'SECURITY_RISK. The incident indicates a true security threat.',
+    '2': 'FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.',
+    '3': 'MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.',
+    '4': 'NOT_SET. The incident resolution was not set.',
+    '5': 'BENIGN. The incident detected the activity as expected but is not a security threat.',
+    '6': 'TEST. The incident was generated due to internal security testing.'
 }
 
-EVENT_SEVERITY = {
-    1: 'Info',
-    2: 'Warning',
-    3: 'Minor',
-    4: 'Major',
-    5: 'Critical',
-    6: 'Fatal'
+EVENT_SEVERITY: Dict[str, str] = {
+    '1': 'Info',
+    '2': 'Warning',
+    '3': 'Minor',
+    '4': 'Major',
+    '5': 'Critical',
+    '6': 'Fatal'
 }
 
-SANDBOX_STATE = {
-    0: 'Completed',
-    1: 'In Progress',
-    2: 'Error'
+# Status for Applicable events : 1, 20, 21, 1000
+EVENT_STATUS: Dict[str, str] = {
+    '0': 'Unknown',
+    '1': 'Success',
+    '2': 'Failure'
+}
+
+EVENT_ATPNODE_ROLE: Dict[str, str] = {
+    '0': 'Pre-Bootstrap',
+    '1': 'Network Scanner',
+    '2': 'Management',
+    '3': 'StandaloneNetwork',
+    '4':'Standalone Endpoint',
+    '5':'All in One'
+}
+
+SANDBOX_STATE: Dict[str, str] = {
+    '0': 'Completed',
+    '1': 'In Progress',
+    '2': 'Error'
+}
+
+DOMAIN_DISPOSITION_STATUS: Dict[str, str] = {
+    '0': 'Healthy',
+    '1': 'unknown',
+    '2': 'Suspicious',
+    '3': 'Bad'
 }
 ''' CLIENT CLASS '''
 
@@ -142,12 +165,12 @@ class Client(BaseClient):
         )
         return response.json()
 
-    def query_patch_api(self, endpoint: str, payload: dict) -> dict:
+    def query_patch_api(self, endpoint: str, payload: list) -> dict:
         """
         Call the PATCH api to add/modify or update to the endpoint
         Args:
             endpoint (str): Symantec EDR endpoint resources operation add, update, delete
-            payload (str): Kwargs
+            payload (List): Kwargs
         Returns:
             return response status code
         """
@@ -164,7 +187,7 @@ class Client(BaseClient):
         response = self._http_request(
             method="PATCH",
             headers=headers,
-            data=payload,
+            data=json.dumps(payload),
             full_url=url_path,
             resp_type="response",
             return_empty_response=True
@@ -222,18 +245,18 @@ def iso_creation_date(date: str):
     """
     iso_date = None
     if date:
-        iso_date = dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z"
+        iso_date = dateparser.parse(date).strftime(SYMANTEC_ISO_DATE_FORMAT)[:23] + "Z" # type: ignore 
 
     return iso_date
 
 
-def get_data_of_current_page(offset: int, limit: int, data_list: List[Dict]):
+def get_data_of_current_page(offset: int, limit: int, data_list: List[Dict[str, Any]]):
     """
     Symantec EDR on-premise pagination
     Args:
         offset (int): Offset
         limit (int): Page Limit
-        data_list (list[dict]): Raw API result list
+        data_list (list): Raw API result list
 
     Returns:
         Return List of object from the response according to the limit, page and page_size.
@@ -294,13 +317,13 @@ def get_command_title_string(context_name: str, page: Optional[int], page_size: 
 
 def process_sub_object(data: Dict) -> Dict:
     data_dict = dict()
-    ignore_key_list = ['file', 'user']
+    ignore_key_list: List[str] = ['file', 'user']
     data_dict = extract_raw_data(data, ignore_key_list)
     return data_dict
 
 
-def attacks_sub_object(data: Dict[str, Any]) -> Dict:
-    ignore_key_list = ['tactic_ids', 'tactic_uids']
+def attacks_sub_object(data: List[dict]) -> Dict:
+    ignore_key_list: List[str] = ['tactic_ids', 'tactic_uids']
     attacks_dict = extract_raw_data(data, ignore_key_list, prefix='attacks')
 
     for attack in data:
@@ -324,9 +347,9 @@ def attacks_sub_object(data: Dict[str, Any]) -> Dict:
     return attacks_dict
 
 
-def event_data_sub_object(data: Dict) -> Dict:
-    ignore_key_list = []
-    event_data_dict = {}
+def event_data_sub_object(data: Dict[str, Any]) -> Dict:
+    ignore_key_list: List[str] = []
+    event_data_dict: Dict[str, Any] = {}
 
     sepm_server = data.get('sepm_server', {})
     search_config = data.get('search_config', {})
@@ -348,7 +371,7 @@ def event_data_sub_object(data: Dict) -> Dict:
 
 
 def enriched_data_sub_object(data: Dict[str, Any]) -> Dict:
-    ignore_key_list = []
+    ignore_key_list: List[str] = []
     enriched_dict = extract_raw_data(data, ignore_key_list, 'enriched_data')
     return enriched_dict
 
@@ -364,15 +387,15 @@ def enriched_data_sub_object(data: Dict[str, Any]) -> Dict:
 
 def user_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     user_dict = dict()
-    ignore_key = []
-    prefix = f'{obj_prefix}_user' if obj_prefix else f'user'
+    ignore_key: List[str] = []
+    prefix = f'{obj_prefix}_use: List[str] = []r' if obj_prefix else f'user'
     user_dict = extract_raw_data(data, ignore_key, prefix)
     return user_dict
 
 
 def xattributes_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     xattributes_dict = dict()
-    ignore_key = []
+    ignore_key: List[str] = []
     prefix = f'{obj_prefix}_user' if obj_prefix else f'xattributes'
     xattributes_dict = extract_raw_data(data, ignore_key, prefix)
     return xattributes_dict
@@ -381,22 +404,22 @@ def xattributes_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict
 def event_actor_sub_object(data: Dict[str, Any]) -> Dict:
     event_actor_dict = dict()
     # Sub Object will be fetch separately
-    ignore_key = ['file', 'user', 'xattributes']
+    ignore_key: List[str] = ['file', 'user', 'xattributes']
     event_actor_dict = extract_raw_data(data, ignore_key, 'event_actor')
 
     # File Sub Object
     if data.get('file'):
-        file_dict = file_sub_object(data.get('file'), 'event_actor')
+        file_dict = file_sub_object(data.get('file', {}), 'event_actor')
         event_actor_dict = {**event_actor_dict, **file_dict}
 
     # User
     if data.get('user'):
-        user_dict = user_sub_object(data.get('user'), 'event_actor')
+        user_dict = user_sub_object(data.get('user', {}), 'event_actor')
         event_actor_dict = {**event_actor_dict, **user_dict}
 
     # xattributes
     if data.get('xattributes'):
-        xattributes_dict = xattributes_sub_object(data.get('xattributes'), 'event_actor')
+        xattributes_dict = xattributes_sub_object(data.get('xattributes', {}), 'event_actor')
         event_actor_dict = {**event_actor_dict, **xattributes_dict}
 
     return event_actor_dict
@@ -404,7 +427,7 @@ def event_actor_sub_object(data: Dict[str, Any]) -> Dict:
 
 def file_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     file_dict = dict()
-    ignore_key_list = ['signature_value_ids']
+    ignore_key_list: List[str] = ['signature_value_ids']
     prefix = f'{obj_prefix}_file' if obj_prefix else f'file'
     file_dict = extract_raw_data(data, ignore_key_list, prefix)
     return file_dict
@@ -442,7 +465,7 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
     Returns:
         event_dict: Event Json Data
     """
-    event_dict = {}
+    event_dict: Dict[str, Any] = {}
     if not data:
         # Return empty dictionary
         return event_dict
@@ -462,9 +485,9 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
         event_dict = {**event_dict, **attacks_dict}
 
     # event data
-    event_data = data.get('data')
-    if data.get('data'):
-        event_data_dict = event_data_sub_object(data.get('data'))
+    event_data = data.get('data', {})
+    if event_data:
+        event_data_dict = event_data_sub_object(event_data)
         event_dict = {**event_dict, **event_data_dict}
 
     # Enriched Data
@@ -474,8 +497,9 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
         event_dict = {**event_dict, **enriched_dict}
 
     # Event_actor
-    if data.get('event_actor'):
-        event_actor_data = event_actor_sub_object(data.get('event_actor'))
+    event_actor = data.get('event_actor', {})
+    if event_actor:
+        event_actor_data = event_actor_sub_object(event_actor)
         event_dict = {**event_dict, **event_actor_data}
 
     # monitor source
@@ -550,7 +574,7 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
     return event_dict
 
 
-def domain_instance_readable_output(results: List[Dict], title: str) -> str:
+def domain_instance_readable_output(results: List[Dict], title: str):
     """
     Convert to XSOAR Readable output for entities Domains instance
     Args:
@@ -559,23 +583,15 @@ def domain_instance_readable_output(results: List[Dict], title: str) -> str:
     Returns:
         A string representation of the Markdown table
     """
-    disposition = {
-        0: 'Healthy (0)',
-        1: 'unknown (1)',
-        2: 'Suspicious (2)',
-        3: 'Bad (3)'
-    }
-
     summary_data = []
     for data in results:
-        disposition_val = arg_to_number(data.get('disposition'))
-
+        disposition_val = data.get('disposition', '')
         new = {
             'data_source_url_domain': data.get('data_source_url_domain', ''),
             'first_seen': data.get('first_seen', ''),
             'last_seen': data.get('last_seen', ''),
             'external_ip': data.get('external_ip', ''),
-            'disposition': disposition.get(disposition_val),
+            'disposition': DOMAIN_DISPOSITION_STATUS.get(str(disposition_val), ''),
             'data_source_url': data.get('data_source_url', ''),
          }
         summary_data.append(new)
@@ -583,7 +599,7 @@ def domain_instance_readable_output(results: List[Dict], title: str) -> str:
     headers = list(headers.keys())
     column_order = list(camelize_string(column) for column in headers)
     markdown = tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
-    return markdown
+    return markdown, summary_data
 
 
 def system_activity_readable_output(results: List[Dict], title: str):
@@ -595,21 +611,26 @@ def system_activity_readable_output(results: List[Dict], title: str):
     Returns:
         markdown: A string representation of the Markdown table
     """
-    # Create Human readable data
+    # Applicable events : 1, 20, 21, 1000
+    # Human readable output
     summary_data = []
-    # Create the context Data
+    # Context dat
     context_data = []
 
     for data in results:
         event_data = event_object_data(data)
+        event_data['severity_id'] = EVENT_SEVERITY.get(str(event_data.get('severity_id')))
+        event_data['atp_node_role'] = EVENT_ATPNODE_ROLE.get(str(event_data.get('atp_node_role')))
+        event_data['status_id'] = EVENT_STATUS.get(str(event_data.get('status_id')))
         # ------------- Symantec EDR Console logging System Activity -------
         new = {
             'time': event_data.get('device_time', ''),
             'type_id': event_data.get('type_id', ''),
-            'severity_id': event_data.get('severity_id', ''),
+            'severity_id': event_data.get('severity_id',''),
             'message': event_data.get('message', ''),
             'device_ip': event_data.get('device_ip', ''),
-            'atp_node_role': event_data.get('atp_node_role', '')
+            'atp_node_role': event_data.get('atp_node_role', ''),
+            'status_id': event_data.get('status_id', '')
         }
         summary_data.append(new)
         context_data.append(event_data)
@@ -697,10 +718,11 @@ def incident_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    summary_data = []
+    summary_data: List[Dict[str, Any]] = []
     for data in results:
-        priority = arg_to_number(data.get('priority_level'))
-        state = arg_to_number(data.get('state'))
+        priority = data.get('priority_level', '')
+        state = data.get('state', '')
+        resolution = data.get('resolution', '')
         new = {
             # EDR CONSOLE Headers : ID , Description, incident Created, Detection Type, Last Updated,priority
             'incident_id': data.get('atp_incident_id', ''),
@@ -708,16 +730,16 @@ def incident_readable_output(results: List[Dict], title: str):
             'incident_created': data.get('device_time', ''),
             'detection_type': data.get('detection_type', ''),
             'last_updated': data.get('updated', ''),
-            'priority': INCIDENT_PRIORITY_LEVEL.get(priority),
+            'priority': INCIDENT_PRIORITY_LEVEL.get(str(priority), ''),
             # ------------------
-            'incident_state': INCIDENT_STATUS.get(state),
+            'incident_state': INCIDENT_STATUS.get(str(state), ''),
             'atp_rule_id': data.get('atp_rule_id'),
             'rule_name': data.get('rule_name'),
             'incident_uuid': data.get('uuid'),
             'log_name': data.get('log_name'),
             'recommended_action': data.get('recommended_action'),
             # 'summary': data.get('summary'),
-            'resolution': INCIDENT_RESOLUTION.get(data.get('resolution')),
+            'resolution': INCIDENT_RESOLUTION.get(str(resolution), ''),
             'first_seen': data.get('first_event_seen'),
             'last_seen': data.get('last_event_seen')
          }
@@ -741,10 +763,13 @@ def audit_event_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    context_data = []
-    summary_data = []
+    context_data: List[Dict[str, Any]] = []
+    summary_data: List[Dict[str, Any]] = []
     for data in results:
         event_dict = event_object_data(data)
+        severity_id = event_dict.get('severity_id', '')
+        event_dict['severity_id'] = EVENT_SEVERITY.get(str(severity_id), '')
+        event_dict['status_id'] = EVENT_STATUS.get(str(event_dict.get('status_id')))
         # ---- Display Data ----
         new = {
             'time': event_dict.get('device_time', ''),
@@ -757,6 +782,7 @@ def audit_event_readable_output(results: List[Dict], title: str):
             'device_name': event_dict.get('device_name', ''),
             'device_ip': event_dict.get('device_ip', ''),
             'uuid': event_dict.get('uuid', ''),
+            'status_id': event_dict.get('status_id', '')
         }
         summary_data.append(new)
         context_data.append(event_dict)
@@ -779,11 +805,12 @@ def incident_event_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    context_data = []
-    summary_data = []
+    context_data: List[Dict[str, Any]] = []
+    summary_data: List[Dict[str, Any]] = []
     for data in results:
         event_dict = event_object_data(data)
-        event_dict['severity_id'] = EVENT_SEVERITY.get(event_dict.get('severity_id'))
+        severity_id = event_dict.get('severity_id', '')
+        event_dict['severity_id'] = EVENT_SEVERITY.get(str(severity_id), '')
         # ---- Display Data ----
         new = {
             'time': event_dict.get('device_time', ''),
@@ -810,7 +837,7 @@ def incident_event_readable_output(results: List[Dict], title: str):
     return markdown, context_data
 
 
-def incident_comment_readable_output(results: List[Dict], title: str, incident_id: str) -> str:
+def incident_comment_readable_output(results: List[Dict], title: str, incident_id: str):
     """
     Convert to XSOAR Readable output for incident comment
     Args:
@@ -822,7 +849,7 @@ def incident_comment_readable_output(results: List[Dict], title: str, incident_i
         summary_data : Formatted data set
     """
 
-    summary_data = []
+    summary_data: List[Dict[str, Any]] = []
     for data in results:
         new = {
             'incident_id': incident_id,
@@ -851,7 +878,7 @@ def generic_readable_output(results_list: List[Dict], title: str) -> str:
      """
     readable_output = []
     for data in results_list:
-        ignore_key_list = []
+        ignore_key_list: List[str] = []
         prefix = ''
         row = extract_raw_data(data, ignore_key_list, prefix)
         readable_output.append(row)
@@ -864,7 +891,7 @@ def generic_readable_output(results_list: List[Dict], title: str) -> str:
     return markdown
 
 
-def extract_raw_data(data: Dict, ignore_key: List = [], prefix: Optional[str] = None) -> Dict:
+def extract_raw_data(data: Union[List, Dict], ignore_key: List[str] = [], prefix: Optional[str] = None) -> Dict:
     """
      Retrieve Json data according and mapping field Name and value
      Args:
@@ -893,7 +920,7 @@ def extract_raw_data(data: Dict, ignore_key: List = [], prefix: Optional[str] = 
     return dataset
 
 
-def query_search_condition(q_type: str, q_value: str, ignore_validation=False) -> str:
+def query_search_condition(q_type: str, q_value: str, ignore_validation: bool = False) -> str:
     """
     This function make parameter query condition based on single or multiple  search values .
     Args:
@@ -903,9 +930,8 @@ def query_search_condition(q_type: str, q_value: str, ignore_validation=False) -
     Returns:
         Return search condition.
     """
-    condition = None
+    condition: str = ''
     if not q_type or not q_value:
-        demisto.debug('No search type and search value found. Return None')
         return condition
 
     list_value = argToList(q_value, ',')
@@ -954,18 +980,18 @@ def get_incident_filter_query(args: Dict[str, Any]) -> str:
     Returns:
         Return string.
     """
-    incident_status_dict = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
-    incident_severity_dict = {'Low': 1, 'Medium': 2, 'High': 3}
+    incident_status_dict: Dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
+    incident_severity_dict: Dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
     ids = arg_to_number(args.get('incident_id'))
-    priority = incident_severity_dict.get(args.get('priority'))
-    status = incident_status_dict.get(args.get('status'))
+    priority = incident_severity_dict.get(args.get('priority',''))
+    status = incident_status_dict.get(args.get('status', ''))
     query = args.get('query')
 
     if query and (ids or priority or status):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
 
-    condition = None
+    condition: str = ''
     if ids:
         condition = f'atp_incident_id: {ids}'
 
@@ -990,7 +1016,7 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         Return string.
     """
     # Activity query Parameters
-    event_severity_mapping = {
+    event_severity_mapping: Dict[str, int] = {
         'info': 1,
         'warning': 2,
         'minor': 3,
@@ -998,19 +1024,30 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         'critical': 5,
         'fatal': 6
     }
+
+    event_status_mapping: Dict[str, int] = {
+        'Unknown': 0,
+        'Success': 1,
+        'Failure': 2
+    }
+
     event_type_id = arg_to_number(args.get('type_id'))
-    severity = event_severity_mapping.get((args.get('severity')))
+    severity = event_severity_mapping.get(args.get('severity', ''))
+    status = event_status_mapping.get(args.get('status', ''))
     query = args.get('query')
 
     if query and (event_type_id or severity):
         raise DemistoException(INVALID_QUERY_ERROR_MSG)
 
-    condition = None
+    condition = ''
     if event_type_id:
         condition = f'type_id: {event_type_id}'
 
     if severity:
         condition = f'severity_id: {severity}' if not condition else f'{condition} AND severity_id: {severity}'
+
+    if status:
+        condition = f'status_id: {status}' if not condition else f'{condition} AND status_id: {status}'
 
     if query:
         condition = query
@@ -1050,9 +1087,9 @@ def get_association_filter_query(args: Dict) -> str:
     Returns:
         Return string.
     """
-    query_type = args.get('search_object')
-    query_value = args.get('search_value')
-    query = args.get('query')
+    query_type = args.get('search_object', None)
+    query_value = args.get('search_value', None)
+    query = args.get('query', None)
 
     if query_type and query_type not in SEARCH_QUERY_TYPE:
         raise DemistoException(f'Invalid Search Type! Only supported type are : {SEARCH_QUERY_TYPE}')
@@ -1075,7 +1112,7 @@ def get_association_filter_query(args: Dict) -> str:
     return query_condition
 
 
-def post_request_body(args: Dict, p_limit: Optional[int] = 1) -> Dict:
+def post_request_body(args: Dict, p_limit: int = 1) -> Dict:
     """
     This function creates a default payload based on the demisto.args().
     Args:
@@ -1085,17 +1122,18 @@ def post_request_body(args: Dict, p_limit: Optional[int] = 1) -> Dict:
         Return arguments dict.
     """
     # Default payload
-    payload = {'verb': 'query'}
-
-    max_limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE), arg_name='limit')
-    if args.get('page_size') and p_limit > max_limit:
+    payload: Dict[str, Any] = {'verb': 'query'}
+    page_size = args.get('page_size')
+    max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
+    if page_size: 
+        if p_limit >= max_limit:
         # in case user pass the page_size or limit is less than page_size
-        payload['limit'] = p_limit
+            payload['limit'] = p_limit
     else:
         payload['limit'] = p_limit if p_limit != DEFAULT_PAGE_SIZE else max_limit
 
-    from_time = iso_creation_date(args.get('start_time', None))
-    to_time = iso_creation_date(args.get('end_time', None))
+    from_time = iso_creation_date(args.get('start_time',''))
+    to_time = iso_creation_date(args.get('end_time',''))
 
     if from_time:
         payload['start_time'] = from_time
@@ -1106,7 +1144,7 @@ def post_request_body(args: Dict, p_limit: Optional[int] = 1) -> Dict:
     return payload
 
 
-def get_params_query(args: Dict, p_limit: Optional[int] = 0) -> Dict:
+def get_params_query(args: Dict, p_limit: int = 0) -> Dict:
     """
     This function creates a query param based on the demisto.args().
     Args:
@@ -1134,9 +1172,10 @@ def get_params_query(args: Dict, p_limit: Optional[int] = 0) -> Dict:
     if sha256:
         check_valid_indicator_value('sha256', sha256)
 
-    max_limit = arg_to_number(args.get('limit', DEFAULT_PAGE_SIZE), arg_name='limit')
-    if args.get('page_size') and p_limit > max_limit:
-        # in case user pass the page_size or limit is less than page_size
+    max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
+    page_size = args.get('page_size')
+    if page_size and (p_limit > max_limit):
+        # in case user pass the page_size or limit, limit will be ignore
         query_param['limit'] = p_limit
     else:
         query_param['limit'] = p_limit if p_limit != DEFAULT_PAGE_SIZE else max_limit
@@ -1329,8 +1368,8 @@ def get_domain_file_association_list_command(client: Client, args: Dict[str, Any
     if search_query:
         payload['query'] = search_query
 
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Domain File Association",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1372,8 +1411,8 @@ def get_endpoint_domain_association_list_command(client: Client, args: Dict[str,
     if search_query:
         payload['query'] = search_query
 
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Endpoint Domain Association",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1415,8 +1454,8 @@ def get_endpoint_file_association_list_command(client: Client, args: Dict[str, A
     if search_query:
         payload['query'] = search_query
 
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Endpoint File Association",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1455,8 +1494,8 @@ def get_audit_event_command(client: Client, args: Dict[str, Any]) -> CommandResu
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
 
-    raw_response = get_event_raw_response_data(endpoint, client, args, page * page_limit)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = get_event_raw_response_data(endpoint, client, args, page * page_limit)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Audit Event",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1493,8 +1532,8 @@ def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
 
-    raw_response = get_event_raw_response_data(endpoint, client, args, page * page_limit)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = get_event_raw_response_data(endpoint, client, args, page * page_limit)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Event",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1532,8 +1571,8 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
 
-    raw_response = get_incident_event_raw_response_data(endpoint, client, args, page * page_limit)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = get_incident_event_raw_response_data(endpoint, client, args, page * page_limit)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Event for Incident",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1572,8 +1611,8 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
 
-    raw_response = get_incident_raw_response_data(endpoint, client, args, page * page_limit)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = get_incident_raw_response_data(endpoint, client, args, page * page_limit)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Incident",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1604,7 +1643,7 @@ def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> Comma
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    incident_id = args.get("incident_id")
+    incident_id = args.get("incident_id", '')
     # Get UUID based on incident_id
     data_list = get_incident_raw_response_data('/atpapi/v2/incidents', client, args, 1).get('result', [])
     if len(data_list) >= 1:
@@ -1620,8 +1659,8 @@ def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> Comma
     page_limit, offset = pagination(page, page_size)
     payload = post_request_body(args, page * page_limit)
 
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Incident Comment",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -1656,11 +1695,11 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
     # Get UUID based on incident_id
     device_uuid = get_incident_uuid(endpoint, client, args)
     action = args.get('action_type')
-    value = args.get('value')
+    value: str = args.get('value', '')
     if action not in INCIDENT_PATCH_ACTION:
         raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
-    action_list = []
+    action_list: List[Dict[str, Any]] = []
     # Incident Add Comment
     if action == 'add_comment':
         if not value:
@@ -1695,7 +1734,7 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
                 }
         action_list.append(update_state)
 
-    response = client.query_patch_api(endpoint, json.dumps(action_list))
+    response = client.query_patch_api(endpoint, action_list)
     title = f"Incident {action_desc}"
 
     if response.get('status') == 204:
@@ -1737,8 +1776,8 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
     query = args.get('query', None)
     if query:
         payload['query'] = query
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("File Instances", arg_to_number(args.get('page', 0)), page_size, total_row)
 
@@ -1778,8 +1817,8 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     query = args.get('query', None)
     if query:
         payload['query'] = query
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Domain Instances", arg_to_number(args.get('page', 0)), page_size, total_row)
 
@@ -1787,8 +1826,7 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     page_result = get_data_of_current_page(offset, page_limit, result)
 
     if page_result:
-        # readable_output = generic_readable_output(page_result, title)
-        readable_output = domain_instance_readable_output(page_result, title)
+        readable_output, context_data = domain_instance_readable_output(page_result, title)
     else:
         readable_output = f'No Domain Instances data to present. \n'
 
@@ -1796,7 +1834,7 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainInstances',
         outputs_key_field='',
-        outputs=page_result,
+        outputs=context_data,
         raw_response=raw_response
     )
 
@@ -1822,8 +1860,8 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
     if query:
         payload['query'] = query
 
-    raw_response = client.query_request_api(endpoint, payload)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Endpoint Instances", arg_to_number(args.get('page', 0)), page_size, total_row)
 
@@ -1866,8 +1904,8 @@ def get_allow_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     page_limit, offset = pagination(page, page_size)
 
     params = get_params_query(args, page * page_limit)
-    raw_response = client.query_request_api(endpoint, params, 'GET')
-    total_row = raw_response.get('total')
+    raw_response = client.query_request_api(endpoint, params, 'GET') #type: Dict[str, Any]
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Allow List Policy", arg_to_number(args.get('page', 0)), page_size, total_row)
 
@@ -1909,8 +1947,8 @@ def get_deny_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     params = get_params_query(args, page * page_limit)
 
-    raw_response = client.query_request_api(endpoint, params, 'GET')
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, params, 'GET')
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("Deny List Policy", arg_to_number(args.get('page', 0)), page_size, total_row)
 
@@ -1948,7 +1986,7 @@ def get_system_activity_command(client: Client, args: Dict[str, Any]) -> Command
     page_limit, offset = pagination(page, page_size)
 
     raw_response = get_event_raw_response_data(endpoint, client, args, page * page_limit)
-    total_row = raw_response.get('total')
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = get_command_title_string("System Activities",
                                      arg_to_number(args.get('page', 0)), page_size, total_row)
@@ -2047,8 +2085,8 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
 
     params = post_request_body(args)
     # raw_response = client.query_get_request_api(endpoint, params)
-    raw_response = client.query_request_api(endpoint, params)
-    total_row = raw_response.get('total')
+    raw_response: Dict[str, Any] = client.query_request_api(endpoint, params)
+    total_row = arg_to_number(raw_response.get('total'))
 
     title = "Command Status"
     summary_data = {
@@ -2061,9 +2099,9 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
     if len(result) >= 1:
         for status in result:
             # summary_data['target'] = status.get('target')
-            summary_data['target_state'] = status.get('state')
-            summary_data['message'] = status.get('message')
-            summary_data['error_code'] = status.get('error_code')
+            summary_data['state'] = status.get('state', '')
+            summary_data['message'] = status.get('message', '')
+            summary_data['error_code'] = status.get('error_code', '')
 
     if summary_data:
         readable_output = generic_readable_output(argToList(summary_data), title)
@@ -2081,234 +2119,247 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_file_sandbox_verdict_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-     Get file Sandbox Verdict of specific SHA2
-     Args:
-         client: client object to use.
-         args: all command arguments, usually passed from ``demisto.args()``.
-     Returns:
-         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-             result.
-     """
-    sha2 = args.get('file')
-    endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
+# def get_file_sandbox_verdict_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+#     """
+#      Get file Sandbox Verdict of specific SHA2
+#      Args:
+#          client: client object to use.
+#          args: all command arguments, usually passed from ``demisto.args()``.
+#      Returns:
+#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+#              result.
+#      """
+#     sha2 = args.get('file')
+#     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
 
-    response_data = client.query_request_api(endpoint, {}, 'GET')
-    # Sandbox verdict
-    # datasets = response_data.get("status", [])
-    title = "Sandbox Verdict"
-    if response_data:
-        readable_output = generic_readable_output(argToList(response_data), title)
-    else:
-        readable_output = f'{title} does not have data to present. \n'
+#     response_data = client.query_request_api(endpoint, {}, 'GET')
+#     # Sandbox verdict
+#     # datasets = response_data.get("status", [])
+#     title = "Sandbox Verdict"
+#     if response_data:
+#         readable_output = generic_readable_output(argToList(response_data), title)
+#     else:
+#         readable_output = f'{title} does not have data to present. \n'
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
-        outputs_key_field='',
-        outputs=response_data
-    )
-
-
-def get_file_sandbox_status_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-     Query file Sandbox command status,
-     Args:
-         client: client object to use.
-         args: all command arguments, usually passed from ``demisto.args()``.
-     Returns:
-         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-             result.
-    """
-    command_id = args.get('command_id')
-    endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
-
-    response_data = client.query_request_api(endpoint, {}, 'GET')
-    # Query Sandbox Command Status
-    datasets = response_data.get("status", [])
-    summary_data = {}
-    if datasets:
-        for data in datasets:
-            new = {
-                'command_id': command_id,
-                'status': data.get('state'),
-                'message': data.get('message'),
-                'target': data.get('target'),
-                'error_code': data.get('error_code')
-            }
-            summary_data = {**summary_data, **new}
-
-    title = "Query File Sandbox Status"
-    if datasets:
-        readable_output = generic_readable_output(datasets, title)
-    else:
-        readable_output = f'{title} does not have data to present. \n'
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxStatus',
-        outputs_key_field='',
-        outputs=summary_data
-    )
+#     return CommandResults(
+#         readable_output=readable_output,
+#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
+#         outputs_key_field='',
+#         outputs=response_data
+#     )
 
 
-def get_file_sandbox_issue_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """
-     Issue File Sandbox command,
-     Args:
-         client: client object to use.
-         args: all command arguments, usually passed from ``demisto.args()``.
-     Returns:
-         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-             result.
-     """
+# def get_file_sandbox_status_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+#     """
+#      Query file Sandbox command status,
+#      Args:
+#          client: client object to use.
+#          args: all command arguments, usually passed from ``demisto.args()``.
+#      Returns:
+#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+#              result.
+#     """
+#     command_id = args.get('command_id')
+#     endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
 
-    file_hash = args.get('file')
-    if not re.match(sha256Regex, file_hash):
-        raise ValueError(f'SHA256 value {file_hash} is invalid')
+#     response_data = client.query_request_api(endpoint, {}, 'GET')
+#     # Query Sandbox Command Status
+#     datasets = response_data.get("status", [])
+#     summary_data = {}
+#     if datasets:
+#         for data in datasets:
+#             new = {
+#                 'command_id': command_id,
+#                 'status': data.get('state'),
+#                 'message': data.get('message'),
+#                 'target': data.get('target'),
+#                 'error_code': data.get('error_code')
+#             }
+#             summary_data = {**summary_data, **new}
 
-    # or (not re.match(md5Regex, file_hash))
+#     title = "Query File Sandbox Status"
+#     if datasets:
+#         readable_output = generic_readable_output(datasets, title)
+#     else:
+#         readable_output = f'{title} does not have data to present. \n'
+#     demisto_print(f'Status Data: {summary_data}')
+#     return CommandResults(
+#         readable_output=readable_output,
+#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxStatus',
+#         outputs_key_field='',
+#         outputs=summary_data
+#     )
 
-    endpoint = '/atpapi/v2/sandbox/commands'
-    payload = {
-        'action': 'analyze',
-        'targets': argToList(file_hash)
-    }
-    response_data = client.query_request_api(endpoint, payload)
-    # Get Issue Sandbox Command
-    title = "Issue Sandbox Command"
-    summary_data = {
-        'file_sha2': file_hash,
-        'command_id': response_data.get('command_id'),
-        'command_type': 'Issue Sandbox Command'
-    }
-    headers = list(summary_data.keys())
-    column_order = list(camelize_string(column) for column in headers)
-    return CommandResults(
-        outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxIssue',
-        outputs_key_field='',
-        outputs=summary_data,
-        readable_output=tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
-    )
+
+# def get_file_sandbox_issue_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+#     """
+#      Issue File Sandbox command,
+#      Args:
+#          client: client object to use.
+#          args: all command arguments, usually passed from ``demisto.args()``.
+#      Returns:
+#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
+#              result.
+#      """
+
+#     file_hash = args.get('file')
+#     if not re.match(sha256Regex, file_hash):
+#         raise ValueError(f'SHA256 value {file_hash} is invalid')
+
+#     # or (not re.match(md5Regex, file_hash))
+
+#     endpoint = '/atpapi/v2/sandbox/commands'
+#     payload = {
+#         'action': 'analyze',
+#         'targets': argToList(file_hash)
+#     }
+#     response_data = client.query_request_api(endpoint, payload)
+#     # Get Issue Sandbox Command
+#     title = "Issue Sandbox Command"
+#     summary_data = {
+#         'file_sha2': file_hash,
+#         'command_id': response_data.get('command_id'),
+#         'command_type': 'Issue Sandbox Command'
+#     }
+#     headers = list(summary_data.keys())
+#     column_order = list(camelize_string(column) for column in headers)
+#     return CommandResults(
+#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxIssue',
+#         outputs_key_field='',
+#         outputs=summary_data,
+#         readable_output=tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
+#     )
 
 
 ''' POLLING CODE '''
 
-
-@polling_function(name='file',
-                  interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
-                  timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)),
-                  requires_polling_arg=False
-                  )
-def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
-    """
-    Polling command to display the progress of the sandbox issue command.
-    After the first run, progress will be shown through the status command.
-    Once a file scanning is done check the status as 'Completed' and return the file verdict
-    Status command will run till its status is not 'Completed'
-    Args:
-        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
-        client: client object to use.
-
-    Returns:
-        PollResult: A result to return to the user which will be set as a CommandResults.
-            The result itself will depend on the stage of polling.
-    """
-    first_run = 'command_id' not in args
-    if first_run:
-        command_results = get_file_sandbox_issue_polling_command(client, args)
-        outputs = command_results.outputs
-        command_id = outputs.get('command_id')
-        if command_id:
-            args['command_id'] = command_id
-
-    command_result = get_file_sandbox_status_polling_command(client, args)
-    outputs = command_result.outputs
-    if outputs:
-        status = arg_to_number(outputs.get('status'))
-        if SANDBOX_STATE.get(status) == 'Completed':
-            command_result = get_file_sandbox_verdict_polling_command(client, args)
-            return PollResult(response=command_result, continue_to_poll=False)
-
-    polling_args = {**args}
-    return PollResult(response=command_result, continue_to_poll=True, args_for_next_run=polling_args)
+# def issue_polling_command(client: Client, args: Dict[str, Any]):
+#     demisto_print(f'Trigger issue command .. ')
+#     command_results = get_file_sandbox_issue_polling_command(client, args)
+#     outputs = command_results.outputs
+#     command_id = outputs.get('command_id')
+#     if command_id:
+#         args['command_id'] = command_id
+#     return file_polling_command(args, client)
 
 
-def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
-    """
-    This function is generically handling the polling flow.
-    After the first run, progress will be shown through the status command.
-    The run_polling_command function runs the Status command will run till its status is  not 'Completed'
-    and returns a ScheduledCommand object that schedules
-    the next 'results' function, until the polling is complete.
-    Args:
-        args: the arguments required to the command being called, under cmd
-        cmd: the command to schedule by after the current command
-        status_func :
-        results_func: the function that retrieves the status of the previously initiated upload process
-        client: a Microsoft Client object
+# @polling_function(name='file',
+#                   interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
+#                   timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)),
+#                   requires_polling_arg=False
+#                   )
+# def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
+#     """
+#     Polling command to display the progress of the sandbox issue command.
+#     After the first run, progress will be shown through the status command.
+#     Once a file scanning is done check the status as 'Completed' and return the file verdict
+#     Status command will run till its status is not 'Completed'
+#     Args:
+#         args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
+#         client: client object to use.
 
-    Returns:
+#     Returns:
+#         PollResult: A result to return to the user which will be set as a CommandResults.
+#             The result itself will depend on the stage of polling.
+#     """
+#     # commandid = args.get('command_id', None)
+#     # #first_run = 'command_id' not in args
+#     # #if first_run:
+#     # if not commandid:
+#     #     demisto_print(f'Trigger issue command .. {commandid}')
+#     #     command_results = get_file_sandbox_issue_polling_command(client, args)
+#     #     outputs = command_results.outputs
+#     #     command_id = outputs.get('command_id')
+#     #     if command_id:
+#     #         args['command_id'] = command_id
 
-    """
-    ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = int(args.get('interval_in_seconds', 90))
-    timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
-    # distinguish between the initial run, which is the Issue the file for scan, and the results run
-    is_first_run = 'command_id' not in args
-    if is_first_run:
-        command_results = get_file_sandbox_issue_polling_command(client, args)
-        outputs = command_results.outputs
-        command_id = outputs.get('command_id')
-        if command_id is not None:
-            args['command_id'] = command_id
+#     demisto_print(f'Args: {args}')
+#     command_result = get_file_sandbox_status_polling_command(client, args)
+#     outputs = command_result.outputs
+#     if outputs:
+#         status = arg_to_number(outputs.get('status'))
+#         if SANDBOX_STATE.get(status) == 'Completed':
+#             command_result = get_file_sandbox_verdict_polling_command(client, args)
+#             return PollResult(response=command_result, continue_to_poll=False)
 
-        # schedule next poll
-        polling_args = {
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **args,
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=interval_in_secs,
-            args=polling_args,
-            timeout_in_seconds=timeout_in_seconds)
-        command_results.scheduled_command = scheduled_command
-        return command_results
-
-    # not a first run
-    command_result = status_func(client, args)
-    outputs = command_result.outputs
-    status = arg_to_number(outputs.get('status'))
-    status_type = SANDBOX_STATE.get(status)
-
-    # 0 = Completed
-    if status_type != 'Completed':
-        polling_args = {
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **args,
-        }
-        scheduled_command = ScheduledCommand(
-            command=cmd,
-            next_run_in_seconds=interval_in_secs,
-            args=polling_args,
-            timeout_in_seconds=timeout_in_seconds
-        )
-
-        # result with scheduled_command only - no update to the war room
-        command_result = CommandResults(scheduled_command=scheduled_command)
-        return command_result
-    # # action was completed
-    elif status_type == 'Complete':
-        return results_func(client, args)
+#     polling_args = {**args}
+#     return PollResult(response=command_result, continue_to_poll=True, args_for_next_run=polling_args)
 
 
-def file_scheduled_polling_command(client, args):
-    return run_polling_command(client, args, 'file', get_file_sandbox_status_polling_command,
-                               get_file_sandbox_verdict_polling_command)
+# def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
+#     """
+#     This function is generically handling the polling flow.
+#     After the first run, progress will be shown through the status command.
+#     The run_polling_command function runs the Status command will run till its status is  not 'Completed'
+#     and returns a ScheduledCommand object that schedules
+#     the next 'results' function, until the polling is complete.
+#     Args:
+#         args: the arguments required to the command being called, under cmd
+#         cmd: the command to schedule by after the current command
+#         status_func :
+#         results_func: the function that retrieves the status of the previously initiated upload process
+#         client: a Microsoft Client object
+
+#     Returns:
+
+#     """
+#     ScheduledCommand.raise_error_if_not_supported()
+#     interval_in_secs = int(args.get('interval_in_seconds', 90))
+#     timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
+#     # distinguish between the initial run, which is the Issue the file for scan, and the results run
+#     is_first_run = 'command_id' not in args
+#     if is_first_run:
+#         command_results = get_file_sandbox_issue_polling_command(client, args)
+#         outputs = command_results.outputs
+#         command_id = outputs.get('command_id')
+#         if command_id is not None:
+#             args['command_id'] = command_id
+
+#         # schedule next poll
+#         polling_args = {
+#             'interval_in_seconds': interval_in_secs,
+#             'polling': True,
+#             **args,
+#         }
+#         scheduled_command = ScheduledCommand(
+#             command=cmd,
+#             next_run_in_seconds=interval_in_secs,
+#             args=polling_args,
+#             timeout_in_seconds=timeout_in_seconds)
+#         command_results.scheduled_command = scheduled_command
+#         return command_results
+
+#     # not a first run
+#     command_result = status_func(client, args)
+#     outputs = command_result.outputs
+#     status = arg_to_number(outputs.get('status'))
+#     status_type = SANDBOX_STATE.get(status)
+
+#     # 0 = Completed
+#     if status_type != 'Completed':
+#         polling_args = {
+#             'interval_in_seconds': interval_in_secs,
+#             'polling': True,
+#             **args,
+#         }
+#         scheduled_command = ScheduledCommand(
+#             command=cmd,
+#             next_run_in_seconds=interval_in_secs,
+#             args=polling_args,
+#             timeout_in_seconds=timeout_in_seconds
+#         )
+
+#         # result with scheduled_command only - no update to the war room
+#         command_result = CommandResults(scheduled_command=scheduled_command)
+#         return command_result
+#     # # action was completed
+#     elif status_type == 'Complete':
+#         return results_func(client, args)
+
+
+# def file_scheduled_polling_command(client, args):
+#     return run_polling_command(client, args, 'file', get_file_sandbox_status_polling_command,
+#                                get_file_sandbox_verdict_polling_command)
 
 
 ''' MAIN FUNCTION '''
@@ -2405,9 +2456,10 @@ def main() -> None:
             return_results(get_endpoint_command(client, args, 'delete_endpoint_file'))
         elif command == "symantec-edr-endpoint-cancel-command":
             return_results(get_endpoint_command(client, args, 'cancel_command'))
-        elif command in ['file']:
+        # elif command in ['file']:
             # File Sandbox Analysis, Command Status, and Verdict
-            return_results(file_polling_command(args, client))
+            # return_results(file_polling_command(args, client))
+            # return_results(issue_polling_command(args, client))
             # return_results(file_scheduled_polling_command(client, args))
         elif command in commands:
             return_results(commands[command](client, args))
