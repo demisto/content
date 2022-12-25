@@ -53,9 +53,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ThreatConnect's intelligence-driven security operations solution with
-  intelligence, automation, analytics, and workflows.
-display: ThreatConnect v2
+description: Deprecated. Use the ThreatConnect v3 integration instead.
+display: ThreatConnect v2 (Deprecated)
 name: ThreatConnect v2
 script:
   commands:
