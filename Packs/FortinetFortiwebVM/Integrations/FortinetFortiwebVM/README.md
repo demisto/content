@@ -314,6 +314,17 @@ Delete Protected Hostname.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!fortiwebvm-protected-hostname-group-delete name=example```
+#### Human Readable Output
+
+>### Hostname group successfully deleted!
+>|Name|
+>|---|
+>| example |
+
+
+There is no context output for this command.
 ### fortiwebvm-ip-list-group-create
 ***
 Create IP List.
