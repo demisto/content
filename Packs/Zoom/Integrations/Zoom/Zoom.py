@@ -596,9 +596,23 @@ def zoom_create_meeting_command(
 
 
 def zoom_fetch_recording_command():
-    # this is the original code with no changes at all. waiting for a paid account
+    # this is the original code with no changes at all.
+    # this part will be removed in the future
+    # waiting for a paid account
+    def get_jwt(apiKey, apiSecret):
+        """
+        Encode the JWT token given the api ket and secret
+        """
+        tt = datetime.now()
+        expire_time = int(tt.strftime('%s')) + 5000
+        payload = {
+            'iss': apiKey,
+            'exp': expire_time
+        }
+        encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
+        return encoded
     URL = 'https://api.zoom.us/v2/'
-    ACCESS_TOKEN = get_jwt(demisto.getParam('apiKey'), demisto.getParam('apiSecret'))
+    ACCESS_TOKEN = get_jwt(demisto.getParam('api_key'), demisto.getParam('api_secret'))
     PARAMS = {'access_token': ACCESS_TOKEN}
     HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
     USE_SSL = not demisto.params().get('insecure', False)
@@ -625,10 +639,8 @@ def zoom_fetch_recording_command():
                 demisto.results('File ' + filename + ' was moved to trash.')
             else:
                 demisto.results('Failed to delete file ' + filename + '.')
-        else:
-            return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
     else:
-        return_error('Unrecognized command: ' + demisto.command())
+        return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
 
 
 def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
