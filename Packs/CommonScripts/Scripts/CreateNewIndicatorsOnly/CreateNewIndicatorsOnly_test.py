@@ -83,7 +83,7 @@ def test_all_indicators_exist_with_single_value(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'existing',
+            'CreationStatus': 'existing',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -132,13 +132,13 @@ def test_all_indicators_exist_with_multiple_value(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'existing',
+            'CreationStatus': 'existing',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
             'Value': '1.1.1.1'
         }, {
-            'Status': 'existing',
+            'CreationStatus': 'existing',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -198,13 +198,13 @@ def test_some_indicators_exist_with_multiple_value(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'existing',
+            'CreationStatus': 'existing',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
             'Value': '1.1.1.1'
         }, {
-            'Status': 'new',
+            'CreationStatus': 'new',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -259,11 +259,11 @@ def test_some_indicators_are_excluded(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'unavailable',
+            'CreationStatus': 'unavailable',
             'Type': 'Unknown',
             'Value': '1.1.1.1'
         }, {
-            'Status': 'new',
+            'CreationStatus': 'new',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -311,7 +311,7 @@ def test_indicator_including_commas(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'new',
+            'CreationStatus': 'new',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -360,7 +360,7 @@ def test_print_verbose(mocker):
 
     expected_entry_context = {
         'CreateNewIndicatorsOnly(val.Value && val.Value == obj.Value && val.Type && val.Type == obj.Type)': [{
-            'Status': 'new',
+            'CreationStatus': 'new',
             'ID': '0',
             'Score': 0,
             'Type': 'Unknown',
@@ -373,5 +373,5 @@ def test_print_verbose(mocker):
     CreateNewIndicatorsOnly.main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
-    assert '|ID|Score|Status|Type|Value' in results.get('HumanReadable')
+    assert '|ID|Score|CreationStatus|Type|Value' in results.get('HumanReadable')
     assert equals_object(expected_entry_context, results.get('EntryContext'))

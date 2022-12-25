@@ -64,7 +64,7 @@ outputs:
 - contextPath: CreateNewIndicatorsOnly.Score
   description: The indicator score
   type: number
-- contextPath: CreateNewIndicatorsOnly.Status
+- contextPath: CreateNewIndicatorsOnly.CreationStatus
   description: The status of the indicator requested to add, which states either one of new, existing or unavailable.
   type: string
 scripttarget: 0

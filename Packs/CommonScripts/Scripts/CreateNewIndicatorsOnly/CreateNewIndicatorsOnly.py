@@ -7,6 +7,8 @@ STATUS_NEW = 'new'
 STATUS_EXISTING = 'existing'
 STATUS_UNAVAILABLE = 'unavailable'
 
+KEY_CREATION_STATUS = 'CreationStatus'
+
 
 def normalize_indicator_value(indicator_value: Any) -> str:
     if isinstance(indicator_value, int):
@@ -17,19 +19,21 @@ def normalize_indicator_value(indicator_value: Any) -> str:
         raise DemistoException(f'Invalid indicator value: {str(indicator_value)}')
 
 
-def add_new_indicator(indicator_value: Any, create_new_indicator_args: Dict[str, Any]) -> Dict[str, Any]:
+def add_new_indicator(indicator_value: Any,
+                      create_new_indicator_args: Dict[str, Any]) -> Dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
 
     if indicators := execute_command('findIndicators', {'value': indicator_value}):
         indicator = indicators[0]
-        status = STATUS_EXISTING
+        indicator[KEY_CREATION_STATUS] = STATUS_EXISTING
     else:
         args = dict(create_new_indicator_args, value=indicator_value)
         indicator = execute_command('createNewIndicator', args)
         if isinstance(indicator, dict):
-            status = STATUS_NEW
+            indicator[KEY_CREATION_STATUS] = STATUS_NEW
         elif isinstance(indicator, str):
-            # createNewIndicator has been successfully done, but the indicator wasn't created for some reasons.
+            # createNewIndicator has been successfully done, but the indicator
+            # wasn't created for some reasons.
             if 'done - Indicator was not created' in indicator:
                 demisto.debug(f'Indicator was not created. Make sure "{indicator_value}" is not excluded.')
             else:
@@ -37,24 +41,19 @@ def add_new_indicator(indicator_value: Any, create_new_indicator_args: Dict[str,
 
             indicator = {
                 'value': indicator_value,
-                'indicator_type': args.get('type', 'Unknown')
+                'indicator_type': args.get('type', 'Unknown'),
+                KEY_CREATION_STATUS: STATUS_UNAVAILABLE,
             }
-            status = STATUS_UNAVAILABLE
         else:
-            raise DemistoException(f'Unknown response from createNewIndicator: str{indicator}')
+            raise DemistoException(f'Unknown response from createNewIndicator: str{indicator_value}')
 
-    return assign_params(
-        Status=status,
-        ID=indicator.get('id'),
-        Score=indicator.get('score'),
-        Type=indicator.get('indicator_type'),
-        Value=indicator.get('value'),
-    )
+    return indicator
 
 
 def add_new_indicators(indicator_values: Optional[List[Any]],
                        create_new_indicator_args: Dict[str, Any]) -> List[Dict[str, Any]]:
-    return [add_new_indicator(indicator_value, create_new_indicator_args) for indicator_value in indicator_values or []]
+    return [add_new_indicator(indicator_value, create_new_indicator_args)
+            for indicator_value in indicator_values or []]
 
 
 def main():
@@ -72,19 +71,30 @@ def main():
         create_new_indicator_args.pop('verbose', None)
         ents = add_new_indicators(indicator_values, create_new_indicator_args)
 
-        count_new = sum(1 for ent in ents if ent.get('Status') == STATUS_NEW)
+        outputs = [assign_params(
+            ID=ent.get('id'),
+            Score=ent.get('score'),
+            CreationStatus=ent.get(KEY_CREATION_STATUS),
+            Type=ent.get('indicator_type'),
+            Value=ent.get('value'),
+        ) for ent in ents]
+
+        count_new = sum(1 for ent in ents if ent.get(KEY_CREATION_STATUS) == STATUS_NEW)
         readable_output = f'{count_new} new indicators have been added.'
         if argToBoolean(args.get('verbose', 'false')):
-            readable_output += '\n' + tblToMd('New Indicator Created', ents)
+            readable_output += '\n' + tblToMd('New Indicator Created', outputs,
+                                              ['ID', 'Score', 'CreationStatus', 'Type', 'Value'])
 
         return_results(CommandResults(
             outputs_prefix='CreateNewIndicatorsOnly',
             outputs_key_field=['Value', 'Type'],
-            outputs=ents,
+            outputs=outputs,
+            raw_response=ents,
             readable_output=readable_output
         ))
     except Exception as e:
-        return_error(f'Failed to execute CreateNewIndicatorsOnly.\nError:\n{str(e)}')
+        return_error(
+            f'Failed to execute CreateNewIndicatorsOnly.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

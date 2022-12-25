@@ -30,7 +30,7 @@ Create new indicators to the Threat Intel DB only if they are not registered.
 | CreateNewIndicatorsOnly.Value | The indicator value | string |
 | CreateNewIndicatorsOnly.Type | The indicator type | string |
 | CreateNewIndicatorsOnly.Score | The indicator score | number |
-| CreateNewIndicatorsOnly.Status | The status of the indicator requested to add, which states either one of new, existing or unavailable. | string |
+| CreateNewIndicatorsOnly.CreationStatus | The status of the indicator requested to add, which states either one of new, existing or unavailable. | string |
 
 ## Notice
 ---
