@@ -296,7 +296,7 @@ script:
   - arguments: []
     description: Tests connectivity to Microsoft Graph Teams.
     name: msgraph-teams-test
-  dockerimage: demisto/crypto:1.0.0.36225
+  dockerimage: demisto/crypto:1.0.0.40696
   runonce: false
   script: ''
   subtype: python3

@@ -4,10 +4,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import base64
-import binascii
-import traceback
-from urllib.parse import quote
 from MicrosoftApiModule import *
 import urllib3
 
@@ -69,7 +65,7 @@ class MsGraphClient:
         return member_list
 
     @staticmethod
-    def _get_user_name(user):
+    def _get_user_name(user: dict):
         """
         Receives dict of form  "emailAddress":{"name":"_", "address":"_"} and return the address
 
@@ -81,7 +77,8 @@ class MsGraphClient:
         """
         return user.get('user', {}).get('displayName', '')
 
-    def _get_body_content(body):
+    @staticmethod
+    def _get_body_content(body: dict):
         """
         Receives dict of form  "emailAddress":{"name":"_", "address":"_"} and return the address
 
@@ -644,7 +641,7 @@ def send_message_command(client: MsGraphClient, args):
     entry_context = {}
     if message_context:
         entry_context = {'MSGraphTeamsChatMessage(val.ID === obj.ID)': message_context}  # human_readable builder
-        human_readable_header = f'The message was send'
+        human_readable_header = 'The message was send'
         human_readable = tableToMarkdown(
             human_readable_header,
             message_context,
@@ -728,5 +725,3 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ["builtins", "__main__"]:
     main()
-
-register_module_line('MicrosoftGraphTeams', 'end', __line__())
