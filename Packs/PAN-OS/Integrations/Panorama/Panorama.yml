@@ -97,7 +97,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '100'
-  display: Max incidents per fetch
+  display: Max incidents per fetch (for each selected Log Type Query)
+  additionalinfo: The max incidents per fetch parameter specifies the maximum number of incidents to fetch per Log Type Query.
   name: max_fetch
   required: false
   type: 0
@@ -106,11 +107,11 @@ configuration:
   required: false
   defaultvalue: All
   type: 16
-  additionalinfo: Select which logs to retrieve.
+  additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure 'All' option is unselected)."
   options:
   - Traffic
   - Threat
-  - URL
+  - Url
   - Data
   - Correlation
   - System
@@ -9344,6 +9345,8 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+defaultmapperin: Panorama Mapper
+defaultclassifier: Panorama Classifier
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

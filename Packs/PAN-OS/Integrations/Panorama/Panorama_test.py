@@ -13,7 +13,6 @@ from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from datetime import datetime
 import dateparser
 
-
 integration_firewall_params = {
     'port': '443',
     'vsys': 'vsys1',
@@ -5881,11 +5880,11 @@ class TestFetchIncidentsHelperFunctions:
     def test_add_time_filter_to_query_parameter(self, query, last_fetch, expected_result):
         """
         Given:
-            - a query from paramters
+            - a query from parameters
         When:
             - every fetch incidents cycle starts
         Then:
-            - add_time_filter_to_query_parameter function will append time_generated paremter to the original query to fillter 
+            - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
               according to the queries log type last fetch time.
         
         """
@@ -5920,7 +5919,7 @@ class TestFetchIncidentsHelperFunctions:
     def test_log_types_queries_to_dict(self, params, expected_result):
         """
         Given:
-        - valid paramters dictionary
+        - valid parameters dictionary
 
         When:
         - test_log_types_queries_to_dict function is called
@@ -6082,14 +6081,6 @@ class TestFetchIncidentsFlows:
              (returned.day == expected.day),
              (returned.hour == expected.hour),
              (returned.minute == expected.minute)])
-
-    
-    def assert_datetime_objects(self, returned: datetime, expected: datetime):
-        assert returned.year == expected.year
-        assert returned.month == expected.month
-        assert returned.day == expected.day
-        assert returned.hour == expected.hour
-        assert returned.minute == expected.minute
 
     def test_first_fetch_with_no_incidents_flow(self, mocker):
         """
