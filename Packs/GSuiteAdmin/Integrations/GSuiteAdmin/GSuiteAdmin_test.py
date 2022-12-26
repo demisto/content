@@ -930,16 +930,6 @@ class MockResponse:
         return self.json_data
 
 
-# def create_test_client(mocker) -> Client:
-#     """ This will create a mock client in order to use in the tests
-
-#     Returns:
-#         Client: A mock client instance
-#     """
-#     mocker.patch('GoogleWorkspaceAdmin.Client._init_credentials', return_value=None)
-#     return Client(base_url='https://example.com/', verify=False, proxy=False, service_account_json={})
-
-
 CHROMEOS_ACTION_ERROR_CASES = [
     ('Delinquent account', MESSAGES.get('INVALID_RESOURCE_CUSTOMER_ID_ERROR', '')),
     ('Some other error', 'Some other error'),
@@ -994,27 +984,6 @@ def test_invalid_pagination_arguments(args, error_message):
                                      page_token=args.get('page_toke', ''),
                                      limit=arg_to_number(args.get('limit', '')))
     assert error_message in str(e)
-
-
-# def test_mobile_device_action(mocker, gsuite_client):
-#     """
-#     Given:
-#         - A client, a resource id (that identifies a mobile device), and an action that affects the mobile device
-#     When:
-#         - The command google-mobiledevice-action is run with a correct action argument
-#     Then:
-#         - A CommandResults is returned that marks the command as successful
-#     """
-#     from GSuiteAdmin import gsuite_mobile_device_action_command
-#     from CommonServerPython import CommandResults
-#     expected_command_result = CommandResults(
-#         readable_output=HR_MESSAGES.get('MOBILE_DEVICE_ACTION_SUCCESS', '').format('resource_id'),
-#     )
-#     mocker.patch(MOCKER_HTTP_METHOD, return_value={})
-#     command_result = gsuite_mobile_device_action_command(client=gsuite_client,
-#                                                          args={'customer_id': 'customer_id', 'resource_id': 'resource_id',
-#                                                                'action': 'correct_action'})
-#     assert command_result.to_context() == expected_command_result.to_context()
 
 
 def test_chromeos_device_action(mocker, gsuite_client):

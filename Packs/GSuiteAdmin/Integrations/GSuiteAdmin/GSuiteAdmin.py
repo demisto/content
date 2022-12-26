@@ -17,6 +17,9 @@ DEFAULT_LIMIT = 50
 
 MESSAGES: Dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
+    'TEST_CONFIGURE_ERROR': ('In order for the test_module to run, an admin_email is required, '
+                             'if it is not configured, then each command can receive an admin_email '
+                             'argument as an optional argument.'),
     'BOOLEAN_ERROR': 'The argument {} must be either true or false.',
     'INTEGER_ERROR': 'The argument {} must be a positive integer.',
     'REQUIRED_ARGS_CUSTOM_SCHEMA': 'Argument field_raw_json or field_json_entry_id is required.',
@@ -539,9 +542,7 @@ def test_module(client: Client) -> str:
         if client.admin_email:
             client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{client.admin_email}", method='GET')
         else:
-            return_results(('In order for the test_module to run, an admin_email is required, '
-                            'if it is not configured, then each command can receive an admin_email '
-                            'argument as an optional argument.'))
+            return_results(MESSAGES.get('TEST_CONFIGURE_ERROR', ''))
     return 'ok'
 
 
