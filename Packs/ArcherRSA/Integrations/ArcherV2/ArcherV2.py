@@ -687,7 +687,8 @@ def generate_field_contents(client, fields_values, level_fields, args):
                 break
 
         if field_data:
-            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name], args)
+            field_key, field_value = generate_field_value(client, field_name, field_data, fields_values[field_name],
+                                                          args)
 
             field_content[_id] = {'Type': field_data['Type'],
                                   field_key: field_value,
