@@ -270,7 +270,7 @@ class MsGraphClient:
 ''' HELPER FUNCTIONS '''
 
 
-def build_chat_object(raw_response: Union[dict, list], user_id: str = None) -> Union[dict, list]:
+def build_chat_object(raw_response: Union[dict, list], user_id: str = None):
     """Building chat entry context
     Getting a list from build_chat_object
 
