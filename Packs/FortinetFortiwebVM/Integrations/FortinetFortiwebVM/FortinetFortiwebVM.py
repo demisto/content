@@ -1991,11 +1991,11 @@ class ClientV1(Client):
             http_service (Optional[str]): HTTP service name.
             https_service (Optional[str]): HTTPS service name.
             http2 (Optional[str]): HTTP2 flag.
-            multi_certificate (Optional[str]): _description_
-            certificate_group (Optional[str]): _description_
-            certificate (Optional[str]): _description_
-            intergroup (Optional[str]): _description_
-            proxy (Optional[str]): _description_
+            multi_certificate (Optional[str]): Multi certificate name.
+            certificate_group (Optional[str]): Certificate group name.
+            certificate (Optional[str]): certificate name.
+            intergroup (Optional[str]): Certificate Intermediate Group name
+            proxy (Optional[str]): Proxy boolean.
             redirect_to_https (Optional[str]): Redirect to HTTPS.
             inline_protection_profile (Optional[str]): Profile.
             monitor_mode (Optional[str]): Monitor mode flag.
@@ -2840,7 +2840,11 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
-        data = {'data': {'add': countries_list,}}
+        data = {
+            'data': {
+                'add': countries_list,
+            }
+        }
         response = self._http_request(method='POST', url_suffix='waf/geoip.setCountrys', json_data=data, params=params)
         return response
 
@@ -2856,7 +2860,10 @@ class ClientV2(Client):
         """
 
         endpoint = 'cmdb/waf/geo-block-list/country-list'
-        params = {'mkey': group_name, 'sub_mkey': member_id,}
+        params = {
+            'mkey': group_name,
+            'sub_mkey': member_id,
+        }
         response = self._http_request(method='DELETE', url_suffix=endpoint, params=params)
         return response
 
