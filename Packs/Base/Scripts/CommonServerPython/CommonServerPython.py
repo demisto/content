@@ -8283,11 +8283,11 @@ if 'requests' in sys.modules:
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
 
-            def __init__(self, verify=True):
-                # type: (bool) -> None
+            def __init__(self, verify=True, **kwargs):
+                # type: (bool, dict) -> None
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
-                super().__init__()
+                super().__init__(**kwargs)
 
             def init_poolmanager(self, *args, **kwargs):
                 kwargs['ssl_context'] = self.context
