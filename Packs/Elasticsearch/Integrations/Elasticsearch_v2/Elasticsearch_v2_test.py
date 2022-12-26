@@ -1,4 +1,3 @@
-import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -82,7 +81,7 @@ ES_V7_RESPONSE = {
     }
 }
 
-MOCK_ES7_SEARCH = {
+MOCK_ES7_SEARCH_CONTEXT = str({
     'Server': '',
     'Index': 'customer',
     'Query': 'check',
@@ -111,10 +110,7 @@ MOCK_ES7_SEARCH = {
             '_source': {'Date': '2019-08-27T18:01:25.343212Z'}
         }
     ]
-}
-
-
-MOCK_ES7_SEARCH_CONTEXT = str(MOCK_ES7_SEARCH)
+})
 
 MOCK_ES7_HIT_CONTEXT = str([
     {
@@ -931,7 +927,6 @@ def test_search_command_with_query_dsl(mocker):
 
     Then
      - make sure that the index is being taken from the command arguments and not from integration parameters
-
     """
     import Elasticsearch_v2
     Elasticsearch_v2.FETCH_INDEX = 'index from parameter'
