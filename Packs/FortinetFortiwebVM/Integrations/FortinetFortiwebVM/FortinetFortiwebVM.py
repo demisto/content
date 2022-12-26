@@ -1398,7 +1398,7 @@ class ClientV1(Client):
             host (str): IP address or FQDN of a virtual or real web host.
             action (str): Select whether to accept or deny HTTP requests whose Host.
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}/ProtectedHostnamesNewHost'
         data = {
@@ -2404,7 +2404,7 @@ class ClientV2(Client):
             kwargs (optional): include_subdomains (str): Include Subdomains.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = 'cmdb/server-policy/allow-hosts/host-list'
         params = {'mkey': name}
@@ -2580,7 +2580,7 @@ class ClientV2(Client):
             ip_address (str): IP address.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': group_name}
         type_val = dict_safe_get(self.parser.type_user_to_api_mapper, [member_type])
@@ -2631,7 +2631,7 @@ class ClientV2(Client):
             member_id (str): IP list member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = 'cmdb/waf/ip-list/members'
         params = {'mkey': group_name, 'sub_mkey': member_id}
@@ -2645,7 +2645,7 @@ class ClientV2(Client):
             group_name (str): IP list group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': group_name}
         if member_id := kwargs.get('member_id'):
@@ -2667,7 +2667,7 @@ class ClientV2(Client):
             kwargs: profile (str): Profile.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': policy_name}
         data = {
@@ -2702,7 +2702,7 @@ class ClientV2(Client):
             kwargs: profile (str): Web protection profile.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': policy_name, 'sub_mkey': member_id}
         data = {
@@ -2727,7 +2727,7 @@ class ClientV2(Client):
             member_id (str): Member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': policy_name, 'sub_mkey': member_id}
         response = self._http_request(method='DELETE',
@@ -2743,7 +2743,7 @@ class ClientV2(Client):
             kwargs: member_id (str): Member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': policy_name}
         if member_id := kwargs.get('member_id'):
@@ -2767,7 +2767,7 @@ class ClientV2(Client):
             kwargs: ignore_x_forwarded_for (str): Ignore x forward for.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         data = {
@@ -2798,7 +2798,7 @@ class ClientV2(Client):
             kwargs: ignore_x_forwarded_for (str): Ignore x forward for.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         params = {'mkey': name}
@@ -2822,7 +2822,7 @@ class ClientV2(Client):
             name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         params = {'mkey': name}
@@ -2836,7 +2836,7 @@ class ClientV2(Client):
             kwargs: name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         name = kwargs.get('name')
@@ -2852,7 +2852,7 @@ class ClientV2(Client):
             countries_list (List[str]): List of countries.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': group_name}
         data = {
@@ -2871,7 +2871,7 @@ class ClientV2(Client):
             member_id (str): Geo IP member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         endpoint = 'cmdb/waf/geo-block-list/country-list'
@@ -2889,7 +2889,7 @@ class ClientV2(Client):
             group_name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': group_name}
         response = self._http_request(method='GET', url_suffix='cmdb/waf/geo-block-list/country-list', params=params)
@@ -3118,7 +3118,7 @@ class ClientV2(Client):
                 allow_list (Optional[str]): Allow list.
                 replace_msg (Optional[str]): Replace message.
         Returns
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         data = self.server_policy_data_builder(
@@ -3210,7 +3210,7 @@ class ClientV2(Client):
             kwargs : allow_list (Optional[str]): Allow list.
             kwargs : replace_msg (Optional[str]): Replace message.
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
 
         params = {'mkey': name}
@@ -3266,7 +3266,7 @@ class ClientV2(Client):
             policy_name (str): Policy name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': policy_name}
         response = self._http_request(method='DELETE', url_suffix='cmdb/server-policy/policy', params=params)
@@ -3276,7 +3276,7 @@ class ClientV2(Client):
         """List the server policies.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         name = kwargs.get('name')
         params = {'mkey': name} if name else {}
@@ -3316,7 +3316,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3337,7 +3337,7 @@ class ClientV2(Client):
         """List custom whitelist members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         name = kwargs.get('id')
         params = {'mkey': name} if name else {}
@@ -3361,7 +3361,7 @@ class ClientV2(Client):
             kwargs: domain (str): Domain.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         data = remove_empty_elements({
             'data': {
@@ -3399,7 +3399,7 @@ class ClientV2(Client):
             kwargs: domain (str): Domain.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3434,7 +3434,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         data = remove_empty_elements({'data': {
             'type': 'Cookie',
@@ -3490,7 +3490,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         data = remove_empty_elements({
             'data': {
@@ -3523,7 +3523,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3562,7 +3562,7 @@ class ClientV2(Client):
         """List the Geo IP Exception.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/waf/geo-ip-except')
 
@@ -3570,7 +3570,7 @@ class ClientV2(Client):
         """List the Trigger Policies.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/log/trigger-policy')
 
@@ -3578,7 +3578,7 @@ class ClientV2(Client):
         """List the Custom Predifined members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='policy/serverobjects.global.predefinedglobalwhitelist')
 
@@ -3586,7 +3586,7 @@ class ClientV2(Client):
         """Update a Custom Predifined members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2
+            Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='PUT',
                                   url_suffix='policy/serverobjects.global.predefinedglobalwhitelist',
