@@ -144,7 +144,7 @@ validate-content-conf:
       then
         echo "Replace Cortex XSOAR for non-xsoar build."
         pushd "$ARTIFACTS_FOLDER"
-        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+        find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCTNAME"'/gI' {} \;
         pushd content_packs; zip -r ../content_packs.zip * 1> /dev/null; popd
         rm -rf content_packs
         popd
@@ -200,7 +200,7 @@ xpanse-prepare-testing-bucket:
   variables:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XPANSE}"
     MARKETPLACE_VERSION: "xpanse"
-    PRODUCT_NAME: "Cortex XPANSE"
+    PRODUCTNAME: "Cortex XPANSE"
     MARKETPLACE_BUCKET: "$GCS_MARKET_XPANSE_BUCKET"
   extends:
     - .generic-prepare-testing-bucket
@@ -210,6 +210,7 @@ mpv2-prepare-testing-bucket:
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
     MARKETPLACE_VERSION: "marketplacev2"
     MARKETPLACE_BUCKET: "$GCS_MARKET_V2_BUCKET"
+    PRODUCTNAME: "Cortex XSIAM"
   extends:
     - .generic-prepare-testing-bucket
 
