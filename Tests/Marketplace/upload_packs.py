@@ -948,8 +948,7 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
     logging.info("Starting to collect pack with dependencies zips")
     for pack_name, pack in packs_for_current_marketplace_dict.items():
         try:
-            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name,
-                                   PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name] or pack.hidden:
+            if pack.status not in [*SKIPPED_STATUS_CODES, PackStatus.SUCCESS.name] or pack.hidden:
                 # avoid trying to upload dependencies zip for failed or hidden packs
                 continue
             pack_and_its_dependencies = [packs_for_current_marketplace_dict.get(dep_name) for dep_name in

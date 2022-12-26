@@ -3890,8 +3890,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
             BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
-                    BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False",
                     BucketUploadFlow.LATEST_VERSION: pack.latest_version
                 } for pack in successful_uploaded_dependencies_zip_packs
             }
