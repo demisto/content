@@ -98,7 +98,7 @@ validate-content-conf:
     - |
       echo "Trying to pull all CSV import files from bucket"
       gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-      # gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*" /var/lib/neo4j/import
+      gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*" /var/lib/neo4j/import
       echo "Successfully pulled all CSV import files from bucket"
     - |
       if [ -z "$(ls -A /var/lib/neo4j/import)" ]; then
@@ -177,7 +177,8 @@ validate-content-conf:
     - |
       if [[ $BUCKET_UPLOAD == "true" ]]; then
         section_start "Upload CSV to bucket" --collapsed
-        gsutil -m cp -r /var/lib/neo4j/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*"
+        # delete command after decide how to upload in prod
+        # gsutil -m cp -r /var/lib/neo4j/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*"
         section_end "Upload Artifacts to GCP"
       fi
     
