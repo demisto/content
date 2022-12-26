@@ -1527,6 +1527,7 @@ script:
           description: Specific ips policy id. To get the policy_id use !nsm-get-ips-policies command.
           required: true
           isArray: false
+      outputs:
         - contextPath: NSM.IPSPolicies.ID
           description: IPS Policy ID
           type: number
