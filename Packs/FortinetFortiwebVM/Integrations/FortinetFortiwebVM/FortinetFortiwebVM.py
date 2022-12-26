@@ -1320,7 +1320,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1.
         """
-        data = {'name': name, 'defaultAction': self.parser.action_user_to_api_mapper[default_action]}
+        data = {
+            'name': name,
+            'defaultAction': self.parser.action_user_to_api_mapper[default_action],
+        }
         response = self._http_request(method='POST',
                                       url_suffix='ServerObjects/ProtectedHostnames/ProtectedHostnames',
                                       json_data=data)
@@ -1340,7 +1343,10 @@ class ClientV1(Client):
             'name':
             name,
             'defaultAction':
-            dict_safe_get(self.parser.action_user_to_api_mapper.get, [default_action])
+            dict_safe_get(
+                self.parser.action_user_to_api_mapper.get,
+                [default_action],
+            )
         })
         response = self._http_request(method='PUT',
                                       url_suffix=f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}',
@@ -1380,7 +1386,10 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}/ProtectedHostnamesNewHost'
-        data = {'action': self.parser.action_user_to_api_mapper[action], 'host': host}
+        data = {
+            'action': self.parser.action_user_to_api_mapper[action],
+            'host': host,
+        }
         response = self._http_request(method='POST', url_suffix=endpoint, json_data=data)
         return response
 
@@ -1402,7 +1411,10 @@ class ClientV1(Client):
             'host':
             host,
             'action':
-            dict_safe_get(self.parser.action_user_to_api_mapper, [kwargs.get('action')])
+            dict_safe_get(
+                self.parser.action_user_to_api_mapper,
+                [kwargs.get('action')],
+            )
         })
         response = self._http_request(method='PUT', url_suffix=endpoint, json_data=data)
         return response
@@ -1488,7 +1500,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        data = {'type': dict_safe_get(self.parser.type_user_to_api_mapper, [member_type]), 'iPv4IPv6': ip_address}
+        data = {
+            'type': dict_safe_get(self.parser.type_user_to_api_mapper, [member_type]),
+            'iPv4IPv6': ip_address,
+        }
         if member_type == 'Black IP':
             data.update(
                 remove_empty_elements({
@@ -1520,7 +1535,10 @@ class ClientV1(Client):
         """
         data = remove_empty_elements({
             'iPv4IPv6': ip_address,
-            'type': dict_safe_get(self.parser.type_user_to_api_mapper, [member_type])
+            'type': dict_safe_get(
+                self.parser.type_user_to_api_mapper,
+                [member_type],
+            )
         })
         if member_type := 'Black IP':
             data.update(
@@ -1674,7 +1692,7 @@ class ClientV1(Client):
             'name': name,
             'severity': dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
             'triggerPolicy': trigger_policy,
-            'except': exception
+            'except': exception,
         })
         response = self._http_request(method='POST', url_suffix='WebProtection/Access/GeoIP', json_data=data)
         return response
@@ -1695,7 +1713,7 @@ class ClientV1(Client):
         data = remove_empty_elements({
             'severity': dict_safe_get(self.parser.severity_user_to_api_mapper, [severity]),
             'triggerPolicy': trigger_policy,
-            'except': exception
+            'except': exception,
         })
         response = self._http_request(method='PUT', url_suffix=f'WebProtection/Access/GeoIP/{name}', json_data=data)
         return response
@@ -2106,7 +2124,10 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V1
         """
-        data = {'type': 2, 'itemName': name}
+        data = {
+            'type': 2,
+            'itemName': name,
+        }
         return self._http_request(method='POST',
                                   url_suffix='ServerObjects/Global/CustomGlobalWhiteList',
                                   json_data=data)
@@ -2301,7 +2322,12 @@ class ClientV2(Client):
         """
 
         action_val = dict_safe_get(self.parser.action_user_to_api_mapper, [default_action])
-        data = {'data': {'name': name, 'default-action': action_val}}
+        data = {
+            'data': {
+                'name': name,
+                'default-action': action_val,
+            }
+        }
         response = self._http_request(method='POST', url_suffix='cmdb/server-policy/allow-hosts', json_data=data)
         return response
 
@@ -2397,7 +2423,10 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = 'cmdb/server-policy/allow-hosts/host-list'
-        params = {'mkey': group_name, 'sub_mkey': member_id}
+        params = {
+            'mkey': group_name,
+            'sub_mkey': member_id,
+        }
         data = {
             "data":
             remove_empty_elements({
@@ -2421,7 +2450,10 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         endpoint = 'cmdb/server-policy/allow-hosts/host-list'
-        params = {'mkey': group_name, 'sub_mkey': member_id}
+        params = {
+            'mkey': group_name,
+            'sub_mkey': member_id,
+        }
         response = self._http_request(method='DELETE', url_suffix=endpoint, params=params)
         return response
 
@@ -2540,7 +2572,12 @@ class ClientV2(Client):
         """
         params = {'mkey': group_name}
         type_val = dict_safe_get(self.parser.type_user_to_api_mapper, [member_type])
-        data = {'data': {'type': type_val, 'ip': ip_address}}
+        data = {
+            'data': {
+                'type': type_val,
+                'ip': ip_address,
+            }
+        }
         response = self._http_request(method='POST',
                                       url_suffix='cmdb/waf/ip-list/members',
                                       json_data=data,
@@ -2806,7 +2843,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
-        data = {'data': {'add': countries_list}}
+        data = {'data': {'add': countries_list,}}
         response = self._http_request(method='POST', url_suffix='waf/geoip.setCountrys', json_data=data, params=params)
         return response
 
@@ -2822,7 +2859,7 @@ class ClientV2(Client):
         """
 
         endpoint = 'cmdb/waf/geo-block-list/country-list'
-        params = {'mkey': group_name, 'sub_mkey': member_id}
+        params = {'mkey': group_name, 'sub_mkey': member_id,}
         response = self._http_request(method='DELETE', url_suffix=endpoint, params=params)
         return response
 
