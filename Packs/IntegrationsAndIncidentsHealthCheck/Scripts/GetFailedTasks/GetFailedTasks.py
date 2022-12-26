@@ -26,6 +26,21 @@ def get_rest_api_instance_to_use():
     return rest_api_instance_to_use
 
 
+def get_tenant_name():
+    """
+        Gets the tenant name from the server url.
+
+        Returns:
+         tenant name.
+    """
+    server_url = demisto.executeCommand("GetServerURL", {})[0].get('Contents')
+    tenant_name = ''
+    if '/acc_' in server_url:
+        tenant_name = server_url.split('acc_')[-1]
+
+    return tenant_name
+
+
 def get_failed_tasks_output(tasks: list, incident: dict):
     """
         Converts the failing task objects of an incident to context outputs.
@@ -76,10 +91,12 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
         Returns:
             List of the tasks given from the response.
     """
+    uri = f'investigation/{str(incident["id"])}/workplan/tasks'
+
     response = demisto.executeCommand(
         "demisto-api-post",
         {
-            "uri": f'investigation/{str(incident["id"])}/workplan/tasks',
+            "uri": uri,
             "body": {
                 "states": ["Error"],
                 "types": ["regular", "condition", "collection"],
@@ -148,7 +165,7 @@ def get_incident_data(incident: dict, rest_api_instance: str = None):
             # ValueError: dial tcp connect: connection refused
             rest_api_instance = get_rest_api_instance_to_use()
             if not rest_api_instance:
-                raise DemistoException('Could not find which Rest Api instance to use,'
+                raise DemistoException('Could not find which Rest API instance to use, '
                                        'Please specify the rest_api_instance argument.')
             tasks = get_incident_tasks_using_rest_api_instance(incident, rest_api_instance)
 
