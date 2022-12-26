@@ -171,7 +171,7 @@ class Parser:
         return {'id': policy['name']}
 
     def operation_status(self, operation_network: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for operation status.
+        """Parse for operation status.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -261,7 +261,7 @@ class Parser:
 class ParserV1(Parser):
 
     def protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname group.
+        """Parse for protected hostname group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -280,7 +280,7 @@ class ParserV1(Parser):
         return group
 
     def protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname member.
+        """Parse for protected hostname member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -297,7 +297,7 @@ class ParserV1(Parser):
         return group
 
     def ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname group.
+        """Parse for protected hostname group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -314,7 +314,7 @@ class ParserV1(Parser):
         return group
 
     def ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for IP list member.
+        """Parse for IP list member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -333,7 +333,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for HTTP content routing member.
+        """Parse for HTTP content routing member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -354,7 +354,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for Geo IP Group.
+        """Parse for Geo IP Group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -376,7 +376,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for Geo IP member.
+        """Parse for Geo IP member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -392,7 +392,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for operation status.
+        """Parse for operation status.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -415,7 +415,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for system status.
+        """Parse for system status.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -442,7 +442,7 @@ class ParserV1(Parser):
         return {'id': data_dict['_id']}
 
     def server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for server policy dict.
+        """Parse for server policy dict.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -476,7 +476,7 @@ class ParserV1(Parser):
         return parsed_data
 
     def custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for custom whitelist member dict.
+        """Parse for custom whitelist member dict.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -598,7 +598,7 @@ class ParserV1(Parser):
 class ParserV2(Parser):
 
     def protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname group.
+        """Parse for protected hostname group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -616,7 +616,7 @@ class ParserV2(Parser):
         return group
 
     def protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname member.
+        """Parse for protected hostname member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -635,7 +635,7 @@ class ParserV2(Parser):
         return group
 
     def ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for protected hostname group.
+        """Parse for protected hostname group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -659,7 +659,7 @@ class ParserV2(Parser):
         return group
 
     def ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for IP list member.
+        """Parse for IP list member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -676,7 +676,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for HTTP content routing member.
+        """Parse for HTTP content routing member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -696,7 +696,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for Geo IP Group.
+        """Parse for Geo IP Group.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -719,7 +719,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for Geo IP member.
+        """Parse for Geo IP member.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -735,7 +735,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for operation status.
+        """Parse for operation status.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -763,7 +763,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for operation status.
+        """Parse for operation status.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -788,7 +788,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for simple dict.
+        """Parse for simple dict.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -800,7 +800,7 @@ class ParserV2(Parser):
         return {'id': data_dict['name']}
 
     def server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for server policy dict.
+        """Parse for server policy dict.
 
         Args:
             client (Client): Fortiweb VM client.
@@ -844,7 +844,7 @@ class ParserV2(Parser):
         return parsed_data
 
     def custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
-        """Parser for custom whitelist member dict.
+        """Parse for custom whitelist member dict.
 
         Args:
             client (Client): Fortiweb VM client.
