@@ -594,7 +594,7 @@ class Client(BaseClient):
             list_id = res['RequestedObject']['RelatedValuesListId']
             values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
-                values_list = []
+                values_list: List[Dict[str, Any]] = []
                 for value in values_list_res['RequestedObject'].get('Children'):
                     self.get_field_value_list_helper(value, values_list, args.get('depth'))
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
