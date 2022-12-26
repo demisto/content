@@ -3962,7 +3962,6 @@ Gets the detections for a specific incident.
 
 ### Using Spotlight APIs
 Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
-For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
 
 
 ### Required API client scope
