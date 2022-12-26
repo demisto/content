@@ -9,6 +9,7 @@ import aiohttp
 import slack_sdk
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_client import AsyncWebClient
+from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.socket_mode.request import SocketModeRequest
 from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.slack_response import SlackResponse
@@ -95,6 +96,28 @@ EXTENSIVE_LOGGING: bool
 MESSAGE_QUEUE: multiprocessing.Queue
 
 ''' HELPER FUNCTIONS '''
+
+
+def support_multiprocessing():
+    """Adds lock on the calls to the Cortex XSOAR server from the Demisto object to support integration which use multithreading.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+    global demisto
+    prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
+    demisto.lock = multiprocessing.Lock()  # type: ignore[attr-defined]
+
+    def locked_do(cmd):
+        if demisto.lock.acquire(timeout=60):  # type: ignore[call-arg,attr-defined]
+            try:
+                return prev_do(cmd)  # type: ignore[call-arg]
+            finally:
+                demisto.lock.release()  # type: ignore[attr-defined]
+        else:
+            raise RuntimeError('Failed acquiring lock')
+
+    demisto._Demisto__do = locked_do  # type: ignore[attr-defined]
 
 
 def get_bot_id() -> str:
@@ -469,10 +492,56 @@ def send_slack_request_sync(client: slack_sdk.WebClient, method: str, http_verb:
     return response  # type: ignore
 
 
+async def send_slack_request_async(client: AsyncWebClient, method: str, http_verb: str = 'POST', file_: str = '',
+                                   body: dict = None) -> SlackResponse:
+    """
+    Sends an async request to slack API while handling rate limit errors.
+
+    Args:
+        client: The slack client.
+        method: The method to use.
+        http_verb: The HTTP method to use.
+        file_: A file path to send.
+        body: The request body.
+
+    Returns:
+        The slack API response.
+    """
+    if body is None:
+        body = {}
+
+    set_name_and_icon(body, method)
+    total_try_time = 0
+    while True:
+        try:
+            demisto.debug(f'Sending slack {method} (async). Body is: {str(body)}')
+            if http_verb == 'POST':
+                if file_:
+                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
+                else:
+                    response = await client.api_call(method, json=body)  # type: ignore
+            else:
+                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
+        except SlackApiError as api_error:
+            demisto.debug(f'Got rate limit error (async). Body is: {str(body)}\n{api_error}')
+            response = api_error.response
+            headers = response.headers
+            if 'Retry-After' in headers:
+                retry_after = int(headers['Retry-After'])
+                total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
+                    await asyncio.sleep(retry_after)
+                    continue
+            raise
+        break
+
+    return response  # type: ignore
+
+
 ''' MIRRORING '''
 
 
-def get_slack_name(slack_id: str, client: WebClient) -> str:
+async def get_slack_name(slack_id: str, client: AsyncWebClient) -> str:
     """
     Get the slack name of a provided user or channel by its ID
 
@@ -499,7 +568,7 @@ def get_slack_name(slack_id: str, client: WebClient) -> str:
             if conversations:
                 conversation = conversations[0]
         if not conversation:
-            conversation = client.conversations_info(channel=slack_id)  # type: ignore
+            conversation = await client.conversations_info(channel=slack_id)  # type: ignore
         slack_name = conversation.get('name', '')
     elif prefix == 'U':
         user: dict = {}
@@ -508,14 +577,14 @@ def get_slack_name(slack_id: str, client: WebClient) -> str:
             if users:
                 user = users[0]
         if not user:
-            user = client.users_info(user=slack_id)  # type: ignore
+            user = await client.users_info(user=slack_id)  # type: ignore
 
         slack_name = user.get('name', '')
 
     return slack_name
 
 
-def clean_message(message: str, client: WebClient) -> str:
+async def clean_message(message: str, client: AsyncWebClient) -> str:
     """
     Prettifies a slack message - replaces tags and URLs with clean expressions
 
@@ -531,7 +600,7 @@ def clean_message(message: str, client: WebClient) -> str:
     message = re.sub(USER_TAG_EXPRESSION, r'\1', message)
     message = re.sub(CHANNEL_TAG_EXPRESSION, r'\1', message)
     for match in matches:
-        slack_name = get_slack_name(match, client)
+        slack_name = await get_slack_name(match, client)
         message = message.replace(match, slack_name)
 
     resolved_message = re.sub(URL_EXPRESSION, r'\1', message)
@@ -629,7 +698,7 @@ def mirror_investigation():
                 body['is_private'] = True
 
             conversation = send_slack_request_sync(CLIENT, 'conversations.create',  # type: ignore
-                                                   body=body).get('channel', {})
+                                                          body=body).get('channel', {})
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
 
@@ -1024,8 +1093,6 @@ def start_listening():
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        # Initialize logging for multiprocessing.
-        multiprocessing.log_to_stderr(logging.DEBUG)
         # create the long-running background task loop
         background_task = multiprocessing.Process(target=long_running_loop)
         # run the process
@@ -1034,34 +1101,24 @@ def start_listening():
 
         # Create the message listeners
         message_consumers = [
-            multiprocessing.Process(target=consume_and_process_message, args=(i,)) for i
+            threading.Thread(target=asyncio.run, args=(consume_and_process_message(i),)) for i
             in range(3)]
         for message_consumer in message_consumers:
             message_consumer.start()
             demisto.info("Created consumer task")
 
-        # Join long-running background task to loop
+        asyncio.run(socket_client_loop())
 
-        # # create the socket_client loop
-        # socket_client = threading.Thread(target=socket_client_loop)
-        # socket_client.start()
-        # demisto.info("Started Client")
-        #
-        # # Join socket_client to loop
-        # socket_client.join()  # blocking
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(socket_client_loop())
-
-        # # Join message listeners to process
-        # for message_consumer in message_consumers:
-        #     message_consumer.join()
-        #     demisto.info("Starting consumer task")
+        # Join message listeners to process. Theoretically won't get here.
+        for message_consumer in message_consumers:
+            message_consumer.join()
+            demisto.info("Starting consumer task")
 
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
 
-def handle_dm(user: dict, text: str, client: WebClient):
+async def handle_dm(user: dict, text: str, client: AsyncWebClient):
     """
     Handles a direct message sent to the bot
 
@@ -1103,14 +1160,14 @@ def handle_dm(user: dict, text: str, client: WebClient):
     body = {
         'users': user.get('id')
     }
-    im = send_slack_request_sync(client, 'conversations.open', body=body)
+    im = await send_slack_request_async(client, 'conversations.open', body=body)
     channel = im.get('channel', {}).get('id')  # type: ignore
     body = {
         'text': data,
         'channel': channel
     }
 
-    send_slack_request_sync(client, 'chat.postMessage', body=body)
+    await send_slack_request_async(client, 'chat.postMessage', body=body)
 
 
 def translate_create(message: str, user_name: str, user_email: str, demisto_user: dict) -> str:
@@ -1234,17 +1291,17 @@ def is_bot_message(data: dict) -> bool:
         return False
 
 
-def get_user_details(user_id: str) -> SlackResponse:
+async def get_user_details(user_id: str) -> AsyncSlackResponse:
     """
     Performs the retrieval of the User object from the UserID which is sent as part of the payload.
     :param user_id: str: The ID of the user to perform the lookup on.
     :return: SlackResponse: An SlackResponse object which is a dictionary of the user object.
     """
-    user = CLIENT.users_info(user=user_id)
+    user = await ASYNC_CLIENT.users_info(user=user_id)
     return user.get('user', {})  # type: ignore
 
 
-def search_text_for_entitlement(text: str, user: SlackResponse) -> str:
+def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     """
     In some cases, a user may send an entitlement string as part of the text, this function will search the text to see
     if an entitlement string exists, and if so, will handle the entitlement and return a default reply
@@ -1264,7 +1321,7 @@ def search_text_for_entitlement(text: str, user: SlackResponse) -> str:
         return ''
 
 
-def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
+async def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
@@ -1278,7 +1335,7 @@ def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text:
         entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
     if '{response}' in entitlement_reply and action_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-    send_slack_request_sync(client=CLIENT, method='chat.update',
+    await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
                             body={
                                 'channel': channel,
                                 'ts': message_ts,
@@ -1296,7 +1353,7 @@ def is_dm(channel: str) -> bool:
     return True if channel and channel[0] == 'D' and ENABLE_DM else False
 
 
-def process_mirror(channel_id: str, text: str, user: SlackResponse):
+async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
     """
     Process messages which have been identified as possible mirrored messages. If so, we grab the context (cached), and
     check for a match of the channel_id in the cached mirrors. If we find one, we will update the mirror object and send
@@ -1344,7 +1401,7 @@ def process_mirror(channel_id: str, text: str, user: SlackResponse):
             demisto.debug("Already Mirrored")
 
         investigation_id = mirror['investigation_id']
-        handle_text(CLIENT, investigation_id, text, user)  # type: ignore
+        await handle_text(ASYNC_CLIENT, investigation_id, text, user)  # type: ignore
 
 
 def fetch_context(force_refresh: bool = False) -> dict:
@@ -1418,7 +1475,7 @@ async def acknowledge_and_queue(client: SocketModeClient, req: SocketModeRequest
     demisto.debug(f"Added to Queue new message. Total in queue is {MESSAGE_QUEUE.qsize()}")
 
 
-def consume_and_process_message(i: int):
+async def consume_and_process_message(i: int):
     """
     This is the main listener which is attached to the open socket connection. When a SocketModeRequest has been received
     this flow will be triggered. The Payload can be of any type and this function will determine what type it is, then
@@ -1483,13 +1540,13 @@ def consume_and_process_message(i: int):
                 continue
 
             # At this point we will need the user's data so we fetch it directly from Slack
-            user = get_user_details(user_id=user_id)
+            user = await get_user_details(user_id=user_id)
             # Searches the text for an entitlement reply. This is not common.
             entitlement_reply = search_text_for_entitlement(text=text, user=user)
 
             # Check if the message is being sent directly to our bot.
             if is_dm(channel):
-                handle_dm(user, text, CLIENT)  # type: ignore
+                await handle_dm(user, text, ASYNC_CLIENT)  # type: ignore
 
             # This is a check to determine if the event contains actions which are sent as part of a SlackAsk response.
             if len(actions) > 0:
@@ -1550,12 +1607,12 @@ def consume_and_process_message(i: int):
 
             # If an entitlement reply has been found, then we will handle the entitlement and forward the message.
             if entitlement_reply:
-                process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
 
             # If a message has made it here, we need to check if the message is being mirrored. If not, we will ignore it.
             else:
                 if MIRRORING_ENABLED:
-                    process_mirror(channel, text, user)
+                    await process_mirror(channel, text, user)
                 else:
                     demisto.debug("Mirroring is not enabled, ignoring.")
                     continue
@@ -1585,7 +1642,7 @@ def get_user_by_id(client: WebClient, user_id: str) -> dict:
     return (send_slack_request_sync(client, 'users.info', http_verb='GET', body=body)).get('user', {})
 
 
-def handle_text(client: WebClient, investigation_id: str, text: str, user: dict):
+async def handle_text(client: AsyncWebClient, investigation_id: str, text: str, user: dict):
     """
     Handles text received in the Slack workspace (not DM)
 
@@ -1598,7 +1655,7 @@ def handle_text(client: WebClient, investigation_id: str, text: str, user: dict)
     demisto.info(f'SlackV3 - adding entry to incident {investigation_id}')
     if text:
         demisto.addEntry(id=investigation_id,
-                         entry=clean_message(text, client),
+                         entry=await clean_message(text, client),
                          username=user.get('name', ''),
                          email=user.get('profile', {}).get('email', ''),
                          footer=MESSAGE_FOOTER
@@ -2784,6 +2841,7 @@ def main() -> None:
         command_func = commands[command_name]
         init_globals(command_name)
         support_multithreading()
+        support_multiprocessing()
         command_func()
     except Exception as e:
         LOG(e)
