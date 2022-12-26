@@ -1830,7 +1830,7 @@ class TestCopyAndUploadToStorage:
         }
 
         task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
-            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict,
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict, {},
             GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert not task_status
@@ -1849,7 +1849,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {},
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {}, {},
                                                                           GCPConfig.CONTENT_PACKS_PATH,
                                                                           GCPConfig.BUILD_BASE_PATH)
         assert task_status
@@ -1878,7 +1878,7 @@ class TestCopyAndUploadToStorage:
                     BucketUploadFlow.AGGREGATED: "False",
                     BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
                 }
-            }, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
+            }, {}, GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH
         )
         assert task_status
         assert not skipped_pack
