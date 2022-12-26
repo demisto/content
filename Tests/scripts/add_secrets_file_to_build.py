@@ -13,10 +13,11 @@ def run(options):
         "integrations": secrets
     }
     for secret in secrets:
-        if secret.get('name') == 'Palo Alto Networks Threat Vault v2':
-            print(f'THIS IS SECRETS FOR THREAT VAULT V2 --- {secret}\n')
-        else:
-            print(f"{secret.get('name')}\n")
+        if secret:
+            if secret.get('name') == 'Palo Alto Networks Threat Vault v2':
+                print(f'THIS IS SECRETS FOR THREAT VAULT V2 --- {secret}\n')
+            else:
+                print(f"{secret.get('name')}\n")
     with open(options.json_path_file, 'w') as secrets_out_file:
         try:
             secrets_out_file.write(json5.dumps(secret_file, quote_keys=True))
