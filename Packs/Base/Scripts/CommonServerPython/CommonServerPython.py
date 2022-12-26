@@ -10451,7 +10451,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def get_found_incident_ids(last_run, incidents, look_back, id_field):
+def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids):
     """
     Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
@@ -10476,8 +10476,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 
     for incident in incidents:
         found_incidents[incident[id_field]] = current_time
-
-    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+    if remove_incident_ids:
+        found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
     return found_incidents
 
@@ -10519,6 +10519,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :rtype: ``Dict``
     """
 
+    remove_incident_ids = True
+
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
@@ -10532,12 +10534,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             'limit': fetch_limit,
         }
     else:
+        remove_incident_ids = False
         new_last_run = {
             'time': start_fetch_time,
             'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
 
-    return new_last_run
+    return new_last_run, remove_incident_ids
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
@@ -10579,10 +10582,18 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :rtype: ``Dict``
     """
 
-    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
+    updated_last_run, remove_incident_ids = create_updated_last_run_object(last_run,
+                                                                           incidents,
+                                                                           fetch_limit,
+                                                                           look_back,
+                                                                           start_fetch_time,
+                                                                           end_fetch_time,
+                                                                           created_time_field,
+                                                                           date_format,
+                                                                           increase_last_run_time,
+                                                                           )
 
-    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
-                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
