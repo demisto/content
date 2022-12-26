@@ -4863,6 +4863,15 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
 
 
 def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
+    """Read JSON file by json id.
+
+    Args:
+        json_template_id (str): JSON file id.
+        name (str): Server Policy name.
+
+    Returns:
+        Dict[str, Any]: Arguments from JSON file.
+    """
     file_data = demisto.getFilePath(json_template_id)
     with open(file_data['path'], 'rb') as f:
         args = json.load(f)
