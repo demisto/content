@@ -13,7 +13,7 @@ import dictdiffer
 
 from ruamel.yaml import YAML
 from slack_sdk import WebClient
-
+from demisto_sdk.commands.content_graph.parsers.content_item import ContentItemParser
 yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
@@ -199,8 +199,8 @@ def compare_content_packs(
         for path in list_files_id_set
         if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
     ]
-    missing = [str(path.relative_to(ARTIFACTS_FOLDER.parent)) for path in missing]
-    missing = [(path, reasons[path]) for path in missing]
+    missing = [ContentItemParser.from_path(path) for path in missing]
+    missing = [(content_item.object_id, reasons[content_item.object_id]) for content_item in missing]
     message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
 
 
