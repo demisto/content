@@ -5422,14 +5422,12 @@ def custom_predifined_whitelist_list_command(client: Client, args: Dict[str, Any
     id = args.get('id')
     object_type = args.get('type')
     response = client.custom_predifined_whitelist_list_request()
+    data = response if client.version == ClientV1.API_VER else response['results']
     if object_type:
-        data = response if client.version == ClientV1.API_VER else response['results']
         rel_data = dict_safe_get(find_dict_in_array(data, 'type', object_type), ['details'])
-        response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
     else:
-        data = response if client.version == ClientV1.API_VER else response['results']
         rel_data = [member for object_type in data for member in object_type['details']]
-        response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
+    response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
