@@ -1604,8 +1604,7 @@ class ClientV1(Client):
         Args:
             policy_name (str): Server policy name.
             http_content_routing_policy (str): HTTP content routing policy name.
-            is_default (str): Is FortiWeb applies the protection profile to any traffic that does not match conditions
-            specified in the HTTP content routing policies?
+            is_default (str): Is default flag.
             inherit_webprotection_profile (str): Enable inherit web protection profile.
             kwargs: profile (str): Web protection profile.
 
@@ -2960,23 +2959,44 @@ class ClientV2(Client):
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
 
-    def server_policy_data_builder(self, name: str, deployment_mode: Optional[str], virtual_server: Optional[str],
-                                   server_pool: Optional[str], protected_hostnames: Optional[str],
-                                   client_real_ip: Optional[str], syn_cookie: Optional[str],
-                                   half_open_thresh: Optional[str], http_service: Optional[str],
-                                   https_service: Optional[str], protocol: Optional[str],
-                                   multi_certificate: Optional[str], certificate_group: Optional[str],
+    def server_policy_data_builder(self,
+                                   name: str,
+                                   deployment_mode: Optional[str],
+                                   virtual_server: Optional[str],
+                                   server_pool: Optional[str],
+                                   protected_hostnames: Optional[str],
+                                   client_real_ip: Optional[str],
+                                   syn_cookie: Optional[str],
+                                   half_open_thresh: Optional[str],
+                                   http_service: Optional[str],
+                                   https_service: Optional[str],
+                                   protocol: Optional[str],
+                                   multi_certificate: Optional[str],
+                                   certificate_group: Optional[str],
                                    proxy: Optional[str],
-                                   redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
-                                   monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
-                                   comments: Optional[str], mach_once: Optional[str], ip_range: Optional[str],
-                                   retry_on: Optional[str], retry_on_cache_size: Optional[str],
+                                   redirect_to_https: Optional[str],
+                                   inline_protection_profile: Optional[str],
+                                   monitor_mode: Optional[str],
+                                   url_case_sensitivity: Optional[str],
+                                   comments: Optional[str],
+                                   mach_once: Optional[str],
+                                   ip_range: Optional[str],
+                                   retry_on: Optional[str],
+                                   retry_on_cache_size: Optional[str],
                                    retry_on_connect_failure: Optional[str],
-                                   retry_times_on_connect_failure: Optional[str], retry_on_http_layer: Optional[str],
+                                   retry_times_on_connect_failure: Optional[str],
+                                   retry_on_http_layer: Optional[str],
                                    retry_times_on_http_layer: Optional[str],
-                                   retry_on_http_response_codes: Optional[list], scripting: Optional[str],
-                                   scripting_list: Optional[str], allow_list: Optional[str], replace_msg: Optional[str],
-                                   certificate_type: Optional[str], lets_certificate: Optional[str], http2: Optional[str]=None,certificate: Optional[str]=None,intergroup: Optional[str]=None) -> Dict[str, Any]:
+                                   retry_on_http_response_codes: Optional[list],
+                                   scripting: Optional[str],
+                                   scripting_list: Optional[str],
+                                   allow_list: Optional[str],
+                                   replace_msg: Optional[str],
+                                   certificate_type: Optional[str],
+                                   lets_certificate: Optional[str],
+                                   http2: Optional[str] = None,
+                                   certificate: Optional[str] = None,
+                                   intergroup: Optional[str] = None) -> Dict[str, Any]:
         data = {
             'data':
             remove_empty_elements({
