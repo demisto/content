@@ -2382,9 +2382,6 @@ def sub_main():
     command = demisto.command()
     if params.get('upn_mailbox', '') and command == "fetch-incidents":
         params['default_target_mailbox'] = params.get('upn_mailbox')
-    print("args.get('upn_mailbox'): " + str(params.get('upn_mailbox')))
-    print(params['default_target_mailbox'])
-    # params['upn_mailbox'] = args.get('upn_mailbox', '')
     try:
         client = EWSClient(**params)
         start_logging()
