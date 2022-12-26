@@ -116,11 +116,6 @@ else
   else
     echo "Skipping uploading corepacks.json file."
   fi
-  if [ -f $ID_SET ]; then
-    gsutil cp -z json $ID_SET "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH"
-  else
-    echo "Skipping uploading id_set.json file."
-  fi
 
   echo "Finished updating content packs successfully."
 fi
