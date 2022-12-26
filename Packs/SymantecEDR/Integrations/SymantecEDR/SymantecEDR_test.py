@@ -194,7 +194,7 @@ def test_get_domain_file_association_list_command(mocker, raw_response, expected
     command_results = get_domain_file_association_list_command(client, args)
 
     # results is CommandResults list
-    context_detail = command_results.to_context()['Contents']
+    context_detail = command_results.to_context()['Contents']["result"]
     assert context_detail == expected.get("result")
 
 
@@ -220,7 +220,7 @@ def test_get_endpoint_domain_association_list_command(mocker, raw_response, expe
     command_results = get_endpoint_domain_association_list_command(client, args)
 
     # results is CommandResults list
-    context_detail = command_results.to_context()['Contents']
+    context_detail = command_results.to_context()['Contents']["result"]
     assert context_detail == expected.get("result")
 
 

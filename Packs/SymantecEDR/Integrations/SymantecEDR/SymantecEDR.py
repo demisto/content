@@ -1281,7 +1281,9 @@ def get_domain_file_association_list_command(client: Client, args: Dict[str, Any
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainFileAssociation',
         outputs_key_field='',
-        outputs=page_result
+        outputs=page_result,
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1324,7 +1326,9 @@ def get_endpoint_domain_association_list_command(client: Client, args: Dict[str,
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.EndpointDomainAssociation',
         outputs_key_field='',
-        outputs=page_result
+        outputs=page_result,
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1408,7 +1412,8 @@ def get_audit_event_command(client: Client, args: Dict[str, Any]) -> CommandResu
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.AuditEvent',
         outputs_key_field='event_uuid',
         outputs=context_data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1446,7 +1451,8 @@ def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.Event',
         outputs_key_field='event_uuid',
         outputs=context_data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1485,7 +1491,8 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IncidentEvent',
         outputs_key_field='event_uuid',
         outputs=context_data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1572,7 +1579,9 @@ def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> Comma
         readable_output=readable_output,
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.IncidentComment',
         outputs_key_field='',
-        outputs=context_data
+        outputs=context_data,
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1642,7 +1651,10 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
     else:
         readable_output = f'Failed {action}. Response from endpoint {response.get("status")}'
 
-    return CommandResults(readable_output=readable_output)
+    return CommandResults(
+        readable_output=readable_output,
+        ignore_auto_extract=True
+    )
 
 
 def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1689,7 +1701,8 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.FileInstance',
         outputs_key_field='sha2',
         outputs=page_result,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1730,7 +1743,8 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DomainInstances',
         outputs_key_field='',
         outputs=context_data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1774,7 +1788,7 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='',
         outputs=page_result,
         raw_response=raw_response,
-        ignore_auto_extract=False
+        ignore_auto_extract=True
     )
 
 
@@ -1817,7 +1831,8 @@ def get_allow_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.AllowListPolicy',
         outputs_key_field='',
         outputs=page_result,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1860,7 +1875,8 @@ def get_deny_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.DenyListPolicy',
         outputs_key_field='',
         outputs=page_result,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1899,7 +1915,8 @@ def get_system_activity_command(client: Client, args: Dict[str, Any]) -> Command
         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SystemActivity',
         outputs_key_field='uuid',
         outputs=context_data,
-        raw_response=raw_response
+        raw_response=raw_response,
+        ignore_auto_extract=True
     )
 
 
@@ -1961,7 +1978,7 @@ def get_endpoint_command(client: Client, args: Dict[str, Any], action: str) -> C
         outputs=raw_response,
         readable_output=tableToMarkdown(title, summary_data, headers=headers, removeNull=True),
         raw_response=raw_response,
-        ignore_auto_extract=False
+        ignore_auto_extract=True
     )
 
 
@@ -2044,7 +2061,7 @@ def main() -> None:
             client_id=username,
             client_secret=password
         )
-#
+
         args = demisto.args()
 
         demisto.debug(f'Command being called is {demisto.command()}')
