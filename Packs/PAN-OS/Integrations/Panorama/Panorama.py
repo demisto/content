@@ -690,7 +690,7 @@ def get_pan_os_major_version() -> int:
 ''' FUNCTIONS'''
 
 
-def panorama_test():
+def panorama_test(fetch_params):
     """
     test module
     """
@@ -717,6 +717,12 @@ def panorama_test():
         # Test the topology functionality
         topology = get_topology()
         test_topology_connectivity(topology)
+        
+        # Test fetch incidents parameters
+        test_fetch_incidents_parameters(fetch_params)
+        
+    except DemistoException as e:
+        raise e
     except Exception as exception_text:
         demisto.debug(f"Failed to create topology; topology commands will not work. {exception_text}")
         pass
@@ -13125,6 +13131,19 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
 
     return last_fetch_dict, parsed_incident_entries_list
 
+
+def test_fetch_incidents_parameters(fetch_params):
+    if argToBoolean(fetch_params.get('isFetch', False)):
+        if log_types := fetch_params.get('log_types'):
+            # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+            active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+            for log_type in active_log_type_queries:
+                log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
+                if not log_type_query:
+                    raise DemistoException("Log Type Query parameter is empty. Please enter a valid query.")
+        else:
+            raise DemistoException("Fetches incidents is cheked but not Log Types were selected to fetch from the dropdown menu.")
+    return 'ok'
     
 def main(): # pragma: no cover
     try:
@@ -13141,7 +13160,7 @@ def main(): # pragma: no cover
         handle_proxy()
 
         if command == 'test-module':
-            panorama_test()
+            panorama_test(params)
 
         # Fetch incidents
         elif command == 'fetch-incidents':

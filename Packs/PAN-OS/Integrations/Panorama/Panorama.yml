@@ -105,7 +105,6 @@ configuration:
 - display: Log Type
   name: log_types
   required: false
-  defaultvalue: All
   type: 16
   additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure 'All' option is unselected)."
   options:

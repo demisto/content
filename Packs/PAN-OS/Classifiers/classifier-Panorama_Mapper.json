@@ -13,7 +13,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 19,
+	"logicalVersion": 25,
 	"mapping": {
 		"PAN-OS Correlation Log Incident": {
 			"dontMapEventToLabels": false,
@@ -63,7 +63,12 @@
 					"simple": "category"
 				},
 				"Destination Geolocation": {
-					"simple": "dstloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "dstloc",
+						"transformers": []
+					}
 				},
 				"Destination IP": {
 					"simple": "dst"
@@ -99,7 +104,12 @@
 					"simple": "time_generated"
 				},
 				"Source Geolocation": {
-					"simple": "srcloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "srcloc",
+						"transformers": []
+					}
 				},
 				"Source IP": {
 					"simple": "src"
@@ -128,7 +138,7 @@
 					"simple": "app"
 				},
 				"Destination Geolocation": {
-					"simple": "dstloc"
+					"simple": "dstloc.#text"
 				},
 				"Destination IP": {
 					"simple": "dst"
@@ -170,7 +180,12 @@
 					"simple": "time_generated"
 				},
 				"Source Geolocation": {
-					"simple": "srcloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "srcloc",
+						"transformers": []
+					}
 				},
 				"Source IP": {
 					"simple": "src"
@@ -231,7 +246,12 @@
 					"simple": "category"
 				},
 				"Destination Geolocation": {
-					"simple": "dstloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "dstloc",
+						"transformers": []
+					}
 				},
 				"Destination IP": {
 					"simple": "dst"
@@ -273,7 +293,12 @@
 					"simple": "time_generated"
 				},
 				"Source Geolocation": {
-					"simple": "srcloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "srcloc",
+						"transformers": []
+					}
 				},
 				"Source Hostname": {
 					"simple": "src_host"
@@ -382,7 +407,12 @@
 					"simple": "category"
 				},
 				"Destination Geolocation": {
-					"simple": "dstloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "dstloc",
+						"transformers": []
+					}
 				},
 				"Destination IP": {
 					"simple": "dst"
@@ -424,7 +454,12 @@
 					"simple": "time_generated"
 				},
 				"Source Geolocation": {
-					"simple": "srcloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "srcloc",
+						"transformers": []
+					}
 				},
 				"Source Hostname": {
 					"simple": "src_host"
@@ -462,7 +497,12 @@
 					"simple": "app"
 				},
 				"Destination Geolocation": {
-					"simple": "dstloc"
+					"complex": {
+						"accessor": "#text",
+						"filters": [],
+						"root": "dstloc",
+						"transformers": []
+					}
 				},
 				"Destination IP": {
 					"simple": "dst"
@@ -501,7 +541,7 @@
 					"simple": "time_generated"
 				},
 				"Source Geolocation": {
-					"simple": "srcloc"
+					"simple": "srcloc.#text"
 				},
 				"Source IP": {
 					"simple": "src"
