@@ -198,9 +198,15 @@ def compare_content_packs(
         path
         for path in list_files_id_set
         if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
+        and path.is_file()
     ]
-    missing = [ContentItemParser.from_path(path) for path in missing]
-    missing = [(content_item.node_id, reasons[content_item.node_id]) for content_item in missing]
+    content_items = []
+    for path in missing:
+        try:
+            content_items.append(ContentItemParser.from_path(path))
+        except Exception as e:
+            print(f"could not parse {path}: {e}")
+    missing = [(content_item.node_id, reasons[content_item.node_id]) for content_item in content_items]
     message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
 
 
