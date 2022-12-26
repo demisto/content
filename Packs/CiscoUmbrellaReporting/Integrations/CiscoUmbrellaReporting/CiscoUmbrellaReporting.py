@@ -29,6 +29,7 @@ PAGE_SIZE_ERROR_MSG = 'Invalid Input Error: page size should be greater than zer
 INVALID_ORG_ID_ERROR_MSG = 'Authorization Error: The provided Organization ID is invalid.'
 INVALID_CREDENTIALS_ERROR_MSG = 'Authorization Error: The provided credentials for Cisco Umbrella Reporting are' \
                                 ' invalid. Please provide a valid Client ID and Client Secret.'
+TEST = 'test'
 
 ACTIVITY_TRAFFIC_TYPE_DICT = {
     "dns": ["traffic_type", "limit", "from", "to", "offset", "domains", "ip", "verdict",
