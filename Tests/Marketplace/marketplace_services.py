@@ -1297,7 +1297,7 @@ class Pack(object):
         """
         pack_was_uploaded_in_prepare_content = self._pack_name in successful_packs_dict
         pack_dependencies_zip_was_uploaded = self._pack_name in successful_uploaded_dependencies_zip_packs_dict
-        if not pack_was_uploaded_in_prepare_content or not pack_dependencies_zip_was_uploaded:
+        if not pack_was_uploaded_in_prepare_content and not pack_dependencies_zip_was_uploaded:
             logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
