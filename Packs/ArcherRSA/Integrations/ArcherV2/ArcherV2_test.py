@@ -5,7 +5,8 @@ import pytest
 from CommonServerPython import DemistoException
 import demistomock as demisto
 from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
-    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, search_records_soap_request
+    fetch_incidents, get_fetch_time, parser, OCCURRED_FORMAT, search_records_by_report_command, \
+    search_records_soap_request
 
 BASE_URL = 'https://test.com/'
 
@@ -70,147 +71,147 @@ VALUE_LIST_RES = {
 }
 
 NESTED_VALUE_LIST_RES = {
- "Links": [],
- "RequestedObject": {
-  "Children": [
-   {
-    "Data": {
-     "Id": 83998,
-     "Name": "Corporate (Reportable)",
-     "IsSelectable": False,
+    "Links": [],
+    "RequestedObject": {
+        "Children": [
+            {
+                "Data": {
+                    "Id": 83998,
+                    "Name": "Corporate (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 88888,
+                            "Name": "level 2",
+                            "IsSelectable": False
+                        },
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 83999,
+                    "Name": "Group & Other Non-Healthcare (Reportable)",
+                    "IsSelectable": False,
+                    "Generation": 0,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84000,
+                            "Name": "Group D&L, Run-off Businesses (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 84001,
+                    "Name": "Health Services (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84002,
+                            "Name": "Pharmacy Operations (Operating)",
+                            "IsSelectable": False,
+                            "Generation": 1,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84003,
+                                    "Name": "Cigna Home Delivery (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                            {
+                                "Data": {
+                                    "Id": 84004,
+                                    "Name": "ESI PBM (including Evicore) (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            }
+                        ],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 84005,
+                    "Name": "Integrated Medical (Reportable)",
+                    "IsSelectable": False,
+                },
+                "Children": [
+                    {
+                        "Data": {
+                            "Id": 84006,
+                            "Name": "Commercial (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84007,
+                                    "Name": "Behavioral (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                        ],
+                        "Depth": 1
+                    },
+                    {
+                        "Data": {
+                            "Id": 84012,
+                            "Name": "Government (Operating)",
+                            "IsSelectable": False,
+                        },
+                        "Children": [
+                            {
+                                "Data": {
+                                    "Id": 84013,
+                                    "Name": "CareAllies (Sub Segments)",
+                                    "IsSelectable": False,
+                                },
+                                "Children": [],
+                                "Depth": 2
+                            },
+                        ],
+                        "Depth": 1
+                    }
+                ],
+                "Depth": 0
+            },
+            {
+                "Data": {
+                    "Id": 107694,
+                    "Name": "US Commercial",
+                    "IsSelectable": False,
+                },
+                "Children": [],
+                "Depth": 0
+            },
+        ]
     },
-    "Children": [
-     {
-      "Data": {
-       "Id": 88888,
-       "Name": "level 2",
-       "IsSelectable": False
-      },
-      "Depth": 1
-     }
-    ],
-    "Depth": 0
-   },
-   {
-    "Data": {
-     "Id": 83999,
-     "Name": "Group & Other Non-Healthcare (Reportable)",
-     "IsSelectable": False,
-     "Generation": 0,
-    },
-    "Children": [
-     {
-      "Data": {
-       "Id": 84000,
-       "Name": "Group D&L, Run-off Businesses (Operating)",
-       "IsSelectable": False,
-      },
-      "Children": [],
-      "Depth": 1
-     }
-    ],
-    "Depth": 0
-   },
-   {
-    "Data": {
-     "Id": 84001,
-     "Name": "Health Services (Reportable)",
-     "IsSelectable": False,
-    },
-    "Children": [
-     {
-      "Data": {
-       "Id": 84002,
-       "Name": "Pharmacy Operations (Operating)",
-       "IsSelectable": False,
-       "Generation": 1,
-      },
-      "Children": [
-       {
-        "Data": {
-         "Id": 84003,
-         "Name": "Cigna Home Delivery (Sub Segments)",
-         "IsSelectable": False,
-        },
-        "Children": [],
-        "Depth": 2
-       },
-       {
-        "Data": {
-         "Id": 84004,
-         "Name": "ESI PBM (including Evicore) (Sub Segments)",
-         "IsSelectable": False,
-        },
-        "Children": [],
-        "Depth": 2
-       }
-      ],
-      "Depth": 1
-     }
-    ],
-    "Depth": 0
-   },
-   {
-    "Data": {
-     "Id": 84005,
-     "Name": "Integrated Medical (Reportable)",
-     "IsSelectable": False,
-    },
-    "Children": [
-     {
-      "Data": {
-       "Id": 84006,
-       "Name": "Commercial (Operating)",
-       "IsSelectable": False,
-      },
-      "Children": [
-       {
-        "Data": {
-         "Id": 84007,
-         "Name": "Behavioral (Sub Segments)",
-         "IsSelectable": False,
-        },
-        "Children": [],
-        "Depth": 2
-       },
-      ],
-      "Depth": 1
-     },
-     {
-      "Data": {
-       "Id": 84012,
-       "Name": "Government (Operating)",
-       "IsSelectable": False,
-      },
-      "Children": [
-       {
-        "Data": {
-         "Id": 84013,
-         "Name": "CareAllies (Sub Segments)",
-         "IsSelectable": False,
-        },
-        "Children": [],
-        "Depth": 2
-       },
-      ],
-      "Depth": 1
-     }
-    ],
-    "Depth": 0
-   },
-   {
-    "Data": {
-     "Id": 107694,
-     "Name": "US Commercial",
-     "IsSelectable": False,
-    },
-    "Children": [],
-    "Depth": 0
-   },
-  ]
- },
- "IsSuccessful": "true",
- "ValidationMessages": []
+    "IsSuccessful": "true",
+    "ValidationMessages": []
 }
 
 VALUE_LIST_RES_FOR_SOURCE = {
@@ -415,6 +416,56 @@ GET_LEVEL_RES_2 = [
     }
 ]
 
+RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
+    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+      'Depth': 0},
+     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
+    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+      'Depth': 0},
+     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+      'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+      'Parent': 'Health Services (Reportable)', 'Depth': 1},
+     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
+RES_DEPTH_3 = {'FieldId': 304, 'ValuesList':
+    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
+     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root',
+      'Depth': 0},
+     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False,
+      'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
+     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False,
+      'Parent': 'Health Services (Reportable)', 'Depth': 1},
+     {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False,
+      'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+     {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False,
+      'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
+     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
+     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False,
+      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)',
+      'Depth': 2},
+     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False,
+      'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
+     {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)',
+      'Depth': 2},
+     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
+
 
 class TestArcherV2:
     def test_extract_from_xml(self):
@@ -566,41 +617,6 @@ class TestArcherV2:
         field_data = client.get_field_value_list(304, {"depth": 1})
         assert VALUE_LIST_FIELD_DATA == field_data
 
-    RES_DEPTH_1 = {'FieldId': 304, 'ValuesList':
-    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
-
-    RES_DEPTH_2 = {'FieldId': 304, 'ValuesList':
-    [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
-     {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False, 'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
-     {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False, 'Parent': 'Health Services (Reportable)', 'Depth': 1},
-     {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-     {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-     {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
-
-    RES_DEPTH_3 = {'FieldId': 304, 'ValuesList':
-        [{'Id': 83998, 'Name': 'Corporate (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-         {'Id': 88888, 'Name': 'level 2', 'IsSelectable': False, 'Parent': 'Corporate (Reportable)', 'Depth': 1},
-         {'Id': 83999, 'Name': 'Group & Other Non-Healthcare (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-         {'Id': 84000, 'Name': 'Group D&L, Run-off Businesses (Operating)', 'IsSelectable': False, 'Parent': 'Group & Other Non-Healthcare (Reportable)', 'Depth': 1},
-         {'Id': 84001, 'Name': 'Health Services (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-         {'Id': 84002, 'Name': 'Pharmacy Operations (Operating)', 'IsSelectable': False, 'Parent': 'Health Services (Reportable)', 'Depth': 1},
-         {'Id': 84003, 'Name': 'Cigna Home Delivery (Sub Segments)', 'IsSelectable': False, 'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
-         {'Id': 84004, 'Name': 'ESI PBM (including Evicore) (Sub Segments)', 'IsSelectable': False, 'Parent': 'Pharmacy Operations (Operating)', 'Depth': 2},
-         {'Id': 84005, 'Name': 'Integrated Medical (Reportable)', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0},
-         {'Id': 84006, 'Name': 'Commercial (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-         {'Id': 84007, 'Name': 'Behavioral (Sub Segments)', 'IsSelectable': False, 'Parent': 'Commercial (Operating)', 'Depth': 2},
-         {'Id': 84012, 'Name': 'Government (Operating)', 'IsSelectable': False, 'Parent': 'Integrated Medical (Reportable)', 'Depth': 1},
-         {'Id': 84013, 'Name': 'CareAllies (Sub Segments)', 'IsSelectable': False, 'Parent': 'Government (Operating)', 'Depth': 2},
-         {'Id': 107694, 'Name': 'US Commercial', 'IsSelectable': False, 'Parent': 'root', 'Depth': 0}]}
-
     @pytest.mark.parametrize('args, expected_response', [({'depth': 1}, RES_DEPTH_1), ({'depth': 2}, RES_DEPTH_2),
                                                          ({'depth': 3}, RES_DEPTH_3)])
     def test_get_field_value_list_nested_response(self, requests_mock, args, expected_response):
@@ -644,7 +660,7 @@ class TestArcherV2:
         field_key, field_value = generate_field_value(client, "", {'Type': 7},
                                                       [{"value": "github", "link": "https://github.com"},
                                                        {"value": "google", "link": "https://google.com"}],
-                                                       {"depth": 1})
+                                                      {"depth": 1})
         assert field_key == 'Value'
         assert field_value == [{"Name": "github", "URL": "https://github.com"},
                                {"Name": "google", "URL": "https://google.com"}]
@@ -662,7 +678,8 @@ class TestArcherV2:
 
         """
         client = Client(BASE_URL, '', '', '', '', 400)
-        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]}, {"depth": 1})
+        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]},
+                                                      {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
 
@@ -721,7 +738,8 @@ class TestArcherV2:
         client = Client(BASE_URL, '', '', '', '', 400)
         field_key, field_value = generate_field_value(client, "Source",
                                                       {'FieldId': '16172', 'IsRequired': False, 'Name':
-                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight', {"depth": 1})
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight',
+                                                      {"depth": 1})
         assert field_key == 'Value'
         assert field_value == {'ValuesListIds': [471]}
 
