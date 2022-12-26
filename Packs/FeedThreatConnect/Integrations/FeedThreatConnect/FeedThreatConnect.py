@@ -166,6 +166,7 @@ INDICATOR_GROUPS = ['Attack Pattern',
                     'Vulnerability'
                     ]
 
+
 #########
 # Utils #
 #########
@@ -181,7 +182,7 @@ def suppress_stdout():
     sys.stdout = original_stdout
 
 
-def set_fields_query(params, endpoint) -> str:
+def set_fields_query(params: dict, endpoint: str) -> str:
     """Creating fields query to add information to the API response"""
     fields_str = '&fields=tags'
     if endpoint == 'indicators':
@@ -192,7 +193,7 @@ def set_fields_query(params, endpoint) -> str:
     return fields_str
 
 
-def create_types_query(params, endpoint) -> str:
+def create_types_query(params: dict, endpoint: str) -> str:
     """Creating TypeName query to fetch different types of indicators"""
     group_types = argToList(params.get('group_type'))
     indicator_types = argToList(params.get('indicator_type'))
@@ -244,7 +245,7 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
     indicator_value = indicator.get('summary') or indicator.get('name')
     fields = create_indicator_fields(indicator, indicator_type)
-    relationships = create_indicator_relationships(fields, indicator_type, indicator_value)
+    relationships = create_indicator_relationships(fields, indicator_type, indicator_value)  # type: ignore
     indicator_obj = {
         "value": indicator_value,
         "type": indicator_type,
@@ -291,7 +292,7 @@ def create_indicator_fields(indicator, indicator_type):
     return fields
 
 
-def create_indicator_relationships(indicator, indicator_type, indicator_value):
+def create_indicator_relationships(indicator: dict, indicator_type: str, indicator_value: str):
     relationships_list = []
     if argToBoolean(demisto.getParam('createRelationships')):
         demisto.debug('Creating relationships')
@@ -299,7 +300,8 @@ def create_indicator_relationships(indicator, indicator_type, indicator_value):
         for entity_b in b_entities:
             entity_b_value = entity_b.get('summary') or entity_b.get('name')
             entity_b_type = entity_b.get('type')
-            relationships_list.extend(create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
+            relationships_list.extend(
+                create_relationships(indicator_value, indicator_type, entity_b_value, entity_b_type))
 
     return relationships_list
 
@@ -387,7 +389,7 @@ def create_or_query(param_name: str, delimiter_str: str) -> str:
     return query[:len(query) - 3]
 
 
-def module_test_command(client: Client, args):  # pragma: no cover
+def module_test_command(client: Client, args):  # pragma: no cover # noqa
     """ Test module - Get 4 indicators from ThreatConnect.
     Args:
         client: ThreatConnect client.
@@ -413,7 +415,8 @@ def module_test_command(client: Client, args):  # pragma: no cover
             return_error(str(e))
 
 
-def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+def fetch_indicators_command(client: Client, params: dict, last_run: dict) -> Tuple[
+    List[Dict[str, Any]], List[Dict[str, Any]]]:  # noqa  # pragma: no cover
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -429,41 +432,47 @@ def fetch_indicators_command(client: Client, params, last_run) -> Tuple[List[Dic
     groups = []
     indicators_next_link = ''
     groups_next_link = ''
-    while True:
-        if indicators_next_link or groups_next_link:
-            if indicators_next_link:
-                demisto.debug('Indicators Next Link: ' + indicators_next_link)
-                response, _, indicators_next_link = client.make_request(Method.GET,
+    try:
+        while True:
+            if indicators_next_link or groups_next_link:
+                if indicators_next_link:
+                    demisto.debug('Indicators Next Link: ' + indicators_next_link)
+                    response, _, indicators_next_link = client.make_request(Method.GET,
+                                                                            url_suffix='',
+                                                                            get_next=True,
+                                                                            full_url=indicators_next_link)
+                    indicators.extend(response)
+                if groups_next_link:
+                    demisto.debug('Groups Next Link: ' + groups_next_link)
+                    response, _, groups_next_link = client.make_request(Method.GET,
                                                                         url_suffix='',
                                                                         get_next=True,
-                                                                        full_url=indicators_next_link)
-                indicators.extend(response)
-            if groups_next_link:
-                demisto.debug('Groups Next Link: ' + groups_next_link)
-                response, _, groups_next_link = client.make_request(Method.GET,
-                                                                    url_suffix='',
-                                                                    get_next=True,
-                                                                    full_url=groups_next_link)
-                groups.extend(response)
-        elif indicators_url or groups_url:
-            demisto.debug('Indicators URL: ' + indicators_url)
-            indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url, get_next=True)
-            indicators.extend(indicators_response)
-            indicators_url = ''
+                                                                        full_url=groups_next_link)
+                    groups.extend(response)
+            elif indicators_url or groups_url:
+                demisto.debug('Indicators URL: ' + indicators_url)
+                indicators_response, _, indicators_next_link = client.make_request(Method.GET, indicators_url,
+                                                                                   get_next=True)
+                indicators.extend(indicators_response)
+                indicators_url = ''
 
-            demisto.debug('Groups URL: ' + groups_url)
-            groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
-            groups.extend(groups_response)
-            groups_url = ''
+                demisto.debug('Groups URL: ' + groups_url)
+                groups_response, _, groups_next_link = client.make_request(Method.GET, groups_url, get_next=True)
+                groups.extend(groups_response)
+                groups_url = ''
 
-        # Limit the number of results to not get an error from the API
-        if ((len(indicators) + len(groups)) > 15000) or (not indicators_next_link and not groups_next_link):
-            break
+            # Limit the number of results to not get an error from the API
+            if ((len(indicators) + len(groups)) > int(demisto.params().get('fetch_limit', '2000'))) or (
+                    not indicators_next_link and not groups_next_link):
+                break
+    except Exception as e:
+        demisto.error(
+            f'Got an error in the fetch loop. Returning {len(groups)} groups + {len(indicators)} indicators. error: {str(e)}')
 
     return indicators, groups
 
 
-def build_url_with_query_params(params, endpoint, last_run):
+def build_url_with_query_params(params: dict, endpoint: str, last_run: dict):
     """Setting the url for the request for each endpoint"""
     if not should_send_request(params, endpoint):
         return ''
@@ -486,13 +495,13 @@ def build_url_with_query_params(params, endpoint, last_run):
         tql = ''
     url = f'/api/v3/{endpoint}{tql}{fields}&resultStart=0&resultLimit=100&sorting=dateAdded%20ASC'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url
+        # replacing only the first occurrence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     return url
 
 
-def should_send_request(params, endpoint):
+def should_send_request(params: dict, endpoint: str):
     """Checking if the user has indicated any indicator/group types to fetch from the API"""
     if endpoint == 'indicators':
         if not argToList(params.get('indicator_type')):
@@ -504,20 +513,20 @@ def should_send_request(params, endpoint):
     return True
 
 
-def set_tql_query(from_date, params, endpoint):
+def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
     """Creating tql query to add information to the API response"""
-    owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '
-    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '
-    status = f'AND ({create_or_query("status", params.get("status"))}) '
+    owners = f'AND ({create_or_query("ownerName", params.get("owners"))}) '  # type: ignore
+    tags = f'AND ({create_or_query("tag", params.get("tags"))}) '  # type: ignore
+    status = f'AND ({create_or_query("status", params.get("status"))}) '  # type: ignore
 
     confidence = ''
     active_only = ''
     threat_score = ''
     if endpoint == 'indicators':
         active_only = 'AND indicatorActive EQ True ' if argToBoolean(params.get("indicator_active")) else ''
-        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''
+        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ''  # type: ignore # noqa
         threat_score = f'AND threatAssessScore GT {params.get("threat_assess_score")} ' \
-                       if int(params.get("threat_assess_score")) != 0 else ''
+            if int(params.get("threat_assess_score")) != 0 else ''  # type: ignore
 
     type_name_query = create_types_query(params, endpoint)
     type_names = f'AND {type_name_query}' if type_name_query else ''
@@ -531,7 +540,7 @@ def set_tql_query(from_date, params, endpoint):
     return tql
 
 
-def get_updated_last_run(indicators, groups, previous_run):
+def get_updated_last_run(indicators: list, groups: list, previous_run: dict) -> dict:
     """Setting the Last Run structure"""
 
     next_run = {}
@@ -548,10 +557,11 @@ def get_updated_last_run(indicators, groups, previous_run):
     return next_run
 
 
-def get_indicators_command(client: Client, args):  # pragma: no cover
+def get_indicators_command(client: Client, args: dict) -> dict:  # type: ignore # pragma: no cover
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
     Args:
         client: ThreatConnect client.
+        args: The arguments from XSOAR.
     Returns:
         str: Human readable.
         dict: Operation entry context.
@@ -562,11 +572,12 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
 
     tql = args.get('tql_query', '')
     if not tql:
-        owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''
+        owners = f'AND ({create_or_query("ownerName", args.get("owners"))}) ' if args.get("owners") else ''  # type: ignore # noqa
         active_only = f'AND indicatorActive EQ {args.get("active_indicators")} ' \
-                      if argToBoolean(args.get("active_indicators")) else ''
+            if argToBoolean(args.get("active_indicators")) else ''
         confidence = f'AND confidence GT {args.get("confidence")} ' if args.get("confidence") else ''
-        threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get("threat_assess_score") else ''
+        threat_score = f'AND threatAssessScore GT {args.get("threat_assess_score")} ' if args.get(
+            "threat_assess_score") else ''
 
         types = argToList(args.get("indicator_type"))
         query = ''
@@ -582,7 +593,7 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
 
     url = f'/api/v3/indicators{tql}&resultStart={offset}&resultLimit={limit}&fields=threatAssess'
     if '?' not in url:
-        # replacing only the first occurence of & if ? is not present in url
+        # replacing only the first occurrence of & if ? is not present in url
         url = url.replace('&', '?', 1)  # type: ignore
 
     demisto.debug("URL: " + url)
@@ -592,13 +603,14 @@ def get_indicators_command(client: Client, args):  # pragma: no cover
         readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
                                                t=t, removeNull=True)  # type: ignore # noqa
 
-        return readable_output, {}, list(response)
+        return readable_output, {}, list(response)  # type: ignore
 
 
-def get_owners_command(client: Client, args) -> COMMAND_OUTPUT:  # pragma: no cover
+def get_owners_command(client: Client, args: dict) -> COMMAND_OUTPUT:  # pragma: no cover
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
     Args:
         client: ThreatConnect client.
+        args: The arguments from XSOAR.
     Returns:
         str: Human readable.
         dict: Operation entry context.
@@ -613,7 +625,7 @@ def get_owners_command(client: Client, args) -> COMMAND_OUTPUT:  # pragma: no co
     return readable_output, {}, list(response)
 
 
-def main():  # pragma: no cover
+def main():  # pragma: no cover # noqa
     insecure = not demisto.getParam('insecure')
     proxy = not demisto.getParam('proxy')
     credentials = demisto.params().get('api_credentials', {})

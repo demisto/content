@@ -24,7 +24,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| DBotScore | Array of all indicators associated with the incident.  | DBotScore.None | Optional |
+| DBotScore | Array of all indicators associated with the incident.  | DBotScore | Optional |
 | NetworkTrafficDirection | The direction of network traffic event associated with the Incident\(Egress/Ingress\). If not supplied, Ingress is considered. | Egress | Optional |
 
 ## Playbook Outputs
