@@ -498,6 +498,9 @@ tasks:
     scriptarguments:
       job_name:
         simple: ${ConfigurationSetup.Jobs.name}
+      using:
+        complex:
+          root: inputs.InstanceName
     separatecontext: false
     view: |-
       {
