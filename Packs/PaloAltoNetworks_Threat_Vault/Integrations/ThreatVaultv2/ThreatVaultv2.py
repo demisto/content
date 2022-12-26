@@ -435,7 +435,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 arg=type_hash, value=_hash
             )
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 response = {}
                 dbot_score = Common.DBotScore(
                     indicator=_hash,
@@ -505,7 +505,7 @@ def cve_command(client: Client, args: Dict) -> List[CommandResults]:
         try:
             response = client.antivirus_signature_get_request(arg="cve", value=cve)
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = (
                     f"CVE {cve} vulnerability reputation is unknown to Threat Vault."
@@ -569,7 +569,7 @@ def threat_signature_get_command(client: Client, args: Dict) -> List[CommandResu
         try:
             response = client.antivirus_signature_get_request(arg="id", value=_id)
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"{_id} reputation is unknown to Threat Vault."
                 command_results_list.append(
@@ -593,7 +593,7 @@ def release_note_get_command(client: Client, args: Dict) -> CommandResults:
     try:
         response = client.release_notes_get_request("content", version)
     except DemistoException as err:
-        if err.res.status_code == 404:
+        if err.res is not None and err.res.status_code == 404:
             return CommandResults(
                 readable_output=f"Release note {version} was not found."
             )
@@ -636,7 +636,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                 arg=type_, value=ids if ids else names, type_=threat_type
             )
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(ids) if ids else str(names)}"
                 command_results_list.append(
@@ -658,7 +658,7 @@ def threat_batch_search_command(client: Client, args: Dict) -> List[CommandResul
                 arg=type_, value=md5 or sha256, type_=threat_type
             )
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 response = {}
                 readable_output = f"There is no information about the {str(md5) if md5 else str(sha256)}"
                 command_results_list.append(
@@ -757,7 +757,7 @@ def threat_search_command(client: Client, args: Dict) -> List[CommandResults]:
     try:
         response = client.threat_search_request(args=query)
     except DemistoException as err:
-        if err.res.status_code == 404:
+        if err.res is not None and err.res.status_code == 404:
             response = {}
             readable_output = "There is no information for your search."
             command_results_list.append(CommandResults(readable_output=readable_output))
@@ -804,7 +804,7 @@ def fetch_incidents(client: Client, args: dict) -> List:
                 {"releaseDate": current.strftime("%Y-%m-%d")}
             )
         except DemistoException as err:
-            if err.res.status_code == 404:
+            if err.res is not None and err.res.status_code == 404:
                 current += timedelta(days=1)
                 continue
             else:
