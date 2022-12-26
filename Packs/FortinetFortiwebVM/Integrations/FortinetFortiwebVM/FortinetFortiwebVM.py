@@ -5556,8 +5556,6 @@ def paginate_results(version: str, response: Union[List, Dict[str, Any]], args: 
     Returns:
         Tuple[dict,str]: Output and paginate_results  message for Command Results.
     """
-    # if version == ClientV2.API_VER:
-    #     response = response['results']  # type: ignore # V2 always returns a Dict.
     response = response if isinstance(response, list) else [response]
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
