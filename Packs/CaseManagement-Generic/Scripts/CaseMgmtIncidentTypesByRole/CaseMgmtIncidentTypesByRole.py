@@ -33,9 +33,9 @@ if not incident:
             allowedTypes = list(set(allowedTypes))
 
             demisto.results({'hidden': False, 'options': allowedTypes})
-        except ValueError as e:
+        except ValueError:
             pass
-        except:
+        except Exception:
             pass
 else:
     # if it's an existing Incident, prevent changing the type from the UI.
