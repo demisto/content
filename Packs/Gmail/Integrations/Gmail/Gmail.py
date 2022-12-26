@@ -849,7 +849,8 @@ def information_search_process(length_accounts: int, searching_accounts: str) ->
         except Exception:
             last_account_number_searched = int(searching_accounts.split(' ')[3])
 
-        readable_output = f'Searching accounts #{int(last_account_number_searched) + 1} to {int(last_account_number_searched) + length_accounts}'
+        readable_output = f'Searching accounts {int(last_account_number_searched) + 1} to' \
+                          f' {int(last_account_number_searched) + length_accounts}'
 
     return CommandResults(
         readable_output=readable_output,
@@ -1260,8 +1261,8 @@ def get_user_tokens(user_id):
 
 def search_in_mailboxes(list_accounts: list[str], receive_only_accounts: bool) -> None:
 
-    futures = []
-    entries = []
+    futures: list = []
+    entries: list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         for user in list_accounts:
             futures.append(executor.submit(search_command, mailbox=user,
