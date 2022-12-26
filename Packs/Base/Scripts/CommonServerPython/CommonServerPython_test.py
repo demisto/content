@@ -3447,7 +3447,7 @@ INDICATOR_VALUE_AND_TYPE = [
     ('test@gmail.com', 'Email'),
     ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
     ('test@yahoo.com', 'Email'),
-    ('http://test.com', 'Domain'),
+    ('http://test.com', 'URL'),
     ('11.111.11.11/11', 'CIDR'),
     ('CVE-0000-0000', 'CVE'),
     ('dbot@demisto.works', 'Email'),
