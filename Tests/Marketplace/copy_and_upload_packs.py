@@ -360,7 +360,7 @@ def main():
 
     # we want to copy also packs that successfully uploaded their dependencies zip, thus unifying
     # pc_successful_packs_dict and pc_successful_uploaded_dependencies_zip_packs_dict
-    pc_successful_packs_dict = pc_successful_packs_dict | pc_successful_uploaded_dependencies_zip_packs_dict
+    pc_successful_packs_dict = pc_successful_packs_dict
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict,
@@ -427,7 +427,8 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
-            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
+            production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
+            production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
