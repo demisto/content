@@ -1595,7 +1595,7 @@ class ClientV1(Client):
             http_content_routing_policy (str): HTTP content routing policy name.
             is_default (str): Is FortiWeb applies the protection profile to any traffic that does not match conditions
             specified in the HTTP content routing policies?
-            inherit_webprotection_profile (str): Enable inherit web protection profile..
+            inherit_webprotection_profile (str): Enable inherit web protection profile.
             kwargs: profile (str): Web protection profile.
 
         Returns:
@@ -2651,7 +2651,7 @@ class ClientV2(Client):
             http_content_routing_policy (str): HTTP content routing policy name.
             is_default (str): Is FortiWeb applies the protection profile to any traffic that does not match conditions
             specified in the HTTP content routing policies?
-            inherit_webprotection_profile (str): Enable inherit web protection profile..
+            inherit_webprotection_profile (str): Enable inherit web protection profile.
             kwargs: status (str): Status.
             kwargs: profile (str): Profile.
 
@@ -2687,7 +2687,7 @@ class ClientV2(Client):
             http_content_routing_policy (str): HTTP content routing policy name.
             is_default (str): Is FortiWeb applies the protection profile to any traffic that does not match conditions
             specified in the HTTP content routing policies?
-            inherit_webprotection_profile (str): Enable inherit web protection profile..
+            inherit_webprotection_profile (str): Enable inherit web protection profile.
             kwargs: profile (str): Web protection profile.
 
         Returns:
