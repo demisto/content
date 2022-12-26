@@ -3963,7 +3963,6 @@ Gets the detections for a specific incident.
 ### Using Spotlight APIs
 Spotlight identifies and gives info about specific vulnerabilities on your hosts using the Falcon sensor.
 
-
 ### Required API client scope
 To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope.
 
@@ -3978,7 +3977,7 @@ If an API query doesn’t exactly match the query used on the Spotlight Vulnera
 ### Expired vulnerabilities in Spotlight APIs
 If a host is deleted or inactive for 45 days, the status of vulnerabilities on that host changes to expired. Expired vulnerabilities are removed from Spotlight after 3 days. 
 Expired vulnerabilities are only visible in API responses and are not included in reports or the Falcon console.
-An external data source might not use the same data retention policy, which can lead to discrepancies with Spotlight APIs. For more info, see Data retention in Spotlight [/documentation/43/falcon-spotlight-overview#data-retention-in-spotlight] .
+An external data source might not use the same data retention policy, which can lead to discrepancies with Spotlight APIs. For more info, see Data retention in Spotlight [https://falcon.crowdstrike.com/login/?next=%2Fdocumentation%2F43%2Ffalcon-spotlight-overview#data-retention-in-spotlight].
 
 ### The following commands uses the Spotlight API:
 
