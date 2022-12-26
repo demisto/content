@@ -75,29 +75,29 @@ This playbook does not use any commands.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| RegistryKeyParsed | An array of parsed registry key indicators. | unknown |
-| ProcessNameParsed | An array of parsed process name indicators. | unknown |
-| CommandLineParsed | An array of parsed CommandLine indicators. | unknown |
-| RegistryHivesParsed | An array of parsed registry hives indicators. | unknown |
-| RegistryValueParsed | An array of parsed registry value indicators. | unknown |
-| HTTPRequestMethodsParsed | An array of parsed HTTP request methods indicators. | unknown |
-| Ja3Parsed | An array of parsed Ja3 indicators. | unknown |
-| UserAgentParsed | An array of parsed user agent indicators. | unknown |
-| URIParsed | An array of parsed URI indicators. | unknown |
-| FilePathParsed | An array of parsed file paths indicators. | unknown |
-| SHA1Parsed | An array of parsed SHA1 indicators. | unknown |
-| SHA256Parsed | An array of parsed SHA256 indicators. | unknown |
-| MD5Parsed | An array of parsed MD5 indicators. | unknown |
-| FileNameParsed | An array of parsed file names indicators. | unknown |
-| FileTypeParsed | An array of parsed file types indicators. | unknown |
-| IPAddressParsed | An array of parsed IP addresses indicators. | unknown |
-| URLDomainParsed | An array of parsed URLDomain indicators. | unknown |
-| CIDRParsed | An array of parsed CIDR indicators. | unknown |
-| EmailAddressParsed | An array of parsed email addresses indicators. | unknown |
-| PortNumberParsed | An array of parsed port numbers indicators. | unknown |
-| GeolocationParsed | An array of parsed geolocation indicators. | unknown |
-| ApplicationParsed | An array of parsed application indicators. | unknown |
-| CVE_IDParsed | An array of parsed CVE IDs | unknown |
+| RegistryKeyParsed | An array of parsed registry key indicators. | string |
+| ProcessNameParsed | An array of parsed process name indicators. | string |
+| CommandLineParsed | An array of parsed CommandLine indicators. | string |
+| RegistryHivesParsed | An array of parsed registry hives indicators. | string |
+| RegistryValueParsed | An array of parsed registry value indicators. | string |
+| HTTPRequestMethodsParsed | An array of parsed HTTP request methods indicators. | string |
+| Ja3Parsed | An array of parsed Ja3 indicators. | string |
+| UserAgentParsed | An array of parsed user agent indicators. | string |
+| URIParsed | An array of parsed URI indicators. | string |
+| FilePathParsed | An array of parsed file paths indicators. | string |
+| SHA1Parsed | An array of parsed SHA1 indicators. | string |
+| SHA256Parsed | An array of parsed SHA256 indicators. | string |
+| MD5Parsed | An array of parsed MD5 indicators. | string |
+| FileNameParsed | An array of parsed file names indicators. | string |
+| FileTypeParsed | An array of parsed file types indicators. | string |
+| IPAddressParsed | An array of parsed IP addresses indicators. | string |
+| URLDomainParsed | An array of parsed URLDomain indicators. | string |
+| CIDRParsed | An array of parsed CIDR indicators. | string |
+| EmailAddressParsed | An array of parsed email addresses indicators. | string |
+| PortNumberParsed | An array of parsed port numbers indicators. | string |
+| GeolocationParsed | An array of parsed geolocation indicators. | string |
+| ApplicationParsed | An array of parsed application indicators. | string |
+| CVE_IDParsed | An array of parsed CVE IDs | string |
 
 ## Playbook Image
 ---

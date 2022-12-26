@@ -1,0 +1,1127 @@
+id: Threat Hunting - Sort Results
+version: -1
+name: Threat Hunting - Sort Results
+description: |
+  The playbook is used for sorting the results of hunting and threat detection. The playbook receives IP addresses, email addresses, hosts, internal domains, hosts regex, and internal IPs inputs provided manually or from outputs by other playbooks.
+  The output of the playbook facilitates pivoting searches for IP addresses, users, and hosts that may be affected.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5a0dac01-77fc-438f-8982-c532d628a558
+    type: start
+    task:
+      id: 5a0dac01-77fc-438f-8982-c532d628a558
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9935afa7-472a-40db-838a-b3ea0a40e010
+    type: title
+    task:
+      id: 9935afa7-472a-40db-838a-b3ea0a40e010
+      version: -1
+      name: Sort internal and external IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1b58dcc8-e960-4890-81a6-2a1164b75706
+    type: condition
+    task:
+      id: 1b58dcc8-e960-4890-81a6-2a1164b75706
+      version: -1
+      name: IP addresses have been detected?
+      description: Checks whether any IP addresses have been detected.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DetectedIPs
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 41b76666-de6e-4f6d-83fc-29734faef8f7
+    type: regular
+    task:
+      id: 41b76666-de6e-4f6d-83fc-29734faef8f7
+      version: -1
+      name: Determine whether IP addresses are internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.DetectedIPs
+      ipRanges:
+        complex:
+          root: inputs.InternalRange
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalRange
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3982f344-024d-4543-8f06-d0cbc923ed15
+    type: regular
+    task:
+      id: 3982f344-024d-4543-8f06-d0cbc923ed15
+      version: -1
+      name: Set detected IP addresses as internal
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedInternalIPs
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0cbb9e16-1054-4ea2-8e66-25038e5e961b
+    type: regular
+    task:
+      id: 0cbb9e16-1054-4ea2-8e66-25038e5e961b
+      version: -1
+      name: Set detected IP addresses as external
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedExternalIPs
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a6fa7630-f694-4882-8805-41ffe802e65f
+    type: title
+    task:
+      id: a6fa7630-f694-4882-8805-41ffe802e65f
+      version: -1
+      name: Done sorting IP addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 912ed3ff-d54b-40cf-86d2-876695d8a429
+    type: title
+    task:
+      id: 912ed3ff-d54b-40cf-86d2-876695d8a429
+      version: -1
+      name: Sort internal and external host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4dc779c8-afe2-4e19-83b5-a11232860c7f
+    type: condition
+    task:
+      id: 4dc779c8-afe2-4e19-83b5-a11232860c7f
+      version: -1
+      name: Host names have been detected?
+      description: Checks whether any hosts have been detected.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DetectedHosts
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5a7ec08d-c0fe-482f-828d-07ee7438448e
+    type: condition
+    task:
+      id: 5a7ec08d-c0fe-482f-828d-07ee7438448e
+      version: -1
+      name: Has the domain name been provided?
+      description: Checks if the organization's internal domain name has been provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InternalDomainName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 03bf1a4a-2e84-406b-8210-9bdfadfb010a
+    type: regular
+    task:
+      id: 03bf1a4a-2e84-406b-8210-9bdfadfb010a
+      version: -1
+      name: Determine whether hosts are internal or external.
+      description: Checks if the supplied hostnames match either the organization's internal naming convention or the domain suffix.
+      scriptName: IsInternalHostName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+    scriptarguments:
+      domainName:
+        complex:
+          root: inputs.InternalDomainName
+      hostName:
+        complex:
+          root: inputs.DetectedHosts
+          transformers:
+          - operator: uniq
+      internalRegex:
+        complex:
+          root: inputs.InternalHostRegex
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalHostRegex
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a88f8be8-fd76-4083-8948-2cf5106dadc2
+    type: regular
+    task:
+      id: a88f8be8-fd76-4083-8948-2cf5106dadc2
+      version: -1
+      name: Set detected hosts as external
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedExternalHosts
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9c87fda7-24b9-43da-8ff5-21655fc1bb4e
+    type: regular
+    task:
+      id: 9c87fda7-24b9-43da-8ff5-21655fc1bb4e
+      version: -1
+      name: Set detected hosts as internal
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedInternalHosts
+      value:
+        complex:
+          root: Endpoint
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Endpoint.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cf388251-6cac-4306-8c01-c66a05682433
+    type: regular
+    task:
+      id: cf388251-6cac-4306-8c01-c66a05682433
+      version: -1
+      name: Determine whether email addresses are internal or external
+      description: Checks if the email addresses are associated with the organization internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "20"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.InternalDomainName
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: '|'
+      email:
+        complex:
+          root: inputs.DetectedEmails
+      include_subdomains:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1680,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9832f23b-ed6e-4cd9-86fd-924e36634803
+    type: title
+    task:
+      id: 9832f23b-ed6e-4cd9-86fd-924e36634803
+      version: -1
+      name: Done sorting host names
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f30a1bfc-004f-4034-816e-361c7849e9e1
+    type: title
+    task:
+      id: f30a1bfc-004f-4034-816e-361c7849e9e1
+      version: -1
+      name: Sort internal and external email addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: aea54d94-5b38-4bab-86f8-d64248309525
+    type: condition
+    task:
+      id: aea54d94-5b38-4bab-86f8-d64248309525
+      version: -1
+      name: Has the domain name been provided?
+      description: Checks if the organization's internal domain name has been provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.InternalDomainName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 316da87f-bb69-434c-8499-d036bec4bcfb
+    type: condition
+    task:
+      id: 316da87f-bb69-434c-8499-d036bec4bcfb
+      version: -1
+      name: Email addresses have been detected?
+      description: Checks whether any email addresses have been detected.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.DetectedEmails
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3484ed2c-6629-4906-8e30-967544e560c1
+    type: regular
+    task:
+      id: 3484ed2c-6629-4906-8e30-967544e560c1
+      version: -1
+      name: Set detected email addresses as external
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedExternalEmails
+      value:
+        complex:
+          root: Account.Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1890,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: cbcc7d27-fa94-4888-8aa2-00bb1fb0a082
+    type: regular
+    task:
+      id: cbcc7d27-fa94-4888-8aa2-00bb1fb0a082
+      version: -1
+      name: Set detected email addresses as internal
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedInternalEmails
+      value:
+        complex:
+          root: Account.Email
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: Internal
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 10560418-0e56-41cc-8284-e38b4fde7b15
+    type: title
+    task:
+      id: 10560418-0e56-41cc-8284-e38b4fde7b15
+      version: -1
+      name: Done sorting email addresses
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1030,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4c2dac15-c4db-4cb2-8768-c76e8345ddc6
+    type: title
+    task:
+      id: 4c2dac15-c4db-4cb2-8768-c76e8345ddc6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 74e68afb-56b5-45d4-8c38-2c43a37d8618
+    type: regular
+    task:
+      id: 74e68afb-56b5-45d4-8c38-2c43a37d8618
+      version: -1
+      name: Set all detected hosts
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedHosts
+      value:
+        complex:
+          root: inputs.DetectedHosts
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 0133e129-1c42-462f-8df1-2bb9b76a75f8
+    type: regular
+    task:
+      id: 0133e129-1c42-462f-8df1-2bb9b76a75f8
+      version: -1
+      name: Set all detected email addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HuntingResults.DetectedEmails
+      value:
+        complex:
+          root: inputs.DetectedEmails
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1270,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_6_#default#": 0.2,
+      "8_14_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1305,
+        "width": 3500,
+        "x": -1890,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
+  playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
+  playbookInputQuery:
+- key: DetectedIPs
+  value: {}
+  required: false
+  description: 'A list of IP addresses that have been detected in threat hunting queries and playbooks. '
+  playbookInputQuery:
+- key: DetectedHosts
+  value: {}
+  required: false
+  description: 'A list of hosts that have been detected in threat hunting queries and playbooks. '
+  playbookInputQuery:
+- key: DetectedEmails
+  value: {}
+  required: false
+  description: 'A list of email addresses that have been detected in threat hunting queries and playbooks. '
+  playbookInputQuery:
+outputs:
+- contextPath: HuntingResults.DetectedExternalEmails
+  description: External email addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedInternalEmails
+  description: Internal email addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedEmails
+  description: A list of all email addresses retrieved from threat hunting queries. Playbook output is generated only when the internal domain name is not specified in the playbook input.
+  type: string
+- contextPath: HuntingResults.DetectedExternalHosts
+  description: External hosts retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedInternalHosts
+  description: Internal hosts retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedHosts
+  description: A list of all hosts retrieved from threat hunting queries. Playbook output is generated only when the internal domain name is not specified in the playbook input.
+  type: string
+- contextPath: HuntingResults.DetectedExternalIPs
+  description: External IP addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedInternalIPs
+  description: Internal IP addresses retrieved from threat hunting queries.
+  type: string
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

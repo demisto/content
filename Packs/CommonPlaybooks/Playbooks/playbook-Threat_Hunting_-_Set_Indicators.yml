@@ -2413,29 +2413,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 6545be76-6a7b-425e-8fe8-27fbaf733094
+    taskid: f4fcc462-4a82-4a32-82cb-4b31bcaf2f20
     type: condition
     task:
-      id: 6545be76-6a7b-425e-8fe8-27fbaf733094
+      id: f4fcc462-4a82-4a32-82cb-4b31bcaf2f20
       version: -1
-      name: Geolocation input exists?
-      description: Checks whether Geolocation input exists
+      name: CVE ID input exists?
+      description: Checks whether CVE ID input exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      Geolocation exists:
+      '#default#':
+      - "60"
+      CVE ID exists:
       - "58"
     separatecontext: false
     conditions:
-    - label: Geolocation exists
+    - label: CVE ID exists
       condition:
       - - operator: isNotEmpty
           left:
             value:
               complex:
-                root: inputs.Geolocation
+                root: inputs.CVE_ID
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -2453,12 +2457,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 1d2b0220-3fc8-4f98-8bb2-745312b16c35
+    taskid: f3b9437f-d591-45a1-8056-d846110283eb
     type: regular
     task:
-      id: 1d2b0220-3fc8-4f98-8bb2-745312b16c35
+      id: f3b9437f-d591-45a1-8056-d846110283eb
       version: -1
-      name: Set Geolocation search argument
+      name: Set CVE ID search argument
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -2472,14 +2476,13 @@ tasks:
         simple: CVE_IDParsed
       value:
         complex:
-          root: inputs
+          root: inputs.CVE_ID
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.Geolocation
+                  simple: inputs.CVE_ID
                 iscontext: true
-          accessor: CVE_ID
           transformers:
           - operator: split
             args:
@@ -2555,7 +2558,7 @@ tasks:
       {
         "position": {
           "x": 5470,
-          "y": 860
+          "y": 850
         }
       }
     note: false
@@ -2585,6 +2588,7 @@ view: |-
       "24_51_#default#": 0.19,
       "4_51_#default#": 0.51,
       "55_53_#default#": 0.17,
+      "57_60_#default#": 0.38,
       "5_51_#default#": 0.27,
       "6_51_#default#": 0.48,
       "7_50_#default#": 0.19,
@@ -2791,81 +2795,73 @@ inputs:
 outputs:
 - contextPath: RegistryKeyParsed
   description: An array of parsed registry key indicators.
-  type: unknown
+  type: string
 - contextPath: ProcessNameParsed
   description: An array of parsed process name indicators.
-  type: unknown
+  type: string
 - contextPath: CommandLineParsed
   description: An array of parsed CommandLine indicators.
-  type: unknown
+  type: string
 - contextPath: RegistryHivesParsed
   description: An array of parsed registry hives indicators.
-  type: unknown
+  type: string
 - contextPath: RegistryValueParsed
   description: An array of parsed registry value indicators.
-  type: unknown
+  type: string
 - contextPath: HTTPRequestMethodsParsed
   description: An array of parsed HTTP request methods indicators.
-  type: unknown
+  type: string
 - contextPath: Ja3Parsed
   description: An array of parsed Ja3 indicators.
-  type: unknown
+  type: string
 - contextPath: UserAgentParsed
   description: An array of parsed user agent indicators.
-  type: unknown
+  type: string
 - contextPath: URIParsed
   description: An array of parsed URI indicators.
-  type: unknown
+  type: string
 - contextPath: FilePathParsed
   description: An array of parsed file paths indicators.
-  type: unknown
+  type: string
 - contextPath: SHA1Parsed
   description: An array of parsed SHA1 indicators.
-  type: unknown
+  type: string
 - contextPath: SHA256Parsed
   description: An array of parsed SHA256 indicators.
-  type: unknown
+  type: string
 - contextPath: MD5Parsed
   description: An array of parsed MD5 indicators.
-  type: unknown
+  type: string
 - contextPath: FileNameParsed
   description: An array of parsed file names indicators.
-  type: unknown
+  type: string
 - contextPath: FileTypeParsed
   description: An array of parsed file types indicators.
-  type: unknown
+  type: string
 - contextPath: IPAddressParsed
   description: An array of parsed IP addresses indicators.
-  type: unknown
+  type: string
 - contextPath: URLDomainParsed
   description: An array of parsed URLDomain indicators.
-  type: unknown
+  type: string
 - contextPath: CIDRParsed
   description: An array of parsed CIDR indicators.
-  type: unknown
+  type: string
 - contextPath: EmailAddressParsed
   description: An array of parsed email addresses indicators.
-  type: unknown
+  type: string
 - contextPath: PortNumberParsed
   description: An array of parsed port numbers indicators.
-  type: unknown
+  type: string
 - contextPath: GeolocationParsed
   description: An array of parsed geolocation indicators.
-  type: unknown
+  type: string
 - contextPath: ApplicationParsed
   description: An array of parsed application indicators.
-  type: unknown
+  type: string
 - contextPath: CVE_IDParsed
   description: An array of parsed CVE IDs
-  type: unknown
+  type: string
 tests:
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
+- No tests (auto formatted)
 fromversion: 6.5.0
