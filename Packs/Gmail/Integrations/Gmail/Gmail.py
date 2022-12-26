@@ -12,6 +12,7 @@ import random
 import re
 import string
 import sys
+import copy
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime, format_datetime
 from distutils.util import strtobool
@@ -35,7 +36,7 @@ from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
-ADMIN_EMAIL = None
+ADMIN_EMAIL = ''
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
@@ -781,7 +782,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
     accounts_batches = cutting_for_batches(accounts)
 
     command_results: list[CommandResults] = []
-    args = {k: v for k, v in demisto.args().items()}
+    args = copy.deepcopy(demisto.args())
     for batch in accounts_batches:
 
         args.update({'list_accounts': batch})
@@ -791,7 +792,7 @@ def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> L
                 scheduled_command=ScheduledCommand(
                     command='gmail-search-all-mailboxes',
                     next_run_in_seconds=10,
-                    args={k: v for k, v in args.items()},
+                    args=copy.deepcopy(args.items()),
                     timeout_in_seconds=600
                 )
             )
@@ -812,14 +813,15 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
     '''
     Used to fetch the list of accounts for the search-all-mailboxes command
     '''
-    list_accounts = []
+    list_accounts: list[str] = []
     counter = 0
     users_next_page_token = users_next_page_token
     service = get_service('admin', 'directory_v1')
+
     while True:
         command_args = {
             'maxResults': min(max_results, 100),
-            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
+            'domain': ADMIN_EMAIL.split('@')[1],
             'pageToken': users_next_page_token
         }
 
@@ -840,14 +842,14 @@ def get_mailboxes(max_results: int, users_next_page_token: str = None):
 def information_search_process(length_accounts: int, searching_accounts: str) -> CommandResults:
 
     if not searching_accounts:
-        readable_output = f'Searching accounts, ' \
-                          f'from 1 to {length_accounts} from all the accounts'
+        readable_output = f'Searching the first {length_accounts} accounts'
     else:
-        last_account_number_searched = searching_accounts.split(' ')[5]
-        readable_output = f'Searching accounts, ' \
-                          f'from {int(last_account_number_searched) + 1} to' \
-                          f' {int(last_account_number_searched) + length_accounts}' \
-                          ' from all the accounts'
+        try:
+            last_account_number_searched = int(searching_accounts.split(' ')[4])
+        except Exception:
+            last_account_number_searched = int(searching_accounts.split(' ')[3])
+
+        readable_output = f'Searching accounts #{int(last_account_number_searched) + 1} to {int(last_account_number_searched) + length_accounts}'
 
     return CommandResults(
         readable_output=readable_output,
@@ -860,7 +862,7 @@ def information_search_process(length_accounts: int, searching_accounts: str) ->
 
 def list_users_command() -> CommandResults:
     args = demisto.args()
-    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
+    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])
     customer = args.get('customer')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
@@ -1264,9 +1266,9 @@ def search_in_mailboxes(list_accounts: list[str], receive_only_accounts: bool) -
         for user in list_accounts:
             futures.append(executor.submit(search_command, mailbox=user,
                                            receive_only_accounts=receive_only_accounts))
-        for future in concurrent.futures.as_completed(futures):
-            if entry := future.result():
-                entries.append(entry)
+        for account in concurrent.futures.as_completed(futures):
+            if found := account.result():
+                entries.append(found)
 
         if entries:
             if receive_only_accounts:
@@ -2597,6 +2599,8 @@ def fetch_incidents():
 def main():
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
+    if '@' not in ADMIN_EMAIL:
+        raise ValueError(f"Admin email {ADMIN_EMAIL} must be in an email format")
     PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
     GAPPS_ID = demisto.params().get('gappsID')
     ''' EXECUTION CODE '''
