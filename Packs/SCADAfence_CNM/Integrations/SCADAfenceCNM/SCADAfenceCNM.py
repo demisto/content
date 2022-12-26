@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import requests
 import urllib3
