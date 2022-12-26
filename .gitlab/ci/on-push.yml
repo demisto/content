@@ -108,7 +108,7 @@ validate-content-conf:
       else
         echo "Getting the list of packs to update in content graph"
         PACKS_TO_UPDATE=( $(git diff $LAST_UPLOAD_COMMIT --name-only -- Packs/* | awk -F/ '{print $2}' | sort | uniq) )
-        echo $PACKS_TO_UPDATE
+        echo "Updating graph for packs: $PACKS_TO_UPDATE"
 
         echo "Updating the content graph"
         demisto-sdk update-content-graph -p $PACKS_TO_UPDATE
