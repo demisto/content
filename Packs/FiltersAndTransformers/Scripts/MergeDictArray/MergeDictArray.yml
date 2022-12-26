@@ -31,8 +31,8 @@ args:
   - merge
   - source
   - destination
-  description: How to merge the values if the key conflicts. 'destination'
-    means data of 'merge_with', 'source' means data of 'array_path'.
+  description: How to merge the values if the key conflicts. 'source'
+    means data of 'merge_with', 'destination' means data of 'array_path'.
   defaultValue: merge
 - name: overwrite_by_source
   description: The list of keys to overwrite by source value when the key conflicts.
