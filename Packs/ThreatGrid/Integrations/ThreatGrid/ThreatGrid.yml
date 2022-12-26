@@ -2,1014 +2,1713 @@ commonfields:
   id: Threat Grid
   version: -1
 name: Threat Grid
-display: Cisco Threat Grid
+display: Cisco Secure Malware Analytics (Threat Grid)
 category: Forensics & Malware Analysis
 description: Query and upload samples to Cisco threat grid.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
-  name: server
+  name: base_url
   defaultvalue: https://panacea.threatgrid.com
   type: 0
   required: true
 - display: API token
-  name: token
-  defaultvalue: ""
+  name: api_token
   type: 4
   required: true
+- display: Source Reliability
+  name: integrationReliability
+  type: 15
+  required: true
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: B - Usually Reliable
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  type: 8
   required: false
+  type: 8
 script:
-  script: ''
+  script: '-'
   type: python
   subtype: python3
   commands:
-  - name: threat-grid-get-samples
+  - name: threat-grid-sample-list
     arguments:
+    - name: sample_id
+      description: The sample ID
+      isArray: false
+      required: false
+    - name: artifact
+      description: The artifact to download. Sample ID is required when choosing 'artifact'.
+      auto: PREDEFINED
+      isArray: false
+      predefined:
+      - video.webm
+      - network-artifacts.zip
+      - report.html
+      - sample.zip
+      - screenshot.png
+      - extracted-artifacts.zip
+      - timeline.json
+      - analysis.json
+      - processes.json
+      - network.pcap
+      required: false
+    - name: page
+      description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      required: false
+    - name: page_size
+      description: The number of items per page.
+      isArray: false
+      required: false
     - name: limit
-      description: The most results to be returned in the response
-    - name: offset
-      description: The number of records to skip
-    - name: sha256
-      description: An SHA256 of the submitted sample, only matches samples, not their artifacts.
-    - name: md5
-      description: An MD5 checksum of the submitted sample, only matches samples, not their artifacts.
-    - name: sha1
-      description: A sha1 of the submitted sample, only matches samples, not their artifacts
-    - name: id
-      description: a sample ID
-    - name: ids
-      description: a comma-separated list of sample IDs
-    - name: ioc
-      description: an IOC name
-    - name: before
-      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-    - name: after
-      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: If “true”, will only match against samples you submitted
+      description: The maximum number of records to retrieve.
+      defaultValue: '50'
+      isArray: false
+      required: false
     outputs:
-    - contextPath: ThreatGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.id
       description: The sample id
-    - contextPath: ThreatGrid.Sample.Filename
+      type: String
+    - contextPath: ThreatGrid.Sample.filename
       description: The sample filename
-    - contextPath: ThreatGrid.Sample.State
+      type: String
+    - contextPath: ThreatGrid.Sample.state
       description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
-    - contextPath: ThreatGrid.Sample.Status
+      type: String
+    - contextPath: ThreatGrid.Sample.status
       description: The sample status, one of a stable set of strings "succ, fail"
-    - contextPath: ThreatGrid.Sample.MD5
+      type: String
+    - contextPath: ThreatGrid.Sample.md5
       description: The sample md5
-    - contextPath: ThreatGrid.Sample.SHA1
+      type: String
+    - contextPath: ThreatGrid.Sample.sha1
       description: The sample sha1
-    - contextPath: ThreatGrid.Sample.SHA256
+      type: String
+    - contextPath: ThreatGrid.Sample.sha256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
+      type: String
+    - contextPath: ThreatGrid.Sample.os
       description: The sample os
-    - contextPath: ThreatGrid.Sample.SubmittedAt
+      type: String
+    - contextPath: ThreatGrid.Sample.submitted_at
       description: The sample submission time
-    - contextPath: ThreatGrid.Sample.StartedAt
+      type: String
+    - contextPath: ThreatGrid.Sample.started_at
       description: The sample analysis starting time
-    - contextPath: ThreatGrid.Sample.CompletedAt
+      type: String
+    - contextPath: ThreatGrid.Sample.completed_at
       description: The sample completion time
+      type: String
+    - contextPath: InfoFile.Name
+      description: The file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: InfoFile.Extension
+      description: The file extension.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information about the file.
+      type: String
     description: Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
-  - name: threat-grid-get-sample-by-id
+    deprecated: false
+    execution: false
+  - name: threat-grid-sample-upload
     arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample ID
+    - name: file_id
+      required: false
+      description: The file ID. Click on the chain-like icon after you upload a file in Demisto to find the file_id.
+      isArray: false
+    - description: "The URL to upload. "
+      isArray: false
+      name: url
+      required: false
+    - defaultValue: '10'
+      description: Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+    - defaultValue: '60'
+      description: Indicates the time in seconds until the polling sequence timeouts. Default is 60.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+    - description: The uploaded sample ID.
+      isArray: false
+      name: sample_id
+      required: false
+    - name: hide_polling_output
+      description: Whether to hide the polling result (automatically filled by polling).
+      deprecated: true
     outputs:
-    - contextPath: ThreatGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.id
       description: The sample id
-    - contextPath: ThreatGrid.Sample.Filename
+      type: String
+    - contextPath: ThreatGrid.Sample.filename
       description: The sample filename
-    - contextPath: ThreatGrid.Sample.State
+      type: String
+    - contextPath: ThreatGrid.Sample.state
       description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
-    - contextPath: ThreatGrid.Sample.Status
-      description: The sample status, one of a stable set of strings "succ, fail"
-    - contextPath: ThreatGrid.Sample.MD5
-      description: The sample md5
-    - contextPath: ThreatGrid.Sample.SHA1
-      description: The sample sha1
-    - contextPath: ThreatGrid.Sample.SHA256
-      description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
-      description: The sample os
-    - contextPath: ThreatGrid.Sample.SubmittedAt
-      description: The sample submission time
-    - contextPath: ThreatGrid.Sample.StartedAt
-      description: The sample analysis starting time
-    - contextPath: ThreatGrid.Sample.CompletedAt
-      description: The sample completion time
-    description: Get threat grid sample by id
-  - name: threat-grid-get-sample-state-by-id
-    arguments:
-    - name: id
-      default: true
-      description: The sample ID
-    - name: ids
-      description: A comma-separated list of sample IDs.
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample ID, globally unique, and the canonical identifier of this sample analysis
-    - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
-    description: Get threat grid sample state by id
-  - name: threat-grid-upload-sample
-    arguments:
-    - name: file-id
-      required: true
-      default: true
-      description: The sample file. Click on the chain like icon after you upload a file in Demisto to find the file-id. 
-    - name: filename
-      required: true
-      description: The original filename of the sample, as a string
-    - name: vm
-      auto: PREDEFINED
-      predefined:
-      - win7-x64
-      - win7-x64-2
-      - win7-x64-jp
-      - win7-x64-kr
-      - win10
-      description: 'a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64bit Profile 2, win7-x64-jp: Windows 7 64bit Japanese (Not available on Threat Grid appliances), win7-x64-kr: Windows 7 64bit Korean (Only available on Threat Grid appliances licensed for this VM), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM.'
-    - name: private
-      description: if present, and set to any value but “false” the sample will be marked private
-    - name: tags
-      description: A comma-separated list of tags applied to this sample
-    - name: playbook
-      auto: PREDEFINED
-      predefined:
-      - none
-      - default
-      - alt_tab_programs
-      - open_word_embedded_object
-      - press_enter
-      - visit_site
-      - close_file
-      - run_dialog_box_ie
-      - open_attachment_msg
-      - run_dialog_box_dde
-      description: 'Name of a playbook to apply to this sample run. none: Explicitly disables playbooks, default: Default Playbook, alt_tab_programs: Conduct Active Window Change, open_word_embedded_object: Open Embedded Object in Word Document, press_enter: Dialogue OK, visit_site: Visit Website Using Internet Explorer, close_file: Close Active Window, run_dialog_box_ie: Click Run on Internet Explorer Download Dialog Box, open_attachment_msg: Open Outlook Email Attachment, run_dialog_box_dde: Accept Microsoft Office Dialog Boxes to Open Dynamic Data Exchange Content. The current list of playbooks endpoints can be obtained by querying /api/v3/configuration/playbooks.'
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample id
-    - contextPath: ThreatGrid.Sample.Filename
-      description: The sample filename
-    - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
-    - contextPath: ThreatGrid.Sample.Status
+      type: String
+    - contextPath: ThreatGrid.Sample.status
       description: The sample status
-    - contextPath: ThreatGrid.Sample.MD5
+      type: String
+    - contextPath: ThreatGrid.Sample.md5
       description: The sample md5
-    - contextPath: ThreatGrid.Sample.SHA1
+      type: String
+    - contextPath: ThreatGrid.Sample.sha1
       description: The sample sha1
-    - contextPath: ThreatGrid.Sample.SHA256
+      type: String
+    - contextPath: ThreatGrid.Sample.sha256
       description: The sample sha256
-    - contextPath: ThreatGrid.Sample.OS
+      type: String
+    - contextPath: ThreatGrid.Sample.os
       description: The sample os
-    - contextPath: ThreatGrid.Sample.OSVer
-      description: The sample ov version
-    - contextPath: ThreatGrid.Sample.SubmittedAt
+      type: String
+    - contextPath: ThreatGrid.Sample.submitted_at
       description: The sample submission time
-    description: Submits a sample to threat grid for analysis
-  - name: threat-grid-search-submissions
+      type: String
+    description: Submits a sample to threat grid for analysis. URL or file, not both.
+    deprecated: false
+    execution: false
+    polling: true
+  - name: threat-grid-submissions-search
     arguments:
-    - name: q
-      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to 'true'
-    - name: user-only
+    - name: query
+      description: Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true
+      isArray: false
+      required: false
+    - name: user_only
       description: Only display submissions created by the current user, as determined by the value of api_key
-    - name: org-only
+      auto: PREDEFINED
+      isArray: false
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
       description: Only display submissions created by the current user's organization, as determined by the value of api_key.
-    - name: term
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
       description: Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields
-    - name: before
-      description: Return submissions created before specified time. Value is a timestring, either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic)
-    - name: after
-      description: Return submissions created after specified time. Value is a timestring, either ISO-8601, or free-form (see documentation for 'chronic,' at https://github.com/mojombo/chronic).
-    - name: state
-      description: 'Restrict match to submissions in specific state or states. Value is a comma-delimited string containing one or more of the values: wait proc succ fail'
-    - name: advanced
-      description: 'When set to ''true'' interprets ''q'' as a Lucene query syntax, allowing matches by specific field, for instance: q=sha256:1b4468 will return items with sha256 equal to 1b4468. q=analysis.threat_score:64 will return analysis whose threat_score value is equal to 64. For reference see: https://lucene.apache.org/core/2_9_4/queryparsersyntax.html'
-    - name: sort_by
-      description: Sorts by timestamp, submitted_at, analyzed_at, filename, type, state, threat or threat_score, login
-    - name: sort_order
+      isArray: false
+      name: term
+      predefined:
+      - antivirus
+      - analysis.artifacts.av_signatures.product
+      - analysis.artifacts.av_signatures.signature
+      - behavior
+      - analysis.behaviors.name
+      - analysis.behaviors.title
+      - analysis.artifacts.av_signatures.signature
+      - domain
+      - analysis.domains.domain
+      - analysis.domains.domain.component
+      - mutant
+      - analysis.processes.mutants
+      - analysis.processes.mutants.whole
+      - analysis.processes.mutants.component
+      - path
+      - filename
+      - analysis.paths.path
+      - analysis.paths.path.whole
+      - analysis.processes.paths
+      - process
+      - analysis.processes.process_name
+      - analysis.processes.startup_info.command_line
+      - analysis.processes.startup_info.image_pathname
+      - analysis.processes.startup_info.window_title
+      - registry_key
+      - analysis.registry_keys.key
+      - analysis.registry_keys.key.whole
+      - analysis.registry_keys.key.component
+      - analysis.processes.registry_keys
+      - analysis.processes.registry_keys.whole
+      - analysis.registry_keys.value_names
+      - sample
+      - filename
+      - url
+      - analysis.urls.url
+      - analysis.urls.url.whole.
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - auto: PREDEFINED
+      description: Restrict match to submissions in specific state or states.
+      isArray: false
+      name: state
+      predefined:
+      - wait
+      - prep
+      - run
+      - proc
+      - succ
+      - fail
+      required: false
+    - auto: PREDEFINED
+      description: If not specified, results will be sorted by the search score, which is based on which fields match the query most accurately, and their weight.
+      isArray: false
+      name: sort_by
+      predefined:
+      - timestamp
+      - submitted_at
+      - analyzed_at
+      - filename
+      - type
+      - state
+      - threat or threat_score
+      - login
+      required: false
+    - auto: PREDEFINED
       description: desc or asc
-    - name: limit
-      description: Restrict the number of records returned.
-    - name: offset
-      description: Return matching submissions starting at the given offset.
-    - name: highlight
+      isArray: false
+      name: sort_order
+      predefined:
+      - desc
+      - asc
+      required: false
+    - auto: PREDEFINED
       description: Provide a 'matches' field in results, indicating which fields were matched
+      isArray: false
+      name: highlight
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
     outputs:
-    - contextPath: ThreatGrid.Sample.ID
+    - contextPath: ThreatGrid.Sample.sample
       description: The sample ID
-    - contextPath: ThreatGrid.Sample.Filename
+      type: String
+    - contextPath: ThreatGrid.Sample.filename
       description: The name of the sample file
-    - contextPath: ThreatGrid.Sample.State
+      type: String
+    - contextPath: ThreatGrid.Sample.state
       description: The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail"
-    - contextPath: ThreatGrid.Sample.Status
+      type: String
+    - contextPath: ThreatGrid.Sample.status
       description: The status of the sample
-    - contextPath: ThreatGrid.Sample.MD5
+      type: String
+    - contextPath: ThreatGrid.Sample.md5
       description: The MD5 id of the sample
-    - contextPath: ThreatGrid.Sample.SHA1
+      type: String
+    - contextPath: ThreatGrid.Sample.sha1
       description: The SHA1 id of the sample
-    - contextPath: ThreatGrid.Sample.SHA256
+      type: String
+    - contextPath: ThreatGrid.Sample.sha256
       description: The SHA256 id of the sample
-    - contextPath: ThreatGrid.Sample.SubmittedAt
+      type: String
+    - contextPath: ThreatGrid.Sample.submitted_at
       description: Time of submission for the sample
-    - contextPath: ThreatGrid.Sample.ThreatScore
+      type: Date
+    - contextPath: ThreatGrid.Sample.threat_score
       description: The threat score of the sample
+      type: Number
     description: Search threat grid submissions
-  - name: threat-grid-get-video-by-id
+    deprecated: false
+    execution: false
+  - name: threat-grid-sample-summary-get
     arguments:
-    - name: id
+    - name: sample_id
       required: true
-      default: true
       description: The sample id
+      isArray: false
     outputs:
-    - contextPath: ThreatGrid.Sample.Id
-      description: The sample Id
-      type: string
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Get the sample analysis video by id
-  - name: threat-grid-get-analysis-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: limit
-      description: Limits the results to not overpopulate the context. Default value is. 20. If you wish to get results with no limit, set this value to "".
-      defaultValue: "20"
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The ID of the sample for which the report was downloaded.
-    - contextPath: Demisto.File
-      description: File containing unfiltered result.
-    - contextPath: ThreatGrid.Sample.VM.ID
-      description: The VM ID for the sample.
-    - contextPath: ThreatGrid.Sample.VM.Name
-      description: The VM Name for the sample.
-    - contextPath: ThreatGrid.Sample.StartedAt
-      description: Start time of the analysis.
-    - contextPath: ThreatGrid.Sample.Runtime
-      description: Runtime of the analysis.
-    - contextPath: ThreatGrid.Sample.FileName
-      description: File name of the sample.
-    - contextPath: ThreatGrid.Sample.Size
-      description: Size of the sample.
-    - contextPath: ThreatGrid.Sample.MD5
-      description: The sample MD5 value.
-    - contextPath: ThreatGrid.Sample.SHA1
-      description: The sample's SHA1 value.
-    - contextPath: ThreatGrid.Sample.SHA256
-      description: The sample's SHA256 value.
-    - contextPath: ThreatGrid.Sample.MagicType
-      description: Sample magic type.
-    - contextPath: ThreatGrid.Sample.Type
-      description: Sample's file type
-    - contextPath: ThreatGrid.Sample.ThreatScore
-      description: The threat score of the sample.
-    - contextPath: ThreatGrid.Sample.HeuristicScore
-      description: The sample's hueristic score.
-    - contextPath: ThreatGrid.Sample.FilesDeleted
-      description: The files that were created during the anaylsis.
-    - contextPath: ThreatGrid.Sample.FileCreated
-      description: The files that were created during the analysis.
-    - contextPath: ThreatGrid.Sample.FilesModified
-      description: The files that were modified during the analysis.
-    - contextPath: ThreatGrid.Sample.Directory
-      description: The directory of the sample.
-    - contextPath: ThreatGrid.Sample.CMD
-      description: The command line execution of the sample.
-    - contextPath: ThreatGrid.Sample.ProcessName
-      description: The process name of the sample.
-    - contextPath: ThreatGrid.Sample.Destination
-      description: The destination IP of the sample.
-    - contextPath: ThreatGrid.Sample.DestinationPort
-      description: The destination port of the sample.
-    - contextPath: ThreatGrid.Sample.PacketSize
-      description: Packet size in bytes.
-    - contextPath: ThreatGrid.Sample.VT.Hits
-      description: Sample malicious hits in virustotal.
-    - contextPath: ThreatGrid.Sample.VT.Engines
-      description: Number of engines that scanned the Sample on Virustotal.
-    - contextPath: ThreatGrid.Artifact.Yara
-      description: Artifact ID (yara signature name)
-    - contextPath: ThreatGrid.Artifact.Tags
-      description: Artifact tags.
-    - contextPath: ThreatGrid.Artifact.FamilyName
-      description: Artifact family name.
-    - contextPath: ThreatGrid.Artifact.ThreatName
-      description: Artifact threat name.
-    description: The detailed overview of dynamic and static analysis results for the sample
-  - name: threat-grid-get-processes-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.Id
-      description: The ID of the sample for which the PCAP needs to be downloaded.
-      type: string
-    description: Get a JSON object which contains a timeline of all process activities as determined by the dynamic analysis engine.
-  - name: threat-grid-get-pcap-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.Id
-      description: The ID of the sample for which the PCAP needs to be downloaded.
-      type: string
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Get the tcpdump PCAP file for a specific Sample ID, with all the network activity of the sample
-  - name: threat-grid-get-warnings-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.Id
-      description: The sample ID
-      type: string
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Gets a JSON structure describing any warnings that occured during the analysis
-  - name: threat-grid-get-summary-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
+    - contextPath: ThreatGrid.SampleAnalysisSummary.sample
       description: The sample ID.
-      type: string
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.RegistryCount
+      type: String
+    - contextPath: ThreatGrid.SampleAnalysisSummary.registry_count
       description: The registry count of the sample.
-      type: number
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.FileName
+      type: Number
+    - contextPath: ThreatGrid.SampleAnalysisSummary.filename
       description: The Filename of the sample.
-      type: string
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.SHA256
+      type: String
+    - contextPath: ThreatGrid.SampleAnalysisSummary.sha256
       description: The SHA256 hash of the sample.
-      type: string
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.SampleType
+      type: String
+    - contextPath: ThreatGrid.SampleAnalysisSummary.magic_type
       description: The sample type.
-      type: string
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.FirstSeen
+      type: String
+    - contextPath: ThreatGrid.SampleAnalysisSummary.first_seen
       description: The timestamp when the sample was first seen.
-      type: date
-    - contextPath: ThreatGrid.Sample.AnalysisSummary.LastSeen
+      type: Date
+    - contextPath: ThreatGrid.SampleAnalysisSummary.last_seen
       description: The timestamp when the sample was last seen.
-      type: date
+      type: Date
     description: Returns summary analysis information
-  - name: threat-grid-get-threat-summary-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample id
-      type: string
-    - contextPath: ThreatGrid.Sample.MaxSeverity
-      description: The sample max severity
-      type: number
-    - contextPath: ThreatGrid.Sample.Score
-      description: The sample score
-      type: number
-    - contextPath: ThreatGrid.Sample.Count
-      description: The sample count
-      type: number
-    - contextPath: ThreatGrid.Sample.MaxConfidence
-      description: The sample max confidence
-      type: number
-    - contextPath: DBotScore.Indicator
-      description: The indicator value
-      type: string
-    - contextPath: DBotScore.Score
-      description: The indicator's score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: The indicator's vendor
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator's type
-      type: string
-    - contextPath: ThreatGrid.Sample.ThreatFeeds
-      description: The sample threat feeds
-    description: Returns a summary of the threats detected during analysis
-  - name: threat-grid-get-html-report-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    outputs:
-    - contextPath: ThreatGrid.Sample.Id
-      description: The ID of the sample for which the report was downloaded.
-      type: string
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Get the report.html file for a specific Sample ID. This is a stand-alone file with a complete report on the sample run. It is designed to be emailed or printed.
-  - name: threat-grid-download-sample-by-id
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The ID of the sample to be downloaded.
-    outputs:
-    - contextPath: ThreatGrid.DownloadedSamples.Id
-      description: The ID of the downloaded sample
-      type: string
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Download a sample by using its ID. The downloaded file is an archive of the sample itself, in a zip format as a form of quarantine.
-  - name: threat-grid-get-analysis-iocs
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: The sample id
-    - name: ioc
-      description: The IOC name you want to fetch details for.
-    - name: limit
-      description: Limit the number of indicators you would like to see. The list is sorted by indicator severity in descending order. 
-    outputs:
-    - contextPath: ThreatGrid.IOCs.Title
-      description: The title of the IOC
-    - contextPath: ThreatGrid.IOCs.Confidence
-      description: The confidence of the IOC
-    - contextPath: ThreatGrid.IOCs.Severity
-      description: The severity of the IOC
-    - contextPath: ThreatGrid.IOCs.IOC
-      description: Threat grid's IOC
-    - contextPath: ThreatGrid.IOCs.IOCCategory
-      description: The IOC category of the IOC
-    - contextPath: DBotScore.Indicator
-      description: The indicator value
-    - contextPath: DBotScore.Vendor
-      description: The indicator vendor
-    - contextPath: DBotScore.Type
-      description: The indicator type
-    - contextPath: DBotScore.Score
-      description: The indicator score
-    - contextPath: ThreatGrid.IOCs.Data.IP
-      description: The IP of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.URL
-      description: The URL of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.Domain
-      description: The domain of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.Path
-      description: The path of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.SHA256
-      description: The SHA256 value of the IOC
-    - contextPath: ThreatGrid.IOCs.Tags
-      description: The tags of the IOC
-    description: Returns a JSON list of the Indicators of Compromise identified in this sample run
-  - name: threat-grid-download-artifact
-    deprecated: true
-    arguments:
-    - name: aid
-      required: true
-      default: true
-      description: The ID of the artifact (SHA 256) to be downloaded. Only SHA-256 type of ID can be used.
-    outputs:
-    - contextPath: ThreatGrid.Artifact.Id
-      description: The ID of the downloaded artifact
-      type: string
-    description: Download an artifact by using its ID.
+    deprecated: false
+    execution: false
   - name: threat-grid-who-am-i
-    arguments: []
     outputs:
-    - contextPath: ThreatGrid.User.Email
-      description: The logged in user Email.
-    - contextPath: ThreatGrid.User.Login
-      description: The logged in user Login ID.
-    - contextPath: ThreatGrid.User.Name
-      description: The logged in user Name.
-    - contextPath: ThreatGrid.User.OrganizationId
-      description: The logged in user Organization ID.
-    - contextPath: ThreatGrid.User.Role
-      description: The logged in user Role
+    - contextPath: ThreatGrid.User.email
+      description: Current user mail.
+      type: string
+    - contextPath: ThreatGrid.User.login
+      description: Current user login name.
+      type: string
     description: Get logged in user
-  - name: threat-grid-user-get-rate-limit
+    deprecated: false
+    execution: false
+  - name: threat-grid-rate-limit-get
     arguments:
     - name: login
       required: true
       default: true
       description: User login name
+      isArray: false
+    - auto: PREDEFINED
+      description: User or Organization
+      isArray: false
+      name: entity_type
+      predefined:
+      - user
+      - organization
+      required: true
     outputs:
-    - contextPath: ThreatGrid.User.RateLimit.Minutes
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the minutes.'
-      type: number
-    - contextPath: ThreatGrid.User.RateLimit.Samples
+    - contextPath: ThreatGrid.RateLimit.submission-rate-limit
       description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the number of samples allowed.'
       type: number
-    - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
+    - contextPath: ThreatGrid.RateLimit.submission-wait-seconds
       description: The number of seconds to wait for a submission to get uploaded on the platform.
       type: number
-    - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
+    - contextPath: ThreatGrid.RateLimit.submissions-available
       description: The number of submissions available for the specified username
       type: number
-    description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
-  - name: threat-grid-get-specific-feed
+    description: Get rate limit for a specific user name. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by a user. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
+    deprecated: false
+    execution: false
+  - name: threat-grid-feed-specific-get
     arguments:
-    - name: feed-name
+    - name: feed_name
       required: true
-      default: true
-      description: The feed name. For a list of possible feed names and how to use them please see - https://panacea.threatgrid.com/doc/main/feeds.html
-    - name: feed-period
-      description: Feed daily date (YYYY-MM-DD). Alternatively, you may also write in free text (e.g. '2 days ago')
-    - name: output-type
-      description: The output type
-      defaultValue: json
-    outputs:
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Gets a specific threat feed
-  - name: threat-grid-detonate-file
-    deprecated: true
-    arguments:
-    - name: file-entry-id
-      required: true
-      default: true
-      description: Entry ID of the uploaded file (e.g. the message in the war room with the uploaded file's details).
-    - name: delay
-      description: Time to wait between status checks (in seconds)
-      defaultValue: "20"
-    - name: timeout
-      description: Total wait time (in seconds)
-      defaultValue: "300"
-    - name: report-file-type
+      description: The feed name.
       auto: PREDEFINED
+      isArray: false
       predefined:
-      - html
+      - autorun-registry
+      - banking-dns
+      - dga-dns
+      - dll-hijacking-dns
+      - doc-net-com-dns
+      - downloaded-pe-dns
+      - dynamic-dns
+      - irc-dns
+      - modified-hosts-dns
+      - parked-dns
+      - public-ip-check-dns
+      - ransomware-dns
+      - rat-dns
+      - scheduled-tasks
+      - sinkholed-ip-dns
+      - stolen-cert-dns
+    - name: output_type
+      description: The output type
+      defaultValue: "json"
+      auto: PREDEFINED
+      isArray: false
+      predefined:
       - json
-      description: File type of report to return
-      defaultValue: html
+      - csv
+      - stix
+      - snort
+      - txt
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
     outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample id
-      type: string
-    - contextPath: ThreatGrid.Sample.MaxSeverity
-      description: The sample max severity
-      type: number
-    - contextPath: ThreatGrid.Sample.Score
-      description: The sample score
-      type: number
-    - contextPath: ThreatGrid.Sample.Count
-      description: The sample count
-      type: number
-    - contextPath: ThreatGrid.Sample.MaxConfidence
-      description: The sample max confidence
-      type: number
-    - contextPath: DBotScore.Indicator
-      description: The indicator value
-      type: string
-    - contextPath: DBotScore.Score
-      description: The indicator's score
-      type: number
-    - contextPath: DBotScore.Vendor
-      description: The indicator's vendor
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator's type
-      type: string
-    description: Detonates URL address through Threat Grid
-  - name: threat-grid-url-to-file
+    - contextPath: ThreatGrid.Feed.sample
+      description: Feed sample.
+      type: String
+    - contextPath: ThreatGrid.Feed.description
+      description: Feed description.
+      type: String
+    description: Gets a specific threat feed
+    deprecated: false
+    execution: false
+  - name: threat-grid-ip-search
     arguments:
-    - name: urls
+    - name: ip
       required: true
-      default: true
-      description: Comma separated list of URLs to convert
-    description: Convert a URL into a file for Threat Grid file detonation.
-  - name: threat-grid-organization-get-rate-limit
-    arguments:
-    - name: adminLogin
-      required: true
-      default: true
-      description: The admin user login name to be used for getting the rate limits.
+      description: The IP to search for.
+      isArray: false
     outputs:
-    - contextPath: ThreatGrid.User.RateLimit.Minutes
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the minutes.'
-      type: number
-    - contextPath: ThreatGrid.User.RateLimit.Samples
-      description: 'Array of array(s) representing submission(s) per minute(s) or the string"nil" to clear the value. Example: [[5, 1440]] which represents 5 samples per day. This field represent the number of samples allowed.'
-      type: number
-    - contextPath: ThreatGrid.User.RateLimit.SubmissionWaitSeconds
-      description: The number of seconds to wait for a submission to get uploaded on the platform.
-      type: number
-    - contextPath: ThreatGrid.User.RateLimit.SubmissionsAvailable
-      description: The number of submissions available for the entire organization.
-      type: number
-    description: Get rate limits applied to an organization. ThreatGrid employs a simple rate limiting method for sample submissions by specifying the number of samples which can be submitted within some variable time period by an entire organization and/or per a license basis. Multiple rate limits can be employed to form overlapping submission limits. For example, 20 submissions per hour AND 400 per day.
-  - name: threat-grid-search-ips
-    arguments:
-    - name: network_dst
-      description: search by destination IP
-    - name: network_src
-      description: search by source IP
-    - name: artifact
-      description: search by artifact SHA256
-    - name: domain
-      description: search by domain name
-    - name: url
-      description: search by url
-    - name: asn
-      description: search by IP asn
-    - name: geo_location
-      description: search by IP geo location information
-    - name: cidr
-      description: search by IP/CIDR
-    - name: ioc
-      description: search by IOC name
-    - name: tag
-      description: search by tag name
+    - contextPath: ThreatGrid.search.ip
+      description: IP item.
+      type: string
+    - contextPath: ThreatGrid.search.asn
+      description: IP asn.
+      type: string
+    - contextPath: ThreatGrid.search.location
+      description: IP location details.
+      type: string
     description: Search IPs. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
-  - name: threat-grid-get-analysis-annotations
+    deprecated: false
+    execution: false
+  - name: threat-grid-analysis-annotations-get
     arguments:
-    - name: id
+    - name: sample_id
+      required: true
       description: The sample ID.
+      isArray: false
     outputs:
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP
-      description: Ip address present in the annotation.
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Asn
-      description: Autonomous system number of the IP.
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.City
-      description: City of the IP found.
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Country
-      description: Country of the IP found
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Org
-      description: Org of the IP found
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Region
-      description: Region of the IP found.
-    - contextPath: ThreatGrid.AnalysisResults.Sample.Id.Annotations.IP.Timestamp
-      description: Timestamp of the IP found
-    description: Returns data regarding the annotations of the anlysis
-  - name: threat-grid-search-samples
-    arguments:
-    - name: ioc
-      description: search by IOC name
-    - name: checksum
-      description: search by checksum (sha256, md5 or sha1)
-    - name: checksum_sample
-      description: search by checksum of sample
-    - name: path
-      description: search by path name
-    - name: path_sample
-      description: search by sample path name
-    - name: path_artifact
-      description: search by artifact name
-    - name: path_deleted
-      description: search by path names that were deleted
-    - name: url
-      description: search by url
-    - name: registry_key
-      description: search by registry key accessed
-    - name: domain
-      description: search by domain name
-    - name: domain_dns_lookup
-      description: search by domain name used for DNS lookups
-    - name: domain_http_request
-      description: search by domain name used in HTTP request
-    - name: ip
-      description: search by ip address
-    - name: ip_dns_lookup
-      description: search by IP address returned in DNS lookup
-    - name: ip_src
-      description: search by network stream source IP address
-    - name: ip_dst
-      description: search by network stream destination IP address
-    - name: tag
-      description: search by sample tag
-    outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: Result ID
-    - contextPath: ThreatGrid.Sample.Details
-      description: Detail of sample
-    description: Search Samples. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
-  - name: threat-grid-search-urls
+    - contextPath: ThreatGrid.SampleAnnotations.network
+      description: IP address & timestamp in the annotation.
+      type: String
+    description: Returns data regarding the annotations of the analysis
+    deprecated: false
+    execution: false
+  - name: threat-grid-url-search
     arguments:
     - name: url
-      description: search by URL pattern
-    - name: sibling
-      description: search by URL pattern prefix
-    - name: neighbor
-      description: search by hostname of URL
-    - name: sha256
-      description: search by SHA56 of URL
-    - name: md5
-      description: search by md5 of URL
-    - name: sha1
-      description: search by sha1 of URL
-    - name: protocol
-      description: search by protocol name
-    - name: host
-      description: search by hostname
-    - name: port
-      description: search by post number
-    - name: path
-      description: search by path name
-    - name: query
-      description: search by query
-    - name: reference
-      description: search by fragment identifier
-    - name: ip
-      description: search by IP address of network stream
-    - name: artifact
-      description: search by artifact downloaded
-    - name: tag
-      description: search by url tag
-    description: Search urls. Please provide a single argument (only one) to use this command, as the API supports 1 filter at a time.
-  - name: threat-grid-get-samples-state
-    arguments:
-    - name: ids
-      description: Comma separated list of sample ids
+      required: true
+      description: The URL to search for.
+      isArray: false
     outputs:
-    - contextPath: ThreatGrid.Sample.ID
-      description: The sample ID, globally unique, and the canonical identifier of this sample analysis
-    - contextPath: ThreatGrid.Sample.State
-      description: The state of the sample, one of a stable set of strings “wait, prep, run, proc, succ, fail”
-    description: Get threat grid samples state
-  - name: threat-grid-feeds-artifacts
+    - contextPath: ThreatGrid.search.url
+      description: URL item
+      type: String
+    description: Search urls. Please provide the URL in the format http://example.com:80/ .
+    deprecated: false
+    execution: false
+  - name: threat-grid-feeds-artifact
     arguments:
     - name: sha256
+      required: false
       description: Restrict returned records with this sha256
-    - name: sha1
-      description: Restrict returned records with this sha1
-    - name: md5
-      description: Restrict returned records with this md5
-    - name: path
-      description: Restrict returned records to this path or path fragment.
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      isArray: false
+    - description: Restrict returned records with this sha1
+      isArray: false
+      name: sha1
+      required: false
+    - description: Restrict returned records with this md5
+      isArray: false
+      name: md5
+      required: false
+    - description: Restrict returned records to this path or path fragment.
+      isArray: false
+      name: path
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: true
+      name: sample_id
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      defaultValue: '50'
+      name: limit
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.Artifact.confidence
+      description: Artifact confidence
+      type: Number
+    - contextPath: ThreatGrid.Artifact.severity
+      description: "Artifact severity"
+      type: Number
+    - contextPath: ThreatGrid.Artifact.ioc
+      description: Artifact IOC
+      type: String
+    - contextPath: ThreatGrid.Artifact.artifact_sha256
+      description: "Artifact sha256"
+      type: String
+    - contextPath: ThreatGrid.Artifact.artifact_md5
+      description: Artifact md5
+      type: String
+    - contextPath: ThreatGrid.Artifact.sample_id
+      description: Artifact sample ID
+      type: String
     description: Get artifacts threat feed
+    deprecated: false
+    execution: false
   - name: threat-grid-feeds-domain
     arguments:
     - name: domain
+      required: false
       description: Restrict returned records to this domain or hostname
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      isArray: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: true
+      name: sample_id
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      defaultValue: '50'
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.Domain.confidence
+      description: "Domain confidence"
+      type: Number
+    - contextPath: ThreatGrid.Domain.severity
+      description: "Domain severity"
+      type: Number
+    - contextPath: ThreatGrid.Domain.ioc
+      description: "Domain IOC"
+      type: String
+    - contextPath: ThreatGrid.Domain.sample_sha256
+      description: Domain sha256
+      type: String
+    - contextPath: ThreatGrid.Domain.sample_id
+      description: "Domain sample ID"
+      type: String
+    - contextPath: ThreatGrid.Domain.domain
+      description: "The Domain "
+      type: String
     description: Get domain threat feed
+    deprecated: false
+    execution: false
   - name: threat-grid-feeds-ip
     arguments:
     - name: ip
+      required: false
       description: Restrict returned records to this IP or CIDR block
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      isArray: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: true
+      name: sample_id
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      defaultValue: '50'
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.Ip.confidence
+      description: IP confidence
+      type: Number
+    - contextPath: ThreatGrid.Ip.severity
+      description: "IP severity"
+      type: Number
+    - contextPath: ThreatGrid.Ip.ioc
+      description: IP IOC
+      type: String
+    - contextPath: ThreatGrid.Ip.sample_sha256
+      description: IP sha256
+      type: String
+    - contextPath: ThreatGrid.Ip.sample_id
+      description: IP sample ID
+      type: String
+    - contextPath: ThreatGrid.Ip.ip
+      description: "The IP"
+      type: String
+    - contextPath: ThreatGrid.Ip.port
+      description: The IP port
+      type: Number
     description: Get ips threat feed
+    deprecated: false
+    execution: false
   - name: threat-grid-feeds-network-stream
     arguments:
     - name: ip
+      required: false
       description: Restrict returned records to this IP address
-    - name: port
-      description: Restrict returned records to this port number
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      isArray: false
+    - description: Restrict returned records to this port number
+      isArray: false
+      name: port
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: true
+      name: sample_id
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      defaultValue: '50'
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.NetworkStreams.confidence
+      description: "Network Streams confidence"
+      type: Number
+    - contextPath: ThreatGrid.NetworkStreams.severity
+      description: "Network Streams severity"
+      type: Number
+    - contextPath: ThreatGrid.NetworkStreams.ioc
+      description: "Network Streams IOC"
+      type: String
+    - contextPath: ThreatGrid.NetworkStreams.sample_sha256
+      description: "Network Streams sha256"
+      type: String
+    - contextPath: ThreatGrid.NetworkStreams.sample_id
+      description: "Network Streams sample ID"
+      type: String
+    - contextPath: ThreatGrid.NetworkStreams.src
+      description: "The Network Streams source "
+      type: String
+    - contextPath: ThreatGrid.NetworkStreams.src_port
+      description: "The Network Streams source port"
+      type: Number
+    - contextPath: ThreatGrid.NetworkStreams.dst
+      description: "The Network Streams destination "
+      type: String
+    - contextPath: ThreatGrid.NetworkStreams.dst_port
+      description: "The Network Streams destination port"
+      type: Number
     description: Get network stream threat feed
+    deprecated: false
+    execution: false
   - name: threat-grid-feeds-path
     arguments:
     - name: path
+      required: false
       description: Restrict returned records to this path or path fragment
+      isArray: false
     - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
+      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
     - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: true
+      name: sample_id
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      defaultValue: '50'
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.Path.confidence
+      description: "Path confidence"
+      type: Number
+    - contextPath: ThreatGrid.Path.severity
+      description: "Path severity"
+      type: Number
+    - contextPath: ThreatGrid.Path.ioc
+      description: "Path IOC"
+      type: String
+    - contextPath: ThreatGrid.Path.sample_sha256
+      description: "Path sha256"
+      type: String
+    - contextPath: ThreatGrid.Path.sample_id
+      description: "Path sample ID"
+      type: String
     description: Get path threat feed
+    deprecated: false
+    execution: false
   - name: threat-grid-feeds-url
+    deprecated: false
     arguments:
     - name: url
+      required: false
       description: Restrict returned records to this URL or URL fragment
-    - name: before
-      description: A date/time (ISO 8601), restricting results to samples submitted before it
-    - name: after
-      description: A date/time (ISO 8601), restricting results to samples submitted after it
-    - name: confidence
+      isArray: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this confidence score or higher, defaults to 80
-    - name: severity
+      isArray: false
+      name: confidence
+      required: false
+    - defaultValue: '80'
       description: Restrict to IOCs with this severity score or higher, defaults to 80
-    - name: ioc
-      description: Restrict returned records to events of this type
-    - name: org-only
-      description: If “true”, will only match against samples submitted by your organization
-    - name: user-only
-      description: ' If “true”, will only match against samples you submitted'
-    - name: sample
-      description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: severity
+      required: false
+    - description: Restrict returned records to events of this type
+      isArray: false
+      name: ioc
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples submitted by your organization"
+      isArray: false
+      name: org_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      description: "If “true”, will only match against samples you submitted"
+      isArray: false
+      name: user_only
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - description: A comma-separated list of sample IDs. Restrict results to these samples.
+      isArray: false
+      name: sample_id
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      defaultValue: '50'
+      required: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
+    - contextPath: ThreatGrid.Url.confidence
+      description: URL confidence
+      type: Number
+    - contextPath: ThreatGrid.Url.severity
+      description: URL severity
+      type: Number
+    - contextPath: ThreatGrid.Url.ioc
+      description: "URL IOC"
+      type: String
+    - contextPath: ThreatGrid.Url.sample_sha256
+      description: URL sha256
+      type: String
+    - contextPath: ThreatGrid.Url.sample_id
+      description: URL sample ID
+      type: String
+    - contextPath: ThreatGrid.Url.url
+      description: The URL
+      type: String
     description: Get url threat feed
-  - name: threat-grid-get-analysis-artifact
+    execution: false
+  - name: threat-grid-analysis-artifacts-get
     arguments:
-    - name: id
+    - description: the sample id
+      isArray: false
+      name: sample_id
       required: true
-      default: true
-      description: the sample id
-    - name: aid
-      required: true
-      description: The artificat id requested
+    - description: The artifact id requested
+      isArray: false
+      name: artifact_id
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.ArtifactAnalysis.items
+      description: List of artifact analysis of the sample.
+      type: Unknown
     description: Returns the sample id artifact with artifact id
-  - name: threat-grid-get-analysis-artifacts
+    deprecated: false
+    execution: false
+  - name: threat-grid-analysis-iocs-get
     arguments:
-    - name: id
+    - name: sample_id
       required: true
-      default: true
       description: the sample id
+      isArray: false
+    - description: the IOC requested
+      isArray: false
+      name: ioc
+      required: false
     outputs:
-    - contextPath: ThreatGrid.Sample.Analysis
-      description: Analysis datat of the sample
-    description: Returns the sample id artifacts
-  - name: threat-grid-get-analysis-ioc
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: the sample id
-    - name: ioc
-      required: true
-      description: the ioc requested
-    outputs:
-    - contextPath: ThreatGrid.IOCs.Title
-      description: The title of the IOC
-    - contextPath: ThreatGrid.IOCs.Confidence
-      description: The confidence of the IOC
-    - contextPath: ThreatGrid.IOCs.Severity
+    - contextPath: ThreatGrid.IOCAnalysis.title
+      description: 'The title of the IOC'
+      type: String
+    - contextPath: ThreatGrid.IOCAnalysis.confidence
+      description: 'The confidence of the IOC'
+      type: Number
+    - contextPath: ThreatGrid.IOCAnalysis.severity
       description: The severity of the IOC
-    - contextPath: ThreatGrid.IOCs.IOC
+      type: String
+    - contextPath: ThreatGrid.IOCAnalysis.ioc
       description: Threat grid's IOC
-    - contextPath: ThreatGrid.IOCs.IOCCategory
+      type: String
+    - contextPath: ThreatGrid.IOCAnalysis.category
       description: The IOC category of the IOC
-    - contextPath: DBotScore.Indicator
-      description: The indicator value
-    - contextPath: DBotScore.Vendor
-      description: The indicator vendor
-    - contextPath: DBotScore.Type
-      description: The indicator type
-    - contextPath: DBotScore.Score
-      description: The indicator score
-    - contextPath: ThreatGrid.IOCs.Data.IP
-      description: The IP of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.URL
-      description: The URL of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.Domain
-      description: The domain of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.Path
-      description: The path of the IOC
-    - contextPath: ThreatGrid.IOCs.Data.SHA256
+      type: String
+    - contextPath: ThreatGrid.IOCAnalysis.sha256
       description: The SHA256 value of the IOC
-    - contextPath: ThreatGrid.IOCs.Tags
+      type: String
+    - contextPath: ThreatGrid.IOCAnalysis.tags
       description: The tags of the IOC
+      type: String
     description: Returns data regarding the specified Indicator of Compromise
-  - name: threat-grid-get-analysis-metadata
+    deprecated: false
+    execution: false
+  - name: threat-grid-analysis-metadata-get
     arguments:
-    - name: id
+    - name: sample_id
       required: true
       default: true
       description: the sample id
+      isArray: false
+    outputs:
+    - contextPath: ThreatGrid.AnalysisMetadata.general_details
+      description: The Metadata Analysis General Details
+      type: Unknown
+    - contextPath: ThreatGrid.AnalysisMetadata.malware_desc
+      description: The Metadata Analysis Malware Desc
+      type: Unknown
+    - contextPath: ThreatGrid.AnalysisMetadata.sandcastle_env
+      description: "The Metadata Analysis Malware Sandcastle ENV"
+      type: Unknown
     description: Returns metadata about the analysis
-  - name: threat-grid-get-analysis-network-stream
+    deprecated: false
+    execution: false
+  - name: threat-grid-analysis-network-streams-get
+    deprecated: false
     arguments:
-    - name: id
+    - name: sample_id
       required: true
-      default: true
       description: the sample id
-    - name: nsid
-      required: true
+      isArray: false
+    - name: network_stream_id
       description: The network stream id
+      isArray: false
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.NetworkAnalysis.protocol
+      description: The network protocol
+      type: Number
+    - contextPath: ThreatGrid.NetworkAnalysis.transport
+      description: "The network transport "
+      type: String
+    - contextPath: ThreatGrid.NetworkAnalysis.service
+      description: The network service
+      type: String
+    - contextPath: ThreatGrid.NetworkAnalysis.client_ip
+      description: The client IP
+      type: String
+    - contextPath: ThreatGrid.NetworkAnalysis.server_ip
+      description: The server IP
+      type: String
     description: Returns data regarding a specific network stream
-  - name: threat-grid-get-analysis-network-streams
+    execution: false
+  - name: threat-grid-analysis-processes-get
     arguments:
-    - name: id
+    - name: sample_id
       required: true
-      default: true
       description: the sample id
-    description: Returns the network stream analysis
-  - name: threat-grid-get-analysis-process
-    arguments:
-    - name: id
-      required: true
-      default: true
-      description: the sample id
-    - name: pid
-      required: true
-      description: the process id requested
+      isArray: false
+    - description: the process id requested
+      isArray: false
+      name: process_id
+      required: false
+    description: Returns data regarding the specific process id in the analysis
+    deprecated: false
+    execution: false
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Returns data regarding the specifiic process id in the analysis
-  - name: threat-grid-get-analysis-processes
+    - contextPath: ThreatGrid.ProcessAnalysis.process_name
+      description: The process name
+      type: String
+    - contextPath: ThreatGrid.ProcessAnalysis.process_id
+      description: The process ID
+      type: String
+  - name: file
     arguments:
-    - name: id
+    - name: file
       required: true
       default: true
-      description: the sample id
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256.
+      isArray: true
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to return full response for scans. Default is "false".
+      name: long
+      predefined:
+      - 'True'
+      - 'False'
+    - description: If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      name: threshold
+    - defaultValue: '60'
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      name: wait
+    - defaultValue: '0'
+      description: Number of retries for the API rate limit. Default is "0".
+      name: retries
     outputs:
-    - contextPath: Demisto.File
-      description: File containing result
-    description: Returns data regarding the analysis processes
+    - contextPath: File.MD5
+      description: 'Bad MD5 hash.'
+      type: String
+    - contextPath: File.Name
+      description: 'File name.'
+      type: String
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+      type: String
+    - contextPath: File.sha256
+      description: Bad SHA256 hash.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ThreatGrid.File.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: number
+    - contextPath: ThreatGrid.File.DetectionEngines
+      description: Total number of engines that checked the indicator.
+      type: number
+    - contextPath: ThreatGrid.File.tgLink
+      description: ThreatGrid permanent link.
+      type: string
+    description: Checks the file reputation of the specified hash.
+    deprecated: false
+    execution: false
+  - name: ip
+    arguments:
+    - name: ip
+      description: IP address to check.
+      default: true
+      isArray: true
+      required: true
+    - name: long
+      description: Whether to return full response for detected URLs. Default is "false".
+      auto: PREDEFINED
+      defaultValue: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10".
+      defaultValue: '10'
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      defaultValue: '60'
+    - name: retries
+      description: Number of retries for API rate limit. Default is "0".
+      defaultValue: '0'
+    - name: fullResponse
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
+      auto: PREDEFINED
+      defaultValue: false
+      predefined:
+      - 'True'
+      - 'False'
+    description: Checks the reputation of an IP address.
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: Bad IP ASN.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: Bad IP country.
+      type: String
+    - contextPath: ThreatGrid.IP.indicator
+      description: IP address.
+      type: String
+    - contextPath: ThreatGrid.IP.confidence
+      description: Indicator confidence between 0-99.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+  - name: url
+    arguments:
+    - name: url
+      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
+      default: true
+      isArray: true
+      required: true
+    - defaultValue: '10'
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
+      name: sampleSize
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to return the full response for the detected URLs.
+      name: long
+      predefined:
+      - 'True'
+      - 'False'
+    - description: If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      name: threshold
+    - defaultValue: '0'
+      description: Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".
+      name: submitWait
+    - defaultValue: '60'
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      name: wait
+    - defaultValue: '0'
+      description: Number of retries for API rate limit. Default is "0".
+      name: retries
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: Number of engines that positively detected the indicator as malicious.
+      type: Number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: ThreatGrid.URL.url
+      description: The URL.
+      type: String
+    - contextPath: ThreatGrid.URL.detection_engines
+      description: Number of engines
+      type: Number
+    - contextPath: ThreatGrid.URL.positive_engines
+      description: Number of positive engines
+      type: Number
+    description: Checks the reputation of a URL.
+    deprecated: false
+    execution: false
+  - name: domain
+    arguments:
+    - name: domain
+      description: Domain name to check.
+      default: true
+      isArray: true
+      required: true
+    - name: long
+      description: Whether to return the full response for detected URLs. Default is "false".
+      auto: PREDEFINED
+      defaultValue: false
+      predefined:
+      - 'True'
+      - 'False'
+    - name: sampleSize
+      description: The number of samples from each type (resolutions, detections, etc.) to display for long format.
+      defaultValue: '10'
+    - name: threshold
+      description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
+    - name: wait
+      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      defaultValue: '60'
+    - name: retries
+      description: Number of retries for API rate limit. Default is "0".
+      defaultValue: '0'
+    - name: fullResponse
+      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
+      auto: PREDEFINED
+      defaultValue: false
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date that the domain was created.
+      type: Date
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: Domain.WHOIS.NameServers
+      description: Name servers of the domain.
+      type: String
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: Unknown
+    - contextPath: Domain.WHOIS.Registrar.AbusePhone
+      description: The phone number of contact for reporting abuse.
+      type: Unknown
+    - contextPath: Domain.WHOIS.Registrar.Name
+      description: 'The name of the registrar, for example: "GoDaddy".'
+      type: String
+    - contextPath: Domain.WHOIS.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.WHOIS.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: ThreatGrid.Domain.domain
+      description: The domain name.
+      type: String
+    description: Checks the reputation of a domain.
+    deprecated: false
+    execution: false
+  - name: threat-grid-domain-samples-list
+    arguments:
+    - name: domain
+      description: The domain to search for.
+      isArray: false
+      required: true
+    - name: after
+      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: before
+      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: '50'
+      isArray: false
+      required: false
+    - name: page_size
+      description: The number of items per page.
+      isArray: false
+      required: false
+    - name: page
+      description: Page number of paginated results.
+      isArray: false
+      required: false
+    description: Returns a list of samples associated with a Domain.
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: ThreatGrid.DomainAssociatedSample.domain
+      description: The domain.
+      type: string
+    - contextPath: ThreatGrid.DomainAssociatedSample.samples
+      description: The associated samples.
+      type: string
+  - name: threat-grid-ip-samples-list
+    arguments:
+    - name: ip
+      description: The IP to search for.
+      isArray: false
+      required: true
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: after
+      required: false
+    - description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      name: before
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - description: Page number of paginated results.
+      isArray: false
+      name: page
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.IpAssociatedSample.ip
+      description: The IP.
+      type: string
+    - contextPath: ThreatGrid.IpAssociatedSample.samples
+      description: The associated samples.
+      type: string
+    description: Returns a list of samples associated with an IP.
+    deprecated: false
+    execution: false
+  - name: threat-grid-path-samples-list
+    arguments:
+    - name: path
+      description: "The path to search for. A path is a slash-separated list of directory names followed by either a directory name or a file name. Path example: ‘/user/name/file’."
+      isArray: false
+      required: true
+    - name: after
+      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: before
+      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: '50'
+      isArray: false
+      required: false
+    - name: page_zise
+      description: The number of items per page.
+      isArray: false
+      required: false
+    - name: page
+      description: Page number of paginated results.
+      isArray: false
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.PathAssociatedSample.path
+      description: The Path.
+      type: string
+    - contextPath: ThreatGrid.PathAssociatedSample.samples
+      description: The associated samples.
+      type: string
+    description: Returns a list of samples associated with a Path.
+    deprecated: false
+    execution: false
+  - name: threat-grid-url-samples-list
+    arguments:
+    - name: url
+      description: The target URL. Please provide the URL in the format http://example.com:80/ .
+      isArray: false
+      required: true
+    - name: after
+      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: before
+      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: '50'
+      isArray: false
+      required: false
+    - name: page_zise
+      description: The number of items per page.
+      isArray: false
+      required: false
+    - name: page
+      description: Page number of paginated results.
+      isArray: false
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.UrlAssociatedSample.url
+      description: The URL.
+      type: string
+    - contextPath: ThreatGrid.UrlAssociatedSample.samples
+      description: The associated samples.
+      type: string
+    description: Returns a list of samples associated with an URL.
+    deprecated: false
+    execution: false
+  - name: threat-grid-registry-key-samples-list
+    arguments:
+    - name: registry_key
+      description: The registry key to search for.
+      isArray: false
+      required: true
+    - name: after
+      description: '"A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: before
+      description: '"A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+|-hhmm e.g. : 2012-04-19T04:00:55-0500"'
+      isArray: false
+      required: false
+    - name: limit
+      description: The maximum number of records to retrieve.
+      defaultValue: '50'
+      isArray: false
+      required: false
+    - name: page_size
+      description: The number of items per page.
+      isArray: false
+      required: false
+    - name: page
+      description: Page number of paginated results.
+      isArray: false
+      required: false
+    outputs:
+    - contextPath: ThreatGrid.RegistryKeyAssociatedSample.key
+      description: The Registry Key.
+      type: string
+    - contextPath: ThreatGrid.RegistryKeyAssociatedSample.samples
+      description: The associated samples.
+      type: string
+    description: Returns a list of samples associated with a specified registry key.
+    deprecated: false
+    execution: false
+  - name: threat-grid-ip-associated-domains
+    arguments:
+    - name: ip
+      description: The IP to search for.
+      isArray: false
+      required: true
+    outputs:
+    - contextPath: ThreatGrid.IpAssociatedDomain.ip
+      description: The IP.
+      type: string
+    - contextPath: ThreatGrid.IpAssociatedDomain.domains
+      description: The associated Domain.
+      type: string
+    description: Returns a list of domains associated with the IP.
+    deprecated: false
+    execution: false
+  - name: threat-grid-ip-associated-urls
+    arguments:
+    - name: ip
+      description: The IP to search for.
+      isArray: false
+      required: true
+    outputs:
+    - contextPath: ThreatGrid.IpAssociatedUrl.ip
+      description: The IP.
+      type: string
+    - contextPath: ThreatGrid.IpAssociatedUrl.urls
+      description: The associated URL.
+      type: string
+    description: Returns a list of URLs associated to the IP.
+    deprecated: false
+    execution: false
+  - name: threat-grid-domain-associated-urls
+    arguments:
+    - name: domain
+      description: The domain to search for.
+      isArray: false
+      required: true
+    outputs:
+    - contextPath: ThreatGrid.DomainAssociatedUrl.domain
+      description: The Domain.
+      type: string
+    - contextPath: ThreatGrid.DomainAssociatedUrl.urls
+      description: The associated URL.
+      type: string
+    description: Returns a list of URLs associated to the domain.
+    deprecated: false
+    execution: false
+  - name: threat-grid-domain-associated-ips
+    arguments:
+    - name: domain
+      required: true
+      description: The domain to search for.
+      isArray: false
+    description: Returns a list of IPs associated to the domain.
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: ThreatGrid.DomainAssociatedIp.domain
+      description: The Domain.
+      type: String
+    - contextPath: ThreatGrid.DomainAssociatedIp.ips
+      description: The associated IP.
+      type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.40422
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
 tests:
-- ThreatGridTest
-fromversion: 5.0.0
+- No tests (auto formatted)
+fromversion: 6.5.0

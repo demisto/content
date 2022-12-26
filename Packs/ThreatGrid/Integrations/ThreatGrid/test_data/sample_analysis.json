@@ -1,0 +1,68 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "items": {
+            "network": {
+                "0.0.0.0": {
+                    "ts": "data_items_network_0.0.0.0_ts"
+                },
+                "192.168.1.1": {
+                    "ts": "data_items_network_192.168.1.1_ts"
+                },
+                "239.255.255.250": {
+                    "ts": "data_items_network_239.255.255.250_ts"
+                },
+                "192.168.1.40": {
+                    "ts": "data_items_network_192.168.1.40_ts"
+                },
+                "192.168.1.255": {
+                    "ts": "data_items_network_192.168.1.255_ts"
+                },
+                "142.250.80.45": {
+                    "org": "data_items_network_142.250.80.45_org",
+                    "ts": "data_items_network_142.250.80.45_ts",
+                    "country": "data_items_network_142.250.80.45_country",
+                    "city": "data_items_network_142.250.80.45_city",
+                    "region_name": "data_items_network_142.250.80.45_region_name",
+                    "region": "data_items_network_142.250.80.45_region",
+                    "reverse_dns": [
+                        "data_items_network_142.250.80.45_reverse_dns_0"
+                    ],
+                    "country_name": "data_items_network_142.250.80.45_country_name",
+                    "asn": "data_items_network_142.250.80.45_asn"
+                },
+                "142.250.80.67": {
+                    "org": "data_items_network_142.250.80.67_org",
+                    "ts": "data_items_network_142.250.80.67_ts",
+                    "country": "data_items_network_142.250.80.67_country",
+                    "city": "data_items_network_142.250.80.67_city",
+                    "region_name": "data_items_network_142.250.80.67_region_name",
+                    "region": "data_items_network_142.250.80.67_region",
+                    "reverse_dns": [
+                        "data_items_network_142.250.80.67_reverse_dns_0"
+                    ],
+                    "country_name": "data_items_network_142.250.80.67_country_name",
+                    "asn": "data_items_network_142.250.80.67_asn"
+                },
+                "255.255.255.255": {
+                    "ts": "data_items_network_255.255.255.255_ts"
+                },
+                "96.44.175.237": {
+                    "org": "data_items_network_96.44.175.237_org",
+                    "ts": "data_items_network_96.44.175.237_ts",
+                    "country": "data_items_network_96.44.175.237_country",
+                    "city": "data_items_network_96.44.175.237_city",
+                    "region_name": "data_items_network_96.44.175.237_region_name",
+                    "region": "data_items_network_96.44.175.237_region",
+                    "reverse_dns": [
+                        "data_items_network_96.44.175.237_reverse_dns_0"
+                    ],
+                    "country_name": "data_items_network_96.44.175.237_country_name",
+                    "asn": "data_items_network_96.44.175.237_asn"
+                }
+            }
+        }
+    }
+}

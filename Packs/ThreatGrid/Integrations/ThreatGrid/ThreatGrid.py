@@ -1,1173 +1,1412 @@
-import requests
-import urllib3
+import copy
+import hashlib
+from typing import Any, Dict, Callable, MutableMapping, MutableSequence, Tuple
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
-from CommonServerPython import *
+DEFAULT_INTERVAL = 90
+DEFAULT_TIMEOUT = 600
 
-urllib3.disable_warnings()
+SUB_API = "/api/v2/"
+USER_API = "/api/v3/"
 
-if not demisto.getParam('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+ANALYSIS_OUTPUTS: Dict = {
+    "artifacts": {
+        "output": "ArtifactAnalysis",
+        "keys_to_delete": ["antivirus", "forensics"],
+    },
+    "iocs": {
+        "output": "IOCAnalysis",
+        "keys_to_delete": ["data"]
+    },
+    "metadata": {
+        "output": "AnalysisMetadata",
+        "keys_to_get": "malware_desc"
+    },
+    "network_streams": {
+        "output": "NetworkAnalysis",
+        "keys_to_delete": ["ssl", "relation"],
+    },
+    "processes": {
+        "output": "ProcessAnalysis",
+        "keys_to_delete": ["startup_info"]
+    },
+    "annotations": {
+        "output": "SampleAnnotations",
+        "keys_to_get": "network"
+    },
+}
 
-URL = demisto.getParam('server')
-if URL[-1] != '/':
-    URL += '/'
-
-API_KEY = str(demisto.getParam('token'))
-SUB_API = 'api/v2/'
-USER_API = 'api/v3/'
-VALIDATE_CERT = not demisto.params().get('insecure', True)
-
-''' Header names maps '''
-# Format: {'Key': [correspondng headers]}
-SAMPLE_ANALYSIS_HEADERS_MAP = {
-    'File': [
-        'FileName',
-        'Type',
-        'Size',
-        'MD5',
-        'SHA1',
-        'SHA256',
-        'MagicType'
-    ],
-    'Domain': [
-        'Name',
-        'Status'
-    ],
-    'Network': [
-        'Ts_Begin',
-        'Destination',
-        'DestinationPort',
-        'Transport',
-        'Packets',
-        'PacketSize'
-    ],
-    'Regitry Keys Created': [
-        'name',
-        'options',
-        'access'
-    ],
-    'Regitry Keys Deleted': [
-        'name'
-    ],
-    'Regitry Keys Modified': [
-        'name',
-        'options',
-        'access'
-    ],
-    'Sample': [
-        'ID',
-        'ThreatScore',
-        'HeuristicScore',
-        'ProcessName',
-        'CMD',
-        'Directory',
-        'Memory',
-        'Children'
-    ],
-    'Enviornment Details': [
-        'VM ID',
-        'VM Name',
-        'StartedAt',
-        'EndedAt',
-        'Runtime'
-    ],
-    'VT': [
-        'Hits',
-        'Engines'
-    ]
+PREFIX_OUTPUTS: Dict = {
+    "artifact": "Artifact",
+    "path": "Path",
+    "domain": "Domain",
+    "network_stream": "NetworkStreams",
+    "url": "Url",
+    "ip": "Ip",
+    "registry_key": "RegistryKey",
 }
 
 
-def req(method, path, params={'api_key': API_KEY}):
-    """
-    Send the request to ThreatGrid and return the JSON response
-    """
-    r = requests.request(method, URL + path, params=params, verify=VALIDATE_CERT)
-    if r.status_code != requests.codes.ok:
-        return_error('Error in API call to Threat Grid service %s - %s' % (path, r.text))
-    return r
+class Client(BaseClient):
 
-
-def handle_filters():
-    """
-    Handle filters associated with samples
-    """
-    params = {'api_key': API_KEY}
-    for k in demisto.args():
-        if demisto.getArg(k):
-            params[k] = demisto.getArg(k)
-    return params
-
-
-def get_with_limit(obj, path, limit=None):
-    """
-    Get from path with optional limit
-    """
-    res = demisto.get(obj, path)
-    try:
-        if limit:
-            if len(res) > limit:
-                if isinstance(res, dict):
-                    return {k: res[k] for k in list(res.keys())[:limit]}
-                elif isinstance(res, list):
-                    return res[:limit]
-    # If res has no len, or if not a list or a dictionary return res
-    except Exception:
-        return res
-    return res
-
-
-def sample_to_readable(k):
-    """
-    Convert sample request to data dictionary
-    """
-    return {
-        'ID': demisto.get(k, 'id'),
-        'Filename': demisto.get(k, 'filename'),
-        'State': demisto.get(k, 'state'),
-        'Status': demisto.get(k, 'status'),
-        'MD5': demisto.get(k, 'md5'),
-        'SHA1': demisto.get(k, 'sha1'),
-        'SHA256': demisto.get(k, 'sha256'),
-        'OS': demisto.get(k, 'os'),
-        'SubmittedAt': demisto.get(k, 'submitted_at'),
-        'StartedAt': demisto.get(k, 'started_at'),
-        'CompletedAt': demisto.get(k, 'completed_at')
-    }
-
-
-def download_sample():
-    """
-    Download a sample given the sample id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/sample.zip')
-    ec = {'ThreatGrid.DownloadedSamples.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Download - \n'
-                             + 'Your download request has been completed successfully for ' + sample_id,
-            'Contents': ec,
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-sample.zip', r.content)
-    ])
-
-
-def get_samples():
-    """
-    Get samples matching the provided filters.
-    """
-    r = req('GET', SUB_API + 'samples', params=handle_filters())
-    samples = []
-    for k in demisto.get(r.json(), 'data.items'):
-        samples.append(sample_to_readable(k))
-    md = tableToMarkdown('ThreatGrid - List of Samples', samples, [
-        'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
-    ])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': samples},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def get_sample_by_id():
-    """
-    Get information about a sample given its id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id)
-    sample = sample_to_readable(r.json().get('data'))
-    md = tableToMarkdown('ThreatGrid - Sample', [sample], [
-        'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt', 'StartedAt', 'CompletedAt'
-    ])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def get_sample_state_helper(sample_ids):
-    """
-    Helper for getting sample state
-    """
-    samples = []
-    requests = []
-    for sample_id in sample_ids:
-        r = req('GET', SUB_API + 'samples/' + sample_id + '/state')
-        samples.append({
-            'ID': sample_id,
-            'State': demisto.get(r.json(), 'data.state')
-        })
-        requests.append(r.json())
-    return {'samples': samples, 'requests': requests}
-
-
-def get_sample_state_by_id():
-    """
-    Get the state of a sample given its id
-    """
-    ids = []  # type: list
-    if demisto.getArg('ids'):
-        ids += argToList(demisto.getArg('ids'))
-    if demisto.getArg('id'):
-        ids.append(demisto.getArg('id'))
-    response = get_sample_state_helper(ids)
-    md = tableToMarkdown('ThreatGrid - Sample state', response['samples'], ['ID', 'State'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': response['samples']},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': response['requests']
-    })
-
-
-def upload_sample():
-    """
-    Upload a sample
-    """
-    args = {}
-    for k in demisto.args():
-        if demisto.getArg(k) and k != 'file-id':
-            args[k] = demisto.getArg(k)
-    args['api_key'] = API_KEY
-    fileData = demisto.getFilePath(demisto.getArg('file-id'))
-    filename = demisto.getArg('filename').replace('"', '').replace('\n', '')
-    with open(fileData['path'], 'rb') as f:
-        r = requests.request('POST', URL + SUB_API + 'samples',
-                             files={'sample': (filename, f)},
-                             data=args, verify=VALIDATE_CERT)
-        if r.status_code != requests.codes.ok:
-            if r.status_code == 503:
-                return_error('Sample upload failed. File was already uploaded.')
-            return_error('Error in API call to Threat Grid service %s - %s' % ('samples', r.text))
-        sample = sample_to_readable(r.json().get('data'))
-        md = tableToMarkdown('ThreatGrid - Sample Upload', [sample], [
-            'ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1', 'SHA256', 'OS', 'SubmittedAt'
-        ])
-        demisto.results({
-            'Type': entryTypes['note'],
-            'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
-            'HumanReadable': md,
-            'ContentsFormat': formats['json'],
-            'Contents': r.json()
-        })
-        return sample.get('ID')
-
-
-def get_html_report_by_id():
-    """
-    Download the html report for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/report.html')
-
-    ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run HTML Report -\n'
-                             + 'Your sample run HTML report download request has been completed successfully for '
-                             + sample_id,
-            'Contents': r.text,
-            'ContentsFormat': formats['html']
-        },
-        fileResult(sample_id + '-report.html', r.content, file_type=entryTypes['entryInfoFile'])
-    ])
-
-
-def get_pcap_by_id():
-    """
-    Download the pcap for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/network.pcap')
-    ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run PCAP File -\n'
-                             + 'Your sample run PCAP file download request has been completed successfully for '
-                             + sample_id,
-            'Contents': ec,
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-pcap.json', r.content)
-    ])
-
-
-def get_processes_by_id():
-    """
-    Download processes file for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/processes.json')
-    ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run Processes File -\n'
-                             + 'Your sample run processes file download request has been completed successfully for '
-                             + sample_id,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-processes.json', r.content)
-    ])
-
-
-def get_summary_by_id():
-    """
-    Get analysis summary information for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    request = req('GET', SUB_API + 'samples/' + sample_id + '/summary')
-    r = request.json()
-    sample = {'ID': sample_id, 'AnalysisSummary': [], 'ArtifactsCount': []}
-
-    # Search submissions request for extra information
-    sub_request = req('GET', SUB_API + 'search/submissions',
-                      params={'api_key': API_KEY, 'q': demisto.get(r, 'data.sha256')})
-    sub_r = sub_request.json()
-    sub_r_first_item = demisto.get(sub_r, 'data.items')[0]
-
-    sample['AnalysisSummary'] = {
-        'RegistryCount': demisto.get(r, 'data.registry_count'),
-        'FileName': demisto.get(r, 'data.filename'),
-        'SHA256': demisto.get(r, 'data.sha256'),
-        'SampleType': demisto.get(sub_r_first_item, 'item.analysis.metadata.submitted_file.type'),
-        'FirstSeen': demisto.get(r, 'data.first_seen'),
-        'LastSeen': demisto.get(r, 'data.last_seen'),
-    }
-    sample['ArtifactsCount'] = {
-        'Network': demisto.get(r, 'data.artifacts.network'),
-        'Disk': demisto.get(r, 'data.artifacts.disk'),
-        'Memory': demisto.get(r, 'data.artifacts.memory'),
-        'Extracted': demisto.get(r, 'data.artifacts.extracted')
-    }
-    md = tableToMarkdown('ThreatGrid - Sample Summary for ' + sample_id,
-                         [sample['AnalysisSummary']], ['RegistryCount', 'FileName',
-                                                       'SHA256', 'SampleType', 'FirstSeen', 'LastSeen'])
-    md += tableToMarkdown('ThreatGrid - Sample Artifacts', [sample['ArtifactsCount']],
-                          ['Network', 'Disk', 'Memory', 'Extracted'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': r
-    })
-
-
-def calc_score(score):
-    """
-    Convert threatgrid score to dbot score
-    """
-    if not score:
-        return 0
-    dbot_score = 1
-    if score >= 95:
-        dbot_score = 3
-    elif score >= 75:
-        dbot_score = 2
-    return dbot_score
-
-
-def get_threat_summary_by_id():
-    """
-    Get threat summary information for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    request = req('GET', SUB_API + 'samples/' + sample_id + '/threat')
-    r = request.json()
-    sample = {
-        'ID': sample_id,
-        'MaxSeverity': demisto.get(r, 'data.max-severity'),
-        'Score': demisto.get(r, 'data.score'),
-        'Count': demisto.get(r, 'data.count'),
-        'MaxConfidence': demisto.get(r, 'data.max-confidence'),
-        'ThreatFeeds': demisto.get(r, 'data.bis')
-    }
-    dbot = {
-        'Vendor': 'ThreatGrid',
-        'Type': 'Sample ID',
-        'Indicator': sample['ID'],
-        'Score': calc_score(sample['Score'])
-    }
-    md = tableToMarkdown('ThreatGrid - Threat Summary', [sample],
-                         ['ID', 'MaxSeverity', 'Score', 'Count', 'MaxConfidence'])
-    mdTableList = []
-    for threatfeed in sample['ThreatFeeds']:
-        mdTableList.append({'Threat Feed': threatfeed})
-    md += tableToMarkdown('Threat Feeds', mdTableList, ['Threat Feed'])
-    md += tableToMarkdown('DBot', [dbot], ['Indicator', 'Score', 'Type', 'Vendor'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': sample, 'DBotScore': dbot},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': r
-    })
-
-
-def get_video_by_id():
-    """
-    Download the video for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/video.webm')
-    ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run Video File -\n'
-                             + 'Your sample run video file download request has been completed successfully for '
-                             + sample_id,
-            'Contents': ec,
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '.webm', r.content)
-    ])
-
-
-def get_warnings_by_id():
-    """
-    Download the warnings for a sample given the id
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/warnings.json')
-    ec = {'ThreatGrid.Sample.Id': sample_id}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': '### ThreatGrid Sample Run Warnings -\n'
-                             + 'Your sample run warnings file download request has been completed successfully for '
-                             + sample_id,
-            'Contents': ec,
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-warnings.json', r.content)
-    ])
-
-
-def user_get_rate_limit():
-    """
-    Get rate limit for a specified user
-    """
-    login = demisto.getArg('login')
-    request = req('GET', USER_API + 'users/' + login + '/rate-limit')
-    r = request.json()
-    rate_limit = {
-        'SubmissionWaitSeconds': demisto.get(r, 'data.user.submission-wait-seconds'),
-        'SubmissionsAvailable': demisto.get(r, 'data.user.submissions-available')
-    }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.User.RateLimit': rate_limit},
-        'HumanReadable': tableToMarkdown('ThreatGrid - User Rate Limit', [rate_limit], [
-            'SubmissionWaitSeconds', 'SubmissionsAvailable'
-        ]),
-        'ContentsFormat': formats['json'],
-        'Contents': r
-    })
-
-
-def organization_get_rate_limit():
-    """
-    Get rate limit for a specified organization
-    """
-    login = demisto.getArg('adminLogin')
-    request = req('GET', USER_API + 'users/' + login + '/rate-limit')
-    r = request.json()
-    rate_limits = [
-        {
-            'Minutes': demisto.get(rate_limit, 'minutes'),
-            'Samples': demisto.get(rate_limit, 'samples'),
-            'SubmissionWaitSeconds': demisto.get(rate_limit, 'submission-wait-seconds'),
-            'SubmissionsAvailable': demisto.get(rate_limit, 'submissions-available')
+    def __init__(self, base_url: str, api_token: str, proxy: bool, verify: bool):
+        self.base_url = base_url
+        headers = {
+            "Authorization": f"bearer {api_token}",
         }
-        for rate_limit in demisto.get(r, 'data.organization.submission-rate-limit')
-    ]
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.User.RateLimit': rate_limits},
-        'HumanReadable': tableToMarkdown('ThreatGrid - Organization Rate Limit', rate_limits, [
-            'Minutes', 'Samples', 'SubmissionWaitSeconds', 'SubmissionsAvailable'
-        ]),
-        'ContentsFormat': formats['json'],
-        'Contents': r
-    })
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            headers=headers,
+            proxy=proxy,
+        )
+
+    def sample_get_request(
+        self,
+        sample_id: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        artifact: Optional[str] = None,
+        summary: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Retrieves the Sample Info record of a submission by sample ID.
+
+        Args:
+            sample_id (str, optional): The sample ID.
+            limit (int, optional): The number of items per page.
+            offset (int, optional): Page number of paginated results.
+            artifact (str, optional): The artifact to download.
+                Sample ID is required when choosing 'artifact'.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        params = remove_empty_elements({
+            "limit": limit,
+            "offset": offset,
+        })
+        url_prefix = f"samples/{sample_id}" if sample_id else "samples"
+        resp_type = "text" if artifact else "json"
+        url_prefix = f"{url_prefix}/{artifact}" if artifact else url_prefix
+        url_prefix = f"{url_prefix}/summary" if summary else url_prefix
+
+        return self._http_request("GET",
+                                  f"{SUB_API}{url_prefix}",
+                                  params=params,
+                                  resp_type=resp_type)
+
+    def sample_analysis_request(
+        self,
+        sample_id: str,
+        analysis_type: str,
+        arg_value: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get analysis data for a specific sample.
+
+        Args:
+            sample_id (str): The sample ID.
+            analysis_type (str): URL parameter (processes/network-streams/iocs/annotations).
+            arg_value (str, optional): argument value for the URL parameter
+                    (specific process/network-stream/ioc).
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        url_prefix = f"{analysis_type}/{arg_value}" if arg_value else analysis_type
+        return self._http_request("GET", f"{SUB_API}samples/{sample_id}/analysis/{url_prefix}")
+
+    def whoami_request(self) -> Dict[str, Any]:
+        """Get details about correct login user and organization.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        return self._http_request("GET", f"{USER_API}session/whoami")
+
+    def associated_samples_list_request(
+        self,
+        arg_name: str,
+        arg_value: str,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Returns a list of samples associated to the domain /
+            IP / URL / path / artifact / registry key that specified.
+
+        Args:
+            arg_name (str): argument name (URL parameter).
+            arg_value (str): argument value (specific value for the URL parameter).
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        params = remove_empty_elements({
+            "limit": limit,
+            "offset": offset,
+        })
+        return self._http_request("GET", f"{SUB_API}{arg_name}s/{arg_value}/samples", params=params)
+
+    def sample_state_request(self, sample_id: str) -> Dict[str, Any]:
+        """Get the sample state.
+
+        Args:
+            sample_id (str): The sample ID.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        return self._http_request("GET", f"{SUB_API}samples/{sample_id}/state")
+
+    def sample_upload_request(self,
+                              files: Optional[Dict] = None,
+                              payload: Optional[Dict] = None) -> Dict[str, Any]:
+        """Submits a sample (file or URL) to Malware Analytics for analysis.
+        Args:
+            files (dict, optional): File name and path in XSOAR.
+            payload (dict, optional): The URL object.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+
+        return self._http_request("POST", f"{SUB_API}samples", files=files, data=payload)
+
+    def associated_request(self, arg_name: str, arg_value: str, url_arg: str) -> Dict[str, Any]:
+        """Returns a list of domains / URLs associated with the IP or
+            list of IPs / URLs associated with the domain.
+
+        Args:
+            arg_name (str): argument name (URL parameter: IPs/domains).
+            arg_value (str): argument value (specific value for the URL parameter).
+            url_arg (str): URL argument (URL parameter: IPs/URLs/domains).
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        url_prefix = f"{arg_name}s/{arg_value}/{url_arg}"
+        return self._http_request("GET", f"{SUB_API}{url_prefix}")
+
+    def feeds_request(
+        self,
+        arg_name: str,
+        arg_value: Optional[Any],
+        ioc: Optional[Any],
+        severity: Optional[int],
+        confidence: Optional[int],
+        sample_id: Optional[str] = None,
+        before: Optional[str] = None,
+        after: Optional[Any] = None,
+        user_only: Optional[bool] = False,
+        org_only: Optional[bool] = False,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Retrieves a list of ips/iocs/domains/urls/paths associated with
+            an Indicator of Compromise (IOC).
+
+        Args:
+            arg_name (str): argument name (URL parameter: IPs/domains).
+            arg_value (str): argument value for the arg_name.
+            ioc (str): The IOC to get.
+            severity (int, optional): The severity score. Defaults to 80.
+            confidence (int, optional): The confidence score. Defaults to 80.
+            sample_id (str, optional): The sample ID. Defaults to None.
+            before (str, optional): Date. Restricting results to samples submitted before it.
+                Defaults to None.
+            after (str, optional): Date. Restricting results to samples submitted after it.
+                Defaults to None.
+            user_only (bool, optional): Match against samples submitted by your user.
+                Defaults to False.
+            org_only (bool, optional): Match against samples submitted by your organization.
+                Defaults to False.
+            limit (int, optional): The number of items per page. Defaults to None.
+            offset (int, optional): Page number of paginated results. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        params = remove_empty_elements({
+            arg_name: arg_value,
+            "sample_id": sample_id,
+            "severity": severity,
+            "ioc": ioc,
+            "before": before,
+            "after": after,
+            "user_only": user_only,
+            "org_only": org_only,
+            "confidence": confidence,
+            "limit": limit,
+            "offset": offset,
+        })
+
+        return self._http_request("GET", f"{SUB_API}iocs/feeds/{arg_name}s", params=params)
+
+    def submission_search_request(
+        self,
+        query: Optional[str] = None,
+        sort_by: Optional[str] = None,
+        term: Optional[str] = None,
+        state: Optional[str] = None,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+        user_only: Optional[bool] = None,
+        org_only: Optional[bool] = None,
+        highlight: Optional[bool] = None,
+        sort_order: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Search submission that has been submitted to Cisco Malware Analytics for
+            analysis has an associated Submission record.
+
+        Args:
+            query (str, optional): Query text. Defaults to None.
+            sort_by (str, optional): An argument to sort by. Defaults to None.
+            term (str, optional): Query terms to search. Defaults to None.
+            state (str, optional): The state of the sample, one of a stable set of strings
+                "wait, prep, run, proc, succ, fail". Defaults to None.
+            before (str, optional): Date. Restricting results to samples submitted before it.
+                Defaults to None.
+            after (str, optional): Date. Restricting results to samples submitted after it.
+                Defaults to None.
+            highlight (bool, optional): Provide a 'matches' field in results, indicating which
+                fields were matched. Defaults to None.
+            sort_order (str, optional): Sort order argument. Defaults to None.
+            user_only (bool, optional): Match against samples submitted by your user.
+                Defaults to False.
+            org_only (bool, optional): Match against samples submitted by your organization.
+                Defaults to False.
+            limit (int, optional): The number of items per page. Defaults to None.
+            offset (int, optional): Page number of paginated results. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        params = remove_empty_elements({
+            "q": query,
+            "sort_by": sort_by,
+            "term": term,
+            "state": state,
+            "before": before,
+            "after": after,
+            "user_only": user_only,
+            "org_only": org_only,
+            "highlight": highlight,
+            "sort_order": sort_order,
+            "limit": limit,
+            "offset": offset,
+        })
+        return self._http_request("GET", f"{SUB_API}search/submissions", params=params)
+
+    def search_request(
+        self,
+        arg_name: str,
+        arg_value: str,
+    ) -> Dict[str, Any]:
+        """Get details about specified IP/URL/domain/path.
+
+        Args:
+            arg_name (str, optional): The argument name.
+            arg_value (str, optional): The argument value.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        return self._http_request("GET", f"{SUB_API}{arg_name}s/{arg_value}")
+
+    def rate_limit_get_request(
+        self,
+        login: str,
+    ) -> Dict[str, Any]:
+        """Get rate limit for a specific user name.
+
+        Args:
+            login (str): User name.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        return self._http_request("GET", f"{USER_API}users/{login}/rate-limit")
+
+    def specific_feed_get_request(
+        self,
+        feed_name: str,
+        output_type: str,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Gets a specific threat feed.
+
+        Args:
+            feed_name (str): The feed name.
+            output_type (str): The output type (json,csv,stix,snort,txt).
+            before (str, optional): Date. Restricting results to samples submitted before it.
+                Defaults to None.
+            after (str, optional): Date. Restricting results to samples submitted after it.
+                Defaults to None.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ThreatGrid.
+        """
+        params = remove_empty_elements({"before": before, "after": after})
+        return self._http_request(
+            method="GET",
+            url_suffix=f"{USER_API}feeds/{feed_name}.{output_type}",
+            params=params,
+        )
 
 
-def who_am_i():
+def submission_search_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Search submission that has been submitted to Cisco Malware Analytics
+        for analysis has an associated Submission record.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    Get information about the current session's user
-    """
-    request = req('GET', USER_API + 'session/whoami')
-    r = request.json()
-    user = {
-        'Email': demisto.get(r, 'data.email'),
-        'Login': demisto.get(r, 'data.login'),
-        'Name': demisto.get(r, 'data.name'),
-        'Organization': demisto.get(r, 'data.organization_id'),
-        'Role': demisto.get(r, 'data.role')
-    }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.User': user},
-        'HumanReadable': tableToMarkdown('ThreatGrid - Current Session User', [user], [
-            'Email', 'Login', 'Name', 'Organization', 'Role'
-        ]),
-        'ContentsFormat': formats['json'],
-        'Contents': user
-    })
+    query = args.get("query")
+    sort_by = args.get("sort_by")
+    term = args.get("term")
+    state = args.get("state")
+    sort_order = args.get("sort_order")
+    highlight = arg_to_boolean(args.get("highlight"))
+    before = args.get("before")
+    after = args.get("after")
+    user_only = arg_to_boolean(args.get("user_only"))
+    org_only = arg_to_boolean(args.get("org_only"))
 
+    limit, offset, pagination_message = pagination(args)
 
-def get_analysis_annotations():
-    """
-    Get analysis annotations for a given sample
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis/annotations')
-
-    annotations = []
-    context_path = 'ThreatGrid.AnalysisResults.Sample.Id.Annotations'
-    ec = {context_path: []}    # type: ignore
-    ips = demisto.get(r.json(), 'data.items.network')  # type: ignore
-    if ips:
-        for k in ips:
-            annotation = {
-                'IP': k,
-                'IP.Asn': ips[k].get('asn'),
-                'IP.City': ips[k].get('city'),
-                'IP.Country': ips[k].get('country'),
-                'IP.Org': ips[k].get('org'),
-                'IP.Region': ips[k].get('region'),
-                'IP.Timestamp': ips[k].get('ts')
-            }
-            annotations.append(annotation)
-            ec[context_path].append(annotation)
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': r.json(),
-        'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('ThreatGrid - Analysis Annotations', annotations, [
-            'IP', 'IP.Asn', 'IP.City', 'IP.Country', 'IP.Org', 'IP.Region', 'IP.Timestamp'
-        ])
-    })
-
-
-def get_analysis_by_id():
-    """
-    Download the analysis for a given sample
-    """
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis.json')
-    ec, hr = extract_data_from_analysis_json(json.loads(r.content), sample_id, demisto.getArg('limit'))
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': hr,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-analysis.json', r.content, file_type=entryTypes['entryInfoFile'])
-    ])
-
-
-def extract_data_from_analysis_json(analysis_json, sample_id, limit):
-    """
-    Extracts relevant data from an analysis json
-    """
-    ec = {}
-    hr = {}
-    sample_key = 'ThreatGrid.Sample(val.ID === obj.ID)'
-    sample_process = extract_sample_process_from_analysis_processes(demisto.get(analysis_json,
-                                                                                'dynamic.processes')) or {}
-    ec[sample_key] = create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process, limit)
-    hr['Sample'] = create_sample_hr_from_analysis_json(ec[sample_key], analysis_json, sample_process, limit)
-    hr['File'] = ec[sample_key]["File"] = create_file_ec_from_analysis_json(analysis_json)
-    handle_artifact_from_analysis_json(ec, hr, analysis_json, limit)
-    hr_str = create_analysis_json_human_readable(hr)
-    return ec, hr_str
-
-
-def handle_artifact_from_analysis_json(ec, hr, analysis_json, limit):
-    '''
-    Populates ec and hr with artifact data from analysis json
-    '''
-    hr['Artifact'] = {}
-    for artifact in get_with_limit(analysis_json, 'artifacts', limit).values():
-        id = None
-        yaras = demisto.get(artifact, 'antivirus.yara')
-        if yaras:
-            for yara in filter(lambda yara: 'id' in yara, yaras):
-                id = yara['id']
-                break
-            if id:
-                artifact_key = 'ThreatGrid.Artifact(val.ID === obj.{0})'.format(id)
-                artifact_hr_key = 'Artifact(ID = {0})'.format(id)
-                tags = set()
-                for yara in filter(lambda yara: 'tags' in yara, yaras):
-                    if yara['tags']:
-                        for tag in yara['tags']:
-                            tags.add(tag)
-                # converting to list for tableToMarkdown
-                tags = list(tags)
-                hr['Artifact'][artifact_hr_key] = ec[artifact_key] = {
-                    'ID': id,
-                    'Tags': tags,
-                    'FamilyName': demisto.get(artifact, 'antivirus.reversing_labs.classification.family_name'),
-                    'ThreatName': demisto.get(artifact, 'antivirus.reversing_labs.threat_name')
-                }
-
-
-def create_analysis_json_human_readable(hr):
-    hr_str = tableToMarkdown('Files scanned:', hr['File'], SAMPLE_ANALYSIS_HEADERS_MAP['File'])
-    tmp_hr_str = ''
-    for k in hr['Sample'].copy():
-        if isinstance(hr['Sample'][k], dict) or (isinstance(hr['Sample'][k], list) and len(hr['Sample'][k]) > 0
-                                                 and k in SAMPLE_ANALYSIS_HEADERS_MAP):
-            tmp_hr_str = tmp_hr_str + tableToMarkdown('{0}:'.format(str(k)), hr['Sample'][k],
-                                                      SAMPLE_ANALYSIS_HEADERS_MAP[k])
-            del hr['Sample'][k]
-    return_sting = hr_str + tableToMarkdown('Sample analysis:', hr['Sample'], SAMPLE_ANALYSIS_HEADERS_MAP['Sample'])
-    return_sting = return_sting + tmp_hr_str + tableToMarkdown('Artifact analysis:', hr['Artifact'])
-    return return_sting
-
-
-def extract_sample_process_from_analysis_processes(processes):
-    """
-    Extracts the relevant process (i.e. sample process) from the processes
-    """
-    if processes:
-        for process in processes.values():
-            if demisto.get(process, 'analyzed_because') == "Is target sample.":
-                return process
-    return None
-
-
-def create_sample_ec_from_analysis_json(analysis_json, sample_id, sample_process, limit):
-    """
-    Creates a dictionary corresponding to required field from the analysis_json
-    """
-    # Handling special case escape character
-    directory = demisto.get(sample_process, 'startup_info.current_directory')
-    if directory:
-        directory = directory[:len(directory) - 1]
-    domain_with_limit = get_with_limit(analysis_json, 'domains', limit) or {}
-    return {
-        'ID': sample_id,
-        'VM': {'ID': demisto.get(analysis_json, 'metadata.sandcastle_env.vm_id'),
-               'Name': demisto.get(analysis_json, 'metadata.sandcastle_env.display_name')},
-        'StartedAt': demisto.get(analysis_json, 'metadata.sandcastle_env.analysis_start'),
-        'EndedAt': demisto.get(analysis_json, 'metadata.sandcastle_env.analysis_end'),
-        'Runtime': demisto.get(analysis_json, 'metadata.sandcastle_env.run_time'),
-        'HeuristicScore': demisto.get(analysis_json, 'threat.heuristic_score'),
-        'ThreatScore': get_with_limit(analysis_json, 'threat.threat_score', limit),
-        'FilesDeleted': get_with_limit(sample_process, 'files_deleted', limit),
-        'FilesCreated': get_with_limit(sample_process, 'files_created', limit),
-        'FilesModified': get_with_limit(sample_process, 'files_modified', limit),
-        'Directory': directory,
-        'CMD': demisto.get(sample_process, 'startup_info.command_line'),
-        'ProcessName': demisto.get(sample_process, 'process_name'),
-        'Stream': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
-                                                         full_extraction=False),
-        'VT': extract_vt_from_analysis_artifact(demisto.get(analysis_json, 'artifacts')),
-        'Domain': [{'Name': str(key), 'Status': str(val.get('status'))} for key, val in domain_with_limit.items()]
-    }
-
-
-def create_sample_hr_from_analysis_json(sample_ec, analysis_json, sample_process, limit):
-    """
-    Creates a human readable dictionary corresponding to required field from the analysis_json
-    """
-    res = dict(sample_ec)
-    children = get_with_limit(sample_process, 'children', limit)
-    memory = demisto.get(sample_process, 'memory')
-    res.update(
-        {
-            'Mutants Created': get_with_limit(sample_process, 'mutants_created', limit),
-            'Regitry Keys Deleted': get_with_limit(sample_process, 'registry_keys_deleted', limit),
-            'Regisrty Keys Modified': get_with_limit(sample_process, 'registry_keys_modified', limit),
-            'Regitry Keys Created': get_with_limit(sample_process, 'registry_keys_created', limit),
-            'Threads': get_with_limit(sample_process, 'threads', limit),
-            'Children': len(children) if children else 0,
-            'Memory': len(memory) if memory and demisto.get(sample_process, 'new') == 'true' else 0,
-            'Network': extract_network_from_analysis_networks(get_with_limit(analysis_json, 'network', limit),
-                                                              full_extraction=True),
-            'Enviornment Details': {
-                'VM ID': sample_ec['VM']['ID'],
-                'VM Name': sample_ec['VM']['Name'],
-                'StartedAt': sample_ec['StartedAt'],
-                'EndedAt': sample_ec['EndedAt'],
-                'Runtime': sample_ec['Runtime']
-            }
-        }
+    response = client.submission_search_request(
+        query=query,
+        sort_by=sort_by,
+        term=term,
+        state=state,
+        before=before,
+        after=after,
+        user_only=user_only,
+        org_only=org_only,
+        highlight=highlight,
+        sort_order=sort_order,
+        limit=limit,
+        offset=offset,
     )
-    # name of stream changes to network for human readable
-    del res['Stream']
-    del res['VM']
-    del res['StartedAt']
-    del res['EndedAt']
-    del res['Runtime']
-    return res
-
-
-def extract_network_from_analysis_networks(networks, full_extraction=False):
-    """
-    Extract network representation from the networks arg
-    """
-    res = []
-    if networks:
-        for network_item in networks.values():
-            res_item = {
-                'Destination': str(demisto.get(network_item, 'dst')),
-                'DestinationPort': demisto.get(network_item, 'dst_port'),
-                'PacketSize': demisto.get(network_item, 'bytes_orig')
-            }
-            if full_extraction:
-                res_item['Transport'] = str(demisto.get(network_item, 'transport'))
-                res_item['Ts_Begin'] = demisto.get(network_item, 'ts_begin')
-                res_item['Packets'] = demisto.get(network_item, 'packets')
-            res.append(res_item)
-    return res
-
-
-def extract_vt_from_analysis_artifact(artifacts):
-    """
-    Extract virusTotal representation from the artifacts arg
-    """
-    if artifacts:
-        for artifact in artifacts.values():
-            if demisto.get(artifact, 'antivirus.virustotal'):
-                vt = demisto.get(artifact, 'antivirus.virustotal')
-                return {
-                    'Hits': demisto.get(vt, 'hits'),
-                    'Engines': demisto.get(vt, 'engines')
-                }
-
-
-def create_file_ec_from_analysis_json(analysis_json):
-    """
-    Creates a file entry array from the analysis json
-    """
-    malware_descs = demisto.get(analysis_json, 'metadata.malware_desc')
-    res = []
-    for desc in malware_descs:
-        res.append(
-            {
-                'FileName': demisto.get(desc, 'filename'),
-                'Size': demisto.get(desc, 'size'),
-                'MD5': demisto.get(desc, 'md5'),
-                'SHA1': demisto.get(desc, 'sha1'),
-                'SHA256': demisto.get(desc, 'sha256'),
-                'MagicType': demisto.get(desc, 'magic'),
-                'Type': demisto.get(desc, 'type'),
-            })
-    return res
-
-
-def ioc_to_readable(ioc):
-    ioc_key_to_path_dict = {
-        'Title': 'title',
-        'Confidence': 'confidence',
-        'Severity': 'severity',
-        'IOC': 'ioc',
-        'Tags': 'tags',
-        'IOCCategory': 'category'
-    }
-    ioc_data_keys_set = {
-        'URL',
-        'Path',
-        'SHA256',
-        'IP'
-    }
-    res = {}
-    # add ioc_key_to_path_dict values to result
-    for k, v in ioc_key_to_path_dict.items():
-        val = demisto.get(ioc, v)
-        if val:
-            res[k] = val
-    # add ioc_data_keys_set values to result.Data
-    res['Data'] = {}
-    for key in ioc_data_keys_set:
-        res['Data'][key] = []
-    if demisto.get(ioc, 'data'):
-        for item in demisto.get(ioc, 'data'):
-            for key in ioc_data_keys_set:
-                if demisto.get(item, key):
-                    res['Data'][key].append(demisto.get(item, key))
-    return res
-
-
-def get_analysis_iocs():
-    """
-    Get data about analysis iocs for a given sample or ioc
-    """
-    sample_id = demisto.getArg('id')
-    ioc = demisto.getArg('ioc')
-    url = SUB_API + 'samples/' + sample_id + '/analysis/iocs'
-    if ioc:
-        url += '/' + ioc
-    params = {'api_key': API_KEY}
-    if demisto.getArg('limit'):
-        params['limit'] = demisto.getArg('limit')
-
-    r = req('GET', url, params=params)
-    iocs = []    # type: ignore
-    dbots = []    # type: ignore
-    items = demisto.get(r.json(), 'data.items')    # type: ignore
-    if not items:
-        append_to_analysis_iocs_arrays(iocs, dbots, demisto.get(r.json(), 'data'))
-    else:
-        for k in items:
-            append_to_analysis_iocs_arrays(iocs, dbots, k)
-    md = tableToMarkdown('ThreatGrid Behavioral Indicators for sample: ' + demisto.getArg('id'), iocs,
-                         ['Title', 'Confidence', 'Severity', 'IOC', 'Tags', 'IOCCategory', 'Data'])
-    md += tableToMarkdown('DBot', dbots, ['Indicator', 'Score', 'Type', 'Vendor'])
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.IOCs': iocs, 'DBotScore': dbots},
-        'HumanReadable': md,
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def append_to_analysis_iocs_arrays(iocs, dbots, k):
-    """
-    Helper for appending analysis item to ioc an dbot arrays
-    """
-    if k and k.get('ioc'):
-        iocs.append(ioc_to_readable(k))
-        dbots.append({
-            'Vendor': 'Threat Grid',
-            'Type': 'IOC',
-            'Indicator': k.get('ioc'),
-            'Score': calc_score(k.get('severity'))
-        })
-
-
-def apply_search_filters():
-    """
-    Helper for applying search filters
-    """
-    params = {'api_key': API_KEY}
-    for k in demisto.args():
-        if demisto.getArg(k):
-            params['term'] = k
-            params['query'] = demisto.getArg(k)
-            break
-    return params
-
-
-def search_ips():
-    """
-    Search ips with the given filters
-    """
-    r = req('GET', SUB_API + 'search/ips', params=apply_search_filters())
-    ips = []
-    for ip in demisto.get(r.json(), 'data.items'):
-        ips.append({
-            'Result': demisto.get(ip, 'result'),
-            'Details': demisto.get(ip, 'details')
-        })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.IPs': ips},
-        'HumanReadable': tableToMarkdown('ThreatGrid - IP Search', ips, ['Result', 'Details']),
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def search_urls():
-    """
-    Search urls with the given filters
-    """
-    r = req('GET', SUB_API + 'search/urls', params=apply_search_filters())
-    urls = []
-    for url in demisto.get(r.json(), 'data.items'):
-        urls.append({
-            'Result': demisto.get(url, 'result'),
-            'Details': demisto.get(url, 'details')
-        })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.URLs': urls},
-        'HumanReadable': tableToMarkdown('ThreatGrid - URL Search', urls, ['Result', 'Details']),
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def search_samples():
-    """
-    Search samples with the given filters
-    """
-    r = req('GET', SUB_API + 'search/samples', params=apply_search_filters())
-    samples = []
-    for sample in demisto.get(r.json(), 'data.items'):
-        samples.append({
-            'ID': demisto.get(sample, 'result'),
-            'Details': demisto.get(sample, 'details')
-        })
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample': samples},
-        'HumanReadable': tableToMarkdown('ThreatGrid - Sample Search', samples, ['Result', 'Details']),
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
-
-
-def search_submissions():
-    """
-    Search submissions with the given filters
-    """
-    r = req('GET', SUB_API + 'search/submissions', params=handle_filters())
     submissions = []
-    for submission in demisto.get(r.json(), 'data.items'):
-        sample = sample_to_readable(demisto.get(submission, 'item'))
-        sample['ID'] = demisto.get(submission, 'item.sample')
-        sample['ThreatScore'] = demisto.get(submission, 'item.analysis.threat_score')
-        submissions.append(sample)
-    demisto.results({
-        'Type': entryTypes['note'],
-        'EntryContext': {'ThreatGrid.Sample(val.ID == obj.ID)': submissions},
-        'HumanReadable': tableToMarkdown('ThreatGrid - Submission Search', submissions,
-                                         ['ID', 'Filename', 'State', 'Status', 'MD5', 'SHA1',
-                                          'SHA256', 'SubmittedAt', 'ThreatScore']),
-        'ContentsFormat': formats['json'],
-        'Contents': r.json()
-    })
+
+    for sample in response["data"]["items"]:
+        submissions.append(
+            delete_keys_from_dict(
+                sample["item"],
+                ["login", "organization_id", "vm_runtime", "login", "tags"],
+            ))
+
+    readable_output = tableToMarkdown(
+        name=f"Samples Submissed : \n {pagination_message}",
+        t=submissions,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.Sample",
+        outputs_key_field="sample",
+        outputs=submissions,
+        raw_response=response,
+    )
 
 
-def url_to_file():
+def search_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Search submission that has been submitted to Cisco Malware Analytics
+        for analysis has an associated Submission record.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    Convert a url to file for detonation
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[2]
+    arg_value = args[arg_name]
+
+    arg_value = url_to_sha256(arg_value) if arg_name == "url" else arg_value
+
+    response = client.search_request(
+        arg_name=arg_name,
+        arg_value=arg_value,
+    )
+
+    search_data = get_specific_key_from_dict(response["data"], "url")
+
+    readable_output = tableToMarkdown(name=f"{arg_name} data:",
+                                      t=search_data,
+                                      headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.search",
+        outputs_key_field=arg_name,
+        outputs=search_data,
+        raw_response=response,
+    )
+
+
+def associated_samples_list_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Returns a list of samples associated to the
+        domain / IP / URL / path / artifact / registry key that specified.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    urls = argToList(demisto.getArg('urls'))
-    files = []
-    for i in range(len(urls)):
-        fileEntry = fileResult('url_' + str(i + 1), '[InternetShortcut]\nURL=' + str(urls[i]))
-        files.append(fileEntry)
-    demisto.results(files)
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[2]
+    arg_name = "registry_key" if arg_name == "registry" else arg_name
+    arg_value = args[arg_name]
+
+    arg_value = url_to_sha256(arg_value) if arg_name == "url" else arg_value
+
+    limit, offset, pagination_message = pagination(args)
+    response = client.associated_samples_list_request(arg_name, arg_value, limit, offset)
+    samples = response["data"]["samples"]
+    sample_list = []
+    for sample in samples:
+        sample_list.append(delete_keys_from_dict(sample, ["details", "relation", "owner", "iocs"]))
+
+    readable_output = tableToMarkdown(
+        name=f"List of samples associated to the {arg_name} - {arg_value} : \
+        \n {pagination_message}",
+        t=sample_list,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"ThreatGrid.{PREFIX_OUTPUTS[arg_name]}AssociatedSample",
+        outputs_key_field="sample",
+        outputs=response["data"],
+        raw_response=response["data"],
+    )
 
 
-def get_specific_feed():
+def sample_analysis_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Get data about a specific IOC / processes / artifact / network-stream
+        from the relevant section of the sample's analysis.json.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    Get specific feed
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[3]
+    url_param = "network_streams" if arg_name == "network" else arg_name
+
+    if arg_name not in ["metadata", "iocs", "annotations"]:
+        arg_name = (f"{url_param[:-2]}_id" if arg_name == "processes" else f"{url_param[:-1]}_id")
+
+    arg_value = args.get(arg_name)
+    sample_id = args["sample_id"]
+    response = client.sample_analysis_request(sample_id, url_param, arg_value)
+
+    items = get_specific_key_from_dict(response["data"], "items")
+    items_to_display = items
+    if isinstance(items, dict):
+        if ANALYSIS_OUTPUTS[url_param].get("keys_to_get"):
+            items_to_display = get_specific_key_from_dict(
+                items, ANALYSIS_OUTPUTS[url_param]["keys_to_get"])
+        if ANALYSIS_OUTPUTS[url_param].get("keys_to_delete"):
+            items_to_display = delete_keys_from_dict(items,
+                                                     ANALYSIS_OUTPUTS[url_param]["keys_to_delete"])
+
+    readable_output = tableToMarkdown(
+        name="List of samples analysis:",
+        t=items_to_display,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'ThreatGrid.{ANALYSIS_OUTPUTS[url_param]["output"]}',
+        outputs_key_field=arg_name,
+        outputs=response["data"],
+        raw_response=response,
+    )
+
+
+def rate_limit_get_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Get rate limit for a specific user name.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    feed_name = demisto.getArg('feed-name')
-    feed_period = '_' + demisto.getArg('feed-period') if demisto.getArg('feed-period') else ''
-    output_type = demisto.getArg('output-type')
-    r = req('GET', USER_API + 'feeds/' + feed_name + feed_period + '.' + output_type)
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': '### ThreatGrid Specific Feed File -\n'
-                             + 'Your specific feed file download request has been completed successfully for '
-                             + feed_name,
-            'Contents': {},
-            'ContentsFormat': formats['json']
-        },
-        fileResult(feed_name + output_type, r.content)
-    ])
+    login = args["login"]
+    entity_type = args.get("entity_type")
+    response = client.rate_limit_get_request(login)
+
+    entity_data = response["data"][entity_type]
+
+    readable_output = tableToMarkdown(
+        name=f"{entity_type} rate limit :",
+        t=entity_data,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.RateLimit",
+        outputs=entity_data,
+        raw_response=response,
+    )
 
 
-def feeds_helper(name):
-    name_conversion = {
-        'domain': 'domains',
-        'ip': 'ips',
-        'network-stream': 'network_streams',
-        'registry-key': 'registry_keys',
-        'url': 'urls',
-        'path': 'paths'
-    }
-    requested_feed = name_conversion[name] if name in name_conversion else name
-    url = SUB_API + 'iocs/feeds/' + requested_feed
-    r = req('GET', url, params=handle_filters())
-    content = json.loads(r.content.decode('utf-8')) if isinstance(r.content, bytes) else r.content,
+def who_am_i_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Get data about a specific IOC / processes / artifact / network-stream
+        from the relevant section of the sample's analysis.json.
 
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': 'Your feeds ' + name + ' file download request has been completed successfully',
-            'Contents': content,
-            'ContentsFormat': formats['json']
-        },
-        fileResult(url, r.content)
-    ])
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
 
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    response = client.whoami_request()
 
-def get_analysis_artifact():
-    aid = demisto.getArg('aid')
-    sample_id = demisto.getArg('id')
-    url = SUB_API + 'samples/' + sample_id + '/analysis/artifacts'
-    if aid:
-        url += '/' + aid
-    r = req('GET', url)
-    ec = {'ThreatGrid.Sample(val.ID === {0})'.format(sample_id): r.json()}
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': ec,
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        }
-    ])
+    whoami_data = response["data"]
+    whoami_data = delete_keys_from_dict(whoami_data, ["properties"])
+    readable_output = tableToMarkdown(name="Who am I ?",
+                                      t=whoami_data,
+                                      headerTransform=string_to_table_header)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.User",
+        outputs_key_field="email",
+        outputs=whoami_data,
+        raw_response=response,
+    )
 
 
-def get_analysis_metadata():
-    sample_id = demisto.getArg('id')
-    r = req('GET', SUB_API + 'samples/' + sample_id + '/analysis/metadata')
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        }
-    ])
+def specific_feed_get_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Get data about a specific IOC / processes / artifact / network-stream
+        from the relevant section of the sample's analysis.json.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    feed_name = args["feed_name"]
+    output_type = args["output_type"]
+    before = args.get("before")
+    after = args.get("after")
+    response = client.specific_feed_get_request(
+        feed_name,
+        output_type,
+        before,
+        after,
+    )
+
+    readable_output = tableToMarkdown(
+        name="Specific feed :",
+        t=response,
+        headers=["sample", "description"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="ThreatGrid.Feed",
+        outputs_key_field="sample",
+        outputs=response,
+        raw_response=response,
+    )
 
 
-def get_analysis_network_stream():
-    sample_id = demisto.getArg('id')
-    nsid = demisto.getArg('nsid')
-    url = SUB_API + 'samples/' + sample_id + '/analysis/artifacts'
-    if nsid:
-        url += '/' + nsid
-    r = req('GET', url)
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        }
-    ])
+def associated_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Returns a list of domains / URLs associated with the IP or
+        list of IPs / URLs associated with the domain.
 
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
 
-def get_analysis_process():
-    sample_id = demisto.getArg('id')
-    pid = demisto.getArg('pid')
-    url = SUB_API + 'samples/' + sample_id + '/analysis/processes'
-    if pid:
-        url += '/' + pid
-    r = req('GET', url)
-    demisto.results([
-        {
-            'Type': entryTypes['note'],
-            'EntryContext': {},
-            'HumanReadable': None,
-            'Contents': r.json(),
-            'ContentsFormat': formats['json']
-        },
-        fileResult(sample_id + '-sample.zip', r.content)
-    ])
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[2]
+    url_arg = command_name.split("-")[4]
+    arg_value = args[arg_name]
 
-
-def main():
-    if demisto.command() == 'test-module':
-        req('GET', USER_API + 'session/whoami')
-        demisto.results('ok')
-    elif demisto.command() == 'threat-grid-download-sample-by-id':
-        download_sample()
-    elif demisto.command() == 'threat-grid-get-samples':
-        get_samples()
-    elif demisto.command() == 'threat-grid-get-sample-by-id':
-        get_sample_by_id()
-    elif demisto.command() == 'threat-grid-get-sample-state-by-id' or demisto.command() == 'threat-grid-get-samples-state':
-        get_sample_state_by_id()
-    elif demisto.command() == 'threat-grid-upload-sample':
-        upload_sample()
-    elif demisto.command() == 'threat-grid-get-html-report-by-id':
-        get_html_report_by_id()
-    elif demisto.command() == 'threat-grid-get-pcap-by-id':
-        get_pcap_by_id()
-    elif demisto.command() == 'threat-grid-get-processes-by-id':
-        get_processes_by_id()
-    elif demisto.command() == 'threat-grid-get-summary-by-id':
-        get_summary_by_id()
-    elif demisto.command() == 'threat-grid-get-threat-summary-by-id':
-        get_threat_summary_by_id()
-    elif demisto.command() == 'threat-grid-get-video-by-id':
-        get_video_by_id()
-    elif demisto.command() == 'threat-grid-get-warnings-by-id':
-        get_warnings_by_id()
-    elif demisto.command() == 'threat-grid-user-get-rate-limit':
-        user_get_rate_limit()
-    elif demisto.command() == 'threat-grid-organization-get-rate-limit':
-        organization_get_rate_limit()
-    elif demisto.command() == 'threat-grid-who-am-i':
-        who_am_i()
-    elif demisto.command() == 'threat-grid-get-analysis-annotations':
-        get_analysis_annotations()
-    elif demisto.command() == 'threat-grid-get-analysis-by-id':
-        get_analysis_by_id()
-    elif demisto.command() == 'threat-grid-get-analysis-iocs' or demisto.command() == 'threat-grid-get-analysis-ioc':
-        get_analysis_iocs()
-    elif demisto.command() == 'threat-grid-url-to-file':
-        url_to_file()
-    elif demisto.command() == 'threat-grid-search-samples':
-        search_samples()
-    elif demisto.command() == 'threat-grid-search-ips':
-        search_ips()
-    elif demisto.command() == 'threat-grid-search-urls':
-        search_urls()
-    elif demisto.command() == 'threat-grid-search-submissions':
-        search_submissions()
-    elif demisto.command() == 'threat-grid-get-specific-feed':
-        get_specific_feed()
-    elif demisto.command() in ['threat-grid-feeds-artifacts', 'threat-grid-feeds-domain',
-                               'threat-grid-feeds-ip', 'threat-grid-feeds-network-stream',
-                               'threat-grid-feeds-registry-key', 'threat-grid-feeds-url', 'threat-grid-feeds-path']:
-        feeds_helper(demisto.command()[18:])
-    elif demisto.command() == 'threat-grid-get-analysis-artifact' or \
-            demisto.command() == 'threat-grid-get-analysis-artifacts':
-        get_analysis_artifact()
-    elif demisto.command() == 'threat-grid-get-analysis-metadata':
-        get_analysis_metadata()
-    elif demisto.command() == 'threat-grid-get-analysis-network-stream' or \
-            demisto.command() == 'threat-grid-get-analysis-network-streams':
-        get_analysis_network_stream()
-    elif demisto.command() == 'threat-grid-get-analysis-process' or \
-            demisto.command() == 'threat-grid-get-analysis-processes':
-        get_analysis_process()
-    elif demisto.command() in ['threat-grid-download-artifact', 'threat-grid-detonate-file']:
-        return_error('Error: The API for this command is no longer supported')
+    response = client.associated_request(arg_name, arg_value, url_arg)
+    items = response["data"][url_arg]
+    item_list = []
+    if url_arg[:-1] != "ip":
+        for item in items:
+            item_list.append(delete_keys_from_dict(item, ["details"]))
     else:
-        return_error('Unrecognized command: ' + demisto.command())
+        item_list = items
+
+    readable_output = tableToMarkdown(
+        name=f"List of {url_arg} associated to the {arg_name} - {arg_value} :",
+        t=item_list,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"ThreatGrid.{arg_name.capitalize()}Associated{url_arg[:-1].capitalize()}",
+        outputs_key_field=arg_name,
+        outputs=response["data"],
+        raw_response=response["data"],
+    )
 
 
-if __name__ in ["__builtin__", "builtins"]:
+def feeds_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Retrieves a list of domain / IP / URL / path / artifact / registry key that specified,
+        associated with an Indicator of Compromise (IOC).
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[3]
+
+    if arg_name == "network":
+        arg_name = "network_stream"
+
+    arg_value = args.get(arg_name)
+    sample_id = args.get("sample_id")
+    severity = arg_to_number(args.get("severity"))
+    confidence = arg_to_number(args.get("confidence"))
+    ioc = args.get("ioc")
+    before = args.get("before")
+    after = args.get("after")
+    user_only = arg_to_boolean(args.get("user_only"))
+    org_only = arg_to_boolean(args.get("org_only"))
+
+    limit, offset, pagination_message = pagination(args)
+
+    response = client.feeds_request(
+        arg_name,
+        arg_value,
+        ioc,
+        severity=severity,
+        confidence=confidence,
+        sample_id=sample_id,
+        before=before,
+        after=after,
+        user_only=user_only,
+        org_only=org_only,
+        limit=limit if limit else 2,
+        offset=offset,
+    )
+
+    feeds_list = response["data"]["items"]
+    readable_output = tableToMarkdown(
+        name=f"Feeds IOCs list {arg_name} : \n {pagination_message}",
+        t=feeds_list,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"ThreatGrid.{PREFIX_OUTPUTS[arg_name]}",
+        outputs_key_field="sample_id",
+        outputs=feeds_list,
+        raw_response=response,
+    )
+
+
+def sample_upload_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Submits a sample (file ID or URL) to Malware Analytics for analysis.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    file_id = args.get("file_id")
+    url = args.get("url")
+
+    if (file_id and url) or (not file_id and not url):
+        raise ValueError("You must specified file_id or url, not both.")
+
+    if file_id:
+        file_data = demisto.getFilePath(file_id)
+        file_name = file_data["name"]
+        with open(file_data["path"], "rb") as f:
+            files = {"sample": (file_name, f.read())}
+        response = client.sample_upload_request(files=files)
+    else:
+        payload = {"url": url}
+        response = client.sample_upload_request(payload=payload)
+    uploaded_sample = response["data"]
+
+    return CommandResults(
+        raw_response=uploaded_sample,
+        outputs=uploaded_sample,
+        outputs_prefix="ThreatGrid.Sample",
+        outputs_key_field="id",
+    )
+
+
+def sample_get_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Retrieves the Sample Info record of a submission by sample ID.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    command_name = args["command_name"]
+    arg_name = command_name.split("-")[3]
+    sample_id = args.get("sample_id")
+
+    name = "Sample details: "
+    outputs_key_field = "id"
+    outputs_prefix = "ThreatGrid.Sample"
+    summary = ""
+
+    if arg_name == "summary":
+        summary = "summary"
+        name = "Sample summary:"
+        outputs_key_field = "sample"
+        outputs_prefix = "ThreatGrid.SampleAnalysisSummary"
+
+    artifact = args.get("artifact")
+    limit = arg_to_number(args.get("limit"))
+    offset = arg_to_number(args.get("offset"))
+
+    if artifact and not sample_id:
+        raise ValueError("When 'artifact' argument is specified - 'sample_id' argument is required")
+
+    response = client.sample_get_request(
+        sample_id=sample_id,
+        limit=limit,
+        offset=offset,
+        artifact=artifact,
+        summary=summary,
+    )
+
+    sample_details = response
+    content_format = "json"
+
+    if artifact:
+        content_format = "html"
+        return fileResult(filename=f"{sample_id}-{artifact}", data=response)
+    else:
+        if response["data"].get("items"):
+            sample_details = response["data"]["items"]
+        else:
+            sample_details = response["data"]
+
+    readable_output = tableToMarkdown(name=name,
+                                      t=sample_details,
+                                      headerTransform=string_to_table_header)
+    return CommandResults(
+        readable_output=readable_output,
+        content_format=content_format,
+        outputs_prefix=outputs_prefix,
+        outputs_key_field=outputs_key_field,
+        outputs=sample_details,
+        raw_response=response,
+    )
+
+
+def sample_state_get_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """Get operation command status.
+    Args:
+        client (Client): ClouDflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+    Returns:
+        CommandResults: status, outputs, readable outputs and raw response for XSOAR.
+    """
+    sample_id = args["sample_id"]
+    response = client.sample_state_request(sample_id)
+    output = response["data"]
+
+    readable_output = "The command was executed successfully"
+    return CommandResults(readable_output=readable_output, outputs=output, raw_response=output)
+
+
+@polling_function(
+    name="threat-grid-sample-upload",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
+    poll_message="Upload sample is executing",
+    requires_polling_arg=False,
+)
+def schedule_command(args: Dict[str, Any], client: Client) -> PollResult:
+    """Build scheduled command if operation status is not completed.
+    Args:
+        operation_id (str): The command operation ID.
+        cmd (Callable): The command name to execute.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+    Returns:
+        ScheduledCommand: Command, args, timeout and interval for CommandResults.
+    """
+
+    if "sample_id" not in args:
+        command_results = sample_upload_command(client, args)
+        sample_id = command_results.raw_response["id"]  # type: ignore[index]
+        args["sample_id"] = sample_id
+    else:
+        command_results = sample_state_get_command(client, args)
+
+    sample_state = dict_safe_get(command_results.raw_response, ["state"])
+    sample_id = args["sample_id"]
+    args_for_next_run = {"sample_id": sample_id, **args}
+
+    if sample_state == "succ":
+        command_results = sample_get_command(client, args)
+        return PollResult(
+            response=command_results,
+            continue_to_poll=False,
+        )
+    else:
+        results = CommandResults(readable_output="Polling job failed.")
+        return PollResult(
+            response=results,
+            continue_to_poll=True,
+            args_for_next_run=args_for_next_run,
+        )
+
+
+def get_dbotscore(
+    api_score: int,
+    generic_command_name: str,
+    command_arg: str,
+    reliability: str,
+) -> Common.DBotScore:
+    """Get XSOAR score for the file's / IP's / URL's / domain's disposition.
+
+    Args:
+        api_score (int): The API score.
+        generic_command_name (str): The generic command name for identify
+            witch command are used for the indicator type.
+        command_arg (str): The command argument - the indicator.
+        reliability (str): The reliability that chosen.
+
+    Returns:
+        Common.DBotScore: DBot Score according to the disposition.
+    """
+    score = 0
+    if not api_score:
+        score = Common.DBotScore.NONE
+    elif api_score >= 85:
+        score = Common.DBotScore.BAD
+    elif api_score >= 50:
+        score = Common.DBotScore.SUSPICIOUS
+    elif api_score < 50:
+        score = Common.DBotScore.GOOD
+
+    return Common.DBotScore(
+        indicator=command_arg,
+        indicator_type=generic_command_name,
+        integration_name="ThreatGrid",
+        reliability=reliability,
+        score=score,
+    )
+
+
+def reputation_command(
+    client: Client,
+    args: Dict[str, Any],
+) -> CommandResults:
+    """
+    Generic reputation command that returns information about Files/IPs/URLs/Domains.
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+    Returns:
+        List[CommandResults]: Indicator for every file_hash
+    """
+    generic_command_name = args["command_name"]
+    command_args = argToList(args[generic_command_name])
+    reliability = args["reliability"]
+    sample_id = ""
+    score = 0
+
+    for command_arg in command_args:
+        response = client.submission_search_request(
+            query=command_arg,
+            state="succ",
+            sort_by="analyzed_at",
+        )
+        if response["data"]["current_item_count"] == 0:
+            return CommandResults(readable_output="Unknown")
+
+        sample_details = response["data"]["items"][0]["item"]
+        sample_analysis_date = sample_details["analysis"]["metadata"]["sandcastle_env"][
+            "analysis_end"]
+
+        if not validate_days_diff(sample_analysis_date):
+            return CommandResults(readable_output="Unknown")
+
+        sample_id = sample_details["sample"]
+        score = sample_details["analysis"]["threat_score"]
+
+    dbot_score = get_dbotscore(score, generic_command_name, command_arg, reliability)
+
+    reputation_helper_command: Callable = REPUTATION_HELPER_FUNCTION[generic_command_name]
+    command_indicator, outputs_prefix, outputs_key_field, outputs = reputation_helper_command(
+        client, command_arg, dbot_score, sample_id, sample_details)
+
+    readable_output = tableToMarkdown(
+        name=f"ThreatGrid {generic_command_name} Reputation for {command_arg} \n",
+        t=outputs,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=outputs_prefix,
+        outputs=outputs,
+        outputs_key_field=outputs_key_field,
+        indicator=command_indicator,
+    )
+
+
+""" HELPER FUNCTIONS """
+
+
+def validate_days_diff(sample_analysis_date: str) -> bool:
+    """Validate days diff between today and the specified
+        date is no more than 14 days.
+
+    Args:
+        sample_analysis_date (str): The specified date.
+
+    Returns:
+        bool: Return True is diff smaller than 14.
+    """
+    analysis_date = sample_analysis_date.split("T")[0]
+    today_date = str(datetime.now()).split(" ")[0]
+    start = datetime.strptime(analysis_date, "%Y-%m-%d")
+    end = datetime.strptime(today_date, "%Y-%m-%d")
+    diff = end.date() - start.date()
+
+    if diff.days > 14:
+        return False
+
+    return True
+
+
+def url_to_sha256(url: str) -> str:
+    """Encrypt URL to sha256.
+
+    Args:
+        url (str): URL.
+
+    Returns:
+        str: URL sha256.
+    """
+
+    return hashlib.sha256(url.encode("utf-8")).hexdigest()
+
+
+def domain_reputation_helper(
+    client: Client,
+    command_arg: str,
+    dbot_score: Common.DBotScore,
+    sample_id: str,
+    sample_details: dict,
+) -> Tuple:
+    """Build outputs for generic command reputation.
+
+    Args:
+        command_arg (str): command argument value.
+        scores (list): scores list.
+        dbot_score (Common.DBotScore): DBotScore object.
+        sample_details (dict): sample details from the API.
+        sample_id (str): sample ID.
+
+    Returns:
+        Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
+    """
+    command_indicator = Common.Domain(
+        domain=command_arg,
+        dbot_score=dbot_score,
+    )
+    domain_reputation_from_threat_grid = {
+        "domain": command_arg,
+        "name": command_arg,
+        "dns": command_arg,
+    }
+    outputs_prefix = "ThreatGrid.Domain"
+    outputs_key_field = "domain"
+    outputs = domain_reputation_from_threat_grid
+    return command_indicator, outputs_prefix, outputs_key_field, outputs
+
+
+def file_reputation_helper(
+    client: Client,
+    command_arg: str,
+    dbot_score: Common.DBotScore,
+    sample_id: str,
+    sample_details: dict,
+) -> Tuple:
+    """Build outputs for generic command reputation.
+
+    Args:
+        command_arg (str): command argument value.
+        scores (list): scores list.
+        dbot_score (Common.DBotScore): DBotScore object.
+        sample_details (dict): sample details from the API.
+        sample_id (str): sample ID.
+
+    Returns:
+        Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
+    """
+    command_indicator = Common.File(
+        md5=dict_safe_get(sample_details, ["md5"]),
+        sha1=dict_safe_get(sample_details, ["sha1"]),
+        sha256=dict_safe_get(sample_details, ["sha256"]),
+        name=dict_safe_get(sample_details, ["filename"]),
+        dbot_score=dbot_score,
+    )
+    file_reputation_from_threat_grid = {
+        "md5": dict_safe_get(sample_details, ["md5"]),
+        "sha1": dict_safe_get(sample_details, ["sha1"]),
+        "sha256": dict_safe_get(sample_details, ["sha256"]),
+    }
+    outputs_prefix = "ThreatGrid.File"
+    outputs_key_field = "md5"
+    outputs = file_reputation_from_threat_grid
+    return command_indicator, outputs_prefix, outputs_key_field, outputs
+
+
+def ip_reputation_helper(
+    client: Client,
+    command_arg: str,
+    dbot_score: Common.DBotScore,
+    sample_id: str,
+    sample_details: dict,
+) -> Tuple:
+    """Build outputs for generic command reputation.
+
+    Args:
+        command_arg (str): command argument value.
+        scores (list): scores list.
+        dbot_score (Common.DBotScore): DBotScore object.
+        sample_details (dict): sample details from the API.
+        sample_id (str): sample ID.
+
+    Returns:
+        Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
+    """
+
+    response = client.sample_analysis_request(sample_id=sample_id, analysis_type="annotations")
+
+    command_indicator = Common.IP(
+        ip=command_arg,
+        asn=dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
+        dbot_score=dbot_score,
+    )
+    ip_reputation_from_threat_grid = {
+        "indicator": command_arg,
+        "asn": dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
+        "confidence": "",
+    }
+    outputs_prefix = "ThreatGrid.IP"
+    outputs_key_field = "indicator"
+    outputs = ip_reputation_from_threat_grid
+    return command_indicator, outputs_prefix, outputs_key_field, outputs
+
+
+def url_reputation_helper(
+    client: Client,
+    command_arg: str,
+    dbot_score: Common.DBotScore,
+    sample_id: str,
+    sample_details: dict,
+) -> Tuple:
+    """Build outputs for generic command reputation.
+
+    Args:
+        command_arg (str): command argument value.
+        scores (list): scores list.
+        dbot_score (Common.DBotScore): DBotScore object.
+        sample_details (dict): sample details from the API.
+
+    Returns:
+        Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
+    """
+    command_indicator = Common.URL(
+        url=command_arg,
+        dbot_score=dbot_score,
+    )
+
+    url_reputation_from_threat_grid = {
+        "url": command_arg,
+    }
+    outputs_prefix = "ThreatGrid.URL"
+    outputs_key_field = "url"
+    outputs = url_reputation_from_threat_grid
+    return command_indicator, outputs_prefix, outputs_key_field, outputs
+
+
+def delete_keys_from_dict(dictionary: MutableMapping,
+                          keys_to_delete: Union[Set[str], List[str]]) -> Dict[str, Any]:
+    """Get a modified dictionary without the requested keys
+    Args:
+        dictionary (Dict[str, Any]): Dictionary to modify according to.
+        keys_to_delete (List[str]): Keys to not include in the modified dictionary.
+    Returns:
+        Dict[str, Any]: Modified dictionary without requested keys.
+    """
+    keys_set = set(keys_to_delete)
+    modified_dict: Dict[str, Any] = {}
+
+    for key, value in dictionary.items():
+        if key not in keys_set:
+            if isinstance(value, MutableMapping):
+                modified_dict[key] = delete_keys_from_dict(value, keys_set)
+
+            elif (isinstance(value, MutableSequence) and len(value) > 0
+                  and isinstance(value[0], MutableMapping)):
+                modified_dict[key] = []
+
+                for val in value:
+                    modified_dict[key].append(delete_keys_from_dict(val, keys_set))
+
+            else:
+                modified_dict[key] = copy.deepcopy(value)
+
+    return modified_dict
+
+
+def validate_pagination_arguments(
+    page: Optional[int] = None,
+    page_size: Optional[int] = None,
+    limit: Optional[int] = None,
+):
+    """Validate pagination arguments according to their default.
+    Args:
+        page (int, optional): Page number of paginated results.
+        page_size (int, optional): Number of items per page.
+        limit (int, optional): The maximum number of records to retrieve.
+    Raises:
+        ValueError: Appropriate error message.
+    """
+    if page_size:
+        if page_size < 1 or page_size > 50:
+            raise ValueError("page size argument must be greater than 1 and smaller than 50.")
+
+    if page is not None:
+        if page < 1:
+            raise ValueError("page argument must be greater than 0.")
+
+    if limit:
+        if limit < 1:
+            raise ValueError("limit argument must be greater than 1.")
+
+
+def pagination(args: Dict[str, Any]) -> Tuple:
+    """Return the correct limit and offset for the API
+        based on the user arguments page, page_size and limit.
+
+    Args:
+        args (Dict[str, Any]): demisto args.
+
+    Returns:
+        Tuple: new_limit, offset, pagination_message.
+    """
+    page = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size"))
+    limit = arg_to_number(args.get("limit", 50))
+
+    validate_pagination_arguments(page, page_size, limit)
+
+    offset = 0
+    new_limit = limit
+
+    if page is not None and page_size:
+        new_limit = page_size
+        offset = page - 1
+
+    pagination_message = f"Showing page {offset+1}. \n Current page size: {new_limit}"
+
+    return new_limit, offset, pagination_message
+
+
+def arg_to_boolean(arg: Optional[Any]) -> Optional[bool]:
+    """Retrieve arg boolean value if it's not none.
+    Args:
+        arg (str): Boolean argument.
+    Returns:
+        Optional[bool]: The argument boolean value.
+    """
+    return argToBoolean(arg) if arg else None
+
+
+def get_specific_key_from_dict(dict: Dict[str, Any], key: str) -> Union[Dict[Any, Any], Any, None]:
+    """Get specific key from a dictionary.
+
+    Args:
+        dict (dict): The dictionary.
+        key (str): The key from the dictionary.
+
+    Returns:
+        Dict[Any, Any]: New dictionary.
+    """
+    dict_by_key = dict.get(key) if dict.get(key) else dict
+    return dict_by_key
+
+
+REPUTATION_HELPER_FUNCTION = {
+    'ip': ip_reputation_helper,
+    'url': url_reputation_helper,
+    'domain': domain_reputation_helper,
+    'file': file_reputation_helper
+}
+
+
+def test_module(client: Client):
+    """Test integration instance for Cisco ThreatGrid.
+
+    Args:
+        client (Client): Cisco ThreatGrid API client.
+
+    Raises:
+        e: Authorization Error.
+
+    Returns:
+        _type_: Authorization message.
+    """
+    try:
+        client.whoami_request()
+    except DemistoException as exc:
+        raise exc
+    return "ok"
+
+
+def main() -> None:
+
+    params: Dict[str, Any] = demisto.params()
+    args: Dict[str, Any] = demisto.args()
+
+    base_url = params["base_url"]
+    api_token = params["api_token"]
+
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
+    reliability = params.get("integrationReliability")
+    reliability = reliability if reliability else DBotScoreReliability.B
+    args.update({"reliability": reliability})
+
+    command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
+    commands = {
+        "threat-grid-submissions-search": submission_search_command,
+        "threat-grid-domain-samples-list": associated_samples_list_command,
+        "threat-grid-ip-samples-list": associated_samples_list_command,
+        "threat-grid-path-samples-list": associated_samples_list_command,
+        "threat-grid-url-samples-list": associated_samples_list_command,
+        "threat-grid-registry-key-samples-list": associated_samples_list_command,
+        "threat-grid-sample-upload": sample_upload_command,
+        "threat-grid-sample-list": sample_get_command,
+        "file": reputation_command,
+        "ip": reputation_command,
+        "url": reputation_command,
+        "domain": reputation_command,
+        "threat-grid-ip-associated-domains": associated_command,
+        "threat-grid-ip-associated-urls": associated_command,
+        "threat-grid-domain-associated-urls": associated_command,
+        "threat-grid-domain-associated-ips": associated_command,
+        "threat-grid-feeds-artifact": feeds_command,
+        "threat-grid-feeds-domain": feeds_command,
+        "threat-grid-feeds-ip": feeds_command,
+        "threat-grid-feeds-network-stream": feeds_command,
+        "threat-grid-feeds-url": feeds_command,
+        "threat-grid-feeds-path": feeds_command,
+        "threat-grid-analysis-artifacts-get": sample_analysis_command,
+        "threat-grid-analysis-iocs-get": sample_analysis_command,
+        "threat-grid-analysis-metadata-get": sample_analysis_command,
+        "threat-grid-analysis-network-streams-get": sample_analysis_command,
+        "threat-grid-analysis-processes-get": sample_analysis_command,
+        "threat-grid-analysis-annotations-get": sample_analysis_command,
+        "threat-grid-rate-limit-get": rate_limit_get_command,
+        "threat-grid-who-am-i": who_am_i_command,
+        "threat-grid-feed-specific-get": specific_feed_get_command,
+        "threat-grid-ip-search": search_command,
+        "threat-grid-url-search": search_command,
+        "threat-grid-sample-summary-get": sample_get_command,
+    }
+
+    try:
+        client: Client = Client(base_url, api_token, proxy, verify_certificate)
+        args.update({"command_name": str(command)})
+
+        if command == "test-module":
+            return_results(test_module(client))
+        elif command == "threat-grid-sample-upload":
+            return_results(schedule_command(args, client))
+        elif command in commands:
+            return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f"{command} command is not implemented.")
+
+    except Exception as exc:
+        return_error(
+            f"One or more of the specified fields are invalid. Please validate them. \n{exc}")
+
+
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
