@@ -186,7 +186,7 @@ script:
           description: Time Mode. Can be "FINITE_TIME_PERIOD" / "RECURRING_TIME_PERIOD" / "RECURRING_TIME_PERIOD_GROUP".
           type: Unknown
     - name: nsm-create-firewall-policy
-      description: Adds a new Firewall Policy and Access Rules.
+      description: Adds a new Firewall Policy and Access Rules. You have to provide at lease one of the source/destination object. If you provide one of the source/destination fields, you must provide the other one as well.
       arguments:
         - name: domain
           required: true
@@ -218,7 +218,7 @@ script:
             - no
         - name: policy_type
           auto: PREDEFINED
-          description: The type of the policy.
+          description: The type of the policy. The options are "Advanced" or "Classic".
           isArray: false
           predefined:
             - Advanced
@@ -230,7 +230,7 @@ script:
           isArray: false
         - name: response
           auto: PREDEFINED
-          description: Action to be performed if the traffic matches this rule.
+          description: Action to be performed if the traffic matches this rule. The options are "Scan", "Drop", "Deny", "Ignore", "Stateless Ignore", "Stateless Drop" and "Require Authentication".
           isArray: false
           predefined:
             - Scan
@@ -252,7 +252,7 @@ script:
           defaultValue: yes
         - name: direction
           auto: PREDEFINED
-          description: The direction of the rule.
+          description: The direction of the rule. The options are "Inbound", "Outbound" and "Either".
           isArray: false
           predefined:
             - Inbound
@@ -265,7 +265,7 @@ script:
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy.
+          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -281,7 +281,7 @@ script:
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy.
+          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -330,7 +330,7 @@ script:
             - no
         - name: policy_type
           auto: PREDEFINED
-          description: The type of the policy.
+          description: The type of the policy. The options are "Advanced" or "Classic".
           isArray: false
           predefined:
             - Advanced
@@ -342,7 +342,7 @@ script:
           isArray: false
         - name: response
           auto: PREDEFINED
-          description: Action to be performed if the traffic matches this rule.
+          description: Action to be performed if the traffic matches this rule. The options are "Scan", "Drop", "Deny", "Ignore", "Stateless Ignore", "Stateless Drop" and "Require Authentication".
           isArray: false
           predefined:
             - Scan
@@ -364,7 +364,7 @@ script:
           defaultValue: yes
         - name: direction
           auto: PREDEFINED
-          description: The direction of the rule.
+          description: The direction of the rule. The options are "Inbound", "Outbound" and "Either".
           isArray: false
           predefined:
             - Inbound
@@ -377,7 +377,7 @@ script:
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy.
+          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -393,7 +393,7 @@ script:
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy.
+          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -427,7 +427,7 @@ script:
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule. The default value is All.
+          description: The type of the rule. The default value is All. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -639,7 +639,7 @@ script:
           isArray: false
         - name: rule_object_type
           auto: PREDEFINED
-          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value.
+          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -781,7 +781,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default value is "LAST_7_DAYS".
+          description: Time Period. The default value is "LAST_7_DAYS". The options are "LAST_5_MINUTES", "LAST_1_HOUR", "LAST_6_HOURS", "LAST_12_HOURS", "LAST_24_HOURS", "LAST_7_DAYS", "LAST_14_DAYS" and "CUSTOM".
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -801,7 +801,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State
+          description: Alert State. The options are "Any", "Acknowledged", "Unacknowledged".
           defaultValue: ANY
           required: false
           isArray: false
@@ -810,7 +810,7 @@ script:
           required: false
           isArray: false
         - name: filter
-          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". If you wish to use the "name" field in the filter, enter only one name in each command run.'
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
           required: false
           isArray: false
         - name: domain_id
@@ -1567,7 +1567,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State
+          description: Alert State. The options are "ANY", "Acknowledged", "Unacknowledged".
           defaultValue: ANY
           required: false
           isArray: false
@@ -1582,7 +1582,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period
+          description: Time Period. The options are "LAST_5_MINUTES", "LAST_1_HOUR", "LAST_6_HOURS", "LAST_12_HOURS", "LAST_24_HOURS", "LAST_7_DAYS", "LAST_14_DAYS".
           required: false
           isArray: false
         - name: start_time
@@ -1598,7 +1598,7 @@ script:
           predefined:
             - Acknowledged
             - Unacknowledged
-          description: The new alert state.
+          description: The new alert state. The options are "Acknowledged", "Unacknowledged".
           required: false
           isArray: false
         - name: new_assignee
@@ -1608,7 +1608,7 @@ script:
         - name: search
           description: Search string in alert details.
         - name: filter
-          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"If you wish to use the "name" field in the filter, enter only one name in each command run.'
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
           required: false
           isArray: false
       outputs:
