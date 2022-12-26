@@ -1420,8 +1420,7 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name} \
-                /ProtectedHostnamesNewHost/{member_id}'
+        edp = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}'
 
         data = remove_empty_elements({
             'host':
@@ -1432,7 +1431,7 @@ class ClientV1(Client):
                 [kwargs.get('action')],
             )
         })
-        response = self._http_request(method='PUT', url_suffix=endpoint, json_data=data)
+        response = self._http_request(method='PUT', url_suffix=edp, json_data=data)
         return response
 
     def protected_hostname_member_delete_request(self, group_name: str, member_id: str) -> Dict[str, Any]:
@@ -1868,9 +1867,8 @@ class ClientV1(Client):
                                    server_pool: Optional[str], protected_hostnames: Optional[str],
                                    client_real_ip: Optional[str], syn_cookie: Optional[str],
                                    half_open_thresh: Optional[str], http_service: Optional[str],
-                                   https_service: Optional[str], http2: Optional[str], multi_certificate: Optional[str],
-                                   certificate_group: Optional[str], certificate: Optional[str],
-                                   intergroup: Optional[str], proxy: Optional[str], redirect_to_https: Optional[str],
+                                   https_service: Optional[str], http2: Optional[str], certificate: Optional[str],
+                                   intergroup: Optional[str], redirect_to_https: Optional[str],
                                    inline_protection_profile: Optional[str], monitor_mode: Optional[str],
                                    url_case_sensitivity: Optional[str], comments: Optional[str],
                                    mach_once: Optional[str]) -> Dict[str, Any]:
@@ -1975,10 +1973,7 @@ class ClientV1(Client):
                                                url_case_sensitivity=url_case_sensitivity,
                                                comments=comments,
                                                mach_once=mach_once,
-                                               multi_certificate=None,
-                                               certificate_group=None,
                                                intergroup=None,
-                                               proxy=None,
                                                certificate=None)
         response = self._http_request(method='POST', url_suffix='Policy/ServerPolicy/ServerPolicy', json_data=data)
         return response
@@ -2039,11 +2034,8 @@ class ClientV1(Client):
                                                url_case_sensitivity=url_case_sensitivity,
                                                comments=comments,
                                                mach_once=mach_once,
-                                               multi_certificate=None,
                                                certificate=certificate,
-                                               certificate_group=None,
-                                               intergroup=intergroup,
-                                               proxy=None)
+                                               intergroup=intergroup)
         response = self._http_request(method='PUT',
                                       url_suffix=f'Policy/ServerPolicy/ServerPolicy/{name}',
                                       json_data=data)
