@@ -2379,29 +2379,33 @@ def sub_main():
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    command = demisto.command()
+    if params.get('upn_mailbox', '') and command == "fetch-incidents":
+        params['default_target_mailbox'] = params.get('upn_mailbox')
+    print("args.get('upn_mailbox'): " + str(params.get('upn_mailbox')))
+    print(params['default_target_mailbox'])
     # params['upn_mailbox'] = args.get('upn_mailbox', '')
     try:
         client = EWSClient(**params)
         start_logging()
-
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
 
-        command = demisto.command()
+        
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
-            "ews-move-item-between-mailboxes": move_item_between_mailboxes,
+            "ews-move-item-between-mailboxes": move_item_between_mailboxes, 
             "ews-move-item": move_item,
             "ews-delete-items": delete_items,
-            "ews-search-mailbox": search_items_in_mailbox,
-            "ews-get-contacts": get_contacts,
-            "ews-get-out-of-office": get_out_of_office_state,
-            "ews-recover-messages": recover_soft_delete_item,
-            "ews-create-folder": create_folder,
-            "ews-mark-item-as-junk": mark_item_as_junk,
-            "ews-find-folders": find_folders,
-            "ews-get-items-from-folder": get_items_from_folder,
+            "ews-search-mailbox": search_items_in_mailbox, 
+            "ews-get-contacts": get_contacts, 
+            "ews-get-out-of-office": get_out_of_office_state, 
+            "ews-recover-messages": recover_soft_delete_item, 
+            "ews-create-folder": create_folder, 
+            "ews-mark-item-as-junk": mark_item_as_junk, 
+            "ews-find-folders": find_folders, 
+            "ews-get-items-from-folder": get_items_from_folder, 
             "ews-get-items": get_items,
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
@@ -2421,8 +2425,6 @@ def sub_main():
             is_test_module = True
             demisto.results(test_module(client, params.get('max_fetch')))
         elif command == "fetch-incidents":
-            if args.get('upn_mailbox'):
-                params['default_target_mailbox'] = args.get('upn_mailbox')
             last_run = demisto.getLastRun()
             incidents = fetch_emails_as_incidents(client, last_run)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
@@ -2436,7 +2438,6 @@ def sub_main():
         else:
             output = normal_commands[command](client, **args)  # type: ignore[operator]
             return_outputs(*output)
-            # return_results(normal_commands[command](client, **args))
 
     except Exception as e:
         demisto.error(f'got exception {e}')
