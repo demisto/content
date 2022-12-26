@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 151
+version: 154
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -700,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8940
+          "y": 8980
         }
       }
     note: false
@@ -725,7 +725,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "67"
     scriptarguments:
       all:
         simple: "no"
@@ -737,7 +737,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 8765
+          "y": 8715
         }
       }
     note: false
@@ -2402,6 +2402,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 74267401-3c42-4ddf-8987-24e02ba51ce3
+    type: regular
+    task:
+      id: 74267401-3c42-4ddf-8987-24e02ba51ce3
+      version: -1
+      name: Test If File Exists
+      description: Returns a list of files and folders in the specified drive.
+      script: '|||msgraph-list-drive-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "35"
+      '#none#':
+      - "17"
+    scriptarguments:
+      item_id:
+        simple: ${UploadedFileID}
+      object_type:
+        simple: drives
+      object_type_id:
+        simple: b!ZAovhtvn4Eapf5FWtPaT7lybnnqOkQpPspFV4riUtXuy_S3BgrgsSp0DNvpsLWoV
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2416,5 +2458,4 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: test_MsGraphFiles
 fromversion: 5.0.0
