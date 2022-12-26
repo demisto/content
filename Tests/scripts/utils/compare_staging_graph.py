@@ -188,7 +188,7 @@ def compare_content_packs(
     output_path: Path,
     message: list[str],
 ):
-    with (ARTIFACTS_FOLDER / f'removed_from_marketplace-{marketplace}').open() as f:
+    with (ARTIFACTS_FOLDER / f'removed_from_marketplace-{marketplace}.json').open() as f:
         reasons = json.load(f)
     ZipFile(content_packs_id_set).extractall(output_path / "id_set")
     ZipFile(content_packs_graph).extractall(output_path / "graph")
