@@ -58,7 +58,7 @@ After you successfully execute a command, a DBot message appears in the War Room
     "SymantecEDR": {
         "Command": {
             "isolate_endpoint": {
-                "command_id": "87efa760338144e18805ea73a85f53df-2022-12-26",
+                "command_id": "0df9c435eb3e45469dd3a5fe17f70624-2022-12-26",
                 "error_code": 0,
                 "message": "Command isolate_endpoint successfully requested"
             }
@@ -72,7 +72,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 >### Command isolate_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command isolate_endpoint successfully requested | 87efa760338144e18805ea73a85f53df-2022-12-26 |
+>| Command isolate_endpoint successfully requested | 0df9c435eb3e45469dd3a5fe17f70624-2022-12-26 |
 
 
 ### symantec-edr-domain-file-association-list
@@ -442,7 +442,7 @@ Get File Instances
         "FileInstance": {
             "first_seen": "2022-10-21T19:31:20.770Z",
             "folder": "c:\\program files\\google\\chrome\\application\\106.0.5249.119",
-            "last_seen": "2022-12-26T10:30:41.390Z",
+            "last_seen": "2022-12-26T11:28:42.168Z",
             "name": "elevation_service.exe",
             "sha2": "302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4"
         }
@@ -455,8 +455,8 @@ Get File Instances
 >### File Instances List
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
->| 2022-10-21T07:00:39.964Z | 2022-12-26T10:30:41.389Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
->| 2022-10-21T19:31:20.770Z | 2022-12-26T10:30:41.390Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T07:00:39.964Z | 2022-12-26T11:28:42.167Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T19:31:20.770Z | 2022-12-26T11:28:42.168Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
 
 
 ### symantec-edr-system-activity-list
@@ -525,11 +525,11 @@ Command to get System Activities
             "device_cap": "EDR",
             "device_ip": "192.168.20.8",
             "device_name": "localhost.localdomain",
-            "device_time": "2022-12-26T11:23:03.095Z",
+            "device_time": "2022-12-26T11:49:45.072Z",
             "feature_name": "AdministratorTask",
             "log_name": "atp_system_log-2022-12-26",
-            "log_time": "2022-12-26T11:23:04.062Z",
-            "message": "Command delete_file with command id 6a5d46e331b14cdaa34e280de39e4a0f-2022-12-26 has started.",
+            "log_time": "2022-12-26T11:49:45.113Z",
+            "message": "Command delete_file with command id 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 has started.",
             "pid": 12358,
             "product_name": "Symantec Endpoint Detection and Response",
             "product_ver": "4.6.8-8",
@@ -537,7 +537,7 @@ Command to get System Activities
             "status_id": "Success",
             "timezone": 0,
             "type_id": 1,
-            "uuid": "a95f4470-850f-11ed-fb48-00000003323f"
+            "uuid": "64398f00-8513-11ed-c2ab-0000000332b4"
         }
     }
 }
@@ -548,7 +548,7 @@ Command to get System Activities
 >### System Activities List
 >|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
 >|---|---|---|---|---|---|---|
->| 2022-12-26T11:23:03.095Z | 1 | Info | Command delete_file with command id 6a5d46e331b14cdaa34e280de39e4a0f-2022-12-26 has started. | 192.168.20.8 | All in One | Success |
+>| 2022-12-26T11:49:45.072Z | 1 | Info | Command delete_file with command id 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 has started. | 192.168.20.8 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
@@ -617,15 +617,15 @@ Get  Audit Events
             "category_id": 4,
             "count": 1,
             "device_cap": "EDR",
-            "device_end_time": "2022-12-26T11:24:11.317Z",
+            "device_end_time": "2022-12-26T11:50:59.898Z",
             "device_ip": "192.168.20.8",
             "device_name": "localhost.localdomain",
-            "device_time": "2022-12-26T11:24:11.317Z",
+            "device_time": "2022-12-26T11:50:59.898Z",
             "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
             "feature_name": "Incident",
             "id": 2,
             "log_name": "atp_audit_log-2022-12",
-            "log_time": "2022-12-26T11:24:12.074Z",
+            "log_time": "2022-12-26T11:51:00.125Z",
             "message": "Incident Closed Successfully.",
             "product_name": "Symantec Endpoint Detection and Response",
             "product_ver": "4.6.8-8",
@@ -637,7 +637,7 @@ Get  Audit Events
             "user_agent_ip": "172.16.11.107",
             "user_name": "SEDR API",
             "user_uid": "O2ID.atp-customer.atp-domain.dbq9fmcjk132kmha7f9584qvr7",
-            "uuid": "d2091e50-850f-11ed-ef5c-000000033240"
+            "uuid": "90d319a0-8513-11ed-db4a-0000000332b5"
         }
     }
 }
@@ -648,7 +648,7 @@ Get  Audit Events
 >### Audit Event List
 >|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-26T11:24:11.317Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.107 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | d2091e50-850f-11ed-ef5c-000000033240 | Success |
+>| 2022-12-26T11:50:59.898Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.107 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | 90d319a0-8513-11ed-db4a-0000000332b5 | Success |
 
 
 ### symantec-edr-event-list
@@ -737,46 +737,50 @@ Used to get events from EDR on-premise
 {
     "SymantecEDR": {
         "Event": {
-            "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
+            "attacks_tactic_ids_0": "2",
+            "attacks_tactic_uids_0": "TA0002",
+            "attacks_technique_name_0": "Windows Management Instrumentation",
+            "attacks_technique_uid_0": "T1047",
+            "cmd_line": "C:\\Windows\\sysWOW64\\wbem\\wmiprvse.exe -secured -Embedding",
             "device_domain": "WORKGROUP",
             "device_ip": "172.16.14.42",
             "device_name": "WIN-TFB8L7BI77H",
             "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-26T11:21:55.909Z",
+            "device_time": "2022-12-26T11:48:11.378Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
             "enriched_data_category_id": 3,
             "enriched_data_category_name": "Process Termination",
             "enriched_data_rule_name": "eProcessClose",
-            "event_actor_cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
-            "event_actor_file_md5": "d2ab39ea2c0fcd172751f84bda723a97",
-            "event_actor_file_modified": "2018-09-15T07:12:24.564Z",
-            "event_actor_file_name": "dllhost.exe",
-            "event_actor_file_normalized_path": "CSIDL_SYSTEM\\dllhost.exe",
-            "event_actor_file_original_name": "dllhost.exe",
-            "event_actor_file_path": "c:\\windows\\system32\\dllhost.exe",
-            "event_actor_file_sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
+            "event_actor_cmd_line": "C:\\Windows\\sysWOW64\\wbem\\wmiprvse.exe -secured -Embedding",
+            "event_actor_file_md5": "3ff0bb6eacc39958042b74ca04e202a6",
+            "event_actor_file_modified": "2018-09-15T07:13:00.192Z",
+            "event_actor_file_name": "wmiprvse.exe",
+            "event_actor_file_normalized_path": "CSIDL_SYSTEMX86\\wbem\\wmiprvse.exe",
+            "event_actor_file_original_name": "Wmiprvse.exe",
+            "event_actor_file_path": "c:\\windows\\syswow64\\wbem\\wmiprvse.exe",
+            "event_actor_file_sha2": "158075d730a7a6acbe7739251ee9bea4349268597ca576b3e0cb8442140865fd",
             "event_actor_file_signature_company_name": "Microsoft Windows",
             "event_actor_integrity_id": 6,
-            "event_actor_pid": 9160,
+            "event_actor_pid": 17004,
             "event_actor_signature_level_id": 60,
-            "event_actor_start_time": "2022-12-26T11:21:49.846Z",
-            "event_actor_uid": "F4B734F0-84FE-F1ED-8217-98261F32744E",
-            "event_actor_use: List[str] = []r_name": "SYSTEM",
-            "event_actor_use: List[str] = []r_sid": "S-1-5-18",
+            "event_actor_start_time": "2022-12-26T11:47:05.826Z",
+            "event_actor_uid": "F4B73A81-84FE-F1ED-8217-98261F32744E",
+            "event_actor_use: List[str] = []r_name": "NETWORK SERVICE",
+            "event_actor_use: List[str] = []r_sid": "S-1-5-20",
             "integrity_id": 6,
             "log_name": "epmp_events-fdr-2022-12-26",
-            "log_time": "2022-12-25T22:58:14.237Z",
+            "log_time": "2022-12-25T23:24:04.949Z",
             "operation": 2,
-            "pid": 9160,
-            "ref_uid": "B2540043-F1FB-4DF8-8FD1-59775B6A7263",
+            "pid": 17004,
+            "ref_uid": "594B5CD1-B3A5-4891-AC4C-5FBCD98CE166",
             "severity_id": "Info",
             "signature_level_id": 60,
             "type_id": 8001,
-            "uid": "F4B734F0-84FE-F1ED-8217-98261F32744E",
+            "uid": "F4B73A81-84FE-F1ED-8217-98261F32744E",
             "user_domain": "NT AUTHORITY",
-            "user_name": "SYSTEM",
-            "user_sid": "S-1-5-18",
-            "uuid": "81537f50-850f-11ed-c907-000000032dd7"
+            "user_name": "NETWORK SERVICE",
+            "user_sid": "S-1-5-20",
+            "uuid": "2c60fd20-8513-11ed-f5e4-000000032e06"
         }
     }
 }
@@ -787,7 +791,7 @@ Used to get events from EDR on-premise
 >### Event List
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|
->| 2022-12-26T11:21:55.909Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
+>| 2022-12-26T11:48:11.378Z | 8001 | wmiprvse.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | NETWORK SERVICE |
 
 
 ### symantec-edr-incident-event-list
@@ -977,38 +981,21 @@ Command is used to get incidents from Symantec EDR on-premise API
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SymantecEDR.Incident.atp_incident_id | Number | A unique identifer for this incident. | 
-| SymantecEDR.Incident.log_name | String | The index of the incident.
-Note: This is for informational purpose and cannot be used as a flter.
-Use time as start_time to query for incidents. Example : "epmp_incident-2018-03-01" | 
+| SymantecEDR.Incident.log_name | String | The index of the incident. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for incidents. Example : epmp_incident-2018-03-01 | 
 | SymantecEDR.Incident.summary | String | Summary information about the incident. | 
 | SymantecEDR.Incident.priority_level | Number | Priority level of the incident. Possible values are: Low, Medium, High | 
-| SymantecEDR.Incident.resultt.last_event_seen | Date | The creation time \(in ISO 8601 format\) when the last event associated
-with the incident was created. Matches the last event’s time feld. | 
+| SymantecEDR.Incident.last_event_seen | Date | The creation time \(in ISO 8601 format\) when the last event associated with the incident was created. Matches the last event’s time field. | 
 | SymantecEDR.Incident.time | Date | The creation time \(in ISO 8601 format\) of the incident. | 
 | SymantecEDR.Incident.rule_name | String | The name of the rule that triggered this incident. | 
-| SymantecEDR.Incident.first_event_seen | Date | The creation time \(in ISO 8601 format\) when the frst event associated
-with the incident was created. Matches the frst event’s time feld. This
-is likely before the incident’s creation time feld given incidents are
-created after their frst event is seen. | 
+| SymantecEDR.Incident.first_event_seen | Date | The creation time \(in ISO 8601 format\) when the frst event associated with the incident was created. Matches the frst event’s time field. This is likely before the incident’s creation time field given incidents are created after their frst event is seen. | 
 | SymantecEDR.Incident.state | Number | The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed | 
 | SymantecEDR.Incident.detection_type | String | Incident Detection Type | 
-| SymantecEDR.Incident.device_time | Date | The timestamp \(in ISO 8601 format\) that specifes the time at which the
-event occurred | 
-| SymantecEDR.Incident.recommended_action | String | Recommended action for this incident. Possible actions could be
-isolating an endpoint, deleting fle from endpoint, blacklist URL, or
-domain, etc. | 
+| SymantecEDR.Incident.device_time | Date | The timestamp \(in ISO 8601 format\) that specifes the time at which the event occurred | 
+| SymantecEDR.Incident.recommended_action | String | Recommended action for this incident. Possible actions could be isolating an endpoint, deleting fle from endpoint, blacklist URL, or domain, etc. | 
 | SymantecEDR.Incident.updated | Date | The time \(in ISO 8601 format\) of last modifcation. | 
-| SymantecEDR.Incident.uuid | String | The GUID assigned for this incident.
-Example : "483e3fde-4556-4800-81b1-e8da5ee394b6" | 
+| SymantecEDR.Incident.uuid | String | The GUID assigned for this incident. Example : "483e3fde-4556-4800-81b1-e8da5ee394b6 | 
 | SymantecEDR.Incident.atp_rule_id | String | The textual representation of the rule that triggered this incident. | 
-| SymantecEDR.Incident.resolution | Number | The resolution of the closed incident. Possible values are:
-0 =INSUFFICIENT_DATA. The incident does not have sufcient information to make a determination.
-1 = SECURITY_RISK. The incident indicates a true security threat.
-2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.
-3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
-4 = NOT_SET. The incident resolution was not set.
-5 = BENIGN. The incident detected the activity as expected but is not a security threat.
-6 = TEST. The incident was generated due to internal security testing. | 
+| SymantecEDR.Incident.resolution | Number | The resolution of the closed incident. Possible values are: 0 =INSUFFICIENT_DATA. The incident does not have suffcient information to make a determination. 1 = SECURITY_RISK. The incident indicates a true security threat. 2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat. 3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there. 4 = NOT_SET. The incident resolution was not set. 5 = BENIGN. The incident detected the activity as expected but is not a security threat. 6 = TEST. The incident was generated due to internal security testing | 
 
 #### Command example
 ```!symantec-edr-incident-list limit=1```
@@ -1058,11 +1045,11 @@ Get Incident Comments based on Incident UUID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | incident_id | Specifies unique incident Id. | Required | 
-| limit | The limit for number of events listed per page.<br/>Default value is '50'. | Optional | 
+| limit | The limit for number of events listed per page. Default value is 50. | Optional | 
 | page | The number of results per page to display. | Optional | 
-| page_size | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default value is '1'. | Optional | 
-| start_time | The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks'). | Optional | 
-| end_time | From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now). | Optional | 
+| page_size | The page number you would like to view. Each page contains page_size values. Must be used along with page_size. Default value is 1. | Optional | 
+| start_time | The earliest time from which to get events. Supports ISO (e.g YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g.10 seconds, 5 minutes, 2 days, 1 weeks). | Optional | 
+| end_time | From current time get events. Supports ISO (e.g YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g.10 seconds, 5 minutes, 2 days, 1 weeks, now). | Optional | 
 
 
 #### Context Output
@@ -1072,8 +1059,7 @@ Get Incident Comments based on Incident UUID
 | SymantecEDR.IncidentComment.incident_id | Number | Incident ID | 
 | SymantecEDR.IncidentComment.comment | String | The comment of incident | 
 | SymantecEDR.IncidentComment.time | String | The timestamp \(in ISO 8601 format\) that specifies the time at which the comment was added to incident  | 
-| SymantecEDR.IncidentComment.user_id | String | The user id who registered the comment. 
-Example: 100000 | 
+| SymantecEDR.IncidentComment.user_id | String | The user id who registered the comment. Example: 100000 | 
 
 #### Command example
 ```!symantec-edr-incident-comment-get incident_id=100010 limit=1```
@@ -1086,7 +1072,7 @@ Example: 100000 |
                 "comment": "added as part of testing xsoar command examples",
                 "incident_id": "100010",
                 "incident_responder_name": "SEDR API",
-                "time": "2022-12-26T10:24:39.271Z",
+                "time": "2022-12-26T11:24:02.791Z",
                 "user_id": 100000
             }
         ]
@@ -1099,7 +1085,7 @@ Example: 100000 |
 >### Incident Comment List
 >|IncidentId|Comment|Time|UserId|IncidentResponderName|
 >|---|---|---|---|---|
->| 100010 | added as part of testing xsoar command examples | 2022-12-26T10:24:39.271Z | 100000 | SEDR API |
+>| 100010 | added as part of testing xsoar command examples | 2022-12-26T11:24:02.791Z | 100000 | SEDR API |
 
 
 ### symantec-edr-deny-list-policy-get
@@ -1114,14 +1100,14 @@ Get Deny List Policies
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to return. If no limit is specified, then the limit value is set to the default = 50 Minimum and Maximum "limit" value greater then &gt;= 10 and less then &lt;= 1000<br/>Note: If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
-| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size.<br/>Default value is '1'. | Optional | 
+| limit | The maximum number of records to return. If no limit is specified, then the limit value is set to the default = 50 Minimum and Maximum "limit" value greater then &gt;= 10 and less then &lt;= 1000 Note: If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
+| page | The page number you would like to view. Each page contains page_size values. Must be used along with page_size. Default value is 1. | Optional | 
 | page_size | The number of results per page to display. | Optional | 
 | domain | Returns list of domain type deny list policies matching to the specified pattern value. If no value is specified, then all domain type allow list policies will be returned. . | Optional | 
 | denylist_id | Returns specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned. | Optional | 
 | ip | Returns list of ip type deny list policies matching to the Specified pattern value. If no value is Specified, then all ip type deny list policies will be returned. | Optional | 
 | sha256 | Returns Specific sha256 type deny list policy for the Specified sha256 value. If no value is Specified, then all sha256 type deny list policies will be returned. | Optional | 
-| url | Returns list of url type deny list policies matching to the Specified pattern value. If no value is Specified, then all url type deny list policies will be returned. <br/><br/>Note: url string must be Specified in encoded URL format. | Optional | 
+| url | Returns list of url type deny list policies matching to the Specified pattern value. If no value is Specified, then all url type deny list policies will be returned. \n\nNote: url string must be Specified in encoded URL format. | Optional | 
 
 
 #### Context Output
@@ -1286,16 +1272,7 @@ Command Status is used to query command status
 | SymantecEDR.CommandStatus.command_issuer_name | String | The user display name who issued the command. Example: ATP API | 
 | SymantecEDR.CommandStatus.state | String | Command state enum \(completed, initializing, in_progress, error, cancel_requested, cancelled\) | 
 | SymantecEDR.CommandStatus.status.error_code | String | This represents error codes for a specific target. Possible values:-1 = Error, 1 = In-progress, 9000 = File Is Clean, 9001 = File Is Malware, 9003 = File Size Over Limit \(File Size Should Not Exceed 10MB For Sandbox Submission\), 9005 = Query To Sandbox Failed \(Check Network Connectivity\), 9006 = File Type Not Supported \(Check With Symantec Support For Sandbox Supported File List\), 9007 = File Not Found In FileStore \(Use get_endpoint_fle Command To Copy File Into FileStore\) | 
-| SymantecEDR.CommandStatus.status.message | String | Message explaining error code.
-Possible values:
-Error \(-1\)
-In progress \(1\)
-File Is Clean \(9000\)
-File Is Malware \(9001\)
-File Size Over Limit \(9003\)
-Query To Sandbox Failed \(9005\)
-File Type Not Supported \(9006\)
-File Not Found In FileStore \(9007\) | 
+| SymantecEDR.CommandStatus.status.message | String | Message explaining error code. Possible values: Error \(-1\), In progress \(1\), File Is Clean \(9000\), File Is Malware \(9001\), File Size Over Limit \(9003\), Query To Sandbox Failed \(9005\), File Type Not Supported \(9006\), File Not Found In FileStore \(9007\) | 
 | SymantecEDR.CommandStatus.status.state | String | This represents the command status for specific target. Values:  0 = Completed 1 = In progress 2 = Error 3 = Cancelled 4 = Cancel requested | 
 | SymantecEDR.CommandStatus.status.target | String | The target feld represents SHA256 of a file | 
 
@@ -1354,7 +1331,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
     "SymantecEDR": {
         "Command": {
             "rejoin_endpoint": {
-                "command_id": "fa812f829c834fabbf12328756b884b3-2022-12-26",
+                "command_id": "42ccc87011654f4a9697cd09afcc0d3a-2022-12-26",
                 "error_code": 0,
                 "message": "Command rejoin_endpoint successfully requested"
             }
@@ -1368,7 +1345,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 >### Command rejoin_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command rejoin_endpoint successfully requested | fa812f829c834fabbf12328756b884b3-2022-12-26 |
+>| Command rejoin_endpoint successfully requested | 42ccc87011654f4a9697cd09afcc0d3a-2022-12-26 |
 
 
 ### symantec-edr-endpoint-delete-file
@@ -1403,7 +1380,7 @@ Deletes a file, i.e. deletes all instances of the file, based on the file hash t
     "SymantecEDR": {
         "Command": {
             "delete_endpoint_file": {
-                "command_id": "6a5d46e331b14cdaa34e280de39e4a0f-2022-12-26",
+                "command_id": "5aaada0c58214d6aa51f4f74c04fe349-2022-12-26",
                 "error_code": 0,
                 "message": "Command delete_endpoint_file successfully requested"
             }
@@ -1417,7 +1394,7 @@ Deletes a file, i.e. deletes all instances of the file, based on the file hash t
 >### Command delete_endpoint_file
 >|Message|CommandId|
 >|---|---|
->| Command delete_endpoint_file successfully requested | 6a5d46e331b14cdaa34e280de39e4a0f-2022-12-26 |
+>| Command delete_endpoint_file successfully requested | 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 |
 
 
 ### symantec-edr-endpoint-cancel-command

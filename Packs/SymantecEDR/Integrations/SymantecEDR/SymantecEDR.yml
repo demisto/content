@@ -1384,75 +1384,57 @@ script:
       description: A unique identifer for this incident.
       type: Number
     - contextPath: SymantecEDR.Incident.log_name
-      description: |-
-        The index of the incident.
-        Note: This is for informational purpose and cannot be used as a flter.
-        Use time as start_time to query for incidents. Example : "epmp_incident-2018-03-01"
+      description: 'The index of the incident. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for incidents. Example : epmp_incident-2018-03-01'
       type: String
     - contextPath: SymantecEDR.Incident.summary
-      description: Summary information about the incident.
+      description: 'Summary information about the incident.'
       type: String
     - contextPath: SymantecEDR.Incident.priority_level
-      description: |-
-        Priority level of the incident. Possible values are: Low, Medium, High
+      description: 'Priority level of the incident. Possible values are: Low, Medium, High'
       type: Number
-    - contextPath: SymantecEDR.Incident.resultt.last_event_seen
-      description: |-
-        The creation time (in ISO 8601 format) when the last event associated
-        with the incident was created. Matches the last event’s time feld.
+    - contextPath: SymantecEDR.Incident.last_event_seen
+      description: 'The creation time (in ISO 8601 format) when the last event associated with the incident was created. Matches the last event’s time field.'
       type: Date
     - contextPath: SymantecEDR.Incident.time
-      description: The creation time (in ISO 8601 format) of the incident.
+      description: 'The creation time (in ISO 8601 format) of the incident.'
       type: Date
     - contextPath: SymantecEDR.Incident.rule_name
-      description: The name of the rule that triggered this incident.
+      description: 'The name of the rule that triggered this incident.'
       type: String
     - contextPath: SymantecEDR.Incident.first_event_seen
-      description: |-
-        The creation time (in ISO 8601 format) when the frst event associated
-        with the incident was created. Matches the frst event’s time feld. This
-        is likely before the incident’s creation time feld given incidents are
-        created after their frst event is seen.
+      description: 'The creation time (in ISO 8601 format) when the frst event associated with the incident was created. Matches the frst event’s time field. This
+        is likely before the incident’s creation time field given incidents are created after their frst event is seen.'
       type: Date
     - contextPath: SymantecEDR.Incident.state
-      description: |-
-        The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed
+      description: 'The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed'
       type: Number
     - contextPath: SymantecEDR.Incident.detection_type
       description: Incident Detection Type
       type: String
     - contextPath: SymantecEDR.Incident.device_time
-      description: |-
-        The timestamp (in ISO 8601 format) that specifes the time at which the
-        event occurred
+      description: 'The timestamp (in ISO 8601 format) that specifes the time at which the event occurred'
       type: Date
     - contextPath: SymantecEDR.Incident.recommended_action
-      description: |-
-        Recommended action for this incident. Possible actions could be
-        isolating an endpoint, deleting fle from endpoint, blacklist URL, or
-        domain, etc.
+      description: 'Recommended action for this incident. Possible actions could be isolating an endpoint, deleting fle from endpoint, blacklist URL, or domain, etc.'
       type: String
     - contextPath: SymantecEDR.Incident.updated
-      description: The time (in ISO 8601 format) of last modifcation.
+      description: 'The time (in ISO 8601 format) of last modifcation.'
       type: Date
     - contextPath: SymantecEDR.Incident.uuid
-      description: |-
-        The GUID assigned for this incident.
-        Example : "483e3fde-4556-4800-81b1-e8da5ee394b6"
+      description: 'The GUID assigned for this incident. Example : "483e3fde-4556-4800-81b1-e8da5ee394b6'
       type: String
     - contextPath: SymantecEDR.Incident.atp_rule_id
-      description: The textual representation of the rule that triggered this incident.
+      description: 'The textual representation of the rule that triggered this incident.'
       type: String
     - contextPath: SymantecEDR.Incident.resolution
-      description: |-
-        The resolution of the closed incident. Possible values are:
-        0 =INSUFFICIENT_DATA. The incident does not have sufcient information to make a determination.
+      description: 'The resolution of the closed incident. Possible values are:
+        0 =INSUFFICIENT_DATA. The incident does not have suffcient information to make a determination.
         1 = SECURITY_RISK. The incident indicates a true security threat.
         2 = FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.
         3 = MANAGED_EXTERNALLY. The incident was exported to an external application and will be triaged there.
         4 = NOT_SET. The incident resolution was not set.
         5 = BENIGN. The incident detected the activity as expected but is not a security threat.
-        6 = TEST. The incident was generated due to internal security testing.
+        6 = TEST. The incident was generated due to internal security testing'
       type: Number
   - arguments:
     - default: false
@@ -1462,9 +1444,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The limit for number of events listed per page.
-        Default value is '50'
+      description: 'The limit for number of events listed per page. Default value is 50'
       isArray: false
       name: limit
       required: false
@@ -1476,61 +1456,56 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        The page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-        Default value is '1'
+      description: 'The page number you would like to view. Each page contains page_size values. Must be used along with page_size. Default value is 1'
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: The earliest time from which to get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks').
+      description: 'The earliest time from which to get events. Supports ISO (e.g YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g.10 seconds, 5 minutes, 2 days, 1 weeks).'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: From current time get events. Supports ISO (e.g 2021-12-28T00:00:00.000Z) and free text (e.g.'10 seconds', '5 minutes', '2 days', '1 weeks', now).
+      description: 'From current time get events. Supports ISO (e.g YYYY-MM-DDTHH:MM:SS.sssZ) and free text (e.g.10 seconds, 5 minutes, 2 days, 1 weeks, now).'
       isArray: false
       name: end_time
       required: false
       secret: false
     deprecated: false
-    description: Get Incident Comments based on Incident UUID
+    description: 'Get Incident Comments based on Incident UUID'
     execution: false
     name: symantec-edr-incident-comment-get
     outputs:
     - contextPath: SymantecEDR.IncidentComment.incident_id
-      description: Incident ID
+      description: 'Incident ID'
       type: Number
     - contextPath: SymantecEDR.IncidentComment.comment
-      description: The comment of incident
+      description: 'The comment of incident'
       type: String
     - contextPath: SymantecEDR.IncidentComment.time
       description: 'The timestamp (in ISO 8601 format) that specifies the time at which the comment was added to incident '
       type: String
     - contextPath: SymantecEDR.IncidentComment.user_id
-      description: "The user id who registered the comment. \nExample: 100000"
+      description: 'The user id who registered the comment. Example: 100000'
       type: String
   - arguments:
     - default: false
-      description: |-
-        The maximum number of records to return. If no limit is specified, then the limit value is set to the default = 50 Minimum and Maximum "limit" value greater then >= 10 and less then <= 1000
-        Note: If the page_size argument is set by the user then the limit argument will be ignored.
+      description: 'The maximum number of records to return. If no limit is specified, then the limit value is set to the default = 50 Minimum and Maximum "limit" value greater then >= 10 and less then <= 1000
+        Note: If the page_size argument is set by the user then the limit argument will be ignored.'
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: |-
-        The page number you would like to view. Each page contains page_size values. Must be used along with page_size.
-        Default value is '1'
+      description: 'The page number you would like to view. Each page contains page_size values. Must be used along with page_size. Default value is 1'
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: The number of results per page to display
+      description: 'The number of results per page to display'
       isArray: false
       name: page_size
       required: false
@@ -1542,25 +1517,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Returns specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned.
+      description: 'Returns specific deny list policy for the specified identifier. If no value is specified, then all deny list policies will be returned.'
       isArray: false
       name: denylist_id
       required: false
       secret: false
     - default: false
-      description: Returns list of ip type deny list policies matching to the Specified pattern value. If no value is Specified, then all ip type deny list policies will be returned
+      description: 'Returns list of ip type deny list policies matching to the Specified pattern value. If no value is Specified, then all ip type deny list policies will be returned'
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: Returns Specific sha256 type deny list policy for the Specified sha256 value. If no value is Specified, then all sha256 type deny list policies will be returned.
+      description: 'Returns Specific sha256 type deny list policy for the Specified sha256 value. If no value is Specified, then all sha256 type deny list policies will be returned.'
       isArray: false
       name: sha256
       required: false
       secret: false
     - default: false
-      description: "Returns list of url type deny list policies matching to the Specified pattern value. If no value is Specified, then all url type deny list policies will be returned. \n\nNote: url string must be Specified in encoded URL format."
+      description: 'Returns list of url type deny list policies matching to the Specified pattern value. If no value is Specified, then all url type deny list policies will be returned. \n\nNote: url string must be Specified in encoded URL format.'
       isArray: false
       name: url
       required: false
@@ -1731,17 +1706,7 @@ script:
       description: 'This represents error codes for a specific target. Possible values:-1 = Error, 1 = In-progress, 9000 = File Is Clean, 9001 = File Is Malware, 9003 = File Size Over Limit (File Size Should Not Exceed 10MB For Sandbox Submission), 9005 = Query To Sandbox Failed (Check Network Connectivity), 9006 = File Type Not Supported (Check With Symantec Support For Sandbox Supported File List), 9007 = File Not Found In FileStore (Use get_endpoint_fle Command To Copy File Into FileStore)'
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.message
-      description: |-
-        Message explaining error code.
-        Possible values:
-        Error (-1)
-        In progress (1)
-        File Is Clean (9000)
-        File Is Malware (9001)
-        File Size Over Limit (9003)
-        Query To Sandbox Failed (9005)
-        File Type Not Supported (9006)
-        File Not Found In FileStore (9007)
+      description: 'Message explaining error code. Possible values: Error (-1), In progress (1), File Is Clean (9000), File Is Malware (9001), File Size Over Limit (9003), Query To Sandbox Failed (9005), File Type Not Supported (9006), File Not Found In FileStore (9007)'
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.state
       description: 'This represents the command status for specific target. Values:  0 = Completed 1 = In progress 2 = Error 3 = Cancelled 4 = Cancel requested'
