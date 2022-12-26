@@ -5657,7 +5657,6 @@ def get_object_data(version: str,
     if members_list := get_request(object_id) if object_id else get_request():
         members_list = members_list if version == ClientV1.API_VER else members_list['results']
         return find_dict_in_array(members_list, by_key, value)
-    return None
 
 
 def test_module(client: Client) -> str:
