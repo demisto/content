@@ -1,12 +1,11 @@
 import demistomock as demisto  # noqa: F401
-import json
 import hcl
-import requests
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+# TODO: remove comments
 # if not demisto.params().get('proxy', False):
 #     del os.environ['HTTP_PROXY']
 #     del os.environ['HTTPS_PROXY']
@@ -19,6 +18,8 @@ requests.packages.urllib3.disable_warnings()
 CREDENTIALS = demisto.params().get('credentials', {})
 USERNAME = None
 PASSWORD = None
+# We use this variable to make sure we generate a new token before the old one expires to avoid edge cases
+OVERLAP_TIME = 600
 if CREDENTIALS:
     USERNAME = CREDENTIALS.get('identifier')
     PASSWORD = CREDENTIALS.get('password')
@@ -584,10 +585,11 @@ def reset_config_command():
     demisto.results('Successfully reset the engines configuration')
 
 
-def configure_engine(engine_path, engine_type, version, folder=None):
+def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600'):
     engine_conf = {
         'type': engine_type,
-        'path': engine_path
+        'path': engine_path,
+        'ttl': ttl
     }
     if version:
         engine_conf['version'] = str(version)
@@ -610,7 +612,6 @@ def fetch_credentials():
     for engine_type in engines:
         engines_to_fetch = list(filter(lambda e: e['type'] == engine_type, ENGINE_CONFIGS))
         engines_to_fetch_from += engines_to_fetch
-    engines_to_fetch_from = [{'path': 'aws', 'version': '2', 'type': 'AWS'}]
     if len(engines_to_fetch_from) == 0:
         return_error('Engine type not configured, Use the configure-engine command to configure a secrets engine.')
 
@@ -626,7 +627,7 @@ def fetch_credentials():
             credentials += get_ch_secrets(engine['path'], concat_username_to_cred_name)
 
         elif engine['type'] == 'AWS':
-            credentials += get_aws_secrets(engine['path'], concat_username_to_cred_name)
+            credentials += get_aws_secrets(engine['path'], engine['ttl'], concat_username_to_cred_name)
 
     if identifier:
         credentials = list(filter(lambda c: c.get('name', '') == identifier, credentials))
@@ -735,10 +736,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
     return secrets
 
 
-def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
-    # TODO: figure out if concat_username_to_cred_name is needed in AWS ?
-    # TODO: add all the config of the path to the readme and the different credentials types to the readme
-    # TODO: check tht the old commands still works or if they work with the aws path
+def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name=False):
     secrets = []
     roles_list_url = engine_path + '/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))
@@ -746,6 +744,15 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
+        integration_context = demisto.getIntegrationContext()
+        now = datetime.now()
+        if f'{role}_ttl' in integration_context:
+            last = datetime.fromtimestamp(integ_context[f'{role}_ttl'])
+            diff = (now - last).seconds
+            if diff <= ttl - OVERLAP_TIME:
+                continue
+        integ_context[f'{role}_ttl'] = now.timestamp()
+        demisto.setIntegrationContext(integ_context)
         role_url = engine_path + '/roles/' + role
         demisto.info('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
@@ -762,8 +769,7 @@ def get_aws_secrets(engine_path, concat_username_to_cred_name=False):
         body = {}
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
-        #     max value 43200
-        body['ttl'] = demisto.params().get('ttl', '3600') + 's'
+            body['ttl'] = ttl + 's'
         aws_credentials = send_request(generate_credentials_url, method, body=body)
         if not aws_credentials or 'data' not in aws_credentials:
             return []
@@ -791,6 +797,9 @@ def get_ch_secret(engine_path, secret):
 LOG('Executing command: ' + demisto.command())
 
 if USERNAME and PASSWORD:
+    if TOKEN:
+        return_error(
+            'You can only specify one login method, please choose username and password or authentication token')
     TOKEN = login()
 elif not TOKEN:
     return_error('Either an authentication token or user credentials must be provided')
