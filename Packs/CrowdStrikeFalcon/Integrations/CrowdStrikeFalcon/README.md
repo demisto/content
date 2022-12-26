@@ -3965,7 +3965,7 @@ Spotlight identifies and gives info about specific vulnerabilities on your hosts
 For more info about managing vulnerabilities in Falcon, see Falcon Spotlight.
 
 ### Required API client scope
-To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope. For more info, see API clients.
+To access the Spotlight API, your API client must be assigned the spotlight-vulnerabilities:read scope.
 
 ### Validating API data
 The Falcon sensor continuously monitors hosts for any changes and reports them as they occur.
