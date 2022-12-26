@@ -5533,8 +5533,7 @@ def parser_handler(data: List[Dict[str, Any]], data_parser: Callable) -> List[Di
     """
     parsed_data = []
     for obj in data:
-        parsed_obj = data_parser(obj)
-        parsed_data.append(parsed_obj)
+        parsed_data.append(data_parser(obj))
     return parsed_data
 
 
