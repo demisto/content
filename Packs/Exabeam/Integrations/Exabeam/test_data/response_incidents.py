@@ -407,7 +407,7 @@ EXPECTED_CALL_ARGS = {
             'medium'
         ],
         'startedDate': [
-            '1671713279738', '1671972479695'
+            '1671717185195', '1671976385145'
         ]
     },
     'sortBy': 'createdAt',
