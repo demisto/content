@@ -5392,7 +5392,6 @@ def custom_whitelist_list_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     id = args.get('id')
     response = client.custom_whitelist_list_request(id=id)
-    # formatted_response, pagination_message = paginate_results(client.version, response, args)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
                                                                                 client.parser.custom_whitelist, args,
                                                                                 id)
