@@ -203,7 +203,9 @@ def compare_content_packs(
     content_items = []
     for path in missing:
         try:
-            content_items.append(ContentItemParser.from_path(path))
+            content_item = ContentItemParser.from_path(path)
+            if content_item:
+                content_items.append(content_item)
         except Exception as e:
             print(f"could not parse {path}: {e}")
     missing = [(content_item.node_id, reasons[content_item.node_id]) for content_item in content_items]
