@@ -1,1 +1,1 @@
-{"breakingChanges":true,"breakingChangesNotes":"**Important Note**: The argument *show-only-mailboxes* will now be True by default when using the command ***gmail-search-all-mailboxes***."}
+{"breakingChanges":true,"breakingChangesNotes":"The argument *show-only-mailboxes* will now be True by default when using the command ***gmail-search-all-mailboxes***. Additionally, The `Gmail.Mailbox` context path in the ***gmail-search-all-mailbox*** command is changed to `Gmail.Mailboxes`."}
