@@ -775,6 +775,7 @@ def test_remove_None_values_from_dict():
 
 
 def test_check_start_time_format__wrong_format():
+    
     """Given -
             a time format
         When -
