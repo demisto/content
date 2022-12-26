@@ -3,6 +3,7 @@ from typing import Any, Dict, Tuple, Optional, Callable
 from abc import abstractmethod
 from CommonServerPython import *
 from enum import Enum
+from requests import Response
 import demistomock as demisto
 import re
 
@@ -1013,7 +1014,7 @@ class Client(BaseClient):
         return super()._http_request(*args, **kwargs)
 
     @abstractmethod
-    def error_handler(self, res: requests.Response):
+    def error_handler(self, res: Response):
         pass
 
     @abstractmethod
@@ -1276,7 +1277,7 @@ class ClientV1(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res: requests.Response):
+    def error_handler(self, res: Response):
         """Error handler for Fortiweb v1 response.
 
         Args:
@@ -2254,7 +2255,7 @@ class ClientV2(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res: requests.Response):
+    def error_handler(self, res: Response):
         """Error handler for Fortiweb v2 response.
 
         Args:
