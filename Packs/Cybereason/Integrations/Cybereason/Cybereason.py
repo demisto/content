@@ -544,23 +544,22 @@ def rest_malops(client: Client,start_time):
     end_time = round(datetime.now().timestamp())*1000
     json_body = {"startTime":start_time,"endTime":end_time}
     api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
-    demisto.debug(f"length of rest dectection malops : {len(api_response)}")
+    demisto.debug(f"Fetching the length of rest/dectection malops : {len(api_response)}")
     return api_response
 
 
-def get_non_edr_list(client:Client,start_time):
+def get_non_edr_list(client,start_time):
     malop_list = rest_malops(client,start_time)
     edr_malop_guid = list()
     non_edr_list = list()
-    demisto.info(f"start time in get_non_edr_list: {start_time}")
 
     for guid in malop_list['malops']:
         if guid['edr']:
             edr_malop_guid.append(guid['guid'])
         else:
             non_edr_list.append(guid)
-    demisto.info(f"length of edr guid: {len(edr_malop_guid)}")
-    demisto.debug(f"length of non_edr: {len(non_edr_list)}")
+    demisto.debug(f"Fetching the length of edr guid list: {len(edr_malop_guid)}")
+    demisto.debug(f"Fetching the length of non-edr list: {len(non_edr_list)}")
     return edr_malop_guid,non_edr_list
 
 def query_malops(
@@ -1529,14 +1528,9 @@ def fetch_incidents(client: Client):
             incidents.append(incident)
 
     ########for epp ##########
-    if last_run and last_run.get('creation_time'):
-        last_update_time = int(last_run.get('creation_time'))
-    else:
-        # In first run
-        last_update_time, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
     edr,non_edr = get_non_edr_list(client,last_update_time)
     if IS_EPP_ENABLED:
-        demisto.info(f"EPP value: {IS_EPP_ENABLED}")
+        demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
         for non_edr_malops in non_edr:
             malop_update_time = non_edr_malops['lastUpdateTime']
 
@@ -1545,7 +1539,7 @@ def fetch_incidents(client: Client):
 
             incident = malop_to_incident(non_edr_malops)
             incidents.append(incident)
-        demisto.debug(f"length of incidents if epp in enabled : {len(incidents)}")
+        demisto.debug(f"Fetching the length of incidents list if epp in enabled : {len(incidents)}")
 
     demisto.setLastRun({
         'creation_time': max_update_time

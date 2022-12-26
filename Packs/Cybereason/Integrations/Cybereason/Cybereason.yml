@@ -37,112 +37,179 @@ configuration:
   name: fetch_by
   required: false
   type: 0
-- defaultvalue: "1"
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
+
 - defaultvalue: "false"
   display: Enable EPP Malop
   name: enable_epp_poll
   required: false
-  type: 8
+  type: 8 
 description: Endpoint detection and response to manage and query malops, connections and processes.
-display: Cybereason (Partner Contribution)
+display: Cybereason
 name: Cybereason
 script:
   commands:
   - arguments:
-    - description: Sensor ID of Cybereason Sensor.
+    - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
       name: sensorID
       required: true
-    - description: Reason for Archiving Cybereason Sensor.
+      secret: false
+    - default: false
+      description: Reason for Archiving Cybereason Sensor.
+      isArray: false
       name: archiveReason
       required: true
+      secret: false
+    deprecated: false
     description: Archives a Sensor.
+    execution: false
     name: cybereason-archive-sensor
   - arguments:
-    - description: Sensor ID of Cybereason Sensor.
+    - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
       name: sensorID
       required: true
-    - description: Reason for Unarchiving Cybereason Sensor.
+      secret: false
+    - default: false
+      description: Reason for Unarchiving Cybereason Sensor.
+      isArray: false
       name: unarchiveReason
       required: true
+      secret: false
+    deprecated: false
     description: Unarchives a Sensor.
+    execution: false
     name: cybereason-unarchive-sensor
   - arguments:
-    - description: Sensor ID of Cybereason Sensor.
+    - default: false
+      description: Sensor ID of Cybereason Sensor.
+      isArray: false
       name: sensorID
       required: true
+      secret: false
+    deprecated: false
     description: Deletes a Sensor.
+    execution: false
     name: cybereason-delete-sensor
   - arguments:
-    - description: The hostname of the machine.
+    - default: false
+      description: The hostname of the machine.
+      isArray: false
       name: machine
+      required: false
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "false"
+      default: false
+      defaultValue: 'false'
       description: Show only suspicious processes.
+      isArray: false
       name: onlySuspicious
       predefined:
-      - "true"
-      - "false"
-    - defaultValue: "10000"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10000'
       description: Maximum number of results to retrieve.
+      isArray: false
       name: limit
-    - description: Process name to filter by.
+      required: false
+      secret: false
+    - default: false
+      description: Process name to filter by.
+      isArray: false
       name: processName
+      required: false
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "false"
+      default: false
+      defaultValue: 'false'
       description: If true, save the result to the context.
+      isArray: false
       name: saveToContext
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "false"
+      default: false
+      defaultValue: 'false'
       description: Filter only processes with incoming connections.
+      isArray: false
       name: hasIncomingConnection
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
-      defaultValue: "false"
+      default: false
+      defaultValue: 'false'
       description: Filter only processes with outgoing connections.
+      isArray: false
       name: hasOutgoingConnection
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: If process has external connection
+      isArray: false
       name: hasExternalConnection
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: If process is not known to reputation services and its image file is unsigned
+      isArray: false
       name: unsignedUnknownReputation
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: If process is running from temporary folder
+      isArray: false
       name: fromTemporaryFolder
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: If process was identified elevating its privileges to local system user
+      isArray: false
       name: privilegesEscalation
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: If the process was executed by PsExec service and is suspicious as being executed maliciously
+      isArray: false
       name: maliciousPsExec
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Searches for processes with various filters.
+    execution: false
     name: cybereason-query-processes
     outputs:
     - contextPath: Cybereason.Process.Name
@@ -194,10 +261,15 @@ script:
       description: The product's name
       type: Unknown
   - arguments:
-    - description: The hostname of the machine to check.
+    - default: false
+      description: The hostname of the machine to check.
+      isArray: false
       name: machine
       required: true
+      secret: false
+    deprecated: false
     description: Checks if the machine is currently connected to the Cybereason server
+    execution: false
     name: cybereason-is-probe-connected
     outputs:
     - contextPath: Cybereason.Machine.isConnected
@@ -207,18 +279,32 @@ script:
       description: Machine name
       type: string
   - arguments:
-    - description: Filter connections which contain this IP (in or out).
+    - default: false
+      description: Filter connections which contain this IP (in or out).
+      isArray: false
       name: ip
-    - description: Filter connections on the given machine.
+      required: false
+      secret: false
+    - default: false
+      description: Filter connections on the given machine.
+      isArray: false
       name: machine
-    - auto: PREDEFINED
-      defaultValue: "false"
+      required: false
+      secret: false
+    - default: false
       description: If true, save the result to the context.
+      isArray: false
       name: saveToContext
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
+    deprecated: false
     description: Searches for connections.
+    execution: false
     name: cybereason-query-connections
     outputs:
     - contextPath: Cybereason.Connection.Name
@@ -260,8 +346,11 @@ script:
   - arguments:
     - default: true
       description: Machine name to be isolated
+      isArray: false
       name: machine
       required: true
+      secret: false
+    deprecated: false
     description: Isolates a machine that has been infected from the rest of the network
     execution: true
     name: cybereason-isolate-machine
@@ -275,8 +364,11 @@ script:
   - arguments:
     - default: true
       description: Machine name to be un-isolated
+      isArray: false
       name: machine
       required: true
+      secret: false
+    deprecated: false
     description: Stops isolation of a machine
     execution: true
     name: cybereason-unisolate-machine
@@ -288,15 +380,29 @@ script:
       description: Is the machine isolated
       type: boolean
   - arguments:
-    - description: Filter to filter response by, given in Cybereason API syntax.
+    - default: false
+      description: Filter to filter response by, given in Cybereason API syntax.
+      isArray: false
       name: filters
-    - description: The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system.
+      required: false
+      secret: false
+    - default: false
+      description: The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system.
+      isArray: false
       name: totalResultLimit
-    - description: The number of items to return per Malop group.
+      required: false
+      secret: false
+    - default: false
+      description: The number of items to return per Malop group.
+      isArray: false
       name: perGroupLimit
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: MALOP
       description: 'The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results.'
+      isArray: false
       name: templateContext
       predefined:
       - MALOP
@@ -304,11 +410,23 @@ script:
       - CUSTOM
       - DETAILS
       - OVERVIEW
-    - description: Return all the malops within the last days
+      required: false
+      secret: false
+    - default: false
+      description: Return all the malops within the last days
+      isArray: false
       name: withinLastDays
-    - description: Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999)
+      required: false
+      secret: false
+    - default: false
+      description: Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999)
+      isArray: false
       name: malopGuid
+      required: false
+      secret: false
+    deprecated: false
     description: Returns a list of all Malops and details on the Malops.
+    execution: false
     name: cybereason-query-malops
     outputs:
     - contextPath: Cybereason.Malops.GUID
@@ -339,14 +457,24 @@ script:
       description: Malop managemant status
       type: string
   - arguments:
-    - description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+    - default: false
+      description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      isArray: false
       name: malopGuids
       required: true
-    - description: Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2)
+      secret: false
+    - default: false
+      description: Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2)
+      isArray: false
       name: machineName
+      required: false
+      secret: false
     - description: Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS").
       name: dateTime
+      required: false
+    deprecated: false
     description: Returns a list of malops
+    execution: false
     name: cybereason-malop-processes
     outputs:
     - contextPath: Cybereason.Process.Name
@@ -398,20 +526,33 @@ script:
       description: The product's name
       type: string
   - arguments:
-    - description: Comment to add to the malop
+    - default: false
+      description: Comment to add to the malop
+      isArray: false
       name: comment
       required: true
-    - description: Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      secret: false
+    - default: false
+      description: Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command)
+      isArray: false
       name: malopGuid
       required: true
+      secret: false
+    deprecated: false
     description: Add new comment to malop
+    execution: false
     name: cybereason-add-comment
   - arguments:
-    - description: Malop GUID to update its status
+    - default: false
+      description: Malop GUID to update its status
+      isArray: false
       name: malopGuid
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Status to update
+      isArray: false
       name: status
       predefined:
       - To Review
@@ -420,7 +561,10 @@ script:
       - Not Relevant
       - Open
       required: true
+      secret: false
+    deprecated: false
     description: Updates malop status
+    execution: false
     name: cybereason-update-malop-status
     outputs:
     - contextPath: Cybereason.Malops.GUID
@@ -432,9 +576,13 @@ script:
   - arguments:
     - default: true
       description: Malop process file MD5 to prevent
+      isArray: false
       name: md5
       required: true
+      secret: false
+    deprecated: false
     description: Prevent malop process file
+    execution: false
     name: cybereason-prevent-file
     outputs:
     - contextPath: Cybereason.Process.MD5
@@ -446,9 +594,13 @@ script:
   - arguments:
     - default: true
       description: Malop process file MD5 to unprevent
+      isArray: false
       name: md5
       required: true
+      secret: false
+    deprecated: false
     description: Unprevent malop process file
+    execution: false
     name: cybereason-unprevent-file
     outputs:
     - contextPath: Cybereason.Process.MD5
@@ -460,9 +612,13 @@ script:
   - arguments:
     - default: true
       description: File hash (SHA-1 and MD5 supported)
+      isArray: false
       name: file_hash
       required: true
+      secret: false
+    deprecated: false
     description: Query files as part of investigation
+    execution: false
     name: cybereason-query-file
     outputs:
     - contextPath: Cybereason.File.Path
@@ -513,9 +669,13 @@ script:
   - arguments:
     - default: true
       description: Domain to query
+      isArray: false
       name: domain
       required: true
+      secret: false
+    deprecated: false
     description: Query domains as part of investigation
+    execution: false
     name: cybereason-query-domain
     outputs:
     - contextPath: Cybereason.Domain.Name
@@ -542,9 +702,13 @@ script:
   - arguments:
     - default: true
       description: Username to query
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Query users as part of investigation
+    execution: false
     name: cybereason-query-user
     outputs:
     - contextPath: Cybereason.User.Username
@@ -728,12 +892,12 @@ script:
     description: Prevent a file associated with ransomware. (User will get inputs by executing the 'cybereason-available-remediation-actions' command if this remediation action is available for that Malop)
     name: cybereason-unsuspend-process
   - arguments:
-    - auto: PREDEFINED
-      description: Filter for Fetching Malwares by Malware needsAttention.
+    - description: Filter for Fetching Malwares by Malware needsAttention.
       name: needsAttention
+      auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
     - description: Filter for Fetching Malwares by Malware Type. (Possible filter values for Type are "KnownMalware,UnknownMalware,FilelessMalware,ApplicationControlMalware,RansomwareMalware").
       name: type
     - description: Filter for Fetching Malwares by Malware Status. (Possible filter values for Status are "Done,Excluded,Detected,Prevented,Remediated,DeleteOnRestart,Quarantined").
@@ -749,14 +913,14 @@ script:
     - description: Sensor ID of a sensor. (Comma separated values supported.)
       name: sensorID
       required: true
-    - auto: PREDEFINED
-      description: Select a method/type to scan a host.
+    - description: Select a method/type to scan a host.
       name: scanType
+      required: true
+      auto: PREDEFINED
       predefined:
       - FULL
       - QUICK
       - STOP
-      required: true
     description: Start or stop a full or quick scan for a host.
     name: cybereason-start-host-scan
   - arguments:
@@ -767,16 +931,22 @@ script:
     description: Get the results for host scanning.
     name: cybereason-fetch-scan-status
   - arguments:
-    - description: The hostname of the machine.
+    - default: false
+      description: The hostname of the machine.
+      isArray: false
       name: machineName
+      required: false
+      secret: false
+    deprecated: false
     description: Get the Sensor ID of a machine.
+    execution: false
     name: cybereason-get-sensor-id
-  dockerimage: demisto/python3:3.10.8.37233
   isfetch: true
   runonce: false
-  script: ''
-  subtype: python3
+  script: '-'
   type: python
-fromversion: 5.0.0
+  subtype: python3
+  dockerimage: demisto/python3:3.10.8.37233
 tests:
 - Cybereason Test
+fromversion: 5.0.0
