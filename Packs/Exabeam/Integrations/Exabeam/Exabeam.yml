@@ -17,7 +17,6 @@ configuration:
     malware,phishing,privilegeAbuse,physicalSecurity,privilegeEscalation,privilegedActivity,ransomware,workforceProtection"
   display: Exabeam Incident Type
   name: incident_type
-  description: "Incident type to filter in exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection."
   options:
   - generic
   - abnormalAuth
@@ -48,7 +47,6 @@ configuration:
 - defaultvalue: low,medium,high,critical
   display: Priority
   name: priority
-  description: "Incident priority to filter in exabeam. Possible values are: low, medium, high, critical."
   options:
   - low
   - medium
@@ -59,7 +57,6 @@ configuration:
 - defaultvalue: closed,closedFalsePositive,inprogress,new,pending,resolved
   display: Status
   name: status
-  description: "Incident status to filter in exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved."
   options:
   - closed
   - closedFalsePositive

@@ -212,10 +212,10 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-07T15:46:43Z',
-                'createdAt': '2022-12-07T15:53:09Z',
+                'startedDate': '2022-12-07T13:46:43Z',
+                'createdAt': '2022-12-07T13:53:09Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-07T15:53:19Z',
+                'updatedAt': '2022-12-07T13:53:19Z',
                 'updatedBy': 'system'
             }
         },
@@ -230,50 +230,50 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-07T16:03:07Z',
-                'createdAt': '2022-12-07T16:08:14Z',
+                'startedDate': '2022-12-07T14:03:07Z',
+                'createdAt': '2022-12-07T14:08:14Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-07T16:08:21Z',
+                'updatedAt': '2022-12-07T14:08:21Z',
                 'updatedBy': 'system'
             }
         },
         {
-        'incidentId': 'SOC-404',
-        'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
-        'baseFields': {
-            'incidentType': [
-                'ueba'
-            ],
-            'owner': 'unassigned',
-            'queue': '1',
-            'priority': 'medium',
-            'status': 'new',
-            'startedDate': '2022-12-07T16:12:44Z',
-            'createdAt': '2022-12-07T16:18:09Z',
-            'createdBy': 'admin',
-            'updatedAt': '2022-12-07T16:18:17Z',
-            'updatedBy': 'system'
-        }
-    }],
+            'incidentId': 'SOC-404',
+            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
+            'baseFields': {
+                'incidentType': [
+                    'ueba'
+                ],
+                'owner': 'unassigned',
+                'queue': '1',
+                'priority': 'medium',
+                'status': 'new',
+                'startedDate': '2022-12-07T14:12:44Z',
+                'createdAt': '2022-12-07T14:18:09Z',
+                'createdBy': 'admin',
+                'updatedAt': '2022-12-07T14:18:17Z',
+                'updatedBy': 'system'
+            }
+        }],
     'second_fetch': [
         {
-        'incidentId': 'SOC-405',
-        'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
-        'baseFields': {
-            'incidentType': [
-                'ueba'
-            ],
-            'owner': 'unassigned',
-            'queue': '1',
-            'priority': 'medium',
-            'status': 'new',
-            'startedDate': '2022-12-07T16:20:46Z',
-            'createdAt': '2022-12-07T16:28:14Z',
-            'createdBy': 'admin',
-            'updatedAt': '2022-12-07T16:28:21Z',
-            'updatedBy': 'system'
-        }
-    },
+            'incidentId': 'SOC-405',
+            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
+            'baseFields': {
+                'incidentType': [
+                    'ueba'
+                ],
+                'owner': 'unassigned',
+                'queue': '1',
+                'priority': 'medium',
+                'status': 'new',
+                'startedDate': '2022-12-07T14:20:46Z',
+                'createdAt': '2022-12-07T14:28:14Z',
+                'createdBy': 'admin',
+                'updatedAt': '2022-12-07T14:28:21Z',
+                'updatedBy': 'system'
+            }
+        },
         {
             'incidentId': 'SOC-406',
             'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
@@ -285,31 +285,31 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-08T09:58:46Z',
-                'createdAt': '2022-12-08T10:03:29Z',
+                'startedDate': '2022-12-08T07:58:46Z',
+                'createdAt': '2022-12-08T08:03:29Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-08T10:03:35Z',
+                'updatedAt': '2022-12-08T08:03:35Z',
                 'updatedBy': 'system'
             }
         },
         {
-        'incidentId': 'SOC-407',
-        'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
-        'baseFields': {
-            'incidentType': [
-                'ueba'
-            ],
-            'owner': 'unassigned',
-            'queue': '1',
-            'priority': 'medium',
-            'status': 'new',
-            'startedDate': '2022-12-08T10:22:21Z',
-            'createdAt': '2022-12-08T10:28:29Z',
-            'createdBy': 'admin',
-            'updatedAt': '2022-12-08T10:28:39Z',
-            'updatedBy': 'system'
-        }
-    }],
+            'incidentId': 'SOC-407',
+            'name': 'Exabeam Alert Active Service Discovery via Net Tool found',
+            'baseFields': {
+                'incidentType': [
+                    'ueba'
+                ],
+                'owner': 'unassigned',
+                'queue': '1',
+                'priority': 'medium',
+                'status': 'new',
+                'startedDate': '2022-12-08T08:22:21Z',
+                'createdAt': '2022-12-08T08:28:29Z',
+                'createdBy': 'admin',
+                'updatedAt': '2022-12-08T08:28:39Z',
+                'updatedBy': 'system'
+            }
+        }],
     'third_fetch': [
         {
             'incidentId': 'SOC-408',
@@ -322,10 +322,10 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-08T10:22:35Z',
-                'createdAt': '2022-12-08T10:28:29Z',
+                'startedDate': '2022-12-08T08:22:35Z',
+                'createdAt': '2022-12-08T08:28:29Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-08T10:28:40Z',
+                'updatedAt': '2022-12-08T08:28:40Z',
                 'updatedBy': 'system'
             }
         },
@@ -340,10 +340,10 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-08T10:22:33Z',
-                'createdAt': '2022-12-08T10:28:29Z',
+                'startedDate': '2022-12-08T08:22:33Z',
+                'createdAt': '2022-12-08T08:28:29Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-08T10:28:41Z',
+                'updatedAt': '2022-12-08T08:28:41Z',
                 'updatedBy': 'system'
             }
         },
@@ -358,10 +358,10 @@ EXPECTED_INCIDENTS = {
                 'queue': '1',
                 'priority': 'medium',
                 'status': 'new',
-                'startedDate': '2022-12-08T10:35:27Z',
-                'createdAt': '2022-12-08T10:38:29Z',
+                'startedDate': '2022-12-08T08:35:27Z',
+                'createdAt': '2022-12-08T08:38:29Z',
                 'createdBy': 'admin',
-                'updatedAt': '2022-12-08T10:38:47Z',
+                'updatedAt': '2022-12-08T08:38:47Z',
                 'updatedBy': 'system'
             }
         }],
@@ -370,7 +370,7 @@ EXPECTED_INCIDENTS = {
 EXPECTED_LAST_RUN = {
     'first_fetch': {
         'limit': 6,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-22T11:53:05.195302',
         'found_incident_ids': {
             'SOC-402': '',
             'SOC-403': '',
@@ -379,7 +379,7 @@ EXPECTED_LAST_RUN = {
     },
     'second_fetch': {
         'limit': 9,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-22T11:53:05.195302',
         'found_incident_ids': {
             'SOC-405': '',
             'SOC-406': '',
@@ -388,7 +388,7 @@ EXPECTED_LAST_RUN = {
     },
     'third_fetch': {
         'limit': 12,
-        'time': '2022-12-22T13:53:05.195302',
+        'time': '2022-12-22T11:53:05.195302',
         'found_incident_ids': {
             'SOC-408': '',
             'SOC-409': '',
