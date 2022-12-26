@@ -22,6 +22,18 @@ Microsoft Graph lets your app get authorized access to a user's Teams app in a p
     | Suppress Errors for Non Found Users |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+#### Required Permissions
+Chat.Create - Delegated
+Chat.Read - Delegated 
+Chat.ReadBasic - Delegated 
+Chat.ReadWrite - Delegated 
+ChatMember.Read - Delegated 
+ChatMember.ReadWrite - Delegated 
+ChatMessage.Read - Delegated 
+ChatMessage.Send - Delegated
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
