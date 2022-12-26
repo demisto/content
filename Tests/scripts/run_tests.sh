@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-SECRET_CONF_PATH=$(cat secret_conf_path)
 XSIAM_SERVERS_PATH=$(cat xsiam_servers_path)
 CONF_PATH="./Tests/conf.json"
 

@@ -2,7 +2,6 @@
 
 echo "start content tests"
 
-SECRET_CONF_PATH=$(cat secret_conf_path)
 CONF_PATH="./Tests/conf.json"
 DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
 

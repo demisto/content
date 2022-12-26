@@ -2,7 +2,6 @@
 
 echo "starting to install packs ..."
 
-SECRET_CONF_PATH=$(cat secret_conf_path)
 XSIAM_SERVERS_PATH=$(cat xsiam_servers_path)
 
 EXTRACT_FOLDER=$(mktemp -d)

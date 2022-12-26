@@ -2,8 +2,6 @@
 
 echo "start instance test"
 
-SECRET_CONF_PATH=$(cat secret_conf_path)
-
 USERNAME=$(cat $SECRET_CONF_PATH | jq '.username')
 PASSWORD=$(cat $SECRET_CONF_PATH | jq '.userPassword')
 

@@ -6,8 +6,6 @@ set -e
 EXTRACT_FOLDER=$(mktemp -d)
 BRANCH=${CI_COMMIT_BRANCH:-unknown}
 
-SECRET_CONF_PATH="./conf_secret.json"
-
 # ====== BUCKET CONFIGURATION ======
 
 if [[ -z $STORAGE_BASE_PATH ]]; then
