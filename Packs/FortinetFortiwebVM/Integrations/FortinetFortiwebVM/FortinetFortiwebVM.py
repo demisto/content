@@ -3590,7 +3590,7 @@ class ClientV2(Client):
         return self._http_request(method='GET', url_suffix='cmdb/system/certificate.intermediate-certificate-group')
 
 
-def protected_hostname_group_validation(args: Dict[str, Any]):
+def validate_protected_hostname_group(args: Dict[str, Any]):
     """Protected hostname group args validator.
 
     Args:
@@ -3613,7 +3613,7 @@ def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    protected_hostname_group_validation(args=args)
+    validate_protected_hostname_group(args=args)
     name = args['name']
     response = client.protected_hostname_create_request(name=name, default_action=args['default_action'])
     command_results = generate_simple_command_results('name', name, response,
@@ -3631,7 +3631,7 @@ def protected_hostname_group_update_command(client: Client, args: Dict[str, Any]
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    protected_hostname_group_validation(args=args)
+    validate_protected_hostname_group(args=args)
     name = args['name']
     response = client.protected_hostname_update_request(name=name, default_action=args.get('default_action'))
     command_results = generate_simple_command_results('name', name, response,
@@ -3689,7 +3689,7 @@ def protected_hostname_group_list_command(client: Client, args: Dict[str, Any]) 
     return command_results
 
 
-def protected_hostname_member_validation(args: Dict[str, Any]):
+def validate_protected_hostname_member(args: Dict[str, Any]):
     """Protected hostname member args validator.
 
     Args:
@@ -3716,7 +3716,7 @@ def protected_hostname_member_create_command(client: Client, args: Dict[str, Any
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    protected_hostname_member_validation(args=args)
+    validate_protected_hostname_member(args=args)
     name = args['group_name']
     host = args['host']
     response = client.protected_hostname_member_create_request(name=name,
@@ -3741,7 +3741,7 @@ def protected_hostname_member_update_command(client: Client, args: Dict[str, Any
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    protected_hostname_member_validation(args=args)
+    validate_protected_hostname_member(args=args)
     group_name = args['group_name']
     member_id = args['member_id']
     # Get exist settings from API version 1
@@ -3822,7 +3822,7 @@ def protected_hostname_member_list_command(client: Client, args: Dict[str, Any])
     return command_results
 
 
-def ip_list_group_validation(client: Client, args: Dict[str, Any]):
+def validate_ip_list_group(client: Client, args: Dict[str, Any]):
     """IP list group args validator.
 
     Args:
@@ -3855,7 +3855,7 @@ def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ip_list_group_validation(client, args)
+    validate_ip_list_group(client, args)
     group_name = args['name']
     response = client.ip_list_group_create_request(group_name=group_name,
                                                    action=args.get('action'),
@@ -3881,7 +3881,7 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     if not isinstance(client, ClientV2):
         raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
-    ip_list_group_validation(client, args)
+    validate_ip_list_group(client, args)
     group_name = args['name']
     response = client.ip_list_group_update_request(  # type: ignore # client is ClientV2.
         group_name=group_name,
@@ -3937,7 +3937,7 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def ip_list_member_validation(client: Client, args: Dict[str, Any]):
+def validate_ip_list_member(client: Client, args: Dict[str, Any]):
     """IP list member args validator.
 
     Args:
@@ -3968,7 +3968,7 @@ def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> Comma
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ip_list_member_validation(client, args)
+    validate_ip_list_member(client, args)
     group_name = args['group_name']
     ip_address = args['ip_address']
     response = client.ip_list_member_create_request(group_name=group_name,
@@ -3994,7 +3994,7 @@ def ip_list_member_update_command(client: Client, args: Dict[str, Any]) -> Comma
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    ip_list_member_validation(client, args)
+    validate_ip_list_member(client, args)
     group_name = args['group_name']
     member_id = args['member_id']
     # Get exist settings from API version 1
@@ -4065,7 +4065,7 @@ def ip_list_member_list_command(client: Client, args: Dict[str, Any]) -> Command
     return command_results
 
 
-def http_content_routing_member_validation(args: Dict[str, Any]):
+def validate_http_content_routing_member(args: Dict[str, Any]):
     """HTTP content routing member args validator.
 
     Args:
@@ -4094,7 +4094,7 @@ def http_content_routing_member_add_command(client: Client, args: Dict[str, Any]
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    http_content_routing_member_validation(args=args)
+    validate_http_content_routing_member(args=args)
     policy_name = args['policy_name']
     http_content_routing_policy = args['http_content_routing_policy']
     response = client.http_content_routing_member_add_request(
@@ -4122,7 +4122,7 @@ def http_content_routing_member_update_command(client: Client, args: Dict[str, A
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    http_content_routing_member_validation(args=args)
+    validate_http_content_routing_member(args=args)
     policy_name = args['policy_name']
     id = args['id']
     # Get exist settings from API version 1
@@ -4196,7 +4196,7 @@ def http_content_routing_member_list_command(client: Client, args: Dict[str, Any
     return command_results
 
 
-def geo_ip_group_validation(client: Client, args: Dict[str, Any]):
+def validate_geo_ip_group(client: Client, args: Dict[str, Any]):
     """Geo IP Group args validator.
 
     Args:
@@ -4228,7 +4228,7 @@ def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    geo_ip_group_validation(client, args)
+    validate_geo_ip_group(client, args)
     name = args['name']
     trigger_policy = args.get('trigger_policy')
     severity = args.get('severity', 'Low')
@@ -4258,7 +4258,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    geo_ip_group_validation(client, args)
+    validate_geo_ip_group(client, args)
     name = args['name']
     # Get exist settings from API version 1
     args = get_object_data_before_update(
@@ -4270,7 +4270,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
         requested_version=ClientV1.API_VER,
     )
     block_period = arg_to_number(args.get('block_period'))
-    block_period_validation(client.version, block_period)
+    validate_block_period(client.version, block_period)
     response = client.geo_ip_group_update_request(name=name,
                                                   trigger_policy=args.get('trigger_policy'),
                                                   severity=args.get('severity'),
@@ -4335,7 +4335,7 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     return command_results
 
 
-def geo_ip_member_validation(args: Dict[str, Any]):
+def validate_geo_ip_member(args: Dict[str, Any]):
     """Geo IP Group args validator.
 
     Args:
@@ -4393,7 +4393,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    geo_ip_member_validation(args=args)
+    validate_geo_ip_member(args=args)
     group_name = args['group_name']
     countries = argToList(args['countries'])
     all_countries = countries
@@ -4783,7 +4783,7 @@ def certificate_intermediate_group_list_command(client: Client, args: Dict[str, 
     return command_results
 
 
-def server_policy_validation(version: str, args: Dict[str, Any]):
+def validate_server_policy(version: str, args: Dict[str, Any]):
     """Validate argument for server policy.
 
     Args:
@@ -4876,7 +4876,7 @@ def server_policy_create_command(client: Client, args: Dict[str, Any]) -> Comman
     name = args['name']
     if json_template_id := args.get('json_template_id'):
         args.update(read_json_policy(json_template_id, name))
-    server_policy_validation(client.version, args)
+    validate_server_policy(client.version, args)
     response = client.server_policy_create_request(
         name=args['name'],
         deployment_mode=args['deployment_mode'],
@@ -4940,7 +4940,7 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
                                          args=args,
                                          parser_command=client.parser.server_policy,
                                          by_key='name' if client.version == ClientV2.API_VER else None)
-    server_policy_validation(client.version, args)
+    validate_server_policy(client.version, args)
     response = client.server_policy_update_request(
         name=args['name'],
         deployment_mode=args.get('deployment_mode'),
@@ -5033,7 +5033,7 @@ def server_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
-def custom_whitelist_validation(version: str, args: Dict[str, Any], member_type: Optional[str] = None):
+def validate_custom_whitelist(version: str, args: Dict[str, Any], member_type: Optional[str] = None):
     """Custom whitelist member args validator.
 
     Args:
@@ -5094,7 +5094,7 @@ def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) ->
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    custom_whitelist_validation(version=client.version, args=args, member_type='URL')
+    validate_custom_whitelist(version=client.version, args=args, member_type='URL')
     request_url = args['request_url']
     response = client.custom_whitelist_url_create_request(request_type=args['request_type'], request_url=request_url)
     member_id = get_object_id(client, response, 'requestURL', request_url, client.custom_whitelist_list_request)
@@ -5124,7 +5124,7 @@ def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) ->
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
                                          parser_command=client.parser.custom_whitelist)
-    custom_whitelist_validation(version=client.version, args=args, member_type='URL')
+    validate_custom_whitelist(version=client.version, args=args, member_type='URL')
     response = client.custom_whitelist_url_update_request(id=id,
                                                           request_type=args.get('request_type'),
                                                           request_url=args.get('request_url'),
@@ -5145,7 +5145,7 @@ def custom_whitelist_parameter_create_command(client: Client, args: Dict[str, An
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    custom_whitelist_validation(version=client.version, args=args, member_type='Parameter')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Parameter')
     name = args['name']
     response = client.custom_whitelist_parameter_create_request(name=name,
                                                                 name_type=args.get('name_type'),
@@ -5215,7 +5215,7 @@ def custom_whitelist_parameter_update_command(client: Client, args: Dict[str, An
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
                                          parser_command=client.parser.custom_whitelist)
-    custom_whitelist_validation(version=client.version, args=args, member_type='Parameter')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Parameter')
     response = client.custom_whitelist_parameter_update_request(id=id,
                                                                 name=args.get('name'),
                                                                 status=args.get('status'),
@@ -5241,7 +5241,7 @@ def custom_whitelist_cookie_create_command(client: Client, args: Dict[str, Any])
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    custom_whitelist_validation(version=client.version, args=args, member_type='Cookie')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Cookie')
     name = args['name']
     response = client.custom_whitelist_cookie_create_request(name=name,
                                                              domain=args.get('domain'),
@@ -5272,7 +5272,7 @@ def custom_whitelist_cookie_update_command(client: Client, args: Dict[str, Any])
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
                                          parser_command=client.parser.custom_whitelist)
-    custom_whitelist_validation(version=client.version, args=args, member_type='Cookie')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Cookie')
     response = client.custom_whitelist_cookie_update_request(id=id,
                                                              name=args.get('name'),
                                                              domain=args.get('domain'),
@@ -5295,7 +5295,7 @@ def custom_whitelist_header_field_create_command(client: Client, args: Dict[str,
     """
     if client.version == ClientV1.API_VER:
         raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
-    custom_whitelist_validation(version=client.version, args=args, member_type='Header Field')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Header Field')
     name = args['name']
     response = client.custom_whitelist_header_field_create_request(  # type: ignore #client is ClientV2
         header_name_type=args['header_name_type'],
@@ -5332,7 +5332,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
                                          parser_command=client.parser.custom_whitelist)
-    custom_whitelist_validation(version=client.version, args=args, member_type='Header Field')
+    validate_custom_whitelist(version=client.version, args=args, member_type='Header Field')
     response = client.custom_whitelist_header_field_update_request(  # type: ignore #client is ClientV2
         id=id,
         header_name_type=args.get('header_name_type'),
@@ -5726,7 +5726,7 @@ def generate_simple_context_data_command_results(key: str, value: str, response:
     return command_results
 
 
-def block_period_validation(version: str, block_period: Optional[int]):
+def validate_block_period(version: str, block_period: Optional[int]):
     """Validate the block period argument.
 
     Args:
