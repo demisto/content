@@ -154,7 +154,7 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
-            
+
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
@@ -2391,21 +2391,20 @@ def sub_main():
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
 
-        
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
-            "ews-move-item-between-mailboxes": move_item_between_mailboxes, 
+            "ews-move-item-between-mailboxes": move_item_between_mailboxes,
             "ews-move-item": move_item,
             "ews-delete-items": delete_items,
-            "ews-search-mailbox": search_items_in_mailbox, 
-            "ews-get-contacts": get_contacts, 
-            "ews-get-out-of-office": get_out_of_office_state, 
-            "ews-recover-messages": recover_soft_delete_item, 
-            "ews-create-folder": create_folder, 
-            "ews-mark-item-as-junk": mark_item_as_junk, 
-            "ews-find-folders": find_folders, 
-            "ews-get-items-from-folder": get_items_from_folder, 
+            "ews-search-mailbox": search_items_in_mailbox,
+            "ews-get-contacts": get_contacts,
+            "ews-get-out-of-office": get_out_of_office_state,
+            "ews-recover-messages": recover_soft_delete_item,
+            "ews-create-folder": create_folder,
+            "ews-mark-item-as-junk": mark_item_as_junk,
+            "ews-find-folders": find_folders,
+            "ews-get-items-from-folder": get_items_from_folder,
             "ews-get-items": get_items,
             "ews-get-folder": get_folder,
             "ews-expand-group": get_expanded_group,
