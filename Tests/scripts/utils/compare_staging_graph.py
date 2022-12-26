@@ -17,6 +17,7 @@ from slack_sdk import WebClient
 yaml = YAML()
 
 SKIPPED_FILES = {"signatures.sf", "script-CommonServerPython.yml", "changelog.json"}
+ARTIFACTS_FOLDER: Path
 
 
 def sort_dict(dct: dict):
@@ -181,11 +182,14 @@ def compare(
 
 
 def compare_content_packs(
+    marketplace: str,
     content_packs_id_set: Path,
     content_packs_graph: Path,
     output_path: Path,
     message: list[str],
 ):
+    with (ARTIFACTS_FOLDER / f'removed_from_marketplace-{marketplace}').open() as f:
+        reasons = json.load(f)
     ZipFile(content_packs_id_set).extractall(output_path / "id_set")
     ZipFile(content_packs_graph).extractall(output_path / "graph")
     list_files_id_set = list((output_path / "id_set").rglob("*"))
@@ -195,7 +199,9 @@ def compare_content_packs(
         for path in list_files_id_set
         if not Path(str(path).replace("id_set", "graph")).exists() and "NonSupported" not in str(path)
     ]
-    message.append(f"Missing files in graph: {missing}")
+    missing = [str(path.relative_to(ARTIFACTS_FOLDER.parent)) for path in missing]
+    missing = [(path, reasons[path]) for path in missing]
+    message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
 
 
 def compare_dependencies(
@@ -205,14 +211,16 @@ def compare_dependencies(
 ):
     dependencies_id_set = json.load(dependencies_id_set.open())
     dependencies_graph = json.load(dependencies_graph.open())
+    with ARTIFACTS_FOLDER / "depends_on.json" as f:
+        reasons = json.load(f)
     for pack_idset, deps_idset in dependencies_id_set.items():
         deps_graph = dependencies_graph.get(pack_idset)
         if not deps_graph:
             continue
-        compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, message)
+        compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, reasons, message)
 
 
-def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, message: list[str]):
+def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, reasons: dict, message: list[str]):
     first_level_dependencies_idset = deps_idset["dependencies"]
     first_level_dependencies_graph = deps_graph["dependencies"]
     if first_level_dependencies_idset != first_level_dependencies_graph:
@@ -223,55 +231,64 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
 
         if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
             message.append(f"Moved to optional dependencies for pack {pack}: {sorted(moved_to_optional)}")
+            for dep in moved_to_optional:
+                message.append(f"Reason: {pack} depends on {dep} because of {reasons[(pack, dep)]}")
 
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
             message.append(f"Moved to mandatory dependencies for pack {pack}: {sorted(moved_to_mandatory)}")
+            for dep in moved_to_mandatory:
+                message.append(f"Reason: {pack} depends on {dep} because of {reasons[(pack, dep)]}")
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(f"Missing mandatory dependencies for pack {pack}: {sorted(missing_in_graph)}")
 
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(f"Extra mandatory dependencies for pack {pack}: {sorted(extra_in_graph)}")
+            for dep in extra_in_graph:
+                message.append(f"Reason: {pack} depends on {dep} because of {reasons[(pack, dep)]}")
 
         if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(f"Missing optional dependencies for pack {pack}: {sorted(missing_in_graph)}")
         if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(f"Extra optional dependencies for pack {pack}: {sorted(extra_in_graph)}")
+            for dep in extra_in_graph:
+                message.append(f"Reason: {pack} depends on {dep} because of {reasons[(pack, dep)]}")
 
 
 def main():
+    global ARTIFACTS_FOLDER
     parser = argparse.ArgumentParser()
     parser.add_argument("--artifacts", help="artifacts of the build")
     parser.add_argument("--marketplace", "--mp", help="Marketplace to use")
     parser.add_argument("--output-path", help="Output path")
     parser.add_argument("--slack-token", "-s", help="Slack token", required=False)
     args = parser.parse_args()
-    artifacts = Path(args.artifacts)
+    ARTIFACTS_FOLDER = Path(args.artifacts)
     output_path = Path(args.output_path)
     slack_token = args.slack_token
     marketplace = args.marketplace
 
-    zip_id_set = artifacts / "uploaded_packs-id_set"
-    zip_graph = artifacts / "uploaded_packs-graph"
+    zip_id_set = ARTIFACTS_FOLDER / "uploaded_packs-id_set"
+    zip_graph = ARTIFACTS_FOLDER / "uploaded_packs-graph"
 
-    index_id_set_path = artifacts / "index.json"
-    index_graph_path = artifacts / "index-graph.json"
+    index_id_set_path = ARTIFACTS_FOLDER / "index.json"
+    index_graph_path = ARTIFACTS_FOLDER / "index-graph.json"
 
-    collected_packs_id_set = artifacts / "content_packs_to_install.txt"
-    collected_packs_graph = artifacts / "content_packs_to_install-graph.txt"
+    collected_packs_id_set = ARTIFACTS_FOLDER / "content_packs_to_install.txt"
+    collected_packs_graph = ARTIFACTS_FOLDER / "content_packs_to_install-graph.txt"
 
-    content_packs_id_set = artifacts / "content_packs_id_set.zip"
-    content_packs_graph = artifacts / "content_packs_graph.zip"
+    content_packs_id_set = ARTIFACTS_FOLDER / "content_packs_id_set.zip"
+    content_packs_graph = ARTIFACTS_FOLDER / "content_packs_graph.zip"
 
-    dependencies_id_set = artifacts / "packs_dependencies_id_set.json"
-    dependencies_graph = artifacts / "packs_dependencies_graph.json"
+    dependencies_id_set = ARTIFACTS_FOLDER / "packs_dependencies_id_set.json"
+    dependencies_graph = ARTIFACTS_FOLDER / "packs_dependencies_graph.json"
 
     message = [
         f"Diff report for {marketplace}",
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
 
-    compare_content_packs(content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
+    compare_content_packs(marketplace, content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
     try:
         compare_dependencies(dependencies_id_set, dependencies_graph, message)
     except Exception as e:
