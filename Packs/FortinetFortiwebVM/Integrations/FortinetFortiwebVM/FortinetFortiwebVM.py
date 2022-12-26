@@ -3079,7 +3079,6 @@ class ClientV2(Client):
             server_pool (Optional[str]): Server pool name.
             protected_hostnames (Optional[str]): Protected hostname group name.
             client_real_ip (Optional[str]): Client real IP.
-            kwargs : ip_range (str): IP Range.
             syn_cookie (Optional[str]): Sync cookie.
             half_open_thresh (Optional[str]): Half open threshold number.
             http_service (Optional[str]): HTTP service name.
@@ -3094,18 +3093,20 @@ class ClientV2(Client):
             url_case_sensitivity (Optional[str]): URL case sensitivity flag.
             comments (Optional[str]): Comments.
             mach_once (Optional[str]): Match once flag.
-            kwargs: retry_on (str): Retry on flag.
-            kwargs: retry_on_cache_size (Optional[str]): Retry on chache size:
-            kwargs : retry_on_connect_failure (Optional[str]): Retry on connect failure status.
-            kwargs : retry_times_on_connect_failure (Optional[str]): Retry on connect failure times.
-            kwargs : retry_on_http_layer (Optional[str]): Retry on http layer status.
-            kwargs : retry_times_on_http_layer (Optional[str]): Retry on http layer times.
-            kwargs : retry_on_http_response_codes (Optional[str]): Retry on HTTP response codes.
-            kwargs : scripting (Optional[str]): Scripting status.
-            kwargs : scripting_list (Optional[str]): Scripting list.
-            kwargs : allow_list (Optional[str]): Allow list.
-            kwargs : replace_msg (Optional[str]): Replace message.
-        Returns:
+            kwargs :
+                ip_range (str): IP Range.
+                retry_on (str): Retry on flag.
+                retry_on_cache_size (Optional[str]): Retry on chache size:
+                retry_on_connect_failure (Optional[str]): Retry on connect failure status.
+                retry_times_on_connect_failure (Optional[str]): Retry on connect failure times.
+                retry_on_http_layer (Optional[str]): Retry on http layer status.
+                retry_times_on_http_layer (Optional[str]): Retry on http layer times.
+                retry_on_http_response_codes (Optional[str]): Retry on HTTP response codes.
+                scripting (Optional[str]): Scripting status.
+                scripting_list (Optional[str]): Scripting list.
+                allow_list (Optional[str]): Allow list.
+                replace_msg (Optional[str]): Replace message.
+        Returns
             Dict[str, Any]: API response from FortiwebVM V2
         """
 
