@@ -33,7 +33,7 @@ jobs:
       - name: Review Release Notes
         run: |
           IFS='${{ env.CHANGED_FILES_DELIMITER }}' read -r -a changed_files <<< "${{ steps.changed-files.outputs.all_changed_files }}"
-          for file in "$changed_files"; do
+          for i in "${changed_files[@]}"; do
             echo "File '${file}' was changed"
           done;
           echo "Starting docs review..."
