@@ -237,6 +237,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
     else:  # custom comments field
         return ioc.get('CustomFields', {}).get(comment_field_name, ()) or None
 
+
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
     try:
         demisto.debug(f'Raw outgoing IOC: {ioc}')
