@@ -1420,8 +1420,9 @@ class ClientV1(Client):
         Returns:
             Dict[str, Any]: API response from FortiwebVM V2.
         """
-        endpoint = \
-            f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name}/ProtectedHostnamesNewHost/{member_id}'
+        endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{group_name} \
+                /ProtectedHostnamesNewHost/{member_id}'
+
         data = remove_empty_elements({
             'host':
             host,
