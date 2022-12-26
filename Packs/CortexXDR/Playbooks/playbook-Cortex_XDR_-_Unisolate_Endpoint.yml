@@ -31,9 +31,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: 1dc90b7b-6380-4a1b-89df-0ada079bf854
@@ -42,7 +39,8 @@ tasks:
       id: 1dc90b7b-6380-4a1b-89df-0ada079bf854
       version: -1
       name: 'Is cortex XDR available '
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -70,21 +68,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f2ee88e0-4fbb-4b5e-81e6-631b37e066ad
+    taskid: dae916a1-0c84-43c8-84f7-29f9cb88cb56
     type: condition
     task:
-      id: f2ee88e0-4fbb-4b5e-81e6-631b37e066ad
+      id: dae916a1-0c84-43c8-84f7-29f9cb88cb56
       version: -1
       name: Is there an endpoint to unisolate?
-      description:  Is there an endpoint to unisolate?
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -99,23 +94,11 @@ tasks:
             value:
               simple: inputs.Endpoint_ID
             iscontext: true
-          right:
-            value: {}
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.Hostname
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.IP
-            iscontext: true
     view: |-
       {
         "position": {
-          "x": 1690,
-          "y": 430
+          "x": 1750,
+          "y": 460
         }
       }
     note: false
@@ -123,9 +106,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 1dd236f7-ea7b-447a-8374-f5b9149e6f04
@@ -143,7 +123,7 @@ tasks:
       {
         "position": {
           "x": 1470,
-          "y": 1160
+          "y": 1430
         }
       }
     note: false
@@ -151,19 +131,16 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7f93febb-d3a1-429a-843a-08b7143d52bd
+    taskid: a0bb8b7b-a3ce-4e95-82d7-668bf269932c
     type: regular
     task:
-      id: 7f93febb-d3a1-429a-843a-08b7143d52bd
+      id: a0bb8b7b-a3ce-4e95-82d7-668bf269932c
       version: -1
       name: Unisolate endpoint
       description: Reverses the isolation of an endpoint.
-      script: '|||xdr-endpoint-unisolate'
+      script: '|||xdr-unisolate-endpoint'
       type: regular
       iscommand: true
       brand: ""
@@ -172,28 +149,13 @@ tasks:
       - "5"
     scriptarguments:
       endpoint_id:
-        complex:
-          root: inputs.Endpoint_ID
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: inputs.Endpoint_ID
-                iscontext: true
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
-                iscontext: true
-          - operator: uniq
+        simple: ${inputs.Endpoint_ID}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1860,
-          "y": 990
+          "x": 2020,
+          "y": 1090
         }
       }
     note: false
@@ -201,18 +163,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 9fc01dd3-680f-4ec6-807c-255e3aab6c41
+    taskid: f6a832c3-2230-4dce-8b8c-3626ce33ecea
     type: regular
     task:
-      id: 9fc01dd3-680f-4ec6-807c-255e3aab6c41
+      id: f6a832c3-2230-4dce-8b8c-3626ce33ecea
       version: -1
       name: Get endpoint status
-      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using AND condition (OR is not supported). Maximum result
+        set size is 100. Offset is the zero-based number of endpoint from the start
+        of the result set (start by counting from 0).
       script: '|||xdr-get-endpoints'
       type: regular
       iscommand: true
@@ -221,36 +184,29 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      alias_name: {}
+      dist_name: {}
       endpoint_id_list:
-        complex:
-          root: inputs.Endpoint_ID
-          transformers:
-          - operator: split
-            args:
-              delimiter: {}
-          - operator: uniq
-      hostname:
-        complex:
-          root: inputs.Hostname
-          transformers:
-          - operator: split
-            args:
-              delimiter: {}
-          - operator: uniq
-      ip_list:
-        complex:
-          root: inputs.IP
-          transformers:
-          - operator: split
-            args:
-              delimiter: {}
-          - operator: uniq
+        simple: ${inputs.Endpoint_ID}
+      first_seen_gte: {}
+      first_seen_lte: {}
+      group_name: {}
+      hostname: {}
+      ip_list: {}
+      isolate: {}
+      last_seen_gte: {}
+      last_seen_lte: {}
+      limit: {}
+      page: {}
+      platform: {}
+      sort_by: {}
+      sort_order: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1860,
-          "y": 610
+          "x": 2020,
+          "y": 640
         }
       }
     note: false
@@ -258,21 +214,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0210a256-b211-4a77-8e86-fd5897fa0a19
+    taskid: 4025aba5-c38e-4201-8db4-2a66add00693
     type: condition
     task:
-      id: 0210a256-b211-4a77-8e86-fd5897fa0a19
+      id: 4025aba5-c38e-4201-8db4-2a66add00693
       version: -1
       name: Is the endpoint is isolated?
-      description: Is the endpoint is isolated?
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
@@ -290,16 +243,20 @@ tasks:
           right:
             value:
               simple: AGENT_ISOLATED
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
+              simple: Endpoint.ID
+            iscontext: true
+          right:
+            value:
+              simple: inputs.Endpoint_ID
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 1860,
-          "y": 760
+          "x": 2020,
+          "y": 860
         }
       }
     note: false
@@ -307,9 +264,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -320,8 +274,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1125,
-        "width": 770,
+        "height": 1395,
+        "width": 930,
         "x": 1470,
         "y": 100
       }
@@ -331,22 +285,11 @@ inputs:
 - key: Endpoint_ID
   value: {}
   required: false
-  description: The endpoint ID that you want to be unisolated.
-  playbookInputQuery:
-- key: Hostname
-  value: {}
-  required: false
-  description: The endpoint's hostname that you want to be unisolated.
-  playbookInputQuery:
-- key: IP
-  value: {}
-  required: false
-  description: The endpoint's IP that you want to be unisolated.
+  description: The endpoint ID that you want to unisolate.
   playbookInputQuery:
 outputs: []
 tests:
 - Test XDR Playbook
-fromversion: 6.2.0
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
+- Cortex XDR - IOC - Test
+fromversion: 5.5.0
+toversion: 6.1.9

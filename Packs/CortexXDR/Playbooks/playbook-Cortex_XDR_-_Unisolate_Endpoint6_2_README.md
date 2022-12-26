@@ -13,7 +13,7 @@ This playbook does not use any sub-playbooks.
 * IsIntegrationAvailable
 
 ### Commands
-* xdr-unisolate-endpoint
+* xdr-endpoint-unisolate
 * xdr-get-endpoints
 
 ## Playbook Inputs
@@ -21,7 +21,9 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Endpoint_ID | The endpoint ID that you want to unisolate. |  | Optional |
+| Endpoint_ID | The endpoint ID that you want to be unisolated. |  | Optional |
+| Hostname | The endpoint's hostname that you want to be unisolated. |  | Optional |
+| IP | The endpoint's IP that you want to be unisolated. |  | Optional |
 
 ## Playbook Outputs
 ---

@@ -4,7 +4,7 @@ This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Ne
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* GenericPolling
+This playbook does not use any sub-playbooks.
 
 ### Integrations
 * CortexXDRIR
@@ -13,7 +13,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
-* xdr-isolate-endpoint
+* xdr-endpoint-isolate
 * xdr-get-endpoints
 
 ## Playbook Inputs
