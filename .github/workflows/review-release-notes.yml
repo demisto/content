@@ -20,7 +20,7 @@ jobs:
           separator: ${{ env.CHANGED_FILES_DELIMITER }}
           files: |
             Packs/**/ReleaseNotes/**
-          since_last_remote_commit: true
+          since_last_remote_commit: false
         
       - name: Setup Python
         uses: actions/setup-python@v3
