@@ -33,13 +33,24 @@ The queries that will be included during the fetch are decided according to "Log
 ##### Log Type Query
 - Each log type has its own query field in the instance configuration. 
 - Note that the default query values has some example text in it, make sure to enter a valid query.
+  
+##### Log Type Query Examples
+
+| Log Type            | Query Example                                                                                                                                           |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Traffic             | (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})                                                                         |
+| Threat              | (severity geq high)                                                                                                                                     |
+| URL                 | ((action eq block-override) or (action eq block-url)) and (severity geq high)                                                                           |
+| Data                | ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)                                               |
+| Correlation         | (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}') and (src in {source_address}) |
+| System              | (subtype eq {sub_type}) and (severity geq {severity})                                                                                                   |
+| Wildfire Submission | ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))                                                          |
+| Decryption          | (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))                                            |
 
 ##### Classifiers and Mappers
 
 This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) That handles incidents returned from the API.
 
 ---
-
-
 
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/panorama)
