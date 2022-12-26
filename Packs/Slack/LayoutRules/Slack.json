@@ -3,7 +3,7 @@
   "layout_id": "test id",
   "description": "This trigger is responsible for handling Impossible Traveler alerts",
   "rule_name": "test rule name",
-  "marketplaces": "marketplacev2",
+  "marketplaces": ["marketplacev2"],
   "alerts_filter": {
     "filter": {
       "AND": [
