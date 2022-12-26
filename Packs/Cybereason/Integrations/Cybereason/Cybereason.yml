@@ -43,6 +43,7 @@ configuration:
   name: enable_epp_poll
   required: false
   type: 8 
+  description: Enable EPP Poll for incidents.
 description: Endpoint detection and response to manage and query malops, connections and processes.
 display: Cybereason
 name: Cybereason
