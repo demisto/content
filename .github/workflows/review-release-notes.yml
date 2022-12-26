@@ -2,7 +2,7 @@ name: Review Release Notes
 on: pull_request
 
 env:
-  CHANGED_FILES_DELIMITER: ;
+  CHANGED_FILES_DELIMITER: ","
 
 jobs:
   release_notes_review:
