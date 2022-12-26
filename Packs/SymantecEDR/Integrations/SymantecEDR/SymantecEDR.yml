@@ -725,6 +725,94 @@ script:
     description: Get  Audit Events
     execution: false
     name: symantec-edr-audit-event-list
+    outputs:
+    - contextPath: SymantecEDR.AuditEvent.user_agent_ip
+      description: 'IP Address of endpoint that originated or caused the event.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.entity_result.data.incident_management.uuid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.entity_result.type
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.entity_result.uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.entity_result.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.status_id
+      description: 'The overall success or failure of the action reported by the event. Values are: 0 = Unknown 1 = Success 2 = Failure.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.feature_name
+      description: 'The name of the feature that originated the event. Example: Search.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.device_ip
+      description: 'The IPv6 or IPv4 address of the device that originated the event.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.user_name
+      description: 'The username or ID that originated or caused the event.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.atp_node_role
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.category_id
+      description: 'The event type category. 4 = Audit.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.device_uid
+      description: 'Unique ID of the device that originated the event.Example: 7c056576-860b-4eb9-b49c-3c349edb733f.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.log_name
+      description: 'The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. Example: epmp_events-2015-11-05'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.count
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.device_name
+      description: 'The device name (i.e., the name of the endpoint or appliance associated with an event).'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.message
+      description: 'Human-readable (multi-line) event message or description of the event.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.log_time
+      description: 'The time the event was logged. Example: YYYY-MM-DDTHH:MM:SS.sssZ'
+      type: Date
+    - contextPath: SymantecEDR.AuditEvent.severity_id
+      description: 'Event severity that specifies the importance of the event. Values are:  1 = info (default), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.device_cap
+      description: 'Name or caption of ATP appliance that generated the event.Example: EDR.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.id
+      description: 'The event identifier. 1 = Exists, 2 = Partial.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.device_time
+      description: 'The timestamp (in ISO 8601 format) that specifies the time at which the event occurred. Example: YYYY-MM-DDTHH:MM:SS.sssZ.'
+      type: Date
+    - contextPath: SymantecEDR.AuditEvent.product_ver
+      description: 'The version of the product that originated the event. Example: 4.6.8-8.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.device_end_time
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.AuditEvent.type_id
+      description: 'The unique identifier for an event. The following events are supported: For type_id details refer to “Input/Output parameter notes”.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.uuid
+      description: 'The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id).'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.product_name
+      description: 'The name of the product that originated the event. Example: "Symantec Endpoint Detection and Response”.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.status_detail
+      description: 'String representing the type of Success or Failure for the Audit events.'
+      type: String
+    - contextPath: SymantecEDR.AuditEvent.timezone
+      description: 'The timezone offset in minutes. For UTC this will always be 0. Example: 0.'
+      type: Number
+    - contextPath: SymantecEDR.AuditEvent.user_uid
+      description: 'Unique ID of the user that originated the event or the user on whose behalf the event occurred.'
+      type: String
   - arguments:
     - default: false
       description: |-
@@ -792,6 +880,163 @@ script:
     description: Used to get events from EDR on-premise
     execution: false
     name: symantec-edr-event-list
+    outputs:
+    - contextPath: SymantecEDR.Event.type_id
+      description: 'The unique identifier for an event. Refer to Section 5 “Input/Output Parameters notes”'
+      type: Number
+    - contextPath: SymantecEDR.Event.severity_id
+      description: 'Event severity that specifies the importance of the event. Values are: 1 = info (default), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal.'
+      type: Number
+    - contextPath: SymantecEDR.Event.device_time
+      description: 'The timestamp (in ISO 8601 format) that specifies the time at which the event occurred.'
+      type: Date
+    - contextPath: SymantecEDR.Event.log_time
+      description: 'The time the event was logged.'
+      type: Date
+    - contextPath: SymantecEDR.Event.device_uid
+      description: 'Unique ID of the device that originated the event.'
+      type: String
+    - contextPath: SymantecEDR.Event.device_name
+      description: 'The domain name of the client computer.'
+      type: String
+    - contextPath: SymantecEDR.Event.device_ip
+      description: 'The IPv6 or IPv4 address of the device that originated the event.'
+      type: String
+    - contextPath: SymantecEDR.Event.device_os_name
+      description: 'The operating system running on the device_type that originated the event. The Values include, but are not limited to, the following: Windows, Mac OSX, IOS, Android.'
+      type: String
+    - contextPath: SymantecEDR.Event.user_name
+      description: 'The username or ID that originated or caused the event.'
+      type: String
+    - contextPath: SymantecEDR.Event.user_domain
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.user_sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.device_domain
+      description: 'The domain where device resides. Example: "internal.somecompany.com”.'
+      type: String
+    - contextPath: SymantecEDR.Event.operation
+      description: 'The OS operation that initiated the event; Refer to Section 13 “Input/Output Parameters Notes”.'
+      type: Number
+    - contextPath: SymantecEDR.Event.event_actor.pid
+      description: 'The process identifer as reported by the operating system'
+      type: Number
+    - contextPath: SymantecEDR.Event.event_actor.uid
+      description: 'The unique identifer of the process. Example : "2ef07353-c1d2-409d-addd-2eed37a87e56". Applicable events : 8007.'
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.cmd_line
+      description: 'The command line that was used to launch the process. Applicable events : 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009,8081'
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.start_time
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.Event.event_actor.signature_level_id
+      description: 'A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT Applicable events : 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
+      type: Number
+    - contextPath: SymantecEDR.Event.event_actor.integrity_id
+      description: 'The process integrity level (Windows only). Possible values are: 0 = Unknown, 1 = Untrusted, 2 = Low, 3 = Medium, 4 = Medium Plus, 5 = High, 6 = System, 7 = Protected Applicable events : 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
+      type: Number
+    - contextPath: SymantecEDR.Event.event_actor.user.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.user.sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.md5
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.modified
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.Event.event_actor.file.path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.normalized_path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.signature_company_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.signature_value_ids
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.event_actor.file.sha2
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.event_actor.file.original_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.pid
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.process.uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.cmd_line
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.signature_level_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.process.integrity_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.process.user.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.user.sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.normalized_path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.md5
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.modified
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.Event.process.file.path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.signature_company_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.signature_value_ids
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.process.file.sha2
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.process.file.original_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.enriched_data.rule_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.enriched_data.category_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.enriched_data.category_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.Event.ref_uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.Event.uuid
+      description: 'The unique ID for this event. UUID uniquely identifies an event with a single event type (type_id).'
+      type: String
+    - contextPath: SymantecEDR.Event.log_name
+      description: 'The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events.'
+      type: String
   - arguments:
     - default: false
       description: |
@@ -866,6 +1111,193 @@ script:
     description: Command is used to get Events for Incidents
     execution: false
     name: symantec-edr-incident-event-list
+    outputs:
+    - contextPath: SymantecEDR.IncidentEvent.type_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.severity_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.device_time
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.IncidentEvent.log_time
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.IncidentEvent.device_uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.device_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.device_ip
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.device_os_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.user_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.user_domain
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.user_sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.incident
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.device_domain
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.operation
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.pid
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.cmd_line
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.start_time
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.signature_level_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.integrity_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.user.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.user.sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.md5
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.modified
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.normalized_path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.signature_company_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.signature_value_ids
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.sha2
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_actor.file.original_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.pid
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.process.uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.cmd_line
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.signature_level_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.process.integrity_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.process.user.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.user.sid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.normalized_path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.md5
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.modified
+      description: ''
+      type: Date
+    - contextPath: SymantecEDR.IncidentEvent.process.file.path
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.signature_company_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.signature_value_ids
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.process.file.sha2
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.process.file.original_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.enriched_data.suspicion_score
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_id
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_description
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_uuid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.attacks.technique_uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.attacks.technique_name
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.attacks.tactic_ids
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.attacks.tactic_uids
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.event_source
+      description: ''
+      type: Number
+    - contextPath: SymantecEDR.IncidentEvent.ref_uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.correlation_uid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.uuid
+      description: ''
+      type: String
+    - contextPath: SymantecEDR.IncidentEvent.log_name
+      description: ''
+      type: String
   - arguments:
     - default: false
       description: |
@@ -1221,18 +1653,6 @@ script:
     - contextPath: SymantecEDR.AllowListPolicy.target_value
       description: "Specifies value of this allow list policy. \n\nExample: \"1.1.1.1\""
       type: String
-  - arguments:
-    - default: true
-      description: Hash of the file to query. Supports SHA256
-      isArray: true
-      name: file
-      required: true
-      secret: false
-    deprecated: false
-    description: Issue Sandbox Command of specific SHA2
-    execution: false
-    name: file
-    polling: true
   - arguments:
     - auto: PREDEFINED
       default: false

@@ -376,15 +376,6 @@ def enriched_data_sub_object(data: Dict[str, Any]) -> Dict:
     return enriched_dict
 
 
-# def entity_sub_object(data: Dict[str, Any]) -> Dict:
-#     entity_dict = dict()
-#     return entity_dict
-#
-#
-# def entity_result_sub_object(data: Dict[str, Any]) -> Dict:
-#     return entity_sub_object(data)
-
-
 def user_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     user_dict = dict()
     ignore_key: List[str] = []
@@ -431,11 +422,6 @@ def file_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
     prefix = f'{obj_prefix}_file' if obj_prefix else f'file'
     file_dict = extract_raw_data(data, ignore_key_list, prefix)
     return file_dict
-
-
-# def process_sub_object(data: Dict[str, Any]) -> Dict:
-#     # Process object also refer to event_actor
-#     return event_actor_sub_object(data)
 
 
 def monitor_source_sub_object(data: Dict[str, Any]) -> Dict:
@@ -552,6 +538,7 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
         }
         event_dict = {**event_dict, **target_port_dict}
 
+    # All those Event Sub Object does not have data to present, Only can implemented in future enhancement if required
     # av # TODO
     # bash # TODO
     # Entity => AuditEntityData TODO
@@ -672,40 +659,6 @@ def endpoint_instance_readable_output(results: List[Dict], title: str) -> str:
     markdown = tableToMarkdown(title, camelize(summary_data, "_"), headers=column_order,
                                removeNull=True)
     return markdown
-
-
-# def generic_association_readable_output(results: List[Dict], title: str) -> str:
-#     """
-#     Convert to XSOAR Readable output for
-#             Domain-file, endpoint-domains and endpoint-file association
-#     Args:
-#         results (list): Symantec Association Results data
-#         title (str): Title string
-#     Returns:
-#         A string representation of the Markdown table
-#     """
-#
-#     summary_data = []
-#     for data in results:
-#         new = {
-#             'device_name': data.get('device_name', ''),
-#             'device_ip': data.get('device_ip', ''),
-#             'device_uid': data.get('device_uid', ''),
-#             'signature_company_name': data.get('signature_company_name', ''),
-#             'name': data.get('name', ''),
-#             'sha2': data.get('sha2', ''),
-#             'last_seen': data.get('last_seen', ''),
-#             'first_seen': data.get('first_seen', ''),
-#             'data_source_url': data.get('data_source_url', ''),
-#             'data_source_url_domain': data.get('data_source_url_domain', ''),
-#             'folder': data.get('folder', '')
-#          }
-#         summary_data.append(new)
-#     headers = summary_data[0] if summary_data else {}
-#     headers = list(headers.keys())
-#     markdown = tableToMarkdown(title, summary_data, headers=headers,
-#                                removeNull=True)
-#     return markdown
 
 
 def incident_readable_output(results: List[Dict], title: str):
@@ -942,35 +895,6 @@ def query_search_condition(q_type: str, q_value: str, ignore_validation: bool = 
     return condition
 
 
-# def get_incident_event_filter_query(args: Dict[str, Any]) -> str:
-#     """
-#     This function validate the incident event search query and return the query condition
-#     Args:
-#         args: demisto.args()
-#     Returns:
-#         Return string.
-#     """
-#     # Incident event parameters
-#     event_type_id = arg_to_number(args.get('type_id'))
-#     severity = EVENT_SEVERITY.get(args.get('severity'))
-#     query = args.get('query')
-#
-#     if query and (event_type_id or severity):
-#         raise DemistoException(INVALID_QUERY_ERROR_MSG)
-#
-#     condition = None
-#     if event_type_id:
-#         condition = f'type_id: {event_type_id}'
-#
-#     if severity:
-#         condition = f'severity_id: {severity}' if not condition else f'{condition} AND severity_id: {severity}'
-#
-#     if query:
-#         condition = query
-#
-#     return condition
-
-
 def get_incident_filter_query(args: Dict[str, Any]) -> str:
     """
     This function validate the incident filter search query and return the query condition
@@ -1052,29 +976,6 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         condition = query
 
     return condition
-
-
-# def fetch_event_data(req_endpoint: str, client: Client, args: Dict[str, Any], max_limit: int) -> dict:
-#     """
-#     Request to Get event response Raw Json Data
-#     Args:
-#         req_endpoint : Endpoint API for request incident
-#         client: Symantec EDR on-premise client objectd to use.
-#         args: all command arguments, usually passed from ``demisto.args()``.
-#         max_limit (int): Limit the maximum number of incident return
-#     Returns:
-#         Response raw result.
-#     """
-#     endpoint = req_endpoint
-#     payload = post_request_body(args, max_limit)
-#
-#     # search query as Lucene query string
-#     search_query = get_event_filter_query(args)
-#     if search_query:
-#         payload['query'] = search_query
-#
-#     raw_response = client.query_request_api(endpoint, payload)
-#     return raw_response
 
 
 def get_association_filter_query(args: Dict) -> str:
@@ -1216,11 +1117,6 @@ def check_valid_indicator_value(indicator_type: str,indicator_value: str) -> boo
         if not re.match(md5Regex, indicator_value):
             raise ValueError(
                 f'MD5 value {indicator_value} is invalid')
-
-    # if indicator_type == 'domain':
-    #     if not re.match(domainRegex, indicator_value):
-    #         raise ValueError(
-    #             f'MD5 value {indicator_value} is invalid')
 
     return True
 
@@ -2118,247 +2014,7 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-# def get_file_sandbox_verdict_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     """
-#      Get file Sandbox Verdict of specific SHA2
-#      Args:
-#          client: client object to use.
-#          args: all command arguments, usually passed from ``demisto.args()``.
-#      Returns:
-#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-#              result.
-#      """
-#     sha2 = args.get('file')
-#     endpoint = f'/atpapi/v2/sandbox/results/{sha2}/verdict'
-
-#     response_data = client.query_request_api(endpoint, {}, 'GET')
-#     # Sandbox verdict
-#     # datasets = response_data.get("status", [])
-#     title = "Sandbox Verdict"
-#     if response_data:
-#         readable_output = generic_readable_output(argToList(response_data), title)
-#     else:
-#         readable_output = f'{title} does not have data to present. \n'
-
-#     return CommandResults(
-#         readable_output=readable_output,
-#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxVerdict',
-#         outputs_key_field='',
-#         outputs=response_data
-#     )
-
-
-# def get_file_sandbox_status_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     """
-#      Query file Sandbox command status,
-#      Args:
-#          client: client object to use.
-#          args: all command arguments, usually passed from ``demisto.args()``.
-#      Returns:
-#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-#              result.
-#     """
-#     command_id = args.get('command_id')
-#     endpoint = f'/atpapi/v2/sandbox/commands/{command_id}'
-
-#     response_data = client.query_request_api(endpoint, {}, 'GET')
-#     # Query Sandbox Command Status
-#     datasets = response_data.get("status", [])
-#     summary_data = {}
-#     if datasets:
-#         for data in datasets:
-#             new = {
-#                 'command_id': command_id,
-#                 'status': data.get('state'),
-#                 'message': data.get('message'),
-#                 'target': data.get('target'),
-#                 'error_code': data.get('error_code')
-#             }
-#             summary_data = {**summary_data, **new}
-
-#     title = "Query File Sandbox Status"
-#     if datasets:
-#         readable_output = generic_readable_output(datasets, title)
-#     else:
-#         readable_output = f'{title} does not have data to present. \n'
-#     demisto_print(f'Status Data: {summary_data}')
-#     return CommandResults(
-#         readable_output=readable_output,
-#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxStatus',
-#         outputs_key_field='',
-#         outputs=summary_data
-#     )
-
-
-# def get_file_sandbox_issue_polling_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     """
-#      Issue File Sandbox command,
-#      Args:
-#          client: client object to use.
-#          args: all command arguments, usually passed from ``demisto.args()``.
-#      Returns:
-#          CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
-#              result.
-#      """
-
-#     file_hash = args.get('file')
-#     if not re.match(sha256Regex, file_hash):
-#         raise ValueError(f'SHA256 value {file_hash} is invalid')
-
-#     # or (not re.match(md5Regex, file_hash))
-
-#     endpoint = '/atpapi/v2/sandbox/commands'
-#     payload = {
-#         'action': 'analyze',
-#         'targets': argToList(file_hash)
-#     }
-#     response_data = client.query_request_api(endpoint, payload)
-#     # Get Issue Sandbox Command
-#     title = "Issue Sandbox Command"
-#     summary_data = {
-#         'file_sha2': file_hash,
-#         'command_id': response_data.get('command_id'),
-#         'command_type': 'Issue Sandbox Command'
-#     }
-#     headers = list(summary_data.keys())
-#     column_order = list(camelize_string(column) for column in headers)
-#     return CommandResults(
-#         outputs_prefix=f'{INTEGRATION_CONTEXT_NAME}.SandboxIssue',
-#         outputs_key_field='',
-#         outputs=summary_data,
-#         readable_output=tableToMarkdown(title, camelize(summary_data, '_'), headers=column_order, removeNull=True)
-#     )
-
-
 ''' POLLING CODE '''
-
-# def issue_polling_command(client: Client, args: Dict[str, Any]):
-#     demisto_print(f'Trigger issue command .. ')
-#     command_results = get_file_sandbox_issue_polling_command(client, args)
-#     outputs = command_results.outputs
-#     command_id = outputs.get('command_id')
-#     if command_id:
-#         args['command_id'] = command_id
-#     return file_polling_command(args, client)
-
-
-# @polling_function(name='file',
-#                   interval=arg_to_number(demisto.args().get('interval_in_seconds', DEFAULT_INTERVAL)),
-#                   timeout=arg_to_number(demisto.args().get('timeout_in_seconds', DEFAULT_TIMEOUT)),
-#                   requires_polling_arg=False
-#                   )
-# def file_polling_command(args: Dict[str, Any], client: Client) -> PollResult:
-#     """
-#     Polling command to display the progress of the sandbox issue command.
-#     After the first run, progress will be shown through the status command.
-#     Once a file scanning is done check the status as 'Completed' and return the file verdict
-#     Status command will run till its status is not 'Completed'
-#     Args:
-#         args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request and a Client.
-#         client: client object to use.
-
-#     Returns:
-#         PollResult: A result to return to the user which will be set as a CommandResults.
-#             The result itself will depend on the stage of polling.
-#     """
-#     # commandid = args.get('command_id', None)
-#     # #first_run = 'command_id' not in args
-#     # #if first_run:
-#     # if not commandid:
-#     #     demisto_print(f'Trigger issue command .. {commandid}')
-#     #     command_results = get_file_sandbox_issue_polling_command(client, args)
-#     #     outputs = command_results.outputs
-#     #     command_id = outputs.get('command_id')
-#     #     if command_id:
-#     #         args['command_id'] = command_id
-
-#     demisto_print(f'Args: {args}')
-#     command_result = get_file_sandbox_status_polling_command(client, args)
-#     outputs = command_result.outputs
-#     if outputs:
-#         status = arg_to_number(outputs.get('status'))
-#         if SANDBOX_STATE.get(status) == 'Completed':
-#             command_result = get_file_sandbox_verdict_polling_command(client, args)
-#             return PollResult(response=command_result, continue_to_poll=False)
-
-#     polling_args = {**args}
-#     return PollResult(response=command_result, continue_to_poll=True, args_for_next_run=polling_args)
-
-
-# def run_polling_command(client: Client, args: dict, cmd: str, status_func: Callable, results_func: Callable):
-#     """
-#     This function is generically handling the polling flow.
-#     After the first run, progress will be shown through the status command.
-#     The run_polling_command function runs the Status command will run till its status is  not 'Completed'
-#     and returns a ScheduledCommand object that schedules
-#     the next 'results' function, until the polling is complete.
-#     Args:
-#         args: the arguments required to the command being called, under cmd
-#         cmd: the command to schedule by after the current command
-#         status_func :
-#         results_func: the function that retrieves the status of the previously initiated upload process
-#         client: a Microsoft Client object
-
-#     Returns:
-
-#     """
-#     ScheduledCommand.raise_error_if_not_supported()
-#     interval_in_secs = int(args.get('interval_in_seconds', 90))
-#     timeout_in_seconds = int(args.get('timeout_in_seconds', 600))
-#     # distinguish between the initial run, which is the Issue the file for scan, and the results run
-#     is_first_run = 'command_id' not in args
-#     if is_first_run:
-#         command_results = get_file_sandbox_issue_polling_command(client, args)
-#         outputs = command_results.outputs
-#         command_id = outputs.get('command_id')
-#         if command_id is not None:
-#             args['command_id'] = command_id
-
-#         # schedule next poll
-#         polling_args = {
-#             'interval_in_seconds': interval_in_secs,
-#             'polling': True,
-#             **args,
-#         }
-#         scheduled_command = ScheduledCommand(
-#             command=cmd,
-#             next_run_in_seconds=interval_in_secs,
-#             args=polling_args,
-#             timeout_in_seconds=timeout_in_seconds)
-#         command_results.scheduled_command = scheduled_command
-#         return command_results
-
-#     # not a first run
-#     command_result = status_func(client, args)
-#     outputs = command_result.outputs
-#     status = arg_to_number(outputs.get('status'))
-#     status_type = SANDBOX_STATE.get(status)
-
-#     # 0 = Completed
-#     if status_type != 'Completed':
-#         polling_args = {
-#             'interval_in_seconds': interval_in_secs,
-#             'polling': True,
-#             **args,
-#         }
-#         scheduled_command = ScheduledCommand(
-#             command=cmd,
-#             next_run_in_seconds=interval_in_secs,
-#             args=polling_args,
-#             timeout_in_seconds=timeout_in_seconds
-#         )
-
-#         # result with scheduled_command only - no update to the war room
-#         command_result = CommandResults(scheduled_command=scheduled_command)
-#         return command_result
-#     # # action was completed
-#     elif status_type == 'Complete':
-#         return results_func(client, args)
-
-
-# def file_scheduled_polling_command(client, args):
-#     return run_polling_command(client, args, 'file', get_file_sandbox_status_polling_command,
-#                                get_file_sandbox_verdict_polling_command)
 
 
 ''' MAIN FUNCTION '''
@@ -2455,11 +2111,6 @@ def main() -> None:
             return_results(get_endpoint_command(client, args, 'delete_endpoint_file'))
         elif command == "symantec-edr-endpoint-cancel-command":
             return_results(get_endpoint_command(client, args, 'cancel_command'))
-        # elif command in ['file']:
-            # File Sandbox Analysis, Command Status, and Verdict
-            # return_results(file_polling_command(args, client))
-            # return_results(issue_polling_command(args, client))
-            # return_results(file_scheduled_polling_command(client, args))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
