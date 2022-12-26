@@ -5606,7 +5606,7 @@ def find_dicts_in_array(container: List[Dict[str, Any]], key: str, value: List[s
         Optional[List[Dict[str, Any]]]: The dictionaries / None if there is no match.
     """
 
-    return [obj for obj in container if obj[key] in value] or None
+    return [obj for obj in container if obj[key] in value]
 
 
 def get_object_id(client: Client,
