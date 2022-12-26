@@ -126,21 +126,18 @@ class DevicesCommandConfig(NamedTuple):
     table_headers: list[str]
     table_title: str
     response_devices_list_key: str
-    cd_devices_list_key: str
     outputs_prefix: str
 
 
 MobileDevicesConfig = DevicesCommandConfig(table_headers=['Serial Number', 'User Names', 'Model Name', 'OS', 'Type', 'Status'],
                                            table_title=HR_MESSAGES.get('MOBILE_DEVICES_LIST_SUCCESS', ''),
                                            response_devices_list_key='mobiledevices',
-                                           cd_devices_list_key='MobileListObjects',
                                            outputs_prefix=OUTPUT_PREFIX.get('MOBILE_DEVICES_LIST', ''),
                                            )
 
 ChromeOSDevicesConfig = DevicesCommandConfig(table_headers=['Serial Number', 'User Name', 'Model Name', 'OS', 'Status'],
                                              table_title=HR_MESSAGES.get('CHROMEOS_DEVICES_LIST_SUCCESS', ''),
                                              response_devices_list_key='chromeosdevices',
-                                             cd_devices_list_key='ChromeOSListObjects',
                                              outputs_prefix=OUTPUT_PREFIX.get('CHROMEOS_DEVICES_LIST', ''),
                                              )
 
@@ -542,7 +539,6 @@ def test_module(client: Client) -> str:
         if client.admin_email:
             client.http_request(url_suffix=f"{URL_SUFFIX['USER']}/{client.admin_email}", method='GET')
         else:
-            # return_results("Please insert Admin Email parameter for the test to run")
             return_results(('In order for the test_module to run, an admin_email is required, '
                             'if it is not configured, then each command can receive an admin_email '
                             'argument as an optional argument.'))
@@ -1095,7 +1091,7 @@ def user_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           readable_output=readable_output)
 
 
-@ logger
+@logger
 def user_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
     get a user details based on user key.
@@ -1131,7 +1127,6 @@ def user_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
                           raw_response=response)
 
 
-# New Commands Implementation
 def mobile_device_list_request(client: Client, customer_id: str, query_params: dict = {}):
     response = client.http_request(
         url_suffix=URL_SUFFIX.get('MOBILE_DEVICES_LIST', '').format(urllib.parse.quote(customer_id)),
@@ -1167,7 +1162,7 @@ def device_list_automatic_pagination(request_by_device_type: Callable, client, c
 
     Args:
         api_request (Callable): The API request that will be used to retrieve the list of devices.
-        client (GSuiteClient): A GSuiteClient instance.
+        client (Client): A Client instance.
         customer_id (str): The unique ID of the customer's Google Workspace Admin account.
         query_params (dict): The query parameters that will be sent with the API call.
         limit (int): The limit argument that will act as the maximum number of results to return from the API request.
@@ -1203,7 +1198,7 @@ def device_list_manual_pagination(request_by_device_type: Callable, client, cust
 
     Args:
         api_request (Callable): The API request that will be used to retrieve the list of devices.
-        client (GSuiteClient): A GSuiteClient instance.
+        client (Client): A Client instance.
         customer_id (str): The unique ID of the customer's Google Workspace Admin account.
         query_params (dict): The query parameters that will be sent with the API call.
         page_token (str): The token of the page from where to retrieve the devices.
@@ -1277,12 +1272,12 @@ def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping
     return human_readable
 
 
-@ logger
+@logger
 def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Retrieves a paginated list that includes company-owned mobile devices.
 
     Args:
-        client (GSuiteClient): A GSuiteClient instance.
+        client (Client): A Client instance.
         args (Dict[str, str]): The arguments of the command.
 
     Returns:
@@ -1360,12 +1355,12 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
     return query_params
 
 
-@ logger
+@logger
 def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:  # pragma: no cover
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
-        client (GSuiteClient): A GSuiteClient instance.
+        client (Client): A Client instance.
         args (Dict[str, str]): The arguments of the command.
 
     Returns:
@@ -1432,12 +1427,12 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         raise DemistoException(error_message)
 
 
-@ logger
+@logger
 def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """Executes an action that affects a ChromeOS Device.
 
     Args:
-        client (GSuiteClient): A GSuiteClient instance.
+        client (Client): A Client instance.
         args (Dict[str, str]): The arguments of the command.
 
     Raises:
