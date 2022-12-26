@@ -1268,6 +1268,10 @@ class ClientV1(Client):
     ]
     WRONG_PARAMETER_ERROR_MSGS = ['Empty values are not allowed.']
 
+    URL_TYPE = 1
+    PARAMETER_TYPE = 2
+    COOKIE_TYPE = 3
+
     def __init__(self, base_url: str, api_key: str, version: str, proxy: bool, verify: bool):
         endpoint_prefix = 'api/v1.0/'
         super().__init__(base_url=base_url,
@@ -2065,7 +2069,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         data = {
-            'type': 1,
+            'type': self.URL_TYPE,
             'requestType': dict_safe_get(self.parser.request_type_user_to_api_mapper, [request_type]),
             'requestURL': request_url,
             'enable': True,
@@ -2142,7 +2146,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         data = remove_empty_elements({
-            'type': 2,
+            'type': self.PARAMETER_TYPE,
             'itemName': name,
             'status': dict_safe_get(self.parser.boolean_user_to_api_mapper, [status])
         })
@@ -2164,7 +2168,7 @@ class ClientV1(Client):
             Dict[str, Any]: API response from FortiwebVM V1
         """
         data = remove_empty_elements({
-            'type': 3,
+            'type': self.COOKIE_TYPE,
             'itemName': name,
             'domain': domain,
             'path': path,
