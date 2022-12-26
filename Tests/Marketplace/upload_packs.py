@@ -1044,8 +1044,8 @@ def main():
     try:
         with Neo4jContentGraphInterface():
             pass
-    except Exception:
-        logging.warning("Database is not ready, using id_set.json instead.")
+    except Exception as e:
+        logging.warning(f"Database is not ready, using id_set.json instead.\n{e}")
         id_set = open_id_set_file(option.id_set_path)
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
