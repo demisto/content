@@ -55,7 +55,7 @@ def get_alert_severity():
     """
     s = ALERT_SEVERITY.replace(" ", "")
     s_arr = s.split(",")
-    if sum(map(lambda x: x in ['Information', 'Warning', 'Threat', 'Severe', 'Critical'], s_arr)) == len(s_arr):
+    if sum([x in ['Information', 'Warning', 'Threat', 'Severe', 'Critical'] for x in s_arr]) == len(s_arr):
         return set(s_arr)
     LOG("Invalid alert severity values")
     raise Exception("Invalid alert severity values")
@@ -102,7 +102,7 @@ def http_request(method, url_suffix, params_dict, headers):
             return None
         return json.loads(res.text)
 
-    except Exception, e:
+    except Exception as e:
         LOG("{}\n{}".format(e, res_msg))
         raise Exception("{}\n{}".format(e, res_msg))
 
@@ -137,7 +137,7 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
 
     last_updated = (datetime(1999, 1, 1, 0, 0, 0, 0), '1999-01-01T00:00:00.0Z')
-    if last_run and last_run.has_key('createdOn'):
+    if last_run and 'createdOn' in last_run:
         ts_str = last_run.get('createdOn')
         last_updated = (datetime.strptime(ts_str, '%Y-%m-%dT%H:%M:%S.%fZ'), ts_str)
 
@@ -179,7 +179,7 @@ def map_optional_params(keys, api_keys):
     :return: dict: mapped current function call parameters
     """
     params = {}
-    param_keys = demisto.args().keys()
+    param_keys = list(demisto.args().keys())
     for i, key in enumerate(keys):
         if key in param_keys:
             params[api_keys[i]] = demisto.args()[key]
@@ -258,13 +258,13 @@ def src_endpoint(ep):
 def get_endpoint_data(data):
     ret = []
     for ep in data:
-        if 'ipAddress' in demisto.args().keys():
+        if 'ipAddress' in list(demisto.args().keys()):
             if demisto.args()['ipAddress'] == ep['src_ip']:
                 ret.append(dest_endpoint(ep))
             else:
                 ret.append(src_endpoint(ep))
 
-        elif 'macAddress' in demisto.args().keys():
+        elif 'macAddress' in list(demisto.args().keys()):
             if demisto.args()['macAddress'] == ep['src_mac']:
                 ret.append(dest_endpoint(ep))
             else:
