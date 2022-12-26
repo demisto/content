@@ -1295,53 +1295,54 @@ class Pack(object):
              otherwise returned False.
 
         """
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
-        if pack_not_uploaded_in_prepare_content:
+        pack_was_uploaded_in_prepare_content = self._pack_name in successful_packs_dict
+        pack_dependencies_zip_was_uploaded = self._pack_name in successful_uploaded_dependencies_zip_packs_dict
+        if not pack_was_uploaded_in_prepare_content or not pack_dependencies_zip_was_uploaded:
             logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
-        latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
-        self._latest_version = latest_version
+        elif pack_was_uploaded_in_prepare_content:
 
-        build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
+            latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
+            self._latest_version = latest_version
 
-        # Verifying that the latest version of the pack has been uploaded to the build bucket
-        existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
-        if not existing_bucket_version_files:
-            logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
-                          f"path {build_version_pack_path}.")
-            return False, False
+            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
 
-        # We upload the pack zip object taken from the build bucket into the production bucket
-        prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-        prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
-        build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
-        build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
+            # Verifying that the latest version of the pack has been uploaded to the build bucket
+            existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
+            if not existing_bucket_version_files:
+                logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                              f"path {build_version_pack_path}.")
+                return False, False
 
-        try:
-            copied_blob = build_bucket.copy_blob(
-                blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
-            )
-            copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-            self.public_storage_path = copied_blob.public_url
-            task_status = copied_blob.exists()
-        except Exception as e:
-            pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
-            logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
-            return False, False
+            # We upload the pack zip object taken from the build bucket into the production bucket
+            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+            prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
+            build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
+            build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
 
-        if not task_status:
-            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
-        else:
-            # Determine if pack versions were aggregated during upload
-            pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
-            if pack_uploaded_in_prepare_content:
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+                )
+                copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                self.public_storage_path = copied_blob.public_url
+                task_status = copied_blob.exists()
+            except Exception as e:
+                pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+                logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
+                return False, False
+
+            if not task_status:
+                logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
+            else:
+                # Determine if pack versions were aggregated during upload
                 agg_str = successful_packs_dict[self._pack_name].get('aggregated')
                 if agg_str:
                     self._aggregated = True
                     self._aggregation_str = agg_str
-            logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
+                logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         # handle dependenices zip upload when found in build bucket
         self.copy_and_upload_dependencies_zip_to_storage(
