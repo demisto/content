@@ -194,6 +194,17 @@ class Parser:
         }
         return parsed_data
 
+    def simple_name_parser(self, data: Dict[str, Any]) -> dict[str, Any]:
+        """Parse a simple output with id.
+
+        Args:
+            data (Dict[str, Any]): Data to parse.
+
+        Returns:
+            dict[str,Any]: Parsed data.
+        """
+        return {'id': data['name']}
+
     @property
     @abstractmethod
     def action_user_to_api_mapper(self) -> Dict[str, Any]:
@@ -4701,10 +4712,6 @@ def http_content_routing_policy_list_command(client: Client, args: Dict[str, Any
     return command_results
 
 
-def simple_name_parser(data: Dict[str, Any]):
-    return {'id': data['name']}
-
-
 def geo_exception_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """List the Geo IP Exception groups.
 
@@ -4716,8 +4723,8 @@ def geo_exception_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.geo_exception_list_request()
-    parsed_data, pagination_message, formatted_response = list_response_handler(client, response, simple_name_parser,
-                                                                                args)
+    parsed_data, pagination_message, formatted_response = list_response_handler(
+        client=client, response=response, data_parser=client.parser.simple_name_parser, args=args)
     readable_output = tableToMarkdown(name='Geo exception:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4742,8 +4749,8 @@ def trigger_policy_list_command(client: Client, args: Dict[str, Any]) -> Command
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.trigger_policy_list_request()
-    parsed_data, pagination_message, formatted_response = list_response_handler(client, response, simple_name_parser,
-                                                                                args)
+    parsed_data, pagination_message, formatted_response = list_response_handler(
+        client=client, response=response, data_parser=client.parser.simple_name_parser, args=args)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4768,8 +4775,8 @@ def certificate_intermediate_group_list_command(client: Client, args: Dict[str, 
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.certificate_intermediate_group_list_request()
-    parsed_data, pagination_message, formatted_response = list_response_handler(client, response, simple_name_parser,
-                                                                                args)
+    parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
+                                                                                client.parser.simple_name_parser, args)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
