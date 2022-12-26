@@ -1886,11 +1886,8 @@ class ClientV1(Client):
                 'tls_v11': 0,
                 'tls_v12': 1
             },
-            # 'urlBasedClientCertificate': True,
             'local':
             certificate,
-            # 'urlBasedClientCertificateGroup': 'url-cert',
-            # proxy
             'hRedirectoHttps':
             dict_safe_get(self.parser.boolean_user_to_api_mapper, [redirect_to_https]),
             'InlineProtectionProfile':
