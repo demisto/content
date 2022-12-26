@@ -196,8 +196,8 @@ def test_zoom_list_users_command__limit_and_page_size(mocker):
         Then -
             Validate that an error message will be returned
     """
-    #mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
-    #mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
+    # mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
+    # mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
                      'total_records': 2, 'next_page_token': '', 'users': [{'id': '1234', 'first_name': 'as', 'last_name': 'bla', 'email': 'example@example.com', 'type': 1, 'pmi': 1234, 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': ''}]}
     mocker.patch.object(Client, "zoom_list_users", return_value=returned_dict)
@@ -267,7 +267,7 @@ def test_manual_list_user_pagination__large_limit(mocker):
         When -
             limit >  MAX_RECORDS_PER_PAGE
         Then -
-            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300) 
+            Validate that the page_size at the last call == MAX_RECORDS_PER_PAGE (currently 300)
     """
     mocker.patch.object(Client, "generate_oauth_token")
     returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
@@ -605,7 +605,6 @@ def test_manual_meeting_list_pagination__small_limit(mocker):
     assert zoom_meeting_list_mocker.call_args[1].get('page_size') == limit
 
 
-
 def test_manual_meeting_list_pagination__large_limit(mocker):
     """
         Given -
@@ -672,7 +671,7 @@ def test_get_jwt_token__encoding_format_check():
         When -
             creating a jwt token
         Then -
-            Validate that the token is in the right format 
+            Validate that the token is in the right format
     """
     encoded_token = Zoom.get_jwt_token(apiKey="blabla", apiSecret="blabla")
     expected = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJibGFibGEiLCJleHAiOjU3MzM4NzgwMH0.8GUkPXA1Dwkj55rGTBqE3chK0IaPiyRTEhCtcOOJjHk'
@@ -702,6 +701,7 @@ def test_zoom_user_list_command__when_user_id(mocker):
     assert len(res.readable_output) == 159
 
 # i dont like this test:(
+
 
 def test_zoom_meeting_list_command__when_user_id(mocker):
     """
@@ -770,3 +770,18 @@ def test_remove_None_values_from_dict():
     }
 
     assert remove_None_values_from_dict(dict_input) == dict_expected_output
+
+
+def test_check_start_time_format():
+    """Given -
+            a time format
+        When -
+            missing a field
+        Then -
+            veryfy that the right error wil raise
+    """
+
+    from Zoom import check_start_time_format
+    with pytest.raises(DemistoException) as e:
+        check_start_time_format("2022-13-26T22:22:Z")
+    assert e.value.message == "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
