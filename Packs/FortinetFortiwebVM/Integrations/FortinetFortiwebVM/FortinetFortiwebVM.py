@@ -1863,15 +1863,26 @@ class ClientV1(Client):
         """
         return self._http_request(method='GET', url_suffix='ServerObjects/Server/HTTPContentRoutingPolicy')
 
-    def server_policy_data_builder(self, name: str, deployment_mode: Optional[str], virtual_server: Optional[str],
-                                   server_pool: Optional[str], protected_hostnames: Optional[str],
-                                   client_real_ip: Optional[str], syn_cookie: Optional[str],
-                                   half_open_thresh: Optional[str], http_service: Optional[str],
-                                   https_service: Optional[str], http2: Optional[str], certificate: Optional[str],
-                                   intergroup: Optional[str], redirect_to_https: Optional[str],
-                                   inline_protection_profile: Optional[str], monitor_mode: Optional[str],
-                                   url_case_sensitivity: Optional[str], comments: Optional[str],
-                                   mach_once: Optional[str]) -> Dict[str, Any]:
+    def server_policy_data_builder(self,
+                                   name: str,
+                                   deployment_mode: Optional[str],
+                                   virtual_server: Optional[str],
+                                   server_pool: Optional[str],
+                                   protected_hostnames: Optional[str],
+                                   client_real_ip: Optional[str],
+                                   syn_cookie: Optional[str],
+                                   half_open_thresh: Optional[str],
+                                   http_service: Optional[str],
+                                   https_service: Optional[str],
+                                   redirect_to_https: Optional[str],
+                                   inline_protection_profile: Optional[str],
+                                   monitor_mode: Optional[str],
+                                   url_case_sensitivity: Optional[str],
+                                   comments: Optional[str],
+                                   mach_once: Optional[str],
+                                   http2: Optional[str] = None,
+                                   intergroup: Optional[str] = None,
+                                   certificate: Optional[str] = None) -> Dict[str, Any]:
         data = remove_empty_elements({
             'name':
             name,
@@ -1966,15 +1977,12 @@ class ClientV1(Client):
                                                half_open_thresh=half_open_thresh,
                                                http_service=http_service,
                                                https_service=https_service,
-                                               http2=None,
                                                redirect_to_https=redirect_to_https,
                                                inline_protection_profile=inline_protection_profile,
                                                monitor_mode=monitor_mode,
                                                url_case_sensitivity=url_case_sensitivity,
                                                comments=comments,
-                                               mach_once=mach_once,
-                                               intergroup=None,
-                                               certificate=None)
+                                               mach_once=mach_once)
         response = self._http_request(method='POST', url_suffix='Policy/ServerPolicy/ServerPolicy', json_data=data)
         return response
 
@@ -2956,9 +2964,9 @@ class ClientV2(Client):
                                    server_pool: Optional[str], protected_hostnames: Optional[str],
                                    client_real_ip: Optional[str], syn_cookie: Optional[str],
                                    half_open_thresh: Optional[str], http_service: Optional[str],
-                                   https_service: Optional[str], http2: Optional[str], protocol: Optional[str],
+                                   https_service: Optional[str], protocol: Optional[str],
                                    multi_certificate: Optional[str], certificate_group: Optional[str],
-                                   certificate: Optional[str], intergroup: Optional[str], proxy: Optional[str],
+                                   proxy: Optional[str],
                                    redirect_to_https: Optional[str], inline_protection_profile: Optional[str],
                                    monitor_mode: Optional[str], url_case_sensitivity: Optional[str],
                                    comments: Optional[str], mach_once: Optional[str], ip_range: Optional[str],
@@ -2968,7 +2976,7 @@ class ClientV2(Client):
                                    retry_times_on_http_layer: Optional[str],
                                    retry_on_http_response_codes: Optional[list], scripting: Optional[str],
                                    scripting_list: Optional[str], allow_list: Optional[str], replace_msg: Optional[str],
-                                   certificate_type: Optional[str], lets_certificate: Optional[str]) -> Dict[str, Any]:
+                                   certificate_type: Optional[str], lets_certificate: Optional[str], http2: Optional[str]=None,certificate: Optional[str]=None,intergroup: Optional[str]=None) -> Dict[str, Any]:
         data = {
             'data':
             remove_empty_elements({
@@ -3125,8 +3133,6 @@ class ClientV2(Client):
             protocol='HTTP',
             http_service=http_service,
             https_service=https_service,
-            http2=None,
-            intergroup=None,
             redirect_to_https=redirect_to_https,
             proxy=proxy,
             retry_on=kwards.get('retry_on'),
@@ -3151,7 +3157,6 @@ class ClientV2(Client):
             certificate_group=multi_certificate,
             lets_certificate=kwards.get('lets_certificate'),
             multi_certificate=multi_certificate,
-            certificate=None,
         )
         return self._http_request(method='POST', url_suffix='cmdb/server-policy/policy', json_data=data)
 
@@ -3180,11 +3185,11 @@ class ClientV2(Client):
             http_service (Optional[str]): HTTP service name.
             https_service (Optional[str]): HTTPS service name.
             http2 (Optional[str]): HTTP2 flag.
-            multi_certificate (Optional[str]): _description_
-            certificate_group (Optional[str]): _description_
-            certificate (Optional[str]): _description_
-            intergroup (Optional[str]): _description_
-            proxy (Optional[str]): _description_
+            multi_certificate (Optional[str]): Multi cartificate name.
+            certificate_group (Optional[str]): Certificate group name.
+            certificate (Optional[str]): Certificate name.
+            intergroup (Optional[str]): Certificate Intermediate Group
+            proxy (Optional[str]): Proxy boolean.
             redirect_to_https (Optional[str]): Redirect to HTTPS.
             inline_protection_profile (Optional[str]): Profile.
             monitor_mode (Optional[str]): Monitor mode flag.
