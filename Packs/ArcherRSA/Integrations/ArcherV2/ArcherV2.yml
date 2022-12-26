@@ -166,6 +166,10 @@ script:
       description: The field level ID.
       type: Number
   - arguments:
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      required: false
+      defaultValue: 1
     - description: The record ID.
       name: contentId
       required: true
@@ -179,6 +183,10 @@ script:
       description: The unique ID of the record.
       type: Number
   - arguments:
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      required: false
+      defaultValue: 1
     - description: The application ID.
       name: applicationId
       required: true
@@ -202,6 +210,10 @@ script:
     description: Deletes an existing content record in the given application.
     name: archer-delete-record
   - arguments:
+    - description: In case of nesting, to which level to go in the depth of the recursion.
+      name: depth
+      required: false
+      defaultValue: 1
     - description: The application ID.
       name: applicationId
       required: true
