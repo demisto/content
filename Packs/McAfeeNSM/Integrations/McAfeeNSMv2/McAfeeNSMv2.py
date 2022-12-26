@@ -554,7 +554,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
             f'IPV{number}RangeList': from_to_list
         }
     else:
-        return f'NETWORK_IPV_{number}', {
+        return f'Network_IPV_{number}', {
             f'networkIPV{number}List': address
         }
 
@@ -1202,9 +1202,12 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     from_to_address_ip_v_6 = []
     from_to_address_ip_v_4 = []
     if is_overwrite:
-        if rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4':
+        if rule_type == 'HOST_IPV_4':
             address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('HostIPv4', {}) \
                 .get('hostIPv4AddressList')
+        if rule_type == 'NETWORK_IPV_4':
+            address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('Network_IPV_4', {}) \
+                .get('networkIPV4List')
         if from_address_ip_v_4:
             from_to_address_ip_v_4 = [{
                 'FromAddress': from_address_ip_v_4,
@@ -1212,9 +1215,12 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
             }]
         elif not from_address_ip_v_4 and rule_type == 'IPV_4_ADDRESS_RANGE':
             from_to_address_ip_v_4 = response_get.get('IPv4AddressRange', {}).get('IPV4RangeList')
-        if rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6':
+        if rule_type == 'HOST_IPV_6':
             address_ip_v_6 = address_ip_v_6 if address_ip_v_6 else response_get.get('HostIPv6', {}) \
                 .get('hostIPv6AddressList')
+        if rule_type == 'NETWORK_IPV_6':
+            address_ip_v_6 = address_ip_v_6 if address_ip_v_6 else response_get.get('Network_IPV_6', {}) \
+                .get('networkIPV6List')
         if from_address_ip_v_6:
             from_to_address_ip_v_6 = [{
                 'FromAddress': from_address_ip_v_6,
@@ -1223,26 +1229,40 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
         elif not from_address_ip_v_6 and rule_type == 'IPV_6_ADDRESS_RANGE':
             from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList')
     else:
-        if rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4':
+        if rule_type == 'HOST_IPV_4':
             old_address_ip_v_4 = response_get.get('HostIPv4', {}).get('hostIPv4AddressList', [])
-            old_address_ip_v_4.extend(address_ip_v_4)
+            if address_ip_v_4:
+                old_address_ip_v_4.extend(address_ip_v_4)
+            address_ip_v_4 = old_address_ip_v_4
+        elif rule_type == 'NETWORK_IPV_4':
+            old_address_ip_v_4 = response_get.get('Network_IPV_4', {}).get('networkIPV4List', [])
+            if address_ip_v_4:
+                old_address_ip_v_4.extend(address_ip_v_4)
             address_ip_v_4 = old_address_ip_v_4
         elif rule_type == 'IPV_4_ADDRESS_RANGE':
             from_to_address_ip_v_4 = response_get.get('IPv4AddressRange', {}).get('IPV4RangeList', [])
-            from_to_address_ip_v_4.append({
-                'FromAddress': from_address_ip_v_4,
-                'ToAddress': to_address_ip_v_4
-            })
-        elif rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6':
+            if from_address_ip_v_4 and to_address_ip_v_4:
+                from_to_address_ip_v_4.append({
+                    'FromAddress': from_address_ip_v_4,
+                    'ToAddress': to_address_ip_v_4
+                })
+        elif rule_type == 'HOST_IPV_6':
             old_address_ip_v_6 = response_get.get('HostIPv6', {}).get('hostIPv6AddressList', [])
-            old_address_ip_v_6.extend(address_ip_v_6)
+            if address_ip_v_6:
+                old_address_ip_v_6.extend(address_ip_v_6)
+            address_ip_v_6 = old_address_ip_v_6
+        elif rule_type == 'NETWORK_IPV_6':
+            old_address_ip_v_6 = response_get.get('Network_IPV_6', {}).get('hostIPv6AddressList', [])
+            if address_ip_v_6:
+                old_address_ip_v_6.extend(address_ip_v_6)
             address_ip_v_6 = old_address_ip_v_6
         elif rule_type == 'IPV_6_ADDRESS_RANGE':
-            from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList', [])
-            from_to_address_ip_v_6.append({
-                'FromAddress': from_address_ip_v_6,
-                'ToAddress': to_address_ip_v_6
-            })
+            from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('networkIPV6List', [])
+            if from_address_ip_v_6 and to_address_ip_v_6:
+                from_to_address_ip_v_6.append({
+                    'FromAddress': from_address_ip_v_6,
+                    'ToAddress': to_address_ip_v_6
+                })
 
     body = {
         'RuleObjDef': {
@@ -1254,8 +1274,8 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
         }
     }
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
-    number = 4 if (address_ip_v_4 or from_address_ip_v_4) else 6
-    from_to_list = from_to_address_ip_v_4 if from_address_ip_v_4 else from_to_address_ip_v_6
+    number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
+    from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
     d_name, extra_body = create_body_create_rule(rule_type, address, number, from_to_list)
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body

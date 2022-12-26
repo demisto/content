@@ -202,7 +202,7 @@ expected_result1 = ('IPv4AddressRange', {
 expected_result2 = ('HostIPv4', {
     'hostIPv4AddressList': ['1.1.1.1']
 })
-expected_result3 = ('NETWORK_IPV_4', {
+expected_result3 = ('Network_IPV_4', {
     'networkIPV4List': ['1.1.1.1']
 })
 create_body_create_rule_params = [('IPV_4_ADDRESS_RANGE', [], 4, from_to_list1, expected_result1),
