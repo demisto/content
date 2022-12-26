@@ -43,7 +43,7 @@ jobs:
             # Check if there are any release notes
             if [ ! -z "$release_notes_to_review" -a "$release_notes_to_review" != " " ]; then
 
-              echo "Release notes requiring review: $release_notes_to_review}"
+              echo "Release notes requiring review: $release_notes_to_review"
               
               echo "Starting docs review..."
               poetry run python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes_to_review" --delimiter ${{ env.CHANGED_FILES_DELIMITER }}
