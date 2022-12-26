@@ -10,7 +10,7 @@ import re
 LIMIT_SIZE = 50
 
 
-class OutputTitle:
+class OutputTitle(Enum):
     PROTECTED_HOSTNAME_GROUP_CREATE = 'Hostname group successfully created!'
     PROTECTED_HOSTNAME_GROUP_UPDATE = 'Hostname group successfully updated!'
     PROTECTED_HOSTNAME_GROUP_DELETE = 'Hostname group successfully deleted!'
@@ -56,7 +56,7 @@ class OutputTitle:
     CUSTOM_PREDIFINED_UPDATE = 'Custom predifined whitelist member successfully updated!'
 
 
-class ErrorMessage:
+class ErrorMessage(Enum):
     NOT_EXIST = 'The object does not exist.'
     ALREADY_EXIST = 'The object already exist.'
     ARGUMENTS = 'There is a problem with one or more arguments.'
@@ -1310,12 +1310,12 @@ class ClientV1(Client):
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete
             if error_msg in self.NOT_EXIST_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.NOT_EXIST} {error}', res=res)
+                raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error}', res=res)
             # create
             elif error_msg in self.EXIST_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST} {error}', res=res)
+                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST.value} {error}', res=res)
             elif error_msg in self.WRONG_PARAMETER_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.ARGUMENTS} {error}', res=res)
+                raise DemistoException(f'{ErrorMessage.ARGUMENTS.value} {error}', res=res)
 
             else:
                 raise DemistoException(
@@ -1398,7 +1398,7 @@ class ClientV1(Client):
             host (str): IP address or FQDN of a virtual or real web host.
             action (str): Select whether to accept or deny HTTP requests whose Host.
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         endpoint = f'ServerObjects/ProtectedHostnames/ProtectedHostnames/{name}/ProtectedHostnamesNewHost'
         data = {
@@ -2305,16 +2305,16 @@ class ClientV2(Client):
         sub_error_code = dict_safe_get(error_msg, ['results', 'errcode'])
         # Only if we add Geo IP member to group that dose'nt exist.
         if not sub_error_code:
-            raise DemistoException(f'{ErrorMessage.NOT_EXIST} {error_msg}', res=res)
+            raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error_msg}', res=res)
         if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
             # update & delete & get
             if sub_error_code in self.NOT_EXIST_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.NOT_EXIST} {error_msg}', res=res)
+                raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error_msg}', res=res)
             # create
             elif sub_error_code in self.EXIST_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST} {error_msg}', res=res)
+                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST.value} {error_msg}', res=res)
             elif sub_error_code in self.WRONG_PARAMETER_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.ARGUMENTS} {error_msg}', res=res)
+                raise DemistoException(f'{ErrorMessage.ARGUMENTS.value} {error_msg}', res=res)
             else:
                 raise DemistoException(
                     f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
@@ -2404,7 +2404,7 @@ class ClientV2(Client):
             kwargs (optional): include_subdomains (str): Include Subdomains.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         endpoint = 'cmdb/server-policy/allow-hosts/host-list'
         params = {'mkey': name}
@@ -2580,7 +2580,7 @@ class ClientV2(Client):
             ip_address (str): IP address.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
         type_val = dict_safe_get(self.parser.type_user_to_api_mapper, [member_type])
@@ -2631,7 +2631,7 @@ class ClientV2(Client):
             member_id (str): IP list member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         endpoint = 'cmdb/waf/ip-list/members'
         params = {'mkey': group_name, 'sub_mkey': member_id}
@@ -2645,7 +2645,7 @@ class ClientV2(Client):
             group_name (str): IP list group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
         if member_id := kwargs.get('member_id'):
@@ -2667,7 +2667,7 @@ class ClientV2(Client):
             kwargs: profile (str): Profile.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': policy_name}
         data = {
@@ -2702,7 +2702,7 @@ class ClientV2(Client):
             kwargs: profile (str): Web protection profile.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': policy_name, 'sub_mkey': member_id}
         data = {
@@ -2727,7 +2727,7 @@ class ClientV2(Client):
             member_id (str): Member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': policy_name, 'sub_mkey': member_id}
         response = self._http_request(method='DELETE',
@@ -2743,7 +2743,7 @@ class ClientV2(Client):
             kwargs: member_id (str): Member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': policy_name}
         if member_id := kwargs.get('member_id'):
@@ -2767,7 +2767,7 @@ class ClientV2(Client):
             kwargs: ignore_x_forwarded_for (str): Ignore x forward for.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         data = {
@@ -2798,7 +2798,7 @@ class ClientV2(Client):
             kwargs: ignore_x_forwarded_for (str): Ignore x forward for.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         params = {'mkey': name}
@@ -2822,7 +2822,7 @@ class ClientV2(Client):
             name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         params = {'mkey': name}
@@ -2836,7 +2836,7 @@ class ClientV2(Client):
             kwargs: name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         name = kwargs.get('name')
@@ -2852,7 +2852,7 @@ class ClientV2(Client):
             countries_list (List[str]): List of countries.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
         data = {
@@ -2871,7 +2871,7 @@ class ClientV2(Client):
             member_id (str): Geo IP member ID.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         endpoint = 'cmdb/waf/geo-block-list/country-list'
@@ -2889,7 +2889,7 @@ class ClientV2(Client):
             group_name (str): Geo IP group name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': group_name}
         response = self._http_request(method='GET', url_suffix='cmdb/waf/geo-block-list/country-list', params=params)
@@ -3118,7 +3118,7 @@ class ClientV2(Client):
                 allow_list (Optional[str]): Allow list.
                 replace_msg (Optional[str]): Replace message.
         Returns
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         data = self.server_policy_data_builder(
@@ -3210,7 +3210,7 @@ class ClientV2(Client):
             kwargs : allow_list (Optional[str]): Allow list.
             kwargs : replace_msg (Optional[str]): Replace message.
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
 
         params = {'mkey': name}
@@ -3266,7 +3266,7 @@ class ClientV2(Client):
             policy_name (str): Policy name.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': policy_name}
         response = self._http_request(method='DELETE', url_suffix='cmdb/server-policy/policy', params=params)
@@ -3276,7 +3276,7 @@ class ClientV2(Client):
         """List the server policies.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         name = kwargs.get('name')
         params = {'mkey': name} if name else {}
@@ -3316,7 +3316,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3337,7 +3337,7 @@ class ClientV2(Client):
         """List custom whitelist members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         name = kwargs.get('id')
         params = {'mkey': name} if name else {}
@@ -3361,7 +3361,7 @@ class ClientV2(Client):
             kwargs: domain (str): Domain.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         data = remove_empty_elements({
             'data': {
@@ -3399,7 +3399,7 @@ class ClientV2(Client):
             kwargs: domain (str): Domain.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3434,7 +3434,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         data = remove_empty_elements({'data': {
             'type': 'Cookie',
@@ -3490,7 +3490,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         data = remove_empty_elements({
             'data': {
@@ -3523,7 +3523,7 @@ class ClientV2(Client):
             status (str): Status.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         params = {'mkey': id}
         data = remove_empty_elements({
@@ -3562,7 +3562,7 @@ class ClientV2(Client):
         """List the Geo IP Exception.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         return self._http_request(method='GET', url_suffix='cmdb/waf/geo-ip-except')
 
@@ -3570,7 +3570,7 @@ class ClientV2(Client):
         """List the Trigger Policies.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         return self._http_request(method='GET', url_suffix='cmdb/log/trigger-policy')
 
@@ -3578,7 +3578,7 @@ class ClientV2(Client):
         """List the Custom Predifined members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         return self._http_request(method='GET', url_suffix='policy/serverobjects.global.predefinedglobalwhitelist')
 
@@ -3586,7 +3586,7 @@ class ClientV2(Client):
         """Update a Custom Predifined members.
 
         Returns:
-            Dict[str, Any]: API response from FortiwebVM V2.
+            Dict[str, Any]: API response from FortiwebVM V2
         """
         return self._http_request(method='PUT',
                                   url_suffix='policy/serverobjects.global.predefinedglobalwhitelist',
@@ -3611,7 +3611,7 @@ def validate_protected_hostname_group(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('default_action') and args['default_action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.DEFAULT_ACTION)
+        raise DemistoException(ErrorMessage.DEFAULT_ACTION.value)
 
 
 def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3628,7 +3628,7 @@ def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]
     name = args['name']
     response = client.protected_hostname_create_request(name=name, default_action=args['default_action'])
     command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_CREATE)
+                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_CREATE.value)
     return command_results
 
 
@@ -3646,7 +3646,7 @@ def protected_hostname_group_update_command(client: Client, args: Dict[str, Any]
     name = args['name']
     response = client.protected_hostname_update_request(name=name, default_action=args.get('default_action'))
     command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_UPDATE)
+                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_UPDATE.value)
     return command_results
 
 
@@ -3663,7 +3663,7 @@ def protected_hostname_group_delete_command(client: Client, args: Dict[str, Any]
     name = args['name']
     response = client.protected_hostname_delete_request(name)
     command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_DELETE)
+                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_DELETE.value)
     return command_results
 
 
@@ -3687,7 +3687,7 @@ def protected_hostname_group_list_command(client: Client, args: Dict[str, Any]) 
         sub_object_id=protected_hostname,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
     headers = create_headers(client.version, ['id', 'default_action', 'protected_hostname_count'], ['can_delete'], [])
-    readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_GROUP_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=headers,
@@ -3710,11 +3710,11 @@ def validate_protected_hostname_member(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('action') and args['action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.ACTION)
+        raise DemistoException(ErrorMessage.ACTION.value)
     if args.get('ignore_port') and args['ignore_port'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_PORT)
+        raise DemistoException(ErrorMessage.IGNORE_PORT.value)
     if args.get('include_subdomains') and args['include_subdomains'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.INCLUDE_SUBDOMAINS)
+        raise DemistoException(ErrorMessage.INCLUDE_SUBDOMAINS.value)
 
 
 def protected_hostname_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3737,7 +3737,7 @@ def protected_hostname_member_create_command(client: Client, args: Dict[str, Any
                                                                include_subdomains=args.get('include_subdomains'))
     member_id = get_object_id(client, response, 'host', host, client.protected_hostname_member_list_request, name)
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.PROTECTED_HOSTNAME_MEMBER_CREATE,
+                                                                   OutputTitle.PROTECTED_HOSTNAME_MEMBER_CREATE.value,
                                                                    'FortiwebVM.ProtectedHostnameMember')
     return command_results
 
@@ -3772,7 +3772,7 @@ def protected_hostname_member_update_command(client: Client, args: Dict[str, Any
                                                                ignore_port=args.get('ignore_port'),
                                                                include_subdomains=args.get('include_subdomains'))
     command_results = generate_simple_command_results('id', member_id, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_UPDATE)
+                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_UPDATE.value)
 
     return command_results
 
@@ -3792,7 +3792,7 @@ def protected_hostname_member_delete_command(client: Client, args: Dict[str, Any
     protected_hostname_member_id = args['member_id']
     response = client.protected_hostname_member_delete_request(protected_hostname, protected_hostname_member_id)
     command_results = generate_simple_command_results('id', protected_hostname_member_id, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_DELETE)
+                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_DELETE.value)
     return command_results
 
 
@@ -3820,7 +3820,7 @@ def protected_hostname_member_list_command(client: Client, args: Dict[str, Any])
     )
     outputs = {'group_name': group_name, 'Members': parsed_data}
     headers = create_headers(client.version, ['id', 'action', 'host'], [], ['ignore_port', 'include_subdomains'])
-    readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_MEMBER_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['Members'],
                                       headers=headers,
@@ -3846,14 +3846,14 @@ def validate_ip_list_group(client: Client, args: Dict[str, Any]):
 
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD)
+        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
 
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.IP_ACTION)
+        raise DemistoException(ErrorMessage.IP_ACTION.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY)
+        raise DemistoException(ErrorMessage.SEVERITY.value)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR)
+        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
 
 
 def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3875,7 +3875,8 @@ def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'),
                                                    trigger_policy=args.get('trigger_policy'))
 
-    command_results = generate_simple_command_results('name', group_name, response, OutputTitle.IP_LIST_GROUP_CREATE)
+    command_results = generate_simple_command_results('name', group_name, response,
+                                                      OutputTitle.IP_LIST_GROUP_CREATE.value)
 
     return command_results
 
@@ -3891,7 +3892,7 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if not isinstance(client, ClientV2):
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
+        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_ip_list_group(client, args)
     group_name = args['name']
     response = client.ip_list_group_update_request(  # type: ignore # client is ClientV2.
@@ -3901,7 +3902,8 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
         severity=args.get('severity'),
         ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'),
         trigger_policy=args.get('trigger_policy'))
-    command_results = generate_simple_command_results('name', group_name, response, OutputTitle.IP_LIST_GROUP_UPDATE)
+    command_results = generate_simple_command_results('name', group_name, response,
+                                                      OutputTitle.IP_LIST_GROUP_UPDATE.value)
 
     return command_results
 
@@ -3909,7 +3911,8 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
 def ip_list_group_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     group_name = args['name']
     response = client.ip_list_group_delete_request(group_name)
-    command_results = generate_simple_command_results('id', group_name, response, OutputTitle.IP_LIST_GROUP_DELETE)
+    command_results = generate_simple_command_results('id', group_name, response,
+                                                      OutputTitle.IP_LIST_GROUP_DELETE.value)
 
     return command_results
 
@@ -3935,7 +3938,7 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
     headers = create_headers(client.version, ['id', 'ip_list_count'], [],
                              ['action', 'block_period', 'severity', 'trigger_policy'])
-    readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_GROUP_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=headers,
@@ -3959,14 +3962,14 @@ def validate_ip_list_member(client: Client, args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if client.version == ClientV1.API_VER and args.get('type') and args['type'] == 'Allow Only Ip':
-        raise DemistoException(ErrorMessage.ALLOW_IP_V1)
+        raise DemistoException(ErrorMessage.ALLOW_IP_V1.value)
     if args.get('type') and args['type'] not in ['Allow Only Ip', 'Black IP', 'Trust IP']:
-        raise DemistoException(ErrorMessage.TYPE)
+        raise DemistoException(ErrorMessage.TYPE.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY)
+        raise DemistoException(ErrorMessage.SEVERITY.value)
     if (ip := args.get('ip_address')) and not re.match(ipv4Regex, ip) and not re.match(ipv6Regex, ip) and not re.match(
             ipv4Regex + '-' + ipv4Regex, ip) and not re.match(ipv6Regex + '-' + ipv6Regex, ip):
-        raise DemistoException(f'{ip} {ErrorMessage.IP}')
+        raise DemistoException(f'{ip} {ErrorMessage.IP.value}')
 
 
 def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3989,7 +3992,7 @@ def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> Comma
                                                     trigger_policy=args.get('trigger_policy'))
     member_id = get_object_id(client, response, 'iPv4IPv6', ip_address, client.ip_list_member_list_request, group_name)
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.IP_LIST_MEMBER_CREATE,
+                                                                   OutputTitle.IP_LIST_MEMBER_CREATE.value,
                                                                    'FortiwebVM.IpListMember')
     return command_results
 
@@ -4024,7 +4027,8 @@ def ip_list_member_update_command(client: Client, args: Dict[str, Any]) -> Comma
                                                     ip_address=args.get('ip_address'),
                                                     severity=severity,
                                                     trigger_policy=args.get('trigger_policy'))
-    command_results = generate_simple_command_results('id', member_id, response, OutputTitle.IP_LIST_MEMBER_UPDATE)
+    command_results = generate_simple_command_results('id', member_id, response,
+                                                      OutputTitle.IP_LIST_MEMBER_UPDATE.value)
     return command_results
 
 
@@ -4041,7 +4045,8 @@ def ip_list_member_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     group_name = args['group_name']
     member_id = args['member_id']
     response = client.ip_list_member_delete_request(group_name, member_id)
-    command_results = generate_simple_command_results('id', member_id, response, OutputTitle.IP_LIST_MEMBER_DELETE)
+    command_results = generate_simple_command_results('id', member_id, response,
+                                                      OutputTitle.IP_LIST_MEMBER_DELETE.value)
     return command_results
 
 
@@ -4063,7 +4068,7 @@ def ip_list_member_list_command(client: Client, args: Dict[str, Any]) -> Command
                                                                                 member_id)
     outputs = {'group_name': group_name, 'Members': parsed_data}
     headers = create_headers(client.version, ['id', 'type', 'ip'], ['severity', 'trigger_policy'], [])
-    readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_MEMBER_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['Members'],
                                       headers=headers,
@@ -4086,13 +4091,13 @@ def validate_http_content_routing_member(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('is_default') and args['is_default'] not in ['yes', 'no']:
-        raise DemistoException(ErrorMessage.IS_DEFAULT)
+        raise DemistoException(ErrorMessage.IS_DEFAULT.value)
     if args.get('inherit_web_protection_profile') and args['inherit_web_protection_profile'] not in [
             'enable', 'disable'
     ]:
-        raise DemistoException(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE)
+        raise DemistoException(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value)
     if args.get('status') and args['status'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.STATUS)
+        raise DemistoException(ErrorMessage.STATUS.value)
 
 
 def http_content_routing_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4118,7 +4123,7 @@ def http_content_routing_member_add_command(client: Client, args: Dict[str, Any]
     member_id = get_object_id(client, response, 'http_content_routing_policy', http_content_routing_policy,
                               client.http_content_routing_member_list_request, policy_name)
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_CREATE,
+                                                                   OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_CREATE.value,
                                                                    'FortiwebVM.HttpContentRoutingMember')
     return command_results
 
@@ -4153,7 +4158,7 @@ def http_content_routing_member_update_command(client: Client, args: Dict[str, A
         profile=args.get('profile'),
         status=args.get('status'))
     command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_UPDATE)
+                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_UPDATE.value)
     return command_results
 
 
@@ -4171,7 +4176,7 @@ def http_content_routing_member_delete_command(client: Client, args: Dict[str, A
     id = args['id']
     response = client.http_content_routing_member_delete_request(policy_name, id)
     command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_DELETE)
+                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_DELETE.value)
     return command_results
 
 
@@ -4194,7 +4199,7 @@ def http_content_routing_member_list_command(client: Client, args: Dict[str, Any
     headers = create_headers(
         client.version, ['id', 'default', 'http_content_routing_policy', 'inherit_web_protection_profile', 'profile'],
         [], ['status'])
-    readable_output = tableToMarkdown(name=OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['Members'],
                                       headers=headers,
@@ -4219,13 +4224,13 @@ def validate_geo_ip_group(client: Client, args: Dict[str, Any]):
     """
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD)
+        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.IP_ACTION)
+        raise DemistoException(ErrorMessage.IP_ACTION.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY)
+        raise DemistoException(ErrorMessage.SEVERITY.value)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR)
+        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
 
 
 def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4254,7 +4259,7 @@ def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> Command
                                                   action=action,
                                                   block_period=block_period,
                                                   ignore_x_forwarded_for=ignore_x_forwarded_for)
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_CREATE)
+    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_CREATE.value)
 
     return command_results
 
@@ -4289,7 +4294,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
                                                   action=args.get('action'),
                                                   block_period=block_period,
                                                   ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'))
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_UPDATE)
+    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_UPDATE.value)
 
     return command_results
 
@@ -4307,7 +4312,7 @@ def geo_ip_group_delete_command(client: Client, args: Dict[str, Any]) -> Command
 
     name = args['name']
     response = client.geo_ip_group_delete_request(name)
-    command_results = generate_simple_command_results('id', name, response, OutputTitle.GEO_IP_GROUP_DELETE)
+    command_results = generate_simple_command_results('id', name, response, OutputTitle.GEO_IP_GROUP_DELETE.value)
 
     return command_results
 
@@ -4333,7 +4338,7 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
     headers = create_headers(client.version, ['id', 'count', 'trigger_policy', 'severity', 'except'], [],
                              ['action', 'block_period', 'ignore_x_forwarded_for'])
-    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_GROUP_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=headers,
@@ -4391,7 +4396,7 @@ def validate_geo_ip_member(args: Dict[str, Any]):
     ]
     countries = argToList(args['countries'])
     if not set(countries).issubset(set(data)):
-        raise DemistoException(ErrorMessage.COUNTRIES)
+        raise DemistoException(ErrorMessage.COUNTRIES.value)
 
 
 def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4420,7 +4425,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
                                                                                 client.parser.geo_ip_member, {})
     countries_data = find_dicts_in_array(parsed_data, 'country', countries)
 
-    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_ADD,
+    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_ADD.value,
                                       t=countries_data,
                                       headers=['id', 'country'],
                                       headerTransform=string_to_table_header)
@@ -4447,7 +4452,7 @@ def geo_ip_member_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     member_id = args['member_id']
     response = client.geo_ip_member_delete_request(group_name=group_name, member_id=member_id)
     command_results = generate_simple_command_results('member_id', member_id, response,
-                                                      OutputTitle.GEO_IP_MEMBER_DELETE)
+                                                      OutputTitle.GEO_IP_MEMBER_DELETE.value)
 
     return command_results
 
@@ -4469,7 +4474,7 @@ def geo_ip_member_list_command(client: Client, args: Dict[str, Any]) -> CommandR
                                                                                 client.parser.geo_ip_member, args)
     outputs = {'group_name': group_name, 'countries': parsed_data}
     headers = ['id', 'country']
-    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['countries'],
                                       headers=headers,
@@ -4800,66 +4805,66 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get('name'):
-        raise DemistoException(ErrorMessage.NAME_INSERT)
+        raise DemistoException(ErrorMessage.NAME_INSERT.value)
     if not args.get('deployment_mode'):
-        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE_INSERT)
+        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE_INSERT.value)
     if not args.get('virtual_server'):
-        raise DemistoException(ErrorMessage.VIRTUAL_SERVER)
+        raise DemistoException(ErrorMessage.VIRTUAL_SERVER.value)
 
     http_service = args.get('http_service')
     https_service = args.get('https_service')
     if not (http_service or https_service):
-        raise DemistoException(ErrorMessage.PROTOCOL)
+        raise DemistoException(ErrorMessage.PROTOCOL.value)
     if args.get('deployment_mode') and args['deployment_mode'] not in [
             'HTTP Content Routing', 'Single Server/Server Balance'
     ]:
-        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE)
+        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE.value)
     if args['deployment_mode'] == 'Single Server/Server Balance' and not args.get('server_pool'):
-        raise DemistoException(ErrorMessage.SERVER_POOL)
+        raise DemistoException(ErrorMessage.SERVER_POOL.value)
     if version == ClientV2.API_VER:
         scripting = args.get('scripting')
         if args.get('scripting') and args['scripting'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.SCRIPTING)
+            raise DemistoException(ErrorMessage.SCRIPTING.value)
         scripting_list = args.get('scripting_list')
         if scripting == 'enable' and not scripting_list:
-            raise DemistoException(ErrorMessage.SCRIPTING_LIST)
+            raise DemistoException(ErrorMessage.SCRIPTING_LIST.value)
         if args.get('certificate_type') and args['certificate_type'] not in [
                 'Local', 'Multi Certificate', 'Letsencrypt'
         ]:
-            raise DemistoException(ErrorMessage.CERTIFICATE_TYPE)
+            raise DemistoException(ErrorMessage.CERTIFICATE_TYPE.value)
         if args.get('client_real_ip') and args['client_real_ip'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.CLIENT_REAL_IP)
+            raise DemistoException(ErrorMessage.CLIENT_REAL_IP.value)
         if args.get('mach_once') and args['mach_once'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.MACH_ONCE)
+            raise DemistoException(ErrorMessage.MACH_ONCE.value)
         if args.get('monitor_mode') and args['monitor_mode'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.MONITOR_MODE)
+            raise DemistoException(ErrorMessage.MONITOR_MODE.value)
         if args.get('redirect_to_https') and args['redirect_to_https'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.REDIRECT_2_HTTPS)
+            raise DemistoException(ErrorMessage.REDIRECT_2_HTTPS.value)
         if args.get('retry_on') and args['retry_on'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON)
+            raise DemistoException(ErrorMessage.RETRY_ON.value)
         if args.get('retry_on_http_layer') and args['retry_on_http_layer'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_LAYER)
+            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
         if args.get('retry_on_connect_failure') and args['retry_on_connect_failure'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON_CONNECT_FAILURE)
+            raise DemistoException(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
         if args.get('syn_cookie') and args['syn_cookie'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.SYN_COOKIE)
+            raise DemistoException(ErrorMessage.SYN_COOKIE.value)
         if args.get('url_case_sensitivity') and args['url_case_sensitivity'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.URL_CASE_SENSITIVITY)
+            raise DemistoException(ErrorMessage.URL_CASE_SENSITIVITY.value)
         half_open_thresh = arg_to_number(args.get('half_open_thresh'))
         if half_open_thresh and not 10 <= half_open_thresh <= 10000:
-            raise DemistoException(ErrorMessage.HALF_OPEN_THRESH)
+            raise DemistoException(ErrorMessage.HALF_OPEN_THRESH.value)
         arg_to_number(args.get('retry_on_cache_size'))
         retry_times_on_connect_failure = arg_to_number(args.get('retry_times_on_connect_failure'))
         if retry_times_on_connect_failure and not 1 <= retry_times_on_connect_failure <= 5:
-            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_CONNECT)
+            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
         retry_times_on_http_layer = arg_to_number(args.get('retry_times_on_http_layer'))
         if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
-            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_HTTP)
+            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
         retry_on_http_response_codes = [
             arg_to_number(code) for code in argToList(args.get('retry_on_http_response_codes'))
         ]
         if not set(retry_on_http_response_codes).issubset(set([404, 408, 500, 501, 502, 503, 504])):
-            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES)
+            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
 
 
 def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
@@ -4870,7 +4875,7 @@ def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
         name (str): Server Policy name.
 
     Returns:
-        Dict[str, Any]: Arguments from JSON file.
+        Dict[str, Any]: New
     """
     file_data = demisto.getFilePath(json_template_id)
     with open(file_data['path'], 'rb') as f:
@@ -4931,7 +4936,7 @@ def server_policy_create_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_CREATE)
+    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_CREATE.value)
 
     return command_results
 
@@ -4995,7 +5000,7 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_UPDATE)
+    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_UPDATE.value)
 
     return command_results
 
@@ -5012,7 +5017,7 @@ def server_policy_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     name = args['name']
     response = client.server_policy_delete_request(name)
-    command_results = generate_simple_command_results('id', name, response, OutputTitle.SERVER_POLICY_DELETE)
+    command_results = generate_simple_command_results('id', name, response, OutputTitle.SERVER_POLICY_DELETE.value)
 
     return command_results
 
@@ -5036,7 +5041,7 @@ def server_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
                                                                                 sub_object_id=name,
                                                                                 sub_object_key='name')
     readable_output = tableToMarkdown(
-        name=OutputTitle.SERVER_POLICY_LIST,
+        name=OutputTitle.SERVER_POLICY_LIST.value,
         metadata=pagination_message,
         t=parsed_data,
         headers=['name', 'deployment_mode', 'virtual_server', 'protocol', 'web_protection_profile', 'monitor_mode'],
@@ -5065,38 +5070,38 @@ def validate_custom_whitelist(version: str, args: Dict[str, Any], member_type: O
         raise DemistoException(f"You can't update {args['type']} member with {member_type} update command.")
     if version == ClientV2.API_VER:
         if args.get('request_url_status') == 'enable' and not args.get('request_url'):
-            raise DemistoException(ErrorMessage.REQUEST_URL_INSERT)
+            raise DemistoException(ErrorMessage.REQUEST_URL_INSERT.value)
         if args.get('domain_status') == 'enable' and not args.get('domain'):
-            raise DemistoException(ErrorMessage.DOMAIN_INSERT)
+            raise DemistoException(ErrorMessage.DOMAIN_INSERT.value)
         if args.get('value_status') == 'enable' and not args.get('value'):
-            raise DemistoException(ErrorMessage.VALUE_INSERT)
+            raise DemistoException(ErrorMessage.VALUE_INSERT.value)
     if member_type == 'URL':
         if args.get('request_type') == 'Simple String' and args.get('request_url') and args['request_url'][0] != '/':
-            raise DemistoException(ErrorMessage.REQUEST_URL)
+            raise DemistoException(ErrorMessage.REQUEST_URL.value)
         if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.REQUEST_TYPE)
+            raise DemistoException(ErrorMessage.REQUEST_TYPE.value)
     if member_type == 'Parameter' and version == ClientV2.API_VER:
         if args.get('name_type') and args['name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.NAME_TYPE)
+            raise DemistoException(ErrorMessage.NAME_TYPE.value)
         if args.get('request_status') and args['request_status'] == 'enable':
             if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException(ErrorMessage.REQUEST_TYPE)
+                raise DemistoException(ErrorMessage.REQUEST_TYPE.value)
             if args.get('request_type') == 'Simple String' and args.get(
                     'request_url') and args['request_url'][0] != '/':
-                raise DemistoException(ErrorMessage.REQUEST_URL)
+                raise DemistoException(ErrorMessage.REQUEST_URL.value)
         if args.get('domain_status') and args['domain_status'] == 'enable':
             if args.get('domain_type') and args['domain_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException(ErrorMessage.DOMAIN_TYPE)
+                raise DemistoException(ErrorMessage.DOMAIN_TYPE.value)
     if member_type == 'Header Field' and version == ClientV2.API_VER:
         if version == ClientV1.API_VER:
-            raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
+            raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
         if args.get('header_name_type') and args['header_name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.HEADER_NAME_TYPE)
+            raise DemistoException(ErrorMessage.HEADER_NAME_TYPE.value)
         if args.get('value_status') and args['value_status'] == 'enable':
             if args.get('header_value_type') and args['header_value_type'] not in [
                     'Simple String', 'Regular Expression'
             ]:
-                raise DemistoException(ErrorMessage.HEADER_VALUE_TYPE)
+                raise DemistoException(ErrorMessage.HEADER_VALUE_TYPE.value)
 
 
 def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -5116,7 +5121,7 @@ def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) ->
     member_id = get_object_id(client, response, 'requestURL', request_url, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.CUSTOM_WHITELIST_URL_CREATE,
+                                                                   OutputTitle.CUSTOM_WHITELIST_URL_CREATE.value,
                                                                    'FortiwebVM.CustomGlobalWhitelist')
 
     return command_results
@@ -5145,7 +5150,7 @@ def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) ->
                                                           request_type=args.get('request_type'),
                                                           request_url=args.get('request_url'),
                                                           status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_URL_UPDATE)
+    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_URL_UPDATE.value)
 
     return command_results
 
@@ -5174,7 +5179,7 @@ def custom_whitelist_parameter_create_command(client: Client, args: Dict[str, An
     member_id = get_object_id(client, response, 'itemName', name, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.CUSTOM_WHITELIST_PARAMETER_CREATE,
+                                                                   OutputTitle.CUSTOM_WHITELIST_PARAMETER_CREATE.value,
                                                                    'FortiwebVM.CustomGlobalWhitelist')
 
     return command_results
@@ -5242,7 +5247,8 @@ def custom_whitelist_parameter_update_command(client: Client, args: Dict[str, An
                                                                 domain_status=args.get('domain_status'),
                                                                 domain_type=args.get('domain_type'),
                                                                 domain=args.get('domain'))
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_PARAMETER_UPDATE)
+    command_results = generate_simple_command_results('id', id, response,
+                                                      OutputTitle.CUSTOM_WHITELIST_PARAMETER_UPDATE.value)
 
     return command_results
 
@@ -5265,7 +5271,7 @@ def custom_whitelist_cookie_create_command(client: Client, args: Dict[str, Any])
     member_id = get_object_id(client, response, 'itemName', name, client.custom_whitelist_list_request)
 
     command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.CUSTOM_WHITELIST_COOKIE_CREATE,
+                                                                   OutputTitle.CUSTOM_WHITELIST_COOKIE_CREATE.value,
                                                                    'FortiwebVM.CustomGlobalWhitelist')
 
     return command_results
@@ -5294,7 +5300,8 @@ def custom_whitelist_cookie_update_command(client: Client, args: Dict[str, Any])
                                                              domain=args.get('domain'),
                                                              path=args.get('path'),
                                                              status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_COOKIE_UPDATE)
+    command_results = generate_simple_command_results('id', id, response,
+                                                      OutputTitle.CUSTOM_WHITELIST_COOKIE_UPDATE.value)
 
     return command_results
 
@@ -5310,7 +5317,7 @@ def custom_whitelist_header_field_create_command(client: Client, args: Dict[str,
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if client.version == ClientV1.API_VER:
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
+        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_custom_whitelist(version=client.version, args=args, member_type='Header Field')
     name = args['name']
     response = client.custom_whitelist_header_field_create_request(  # type: ignore #client is ClientV2
@@ -5321,9 +5328,9 @@ def custom_whitelist_header_field_create_command(client: Client, args: Dict[str,
         value=args.get('value'))
     member_id = get_object_id(client, response, 'itemName', name, client.custom_whitelist_list_request)
 
-    command_results = generate_simple_context_data_command_results('id', member_id, response,
-                                                                   OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_CREATE,
-                                                                   'FortiwebVM.CustomGlobalWhitelist')
+    command_results = generate_simple_context_data_command_results(
+        'id', member_id, response, OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_CREATE.value,
+        'FortiwebVM.CustomGlobalWhitelist')
 
     return command_results
 
@@ -5340,7 +5347,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
     """
 
     if not isinstance(client, ClientV2):
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED)
+        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
     id = args['id']
     # Get exist settings from Fortiweb for validation
     args = get_object_data_before_update(client=client,
@@ -5359,7 +5366,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
         value=args.get('value'))
 
     command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE)
+                                                      OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE.value)
     return command_results
 
 
@@ -5376,7 +5383,7 @@ def custom_whitelist_delete_command(client: Client, args: Dict[str, Any]) -> Com
 
     id = args['id']
     response = client.custom_whitelist_delete_request(id=id)
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_DELETE)
+    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_DELETE.value)
     return command_results
 
 
@@ -5392,10 +5399,11 @@ def custom_whitelist_list_command(client: Client, args: Dict[str, Any]) -> Comma
     """
     id = args.get('id')
     response = client.custom_whitelist_list_request(id=id)
+    # formatted_response, pagination_message = paginate_results(client.version, response, args)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
                                                                                 client.parser.custom_whitelist, args,
                                                                                 id)
-    readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_WHITELIST_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_WHITELIST_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=['id', 'name', 'request_url', 'path', 'domain', 'status'],
@@ -5422,19 +5430,21 @@ def custom_predifined_whitelist_list_command(client: Client, args: Dict[str, Any
     id = args.get('id')
     object_type = args.get('type')
     response = client.custom_predifined_whitelist_list_request()
-    data = response if client.version == ClientV1.API_VER else response['results']
     if object_type:
+        data = response if client.version == ClientV1.API_VER else response['results']
         rel_data = dict_safe_get(find_dict_in_array(data, 'type', object_type), ['details'])
+        response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
     else:
+        data = response if client.version == ClientV1.API_VER else response['results']
         rel_data = [member for object_type in data for member in object_type['details']]
-    response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
+        response = rel_data if client.version == ClientV1.API_VER else {'results': rel_data}
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
         data_parser=client.parser.custom_predifined_whitelist,
         args=args,
         sub_object_id=id)
-    readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_PREDIFINED_LIST,
+    readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_PREDIFINED_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
                                       headers=['id', 'name', 'path', 'domain', 'status'],
@@ -5475,7 +5485,7 @@ def custom_predifined_whitelist_update_command(client: Client, args: Dict[str, A
         rel_data.pop(f'{id}_enable', None)
     response = client.custom_predifined_whitelist_update_request(data=rel_data)
 
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_PREDIFINED_UPDATE)
+    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_PREDIFINED_UPDATE.value)
     return command_results
 
 
@@ -5515,7 +5525,7 @@ def list_response_handler(client: Client,
         group_dict = find_dict_in_array(response, sub_object_key, sub_object_id)
         response = [group_dict] if group_dict else []
         if not response:
-            raise DemistoException(ErrorMessage.NOT_EXIST)
+            raise DemistoException(ErrorMessage.NOT_EXIST.value)
     response, pagination_message = paginate_results(client.version, response, args)
     parsed_data = parser_handler(response, data_parser)
     return parsed_data, pagination_message, response
@@ -5533,7 +5543,8 @@ def parser_handler(data: List[Dict[str, Any]], data_parser: Callable) -> List[Di
     """
     parsed_data = []
     for obj in data:
-        parsed_data.append(data_parser(obj))
+        parsed_obj = data_parser(obj)
+        parsed_data.append(parsed_obj)
     return parsed_data
 
 
@@ -5746,7 +5757,7 @@ def validate_block_period(version: str, block_period: Optional[int]):
         block_period (Optional[int]): Block period input value.
     """
     if version == ClientV2.API_VER and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD)
+        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
 
 
 def main() -> None:

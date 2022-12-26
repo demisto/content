@@ -1,6 +1,6 @@
 from http import HTTPStatus
 from urllib.parse import urljoin
-from FortinetFortiwebVM import ClientV1, ClientV2, Client, ERRORS, OutputTitles
+from FortinetFortiwebVM import ClientV1, ClientV2, Client, ErrorMessage, OutputTitle
 from CommonServerPython import *
 import json
 import pytest
@@ -64,26 +64,26 @@ def test_protected_hostname_group_create_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = protected_hostname_group_create_command(mock_client, args)
-    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_CREATE in str(result.readable_output)
+    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_CREATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
         'name': 'check',
         'default_action': 'Allow'
-    }, 'protected_hostname/v1_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v1_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames', {
         'name': 'check',
         'default_action': 'wrong_action'
-    }, 'protected_hostname/v1_failed_exist.json', ERRORS.DEFAULT_ACTION),
+    }, 'protected_hostname/v1_failed_exist.json', ErrorMessage.DEFAULT_ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
         'name': 'check',
         'default_action': 'Allow'
-    }, 'protected_hostname/v2_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v2_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts', {
         'name': 'check',
         'default_action': 'wrong_action'
-    }, 'protected_hostname/v2_failed_exist.json', ERRORS.DEFAULT_ACTION),
+    }, 'protected_hostname/v2_failed_exist.json', ErrorMessage.DEFAULT_ACTION.value),
 ))
 def test_fail_protected_hostname_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                       args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -135,24 +135,24 @@ def test_protected_hostname_group_update_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = protected_hostname_group_update_command(mock_client, args)
-    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_UPDATE in str(result.readable_output)
+    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
         'name': 'check',
-    }, 'protected_hostname/v1_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v1_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
         'name': 'check',
         'default_action': 'wrong_action'
-    }, 'protected_hostname/v1_success.json', ERRORS.DEFAULT_ACTION),
+    }, 'protected_hostname/v1_success.json', ErrorMessage.DEFAULT_ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
         'name': 'check',
-    }, 'protected_hostname/v2_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v2_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
         'name': 'check',
         'default_action': 'wrong_action'
-    }, 'protected_hostname/v2_success.json', ERRORS.DEFAULT_ACTION),
+    }, 'protected_hostname/v2_success.json', ErrorMessage.DEFAULT_ACTION.value),
 ))
 def test_fail_protected_hostname_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                       args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -202,16 +202,16 @@ def test_protected_hostname_group_delete_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = protected_hostname_group_delete_command(mock_client, args)
-    assert OutputTitles.PROTECTED_HOSTNAME_GROUP_DELETE in str(result.readable_output)
+    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/check', {
         'name': 'check'
-    }, 'protected_hostname/v1_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v1_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts?mkey=check', {
         'name': 'check'
-    }, 'protected_hostname/v2_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v2_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
 ))
 def test_fail_protected_hostname_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                       args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -318,40 +318,40 @@ def test_protected_hostname_member_create_command(requests_mock, mock_client: Cl
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4'
-    }, 'protected_hostname_member/v1_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname_member/v1_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost', {
         'group_name': '1234',
         'action': 'wrong_action',
         'host': '1.2.3.4'
-    }, 'protected_hostname_member/v1_failed_exist.json', ERRORS.ACTION),
+    }, 'protected_hostname_member/v1_failed_exist.json', ErrorMessage.ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname_member/v2_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'wrong_action',
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_exist.json', ERRORS.ACTION),
+    }, 'protected_hostname_member/v2_failed_exist.json', ErrorMessage.ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4',
         'ignore_port': 'wrong',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_exist.json', ERRORS.IGNORE_PORT),
+    }, 'protected_hostname_member/v2_failed_exist.json', ErrorMessage.IGNORE_PORT.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234', {
         'group_name': '1234',
         'action': 'Allow',
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'wrong'
-    }, 'protected_hostname_member/v2_failed_exist.json', ERRORS.INCLUDE_SUBDOMAINS),
+    }, 'protected_hostname_member/v2_failed_exist.json', ErrorMessage.INCLUDE_SUBDOMAINS.value),
 ))
 def test_fail_protected_hostname_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                        args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -421,7 +421,7 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = protected_hostname_member_update_command(mock_client, args)
-    assert OutputTitles.PROTECTED_HOSTNAME_MEMBER_UPDATE in str(result.readable_output)
+    assert OutputTitle.PROTECTED_HOSTNAME_MEMBER_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -430,13 +430,13 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
         'member_id': '1',
         'action': 'Allow',
         'host': '1.2.3.4'
-    }, 'protected_hostname_member/v1_failed_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'protected_hostname_member/v1_failed_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost/1', {
         'group_name': '1234',
         'member_id': '1',
         'action': 'wrong',
         'host': '1.2.3.4'
-    }, 'protected_hostname_member/v1_failed_not_exist.json', ERRORS.ACTION),
+    }, 'protected_hostname_member/v1_failed_not_exist.json', ErrorMessage.ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
@@ -444,7 +444,7 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'protected_hostname_member/v2_failed_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
@@ -452,7 +452,7 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_not_exist.json', ERRORS.ACTION),
+    }, 'protected_hostname_member/v2_failed_not_exist.json', ErrorMessage.ACTION.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
@@ -460,7 +460,7 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
         'host': '1.2.3.4',
         'ignore_port': 'wrong',
         'include_subdomains': 'disable'
-    }, 'protected_hostname_member/v2_failed_not_exist.json', ERRORS.IGNORE_PORT),
+    }, 'protected_hostname_member/v2_failed_not_exist.json', ErrorMessage.IGNORE_PORT.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
@@ -468,7 +468,7 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
         'host': '1.2.3.4',
         'ignore_port': 'disable',
         'include_subdomains': 'wrong'
-    }, 'protected_hostname_member/v2_failed_not_exist.json', ERRORS.INCLUDE_SUBDOMAINS),
+    }, 'protected_hostname_member/v2_failed_not_exist.json', ErrorMessage.INCLUDE_SUBDOMAINS.value),
 ))
 def test_fail_protected_hostname_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                        args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -525,18 +525,18 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = protected_hostname_member_delete_command(mock_client, args)
-    assert OutputTitles.PROTECTED_HOSTNAME_MEMBER_DELETE in str(result.readable_output)
+    assert OutputTitle.PROTECTED_HOSTNAME_MEMBER_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/ProtectedHostnames/ProtectedHostnames/1234/ProtectedHostnamesNewHost/1', {
         'group_name': '1234',
         'member_id': '1',
-    }, 'protected_hostname_member/v1_delete_failed.json', ERRORS.NOT_EXIST),
+    }, 'protected_hostname_member/v1_delete_failed.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/allow-hosts/host-list?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
-    }, 'protected_hostname_member/v2_delete_failed.json', ERRORS.NOT_EXIST),
+    }, 'protected_hostname_member/v2_delete_failed.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_protected_hostname_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                        args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -634,55 +634,55 @@ def test_ip_list_group_create_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = ip_list_group_create_command(mock_client, args)
-    assert OutputTitles.IP_LIST_GROUP_CREATE in str(result.readable_output)
+    assert OutputTitle.IP_LIST_GROUP_CREATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'WebProtection/Access/IPList', {
         'name': 'check',
-    }, 'ip_list_group/v1_create_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'ip_list_group/v1_create_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'Alert deny',
         'block_period': 600,
         'severity': 'Low',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'ip_list_group/v2_create_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'wrong',
         'block_period': 0,
         'severity': 'Low',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_success.json', ERRORS.IP_ACTION),
+    }, 'ip_list_group/v2_create_success.json', ErrorMessage.IP_ACTION.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'Alert deny',
         'block_period': -1,
         'severity': 'Low',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_success.json', ERRORS.BLOCK_PERIOD),
+    }, 'ip_list_group/v2_create_success.json', ErrorMessage.BLOCK_PERIOD.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'wrong',
         'block_period': 600,
         'severity': 'Low',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_success.json', ERRORS.IP_ACTION),
+    }, 'ip_list_group/v2_create_success.json', ErrorMessage.IP_ACTION.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'Alert deny',
         'block_period': 601,
         'severity': 'Low',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_success.json', ERRORS.BLOCK_PERIOD),
+    }, 'ip_list_group/v2_create_success.json', ErrorMessage.BLOCK_PERIOD.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'Alert deny',
         'block_period': 600,
         'severity': 'wrong',
         'ignore_x_forwarded_for': 'disable'
-    }, 'ip_list_group/v2_create_success.json', ERRORS.SEVERITY),
+    }, 'ip_list_group/v2_create_success.json', ErrorMessage.SEVERITY.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list', {
         'name': 'check',
         'action': 'Alert deny',
@@ -736,18 +736,18 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = ip_list_group_update_command(mock_client, args)
-    assert OutputTitles.IP_LIST_GROUP_UPDATE in str(result.readable_output)
+    assert OutputTitle.IP_LIST_GROUP_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'no_matter', {
         'name': 'check',
         'action': 'Alert deny',
-    }, 'ip_list_group/v2_not_exist.json', ERRORS.V1_NOT_SUPPORTED),
+    }, 'ip_list_group/v2_not_exist.json', ErrorMessage.V1_NOT_SUPPORTED.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
         'name': 'check',
         'action': 'Alert deny',
-    }, 'ip_list_group/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'ip_list_group/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=check', {
         'name': 'check',
         'action': 'wrong',
@@ -802,16 +802,16 @@ def test_ip_list_group_delete_command(requests_mock, mock_client: Client, versio
     requests_mock.delete(url=url, json=json_response)
 
     result = ip_list_group_delete_command(mock_client, args)
-    assert OutputTitles.IP_LIST_GROUP_DELETE in str(result.readable_output)
+    assert OutputTitle.IP_LIST_GROUP_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'WebProtection/Access/IPList/Example', {
         'name': 'Example'
-    }, 'protected_hostname/v1_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v1_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list?mkey=Example', {
         'name': 'Example'
-    }, 'protected_hostname/v2_failed_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'protected_hostname/v2_failed_exist.json', ErrorMessage.ALREADY_EXIST.value),
 ))
 def test_fail_ip_list_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -920,13 +920,13 @@ def test_ip_list_member_create_command(requests_mock, mock_client: Client, versi
         'ip_address': '1.1.1.1',
         'type': 'Black IP',
         'severity': 'Low'
-    }, 'ip_list_member/v1_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'ip_list_member/v1_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember', {
         'group_name': '1234',
         'ip_address': '1.1.1.1',
         'type': 'Allow Only Ip',
         'severity': 'Low'
-    }, 'ip_list_member/v1_exist.json', ERRORS.ALLOW_IP_V1),
+    }, 'ip_list_member/v1_exist.json', ErrorMessage.ALLOW_IP_V1.value),
     (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember', {
         'group_name': '1234',
         'ip_address': 'wrong',
@@ -950,7 +950,7 @@ def test_ip_list_member_create_command(requests_mock, mock_client: Client, versi
         'ip_address': '1.1.1.1',
         'type': 'Black IP',
         'severity': 'Low'
-    }, 'ip_list_member/v2_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'ip_list_member/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
 ))
 def test_fail_ip_list_member_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                             args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -1013,7 +1013,7 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = ip_list_member_update_command(mock_client, args)
-    assert OutputTitles.IP_LIST_MEMBER_UPDATE in str(result.readable_output)
+    assert OutputTitle.IP_LIST_MEMBER_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1022,13 +1022,13 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
         'member_id': '1',
         'ip_address': '1.1.1.1',
         'type': 'Black IP'
-    }, 'ip_list_member/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'ip_list_member/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
         'ip_address': '1.1.1.1',
         'type': 'Black IP'
-    }, 'ip_list_member/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'ip_list_member/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_ip_list_member_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                             args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -1084,18 +1084,18 @@ def test_ip_list_member_delete_command(requests_mock, mock_client: Client, versi
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = ip_list_member_delete_command(mock_client, args)
-    assert OutputTitles.IP_LIST_MEMBER_DELETE in str(result.readable_output)
+    assert OutputTitle.IP_LIST_MEMBER_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'WebProtection/Access/IPList/1234/IPListCreateIPListPolicyMember/1', {
         'group_name': '1234',
         'member_id': '1',
-    }, 'ip_list_member/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'ip_list_member/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/ip-list/members?mkey=1234&sub_mkey=1', {
         'group_name': '1234',
         'member_id': '1',
-    }, 'ip_list_member/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'ip_list_member/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_ip_list_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                             args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -1209,25 +1209,25 @@ def test_http_content_routing_member_add_command(requests_mock, mock_client: Cli
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg', 'additional_args'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
-     'http_content_routing_member/v1_exist.json', ERRORS.ALREADY_EXIST, {}),
+     'http_content_routing_member/v1_exist.json', ErrorMessage.ALREADY_EXIST.value, {}),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
-     'http_content_routing_member/v1_wrong_content_routing.json', ERRORS.ARGUMENTS, {}),
+     'http_content_routing_member/v1_wrong_content_routing.json', ErrorMessage.ARGUMENTS.value, {}),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
-     'http_content_routing_member/v1_wrong_content_routing.json', ERRORS.IS_DEFAULT, {
+     'http_content_routing_member/v1_wrong_content_routing.json', ErrorMessage.IS_DEFAULT.value, {
          'is_default': 'wrong'
      }),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
-     'http_content_routing_member/v1_wrong_content_routing.json', ERRORS.INHERIT_WEB_PROTECTION_PROFILE, {
+     'http_content_routing_member/v1_wrong_content_routing.json', ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value, {
          'inherit_web_protection_profile': 'wrong'
      }),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting',
-     'http_content_routing_member/v1_wrong_content_routing.json', ERRORS.STATUS, {
+     'http_content_routing_member/v1_wrong_content_routing.json', ErrorMessage.STATUS.value, {
          'status': 'wrong'
      }),
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy',
-     'http_content_routing_member/v2_exist.json', ERRORS.ALREADY_EXIST, {}),
+     'http_content_routing_member/v2_exist.json', ErrorMessage.ALREADY_EXIST.value, {}),
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy',
-     'http_content_routing_member/v2_wrong_content_routing.json', ERRORS.ARGUMENTS, {}),
+     'http_content_routing_member/v2_wrong_content_routing.json', ErrorMessage.ARGUMENTS.value, {}),
 ))
 def test_fail_http_content_routing_member_add_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                       jsonpath: str, error_msg: str, additional_args: dict):
@@ -1289,18 +1289,18 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client: 
     args = {'policy_name': 'policy', 'http_content_routing_policy': '1234', 'id': 1}
 
     result = http_content_routing_member_update_command(mock_client, args)
-    assert OutputTitles.HTTP_CONTENT_ROUTING_MEMBER_UPDATE in str(result.readable_output)
+    assert OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting/1',
-     'http_content_routing_member/v1_not_exist.json', ERRORS.NOT_EXIST),
+     'http_content_routing_member/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting/1',
-     'http_content_routing_member/v1_wrong_content_routing.json', ERRORS.ARGUMENTS),
+     'http_content_routing_member/v1_wrong_content_routing.json', ErrorMessage.ARGUMENTS.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
-     'http_content_routing_member/v2_not_exist.json', ERRORS.NOT_EXIST),
+     'http_content_routing_member/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
-     'http_content_routing_member/v2_wrong_content_routing.json', ERRORS.ARGUMENTS),
+     'http_content_routing_member/v2_wrong_content_routing.json', ErrorMessage.ARGUMENTS.value),
 ))
 def test_fail_http_content_routing_member_update_command(requests_mock, mock_client: Client, version: str,
                                                          endpoint: str, jsonpath: str, error_msg: str):
@@ -1353,14 +1353,14 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client: 
     args = {'policy_name': 'policy', 'id': 1}
 
     result = http_content_routing_member_delete_command(mock_client, args)
-    assert OutputTitles.HTTP_CONTENT_ROUTING_MEMBER_DELETE in str(result.readable_output)
+    assert OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/policy/EditContentRouting/1',
-     'http_content_routing_member/v1_not_exist.json', ERRORS.NOT_EXIST),
+     'http_content_routing_member/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy/http-content-routing-list?mkey=policy&sub_mkey=1',
-     'http_content_routing_member/v2_not_exist.json', ERRORS.NOT_EXIST),
+     'http_content_routing_member/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_http_content_routing_member_delete_command(requests_mock, mock_client: Client, version: str,
                                                          endpoint: str, jsonpath: str, error_msg: str):
@@ -1445,29 +1445,35 @@ def test_geo_ip_group_create_command(requests_mock, mock_client: Client, version
     }
 
     result = geo_ip_group_create_command(mock_client, args)
-    assert OutputTitles.GEO_IP_GROUP_CREATE in str(result.readable_output)
+    assert OutputTitle.GEO_IP_GROUP_CREATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg', 'additional_args'), (
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_exist.json', ERRORS.ALREADY_EXIST, {}),
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json', ERRORS.IP_ACTION, {
-        'action': 'wrong'
-    }),
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json', ERRORS.SEVERITY, {
-        'severity': 'wrong'
-    }),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_exist.json', ErrorMessage.ALREADY_EXIST.value,
+     {}),
     (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json',
-     ERRORS.IGNORE_X_FORWARDED_FOR, {
+     ErrorMessage.IP_ACTION.value, {
+         'action': 'wrong'
+     }),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json', ErrorMessage.SEVERITY.value,
+     {
+         'severity': 'wrong'
+     }),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP', 'geo_ip_group/v1_create_success.json',
+     ErrorMessage.IGNORE_X_FORWARDED_FOR.value, {
          'ignore_x_forwarded_for': 'wrong'
      }),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_exist.json', ERRORS.ALREADY_EXIST, {}),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json', ERRORS.ARGUMENTS, {}),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json', ERRORS.BLOCK_PERIOD, {
-        'block_period': '-1'
-    }),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json', ERRORS.BLOCK_PERIOD, {
-        'block_period': '601'
-    }),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_exist.json', ErrorMessage.ALREADY_EXIST.value, {}),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json', ErrorMessage.ARGUMENTS.value,
+     {}),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json',
+     ErrorMessage.BLOCK_PERIOD.value, {
+         'block_period': '-1'
+     }),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list', 'geo_ip_group/v2_wrong_parameters.json',
+     ErrorMessage.BLOCK_PERIOD.value, {
+         'block_period': '601'
+     }),
 ))
 def test_fail_geo_ip_group_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                           jsonpath: str, error_msg: str, additional_args: dict):
@@ -1510,12 +1516,14 @@ def test_geo_ip_group_update_command(requests_mock, mock_client: Client, version
     }
 
     result = geo_ip_group_update_command(mock_client, args)
-    assert OutputTitles.GEO_IP_GROUP_UPDATE in str(result.readable_output)
+    assert OutputTitle.GEO_IP_GROUP_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json', ERRORS.NOT_EXIST),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json', ERRORS.NOT_EXIST),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_geo_ip_group_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                           jsonpath: str, error_msg: str):
@@ -1550,12 +1558,14 @@ def test_geo_ip_group_delete_command(requests_mock, mock_client: Client, version
     requests_mock.delete(url=url, json=json_response)
     args = {'name': 'check'}
     result = geo_ip_group_delete_command(mock_client, args)
-    assert OutputTitles.GEO_IP_GROUP_DELETE in str(result.readable_output)
+    assert OutputTitle.GEO_IP_GROUP_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
-    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json', ERRORS.NOT_EXIST),
-    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json', ERRORS.NOT_EXIST),
+    (ClientV1.API_VER, 'WebProtection/Access/GeoIP/check', 'geo_ip_group/v1_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
+    (ClientV2.API_VER, 'cmdb/waf/geo-block-list?mkey=check', 'geo_ip_group/v2_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_geo_ip_group_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                           jsonpath: str, error_msg: str):
@@ -1638,16 +1648,16 @@ def test_geo_ip_member_add_command(requests_mock, mock_client: Client, version: 
     requests_mock.get(url=get_url, json=get_json_response)
     requests_mock.post(url=post_url, json=post_json_response)
     result = geo_ip_member_add_command(mock_client, args)
-    assert OutputTitles.GEO_IP_MEMBER_ADD in str(result.readable_output)
+    assert OutputTitle.GEO_IP_MEMBER_ADD.value in str(result.readable_output)
     assert 'FortiwebVM.GeoIpMember' == result.outputs_prefix
     assert len(result.outputs) == expected_value
 
 
 @pytest.mark.parametrize(('version', 'post_endpoint', 'get_endpoint', 'post_jsonpath', 'get_jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry', 'WebProtection/Access/GeoIP/ron/AddCountry',
-     'geo_ip_member/v1_not_exist.json', 'geo_ip_member/v1_list_success.json', ERRORS.NOT_EXIST),
+     'geo_ip_member/v1_not_exist.json', 'geo_ip_member/v1_list_success.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'waf/geoip.setCountrys?mkey=ron', 'cmdb/waf/geo-block-list/country-list?mkey=ron',
-     'geo_ip_member/v2_not_exist.json', 'geo_ip_member/v2_list_success.json', ERRORS.NOT_EXIST),
+     'geo_ip_member/v2_not_exist.json', 'geo_ip_member/v2_list_success.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_geo_ip_member_add_command(requests_mock, mock_client: Client, version: str, post_endpoint: str,
                                         get_endpoint: str, post_jsonpath: str, get_jsonpath: str, error_msg: str):
@@ -1698,14 +1708,14 @@ def test_geo_ip_member_delete_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = geo_ip_member_delete_command(mock_client, args)
-    assert OutputTitles.GEO_IP_MEMBER_DELETE in str(result.readable_output)
+    assert OutputTitle.GEO_IP_MEMBER_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'WebProtection/Access/GeoIP/ron/AddCountry/1', 'geo_ip_member/v1_not_exist.json',
-     ERRORS.NOT_EXIST),
+     ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/waf/geo-block-list/country-list?mkey=ron&sub_mkey=1', 'geo_ip_member/v2_not_exist.json',
-     ERRORS.NOT_EXIST),
+     ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_geo_ip_member_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            jsonpath: str, error_msg: str):
@@ -2000,7 +2010,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = server_policy_create_command(mock_client, args)
-    assert OutputTitles.SERVER_POLICY_CREATE in str(result.readable_output)
+    assert OutputTitle.SERVER_POLICY_CREATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2009,41 +2019,41 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
-    }, 'server_policy/v1_create_success.json', ERRORS.PROTOCOL),
+    }, 'server_policy/v1_create_success.json', ErrorMessage.PROTOCOL.value),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
         'name': 'check',
         'deployment_mode': 'wrong',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.DEPLOYMENT_MODE),
+    }, 'server_policy/v1_exist.json', ErrorMessage.DEPLOYMENT_MODE.value),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
         'name': 'check',
         'deployment_mode': 'Single Server/Server Balance',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.SERVER_POOL),
+    }, 'server_policy/v1_exist.json', ErrorMessage.SERVER_POOL.value),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v1_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'server_policy/v1_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v1_wrong_parameters.json', ERRORS.ARGUMENTS),
+    }, 'server_policy/v1_wrong_parameters.json', ErrorMessage.ARGUMENTS.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP'
-    }, 'server_policy/v2_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'server_policy/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
@@ -2051,7 +2061,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
         'scripting': 'wrong'
-    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING),
+    }, 'server_policy/v2_exist.json', ErrorMessage.SCRIPTING.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
@@ -2059,7 +2069,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
         'client_real_ip': 'wrong'
-    }, 'server_policy/v2_exist.json', ERRORS.CLIENT_REAL_IP),
+    }, 'server_policy/v2_exist.json', ErrorMessage.CLIENT_REAL_IP.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
@@ -2067,7 +2077,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
         'mach_once': 'wrong'
-    }, 'server_policy/v2_exist.json', ERRORS.MACH_ONCE),
+    }, 'server_policy/v2_exist.json', ErrorMessage.MACH_ONCE.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
@@ -2075,7 +2085,7 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
         'monitor_mode': 'wrong'
-    }, 'server_policy/v2_exist.json', ERRORS.MONITOR_MODE),
+    }, 'server_policy/v2_exist.json', ErrorMessage.MONITOR_MODE.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
@@ -2083,14 +2093,14 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
         'scripting': 'enable'
-    }, 'server_policy/v2_exist.json', ERRORS.SCRIPTING_LIST),
+    }, 'server_policy/v2_exist.json', ErrorMessage.SCRIPTING_LIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy', {
         'name': 'check',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v2_wrong_parameters.json', ERRORS.ARGUMENTS),
+    }, 'server_policy/v2_wrong_parameters.json', ErrorMessage.ARGUMENTS.value),
 ))
 def test_fail_server_policy_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -2156,7 +2166,7 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = server_policy_update_command(mock_client, args)
-    assert OutputTitles.SERVER_POLICY_UPDATE in str(result.readable_output)
+    assert OutputTitle.SERVER_POLICY_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2166,14 +2176,14 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP',
-    }, 'server_policy/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'server_policy/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=123456789', {
         'name': '123456789',
         'deployment_mode': 'HTTP Content Routing',
         'server_pool': 'server1',
         'virtual_server': 'virtual1',
         'http_service': 'HTTP'
-    }, 'server_policy/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'server_policy/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_server_policy_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -2228,12 +2238,14 @@ def test_server_policy_delete_command(requests_mock, mock_client: Client, versio
     args = {'name': 'check'}
 
     result = server_policy_delete_command(mock_client, args)
-    assert OutputTitles.SERVER_POLICY_DELETE in str(result.readable_output)
+    assert OutputTitle.SERVER_POLICY_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
-    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/check', 'server_policy/v1_not_exist.json', ERRORS.NOT_EXIST),
-    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=check', 'server_policy/v2_not_exist.json', ERRORS.NOT_EXIST),
+    (ClientV1.API_VER, 'Policy/ServerPolicy/ServerPolicy/check', 'server_policy/v1_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
+    (ClientV2.API_VER, 'cmdb/server-policy/policy?mkey=check', 'server_policy/v2_not_exist.json',
+     ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_server_policy_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                            jsonpath: str, error_msg: str):
@@ -2333,19 +2345,19 @@ def test_custom_whitelist_url_create_command(requests_mock, mock_client: Client,
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
         'request_url': '/123',
         'request_type': 'Simple String',
-    }, 'custom_whitelist/v1_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v1_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList', {
         'request_url': '123',
         'request_type': 'Simple String',
-    }, 'custom_whitelist/v1_exist.json', ERRORS.REQUEST_URL),
+    }, 'custom_whitelist/v1_exist.json', ErrorMessage.REQUEST_URL.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'request_url': '/123',
         'request_type': 'Simple String',
-    }, 'custom_whitelist/v2_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'request_url': '123',
         'request_type': 'Simple String',
-    }, 'custom_whitelist/v2_exist.json', ERRORS.REQUEST_URL),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.REQUEST_URL.value),
 ))
 def test_fail_custom_whitelist_url_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                   args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -2418,13 +2430,13 @@ def test_custom_whitelist_parameter_create_command(requests_mock, mock_client: C
         'name': 'ron',
         'request_type': 'Simple String',
         'status': 'disable'
-    }, 'custom_whitelist/v1_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v1_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'name': 'ron',
         'request_type': 'Simple String',
         'request_url_status': 'enable',
         'status': 'disable'
-    }, 'custom_whitelist/v2_exist.json', ERRORS.REQUEST_URL_INSERT),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.REQUEST_URL.REQUEST_URL_INSERT.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'name': 'ron',
         'request_type': 'Simple String',
@@ -2432,7 +2444,7 @@ def test_custom_whitelist_parameter_create_command(requests_mock, mock_client: C
         'request_url': '/asds',
         'domain_status': 'enable',
         'status': 'disable'
-    }, 'custom_whitelist/v2_exist.json', ERRORS.DOMAIN_INSERT),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.DOMAIN_INSERT.value),
 ))
 def test_fail_custom_whitelist_parameter_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                         args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -2502,12 +2514,12 @@ def test_custom_whitelist_cookie_create_command(requests_mock, mock_client: Clie
         'name': 'ron',
         'domain': 'do1',
         'path': '/abc'
-    }, 'custom_whitelist/v1_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v1_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'name': 'ron',
         'domain': 'do1',
         'path': '/abc'
-    }, 'custom_whitelist/v2_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
 ))
 def test_fail_custom_whitelist_cookie_create_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                      args: Dict[str, Any], jsonpath: str, error_msg: str):
@@ -2574,18 +2586,18 @@ def test_custom_whitelist_header_field_create_command(requests_mock, mock_client
         'name': 'ron',
         'status': 'disable',
         'header_name_type': 'Simple String'
-    }, 'custom_whitelist/v1_wrong_parameters.json', ERRORS.V1_NOT_SUPPORTED),
+    }, 'custom_whitelist/v1_wrong_parameters.json', ErrorMessage.V1_NOT_SUPPORTED.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'name': 'ron',
         'status': 'disable',
         'header_name_type': 'Simple String'
-    }, 'custom_whitelist/v2_exist.json', ERRORS.ALREADY_EXIST),
+    }, 'custom_whitelist/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
         'name': 'ron',
         'status': 'disable',
         'header_name_type': 'Simple String',
         'value_status': 'enable'
-    }, 'custom_whitelist/v2_wrong_parameters.json', ERRORS.VALUE_INSERT),
+    }, 'custom_whitelist/v2_wrong_parameters.json', ErrorMessage.VALUE_INSERT.value),
 ))
 def test_fail_custom_whitelist_header_field_create_command(requests_mock, mock_client: Client, version: str,
                                                            endpoint: str, args: Dict[str, Any], jsonpath: str,
@@ -2653,7 +2665,7 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_url_update_command(mock_client, args)
-    assert OutputTitles.CUSTOM_WHITELIST_URL_UPDATE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_WHITELIST_URL_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2662,7 +2674,7 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
         'request_url': '/123',
         'request_type': 'Simple String',
         'status': 'disable'
-    }, 'custom_whitelist/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/6', {
         'id': '6',
         'request_url': '/123',
@@ -2674,7 +2686,7 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
         'request_url': '/123',
         'request_type': 'Simple String',
         'status': 'disable'
-    }, 'custom_whitelist/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=6', {
         'id': '2',
         'request_url': '/123',
@@ -2749,14 +2761,14 @@ def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: C
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_parameter_update_command(mock_client, args)
-    assert OutputTitles.CUSTOM_WHITELIST_PARAMETER_UPDATE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_WHITELIST_PARAMETER_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/6', {
         'id': '6',
         'name': 'sdfs',
-    }, 'custom_whitelist/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
         'id': '3',
         'name': 'sdfs',
@@ -2764,7 +2776,7 @@ def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: C
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
         'id': '2',
         'name': 'sdfs',
-    }, 'custom_whitelist/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=1', {
         'id': '1',
         'name': 'sdfs',
@@ -2832,14 +2844,14 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_cookie_update_command(mock_client, args)
-    assert OutputTitles.CUSTOM_WHITELIST_COOKIE_UPDATE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_WHITELIST_COOKIE_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
         'id': '7',
         'name': 'sdfs',
-    }, 'custom_whitelist/v1_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v1_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
         'id': '3',
         'name': 'sdfs',
@@ -2847,7 +2859,7 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=3', {
         'id': '3',
         'name': 'sdfs',
-    }, 'custom_whitelist/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
         'id': '2',
         'name': 'sdfs',
@@ -2911,14 +2923,14 @@ def test_custom_whitelist_header_field_update_command(requests_mock, mock_client
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_header_field_update_command(mock_client, args)
-    assert OutputTitles.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
         'id': '7',
         'name': 'sdfs',
-    }, 'custom_whitelist/v1_success.json', ERRORS.V1_NOT_SUPPORTED),
+    }, 'custom_whitelist/v1_success.json', ErrorMessage.V1_NOT_SUPPORTED.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
         'id': '4',
         'name': 'sdfs',
@@ -2927,7 +2939,7 @@ def test_custom_whitelist_header_field_update_command(requests_mock, mock_client
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
         'id': '4',
         'name': 'sdfs',
-    }, 'custom_whitelist/v2_not_exist.json', ERRORS.NOT_EXIST),
+    }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=2', {
         'id': '2',
         'name': 'sdfs',
@@ -2988,14 +3000,14 @@ def test_custom_whitelist_delete_command(requests_mock, mock_client: Client, ver
     args = {'id': '1'}
 
     result = custom_whitelist_delete_command(mock_client, args)
-    assert OutputTitles.CUSTOM_WHITELIST_DELETE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_WHITELIST_DELETE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/1', 'custom_whitelist/v1_not_exist.json',
-     ERRORS.NOT_EXIST),
+     ErrorMessage.NOT_EXIST.value),
     (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=1',
-     'custom_whitelist/v2_not_exist.json', ERRORS.NOT_EXIST),
+     'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_fail_custom_whitelist_delete_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                               jsonpath: str, error_msg: str):
@@ -3134,7 +3146,7 @@ def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: 
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
     result = custom_predifined_whitelist_update_command(mock_client, args)
-    assert OutputTitles.CUSTOM_PREDIFINED_UPDATE in str(result.readable_output)
+    assert OutputTitle.CUSTOM_PREDIFINED_UPDATE.value in str(result.readable_output)
 
 
 @pytest.mark.parametrize(
