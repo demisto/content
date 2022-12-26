@@ -8,7 +8,7 @@ alter
     xdm.target.port = dpt,
     xdm.source.port = spt,
     xdm.observer.action = act,
-    xdm.alert.category = cat,
+    xdm.event.type = cat,
     xdm.alert.subcategory = cs1,
     xdm.source.host.device_category = cs2,
     xdm.observer.name = cs3,
