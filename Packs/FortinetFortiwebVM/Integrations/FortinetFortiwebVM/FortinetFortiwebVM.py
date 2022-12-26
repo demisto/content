@@ -5592,7 +5592,6 @@ def find_dict_in_array(container: List[Dict[str, Any]], key: str, value: str) ->
     for obj in container:
         if obj.get(key) and str(obj[key]) == value:
             return obj
-    return None
 
 
 def find_dicts_in_array(container: List[Dict[str, Any]], key: str, value: List[str]) -> Optional[List[Dict[str, Any]]]:
