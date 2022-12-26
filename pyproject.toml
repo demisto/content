@@ -9,7 +9,7 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "add_nativeimage_support"}
+demisto-sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "32c79c052511e44a6d92ab62f99fa4c978910e8f"}
 requests = "^2.22.0"
 pre-commit = "^2.20.0"
 
