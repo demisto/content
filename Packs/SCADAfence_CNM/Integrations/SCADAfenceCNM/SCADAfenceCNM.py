@@ -7,12 +7,12 @@ import sys
 from datetime import datetime, timedelta
 
 import requests
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-API_URL = demisto.params()['APIUrl'].rstrip('/') + '/externalApi'
+API_URL = f'{demisto.params()["APIUrl"].rstrip("/")}/externalApi'
 API_KEY = demisto.params()['APIKey']
 API_SECRET = demisto.params()['APISecret']
 ALERT_SEVERITY = demisto.params()['AlertSeverity']
@@ -57,7 +57,7 @@ def get_alert_severity():
     s_arr = s.split(",")
     if sum([x in ['Information', 'Warning', 'Threat', 'Severe', 'Critical'] for x in s_arr]) == len(s_arr):
         return set(s_arr)
-    LOG("Invalid alert severity values")
+    demisto.debug('Invalid alert severity values')
     raise Exception("Invalid alert severity values")
 
 
@@ -75,9 +75,9 @@ def http_request(method, url_suffix, params_dict, headers):
     if params_dict is not None:
         req_params.update(params_dict)
 
-    url = API_URL + url_suffix
+    url = f'{API_URL}{url_suffix}'
 
-    LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
+    demisto.debug(f'running {method} request with url={url}\theaders={headers}\nparams={json.dumps(req_params)}')
     res_msg = ""
     try:
 
@@ -103,8 +103,8 @@ def http_request(method, url_suffix, params_dict, headers):
         return json.loads(res.text)
 
     except Exception as e:
-        LOG("{}\n{}".format(e, res_msg))
-        raise Exception("{}\n{}".format(e, res_msg))
+        demisto.debug(f"{e}\n{res_msg}")
+        raise Exception(f"{e}\n{res_msg}")
 
 
 def call_api(method, api_suffix, params):
@@ -345,11 +345,10 @@ elif demisto.command() == 'scadafence-getAlerts':
     })
 
 elif demisto.command() == 'scadafence-setAlertStatus':
-    api_suffix = "/alerts/" + demisto.args()['alertId']
+    api_suffix = f"/alerts/{demisto.args()['alertId']}"
     alert_status = demisto.args()['alertStatus']
     call_api('PATCH', api_suffix, {'status': alert_status})
-    md = tableToMarkdown("Setting status for alert " + demisto.args()
-                         ['alertId'] + " to '" + alert_status + "':", {"success": True})
+    md = tableToMarkdown(f"Setting status for alert {demisto.args()['alertId']} to '{alert_status}':", {"success": True})
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': {"status": alert_status},
