@@ -10,6 +10,8 @@ def mock_client_ouath(mocker):
     mocker.patch.object(Client, 'get_oauth_token')
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, 'zoom_list_users', return_value='Invalid access token')
+
     return client
 
 
@@ -772,7 +774,7 @@ def test_remove_None_values_from_dict():
     assert remove_None_values_from_dict(dict_input) == dict_expected_output
 
 
-def test_check_start_time_format():
+def test_check_start_time_format__wrong_format():
     """Given -
             a time format
         When -
@@ -785,3 +787,40 @@ def test_check_start_time_format():
     with pytest.raises(DemistoException) as e:
         check_start_time_format("2022-13-26T22:22:Z")
     assert e.value.message == "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
+
+
+def test_test_moudle__reciving_errors(mocker):
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException('Invalid access token'))
+
+    from Zoom import test_module
+    assert test_module(client=client) == 'Invalid credentials. Please verify that your credentials are valid.'
+
+def test_test_moudle__reciving_errors(mocker):
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("The Token's Signature resulted invalid"))
+
+    from Zoom import test_module
+    assert test_module(client=client) == 'Invalid API Secret. Please verify that your API Secret is valid.' 
+
+def test_test_moudle__reciving_errors(mocker):
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("Invalid client_id or client_secret"))
+
+    from Zoom import test_module
+    assert test_module(client=client) == 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.' 
+
+def test_test_moudle__reciving_errors(mocker):
+    mocker.patch.object(Client, "generate_oauth_token")
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("mockerror"))
+
+    from Zoom import test_module
+    assert test_module(client=client) == 'Problem reaching Zoom API, check your credentials. Error message: mockerror' 
