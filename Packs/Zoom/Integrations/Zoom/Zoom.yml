@@ -516,9 +516,9 @@ script:
           description: The time that this meeting was created
           type: Date
         - contextPath: Zoom.Meetings.type
-      description:
-        "This command will show all the user meetings. Note: only scheduled
-        and unexpired meetings will appear."
+      description: >
+        Show all the meetings of a given user.
+        Note: only scheduled and unexpired meetings will appear.
   dockerimage: demisto/pyjwt3:1.0.0.38747
   runonce: false
   script: "-"
