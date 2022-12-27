@@ -299,6 +299,14 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
+            "playbookID": "OpenCTI 5.x Feed Test",
+            "fromversion": "6.0.0",
+            "is_mockable": false,
+            "instance_names": "OpenCTI_Feed_4_X",
+            "timeout": 2400
+        },
+        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test",
             "timeout": 800
@@ -5216,7 +5224,7 @@
             "integrations": "Cisco Umbrella Reporting",
             "playbookID": "Cisco Umbrella Reporting Test",
             "fromversion": "6.5.0"
-        },
+        },  
         {
             "integrations": "XSOAR EDL Checker",
             "playbookID": "TestXSOAREDLCheckerPlaybook"
