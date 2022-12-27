@@ -3715,7 +3715,7 @@ def validate_protected_hostname_group(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('default_action') and args['default_action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.DEFAULT_ACTION.value)
+        raise ValueError(ErrorMessage.DEFAULT_ACTION.value)
 
 
 def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3815,11 +3815,11 @@ def validate_protected_hostname_member(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('action') and args['action'] not in ['Allow', 'Deny', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.ACTION.value)
+        raise ValueError(ErrorMessage.ACTION.value)
     if args.get('ignore_port') and args['ignore_port'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_PORT.value)
+        raise ValueError(ErrorMessage.IGNORE_PORT.value)
     if args.get('include_subdomains') and args['include_subdomains'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.INCLUDE_SUBDOMAINS.value)
+        raise ValueError(ErrorMessage.INCLUDE_SUBDOMAINS.value)
 
 
 def protected_hostname_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3947,19 +3947,19 @@ def validate_ip_list_group(client: Client, args: Dict[str, Any]):
         args (Dict[str, Any]): Command arguments from XSOAR.
 
     Raises:
-        DemistoException: Errors.
+        ValueError: Errors.
     """
 
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
+        raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
 
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.IP_ACTION.value)
+        raise ValueError(ErrorMessage.IP_ACTION.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY.value)
+        raise ValueError(ErrorMessage.SEVERITY.value)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
+        raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
 
 
 def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -3998,7 +3998,7 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if not isinstance(client, ClientV2):
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
+        raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_ip_list_group(client, args)
     group_name = args['name']
     response = client.ip_list_group_update_request(  # type: ignore # client is ClientV2.
@@ -4065,17 +4065,17 @@ def validate_ip_list_member(client: Client, args: Dict[str, Any]):
         args (Dict[str, Any]): Command arguments from XSOAR.
 
     Raises:
-        DemistoException: Errors.
+        ValueError: Errors.
     """
     if client.version == ClientV1.API_VER and args.get('type') and args['type'] == 'Allow Only Ip':
-        raise DemistoException(ErrorMessage.ALLOW_IP_V1.value)
+        raise ValueError(ErrorMessage.ALLOW_IP_V1.value)
     if args.get('type') and args['type'] not in ['Allow Only Ip', 'Black IP', 'Trust IP']:
-        raise DemistoException(ErrorMessage.TYPE.value)
+        raise ValueError(ErrorMessage.TYPE.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY.value)
+        raise ValueError(ErrorMessage.SEVERITY.value)
     if (ip := args.get('ip_address')) and not re.match(ipv4Regex, ip) and not re.match(ipv6Regex, ip) and not re.match(
             ipv4Regex + '-' + ipv4Regex, ip) and not re.match(ipv6Regex + '-' + ipv6Regex, ip):
-        raise DemistoException(f'{ip} {ErrorMessage.IP.value}')
+        raise ValueError(f'{ip} {ErrorMessage.IP.value}')
 
 
 def ip_list_member_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4198,13 +4198,13 @@ def validate_http_content_routing_member(args: Dict[str, Any]):
         DemistoException: Errors.
     """
     if args.get('is_default') and args['is_default'] not in ['yes', 'no']:
-        raise DemistoException(ErrorMessage.IS_DEFAULT.value)
+        raise ValueError(ErrorMessage.IS_DEFAULT.value)
     if args.get('inherit_web_protection_profile') and args['inherit_web_protection_profile'] not in [
             'enable', 'disable'
     ]:
-        raise DemistoException(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value)
+        raise ValueError(ErrorMessage.INHERIT_WEB_PROTECTION_PROFILE.value)
     if args.get('status') and args['status'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.STATUS.value)
+        raise ValueError(ErrorMessage.STATUS.value)
 
 
 def http_content_routing_member_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4327,17 +4327,17 @@ def validate_geo_ip_group(client: Client, args: Dict[str, Any]):
         client (Client): FortiwebVM API client.
 
     Raises:
-        DemistoException: Errors.
+        ValueError: Errors.
     """
     block_period = arg_to_number(args.get('block_period'))
     if isinstance(client, ClientV2) and block_period and not 1 <= block_period <= 600:
-        raise DemistoException(ErrorMessage.BLOCK_PERIOD.value)
+        raise ValueError(ErrorMessage.BLOCK_PERIOD.value)
     if args.get('action') and args['action'] not in ['Alert deny', 'Block period', 'Deny (no log)']:
-        raise DemistoException(ErrorMessage.IP_ACTION.value)
+        raise ValueError(ErrorMessage.IP_ACTION.value)
     if args.get('severity') and args['severity'] not in ['High', 'Medium', 'Low', 'Info']:
-        raise DemistoException(ErrorMessage.SEVERITY.value)
+        raise ValueError(ErrorMessage.SEVERITY.value)
     if args.get('ignore_x_forwarded_for') and args['ignore_x_forwarded_for'] not in ['enable', 'disable']:
-        raise DemistoException(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
+        raise ValueError(ErrorMessage.IGNORE_X_FORWARDED_FOR.value)
 
 
 def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -4912,66 +4912,66 @@ def validate_server_policy(version: str, args: Dict[str, Any]):
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get('name'):
-        raise DemistoException(ErrorMessage.NAME_INSERT.value)
+        raise ValueError(ErrorMessage.NAME_INSERT.value)
     if not args.get('deployment_mode'):
-        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE_INSERT.value)
+        raise ValueError(ErrorMessage.DEPLOYMENT_MODE_INSERT.value)
     if not args.get('virtual_server'):
-        raise DemistoException(ErrorMessage.VIRTUAL_SERVER.value)
+        raise ValueError(ErrorMessage.VIRTUAL_SERVER.value)
 
     http_service = args.get('http_service')
     https_service = args.get('https_service')
     if not (http_service or https_service):
-        raise DemistoException(ErrorMessage.PROTOCOL.value)
+        raise ValueError(ErrorMessage.PROTOCOL.value)
     if args.get('deployment_mode') and args['deployment_mode'] not in [
             'HTTP Content Routing', 'Single Server/Server Balance'
     ]:
-        raise DemistoException(ErrorMessage.DEPLOYMENT_MODE.value)
+        raise ValueError(ErrorMessage.DEPLOYMENT_MODE.value)
     if args['deployment_mode'] == 'Single Server/Server Balance' and not args.get('server_pool'):
-        raise DemistoException(ErrorMessage.SERVER_POOL.value)
+        raise ValueError(ErrorMessage.SERVER_POOL.value)
     if version == ClientV2.API_VER:
         scripting = args.get('scripting')
         if args.get('scripting') and args['scripting'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.SCRIPTING.value)
+            raise ValueError(ErrorMessage.SCRIPTING.value)
         scripting_list = args.get('scripting_list')
         if scripting == 'enable' and not scripting_list:
-            raise DemistoException(ErrorMessage.SCRIPTING_LIST.value)
+            raise ValueError(ErrorMessage.SCRIPTING_LIST.value)
         if args.get('certificate_type') and args['certificate_type'] not in [
                 'Local', 'Multi Certificate', 'Letsencrypt'
         ]:
-            raise DemistoException(ErrorMessage.CERTIFICATE_TYPE.value)
+            raise ValueError(ErrorMessage.CERTIFICATE_TYPE.value)
         if args.get('client_real_ip') and args['client_real_ip'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.CLIENT_REAL_IP.value)
+            raise ValueError(ErrorMessage.CLIENT_REAL_IP.value)
         if args.get('mach_once') and args['mach_once'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.MACH_ONCE.value)
+            raise ValueError(ErrorMessage.MACH_ONCE.value)
         if args.get('monitor_mode') and args['monitor_mode'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.MONITOR_MODE.value)
+            raise ValueError(ErrorMessage.MONITOR_MODE.value)
         if args.get('redirect_to_https') and args['redirect_to_https'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.REDIRECT_2_HTTPS.value)
+            raise ValueError(ErrorMessage.REDIRECT_2_HTTPS.value)
         if args.get('retry_on') and args['retry_on'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON.value)
+            raise ValueError(ErrorMessage.RETRY_ON.value)
         if args.get('retry_on_http_layer') and args['retry_on_http_layer'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
+            raise ValueError(ErrorMessage.RETRY_ON_HTTP_LAYER.value)
         if args.get('retry_on_connect_failure') and args['retry_on_connect_failure'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
+            raise ValueError(ErrorMessage.RETRY_ON_CONNECT_FAILURE.value)
         if args.get('syn_cookie') and args['syn_cookie'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.SYN_COOKIE.value)
+            raise ValueError(ErrorMessage.SYN_COOKIE.value)
         if args.get('url_case_sensitivity') and args['url_case_sensitivity'] not in ['enable', 'disable']:
-            raise DemistoException(ErrorMessage.URL_CASE_SENSITIVITY.value)
+            raise ValueError(ErrorMessage.URL_CASE_SENSITIVITY.value)
         half_open_thresh = arg_to_number(args.get('half_open_thresh'))
         if half_open_thresh and not 10 <= half_open_thresh <= 10000:
-            raise DemistoException(ErrorMessage.HALF_OPEN_THRESH.value)
+            raise ValueError(ErrorMessage.HALF_OPEN_THRESH.value)
         arg_to_number(args.get('retry_on_cache_size'))
         retry_times_on_connect_failure = arg_to_number(args.get('retry_times_on_connect_failure'))
         if retry_times_on_connect_failure and not 1 <= retry_times_on_connect_failure <= 5:
-            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
+            raise ValueError(ErrorMessage.RETRY_TIMES_ON_CONNECT.value)
         retry_times_on_http_layer = arg_to_number(args.get('retry_times_on_http_layer'))
         if retry_times_on_http_layer and not 1 <= retry_times_on_http_layer <= 5:
-            raise DemistoException(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
+            raise ValueError(ErrorMessage.RETRY_TIMES_ON_HTTP.value)
         retry_on_http_response_codes = [
             arg_to_number(code) for code in argToList(args.get('retry_on_http_response_codes'))
         ]
         if not set(retry_on_http_response_codes).issubset(set([404, 408, 500, 501, 502, 503, 504])):
-            raise DemistoException(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
+            raise ValueError(ErrorMessage.RETRY_ON_HTTP_RESPONSE_CODES.value)
 
 
 def read_json_policy(json_template_id: str, name: str) -> Dict[str, Any]:
@@ -5172,44 +5172,42 @@ def validate_custom_whitelist(version: str, args: Dict[str, Any], member_type: O
     Raises:
         DemistoException: Errors.
     """
-    # if args.get('status') and args['status'] not in ['enable', 'disable']:
-    #     raise DemistoException(ERRORS.STATUS)
     if args.get('type') and args['type'] != member_type:
-        raise DemistoException(f"You can't update {args['type']} member with {member_type} update command.")
+        raise ValueError(f"You can't update {args['type']} member with {member_type} update command.")
     if version == ClientV2.API_VER:
         if args.get('request_url_status') == 'enable' and not args.get('request_url'):
-            raise DemistoException(ErrorMessage.REQUEST_URL_INSERT.value)
+            raise ValueError(ErrorMessage.REQUEST_URL_INSERT.value)
         if args.get('domain_status') == 'enable' and not args.get('domain'):
-            raise DemistoException(ErrorMessage.DOMAIN_INSERT.value)
+            raise ValueError(ErrorMessage.DOMAIN_INSERT.value)
         if args.get('value_status') == 'enable' and not args.get('value'):
-            raise DemistoException(ErrorMessage.VALUE_INSERT.value)
+            raise ValueError(ErrorMessage.VALUE_INSERT.value)
     if member_type == 'URL':
         if args.get('request_type') == 'Simple String' and args.get('request_url') and args['request_url'][0] != '/':
-            raise DemistoException(ErrorMessage.REQUEST_URL.value)
+            raise ValueError(ErrorMessage.REQUEST_URL.value)
         if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.REQUEST_TYPE.value)
+            raise ValueError(ErrorMessage.REQUEST_TYPE.value)
     if member_type == 'Parameter' and version == ClientV2.API_VER:
         if args.get('name_type') and args['name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.NAME_TYPE.value)
+            raise ValueError(ErrorMessage.NAME_TYPE.value)
         if args.get('request_status') and args['request_status'] == 'enable':
             if args.get('request_type') and args['request_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException(ErrorMessage.REQUEST_TYPE.value)
+                raise ValueError(ErrorMessage.REQUEST_TYPE.value)
             if args.get('request_type') == 'Simple String' and args.get(
                     'request_url') and args['request_url'][0] != '/':
-                raise DemistoException(ErrorMessage.REQUEST_URL.value)
+                raise ValueError(ErrorMessage.REQUEST_URL.value)
         if args.get('domain_status') and args['domain_status'] == 'enable':
             if args.get('domain_type') and args['domain_type'] not in ['Simple String', 'Regular Expression']:
-                raise DemistoException(ErrorMessage.DOMAIN_TYPE.value)
+                raise ValueError(ErrorMessage.DOMAIN_TYPE.value)
     if member_type == 'Header Field' and version == ClientV2.API_VER:
         if version == ClientV1.API_VER:
-            raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
+            raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
         if args.get('header_name_type') and args['header_name_type'] not in ['Simple String', 'Regular Expression']:
-            raise DemistoException(ErrorMessage.HEADER_NAME_TYPE.value)
+            raise ValueError(ErrorMessage.HEADER_NAME_TYPE.value)
         if args.get('value_status') and args['value_status'] == 'enable':
             if args.get('header_value_type') and args['header_value_type'] not in [
                     'Simple String', 'Regular Expression'
             ]:
-                raise DemistoException(ErrorMessage.HEADER_VALUE_TYPE.value)
+                raise ValueError(ErrorMessage.HEADER_VALUE_TYPE.value)
 
 
 def custom_whitelist_url_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -5425,7 +5423,7 @@ def custom_whitelist_header_field_create_command(client: Client, args: Dict[str,
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     if client.version == ClientV1.API_VER:
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
+        raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     validate_custom_whitelist(version=client.version, args=args, member_type='Header Field')
     name = args['name']
     response = client.custom_whitelist_header_field_create_request(  # type: ignore #client is ClientV2
@@ -5455,7 +5453,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
     """
 
     if not isinstance(client, ClientV2):
-        raise DemistoException(ErrorMessage.V1_NOT_SUPPORTED.value)
+        raise ValueError(ErrorMessage.V1_NOT_SUPPORTED.value)
     id = args['id']
     # Get exist settings from Fortiweb for validation
     args = get_object_data_before_update(client=client,
