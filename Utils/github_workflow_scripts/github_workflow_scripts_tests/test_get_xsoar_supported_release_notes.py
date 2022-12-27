@@ -31,10 +31,10 @@ def test_is_pack_xsoar_supported(pack_name, expected):
 
 
 @pytest.mark.parametrize('files_paths, expected', [
-    ([], [])
+    ([], []),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ["Packs/CommonTypes/ReleaseNotes/3_3_39.md"]),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"],
-        ["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"]),
+        ["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"])
 ])
 def test_convert_files_to_paths(files_paths, expected):
     """
@@ -59,13 +59,13 @@ def test_convert_files_to_paths(files_paths, expected):
 
 
 @pytest.mark.parametrize('rns, delimiter, expected', [
-    ([], "," "")
-    ([], ";", "")
+    ([], "," ""),
+    ([], ";", ""),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ",", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ";", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], ",", "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], ";", "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
-    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], None, "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], None, "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md")
 ])
 def test_format_output(rns, delimiter, expected):
     """
