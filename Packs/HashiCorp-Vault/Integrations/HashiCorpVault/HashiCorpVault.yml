@@ -44,7 +44,8 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: CSV list of secrets engine types to fetch secrets from (possible values are KV, Cubbyhole, AWS)
+- display: CSV list of secrets engine types to fetch secrets from
+  additionalinfo: Possible values are KV, Cubbyhole, AWS
   name: engines
   defaultvalue: KV,Cubbyhole
   type: 0

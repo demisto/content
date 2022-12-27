@@ -257,7 +257,7 @@ def delete_secret_command():
 
 
 def delete_secret(engine_path, secret_path, versions):
-    path = engine_path + 'delete/' + secret_path
+    path = urljoin(engine_path, urljoin('delete/', secret_path))
 
     body = {
         'versions': versions
@@ -277,7 +277,7 @@ def undelete_secret_command():
 
 
 def undelete_secret(engine_path, secret_path, versions):
-    path = engine_path + 'undelete/' + secret_path
+    path = urljoin(engine_path, urljoin('undelete/', secret_path))
 
     body = {
         'versions': versions
@@ -297,7 +297,7 @@ def destroy_secret_command():
 
 
 def destroy_secret(engine_path, secret_path, versions):
-    path = engine_path + 'destroy/' + secret_path
+    path = urljoin(engine_path, urljoin('destroy/', secret_path))
 
     body = {
         'versions': versions
@@ -736,7 +736,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
     return secrets
 
 
-def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name=False):
+def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     secrets = []
     roles_list_url = engine_path + '/roles?list=true'
     demisto.info('roles_list_url: {}'.format(roles_list_url))
@@ -777,6 +777,8 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name=False):
         secret_key = aws_credentials['data'].get('secret_key')
         if aws_credentials['data'].get('security_token'):
             secret_key = secret_key + '@@@' + aws_credentials["data"].get("security_token")
+        if concat_username_to_cred_name:
+            role = '{0}_{1}'.format(role, access_key)
         secrets.append({
             'user': access_key,
             'password': secret_key,
