@@ -102,8 +102,8 @@ class Client:
 
 
 def get_headers(params: Dict) -> Dict:
-    api_key: str = str(params.get('apikey'))
-    api_key_id: str = str(params.get('apikey_id'))
+    api_key: str = params.get('credentials', {}).get('password') or str(params.get('apikey'))
+    api_key_id: str = params.get('credentials', {}).get('identifier') or str(params.get('apikey_id'))
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
     timestamp: str = str(int(datetime.now(timezone.utc).timestamp()) * 1000)
     auth_key = "%s%s%s" % (api_key, nonce, timestamp)
