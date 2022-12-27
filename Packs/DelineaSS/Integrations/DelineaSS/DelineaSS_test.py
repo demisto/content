@@ -7,14 +7,16 @@ from DelineaSS import Client, \
     secret_delete_command, folder_create_command, \
     folder_delete_command, folder_update_command, \
     user_delete_command, secret_create_command, user_create_command, \
-    user_update_command, secret_rpc_changepassword_command, fetch_credentials_command
+    user_update_command, secret_rpc_changepassword_command, \
+    fetch_credentials_command, secret_search_name_command
 from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, \
     GET_USERNAME_BY_ID_CONTENT, SECRET_GET_CONTENT, \
     SECRET_PASSWORD_UPDATE_CONTEXT, SECRET_CHECKOUT_CONTEXT, \
     SECRET_CHECKIN_CONTEXT, SECRET_DELETE_CONTEXT, \
     FOLDER_CREATE_CONTEXT, FOLDER_DELETE_CONTEXT, FOLDER_UPDATE_CONTEXT, \
     USER_DELETE_CONTEXT, SECRET_CREATE_CONTEXT, USER_CREATE_CONTEXT, \
-    USER_UPDATE_CONTEXT, SECRET_RPC_CHANGE_PASSWORD_CONTEXT, SECRET_GET_CREDENTIALS_CONTEXT
+    USER_UPDATE_CONTEXT, SECRET_RPC_CHANGE_PASSWORD_CONTEXT, \
+    SECRET_GET_CREDENTIALS_CONTEXT, SECRET_SEARCH_NAME_CONTEXT
 from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
     GET_USERNAME_BY_ID_RAW_RESPONSE, SECRET_CHECKOUT_RAW_RESPONSE, \
     SECRET_GET_RAW_RESPONSE, SECRET_PASSWORD_UPDATE_RAW_RESPONSE, \
@@ -22,7 +24,8 @@ from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
     FOLDER_CREATE_RAW_RESPONSE, FOLDER_DELETE_RAW_RESPONSE, \
     FOLDER_UPDATE_RAW_RESPONSE, USER_DELETE_RAW_RESPONSE, \
     SECRET_CREATE_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, \
-    USER_CREATE_RAW_RESPONSE, USER_UPDATE_RAW_RESPONSE, SECRET_GET_CREDENTIALS_RAW_RESPONSE
+    USER_CREATE_RAW_RESPONSE, USER_UPDATE_RAW_RESPONSE, SECRET_GET_CREDENTIALS_RAW_RESPONSE, \
+    SECRET_SEARCH_NAME_RAW_RESPONSE
 
 GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4"}
 GET_USERNAME_BY_ID_ARGS = {"secret_id": "4"}
@@ -46,6 +49,7 @@ SECRET_CREATE_ARGS = {"name": "xsoarSecret", "secrettemplateid": "6003",
 USER_UPDATE_ARGS = {"id": "28", "userName": "UserOne"}
 SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword"}
 SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
+SECRET_SEARCH_NAME_ARGS = {"search_name": "Sayali"}
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -67,7 +71,9 @@ SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
     (secret_rpc_changepassword_command, SECRET_RPC_CHANGE_PASSWORD_ARGS,
      SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_CONTEXT),
     (fetch_credentials_command, SECRET_GET_CREDENTIALS_ARGS, SECRET_GET_CREDENTIALS_RAW_RESPONSE,
-     SECRET_GET_CREDENTIALS_CONTEXT)
+     SECRET_GET_CREDENTIALS_CONTEXT),
+    (secret_search_name_command, SECRET_SEARCH_NAME_ARGS, SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_NAME_CONTEXT)
+
 ])
 def test_delinea_commands(command, args, http_response, context, mocker):
     mocker.patch.object(Client, '_generate_token')
@@ -80,4 +86,3 @@ def test_delinea_commands(command, args, http_response, context, mocker):
     results = outputs.to_context()
 
     assert results.get("EntryContext") == context
-

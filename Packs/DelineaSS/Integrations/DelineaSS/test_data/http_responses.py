@@ -452,3 +452,58 @@ SECRET_GET_CREDENTIALS_RAW_RESPONSE = {
         'responseCodes': []
 }
 
+SECRET_SEARCH_NAME_RAW_RESPONSE = {
+    'filter': {
+        'searchText': 'Sayali',
+        'searchField': None,
+        'searchFieldSlug': None,
+        'includeInactive': False,
+        'includeActive': None,
+        'includeRestricted': False,
+        'secretTemplateId': None,
+        'folderId': None,
+        'includeSubFolders': False,
+        'heartbeatStatus': None,
+        'siteId': None,
+        'scope': None,
+        'recentMinDateTime': None,
+        'recentMaxDateTime': None,
+        'onlySharedWithMe': None,
+        'extendedFields': None,
+        'permissionRequired': None,
+        'extendedTypeId': None,
+        'passwordTypeIds': None,
+        'onlyRPCEnabled': None,
+        'doubleLockId': None,
+        'isExactMatch': None,
+        'allowDoubleLocks': None,
+        'doNotCalculateTotal': None
+    },
+    'skip': 0,
+    'take': 10,
+    'total': 3,
+    'pageCount': 1,
+    'currentPage': 1,
+    'batchCount': 1,
+    'prevSkip': 0,
+    'nextSkip': 10,
+    'hasPrev': False,
+    'hasNext': False,
+    'records': [
+        {
+            'id': 3564,
+            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali'
+        },
+        {
+            'id': 3566,
+            'value': '-1 - 6001 - alpha.thycotic.com\\ALMHitendra_sayali2'
+        },
+        {
+            'id': 4241,
+            'value': '241 - 9 - xsoartest1'
+        }
+    ],
+    'sortBy': [],
+    'success': True,
+    'severity': 'None'
+}

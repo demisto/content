@@ -426,3 +426,11 @@ SECRET_GET_CREDENTIALS_CONTEXT = {
     ]
 
 }
+
+SECRET_SEARCH_NAME_CONTEXT = {
+    'Delinea.Secret.Id(val.search_id && val.search_id == obj.search_id)': [
+        3564,
+        3566,
+        4241
+    ]
+}
