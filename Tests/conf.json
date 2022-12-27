@@ -5211,7 +5211,6 @@
         }
     ],
     "skipped_tests": {
-        "test_MsGraphFiles prod": "",
         "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
