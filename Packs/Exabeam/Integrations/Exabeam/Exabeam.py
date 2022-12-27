@@ -717,6 +717,7 @@ class Client(BaseClient):
         if limit:
             params['length'] = limit
 
+        params = {'query': 'incidentType:malware,phishing'}
         return params
 
     def get_single_incident(self, incident_id: str, username: str = None):
@@ -1137,19 +1138,16 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
-def order_time_as_milisecound_for_fetch(start_time, end_time) -> tuple[str, str]:
+def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> tuple[str, str]:
 
-    return str(convert_date_to_unix((
-        datetime.strptime(
-            start_time, '%Y-%m-%dT%H:%M:%S.%f'
-        )).strftime(
-            '%Y-%m-%dT%H:%M:%S.%f')
-    )), str(convert_date_to_unix((
-            datetime.strptime(
-                end_time, '%Y-%m-%dT%H:%M:%S.%f'
-            )).strftime(
-                '%Y-%m-%dT%H:%M:%S.%f')
-    ))
+    date_time = '%Y-%m-%dT%H:%M:%S.%f'
+    start = datetime.strptime(start_time, date_time)
+    end = datetime.strptime(end_time, date_time)
+
+    start_unix = convert_date_to_unix(start.strftime(date_time))
+    end_unix = convert_date_to_unix(end.strftime(date_time))
+
+    return str(start_unix), str(end_unix)
 
 
 def convert_all_unix_keys_to_date(incident: dict) -> dict:
@@ -2032,7 +2030,7 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
         date_format='%Y-%m-%dT%H:%M:%S.%f',
     )
 
-    demisto.debug(start_time, end_time)
+    demisto.debug(f"fetching incidents between {start_time=}, {end_time=}")
     start_time_as_milisecound, end_time_as_milisecound = order_time_as_milisecound_for_fetch(start_time, end_time)
 
     incident_type = argToList(args.get('incident_type'))
@@ -2068,9 +2066,8 @@ def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
 
     incidents: List[dict] = []
     for incident in incidents_filtered:
-        incident.update({
-            'createdAt': datetime.fromtimestamp(
-                incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')})
+        incident['createdAt'] = datetime.fromtimestamp(
+            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')
         incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
