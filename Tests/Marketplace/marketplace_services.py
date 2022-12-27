@@ -1295,6 +1295,7 @@ class Pack(object):
              otherwise returned False.
 
         """
+        task_status = True
         pack_was_uploaded_in_prepare_content = self._pack_name in successful_packs_dict
         pack_dependencies_zip_was_uploaded = self._pack_name in successful_uploaded_dependencies_zip_packs_dict
         if not pack_was_uploaded_in_prepare_content and not pack_dependencies_zip_was_uploaded:
