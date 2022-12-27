@@ -173,20 +173,14 @@ tasks:
     scriptarguments:
       endpoint_id:
         complex:
-          root: inputs.Endpoint_ID
+          root: PaloAltoNetworksXDR.Endpoint.endpoint_id
           filters:
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: inputs.Endpoint_ID
-                iscontext: true
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
                   simple: PaloAltoNetworksXDR.Endpoint.endpoint_id
                 iscontext: true
+          transformers:
           - operator: uniq
     separatecontext: false
     view: |-
