@@ -7,21 +7,53 @@ type: python
 subtype: python3
 tags:
 - Utility
-comment: Resolve the original URL from the given shortened URL and place it in both as output and in the context of a playbook. (https://unshorten.me/api)
+comment: Resolve the original URL from the given shortened URL and place it in both as output and in the context of a playbook.
 enabled: true
 args:
+- name: service
+  required: true
+  description: Service to use for resolving the URL. Using "self" will unshorten the URL by sending a request to the URL and following redirects. Note that this might expose you to security risks and leak your server's IP address.
+  auto: PREDEFINED
+  predefined:
+  - "unshorten.me"
+  - "Self"
 - name: url
   required: true
-  default: true
   description: URL to resolve
+  default: true
+- name: redirect_limit
+  required: false
+  defaultValue: "6"
+  description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended), and 1 for no recursion.
 - name: insecure
   required: false
   type: Boolean
-  defaultValue: "false"
+  predefined:
+  - "False"
+  - "True"
   description: Trust any certificate (not secure)
 outputs:
 - contextPath: URL.Data
-  description: Shortened URL
+  description: Resolved URL
+  type: string
+- contextPath: ResolveShortenedURL.OriginalURL
+  description: The original shortened URL.
+  type: string
+- contextPath: ResolveShortenedURL.ResolvedURL
+  description: The resolved URL.
+  type: string
+- contextPath: ResolveShortenedURL.ServiceName
+  description: The name of the service that was used to resolve the URL.
+  type: string
+- contextPath: ResolveShortenedURL.UsageCount
+  description: The number of times the URL was resolved (as provided by the service used).
+  type: int
+- contextPath: ResolveShortenedURL.RedirectCount
+  description: The number of redirects that were followed to resolve the URL.
+  type: int
+- contextPath: ResolveShortenedURL.RedirectHistory
+  description: The history of redirects that were followed to resolve the URL.
+  type: list
 scripttarget: 0
 tests:
 - "No test"
