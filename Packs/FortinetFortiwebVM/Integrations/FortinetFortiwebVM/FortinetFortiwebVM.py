@@ -3062,6 +3062,48 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
+    def handle_certificate(self,certificate_type:str,certificate:str,multi_certificate:str,lets_certificate:str)-> Dict[str,Any]:
+        """Hadle certificates for Fortiweb V2 server policy.
+
+        Args:
+            certificate_type (str): Certificate type.
+            certificate (str): Certificate name.
+            multi_certificate (str): Multi certificate name.
+            lets_certificate (str): Lets Certificate name.
+
+        Returns:
+            Dict[str,Any]: Certificate data to server policy.
+        """
+        data={}
+        match certificate_type:
+            case 'Letsencrypt':
+                data['data'].update(
+                    remove_empty_elements({
+                        'multi-certificate': 'disable',
+                        'certificate-type': 'enable',
+                        'lets-certificate': lets_certificate,
+                        'certificate-group': '',
+                    }))
+            case 'Multi Certificate':
+                data['data'].update(
+                    remove_empty_elements({
+                        'multi-certificate': 'enable',
+                        'certificate-type': 'disable',
+                        'lets-certificate': '',
+                        'certificate-group': multi_certificate,
+                    }))
+            case 'Local':
+                data['data'].update(
+                    remove_empty_elements({
+                        'certificate': certificate,
+                        'certificate-type': 'disable',
+                        'lets-certificate': '',
+                        'multi-certificate': 'disable',
+                        'certificate-group': '',
+                    }))
+            case '':
+                pass
+        return data
 
     def server_policy_data_builder(self,
                                    name: str,
@@ -3170,33 +3212,8 @@ class ClientV2(Client):
                 mach_once
             })
         }
-        if certificate_type == 'Letsencrypt':
-            data['data'].update(
-                remove_empty_elements({
-                    'multi-certificate': 'disable',
-                    'certificate-type': 'enable',
-                    'lets-certificate': lets_certificate,
-                    'certificate-group': '',
-                }))
-        elif certificate_type == 'Multi Certificate':
-            data['data'].update(
-                remove_empty_elements({
-                    'multi-certificate': 'enable',
-                    'certificate-type': 'disable',
-                    'lets-certificate': '',
-                    'certificate-group': multi_certificate,
-                }))
-        elif certificate_type == 'Local':
-            data['data'].update(
-                remove_empty_elements({
-                    'certificate': certificate,
-                    'certificate-type': 'disable',
-                    'lets-certificate': '',
-                    'multi-certificate': 'disable',
-                    'certificate-group': '',
-                }))
+        data.update(self.handle_certificate(certificate_type,certificate,multi_certificate,lets_certificate))
         return data
-
     def server_policy_create_request(self, name: str, deployment_mode: str, virtual_server: str,
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
                                      client_real_ip: Optional[str], syn_cookie: Optional[str],
