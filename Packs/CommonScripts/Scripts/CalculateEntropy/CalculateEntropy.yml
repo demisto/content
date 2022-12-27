@@ -1,6 +1,6 @@
 args:
 - default: true
-  description: The data for which to calculate entropy.
+  description: The  data for which to calculate entropy.
   isArray: false
   name: data
   required: true
