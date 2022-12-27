@@ -112,6 +112,11 @@ class ErrorMessage(Enum):
 class Parser:
 
     @abstractmethod
+    def create_output_headers(self, version: str, common_headers: List[str], v1_only_headers: List[str],
+                              v2_only_headers: List[str]) -> List[str]:
+        pass
+
+    @abstractmethod
     def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
@@ -271,6 +276,21 @@ class Parser:
 
 
 class ParserV1(Parser):
+
+    def create_output_headers(self, version: str, common_headers: List[str], v1_only_headers: List[str],
+                              v2_only_headers: List[str]) -> List[str]:
+        """Create headers for xsoar output.
+
+        Args:
+            version (str): Client version.
+            common_headers (List[str]): Common headers field for both versions.
+            v1_only_headers (List[str]): Headers for V1 only.
+            v2_only_headers (List[str]): Header for V2 only.
+
+        Returns:
+            List[str]: List of headers.
+        """
+        return common_headers + v1_only_headers
 
     def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
@@ -608,6 +628,21 @@ class ParserV1(Parser):
 
 
 class ParserV2(Parser):
+
+    def create_output_headers(self, version: str, common_headers: List[str], v1_only_headers: List[str],
+                              v2_only_headers: List[str]) -> List[str]:
+        """Create headers for xsoar output.
+
+        Args:
+            version (str): Client version.
+            common_headers (List[str]): Common headers field for both versions.
+            v1_only_headers (List[str]): Headers for V1 only.
+            v2_only_headers (List[str]): Header for V2 only.
+
+        Returns:
+            List[str]: List of headers.
+        """
+        return common_headers + v2_only_headers
 
     def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
@@ -3755,7 +3790,8 @@ def protected_hostname_group_list_command(client: Client, args: Dict[str, Any]) 
         args=args,
         sub_object_id=protected_hostname,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
-    headers = create_headers(client.version, ['id', 'default_action', 'protected_hostname_count'], ['can_delete'], [])
+    headers = client.parser.create_output_headers(client.version, ['id', 'default_action', 'protected_hostname_count'],
+                                                  ['can_delete'], [])
     readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -3888,7 +3924,8 @@ def protected_hostname_member_list_command(client: Client, args: Dict[str, Any])
         sub_object_key='id',
     )
     outputs = {'group_name': group_name, 'Members': parsed_data}
-    headers = create_headers(client.version, ['id', 'action', 'host'], [], ['ignore_port', 'include_subdomains'])
+    headers = client.parser.create_output_headers(client.version, ['id', 'action', 'host'], [],
+                                                  ['ignore_port', 'include_subdomains'])
     readable_output = tableToMarkdown(name=OutputTitle.PROTECTED_HOSTNAME_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['Members'],
@@ -4005,8 +4042,8 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
         args=args,
         sub_object_id=group_name,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
-    headers = create_headers(client.version, ['id', 'ip_list_count'], [],
-                             ['action', 'block_period', 'severity', 'trigger_policy'])
+    headers = client.parser.create_output_headers(client.version, ['id', 'ip_list_count'], [],
+                                                  ['action', 'block_period', 'severity', 'trigger_policy'])
     readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4136,7 +4173,8 @@ def ip_list_member_list_command(client: Client, args: Dict[str, Any]) -> Command
                                                                                 client.parser.parse_ip_list_member,
                                                                                 args, member_id)
     outputs = {'group_name': group_name, 'Members': parsed_data}
-    headers = create_headers(client.version, ['id', 'type', 'ip'], ['severity', 'trigger_policy'], [])
+    headers = client.parser.create_output_headers(client.version, ['id', 'type', 'ip'], ['severity', 'trigger_policy'],
+                                                  [])
     readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_MEMBER_LIST.value,
                                       metadata=pagination_message,
                                       t=outputs['Members'],
@@ -4265,7 +4303,7 @@ def http_content_routing_member_list_command(client: Client, args: Dict[str, Any
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client, response, client.parser.parse_http_content_routing_member, args, member_id)
     outputs = {'policy_name': policy_name, 'Members': parsed_data}
-    headers = create_headers(
+    headers = client.parser.create_output_headers(
         client.version, ['id', 'default', 'http_content_routing_policy', 'inherit_web_protection_profile', 'profile'],
         [], ['status'])
     readable_output = tableToMarkdown(name=OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_LIST.value,
@@ -4405,8 +4443,9 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         args=args,
         sub_object_id=name,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
-    headers = create_headers(client.version, ['id', 'count', 'trigger_policy', 'severity', 'except'], [],
-                             ['action', 'block_period', 'ignore_x_forwarded_for'])
+    headers = client.parser.create_output_headers(client.version,
+                                                  ['id', 'count', 'trigger_policy', 'severity', 'except'], [],
+                                                  ['action', 'block_period', 'ignore_x_forwarded_for'])
     readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_GROUP_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4601,7 +4640,7 @@ def policy_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.policy_status_get_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
                                                                                 client.parser.parse_policy_status, args)
-    headers = create_headers(
+    headers = client.parser.create_output_headers(
         client.version,
         ['id', 'name', 'status', 'vserver', 'http_port', 'https_port', 'mode', 'session_count', 'connction_per_second'],
         [], ['policy', 'client_rtt', 'server_rtt', 'app_response_time'])
@@ -4631,13 +4670,14 @@ def system_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
     response = client.system_status_get_request()
     results = response['results'] if client.version == ClientV2.API_VER else response
     parsed_data = client.parser.parse_system_status(results)
-    headers = create_headers(client.version,
-                             common_headers=[
-                                 'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time',
-                                 'firmware_version', 'administrative_domain'
-                             ],
-                             v1_only_headers=['system_uptime', 'fips_and_cc_mode', 'log_disk'],
-                             v2_only_headers=['manager_status', 'sysyem_up_days', 'sysyem_up_hrs', 'sysyem_up_mins'])
+    headers = client.parser.create_output_headers(
+        client.version,
+        common_headers=[
+            'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time', 'firmware_version',
+            'administrative_domain'
+        ],
+        v1_only_headers=['system_uptime', 'fips_and_cc_mode', 'log_disk'],
+        v2_only_headers=['manager_status', 'sysyem_up_days', 'sysyem_up_hrs', 'sysyem_up_mins'])
     readable_output = tableToMarkdown(name='System Status:',
                                       t=parsed_data,
                                       headers=headers,
@@ -5614,25 +5654,25 @@ def parser_handler(data: List[Dict[str, Any]], data_parser: Callable) -> List[Di
     return parsed_data
 
 
-def create_headers(version: str, common_headers: List[str], v1_only_headers: List[str],
-                   v2_only_headers: List[str]) -> List[str]:
-    """Create headers for xsoar output.
+# def create__output_headers(version: str, common_headers: List[str], v1_only_headers: List[str],
+#                            v2_only_headers: List[str]) -> List[str]:
+#     """Create headers for xsoar output.
 
-    Args:
-        version (str): Client version.
-        common_headers (List[str]): Common headers field for both versions.
-        v1_only_headers (List[str]): Headers for V1 only.
-        v2_only_headers (List[str]): Header for V2 only.
+#     Args:
+#         version (str): Client version.
+#         common_headers (List[str]): Common headers field for both versions.
+#         v1_only_headers (List[str]): Headers for V1 only.
+#         v2_only_headers (List[str]): Header for V2 only.
 
-    Returns:
-        List[str]: List of headers.
-    """
-    headers = common_headers
-    if version == ClientV1.API_VER:
-        headers = headers + v1_only_headers
-    if version == ClientV2.API_VER:
-        headers = headers + v2_only_headers
-    return headers
+#     Returns:
+#         List[str]: List of headers.
+#     """
+#     headers = common_headers
+#     if version == ClientV1.API_VER:
+#         headers = headers + v1_only_headers
+#     if version == ClientV2.API_VER:
+#         headers = headers + v2_only_headers
+#     return headers
 
 
 def paginate_results(version: str, response: Union[List, Dict[str, Any]], args: Dict[str, Any]) -> Tuple[list, str]:
