@@ -3062,7 +3062,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
-    def handle_certificate(self,certificate_type:str,certificate:str,multi_certificate:str,lets_certificate:str)-> Dict[str,Any]:
+    def handle_certificates(self,certificate_type:str,certificate:str,multi_certificate:str,lets_certificate:str)-> Dict[str,Any]:
         """Hadle certificates for Fortiweb V2 server policy.
 
         Args:
@@ -3077,15 +3077,15 @@ class ClientV2(Client):
         data={}
         match certificate_type:
             case 'Letsencrypt':
-                data['data'].update(
+                data.update(
                     remove_empty_elements({
-                        'multi-certificate': 'disable',
+                        'multi-certificate' : 'disable',
                         'certificate-type': 'enable',
                         'lets-certificate': lets_certificate,
                         'certificate-group': '',
                     }))
             case 'Multi Certificate':
-                data['data'].update(
+                data.update(
                     remove_empty_elements({
                         'multi-certificate': 'enable',
                         'certificate-type': 'disable',
@@ -3093,7 +3093,7 @@ class ClientV2(Client):
                         'certificate-group': multi_certificate,
                     }))
             case 'Local':
-                data['data'].update(
+                data.update(
                     remove_empty_elements({
                         'certificate': certificate,
                         'certificate-type': 'disable',
@@ -3212,7 +3212,7 @@ class ClientV2(Client):
                 mach_once
             })
         }
-        data.update(self.handle_certificate(certificate_type,certificate,multi_certificate,lets_certificate))
+        data.update(self.handle_certificates(certificate_type,certificate,multi_certificate,lets_certificate))
         return data
     def server_policy_create_request(self, name: str, deployment_mode: str, virtual_server: str,
                                      server_pool: Optional[str], protected_hostnames: Optional[str],
