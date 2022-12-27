@@ -20,6 +20,12 @@ For more details about the authentication used in this integration, see [Microso
 
 Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
+## Email Attachments Limitations
+* The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
+* The larger the attachment, the longer it would take for a command that supports adding attachments to run.
+* Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
+* When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
+
 ### Required Permissions
 The following permissions are required for all commands:
 - Mail.ReadWrite - Delegated
@@ -50,6 +56,8 @@ The following permissions are required for all commands:
     | Use system proxy settings |  | False |
     | Use a self-deployed Azure application |  | False |
     | Incident type |  | False |
+    | Display full email body | If not active, only a preview of the email will be fetched. |  |
+    | Mark fetched emails as read | Relevant only if fetch incidents is active. |  |
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -113,7 +121,10 @@ Creates a draft message in the specified user's mailbox.
 ***
 Replies to an email using Graph Mail Single User.
 
-
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 #### Base Command
 
 `reply-mail`
@@ -153,6 +164,10 @@ Replies to an email using Graph Mail Single User.
 ***
 Sends an email using Microsoft Graph.
 
+##### Required Permissions
+**The following permissions are required for this command:**
+- Mail.Send (Application)
+- Mail.ReadWrite (Application) - to send attachments > 3mb
 
 #### Base Command
 
@@ -350,6 +365,7 @@ Lists all of the attachments of given email
 | --- | --- | --- |
 | message_id | The email message ID. | Required | 
 | folder_id | The ID of the folder. | Optional | 
+| ran_once_flag | Flag for rate limit retry. | Optional | 
 
 
 #### Context Output
@@ -374,7 +390,7 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | The unique ID of the mail. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
+| message_id | The unique ID of the email. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. | Required | 
 
 
 #### Context Output
@@ -392,3 +408,24 @@ Retrieves an email message by message ID and uploads the content as an EML file.
 | File.Type | String | The file type. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The extension of the file. | 
+
+### msgraph-update-email-status
+***
+Update the status of an email to read / unread.
+
+
+#### Base Command
+
+`msgraph-update-email-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| message_ids | Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '&lt;message-id&gt;'. Can be a list of comma-separated values. | Required | 
+| folder_id | The folder ID. | Optional | 
+| status | Status to set the email to. Possible values are: Read, Unread. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.

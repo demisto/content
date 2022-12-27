@@ -3447,7 +3447,7 @@ INDICATOR_VALUE_AND_TYPE = [
     ('test@gmail.com', 'Email'),
     ('e775eb1250137c0b83d4e7c4549c71d6f10cae4e708ebf0b5c4613cbd1e91087', 'File'),
     ('test@yahoo.com', 'Email'),
-    ('http://test.com', 'Domain'),
+    ('http://test.com', 'URL'),
     ('11.111.11.11/11', 'CIDR'),
     ('CVE-0000-0000', 'CVE'),
     ('dbot@demisto.works', 'Email'),
@@ -7806,6 +7806,224 @@ class TestFetchWithLookBack:
             self.INCIDENTS_TIME_AWARE = incidents
         else:
             self.INCIDENTS = incidents
+
+    @pytest.mark.parametrize(
+        'args1, expected_results1, args2, expected_results2, args3, expected_results3',
+        [
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-02T10:11:00', 'id': '4'},
+                        {'createAt': '2022-04-02T10:12:00', 'id': '5'},
+                        {'createAt': '2022-04-02T10:13:00', 'id': '6'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 9,
+                    'found_incident_ids': {'1': '', '2': '', '3': '',
+                                           '4': '', '5': '', '6': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-03T10:11:00', 'id': '7'},
+                        {'createAt': '2022-04-03T10:12:00', 'id': '8'},
+                        {'createAt': '2022-04-03T10:13:00', 'id': '9'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 12,
+                    'found_incident_ids': {'1': '', '2': '', '3': '',
+                                           '4': '', '5': '', '6': '',
+                                           '7': '', '8': '', '9': ''}
+                }
+            ),
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-02T10:11:00', 'id': '4'},
+                        {'createAt': '2022-04-02T10:12:00', 'id': '5'},
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-02T10:12:00',
+                    'limit': 3,
+                    'found_incident_ids': {'4': '', '5': ''}
+                },
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-03T10:11:00', 'id': '7'},
+                        {'createAt': '2022-04-03T10:12:00', 'id': '8'},
+                        {'createAt': '2022-04-03T10:13:00', 'id': '9'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-02T10:12:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-02T10:12:00',
+                    'limit': 6,
+                    'found_incident_ids': {'4': '', '5': '',
+                                           '7': '', '8': '', '9': ''}
+                }
+            ),
+            (
+                {
+                    'incidents': [
+                        {'createAt': '2022-04-01T10:11:00', 'id': '1'},
+                        {'createAt': '2022-04-01T10:12:00', 'id': '2'},
+                        {'createAt': '2022-04-01T10:13:00', 'id': '3'}
+                    ],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-05T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-01T10:11:00',
+                    'limit': 6,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-01T10:11:00',
+                    'end_fetch_time': '2022-04-06T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-06T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                },
+                {
+                    'incidents': [],
+                    'fetch_limit': 3,
+                    'start_fetch_time': '2022-04-02T10:12:00',
+                    'end_fetch_time': '2022-04-07T10:11:00',
+                    'look_back': 1,
+                    'created_time_field': 'createAt',
+                    'id_field': 'id',
+                    'date_format': '%Y-%m-%dT%H:%M:%S',
+                    'increase_last_run_time': True
+                },
+                {
+                    'time': '2022-04-07T10:11:00',
+                    'limit': 3,
+                    'found_incident_ids': {'1': '', '2': '', '3': ''}
+                }
+            )
+        ]
+    )
+    def test_update_last_run_object(self, args1, expected_results1, args2, expected_results2, args3, expected_results3):
+
+        from CommonServerPython import update_last_run_object
+
+        args1.update({'last_run': {}})
+        results = update_last_run_object(**args1)
+
+        assert results.get('time') == expected_results1.get('time')
+        assert results.get('limit') == expected_results1.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results1.get('found_incident_ids')
+
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
+        args2.update({'last_run': results})
+        results = update_last_run_object(**args2)
+
+        assert results.get('time') == expected_results2.get('time')
+        assert results.get('limit') == expected_results2.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results2.get('found_incident_ids')
+
+        for id_ in results.get('found_incident_ids'):
+            results['found_incident_ids'][id_] = results['found_incident_ids'][id_] - 200
+        args3.update({'last_run': results})
+        results = update_last_run_object(**args3)
+
+        assert results.get('time') == expected_results3.get('time')
+        assert results.get('limit') == expected_results3.get('limit')
+        for id_ in results.get('found_incident_ids').keys():
+            assert id_ in expected_results3.get('found_incident_ids')
 
 
 class TestTracebackLineNumberAdgustment:
