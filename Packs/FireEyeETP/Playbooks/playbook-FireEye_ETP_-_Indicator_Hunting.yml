@@ -1,0 +1,1466 @@
+id: FireEye ETP - Indicator Hunting
+version: -1
+name: FireEye ETP - Indicator Hunting
+description: "This playbook queries FireEye Email Threat Prevention (ETP) for indicators such as domains, IP addresses, sender and recipient email addresses.\n\nThis playbook outputs a list of detected users, IP addresses associated with the indicators, as well as the results of the FireEye Email Threat Prevention (ETP) query. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a52d8420-7a8c-4987-866d-15dd05511bae
+    type: start
+    task:
+      id: a52d8420-7a8c-4987-866d-15dd05511bae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 415c72b8-85d2-4345-8d5f-8cc99b176c47
+    type: title
+    task:
+      id: 415c72b8-85d2-4345-8d5f-8cc99b176c47
+      version: -1
+      name: IPAddress Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 04310ca8-9312-452f-8d7b-4b33adcfef07
+    type: title
+    task:
+      id: 04310ca8-9312-452f-8d7b-4b33adcfef07
+      version: -1
+      name: Domain Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4c2c8b68-66ee-4394-880e-610e113a249c
+    type: regular
+    task:
+      id: 4c2c8b68-66ee-4394-880e-610e113a249c
+      version: -1
+      name: Save matching results - IP addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedIPs
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.domain
+                iscontext: true
+              right:
+                value:
+                  simple: URLDomainParsed
+                iscontext: true
+          accessor: senderIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: a7b3c50a-1a9e-4533-80f2-b64b47d2dadc
+    type: title
+    task:
+      id: a7b3c50a-1a9e-4533-80f2-b64b47d2dadc
+      version: -1
+      name: EmailAddress Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 9194fece-7d1c-4f5d-886d-5c10e93324b4
+    type: condition
+    task:
+      id: 9194fece-7d1c-4f5d-886d-5c10e93324b4
+      version: -1
+      name: Is FireEye ETP enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "127"
+      "yes":
+      - "107"
+    scriptarguments:
+      brandname:
+        simple: FireEye ETP
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: b6f30507-87e8-4f09-891f-6f44921fe468
+    type: regular
+    task:
+      id: b6f30507-87e8-4f09-891f-6f44921fe468
+      version: -1
+      name: FireEye ETP Query - Domain
+      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      script: FireEye ETP|||fireeye-etp-search-messages
+      type: regular
+      iscommand: true
+      brand: FireEye ETP
+    nexttasks:
+      '#none#':
+      - "26"
+      - "112"
+    scriptarguments:
+      domain:
+        complex:
+          root: URLDomainParsed
+      from_accepted_date_time:
+        complex:
+          root: inputs.from_accepted_date_time
+      last_modified_date_time:
+        complex:
+          root: inputs.last_modified_date_time
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.last_modified_date_time
+                iscontext: true
+      max_message_size:
+        complex:
+          root: inputs.max_message_size
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.max_message_size
+                iscontext: true
+      to_accepted_date_time:
+        complex:
+          root: inputs.to_accepted_date_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 74d4d4b5-949c-40d0-8fa9-d55c4d317f5d
+    type: regular
+    task:
+      id: 74d4d4b5-949c-40d0-8fa9-d55c4d317f5d
+      version: -1
+      name: FireEye ETP Query - Sender IP Address
+      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      script: FireEye ETP|||fireeye-etp-search-messages
+      type: regular
+      iscommand: true
+      brand: FireEye ETP
+    nexttasks:
+      '#none#':
+      - "115"
+      - "113"
+    scriptarguments:
+      from_accepted_date_time:
+        complex:
+          root: inputs.from_accepted_date_time
+      last_modified_date_time:
+        complex:
+          root: inputs.last_modified_date_time
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.last_modified_date_time
+                iscontext: true
+      max_message_size:
+        complex:
+          root: inputs.max_message_size
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.max_message_size
+                iscontext: true
+      sender_ip:
+        complex:
+          root: IPAddressParsed
+      to_accepted_date_time:
+        complex:
+          root: inputs.To_accepted_date_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: de8699cc-76c4-4531-86ff-678288918f94
+    type: regular
+    task:
+      id: de8699cc-76c4-4531-86ff-678288918f94
+      version: -1
+      name: FireEye ETP Query - Sender Email Address
+      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      script: FireEye ETP|||fireeye-etp-search-messages
+      type: regular
+      iscommand: true
+      brand: FireEye ETP
+    nexttasks:
+      '#none#':
+      - "116"
+      - "118"
+    scriptarguments:
+      from_accepted_date_time:
+        complex:
+          root: inputs.from_accepted_date_time
+      from_email:
+        complex:
+          root: EmailAddressParsed
+      last_modified_date_time:
+        complex:
+          root: inputs.last_modified_date_time
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.last_modified_date_time
+                iscontext: true
+      max_message_size:
+        complex:
+          root: inputs.max_message_size
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.max_message_size
+                iscontext: true
+      to_accepted_date_time:
+        complex:
+          root: inputs.to_accepted_date_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: f2186b4f-14b5-445e-8b2a-9423909ba316
+    type: regular
+    task:
+      id: f2186b4f-14b5-445e-8b2a-9423909ba316
+      version: -1
+      name: FireEye ETP Query - Recipient Email Address
+      description: Search for messages that include specified message attributes that are accessible in he ETP portal.
+      script: FireEye ETP|||fireeye-etp-search-messages
+      type: regular
+      iscommand: true
+      brand: FireEye ETP
+    nexttasks:
+      '#none#':
+      - "119"
+      - "121"
+    scriptarguments:
+      from_accepted_date_time:
+        complex:
+          root: inputs.from_accepted_date_time
+      last_modified_date_time:
+        complex:
+          root: inputs.last_modified_date_time
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.last_modified_date_time
+                iscontext: true
+      max_message_size:
+        complex:
+          root: inputs.max_message_size
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.max_message_size
+                iscontext: true
+      recipients:
+        complex:
+          root: EmailAddressParsed
+      to_accepted_date_time:
+        complex:
+          root: inputs.to_accepted_date_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 31cc0b18-0195-4cdc-8808-29dfe5e898cd
+    type: playbook
+    task:
+      id: 31cc0b18-0195-4cdc-8808-29dfe5e898cd
+      version: -1
+      name: Threat Hunting - Set Indicators
+      playbookName: Threat Hunting - Set Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "10"
+      - "40"
+    scriptarguments:
+      EmailAddress:
+        complex:
+          root: inputs.EmailAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.EmailAddress
+                iscontext: true
+      IPAddress:
+        complex:
+          root: inputs.IPAddress
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IPAddress
+                iscontext: true
+      URLDomain:
+        complex:
+          root: inputs.Domain
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 835ecb70-88c5-4da3-86c9-532ea5ae5274
+    type: condition
+    task:
+      id: 835ecb70-88c5-4da3-86c9-532ea5ae5274
+      version: -1
+      name: Any domains to hunt for?
+      description: Checks whether any domains are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "122"
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: URLDomainParsed
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 2ac0ad3d-ff02-4fb4-86d3-d6ad28fa0ed5
+    type: condition
+    task:
+      id: 2ac0ad3d-ff02-4fb4-86d3-d6ad28fa0ed5
+      version: -1
+      name: Any IP addresses to hunt for?
+      description: Checks whether any IP addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "123"
+      "yes":
+      - "101"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPAddressParsed
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: f495d783-c5d4-48f9-8f80-48822033039c
+    type: condition
+    task:
+      id: f495d783-c5d4-48f9-8f80-48822033039c
+      version: -1
+      name: Any email addresses to hunt for?
+      description: Checks whether any email addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "124"
+      "yes":
+      - "103"
+      - "104"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: EmailAddressParsed
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 901f51da-a702-4851-8dfd-743c424e44c6
+    type: regular
+    task:
+      id: 901f51da-a702-4851-8dfd-743c424e44c6
+      version: -1
+      name: Save matching results - email addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedEmails
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.domain
+                iscontext: true
+              right:
+                value:
+                  simple: URLDomainParsed
+                iscontext: true
+          accessor: recipients
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 3714df4c-1dce-4cf9-80aa-cb1dcb8928e1
+    type: regular
+    task:
+      id: 3714df4c-1dce-4cf9-80aa-cb1dcb8928e1
+      version: -1
+      name: Save matching results - IP addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedIPs
+      value:
+        complex:
+          root: FireEyeETP.Message.senderIP
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.senderIP
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressParsed
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 0d5a9b61-f2d3-4cdc-8be3-d762745a58ed
+    type: regular
+    task:
+      id: 0d5a9b61-f2d3-4cdc-8be3-d762745a58ed
+      version: -1
+      name: Save matching results - email addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "123"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedEmails
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.senderIP
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressParsed
+                iscontext: true
+          accessor: recipients
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 4a2a3ab8-3451-481d-89bf-375abff957ef
+    type: regular
+    task:
+      id: 4a2a3ab8-3451-481d-89bf-375abff957ef
+      version: -1
+      name: Save matching results - email addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedEmails
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+              right:
+                value:
+                  simple: EmailAddressParsed
+                iscontext: true
+          accessor: recipients
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 007f166c-24bd-477e-87b1-f99856c9114b
+    type: regular
+    task:
+      id: 007f166c-24bd-477e-87b1-f99856c9114b
+      version: -1
+      name: Save matching results - IP addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedIPs
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+              right:
+                value:
+                  simple: EmailAddressParsed
+                iscontext: true
+          accessor: senderIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2210,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 08a31c8b-680e-4c7b-8b62-07a97abae616
+    type: regular
+    task:
+      id: 08a31c8b-680e-4c7b-8b62-07a97abae616
+      version: -1
+      name: Save matching results - email addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedEmails
+      value:
+        complex:
+          root: FireEyeETP.Message.recipients
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.recipients
+                iscontext: true
+              right:
+                value:
+                  simple: EmailAddressParsed
+                iscontext: true
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: FireEyeETP.Message.sender
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2620,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 149d9c94-e417-4216-81ae-1c802a46e01a
+    type: regular
+    task:
+      id: 149d9c94-e417-4216-81ae-1c802a46e01a
+      version: -1
+      name: Save matching results - IP addresses
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ETPHunting.DetectedIPs
+      value:
+        complex:
+          root: FireEyeETP.Message
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: FireEyeETP.Message.recipients
+                iscontext: true
+              right:
+                value:
+                  simple: EmailAddressParsed
+                iscontext: true
+          accessor: senderIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3020,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 171b6e82-e132-4763-8379-a4a23158ebf4
+    type: title
+    task:
+      id: 171b6e82-e132-4763-8379-a4a23158ebf4
+      version: -1
+      name: Domain Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 9813d836-c103-4746-8499-5422cf337eb7
+    type: title
+    task:
+      id: 9813d836-c103-4746-8499-5422cf337eb7
+      version: -1
+      name: IP Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 67bb5dba-9e0f-48e5-8b03-675d1fdf6ef8
+    type: title
+    task:
+      id: 67bb5dba-9e0f-48e5-8b03-675d1fdf6ef8
+      version: -1
+      name: Email Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2410,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 86fd019e-3dbc-4c72-8fa2-2e9fab0b395a
+    type: title
+    task:
+      id: 86fd019e-3dbc-4c72-8fa2-2e9fab0b395a
+      version: -1
+      name: Sort Results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "126"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: ee05e89e-487e-4ae7-89b6-f75f6cf44df9
+    type: playbook
+    task:
+      id: ee05e89e-487e-4ae7-89b6-f75f6cf44df9
+      version: -1
+      name: Threat Hunting - Sort Results
+      description: |
+        The playbook is used for sorting the results of hunting and threat detection. The playbook receives IP addresses, email addresses, hosts, internal domains, hosts regex, and internal IPs inputs provided manually or from outputs by other playbooks.
+        The output of the playbook facilitates pivoting searches for IP addresses, users, and hosts that may be affected.
+      playbookName: Threat Hunting - Sort Results
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      DetectedEmails:
+        complex:
+          root: ETPHunting.DetectedEmails
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ETPHunting.DetectedEmails
+                iscontext: true
+          transformers:
+          - operator: uniq
+      DetectedIPs:
+        complex:
+          root: ETPHunting.DetectedIPs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ETPHunting.DetectedIPs
+                iscontext: true
+          transformers:
+          - operator: uniq
+      InternalDomainName:
+        complex:
+          root: inputs.InternalDomainName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalDomainName
+                iscontext: true
+          transformers:
+          - operator: uniq
+      InternalHostRegex:
+        complex:
+          root: inputs.InternalHostRegex
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalHostRegex
+                iscontext: true
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.InternalRange
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 902796a2-512e-4d1d-84cf-2412f7ee3f92
+    type: title
+    task:
+      id: 902796a2-512e-4d1d-84cf-2412f7ee3f92
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "108_100_yes": 0.7,
+      "108_122_#default#": 0.24,
+      "109_101_yes": 0.5,
+      "109_123_#default#": 0.24,
+      "110_124_#default#": 0.22,
+      "56_107_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 3620,
+        "x": -220,
+        "y": -490
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP addresses to search for (maximum of 10 entries). Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple domains to search for (maximum of 10 entries).
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: EmailAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple email addresses to search for (maximum of 10 entries). Used for both recipient and sender email addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: from_email_not_in
+  value: {}
+  required: false
+  description: List of 'From' email-addresses not to be included, max limit of entries is 10.
+  playbookInputQuery:
+- key: recipients_not_in
+  value: {}
+  required: false
+  description: |
+    list of 'To'/'Cc' email-addresses not to be included, max limit of entries is 10.
+  playbookInputQuery:
+- key: has_attachments
+  value: {}
+  required: false
+  description: |-
+    Boolean value filter to indicate if the message has attachments.
+    Values can be only 'true' or 'false'.
+  playbookInputQuery:
+- key: max_message_size
+  value: {}
+  required: false
+  description: |
+    The default value is 20kb and maximum value is 100kb.
+  playbookInputQuery:
+- key: from_accepted_date_time
+  value: {}
+  required: true
+  description: ' The time stamp of the email-accepted date to specify the beginning of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''to_accepted_date_time''  as well to set the complete date range for the search.'
+  playbookInputQuery:
+- key: to_accepted_date_time
+  value: {}
+  required: true
+  description: ' The time stamp of the email-accepted date to specify the end of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as well to set the complete date range for the search.'
+  playbookInputQuery:
+- key: last_modified_date_time
+  value: {}
+  required: false
+  description: |
+    Date corresponding to last modified date, along with one of the following operators: ">", "<", ">=", "<=".  E.g. use value "<2017-10-24T18:00:00.000Z" to search for messages that were last modified after the specified time stamp.
+  playbookInputQuery:
+- key: EmailStatus
+  value: {}
+  required: false
+  description: "List of email status values in FireEye EPT \nPossible values are:  \"accepted\", \"deleted\", \"delivered\", \"delivered (retroactive)\", \"dropped\", \"dropped oob\", \"dropped (oob retroactive)\", \"permanent failure\", \"processing\", \"quarantined\", \"rejected\", \"temporary failure\"."
+  playbookInputQuery:
+- key: EmailStatus_not_in
+  value: {}
+  required: false
+  description: "List of email status values in FireEye EPT to exclude from query.  \nPossible values are:  \"accepted\", \"deleted\", \"delivered\", \"delivered (retroactive)\", \"dropped\", \"dropped oob\", \"dropped (oob retroactive)\", \"permanent failure\", \"processing\", \"quarantined\", \"rejected\", \"temporary failure\"."
+  playbookInputQuery:
+- key: rejection_reason
+  value: {}
+  required: false
+  description: |2-
+     list of ETP rejection reason codes.
+    Possible values are:  "ETP102", "ETP103", "ETP104", "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302", "ETP401", "ETP402", "ETP403", "ETP404", "ETP405".
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
+  playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
+  playbookInputQuery:
+outputs:
+- contextPath: FireEyeETP.Message
+  description: Details of detected messages retrieved from FireEyeETP.
+  type: string
+- contextPath: FireEyeETP.Message.verdicts
+  description: Verdicts (pass/fail) for FireEyeETP detected messages.
+  type: string
+- contextPath: HuntingResults.DetectedExternalEmails
+  description: External email addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedInternalEmails
+  description: Internal email addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedEmails
+  description: A list of all email addresses retrieved from threat hunting queries. Playbook output is generated only when the internal domain name is not specified in the playbook input.
+  type: string
+- contextPath: HuntingResults.DetectedExternalIPs
+  description: External IP addresses retrieved from threat hunting queries.
+  type: string
+- contextPath: HuntingResults.DetectedInternalIPs
+  description: Internal IP addresses retrieved from threat hunting queries.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
