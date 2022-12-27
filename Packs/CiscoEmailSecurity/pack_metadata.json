@@ -2,7 +2,7 @@
     "name": "Cisco Email Security (Beta) (Deprecated)",
     "description": "Deprecated. Use CiscoSMA instead.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,6 +11,7 @@
         "Network Security"
     ],
     "tags": [],
+    "hidden": true,
     "useCases": [],
     "keywords": [],
     "marketplaces": [
