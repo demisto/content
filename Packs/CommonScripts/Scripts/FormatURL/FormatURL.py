@@ -392,7 +392,20 @@ class URLCheck(object):
                 index += 1
 
         elif char in self.brackets:
-            return len(self.modified_url), part
+            if char == '[':
+                self.inside_brackets = True
+                self.output += char
+                part += char
+                index += 1
+            
+            elif char == ']' and self.inside_brackets:
+                self.inside_brackets = False
+                self.output += char
+                part += char
+                index += 1
+            
+            else:
+                return len(self.modified_url), part
 
         elif char == '\\':
             # Edge case of the url ending with quotes and an escape char before them
@@ -526,7 +539,7 @@ class URLFormatter(object):
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?:v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|v3/__(.*?)(?:_|$))', re.I)
+    proofpoint_regex = re.compile('(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|urldefense[.]\w{2,3}/v3/__(.*?)(?:_|$))', re.I)
     trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
