@@ -358,10 +358,6 @@ def main():
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
     logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
 
-    # we want to copy also packs that successfully uploaded their dependencies zip, thus unifying
-    # pc_successful_packs_dict and pc_successful_uploaded_dependencies_zip_packs_dict
-    pc_successful_packs_dict = pc_successful_packs_dict
-
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict,
                             pc_uploaded_images)
