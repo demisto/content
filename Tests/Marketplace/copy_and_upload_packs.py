@@ -435,7 +435,10 @@ def main():
             pack.cleanup()
             continue
 
-        pack.status = PackStatus.SUCCESS.name
+        if pack.name in pc_successful_packs_dict:
+            pack.status = PackStatus.SUCCESS.name
+        elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
+            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
@@ -459,6 +462,7 @@ def main():
 
     # verify that the successful from Prepare content and are the ones that were copied
     verify_copy(successful_packs, pc_successful_packs_dict)
+    verify_copy(successful_uploaded_dependencies_zip_packs, pc_successful_uploaded_dependencies_zip_packs_dict)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)
