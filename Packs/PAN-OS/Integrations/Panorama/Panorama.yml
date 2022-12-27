@@ -98,7 +98,7 @@ configuration:
   type: 0
 - defaultvalue: '100'
   display: Max incidents per fetch (for each selected Log Type Query)
-  additionalinfo: The max incidents per fetch parameter specifies the maximum number of incidents to fetch per Log Type Query.
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query.
   name: max_fetch
   required: false
   type: 0
@@ -106,7 +106,7 @@ configuration:
   name: log_types
   required: false
   type: 16
-  additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure 'All' option is unselected)."
+  additionalinfo: "Select which log types to fetch.\nSelecting 'All' will use all the log type queries in the fetch.\nTo choose a specific set of queries, select their log types from the dropdown (make sure the 'All' option is unselected)."
   options:
   - Traffic
   - Threat
