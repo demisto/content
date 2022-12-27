@@ -299,6 +299,59 @@ class PrismaCloudComputeClient(BaseClient):
         )
 
 
+    def get_waas_policies(self):
+        """
+        Get the current WAAS policy
+
+        Returns:
+            dict: the current policy.
+        """
+        return self._http_request(
+            method="GET", url_suffix="policies/firewall/app/container"
+        )
+
+
+    def update_waas_policies(self, policy):
+        """
+        Update the waas policy.
+
+        Args:
+            policy (dict): the previous waas policy.
+
+        Returns:
+            dict: the updated policy.
+        """
+        return self._http_request(
+            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response"
+        )
+
+
+    def get_firewall_audit_container_alerts(self, image_name, from_time, to_time, limit, audit_type):
+        """
+        Get the container audit alerts for a specific image.
+
+        Args:
+            image_name (str): The container image name.
+            from_time (str): The start time of the query for alerts.
+            to_time (str): The end time to query alerts.
+            limit (num): the limit of alerts returned.
+            audit_type (str): the alert audit type.
+
+        Returns:
+            dict: the container alerts.
+        """
+        params = {
+            "type": audit_type,
+            "imageName": image_name,
+            "from": from_time,
+            "to": to_time
+        }
+        return self._http_request(
+            method="GET", url_suffix="audits/firewall/app/container", params=params, resp_type="response"
+        )
+
+
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -1572,6 +1625,101 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
         raw_response=raw_response
     )
 
+def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the WAAS policies.
+    Implement the command 'prisma-cloud-compute-get-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    policies = client.get_waas_policies()
+
+    rules = policies["rules"][0]["applicationsSpec"][0]
+    formatted_waas_policy = [{
+        "SQLInjection": rules["sqli"]["effect"],
+        "CrossSiteScriptingXSS": rules["xss"]["effect"],
+        "OSCommandInjetion": rules["cmdi"]["effect"],
+        "CodeInjection": rules["codeInjection"]["effect"],
+        "LocalFileInclusion": rules["lfi"]["effect"],
+        "AttackToolsAndVulnScanners": rules["attackTools"]["effect"],
+        "Shellshock": rules["shellshock"]["effect"],
+        "MalformedHTTPRequest": rules["malformedReq"]["effect"],
+        "ATP": rules["networkControls"]["advancedProtectionEffect"],
+        "DetectInformationLeakage": rules["intelGathering"]["infoLeakageEffect"]
+    }]
+    data = {
+        "Name": "dvwa",
+        "WaasPolicy": formatted_waas_policy
+    }
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Policies",
+        outputs_key_field="Name",
+        outputs=data,
+        readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
+        raw_response=policies
+    )
+
+
+def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Update the WAAS policy.
+    Implement the command 'prisma-cloud-compute-update-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-update-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
+
+    policy = args.get("policy")
+
+    for index, rule in enumerate(policy["rules"]):
+        if rule["name"] != args.get("rule_name"):
+            continue
+        policy["rules"][index]["applicationsSpec"][0][args.get("attack_type")] = {"effect": args.get("action") }
+
+    res = client.update_waas_policies(policy)
+    if res.status_code == 200:
+        demisto.results("Successfully updated the WaaS policy")
+    else:
+        demisto.results("Something went wrong...")
+
+
+def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the firewall container alerts.
+    Implement the command 'prisma-cloud-compute-get-audit-firewall-container-alerts'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-audit-firewall-container-alerts command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    now = datetime.datetime.now()
+    from_time = now - datetime.timedelta(days=int(args.get("FromDays", 2)))
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')
+    audit_type = args.get("audit_type")
+    data = client.get_firewall_audit_container_alerts(image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z", limit=25, audit_type=audit_type).json()
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Audits",
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=tableToMarkdown("Audits", data),
+        raw_response=data
+    )
+
 
 def main():
     """
@@ -1670,6 +1818,12 @@ def main():
             return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-vulnerabilities-impacted-resources-list':
             return_results(results=get_impacted_resources(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-waas-policies':
+            return_results(results=get_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-update-waas-policies':
+            update_waas_policies(client=client, args=demisto.args())
+        elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
+            return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
