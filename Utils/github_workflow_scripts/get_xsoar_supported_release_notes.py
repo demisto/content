@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 This script is used in the Review Release Notes GitHub workflow.
-It accepts a list of changed files (pack_metadata and release notes)
+It accepts a list of changed files (release notes)
 and returns the release notes of XSOAR-supported Packs.
 """
 
@@ -37,7 +37,7 @@ def is_pack_xsoar_supported(pack_name: str) -> bool:
 
 def convert_files_to_paths(files: List[str]) -> List[Path]:
     """
-    Converts a list of relative file paths to a list of `Path` object for
+    Converts a list of relative file paths to a list of `Path` objects for
     easier navigation of filesystem.
 
     Args:
