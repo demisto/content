@@ -33,7 +33,6 @@ jobs:
           poetry install --with ci
       - name: Review Release Notes
         run: |
-          # Parse changed files into array
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
 
           if [ ! -z "$release_notes" -a "$release_notes" != " " ]; then
