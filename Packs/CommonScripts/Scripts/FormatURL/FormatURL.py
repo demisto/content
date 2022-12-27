@@ -37,6 +37,14 @@ class URLCheck(object):
     brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
     url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
                             "_", "~")
+    
+    bracket_pairs = {
+            '{': '}',
+            '(': ')',
+            '[': ']',
+            '"': '"',
+            '\'': '\'',
+        }
 
     def __init__(self, original_url: str):
         """
@@ -63,6 +71,7 @@ class URLCheck(object):
         self.output = ''
 
         self.inside_brackets = False
+        self.opening_bracket = ''
         self.port = False
         self.query = False
         self.fragment = False
@@ -392,13 +401,14 @@ class URLCheck(object):
                 index += 1
 
         elif char in self.brackets:
-            if char == '[':
+            if char in self.bracket_pairs.keys():
                 self.inside_brackets = True
+                self.opening_bracket = char
                 self.output += char
                 part += char
                 index += 1
             
-            elif char == ']' and self.inside_brackets:
+            elif char == self.bracket_pairs[self.opening_bracket] and self.inside_brackets:
                 self.inside_brackets = False
                 self.output += char
                 part += char
@@ -499,23 +509,16 @@ class URLCheck(object):
         Will remove all leading chars of the following ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
         from the URL.
         """
-        bracket_pairs = {
-            '{': '}',
-            '(': ')',
-            '[': ']',
-            '"': '"',
-            '\'': '\'',
-        }
 
-        beggining = 0
+        beginning = 0
         end = -1
 
         in_brackets = True
 
         while in_brackets:
             try:
-                if bracket_pairs[self.modified_url[beggining]] == self.modified_url[end]:
-                    beggining += 1
+                if self.bracket_pairs[self.modified_url[beginning]] == self.modified_url[end]:
+                    beginning += 1
                     end -= 1
 
                 else:
@@ -524,14 +527,14 @@ class URLCheck(object):
             except KeyError:
                 in_brackets = False
 
-        while self.modified_url[beggining] in self.brackets:
-            beggining += 1
+        while self.modified_url[beginning] in self.brackets:
+            beginning += 1
 
         if end == -1:
-            self.modified_url = self.modified_url[beggining:]
+            self.modified_url = self.modified_url[beginning:]
 
         else:
-            self.modified_url = self.modified_url[beggining:end + 1]
+            self.modified_url = self.modified_url[beginning:end + 1]
 
 
 class URLFormatter(object):
