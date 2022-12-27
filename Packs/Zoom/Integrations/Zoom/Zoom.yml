@@ -407,37 +407,37 @@ script:
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
           defaultValue: False
       outputs:
-        - contextPath: Zoom.Meetings.join_url
+        - contextPath: Zoom.Meeting.join_url
           description: Join url for the meeting
           type: string
-        - contextPath: Zoom.Meetings.id
+        - contextPath: Zoom.Meeting.id
           description: Meeting id of the new meeting that is created
           type: string
-        - contextPath: Zoom.Meetings.start_url
+        - contextPath: Zoom.Meeting.start_url
           description: The URL to start the meeting
           type: string
-        - contextPath: Zoom.Meetings.uuid
+        - contextPath: Zoom.Meeting.uuid
           description: Unique meeting ID of the new meeting that is created
           type: string
-        - contextPath: Zoom.Meetings.status
+        - contextPath: Zoom.Meeting.status
           description: The status of the meeting
           type: string
-        - contextPath: Zoom.Meetings.start_time
+        - contextPath: Zoom.Meeting.start_time
           description: The time that the meeting will start at
           type: Date
-        - contextPath: Zoom.Meetings.host email
+        - contextPath: Zoom.Meeting.host email
           description: The email of the host of this meeting
           type: string
-        - contextPath: Zoom.Meetings.topic
+        - contextPath: Zoom.Meeting.topic
           description: The topic of the meeting
           type: string
-        - contextPath: Zoom.Meetings.duration
+        - contextPath: Zoom.Meeting.duration
           description: The duratian of the meeting
           type: number
-        - contextPath: Zoom.Meetings.created_at
+        - contextPath: Zoom.Meeting.created_at
           description: The time that this meeting was created
           type: Date
-        - contextPath: Zoom.Meetings.type
+        - contextPath: Zoom.Meeting.type
           description: The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8
           type: number
       description: Get the information of an existing zoom meeting
@@ -479,43 +479,43 @@ script:
         - contextPath: Zoom.Metadata.Total
           description: Total number of records
           type: number
-        - contextPath: Zoom.Meetings.page_size
+        - contextPath: Zoom.Meeting.page_size
           description: The size of the page returned from the API
           type: number
-        - contextPath: Zoom.Meetings.total_records
+        - contextPath: Zoom.Meeting.total_records
           description: The total records in the API for this request.
           type: number
-        - contextPath: Zoom.Meetings.join_url
+        - contextPath: Zoom.Meeting.join_url
           description: Join url for the meeting
           type: string
-        - contextPath: Zoom.Meetings.id
+        - contextPath: Zoom.Meeting.id
           description: Meeting id of the new meeting that is created
           type: string
-        - contextPath: Zoom.Meetings.start_url
+        - contextPath: Zoom.Meeting.start_url
           description: The URL to start the meeting
           type: string
-        - contextPath: Zoom.Meetings.uuid
+        - contextPath: Zoom.Meeting.uuid
           description: Unique meeting ID of the new meeting that is created
           type: string
-        - contextPath: Zoom.Meetings.status
+        - contextPath: Zoom.Meeting.status
           description: The status of the meeting
           type: string
-        - contextPath: Zoom.Meetings.start_time
+        - contextPath: Zoom.Meeting.start_time
           description: The time that the meeting will start at
           type: Date
-        - contextPath: Zoom.Meetings.host email
+        - contextPath: Zoom.Meeting.host email
           description: The email of the host of this meeting
           type: string
-        - contextPath: Zoom.Meetings.topic
+        - contextPath: Zoom.Meeting.topic
           description: The topic of the meeting
           type: string
-        - contextPath: Zoom.Meetings.duration
+        - contextPath: Zoom.Meeting.duration
           description: The duratian of the meeting
           type: number
-        - contextPath: Zoom.Meetings.created_at
+        - contextPath: Zoom.Meeting.created_at
           description: The time that this meeting was created
           type: Date
-        - contextPath: Zoom.Meetings.type
+        - contextPath: Zoom.Meeting.type
       description: >
         Show all the meetings of a given user.
         Note: only scheduled and unexpired meetings will appear.
