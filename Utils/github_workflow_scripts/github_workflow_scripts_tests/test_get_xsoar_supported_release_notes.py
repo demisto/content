@@ -1,10 +1,9 @@
 from Utils.github_workflow_scripts.get_xsoar_supported_release_notes import \
     is_pack_xsoar_supported,\
     convert_files_to_paths,\
-    main
+    format_output
 
 import pytest
-# from argparse import Namespace
 
 
 @pytest.mark.parametrize('pack_name, expected', [
@@ -13,7 +12,6 @@ import pytest
     ("", False),
 ])
 def test_is_pack_xsoar_supported(pack_name, expected):
-
     """
     Given:
         - A Pack name
@@ -31,35 +29,67 @@ def test_is_pack_xsoar_supported(pack_name, expected):
 
     assert expected == is_pack_xsoar_supported(pack_name)
 
-# @pytest.mark.parametrize('files_paths, expected', [
-#     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md" , "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], )
-# ])
-# def test_convert_files_to_paths(files_paths, expected):
+
+@pytest.mark.parametrize('files_paths, expected', [
+    ([], [])
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ["Packs/CommonTypes/ReleaseNotes/3_3_39.md"]),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"],
+        ["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"]),
+])
+def test_convert_files_to_paths(files_paths, expected):
+    """
+    Given:
+        - A list of paths strings
+
+    When:
+        - The list is empty
+        - The list includes 1 path
+        - The list includes 2 paths
+
+    Then:
+        - The returned list is empty
+        - The returned list is 1 in length
+        - The returned list is 2 in length
+    """
+
+    fps = convert_files_to_paths(files_paths)
+    expected_list_of_str = list(map(lambda fp: str(fp), fps))
+
+    assert expected == expected_list_of_str
 
 
+@pytest.mark.parametrize('rns, delimiter, expected', [
+    ([], "," "")
+    ([], ";", "")
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ",", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ";", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], ",", "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], ";", "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
+    (["Packs/CommonTypes/ReleaseNotes/3_3_39.md", "Packs/SentinelOne/ReleaseNotes/3_0_4.md"], None, "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md"),
+])
+def test_format_output(rns, delimiter, expected):
+    """
+    Given:
+        - A list of paths strings
 
-# class TestsRunDocsReview:
-#     def test_file_name_includes_apostrophe(self, mocker, capsys):
-#         """
-#             Given:
-#                 - A string contains a file name with an apostrophe.
-#             When:
-#                 - Running run_docs_review function of the run_docs_review github workflow script.
-#             Then:
-#                 - Verify the doc reviewer gets the file name with the apostrophe correctly.
-#                 - Verify that the output is as expected.
-#         """
-#         file_name_with_apostrophe = "Packs/UnRealPack/Apostrophe's_Test.yml"
-#         file_name = 'Packs/UnRealPack/UnRealFile.yml'
-#         delimiter = ';'
-#         files_names = f'{file_name_with_apostrophe}{delimiter}{file_name}'
-#         sdk_docs_reviewer_starting_string = '================= Starting Doc Review ================='
-#         expected_exit_code_of_run_docs_review = 0
+    When:
+        - The list is empty and comma is the delimiter
+        - The list is empty and semicolon is the delimiter
+        - The list includes 1 path and comma is the delimiter
+        - The list includes 1 path and semicolon is the delimiter
+        - The list includes 2 paths and comma is the delimiter
+        - The list includes 2 paths and semicolon is the delimiter
+        - The list includes 2 paths and semicolon is the delimiter is not specified
 
-#         args = Namespace(changed_files=files_names, delimiter=delimiter)
-#         mocker.patch('Utils.github_workflow_scripts.run_docs_review.parse_changed_files_names', return_value=args)
+    Then:
+        - The returned string is empty
+        - The returned string is empty
+        - The returned string has 1 path
+        - The returned string has 1 path
+        - The returned string has 2 paths with comma in between
+        - The returned string has 2 paths with semicolon in between
+        - The returned string has 2 paths with comma in between
+    """
 
-#         result = run_docs_review()
-#         captured = capsys.readouterr()
-#         assert sdk_docs_reviewer_starting_string in captured.out
-#         assert result == expected_exit_code_of_run_docs_review
+    actual = format_output(rns, delimiter)
+    assert expected == actual
