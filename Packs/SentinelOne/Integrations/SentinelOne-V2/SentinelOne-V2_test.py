@@ -459,3 +459,36 @@ def test_delete_star_rule(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
     assert command_results.outputs == [{'ID': '1234567890', 'Deleted': True}]
+
+
+def test_get_events(mocker, requests_mock):
+    """
+    Given:
+    When: run get events
+    Then: ensure the context output are as expected and contained the 'ProcessID' and 'EventID' as id keys
+    """
+    from CommonServerPython import CommandResults
+
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/dv/events", json={'data': [
+        {'ProcessID': 'ProcessID_1', 'EventID': 'EventID_1'},
+        {'ProcessID': 'ProcessID_2', 'EventID': 'EventID_2'}
+    ]})
+    mocker.patch.object(demisto, 'params', return_value={'token': 'token',
+                                                         'url': 'https://usea1.sentinelone.net',
+                                                         'api_version': '2.1',
+                                                         'fetch_threat_rank': '4'})
+    mocker.patch.object(demisto, 'command', return_value='sentinelone-get-events')
+    mocker.patch.object(demisto, 'args', return_value={
+        'query_id': '1234567890'
+    })
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    expected_context = CommandResults(
+        outputs_prefix='SentinelOne.Event',
+        outputs_key_field=['ProcessID', 'EventID'],
+        outputs=[{}]).to_context().get('EntryContext', {})
+
+    call = sentinelone_v2.return_results.call_args_list
+    context_outputs = call[0].args[0].outputs
+    assert all(key in context_outputs.keys() for key in expected_context.keys())
