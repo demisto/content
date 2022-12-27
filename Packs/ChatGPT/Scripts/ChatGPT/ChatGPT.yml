@@ -1,0 +1,40 @@
+args:
+- description: the needed api key to query OpenAI ChapGPT
+  name: api
+  required: true
+  secret: true
+- description: The question you want talking with ChatGPT
+  name: prompt
+  required: true
+- defaultValue: "4000"
+  description: The maximum number of tokens to generate in the completion . The token count of your prompt plus max_tokens cannot exceed the model's context length. Most models have a context length of 2048 tokens (except for the newest models, which support 4096).
+  name: maxToken
+- defaultValue: "1.0"
+  description: What sampling temperature to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.
+  name: temp
+comment: |+
+  Author: Jie Liau
+
+  Intro: This custom automation is created for fun. You can use or modify it followed by your own innovation.
+
+  Usage: Login to https://beta.openai.com/ and access to "View API Keys", then "Create new secret key"
+
+commonfields:
+  id: ChatGPT
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.9.40422
+enabled: true
+name: ChatGPT
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

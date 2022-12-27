@@ -1,0 +1,21 @@
+{
+    "name": "ChatGPT",
+    "description": "This is the automation that you can ask ChatGPT question and also can use it in the playbook. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jie Liau",
+    "url": "",
+    "email": "",
+    "created": "2022-12-27T07:22:09Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "jieliau"
+    ]
+}
