@@ -5586,9 +5586,7 @@ def list_response_handler(client: Client,
     if internal_path:
         response = dict_safe_get(response, internal_path)
     elif not isinstance(response, list):
-        response_list = []
-        response_list.append(response)
-        response = response_list
+        response = [response]
     if sub_object_id and isinstance(response, list):
         group_dict = find_dict_in_array(response, sub_object_key, sub_object_id)
         response = [group_dict] if group_dict else []
