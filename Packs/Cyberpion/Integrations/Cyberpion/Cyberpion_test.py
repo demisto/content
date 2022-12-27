@@ -9,12 +9,12 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_get_domain_state(requests_mock):
+def test_get_domain_state(requests_mock, mocker):
     from Cyberpion import Client
     mock_response = util_load_json('test_data/domain_state.json')
-    requests_mock.get(
-        f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
-        json=mock_response)
+    # requests_mock.get(
+    #     f'{MOCKED_BASE_URL}domainstate/?verbosity=details&domain=$anon100-2.com',
+    #     json=mock_response)
     client = Client(
         base_url=MOCKED_BASE_URL,
         verify=False,
@@ -22,6 +22,7 @@ def test_get_domain_state(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
+    mocker.patch.object(Client, '_http_request', return_value=mock_response)
     domain = '$anon100-2.com'
     response = client.get_domain_state(domain)
     # domain types and ips are reformatted in the function, skip checking them

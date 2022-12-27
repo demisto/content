@@ -1,15 +1,15 @@
+''' IMPORTS '''
 import demistomock as demisto  # noqa: F401
 from typing import Dict, Tuple, List
 from datetime import timezone
-
 from CommonServerPython import *
+import urllib3
+
+urllib3.disable_warnings()
 
 """Cyberpion Integration for Cortex XSOAR (aka Demisto)
 """
 
-''' IMPORTS '''
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
