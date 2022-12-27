@@ -37,13 +37,13 @@ class URLCheck(object):
     brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
     url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
                             "_", "~")
-    
+
     bracket_pairs = {
-            '{': '}',
-            '(': ')',
-            '[': ']',
-            '"': '"',
-            '\'': '\'',
+        '{': '}',
+        '(': ')',
+        '[': ']',
+        '"': '"',
+        '\'': '\'',
         }
 
     def __init__(self, original_url: str):
@@ -407,13 +407,13 @@ class URLCheck(object):
                 self.output += char
                 part += char
                 index += 1
-            
+
             elif char == self.bracket_pairs[self.opening_bracket] and self.inside_brackets:
                 self.inside_brackets = False
                 self.output += char
                 part += char
                 index += 1
-            
+
             else:
                 return len(self.modified_url), part
 
@@ -542,7 +542,7 @@ class URLFormatter(object):
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
     fireeye_regex = re.compile('.*?fireeye[.]com.*?&u=(.*)', re.I)
-    proofpoint_regex = re.compile('(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|urldefense[.]\w{2,3}/v3/__(.*?)(?:_|$))', re.I)
+    proofpoint_regex = re.compile('(?i)(?:proofpoint.com/v[1-2]/(?:url\?u=)?(.*?)(?:&amp|&d|$)|urldefense[.]\w{2,3}/v3/__(.*?)(?:_|$))')
     trendmicro_regex = re.compile('https://.*?trendmicro\.com(?::443)?/wis/clicktime/.*?/?url==3d(.*?)&', re.I)
 
     # Scheme slash fixer
