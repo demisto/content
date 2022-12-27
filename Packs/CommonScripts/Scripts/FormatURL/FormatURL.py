@@ -408,7 +408,7 @@ class URLCheck(object):
                 part += char
                 index += 1
             
-            elif char == self.bracket_pairs[self.opening_bracket] and self.inside_brackets:
+            elif self.inside_brackets and char == self.bracket_pairs[self.opening_bracket]:
                 self.inside_brackets = False
                 self.output += char
                 part += char
