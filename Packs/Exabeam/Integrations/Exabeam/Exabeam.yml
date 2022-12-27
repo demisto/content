@@ -1962,7 +1962,12 @@ script:
       required: false
       secret: false
     - default: false
-      description: The query that will be used to filter incidents in exabeam
+      description: |
+        The query string that will be used to filter incidents in exabeam
+        For exemple:
+        - simple query: incidentType:generic,
+        - OR query: "status:new AND priority:high",
+        - AND query: "status:new OR status:closedFalsePositive".
       isArray: false
       name: query
       required: false
@@ -2055,40 +2060,40 @@ script:
     name: exabeam-list-incident
     outputs:
     - contextPath: Exabeam.incidents.incidentId
-      description: The sequence event type.
+      description: The incident id.
       type: String
     - contextPath: Exabeam.incidents.name
-      description: The sequence event type.
+      description: The incident name.
       type: String
     - contextPath: Exabeam.incidents.fields.startedDate
-      description: The sequence event type.
+      description: The starting date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.closedDate
-      description: The sequence event type.
+      description: The closing date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.createdAt
-      description: The sequence event type.
+      description: The creating date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.owner
-      description: The sequence event type.
+      description: The owner of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.status
-      description: The sequence event type.
+      description: The incident status.
       type: String
     - contextPath: Exabeam.incidents.fields.incidentType
-      description: The sequence event type.
+      description: The incident type.
       type: String
     - contextPath: Exabeam.incidents.fields.source
-      description: The sequence event type.
+      description: The incident source.
       type: String
     - contextPath: Exabeam.incidents.fields.priority
-      description: The sequence event type.
+      description: The incident priority.
       type: String
     - contextPath: Exabeam.incidents.fields.queue
-      description: The sequence event type.
+      description: The queue of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.description
-      description: The sequence event type.
+      description: The incident description.
       type: String
   dockerimage: demisto/python3:3.10.9.40422
   isfetch: true

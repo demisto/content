@@ -702,16 +702,15 @@ class Client(BaseClient):
                                   params=query_params)
 
     def get_single_incident(self, incident_id: str, username: str = None):
-        headers = {**self._headers, 'EXA_USERNAME': username or self.username}
+        headers = self._headers | {'EXA_USERNAME': username or self.username}
         return self._http_request('GET', url_suffix=f'/ir/api/incident/{incident_id}',
                                   headers=headers)
 
-    def get_incidents(self, query: Dict[str, Any]):
-        headers = {**self._headers}
+    def get_incidents(self, query: dict[str, Any]):
+
         return self._http_request(
             'POST',
             url_suffix='/ir/api/incidents/search',
-            headers=headers,
             json_data=query,
         )
 
@@ -719,8 +718,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def format_single_incident(incident):
-    incident_fields = incident.get('fields')
+def format_single_incident(incident: dict[str, Any]) -> dict[str, Any]:
+    incident_fields = incident.get('fields', {})
     formatted_incident = {'incidentId': incident.get('incidentId'),
                           'name': incident.get('name'),
                           'fields': {
@@ -1166,6 +1165,7 @@ def build_incident_response_query_params(query: str | None,
             params['query'] = q
     else:
         params['query'] = query
+
     if page_size and page_number:
         params['offset'] = page_size * page_number
 
@@ -1178,7 +1178,7 @@ def build_incident_response_query_params(query: str | None,
 ''' COMMANDS '''
 
 
-def test_module(client: Client, args: Dict[str, str], params):
+def test_module(client: Client, args: dict[str, str], params):
     """test function
 
     Args:
@@ -1997,7 +1997,7 @@ def get_notable_sequence_event_types(client: Client, args: Dict[str, str]) -> Tu
     return human_readable, entry_context, sequence_event_types_raw_data
 
 
-def list_incidents(client: Client, args: Dict[str, str]):
+def list_incidents(client: Client, args: dict[str, str]):
     incident_ids = argToList(args.get('incident_id'))
     query = args.get('query')
     incident_type = args.get('incident_type')
@@ -2020,7 +2020,7 @@ def list_incidents(client: Client, args: Dict[str, str]):
             incidents.append(format_single_incident(raw_response))
 
     else:
-        if any([query, incident_type, priority, status]):
+        if any((query, incident_type, priority, status)):
             query_params = build_incident_response_query_params(query,
                                                                 incident_type,
                                                                 priority,
@@ -2042,7 +2042,7 @@ def list_incidents(client: Client, args: Dict[str, str]):
     return human_readable, entry_context, raw_response
 
 
-def fetch_incidents(client: Client, args: Dict[str, str]) -> Tuple[list, dict]:
+def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
 
     last_run = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
@@ -2118,11 +2118,13 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
-    base_url = demisto.params().get('url')
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    args = demisto.args()
+    username = params.get('credentials').get('identifier')
+    password = params.get('credentials').get('password')
+    base_url = params.get('url')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
     headers = {'Accept': 'application/json', 'Csrf-Token': 'nocheck'}
     if username == TOKEN_INPUT_IDENTIFIER:
         headers['ExaAuthToken'] = password
@@ -2175,13 +2177,13 @@ def main():
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command == 'fetch-incidents':
-            incidents, next_run = fetch_incidents(client, demisto.params())
+            incidents, next_run = fetch_incidents(client, params)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
-            return_outputs(*commands[command](client, demisto.args(), demisto.params()))  # type: ignore
+            return_outputs(*commands[command](client, args, params))
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+            return_outputs(*commands[command](client, args))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
