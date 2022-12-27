@@ -57,7 +57,6 @@ def get_alert_severity():
     s_arr = s.split(",")
     if sum([x in ['Information', 'Warning', 'Threat', 'Severe', 'Critical'] for x in s_arr]) == len(s_arr):
         return set(s_arr)
-    demisto.debug('Invalid alert severity values')
     raise Exception("Invalid alert severity values")
 
 
@@ -70,8 +69,7 @@ def http_request(method, url_suffix, params_dict, headers):
     :param headers: dict: optional http headers
     :return: dict: response data
     """
-    req_params = {
-    }
+    req_params = {}
     if params_dict is not None:
         req_params.update(params_dict)
 
@@ -103,7 +101,6 @@ def http_request(method, url_suffix, params_dict, headers):
         return json.loads(res.text)
 
     except Exception as e:
-        demisto.debug(f"{e}\n{res_msg}")
         raise Exception(f"{e}\n{res_msg}")
 
 
@@ -278,7 +275,6 @@ def get_endpoint_data(data):
     return ret
 
 
-# The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
     get_alerts('Critical', None, None)
