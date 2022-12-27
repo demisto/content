@@ -208,7 +208,7 @@ def compare_content_packs(
                 content_items.append(content_item)
         except Exception as e:
             print(f"could not parse {path}: {e}")
-    missing = [(content_item.node_id, reasons[content_item.get(content_item.node.id, "Reason not found")]) for content_item in content_items]
+    missing = [(content_item.node_id, reasons[reasons.get(content_item.node_id, "Reason not found")]) for content_item in content_items]
     message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
 
 
