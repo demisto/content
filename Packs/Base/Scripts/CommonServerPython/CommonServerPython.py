@@ -138,9 +138,6 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
-from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
-
-
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -3917,6 +3914,9 @@ class Common(object):
         :type traffic_light_protocol: ``str``
         :param traffic_light_protocol: The CVE tlp color.
 
+        :type publications: ``str``
+        :param publications: Unique system-assigned ID of the vulnerability evaluation logic
+
         :type dbot_score: ``DBotScore``
         :param dbot_score: If file has a score then create and set a DBotScore object
 
@@ -3927,7 +3927,7 @@ class Common(object):
 
         def __init__(self, id, cvss, published, modified, description, relationships=None, stix_id=None,
                      cvss_version=None, cvss_score=None, cvss_vector=None, cvss_table=None, community_notes=None,
-                     tags=None, traffic_light_protocol=None, dbot_score=None):
+                     tags=None, traffic_light_protocol=None, dbot_score=None, publications=None):
             # type (str, str, str, str, str) -> None
 
             # Main indicator value
@@ -3946,6 +3946,7 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
+            self.publications = publications
 
             # XSOAR Fields
             self.relationships = relationships
@@ -4000,6 +4001,9 @@ class Common(object):
 
             if self.traffic_light_protocol:
                 cve_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.publications:
+                cve_context['Publications'] = self.create_context_table(self.publications)
 
             ret_value = {
                 Common.CVE.CONTEXT_PATH: cve_context
@@ -5213,6 +5217,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 gn=None,  # type: Optional[Common.GeneralName]
@@ -5252,6 +5257,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 issuer=None,  # type: Optional[List[Common.GeneralName]]
@@ -5295,6 +5301,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 full_name=None,  # type: Optional[List[Common.GeneralName]]
@@ -5334,6 +5341,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 policy_identifier,  # type: str
@@ -5366,6 +5374,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 access_method,  # type: str
@@ -5394,6 +5403,7 @@ class Common(object):
             :return: None
             :rtype: ``None``
             """
+
             def __init__(
                 self,
                 ca,  # type: bool
@@ -6101,6 +6111,7 @@ class IndicatorsTimeline:
     :return: None
     :rtype: ``None``
     """
+
     def __init__(self, indicators=None, category=None, message=None):
         # type: (list, str, str) -> None
         if indicators is None:
@@ -6133,7 +6144,6 @@ class IndicatorsTimeline:
 
 def arg_to_number(arg, arg_name=None, required=False):
     # type: (Any, Optional[str], bool) -> Optional[int]
-
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -6191,7 +6201,6 @@ def arg_to_number(arg, arg_name=None, required=False):
 
 def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
     # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
-
     """Converts an XSOAR argument to a datetime
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -7053,6 +7062,7 @@ class ExecutionMetrics(object):
         :return: None
         :rtype: ``None``
     """
+
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
                  proxy_error=0, ssl_error=0, timeout_error=0):
         self._metrics = []
@@ -7237,6 +7247,7 @@ class CommandRunner:
         :return: None
         :rtype: ``None``
         """
+
         def __init__(self, commands, args_lst, brand=None, instance=None):
             """
 
@@ -7286,6 +7297,7 @@ class CommandRunner:
         :return: None
         :rtype: ``None``
         """
+
         def __init__(self, command, args, brand, instance, result):
             """
             :param command: command that was run.
@@ -8656,7 +8668,7 @@ if 'requests' in sys.modules:
                 return response.status_code in status_codes
             return response.ok
 
-        def  client_error_handler(self, res):
+        def client_error_handler(self, res):
             """Generic handler for API call error
             Constructs and throws a proper error for the API call response.
 
@@ -9519,6 +9531,7 @@ class AutoFocusKeyRetriever:
     :return: No data returned
     :rtype: ``None``
     """
+
     def __init__(self, api_key):
         # demisto.getAutoFocusApiKey() is available from version 6.2.0
         if not api_key:
@@ -10010,6 +10023,7 @@ class PollResult:
     :rtype: ``PollResult``
 
     """
+
     def __init__(self, response, continue_to_poll=False, args_for_next_run=None, partial_result=None):
         """
         Constructor for PollResult
@@ -10437,7 +10451,7 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
     return new_found_incidents_ids
 
 
-def get_found_incident_ids(last_run, incidents, look_back, id_field):
+def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids):
     """
     Gets the found incident ids from the last run object and adds the new fetched incident IDs.
 
@@ -10462,8 +10476,8 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field):
 
     for incident in incidents:
         found_incidents[incident[id_field]] = current_time
-
-    found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
+    if remove_incident_ids:
+        found_incidents = remove_old_incidents_ids(found_incidents, current_time, look_back)
 
     return found_incidents
 
@@ -10505,6 +10519,8 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :rtype: ``Dict``
     """
 
+    remove_incident_ids = True
+
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
@@ -10518,12 +10534,13 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             'limit': fetch_limit,
         }
     else:
+        remove_incident_ids = False
         new_last_run = {
             'time': start_fetch_time,
             'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
 
-    return new_last_run
+    return new_last_run, remove_incident_ids
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
@@ -10565,10 +10582,18 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
     :rtype: ``Dict``
     """
 
-    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field)
+    updated_last_run, remove_incident_ids = create_updated_last_run_object(last_run,
+                                                                           incidents,
+                                                                           fetch_limit,
+                                                                           look_back,
+                                                                           start_fetch_time,
+                                                                           end_fetch_time,
+                                                                           created_time_field,
+                                                                           date_format,
+                                                                           increase_last_run_time,
+                                                                           )
 
-    updated_last_run = create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time,
-                                                      end_fetch_time, created_time_field, date_format, increase_last_run_time)
+    found_incidents = get_found_incident_ids(last_run, incidents, look_back, id_field, remove_incident_ids)
 
     if found_incidents:
         updated_last_run.update({'found_incident_ids': found_incidents})
@@ -10612,6 +10637,7 @@ class OutputArgument:
     :return: The OutputArgument object
     :rtype: ``OutputArgument``
     """
+
     def __init__(self,
                  name,
                  output_type=dict,
@@ -10630,6 +10656,7 @@ class InputArgument:
     :return: The InputArgument object
     :rtype: ``InputArgument``
     """
+
     def __init__(self,
                  name=None,
                  description=None,
@@ -10653,6 +10680,7 @@ class ConfKey:
     :return: The ConfKey object
     :rtype: ``ConfKey``
     """
+
     def __init__(self,
                  name,
                  display=None,
@@ -10676,6 +10704,7 @@ class YMLMetadataCollector:
     :return: The YMLMetadataCollector object
     :rtype: ``YMLMetadataCollector``
     """
+
     def __init__(self, integration_name, docker_image="demisto/python3:latest",
                  description=None, category="Utilities", conf=None,
                  is_feed=False, is_fetch=False, is_runonce=False,
