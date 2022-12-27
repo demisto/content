@@ -212,6 +212,15 @@ def compare_content_packs(
     message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
 
 
+def format_reason(reasons: list[dict]) -> str:
+    message = []
+    for reason in reasons:
+        message.append(
+            f"Reason: {reason.get('source')} -> {reason.get('target')} (mandatorily: {reason.get('mandatorily')})"
+        )
+    return "\n".join(message)
+
+
 def compare_dependencies(
     dependencies_id_set: Path,
     dependencies_graph: Path,
@@ -240,12 +249,12 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
         if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
             message.append(f"Moved to optional dependencies for pack {pack}: {sorted(moved_to_optional)}")
             for dep in moved_to_optional:
-                message.append(f"Reason: {pack} depends on {dep} because of {reasons[pack][dep]}")
+                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
             message.append(f"Moved to mandatory dependencies for pack {pack}: {sorted(moved_to_mandatory)}")
             for dep in moved_to_mandatory:
-                message.append(f"Reason: {pack} depends on {dep} because of {reasons[pack][dep]}")
+                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(f"Missing mandatory dependencies for pack {pack}: {sorted(missing_in_graph)}")
@@ -253,14 +262,14 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(f"Extra mandatory dependencies for pack {pack}: {sorted(extra_in_graph)}")
             for dep in extra_in_graph:
-                message.append(f"Reason: {pack} depends on {dep} because of {reasons[pack][dep]}")
+                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
         if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
             message.append(f"Missing optional dependencies for pack {pack}: {sorted(missing_in_graph)}")
         if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
             message.append(f"Extra optional dependencies for pack {pack}: {sorted(extra_in_graph)}")
             for dep in extra_in_graph:
-                message.append(f"Reason: {pack} depends on {dep} because of {reasons[pack][dep]}")
+                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
 
 def main():
