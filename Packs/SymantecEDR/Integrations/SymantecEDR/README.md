@@ -58,7 +58,7 @@ After you successfully execute a command, a DBot message appears in the War Room
     "SymantecEDR": {
         "Command": {
             "isolate_endpoint": {
-                "command_id": "0df9c435eb3e45469dd3a5fe17f70624-2022-12-26",
+                "command_id": "22a51c012c044b7693409eb5eeeaf7fc-2022-12-27",
                 "error_code": 0,
                 "message": "Command isolate_endpoint successfully requested"
             }
@@ -72,7 +72,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 >### Command isolate_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command isolate_endpoint successfully requested | 0df9c435eb3e45469dd3a5fe17f70624-2022-12-26 |
+>| Command isolate_endpoint successfully requested | 22a51c012c044b7693409eb5eeeaf7fc-2022-12-27 |
 
 
 ### symantec-edr-domain-file-association-list
@@ -308,7 +308,7 @@ Get Domain Instances
                 "disposition": "Healthy",
                 "external_ip": "",
                 "first_seen": "2022-10-21T13:05:38.000Z",
-                "last_seen": "2022-12-25T13:09:20.000Z"
+                "last_seen": "2022-12-27T13:09:20.000Z"
             }
         ]
     }
@@ -320,7 +320,7 @@ Get Domain Instances
 >### Domain Instances List
 >|DataSourceUrlDomain|FirstSeen|LastSeen|Disposition|
 >|---|---|---|---|
->| ctldl.windowsupdate.com | 2022-10-21T13:05:38.000Z | 2022-12-25T13:09:20.000Z | Healthy |
+>| ctldl.windowsupdate.com | 2022-10-21T13:05:38.000Z | 2022-12-27T13:09:20.000Z | Healthy |
 
 
 ### symantec-edr-endpoint-instance-list
@@ -442,7 +442,7 @@ Get File Instances
         "FileInstance": {
             "first_seen": "2022-10-21T19:31:20.770Z",
             "folder": "c:\\program files\\google\\chrome\\application\\106.0.5249.119",
-            "last_seen": "2022-12-26T11:28:42.168Z",
+            "last_seen": "2022-12-26T12:10:42.738Z",
             "name": "elevation_service.exe",
             "sha2": "302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4"
         }
@@ -455,8 +455,8 @@ Get File Instances
 >### File Instances List
 >|FirstSeen|LastSeen|Sha2|Name|Folder|
 >|---|---|---|---|---|
->| 2022-10-21T07:00:39.964Z | 2022-12-26T11:28:42.167Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
->| 2022-10-21T19:31:20.770Z | 2022-12-26T11:28:42.168Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T07:00:39.964Z | 2022-12-26T12:10:42.738Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | csidl_program_files\google\chrome\application\106.0.5249.119 |
+>| 2022-10-21T19:31:20.770Z | 2022-12-26T12:10:42.738Z | 302c968ab3e1227d54df4e72f39088d7483d25eeb3037f0b16bc39cef2728fa4 | elevation_service.exe | c:\program files\google\chrome\application\106.0.5249.119 |
 
 
 ### symantec-edr-system-activity-list
@@ -525,11 +525,11 @@ Command to get System Activities
             "device_cap": "EDR",
             "device_ip": "192.168.20.8",
             "device_name": "localhost.localdomain",
-            "device_time": "2022-12-26T11:49:45.072Z",
+            "device_time": "2022-12-27T21:19:51.112Z",
             "feature_name": "AdministratorTask",
-            "log_name": "atp_system_log-2022-12-26",
-            "log_time": "2022-12-26T11:49:45.113Z",
-            "message": "Command delete_file with command id 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 has started.",
+            "log_name": "atp_system_log-2022-12-27",
+            "log_time": "2022-12-27T21:19:52.057Z",
+            "message": "Command delete_file with command id b6ab429a54b34597956b36485b287d04-2022-12-27 has started.",
             "pid": 12358,
             "product_name": "Symantec Endpoint Detection and Response",
             "product_ver": "4.6.8-8",
@@ -537,7 +537,7 @@ Command to get System Activities
             "status_id": "Success",
             "timezone": 0,
             "type_id": 1,
-            "uuid": "64398f00-8513-11ed-c2ab-0000000332b4"
+            "uuid": "3306cc80-862c-11ed-c706-000000033d61"
         }
     }
 }
@@ -548,7 +548,7 @@ Command to get System Activities
 >### System Activities List
 >|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
 >|---|---|---|---|---|---|---|
->| 2022-12-26T11:49:45.072Z | 1 | Info | Command delete_file with command id 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 has started. | 192.168.20.8 | All in One | Success |
+>| 2022-12-27T21:19:51.112Z | 1 | Info | Command delete_file with command id b6ab429a54b34597956b36485b287d04-2022-12-27 has started. | 192.168.20.8 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
@@ -617,15 +617,15 @@ Get  Audit Events
             "category_id": 4,
             "count": 1,
             "device_cap": "EDR",
-            "device_end_time": "2022-12-26T11:50:59.898Z",
+            "device_end_time": "2022-12-27T21:22:22.284Z",
             "device_ip": "192.168.20.8",
             "device_name": "localhost.localdomain",
-            "device_time": "2022-12-26T11:50:59.898Z",
+            "device_time": "2022-12-27T21:22:22.284Z",
             "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
             "feature_name": "Incident",
             "id": 2,
             "log_name": "atp_audit_log-2022-12",
-            "log_time": "2022-12-26T11:51:00.125Z",
+            "log_time": "2022-12-27T21:22:23.049Z",
             "message": "Incident Closed Successfully.",
             "product_name": "Symantec Endpoint Detection and Response",
             "product_ver": "4.6.8-8",
@@ -637,7 +637,7 @@ Get  Audit Events
             "user_agent_ip": "172.16.11.107",
             "user_name": "SEDR API",
             "user_uid": "O2ID.atp-customer.atp-domain.dbq9fmcjk132kmha7f9584qvr7",
-            "uuid": "90d319a0-8513-11ed-db4a-0000000332b5"
+            "uuid": "8d21d0c0-862c-11ed-deb2-000000033d62"
         }
     }
 }
@@ -648,7 +648,7 @@ Get  Audit Events
 >### Audit Event List
 >|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-26T11:50:59.898Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.107 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | 90d319a0-8513-11ed-db4a-0000000332b5 | Success |
+>| 2022-12-27T21:22:22.284Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.107 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | 8d21d0c0-862c-11ed-deb2-000000033d62 | Success |
 
 
 ### symantec-edr-event-list
@@ -737,50 +737,46 @@ Used to get events from EDR on-premise
 {
     "SymantecEDR": {
         "Event": {
-            "attacks_tactic_ids_0": "2",
-            "attacks_tactic_uids_0": "TA0002",
-            "attacks_technique_name_0": "Windows Management Instrumentation",
-            "attacks_technique_uid_0": "T1047",
-            "cmd_line": "C:\\Windows\\sysWOW64\\wbem\\wmiprvse.exe -secured -Embedding",
+            "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
             "device_domain": "WORKGROUP",
             "device_ip": "172.16.14.42",
             "device_name": "WIN-TFB8L7BI77H",
             "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-26T11:48:11.378Z",
+            "device_time": "2022-12-27T21:18:58.645Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
             "enriched_data_category_id": 3,
             "enriched_data_category_name": "Process Termination",
             "enriched_data_rule_name": "eProcessClose",
-            "event_actor_cmd_line": "C:\\Windows\\sysWOW64\\wbem\\wmiprvse.exe -secured -Embedding",
-            "event_actor_file_md5": "3ff0bb6eacc39958042b74ca04e202a6",
-            "event_actor_file_modified": "2018-09-15T07:13:00.192Z",
-            "event_actor_file_name": "wmiprvse.exe",
-            "event_actor_file_normalized_path": "CSIDL_SYSTEMX86\\wbem\\wmiprvse.exe",
-            "event_actor_file_original_name": "Wmiprvse.exe",
-            "event_actor_file_path": "c:\\windows\\syswow64\\wbem\\wmiprvse.exe",
-            "event_actor_file_sha2": "158075d730a7a6acbe7739251ee9bea4349268597ca576b3e0cb8442140865fd",
+            "event_actor_cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
+            "event_actor_file_md5": "d2ab39ea2c0fcd172751f84bda723a97",
+            "event_actor_file_modified": "2018-09-15T07:12:24.564Z",
+            "event_actor_file_name": "dllhost.exe",
+            "event_actor_file_normalized_path": "CSIDL_SYSTEM\\dllhost.exe",
+            "event_actor_file_original_name": "dllhost.exe",
+            "event_actor_file_path": "c:\\windows\\system32\\dllhost.exe",
+            "event_actor_file_sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
             "event_actor_file_signature_company_name": "Microsoft Windows",
             "event_actor_integrity_id": 6,
-            "event_actor_pid": 17004,
+            "event_actor_pid": 13000,
             "event_actor_signature_level_id": 60,
-            "event_actor_start_time": "2022-12-26T11:47:05.826Z",
-            "event_actor_uid": "F4B73A81-84FE-F1ED-8217-98261F32744E",
-            "event_actor_use: List[str] = []r_name": "NETWORK SERVICE",
-            "event_actor_use: List[str] = []r_sid": "S-1-5-20",
+            "event_actor_start_time": "2022-12-27T21:18:53.587Z",
+            "event_actor_uid": "848DF90E-85C7-F1ED-8217-98261F32744E",
+            "event_actor_user_name": "SYSTEM",
+            "event_actor_user_sid": "S-1-5-18",
             "integrity_id": 6,
-            "log_name": "epmp_events-fdr-2022-12-26",
-            "log_time": "2022-12-25T23:24:04.949Z",
+            "log_name": "epmp_events-fdr-2022-12-27",
+            "log_time": "2022-12-27T08:53:12.083Z",
             "operation": 2,
-            "pid": 17004,
-            "ref_uid": "594B5CD1-B3A5-4891-AC4C-5FBCD98CE166",
+            "pid": 13000,
+            "ref_uid": "1BCB3D99-9B94-4227-93DB-0470CA137F6B",
             "severity_id": "Info",
             "signature_level_id": 60,
             "type_id": 8001,
-            "uid": "F4B73A81-84FE-F1ED-8217-98261F32744E",
+            "uid": "848DF90E-85C7-F1ED-8217-98261F32744E",
             "user_domain": "NT AUTHORITY",
-            "user_name": "NETWORK SERVICE",
-            "user_sid": "S-1-5-20",
-            "uuid": "2c60fd20-8513-11ed-f5e4-000000032e06"
+            "user_name": "SYSTEM",
+            "user_sid": "S-1-5-18",
+            "uuid": "13c0f850-862c-11ed-daf9-0000000339db"
         }
     }
 }
@@ -791,7 +787,7 @@ Used to get events from EDR on-premise
 >### Event List
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|
->| 2022-12-26T11:48:11.378Z | 8001 | wmiprvse.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | NETWORK SERVICE |
+>| 2022-12-27T21:18:58.645Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
 
 
 ### symantec-edr-incident-event-list
@@ -882,76 +878,6 @@ Command is used to get Events for Incidents
 | SymantecEDR.IncidentEvent.correlation_uid | String |  | 
 | SymantecEDR.IncidentEvent.uuid | String |  | 
 | SymantecEDR.IncidentEvent.log_name | String |  | 
-
-#### Command example
-```!symantec-edr-incident-event-list limit=1```
-#### Context Example
-```json
-{
-    "SymantecEDR": {
-        "IncidentEvent": {
-            "attacks_tactic_ids_0": "2",
-            "attacks_tactic_uids_0": "TA0002",
-            "attacks_technique_name_0": "Command and Scripting Interpreter",
-            "attacks_technique_uid_0": "T1059",
-            "cmd_line": "C:\\Windows\\system32\\cmd.exe /d /c \"C:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\14.3.8268.5000.105\\Data\\Definitions\\WebExtDefs\\20221129.017\\webextbridge.exe\" chrome-extension://pamolibmfebkknkdmfabpjebifbffbec/ --parent-window=0 < \\\\.\\pipe\\chrome.nativeMessaging.in.90abb4245fc8fa0a > \\\\.\\pipe\\chrome.nativeMessaging.out.90abb4245fc8fa0a",
-            "correlation_uid": "787E05EE-71B8-11ED-8217-78E3B5B300F9",
-            "device_domain": "WORKGROUP",
-            "device_ip": "172.16.14.42",
-            "device_name": "WIN-TFB8L7BI77H",
-            "device_os_name": "Windows Server 2019 ",
-            "device_time": "2022-12-01T21:43:44.218Z",
-            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-            "enriched_data_category_id": 2,
-            "enriched_data_category_name": "Process Launch",
-            "enriched_data_rule_description": "Generic process launch event",
-            "enriched_data_rule_name": "eGenericProcessLaunch",
-            "enriched_data_suspicion_score": 0,
-            "event_actor_cmd_line": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" ",
-            "event_actor_file_md5": "a66494a69f3e565df33e527d710635bc",
-            "event_actor_file_modified": "2022-11-23T22:47:01.271Z",
-            "event_actor_file_name": "chrome.exe",
-            "event_actor_file_normalized_path": "CSIDL_PROGRAM_FILES\\google\\chrome\\application\\chrome.exe",
-            "event_actor_file_original_name": "chrome.exe",
-            "event_actor_file_path": "c:\\program files\\google\\chrome\\application\\chrome.exe",
-            "event_actor_file_sha2": "fd7b8f1a5f5b08c9d2ace30d8982df968c19ddaf8cf766497a05457c5f6e4a96",
-            "event_actor_file_signature_company_name": "Google LLC",
-            "event_actor_integrity_id": 5,
-            "event_actor_pid": 12936,
-            "event_actor_signature_level_id": 40,
-            "event_actor_start_time": "2022-12-01T21:43:29.835Z",
-            "event_actor_uid": "787E05D5-71B8-F1ED-8217-98261F32744E",
-            "event_actor_use: List[str] = []r_name": "Administrator",
-            "event_actor_use: List[str] = []r_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
-            "event_source": 3,
-            "event_uuid": "3a7beba0-71c1-11ed-fd2d-000000010f00",
-            "incident": "9d6f2100-7158-11ed-da26-000000000001",
-            "integrity_id": 5,
-            "log_name": "epmp_incident-2022-12-01",
-            "log_time": "2022-12-01T09:54:47.909Z",
-            "operation": 1,
-            "pid": 14468,
-            "ref_uid": "09FB7038-0A5E-4048-A3D5-E88885323F2E",
-            "severity_id": "Info",
-            "signature_level_id": 60,
-            "type_id": 8001,
-            "uid": "787E05ED-71B8-F1ED-8217-98261F32744E",
-            "user_domain": "WIN-TFB8L7BI77H",
-            "user_name": "Administrator",
-            "user_sid": "S-1-5-21-3669279935-616031708-4259075843-500",
-            "uuid": "30de6860-715e-11ed-e069-000000000015"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Event for Incident List
->|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|EventUuid|Incident|Operation|DeviceDomain|UserName|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-01T21:43:44.218Z | 8001 | chrome.exe logged: Generic process launch event | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
-
 
 ### symantec-edr-incident-list
 ***
@@ -1072,7 +998,7 @@ Get Incident Comments based on Incident UUID
                 "comment": "added as part of testing xsoar command examples",
                 "incident_id": "100010",
                 "incident_responder_name": "SEDR API",
-                "time": "2022-12-26T11:24:02.791Z",
+                "time": "2022-12-26T11:50:49.602Z",
                 "user_id": 100000
             }
         ]
@@ -1085,7 +1011,7 @@ Get Incident Comments based on Incident UUID
 >### Incident Comment List
 >|IncidentId|Comment|Time|UserId|IncidentResponderName|
 >|---|---|---|---|---|
->| 100010 | added as part of testing xsoar command examples | 2022-12-26T11:24:02.791Z | 100000 | SEDR API |
+>| 100010 | added as part of testing xsoar command examples | 2022-12-26T11:50:49.602Z | 100000 | SEDR API |
 
 
 ### symantec-edr-deny-list-policy-get
@@ -1331,7 +1257,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
     "SymantecEDR": {
         "Command": {
             "rejoin_endpoint": {
-                "command_id": "42ccc87011654f4a9697cd09afcc0d3a-2022-12-26",
+                "command_id": "004f7ba1146a4594b6eb2a028ce37e2a-2022-12-27",
                 "error_code": 0,
                 "message": "Command rejoin_endpoint successfully requested"
             }
@@ -1345,7 +1271,7 @@ Rejoins endpoints by re-establishing connections that the endpoint(s) has to int
 >### Command rejoin_endpoint
 >|Message|CommandId|
 >|---|---|
->| Command rejoin_endpoint successfully requested | 42ccc87011654f4a9697cd09afcc0d3a-2022-12-26 |
+>| Command rejoin_endpoint successfully requested | 004f7ba1146a4594b6eb2a028ce37e2a-2022-12-27 |
 
 
 ### symantec-edr-endpoint-delete-file
@@ -1380,7 +1306,7 @@ Deletes a file, i.e. deletes all instances of the file, based on the file hash t
     "SymantecEDR": {
         "Command": {
             "delete_endpoint_file": {
-                "command_id": "5aaada0c58214d6aa51f4f74c04fe349-2022-12-26",
+                "command_id": "b6ab429a54b34597956b36485b287d04-2022-12-27",
                 "error_code": 0,
                 "message": "Command delete_endpoint_file successfully requested"
             }
@@ -1394,7 +1320,7 @@ Deletes a file, i.e. deletes all instances of the file, based on the file hash t
 >### Command delete_endpoint_file
 >|Message|CommandId|
 >|---|---|
->| Command delete_endpoint_file successfully requested | 5aaada0c58214d6aa51f4f74c04fe349-2022-12-26 |
+>| Command delete_endpoint_file successfully requested | b6ab429a54b34597956b36485b287d04-2022-12-27 |
 
 
 ### symantec-edr-endpoint-cancel-command
