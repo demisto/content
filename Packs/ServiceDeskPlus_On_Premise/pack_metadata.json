@@ -1,6 +1,7 @@
 {
     "name": "Manage Engine Service Desk Plus (On-Premise) (Deprecated)",
     "description": "Deprecated. Please Use the Service Desk Plus pack instead.",
+    "hidden": true,
     "support": "xsoar",
     "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
