@@ -59,7 +59,7 @@ def test_convert_files_to_paths(files_paths, expected):
 
 
 @pytest.mark.parametrize('rns, delimiter, expected', [
-    ([], "," ""),
+    ([], ",", ""),
     ([], ";", ""),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ",", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
     (["Packs/CommonTypes/ReleaseNotes/3_3_39.md"], ";", "Packs/CommonTypes/ReleaseNotes/3_3_39.md"),
