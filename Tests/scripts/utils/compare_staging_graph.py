@@ -165,19 +165,19 @@ def compare(
         diff_files = compare_zips(zip_id_set / file, zip_graph / file, output_path / pack)
         if diff_files:
             diff_found = True
-            message.append(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
+            print(f'Detected differences in the following files for pack {pack}: {", ".join(diff_files)}')
     if compare_indexes(index_id_set_path, index_graph_path, output_path):
         diff_found = True
-        message.append("Detected differences between index.json files")
+        print("Detected differences between index.json files")
     if file_diff_text(collected_packs_id_set, collected_packs_graph, output_path / "collect_tests_diff.log"):
         diff_found = True
-        message.append("Detected differences between collect tests results")
+        print("Detected differences between collect tests results")
         shutil.copy(collected_packs_id_set, output_path / "collected_packs-id_set.txt")
         shutil.copy(collected_packs_graph, output_path / "collected_packs-graph.txt")
 
     shutil.make_archive(str(output_path / f"diff-{marketplace}"), "zip", output_path)
     if not diff_found:
-        message.append("No difference were found!")
+        print("No difference were found!")
     return message
 
 
@@ -186,7 +186,6 @@ def compare_content_packs(
     content_packs_id_set: Path,
     content_packs_graph: Path,
     output_path: Path,
-    message: list[str],
 ):
     with (ARTIFACTS_FOLDER / f'removed_from_marketplace-{marketplace}.json').open() as f:
         reasons = json.load(f)
@@ -201,15 +200,21 @@ def compare_content_packs(
         and path.is_file()
     ]
     content_items = []
+    unable_to_parse = []
     for path in missing:
         try:
             content_item = ContentItemParser.from_path(path)
             if content_item:
                 content_items.append(content_item)
+            else:
+                unable_to_parse.append(path)
         except Exception as e:
             print(f"could not parse {path}: {e}")
-    missing = [(content_item.node_id, reasons[reasons.get(content_item.node_id, "Reason not found")]) for content_item in content_items]
-    message.append(f"Missing files in graph: {json.dumps(missing, indent=4)}")
+            unable_to_parse.append(path)
+
+    missing = [(content_item.node_id, reasons.get(content_item.node_id, "Reason not found")) for content_item in content_items]
+    print(missing)
+    print(unable_to_parse)
 
 
 def format_reason(reasons: list[dict]) -> str:
@@ -224,7 +229,6 @@ def format_reason(reasons: list[dict]) -> str:
 def compare_dependencies(
     dependencies_id_set: Path,
     dependencies_graph: Path,
-    message: list[str],
 ):
     dependencies_id_set = json.load(dependencies_id_set.open())
     dependencies_graph = json.load(dependencies_graph.open())
@@ -234,10 +238,10 @@ def compare_dependencies(
         deps_graph = dependencies_graph.get(pack_idset)
         if not deps_graph:
             continue
-        compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, reasons, message)
+        compare_first_level_dependencies(pack_idset, deps_idset, deps_graph, reasons)
 
 
-def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, reasons: dict, message: list[str]):
+def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: dict, reasons: dict):
     first_level_dependencies_idset = deps_idset["dependencies"]
     first_level_dependencies_graph = deps_graph["dependencies"]
     if first_level_dependencies_idset != first_level_dependencies_graph:
@@ -247,29 +251,29 @@ def compare_first_level_dependencies(pack: str, deps_idset: dict, deps_graph: di
         optional_deps_graph = {dep for dep, data in first_level_dependencies_graph.items() if not data.get("mandatory")}
 
         if moved_to_optional := (mandatory_deps_idset & optional_deps_graph):
-            message.append(f"Moved to optional dependencies for pack {pack}: {sorted(moved_to_optional)}")
+            print(f"Moved to optional dependencies for pack {pack}: {sorted(moved_to_optional)}")
             for dep in moved_to_optional:
-                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
-
+                print(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
+                
         if moved_to_mandatory := (optional_deps_idset & mandatory_deps_graph):
-            message.append(f"Moved to mandatory dependencies for pack {pack}: {sorted(moved_to_mandatory)}")
+            print(f"Moved to mandatory dependencies for pack {pack}: {sorted(moved_to_mandatory)}")
             for dep in moved_to_mandatory:
-                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
+                print(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
         if missing_in_graph := mandatory_deps_idset - mandatory_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(f"Missing mandatory dependencies for pack {pack}: {sorted(missing_in_graph)}")
+            print(f"Missing mandatory dependencies for pack {pack}: {sorted(missing_in_graph)}")
 
         if extra_in_graph := mandatory_deps_graph - mandatory_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(f"Extra mandatory dependencies for pack {pack}: {sorted(extra_in_graph)}")
+            print(f"Extra mandatory dependencies for pack {pack}: {sorted(extra_in_graph)}")
             for dep in extra_in_graph:
-                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
+                print(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
         if missing_in_graph := optional_deps_idset - optional_deps_graph - moved_to_optional - moved_to_mandatory:
-            message.append(f"Missing optional dependencies for pack {pack}: {sorted(missing_in_graph)}")
+            print(f"Missing optional dependencies for pack {pack}: {sorted(missing_in_graph)}")
         if extra_in_graph := optional_deps_graph - optional_deps_idset - moved_to_optional - moved_to_mandatory:
-            message.append(f"Extra optional dependencies for pack {pack}: {sorted(extra_in_graph)}")
+            print(f"Extra optional dependencies for pack {pack}: {sorted(extra_in_graph)}")
             for dep in extra_in_graph:
-                message.append(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
+                print(f"Reason: {pack} depends on {dep} because of {format_reason(reasons[pack][dep])}")
 
 
 def main():
@@ -305,15 +309,15 @@ def main():
         f'Job URL: {os.getenv("CI_JOB_URL")}',
     ]
 
-    compare_content_packs(marketplace, content_packs_id_set, content_packs_graph, output_path / "content_packs", message)
+    compare_content_packs(marketplace, content_packs_id_set, content_packs_graph, output_path / "content_packs")
     try:
-        compare_dependencies(dependencies_id_set, dependencies_graph, message)
+        compare_dependencies(dependencies_id_set, dependencies_graph)
     except Exception as e:
         print("Failed to compare dependencies", e)
     if not zip_graph.exists():
-        message.append("No packs were uploaded for id_set")
+        print("No packs were uploaded for id_set")
     if not zip_id_set.exists():
-        message.append("No packs were uploaded for graph")
+        print("No packs were uploaded for graph")
 
     else:
         message = compare(
