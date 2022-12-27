@@ -79,8 +79,8 @@ def main(args: argparse.Namespace) -> str:  # pragma: no cover
 
     arg_dict: Dict[str, Any] = vars(args)
 
-    delimiter: str = arg_dict.get("delimiter")
-    release_notes_arg: List[Path] = convert_files_to_paths(arg_dict.get("release_notes").split(delimiter))
+    delimiter: str = arg_dict.get("delimiter", ",")
+    release_notes_arg: List[Path] = convert_files_to_paths(arg_dict.get("release_notes", []).split(delimiter))
 
     # Create new list to hold release notes to review
     release_notes_to_review: List[str] = []
@@ -88,13 +88,17 @@ def main(args: argparse.Namespace) -> str:  # pragma: no cover
     # Iterate over all release notes provided in the args
     # If the Pack is XSOAR-supported, we want to add it to
     # the list of RNs we want to review.
-    for rn in release_notes_arg:
-        pack_name = rn.parts[1]
-        if is_pack_xsoar_supported(pack_name):
-            release_notes_to_review.append(str(rn))
 
-    if release_notes_to_review:
-        return format_output(release_notes_to_review, delimiter)
+    if release_notes_arg:
+        for rn in release_notes_arg:
+            pack_name = rn.parts[1]
+            if is_pack_xsoar_supported(pack_name):
+                release_notes_to_review.append(str(rn))
+
+        if release_notes_to_review:
+            return format_output(release_notes_to_review, delimiter)
+        else:
+            return ""
     else:
         return ""
 
