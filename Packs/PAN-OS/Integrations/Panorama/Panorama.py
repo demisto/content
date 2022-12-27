@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+from types import SimpleNamespace
 import enum
 
 import demistomock as demisto  # noqa: F401
@@ -27,10 +28,11 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, Callable, ValuesView, Iterator
 
 import requests
+import urllib3
 from urllib.parse import urlparse
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 URL = ''
@@ -192,6 +194,65 @@ class PAN_OS_Not_Found(Exception):
 
 class InvalidUrlLengthException(Exception):
     pass
+
+
+class PanosResponse():
+
+    class PanosNamespace(SimpleNamespace):
+        """
+        Namespace class for the PanosResponse
+        """
+
+        def __init__(self, ignored_keys: set = None, **kwargs):
+            if not ignored_keys:
+                ignored_keys = set()
+            super().__init__(**{k: v for k, v in kwargs.items() if k not in ignored_keys})
+
+        def __getattr__(self, attr):
+            """
+            If an AttributeError is raised, this method is called, if the attr was not found, Returns None.
+            """
+            return [] if attr == 'entry' else None
+
+    def __init__(self, response: dict, ignored_keys: set = None, illegal_chars: set = None):
+        self.raw = response
+        self.ns = self.to_class(response, ignored_keys=ignored_keys, illegal_chars=illegal_chars)
+
+    def get_nested_key(self, items: str):
+        """
+        Arguments:
+        -------
+        items: string of dotted notation to retrieve
+
+        Returns:
+        -------
+        Dicitonary value of the requested items
+        """
+        return_response = self.raw
+        for item in items.split("."):
+            return_response = return_response.get(item, {})
+        return return_response
+
+    def handle_illegal_chars(self, dictionary: dict, illegal_chars: set = None):
+        if not illegal_chars:
+            return dictionary
+        return {
+            key.replace(char, ''): val for key, val in dictionary.items() for char in illegal_chars
+        }
+
+    def to_class(self, response, ignored_keys: set = None, illegal_chars: set = None) -> PanosNamespace:
+        if not ignored_keys:
+            ignored_keys = set()
+        if not illegal_chars:
+            illegal_chars = set()
+        json_dump = json.dumps(response)
+        return json.loads(
+            json_dump,
+            object_hook=lambda d: self.PanosNamespace(
+                **self.handle_illegal_chars(d, illegal_chars=illegal_chars),
+                ignored_keys=ignored_keys
+            )
+        )
 
 
 def http_request(uri: str, method: str, headers: dict = {},
@@ -2825,7 +2886,7 @@ def calculate_dbot_score(category: str, additional_suspicious: list, additional_
                              'not-resolved']
     suspicious_categories = list((set(additional_suspicious)).union(set(predefined_suspicious)))
 
-    predefined_malicious = ['phishing', 'command-and-control', 'malware']
+    predefined_malicious = ['phishing', 'command-and-control', 'malware', 'ransomware']
     malicious_categories = list((set(additional_malicious)).union(set(predefined_malicious)))
 
     dbot_score = 1
@@ -4969,12 +5030,17 @@ def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_
     return result
 
 
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
+    timeout=arg_to_number(demisto.args().get('timeout', 600))
+)
 def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
     log_type = args.get('log-type')
-    number_of_logs = args.get('number_of_logs')
+    number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
     address_src = args.get('addr-src')
     address_dst = args.get('addr-dst')
@@ -4987,40 +5053,114 @@ def panorama_query_logs_command(args: dict):
     rule = args.get('rule')
     filedigest = args.get('filedigest')
     url = args.get('url')
+    job_id = args.get('query_log_job_id')
+    illegal_chars = {'@', '#'}
+    ignored_keys = {'entry'}
 
-    if query and (address_src or address_dst or zone_src or zone_dst
-                  or time_generated or action or port_dst or rule or url or filedigest):
-        raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
+    if not job_id:
+        if query and (address_src or address_dst or zone_src or zone_dst
+                    or time_generated or action or port_dst or rule or url or filedigest):
+            raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
-                                 zone_src, zone_dst, time_generated, action,
-                                 port_dst, rule, url, filedigest)
+        result: PanosResponse = PanosResponse(
+            panorama_query_logs(
+                log_type, number_of_logs, query, address_src, address_dst, ip_,
+                zone_src, zone_dst, time_generated, action,
+                port_dst, rule, url, filedigest
+            ),
+            illegal_chars=illegal_chars,
+            ignored_keys=ignored_keys
+        )
+        if result.ns.response.status == 'error':
+            if result.ns.response.result.msg.line:
+                raise Exception(f"Query logs failed. Reason is: {result.ns.response.result.msg.line}")
+            else:
+                raise Exception('Query logs failed.')
+        if not result.ns.response.result.job:
+            raise Exception('Missing JobID in response.')
+        query_logs_output = {
+            'JobID': result.ns.response.result.job,
+            'Status': 'Pending',
+            'LogType': log_type,
+            'Message': result.ns.response.result.msg.line
+        }
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            raise Exception(f"Query logs failed. Reason is: {result['response']['msg']['line']}")
-        else:
-            raise Exception('Query logs failed.')
+        command_results = CommandResults(
+            outputs_prefix='Panorama.Monitor',
+            outputs_key_field='JobID',
+            outputs=query_logs_output,
+            readable_output=tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True)
+        )
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result']:
-        raise Exception('Missing JobID in response.')
+        poll_result = PollResult(
+            response=command_results,
+            continue_to_poll=True,
+            args_for_next_run={
+                'query_log_job_id': result.ns.response.result.job,
+                'log-type': log_type,
+                'polling': argToBoolean(args.get('polling', 'false')),
+                'interval_in_seconds': arg_to_number(args.get('interval_in_seconds', 10)),
+                'timeout': arg_to_number(args.get('timeout', 120))
+            },
+            partial_result=CommandResults(
+                readable_output=f"Fetching {log_type} logs for job ID {result.ns.response.result.job}...",
+                raw_response=result.raw
+            )
+        )
 
-    query_logs_output = {
-        'JobID': result['response']['result']['job'],
-        'Status': 'Pending',
-        'LogType': log_type,
-        'Message': result['response']['result']['msg']['line']
-    }
+    else:
+        # Only used in subsequent polling executions
+        
+        parsed: PanosResponse = PanosResponse(
+            panorama_get_traffic_logs(job_id),
+            illegal_chars=illegal_chars,
+            ignored_keys=ignored_keys
+        )
+        if parsed.ns.response.status == 'error':
+            if parsed.ns.response.result.msg.line:
+                raise Exception(
+                    f'Query logs failed. Reason is: {parsed.ns.response.result.msg.line}'
+                )
+            else:
+                raise Exception(
+                    f'Query logs failed.'
+                )
+        
+        if not parsed.ns.response.result.job.id:
+            raise Exception('Missing JobID status in response.')
+        
+        query_logs_output = {
+            'JobID': job_id,
+            'LogType': log_type
+        }
+        readable_output = None
+        if parsed.ns.response.result.job.status.upper() == 'FIN':
+            query_logs_output['Status'] = 'Completed'
+            if parsed.ns.response.result.log.logs.count == '0':
+                readable_output = f'No {log_type} logs matched the query.'
+                query_logs_output['Logs'] = []
+            else:
+                pretty_logs = prettify_logs(parsed.get_nested_key('response.result.log.logs.entry'))
+                query_logs_output['Logs'] = pretty_logs
+                readable_output = tableToMarkdown(
+                    f'Query {log_type} Logs:',
+                    pretty_logs,
+                    ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
+                    removeNull=True
+                )
 
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-    })
+        poll_result = PollResult(
+            response=CommandResults(
+                outputs_prefix='Panorama.Monitor',
+                outputs_key_field='JobID',
+                outputs=query_logs_output,
+                readable_output=readable_output,
+                raw_response=parsed.raw
+            ),
+            continue_to_poll=parsed.ns.response.result.job.status != 'FIN'
+        )
 
+    return poll_result
 
 def panorama_check_logs_status_command(job_id: str):
     """
@@ -8210,7 +8350,11 @@ class Topology:
                 else:
                     self.ha_active_devices[serial_number] = "STANDALONE"
 
-        self.ha_pair_serials = ha_pair_dict
+        # This is only true if Panorama is in HA mode as well.
+        if self.ha_pair_serials:
+            self.ha_pair_serials = {**self.ha_pair_serials, **ha_pair_dict}
+        else:
+            self.ha_pair_serials = ha_pair_dict
 
     def add_device_object(self, device: Union[PanDevice, Panorama, Firewall]):
         """
@@ -8224,16 +8368,32 @@ class Topology:
             serial_number_or_hostname = device.serial if device.serial else device.hostname
 
             # Check if HA is active and if so, what the system state is.
+            # Only associate Firewalls with the ACTIVE Panorama instance
             panorama_ha_state_result = run_op_command(device, "show high-availability state")
             enabled = panorama_ha_state_result.find("./result/enabled")
             if enabled is not None:
                 if enabled.text == "yes":
-                    # Only associate Firewalls with the active Panorama instance
-                    state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+                    try:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/local-info/state")
+                    except LookupError:
+                        state = find_text_in_element(panorama_ha_state_result, "./result/group/local-info/state")
+
                     if "active" in state:
-                        # TODO: Work out how to get the Panorama peer serial..
-                        self.ha_active_devices[serial_number_or_hostname] = "peer serial not implemented here.."
+                        peer_serial = None
+                        try:
+                            # For panorama, there is no serial stored in the HA output, so we can't get it.
+                            # Instead, we can get the mgmt IP in it's place.
+                            peer_serial = find_text_in_element(panorama_ha_state_result, "./result/peer-info/mgmt-ip")
+                        except LookupError:
+                            peer_serial = None
+
+                        self.ha_active_devices[serial_number_or_hostname] = peer_serial
+                        self.ha_pair_serials[serial_number_or_hostname] = peer_serial
+                        if peer_serial:
+                            self.ha_pair_serials[peer_serial] = serial_number_or_hostname
+
                         self.get_all_child_firewalls(device)
+                        self.panorama_objects[serial_number_or_hostname] = device
                         return
                 else:
                     self.get_all_child_firewalls(device)
@@ -9140,8 +9300,8 @@ class DeviceGroupInformation(ResultData):
     """
     serial: str
     connected: str
-    hostname: str
     last_commit_all_state_sp: str
+    hostname: Optional[str] = ""
     name: str = ""
 
     _output_prefix = OUTPUT_PREFIX + "DeviceGroupOp"
@@ -10564,7 +10724,7 @@ class FirewallCommand:
     @staticmethod
     def get_ha_status(
         topology: Topology, device_filter_str: Optional[str] = None, target: Optional[str] = None
-    ) -> List[ShowHAState]:
+    ) -> List[ShowHAState] | ShowHAState:
         """
         Gets the HA status of the device. If HA is not enabled, assumes the device is active.
         :param topology: `Topology` instance.
@@ -10575,8 +10735,9 @@ class FirewallCommand:
         for firewall in topology.all(filter_string=device_filter_str, target=target):
             firewall_host_id: str = resolve_host_id(firewall)
 
-            peer_serial: str = topology.get_peer(firewall_host_id)
-            if not peer_serial:
+            peer_serial: str = topology.get_peer(firewall_host_id) or ''
+            # if this is firewall instance, there is no peer_serial, hence checking this only for Panorama instance.
+            if not peer_serial and DEVICE_GROUP:
                 result.append(ShowHAState(
                     hostid=firewall_host_id,
                     status="HA Not enabled.",
@@ -10585,9 +10746,24 @@ class FirewallCommand:
                 ))
             else:
                 state_information_element = run_op_command(firewall, FirewallCommand.HA_STATE_COMMAND)
-                state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                # Check both places for state to cover firewalls and panorama
+                try:
+                    state = find_text_in_element(state_information_element, "./result/group/local-info/state")
+                except LookupError as e:
+                    demisto.debug(f'Could not find HA state at ./result/group/local-info/state, error: {e}')
+                    try:
+                        state = find_text_in_element(state_information_element, "./result/local-info/state")
+                    except LookupError as e:  # if the state was not found at all, that means HA is not enabled.
+                        demisto.debug(f'Could not find HA state at ./result/local-info/state, error: {e}')
+                        result.append(ShowHAState(
+                            hostid=firewall_host_id,
+                            status="HA Not enabled.",
+                            active=True,
+                            peer=""
+                        ))
+                        continue
 
-                if state == "active":
+                if "active" in state:
                     result.append(ShowHAState(
                         hostid=firewall_host_id,
                         status=state,
@@ -10792,7 +10968,7 @@ def get_ha_state(
     topology: Topology,
     device_filter_string: Optional[str] = None,
     target: Optional[str] = None
-) -> List[ShowHAState]:
+) -> List[ShowHAState] | ShowHAState:
     """
     Get the HA state and associated details from the given device and any other details.
     :param topology: `Topology` instance !no-auto-argument
@@ -12887,7 +13063,7 @@ def main():
 
         # Logs
         elif command == 'panorama-query-logs' or command == 'pan-os-query-logs':
-            panorama_query_logs_command(args)
+            return_results(panorama_query_logs_command(args))
 
         elif command == 'panorama-check-logs-status' or command == 'pan-os-check-logs-status':
             panorama_check_logs_status_command(args.get('job_id'))

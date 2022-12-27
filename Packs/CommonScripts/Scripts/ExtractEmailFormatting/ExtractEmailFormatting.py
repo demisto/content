@@ -4,38 +4,83 @@ from CommonServerPython import *  # lgtm [py/polluting-import]
 import re
 
 # Negative lookahead - Verify the pattern does not end with the listed file extensions. Separated by |
-VALID_EXTENSION = r'(?!\S*\.(?:zip|jpg|jpeg|csv|png|gif|bmp|txt|pdf|ppt|pptx|xls|xlsx|doc|docx|eml|msg)(?:\s*$))'
-
-"""
-First Group - [a-z0-9.!#$%&'*+-/=?^_`{|}~]+ :
-    any valid character in the valid local part (see in: https://datatracker.ietf.org/doc/html/rfc3696#section-3)
-    1 or more times up to 64 characters
-Second Group - [a-z0-9.-]+ :
-    any character of: 'A-Z', '0-9','.', '-' 1 or more times up to 253 times
-Third Group - [a-z]{2,} :
-    any character of: 'A-Z' 2 or more times.
-
-The pattern will be: <First Group>@<Second Group>.<Third Group>
-"""
-VALID_ADDRESS_FORMAT = r"[a-z0-9.!#$%&'*+-/=?^_`{|}~]{1,64}\[?@]?[a-z0-9.-]{1,253}\[?.]?[a-z]{2,}"
-VALID_ADDRESS_REGEX = VALID_EXTENSION + VALID_ADDRESS_FORMAT
+COMMON_FILE_EXT = ("zip", "jpg", "jpeg", "csv", "png", "gif", "bmp", "txt", "pdf", "ppt", "pptx", "xls", "xlsx", "doc",
+                   "docx", "eml", "msg")
 
 
-def verify_is_email(email_address: str) -> bool:
+def extract_email(email_address: str) -> str:
+    """
+    Extracts a clean email address using group 1 of the regex.
+    Args:
+        email_address: the inputted email address
+
+    Returns:
+        String: A clean email address (might be defanged)
+
+    """
+    email_address = email_address.lower()
+
+    email_format = re.compile("[<(\[{\"\'.]*"
+                              "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
+                              "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
+                              "\[?@]?[\w.-]{1,255}\[?\.]?"
+                              "[A-Za-z]{2,})", re.IGNORECASE)
+
     try:
-        return re.match(VALID_ADDRESS_REGEX, email_address, re.IGNORECASE) is not None
-    except Exception:
+        return re.findall(email_format, email_address)[0]
+
+    except IndexError:
+        return ''
+
+
+def check_tld(email_address: str) -> bool:
+    """
+    Checks the email domain tld, if it's a common file extension it's a file
+    Args:
+        email_address: the inputted email address
+
+    Returns:
+        Boolean: True if it's not a common file extension
+
+    """
+    if email_address.split(".")[-1] not in COMMON_FILE_EXT:
+        return True
+    else:
         return False
 
 
+def refang_email(email_address: str) -> str:
+    """
+    Refangs an email address by removing square brackets surrounding "@" and ".".
+    Args:
+        email_address: the inputted email address
+
+    Returns:
+        String - Fanged email address
+
+    """
+    return email_address.replace("[@]", "@").replace("[.]", ".") if check_tld(email_address) else ''
+
+
 def main():
+    list_results = []
+
     emails = argToList(demisto.args().get('input'))
 
-    list_results = [email_address.replace("[@]", "@").replace("[.]", ".") if verify_is_email(email_address) else ''
-                    for email_address in emails]
+    clean_emails = [extract_email(address) for address in emails]
 
-    if list_results:
-        return_results(list_results)
+    list_results = [refang_email(email_address) for email_address in clean_emails]
+
+    output = [
+        {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': [email_address] if email_address else [],
+            'EntryContext': {'Email': email_address} if email_address else {},
+        } for email_address in list_results]
+
+    if output:
+        return_results(output)
     else:
         return_results('')
 

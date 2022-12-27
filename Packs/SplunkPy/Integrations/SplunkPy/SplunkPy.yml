@@ -22,7 +22,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES noatable events, make sure to include the \`notable\` macro in your query.
+- additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \`notable\` macro in your query.
   defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
   display: Fetch events query
   name: fetchQuery
@@ -100,7 +100,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to XSOAR), Outgoing (from XSOAR to Splunk), or Incoming and Outgoing (from/to XSOAR and Splunk).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Splunk to Cortex XSOAR), Outgoing (from Cortex XSOAR to Splunk), or Incoming and Outgoing (from/to Cortex XSOAR and Splunk).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -158,12 +158,6 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: Use Python requests handler
-  name: use_requests_handler
-  required: false
-  type: 8
-  section: Collect
-  advanced: true
 - additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   display: Enrichment Types
   name: enabled_enrichments
@@ -191,13 +185,13 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: 'Advanced: Extensive logging (for debugging purposes) - Please do not use this option unless advised otherwise.'
+- display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The fetch time range will be at least of the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to analyze what is the average time between them both on your splunk envorinment.
+- additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
   defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
@@ -205,7 +199,7 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: Use this parameter to specify a list of comma separated fields, which together are a unique identifier for the events you wish to fetch.
+- additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
   display: 'Advanced: Unique ID fields'
   name: unique_id_fields
   required: false
@@ -219,7 +213,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The name of the lookup table in splunk, containing the username's mapping data.
+- additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
   defaultvalue: splunk_xsoar_users
   display: Users Lookup table name
   name: user_map_lookup_name
@@ -227,7 +221,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: The name of the lookup column containing the xsoar username.
+- additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
   defaultvalue: xsoar_username
   display: XSOAR user key
   name: xsoar_user_field
@@ -478,7 +472,7 @@ script:
     name: splunk-kv-store-collection-data-list
     outputs:
     - contextPath: Splunk.KVstoreData
-      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<colletion_name> is a list of the data in the collection).
+      description: An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.<collection_name> is a list of the data in the collection).
       type: Unknown
   - arguments:
     - default: true
@@ -554,12 +548,12 @@ script:
       name: id
       required: true
     - defaultValue: '0'
-      description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
+      description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
     description: Gets data from a notable event. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
-    - description: ISO format date with timezone, e.g. 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
+    - description: ISO format date with timezone, e.g., 2021-02-09T16:41:30.589575+02:00. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
     description: Gets the list of notable events that were modified since the last update. This command should be used for debugging purposes, and is available from Cortex XSOAR version 6.1.
     name: get-modified-remote-data
@@ -568,36 +562,32 @@ script:
     arguments: []
   - arguments:
     - default: true
-      description: Xsoar username to match in splunk's usernames records.
+      description: Cortex XSOAR username to match in Splunk's usernames records.
       isArray: true
       name: xsoar_username
       required: true
-    description: Returns the Splunk's username matching the given Xsoar's username.
+    description: Returns the Splunk's username matching the given Cortex XSOAR's username.
     name: splunk-get-username-by-xsoar-user
     outputs:
     - contextPath: Splunk.UserMapping.XsoarUser
-      description: xsoar user mapping.
+      description: Cortex XSOAR user mapping.
       type: String
     - contextPath: Splunk.UserMapping.SplunkUser
-      description: splunk user mapping.
+      description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk:1.0.0.33029
+  dockerimage: demisto/splunksdk-py3:1.0.0.41234
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - SplunkPySearch_Test_default_handler
-- SplunkPySearch_Test_requests_handler
 - SplunkPy-Test-V2_default_handler
-- SplunkPy-Test-V2_requests_handler
 - Splunk-Test_default_handler
-- Splunk-Test_requests_handler
 - SplunkPy_KV_commands_default_handler
-- SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
 fromversion: 5.0.0

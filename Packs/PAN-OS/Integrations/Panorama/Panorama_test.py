@@ -466,6 +466,141 @@ def test_remove_from_custom_url_category(category_name, items, mocker):
     assert "www.test.com" in demisto_result_got['element']
 
 
+class TestQueryLogsCommand:
+
+    @staticmethod
+    def create_logs_query_queue(status_count, no_logs_found):
+
+        response_queue = [
+            MockedResponse(
+                text='<response status="success" code="19"><result><msg><line>query '
+                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                status_code=200
+            )
+        ]
+
+        for _ in range(status_count):
+            response_queue.append(
+                MockedResponse(
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>'
+                         '01:00:00</tlast><status>ACT</status><id>1238</id></job><log><logs count="0" progress="20"/'
+                         '></log></result></response>',
+                    status_code=200
+                )
+            )
+
+        if no_logs_found:
+            # job has finished without finding any logs
+            response_queue.append(
+                MockedResponse(
+                    text='<response status="success"><result><job><tenq>15:05:47</tenq><tdeq>15:05:47</tdeq><tlast>'
+                         '15:06:52</tlast><status>FIN</status><id>1</id></job><log><logs count="0"'
+                         ' progress="100"/></log></result></response>',
+                    status_code=200
+                )
+            )
+
+        else:
+
+            with open('test_data/query_logs.xml') as f:
+                # job has finished with finding logs
+                response_queue.append(
+                    MockedResponse(
+                        text=f.read(),
+                        status_code=200
+                    )
+                )
+
+        return response_queue
+
+    def test_query_logs_command_without_polling(self, mocker):
+        """
+        Given
+        - an api response indicating a log query job has been created
+
+        When
+        - querying logs without polling
+
+        Then
+        - make sure polling is not triggered.
+        - make sure context output indicates that the status of the job is 'Pending'
+        """
+        import Panorama
+        import requests
+        from Panorama import panorama_query_logs_command
+
+        Panorama.API_KEY = 'thisisabogusAPIKEY!'
+        mocker.patch.object(
+            requests,
+            'request',
+            return_value=MockedResponse(
+                text='<response status="success" code="19"><result><msg><line>query '
+                'job enqueued with jobid 1</line></msg><job>1</job></result></response>',
+                status_code=200
+            )
+        )
+
+        command_result = panorama_query_logs_command({'log-type': 'traffic', 'polling': 'false'})
+        assert command_result.outputs == {
+            'JobID': '1', 'Status': 'Pending', 'LogType': 'traffic', 'Message': 'query job enqueued with jobid 1'
+        }
+        assert not command_result.scheduled_command
+        assert command_result.readable_output == '### Query Logs:\n|JobID|Status|\n|---|---|\n| 1 | Pending |\n'
+
+    @pytest.mark.parametrize(
+        'status_count, no_logs_found', [(1, False), (2, True), (3, False), (5, True), (8, False), (10, True)]
+    )
+    def test_query_logs_command_with_polling(self, mocker, status_count, no_logs_found):
+        """
+        Given
+        - a queue of api responses
+        - responses indicating query logs succeeded or not succeeded.
+        - a status count which means how many times polling was done.
+
+        When
+        - querying logs with polling
+
+        Then
+        - make sure the readable output indicating polling is active is printed only once.
+        - make sure context is returned only at the end of polling, and that the context is valid
+          if there are logs available and if there aren't.
+        """
+        import Panorama
+        import requests
+        from Panorama import panorama_query_logs_command
+        from CommonServerPython import ScheduledCommand
+
+        Panorama.API_KEY = 'thisisabogusAPIKEY!'
+        mocker.patch.object(
+            requests,
+            'request',
+            side_effect=self.create_logs_query_queue(status_count=status_count, no_logs_found=no_logs_found)
+        )
+        mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+        command_result = panorama_query_logs_command({'log-type': 'traffic', 'polling': 'true'})
+        assert command_result.readable_output == 'Fetching traffic logs for job ID 1...'
+        assert not command_result.outputs  # no context should be returned until polling is done.
+
+        polling_args = {
+            'query_log_job_id': '1', 'hide_polling_output': True, 'polling': True, 'log-type': 'traffic'
+        }
+
+        command_result = panorama_query_logs_command(polling_args)
+        while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
+            assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
+            command_result = panorama_query_logs_command(polling_args)
+
+        if no_logs_found:
+            assert command_result.outputs == {'JobID': '1', 'LogType': 'traffic', 'Logs': [], 'Status': 'Completed'}
+        else:
+            partial_expected_outputs = {'JobID': '1', 'LogType': 'traffic', 'Status': 'Completed'}
+            assert partial_expected_outputs.items() <= command_result.outputs.items()
+            assert 'Logs' in command_result.outputs
+            assert command_result.outputs['Logs']  # make sure there are log outputs available.
+
+
 def test_prettify_edl():
     from Panorama import prettify_edl
     edl = {'@name': 'edl_name', 'type': {'my_type': {'url': 'abc.com', 'description': 'my_desc'}}}
@@ -2485,7 +2620,18 @@ def mock_topology(mock_panorama, mock_firewall):
         MOCK_FIREWALL_1_SERIAL: mock_firewall
     }
     topology.ha_pair_serials = {
+        MOCK_PANORAMA_SERIAL: "1.1.1.1",
         MOCK_FIREWALL_1_SERIAL: MOCK_FIREWALL_2_SERIAL,
+    }
+    return topology
+
+
+@pytest.fixture
+def mock_firewall_topology(mock_firewall):
+    from Panorama import Topology
+    topology = Topology()
+    topology.firewall_objects = {
+        MOCK_FIREWALL_1_SERIAL: mock_firewall
     }
     return topology
 
@@ -2506,6 +2652,7 @@ def mock_single_device_topology(mock_panorama):
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
     SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_STATE_PANORAMA_ENABLED = "test_data/show_ha_state_panorama_enabled.xml"
     SHOW_HA_STATE_DISABLED_XML = "test_data/show_ha_state_disabled.xml"
     SHOW_DEVICES_ALL_XML = "test_data/panorama_show_devices_all.xml"
 
@@ -2536,6 +2683,22 @@ class TestTopology:
 
         assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
         assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
+
+    @patch("Panorama.Topology.get_all_child_firewalls")
+    @patch("Panorama.run_op_command")
+    def test_add_panorama_device_object_with_ha(self, patched_run_op_command, _, mock_panorama):
+        """
+        Given a Panorama where High availability is active, test that it is correctly added to the topology.
+        """
+        from Panorama import Topology
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestTopology.SHOW_HA_STATE_PANORAMA_ENABLED)
+        topology = Topology()
+        topology.add_device_object(mock_panorama)
+
+        assert MOCK_PANORAMA_SERIAL in topology.panorama_objects
+        assert MOCK_PANORAMA_SERIAL in topology.ha_active_devices
+        assert MOCK_PANORAMA_SERIAL in topology.ha_pair_serials
         assert MOCK_PANORAMA_SERIAL not in topology.firewall_objects
 
     @patch("Panorama.run_op_command")
@@ -2700,12 +2863,14 @@ class TestPanoramaCommand:
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestPanoramaCommand.SHOW_DEVICEGROUPS_XML)
 
         result = PanoramaCommand.get_device_groups(mock_topology)
-        assert len(result) == 2
+        assert len(result) == 3
         assert result[0].name
         assert result[0].hostid
         assert result[0].connected
         assert result[0].serial
         assert result[0].last_commit_all_state_sp
+        # Support for missing hostname
+        assert not result[2].hostname
 
     @patch("Panorama.run_op_command")
     def test_get_template_stacks(self, patched_run_op_command, mock_topology):
@@ -2843,6 +3008,7 @@ class TestFirewallCommand:
     SHOW_GLOBAL_COUNTERS_XML = "test_data/show_counter_global.xml"
     SHOW_BGP_PEERS_XML = "test_data/show_routing_protocol_bgp_peer.xml"
     SHOW_HA_STATE_XML = "test_data/show_ha_state_enabled.xml"
+    SHOW_HA_PANORAMA_STATE_XML = "test_data/show_ha_state_panorama_enabled.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_arp_table(self, patched_run_op_command, mock_topology):
@@ -2932,10 +3098,24 @@ class TestFirewallCommand:
                 assert value is not None
 
     @patch("Panorama.run_op_command")
-    def test_get_ha_status(self, patched_run_op_command, mock_topology):
-        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+    def test_get_ha_status_firewall(self, patched_run_op_command, mock_firewall_topology):
+        """
+        Given the XML output for a HA firewall which is enabled, ensure the data class is parsed correctly
+        """
         from Panorama import FirewallCommand
         patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_STATE_XML)
+        result = FirewallCommand.get_ha_status(mock_firewall_topology)
+
+        assert result.status != 'HA Not enabled.'
+        assert result.active is not None
+        assert result.hostid is not None
+        assert result.peer is not None
+
+    @patch("Panorama.run_op_command")
+    def test_get_ha_status_panorama(self, patched_run_op_command, mock_topology):
+        """Given the XML output for a HA firewall, ensure the dataclasses are parsed correctly"""
+        from Panorama import FirewallCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file(TestFirewallCommand.SHOW_HA_PANORAMA_STATE_XML)
         result = FirewallCommand.get_ha_status(mock_topology)
         # Check all attributes of result data have values
         for result_dataclass in result:

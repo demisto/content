@@ -1,13 +1,15 @@
 {
-    "name": "Cisco ESA IronPort Email API",
-    "description": "Cisco ESA IronPort Email API\nSearch IronPort mail traffic logs\nSearch in IronPort Spam and Quarantines\nRelease Emails from Spam and Quarantines  ",
+    "name": "Cisco ESA IronPort Email API (Deprecated)",
+    "description": "Deprecated. Use CiscoESA instead.",
     "support": "community",
-    "currentVersion": "1.0.4",
+    "currentVersion": "1.1.0",
     "author": "OsamaShenoda",
     "url": "",
     "email": "",
     "created": "2020-11-09T16:50:34Z",
-    "categories": [],
+    "categories": [
+        "Network Security"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],

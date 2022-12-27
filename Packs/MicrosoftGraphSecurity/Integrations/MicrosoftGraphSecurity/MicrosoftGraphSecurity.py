@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,7 +6,7 @@ from CommonServerUserPython import *
 from typing import Dict, List, Any
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 APP_NAME = 'ms-graph-security'
 
@@ -43,7 +44,7 @@ class MsGraphClient:
         if last_modified:
             filters.append("lastModifiedDateTime gt {}".format(get_timestamp(last_modified)))
         if category:
-            filters.append("category eq '{}'".format(category))
+            filters.append("contains(category, '{}')".format(category))
         if severity:
             filters.append("severity eq '{}'".format(severity))
         if time_from:  # changed to ge and le in order to solve issue #27884
@@ -51,10 +52,20 @@ class MsGraphClient:
         if time_to:
             filters.append("createdDateTime le {}".format(time_to))
         if filter_query:
-            filters.append("{}".format(filter_query))
+            # Due to an issue (from Microsoft Graph API) with filtering alerts with the `eq` operator,
+            # We use the `contains` function instead of the `eq` operator (as a workaround), For example:
+            # "category eq 'Malware' and severity eq 'High'" => "contains(category, 'Malware') and severity eq 'High'".
+            # For more info please see: https://learn.microsoft.com/en-us/graph/filter-query-parameter.
+            filter_list = [f.strip() for f in filter_query.lower().split('and')]
+            for filter_item in filter_list:
+                if 'category eq' in filter_item:
+                    category = filter_item.split()[-1]
+                    filter_item = "contains(category, {})".format(category)
+                filters.append(filter_item)
         filters = " and ".join(filters)
         cmd_url = 'security/alerts'
         params = {'$filter': filters}
+        demisto.debug(f'Fetching MS Graph Security incidents with params: {params}')
         response = self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
         return response
 

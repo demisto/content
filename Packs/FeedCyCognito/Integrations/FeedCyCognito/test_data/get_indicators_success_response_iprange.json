@@ -1,0 +1,38 @@
+[
+    {
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "iprange/192.168.0.0-192.168.255.255",
+        "first_seen": "2022-03-30T04:50:35.379Z",
+        "investigation_status": "uninvestigated",
+        "status": "new",
+        "security_grade": "F",
+        "type": "iprange",
+        "organizations": [
+            "Unattributed"
+        ],
+        "discoverability": "Low",
+        "hosting_type": "undetermined",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "last_seen": "2022-03-31T03:39:22.568Z",
+        "tags": [],
+        "id": "iprange/192.168.1.0-192.168.1.255",
+        "first_seen": "2022-02-25T19:47:04.740Z",
+        "investigation_status": "uninvestigated",
+        "status": "new",
+        "security_grade": "A",
+        "type": "iprange",
+        "organizations": [
+            "Unattributed"
+        ],
+        "discoverability": "Low",
+        "hosting_type": "undetermined",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    }
+]

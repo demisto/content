@@ -2,13 +2,20 @@
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from GCenter import (
-    gw_list_alerts,
     gw_get_alert,
+    gw_get_malcore_list_entry,
     gw_add_malcore_list_entry,
     gw_del_malcore_list_entry,
+    gw_get_dga_list_entry,
     gw_add_dga_list_entry,
     gw_del_dga_list_entry,
     gw_es_query,
+    gw_es_wrapper,
+    gw_get_file_infected,
+    gw_get_ignore_asset_name,
+    gw_get_ignore_kuser_ip,
+    gw_get_ignore_kuser_name,
+    gw_get_ignore_mac_address,
     gw_add_ignore_asset_name,
     gw_add_ignore_kuser_ip,
     gw_add_ignore_kuser_name,
@@ -34,18 +41,23 @@ def load_json(file):
 
 
 @pytest.fixture
-def raw_alerts_list():
-    return load_json("test_data/raw_alerts_list.json")
-
-
-@pytest.fixture
 def raw_alerts_read():
     return load_json("test_data/raw_alerts_read.json")
 
 
 @pytest.fixture
+def get_dga_list():
+    return load_json("test_data/get_dga_list.json")
+
+
+@pytest.fixture
 def add_dga_list():
     return load_json("test_data/add_dga_list.json")
+
+
+@pytest.fixture
+def get_malcore_list():
+    return load_json("test_data/get_malcore_list.json")
 
 
 @pytest.fixture
@@ -56,6 +68,41 @@ def add_malcore_list():
 @pytest.fixture
 def es_query():
     return load_json("test_data/es_query.json")
+
+
+@pytest.fixture
+def es_wrapper_src_ip():
+    return load_json("test_data/es_wrapper_src_ip.json")
+
+
+@pytest.fixture
+def es_wrapper_sha256():
+    return load_json("test_data/es_wrapper_sha256.json")
+
+
+@pytest.fixture
+def get_file_infected_es():
+    return load_json("test_data/get_file_infected_es.json")
+
+
+@pytest.fixture
+def get_ignore_asset_name():
+    return load_json("test_data/get_ignore_asset_name.json")
+
+
+@pytest.fixture
+def get_ignore_kuser_name():
+    return load_json("test_data/get_ignore_kuser_name.json")
+
+
+@pytest.fixture
+def get_ignore_kuser_ip():
+    return load_json("test_data/get_ignore_kuser_ip.json")
+
+
+@pytest.fixture
+def get_ignore_mac_address():
+    return load_json("test_data/get_ignore_mac_address.json")
 
 
 @pytest.fixture
@@ -96,13 +143,20 @@ def send_shellcode():
 @pytest.fixture
 def prefix_mapping():
     return {
-        "gw_list_alerts": "GCenter.Alert.List",
         "gw_get_alert": "GCenter.Alert.Single",
+        "gw_get_malcore_list_entry": "GCenter.Malcore.List",
         "gw_add_malcore_list_entry": "GCenter.Malcore",
         "gw_del_malcore_list_entry": "GCenter.Malcore",
+        "gw_get_dga_list_entry": "GCenter.Dga.List",
         "gw_add_dga_list_entry": "GCenter.Dga",
         "gw_del_dga_list_entry": "GCenter.Dga",
         "gw_es_query": "GCenter.Elastic",
+        "gw_es_wrapper": "GCenter.Elastic.Wrapper",
+        "gw_get_file_infected": "GCenter.File",
+        "gw_get_ignore_asset_name": "GCenter.Ignore.AssetName.List",
+        "gw_get_ignore_kuser_ip": "GCenter.Ignore.KuserIP.List",
+        "gw_get_ignore_kuser_name": "GCenter.Ignore.KuserName.List",
+        "gw_get_ignore_mac_address": "GCenter.Ignore.MacAddress.List",
         "gw_add_ignore_asset_name": "GCenter.Ignore.AssetName",
         "gw_add_ignore_kuser_ip": "GCenter.Ignore.KuserIP",
         "gw_add_ignore_kuser_name": "GCenter.Ignore.KuserName",
@@ -128,27 +182,6 @@ def client(requests_mock):
     return client
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
-def test_gw_list_alerts(client, requests_mock, ltype, prefix_mapping, raw_alerts_list):
-    args = {}
-    requests_mock.get(
-        f"https://{client.ip}/api/raw-alerts/",
-        json=raw_alerts_list,
-        status_code=200
-    )
-    response = gw_list_alerts(client, args)
-    assert response.outputs == raw_alerts_list["results"]
-    assert response.outputs_prefix == prefix_mapping[
-        inspect.stack()[0][3].replace("test_", "")
-    ]
-    requests_mock.get(
-        f"https://{client.ip}/api/raw-alerts/",
-        status_code=500
-    )
-    with pytest.raises(GwAPIException):
-        gw_list_alerts(client, args)
-
-
 @pytest.mark.parametrize("uid", ["xxx", "yyy"])
 def test_gw_get_alert(client, requests_mock, uid, prefix_mapping, raw_alerts_read):
     args = {
@@ -170,6 +203,29 @@ def test_gw_get_alert(client, requests_mock, uid, prefix_mapping, raw_alerts_rea
     )
     with pytest.raises(GwAPIException):
         gw_get_alert(client, args)
+
+
+@pytest.mark.parametrize("ltype", ["white", "black"])
+def test_gw_get_malcore_list_entry(client, requests_mock, ltype, prefix_mapping, get_malcore_list):
+    args = {
+        "type": ltype
+    }
+    requests_mock.get(
+        f"https://{client.ip}/api/malcore/{ltype}-list/",
+        json=get_malcore_list,
+        status_code=200
+    )
+    response = gw_get_malcore_list_entry(client, args)
+    assert response.outputs == get_malcore_list["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/malcore/{ltype}-list/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_malcore_list_entry(client, args)
 
 
 @pytest.mark.parametrize("ltype", ["white", "black"])
@@ -219,6 +275,29 @@ def test_gw_del_malcore_list_entry(client, requests_mock, ltype, prefix_mapping)
     )
     with pytest.raises(GwAPIException):
         gw_del_malcore_list_entry(client, args)
+
+
+@pytest.mark.parametrize("ltype", ["white", "black"])
+def test_gw_get_dga_list_entry(client, requests_mock, ltype, prefix_mapping, get_dga_list):
+    args = {
+        "type": ltype
+    }
+    requests_mock.get(
+        f"https://{client.ip}/api/dga-detection/{ltype}-list/",
+        json=get_dga_list,
+        status_code=200
+    )
+    response = gw_get_dga_list_entry(client, args)
+    assert response.outputs == get_dga_list["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/dga-detection/{ltype}-list/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_dga_list_entry(client, args)
 
 
 @pytest.mark.parametrize("ltype", ["white", "black"])
@@ -291,6 +370,157 @@ def test_gw_es_query(client, requests_mock, index, prefix_mapping, es_query):
     )
     with pytest.raises(GwAPIException):
         gw_es_query(client, args)
+
+
+@pytest.mark.parametrize("aggs_term", ["src_ip", "SHA256"])
+def test_gw_es_wrapper(client, requests_mock, aggs_term, prefix_mapping, es_wrapper_src_ip, es_wrapper_sha256):
+    args = {
+        "index": "malware",
+        "aggs_term": aggs_term,
+        "must_match": "state=Infectected",
+        "timerange": "24",
+        "size": "100",
+        "formatted": "True"
+    }
+    data = es_wrapper_src_ip if aggs_term == "src_ip" else es_wrapper_sha256
+    requests_mock.post(
+        f"https://{client.ip}/api/data/es/search/?index=malware",
+        json=data,
+        status_code=200
+    )
+    response = gw_es_wrapper(client, args)
+    data = {
+        aggs_term: [
+            bucket['key'] for bucket in
+            data['aggregations'][aggs_term]["buckets"]
+        ]
+    }
+    assert response.outputs == data
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.post(
+        f"https://{client.ip}/api/data/es/search/?index=malware",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_es_wrapper(client, args)
+
+
+@pytest.mark.parametrize("uuid", ["85658c43-56d2-453d-9042-ee6b78930b0d", "b134c3d7-1871-4f96-ba80-7d0b44291a48"])
+def test_gw_get_file_infected(client, requests_mock, uuid, prefix_mapping, get_file_infected_es):
+    args = {
+        "timerange": "24",
+        "size": "100"
+    }
+    get_file_infected_es["aggregations"]["uuid"]["buckets"][0]["key"] = uuid
+    requests_mock.post(
+        f"https://{client.ip}/api/data/es/search/?index=malware",
+        json=get_file_infected_es,
+        status_code=200
+    )
+    requests_mock.get(
+        f"https://{client.ip}/api/raw-alerts/{uuid}/file",
+        headers={'Content-Type': 'application/zip',
+                 'Content-Disposition': f'attachment; filename={uuid}.zip'
+                 },
+        status_code=200
+    )
+    response = gw_get_file_infected(client, args)
+    assert response.outputs[0]['File'] == f'{uuid}.zip'
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/raw-alerts/{uuid}/file",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_file_infected(client, args)
+
+
+@pytest.mark.parametrize("name", ["test1", "test3"])
+def test_gw_get_ignore_asset_name(client, requests_mock, name, prefix_mapping, get_ignore_asset_name):
+    args = {}
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/asset-names/",
+        json=get_ignore_asset_name,
+        status_code=200
+    )
+    response = gw_get_ignore_asset_name(client, args)
+    assert response.outputs == get_ignore_asset_name["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/asset-names/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_ignore_asset_name(client, args)
+
+
+@pytest.mark.parametrize("ip", ["10.10.10.10", "20.20.20.20"])
+def test_gw_get_ignore_kuser_ip(client, requests_mock, ip, prefix_mapping, get_ignore_kuser_ip):
+    args = {}
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/kuser-ips/",
+        json=get_ignore_kuser_ip,
+        status_code=200
+    )
+    response = gw_get_ignore_kuser_ip(client, args)
+    assert response.outputs == get_ignore_kuser_ip["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/kuser-ips/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_ignore_kuser_ip(client, args)
+
+
+@pytest.mark.parametrize("name", ["test1", "test3"])
+def test_gw_get_ignore_kuser_name(client, requests_mock, name, prefix_mapping, get_ignore_kuser_name):
+    args = {}
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/kuser-names/",
+        json=get_ignore_kuser_name,
+        status_code=200
+    )
+    response = gw_get_ignore_kuser_name(client, args)
+    assert response.outputs == get_ignore_kuser_name["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/kuser-names/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_ignore_kuser_name(client, args)
+
+
+@pytest.mark.parametrize("mac", ["00:50:50:50:50:50", "00:50:50:50:50:51"])
+def test_gw_get_ignore_mac_address(client, requests_mock, mac, prefix_mapping, get_ignore_mac_address):
+    args = {}
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/mac-addresses/",
+        json=get_ignore_mac_address,
+        status_code=200
+    )
+    response = gw_get_ignore_mac_address(client, args)
+    assert response.outputs == get_ignore_mac_address["results"]
+    assert response.outputs_prefix == prefix_mapping[
+        inspect.stack()[0][3].replace("test_", "")
+    ]
+    requests_mock.get(
+        f"https://{client.ip}/api/ignore-lists/mac-addresses/",
+        status_code=500
+    )
+    with pytest.raises(GwAPIException):
+        gw_get_ignore_mac_address(client, args)
 
 
 @pytest.mark.parametrize("name", ["test1", "test3"])

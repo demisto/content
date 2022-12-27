@@ -420,6 +420,7 @@ class McAfeeESMClient(BaseClient):
                 }
             }
 
+        demisto.debug(f'sending request to fetch alarms with {start_time=}, {end_time=}')
         raw_response = self.__request(path, data=data, params=params)
         result = raw_response
 
@@ -656,11 +657,14 @@ class McAfeeESMClient(BaseClient):
         _, _, all_alarms = self.fetch_alarms(start_time=start_time, end_time=current_time, raw=True)
         all_alarms = filtering_incidents(all_alarms, start_id=start_id, limit=limit)
         if all_alarms:
-            current_run['time'] = all_alarms[0].get('triggeredDate', current_time)
+            current_run['time'] = all_alarms[0].get('triggeredDate', start_time)
             current_run['id'] = all_alarms[0]['id']
+            current_run_time = current_run['time']
+            demisto.debug(f'{len(all_alarms)=}, setting current time to {current_run_time=}')
         else:
-            current_run['time'] = current_time
+            current_run['time'] = start_time
             current_run['id'] = start_id
+            demisto.debug(f'No alarms were found, setting current time to {start_time=}')
         all_alarms = create_incident(all_alarms, alarms=True)
         return all_alarms, current_run
 
