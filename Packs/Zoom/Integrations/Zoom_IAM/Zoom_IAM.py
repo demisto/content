@@ -49,7 +49,11 @@ class Client(BaseClient):
             self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
-            self.access_token = self.get_oauth_token()
+            try:
+                self.access_token = self.get_oauth_token()
+            except Exception:
+                demisto.debug("Cannot get access token")
+                self.access_token = None
 
     def generate_oauth_token(self):
         """
@@ -59,7 +63,8 @@ class Client(BaseClient):
     """
         token_res = self._http_request(method="POST", full_url=OAUTH_TOKEN_GENERATOR_URL,
                                        params={"account_id": self.account_id,
-                                               "grant_type": "account_credentials"}, auth=(self.client_id, self.client_secret))
+                                               "grant_type": "account_credentials"},
+                                       auth=(self.client_id, self.client_secret))
         return token_res.get('access_token')
 
     def get_oauth_token(self, force_gen_new_token=False):
@@ -74,48 +79,42 @@ class Client(BaseClient):
         now = datetime.now()
         ctx = get_integration_context()
 
-        if not ctx or not ctx.get('generation_time', force_gen_new_token):
+        if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
             ctx = {}
         else:
-            generation_time = dateparser.parse(ctx.get('generation_time'))
+            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
             if generation_time:
                 time_passed = now - generation_time
             else:
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('oauth_token')
+                return ctx.get('token_info').get('oauth_token')
             else:
                 # token expired
                 oauth_token = self.generate_oauth_token()
 
-        ctx.update({'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
         set_integration_context(ctx)
         return oauth_token
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None,
-                      data=None, files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False,
-                      retries=0, status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False,
-                      raise_on_status=False, error_handler=None, empty_valid_codes=None, **kwargs):
-        """ This is a rewrite of the classic _http_request, 
-            all future functions should call this function instead of the original _http_request.
-            This is needed because the OAuth token may not behave consistently,
-            First the func will make an http request with a token,
-            and if it turns out to be invalid, the func will retry again with a new token."""
+    def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
+                                   auth=None, json_data=None, params=None, return_empty_response: bool = False, resp_type: str = 'json'):
+
+        # all future functions should call this function instead of the original _http_request.
+        # This is needed because the OAuth token may not behave consistently,
+        # First the func will make an http request with a token,
+        # and if it turns out to be invalid, the func will retry again with a new token.
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
-                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
-                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
-                                         empty_valid_codes, **kwargs)
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response, resp_type)
         except DemistoException as e:
-            if 'Invalid access token' in e.message:
+            if ('Invalid access token' in e.message
+                    or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
-                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
-                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
-                                         empty_valid_codes, **kwargs)
+                headers = {'authorization': f'Bearer {self.access_token}'}
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response, resp_type)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -126,7 +125,7 @@ class Client(BaseClient):
     def get_user(self, _, filter_value: str) -> Optional[IAMUserAppData]:
         uri = f'/users/{filter_value}'
 
-        res = self._http_request(
+        res = self.error_handled_http_request(
             method='GET',
             url_suffix=uri,
             headers={'authorization': f'Bearer {self.access_token}',
@@ -158,7 +157,7 @@ class Client(BaseClient):
         :rtype: ``IAMUserAppData``
         """
         uri = f'/users/{user_id}/status'
-        self._http_request(
+        self.error_handled_http_request(
             method='PUT',
             url_suffix=uri,
             json_data=user_data,

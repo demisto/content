@@ -3,7 +3,7 @@ import demistomock as demisto  # noqa: F401
 import jwt
 from CommonServerPython import *  # noqa: F401
 from datetime import timedelta
-from datetime import datetime
+
 import dateparser
 
 
@@ -22,6 +22,26 @@ USER_TYPE_MAPPING = {
     "Licensed": 2,
     "Corporate": 3
 }
+
+# ERRORS
+INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
+INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
+INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
+WRONG_TIME_FORMAT ="Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
+LIMIT_AND_EXTRA_ARGUMENTS = """Too money arguments. if you choose a limit,
+                                       don't enter a user_id or page_size or next_page_token"""
+INSTANT_AND_TIME = "Too money arguments. start_time and timezone are for scheduled meetings only."
+JBH_TIME_AND_NO_JBH = "Collision arguments. jbh_time argument can be used only if join_before_host is 'True'."
+WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."                 
+END_TIMES_AND_END_DATE_TIME =  "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time."
+NOT_RECURRING_WITH_RECUURING_ARGUMENTS = "One or more arguments that were filed are used for recurring meeting with fixed time only"
+NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only"
+MONTHLY_RECURRING_MISIING_ARGUMENTS =  """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
+            must have the fallowing arguments: monthly_week and monthly_week_day"""
+NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only"
+EXTRA_PARAMS = """Too many fields were filled.
+                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
 '''CLIENT CLASS'''
 
 
@@ -81,54 +101,45 @@ class Client(BaseClient):
         now = datetime.now()
         ctx = get_integration_context()
 
-        if not ctx or not ctx.get('generation_time', force_gen_new_token):
+        if not ctx or not ctx.get('token_info').get('generation_time', force_gen_new_token):
             # new token is needed
             oauth_token = self.generate_oauth_token()
             ctx = {}
         else:
-            generation_time = dateparser.parse(ctx.get('generation_time'))
+            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
             if generation_time:
                 time_passed = now - generation_time
             else:
                 time_passed = TOKEN_LIFE_TIME
             if time_passed < TOKEN_LIFE_TIME:
                 # token hasn't expired
-                return ctx.get('oauth_token')
+                return ctx.get('token_info').get('oauth_token')
             else:
                 # token expired
                 oauth_token = self.generate_oauth_token()
 
-        ctx.update({'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        ctx.update({'token_info': {'oauth_token': oauth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")}})
         set_integration_context(ctx)
         return oauth_token
 
-    def _http_request(self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None, params=None, data=None,
-                      files=None, timeout=None, resp_type='json', ok_codes=None, return_empty_response=False, retries=0,
-                      status_list_to_retry=None, backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                      error_handler=None, empty_valid_codes=None, **kwargs):
-        # This is a rewrite of the classic _http_request,
+    def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
+                                   auth=None, json_data=None, params=None, return_empty_response: bool = False, resp_type: str = 'json'):
+
         # all future functions should call this function instead of the original _http_request.
         # This is needed because the OAuth token may not behave consistently,
         # First the func will make an http request with a token,
         # and if it turns out to be invalid, the func will retry again with a new token.
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
-                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
-                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
-                                         empty_valid_codes, **kwargs)
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response,resp_type)
         except DemistoException as e:
             if ('Invalid access token' in e.message
-                or "Access token is expired." in e.message
                     or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params,
-                                         data, files, timeout, resp_type, ok_codes, return_empty_response, retries,
-                                         status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status, error_handler,
-                                         empty_valid_codes, **kwargs)
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response,resp_type )
 
     def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='POST',
             url_suffix='users',
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -145,7 +156,7 @@ class Client(BaseClient):
                         next_page_token: str = None,
                         role_id: str = None, url_suffix: str = None,
                         page_number: int = None):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='GET',
             url_suffix=url_suffix,
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -157,7 +168,7 @@ class Client(BaseClient):
                 'role_id': role_id})
 
     def zoom_delete_user(self, user_id: str, action: str):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='DELETE',
             url_suffix='users/' + user_id,
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -167,7 +178,7 @@ class Client(BaseClient):
         )
 
     def zoom_create_meeting(self, url_suffix: str, json_data: dict):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='POST',
             url_suffix=url_suffix,
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -175,7 +186,7 @@ class Client(BaseClient):
 
     def zoom_meeting_get(self, meeting_id: str, occurrence_id: str | None = None,
                          show_previous_occurrences: bool | str = False):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='GET',
             url_suffix=f"/meetings/{meeting_id}",
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -186,7 +197,7 @@ class Client(BaseClient):
 
     def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
                           limit: int | str | None = None, type: str = None, page_number: int = None):
-        return self._http_request(
+        return self.error_handled_http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
             headers={'authorization': f'Bearer {self.access_token}'},
@@ -196,50 +207,6 @@ class Client(BaseClient):
                 'page_size': page_size,
                 'page_number': page_number
             })
-# this part is waiting for a paid zoom account
-
-    # def zoom_fetch_recording(self, meeting_id: str):
-    #     succeed = []
-    #     failed = []
-    #     meeting = meeting_id
-    #     try:
-    #         data = self._http_request(
-    #             method='GET',
-    #             url_suffix=f'meetings/{meeting}/recordings',
-    #             headers={'authorization': f'Bearer {self.access_token}'},
-    #         )
-    #         recording_files = data['recording_files']
-    #         for file in recording_files:
-    #             download_BASE_URL = file['download_BASE_URL']
-    #             try:
-    #                 r = self._http_request(
-    #                     method='GET',
-    #                     full_url=download_BASE_URL,
-    #                     stream=True
-    #                 )
-    #                 filename = f'recording_{meeting}_{file["id"]}.mp4'
-    #                 with open(filename, 'wb') as f:
-    #                     r.raw.decode_content = True
-    #                     shutil.copyfileobj(r.raw, f)
-
-    #                 succeed.append(file_result_existing_file(filename))
-    #             except DemistoException as e:
-    #                 raise DemistoException(
-    #                     f'Unable to download recording for meeting {meeting}: [{e.res.status_code}] - {e.res.text}')
-    #             try:
-    #                 self._http_request(
-    #                     method='DELETE',
-    #                     url_suffix=f'meetings/{meeting}/recordings/{file["id"]}',
-    #                     headers={'authorization': f'Bearer {self.access_token}'},
-    #                 )
-    #                 succeed.append('File ' + filename + ' was moved to trash.')
-    #             except DemistoException:
-    #                 failed.append('Failed to delete file ' + filename + '.')
-
-    #             return (succeed, failed)
-
-    #     except DemistoException as e:
-    #         raise DemistoException(f'Unable to reach the recording: [{e.res.status_code}] - {e.res.text}')
 
 
 '''HELPER FUNCTIONS'''
@@ -270,11 +237,11 @@ def test_module(client: Client):
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
-            error_message = 'Invalid credentials. Please verify that your credentials are valid.'
+            error_message = INVALID_CREDENTIALS
         elif "The Token's Signature resulted invalid" in error_message:
-            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+            error_message = INVALID_API_SECRET 
         elif 'Invalid client_id or client_secret' in error_message:
-            error_message = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
+            error_message = INVALID_ID_OR_SECRET 
         else:
             error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
@@ -306,8 +273,7 @@ def check_start_time_format(start_time):
     try:
         datetime.strptime(start_time, expected_format)
     except ValueError as e:
-        raise DemistoException(
-            "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' ") from e
+        raise DemistoException(WRONG_TIME_FORMAT) from e
 
 
 def manual_list_user_pagination(client: Client, next_page_token: str, page_size: int,
@@ -324,9 +290,8 @@ def manual_list_user_pagination(client: Client, next_page_token: str, page_size:
                                                next_page_token=next_page_token,
                                                role_id=role_id, url_suffix="users")
         next_page_token = basic_request.get("next_page_token")
-        # collect all the results together
+    
         res.append(basic_request)
-        # subtract what i already got
         limit -= MAX_RECORDS_PER_PAGE
     return res
 
@@ -359,7 +324,8 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = None,
                             status: str = "active", next_page_token: str = None,
                             role_id: str = None, limit: int = None, page_number: int = None) -> CommandResults:
-    # preprocessing
+  
+    # PREPROCESSING
     if not user_id:
         url_suffix = 'users'
     else:
@@ -375,8 +341,7 @@ def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = 
         args = demisto.args()
         if "page_size" in args or next_page_token or user_id:
             # arguments collision
-            raise DemistoException("""Too money arguments. if you choose a limit,
-                                       don't enter a user_id or page_size or next_page_token""")
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS )
         else:
             # multiple requests are needed
             raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
@@ -488,34 +453,30 @@ def zoom_create_meeting_command(
     # for arguments that have a default value, i use demisto.args to trigger an exception if user entered a value.
     args = demisto.args()
     if type == "instant" and (timezone or start_time):
-        raise DemistoException("Too money arguments. start_time and timezone are for scheduled meetings only.")
+        raise DemistoException(INSTANT_AND_TIME)
 
     if jbh_time and not join_before_host:
-        raise DemistoException("Collision arguments. jbh_time argument can be used only if join_before_host is 'True'.")
+        raise DemistoException(JBH_TIME_AND_NO_JBH)
 
     if waiting_room and join_before_host:
-        raise DemistoException("Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'.")
+        raise DemistoException(WAITING_ROOM_AND_JBH )
 
     if args.get("end_times") and end_date_time:
-        raise DemistoException(
-            "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time.")
+        raise DemistoException(END_TIMES_AND_END_DATE_TIME)
 
     if num_type != 8 and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
                               monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
-        raise DemistoException("One or more arguments that were filed are used for recurring meeting with fixed time only")
+        raise DemistoException(NOT_RECURRING_WITH_RECUURING_ARGUMENTS )
 
     if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
                                                        monthly_week, monthly_week_day)):
-        raise DemistoException(
-            "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only")
+        raise DemistoException( NOT_MONTHLY_AND_MONTHLY_ARGUMENTS)
 
     if num_type == 8 and recurrence_type == 3 and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
-        raise DemistoException(
-            """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
-            must have the fallowing arguments: monthly_week and monthly_week_day""")
+        raise DemistoException(MONTHLY_RECURRING_MISIING_ARGUMENTS)
 
     if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
-        raise DemistoException("Weekly_days is for weekly recurrence_type only")
+        raise DemistoException(NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS )
 
     if num_type == 8 and not recurrence_type:
         raise DemistoException(
@@ -589,7 +550,7 @@ def zoom_create_meeting_command(
     # removing passwords from the response#
     safe_raw_data = raw_data
     for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
-        safe_raw_data.pop(sensitive_info)
+        safe_raw_data.pop(sensitive_info, None)
     return CommandResults(
         outputs_prefix='Zoom.Meeting',
         readable_output=md,
@@ -648,9 +609,9 @@ def zoom_fetch_recording_command():
 
 def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
                              show_previous_occurrences: bool = True) -> CommandResults:
-    # converting
+   
     show_previous_occurrences = argToBoolean(show_previous_occurrences)
-    # call the API
+   
     raw_data = client.zoom_meeting_get(meeting_id, occurrence_id, show_previous_occurrences)
     # parsing the response
     md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
@@ -660,7 +621,7 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
     # removing passwords from the response#
     safe_raw_data = raw_data
     for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
-        safe_raw_data.pop(sensitive_info)
+        safe_raw_data.pop(sensitive_info, None)
     return CommandResults(
         outputs_prefix='Zoom.Meeting',
         readable_output=md,
@@ -683,7 +644,7 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
     if limit:
         if "page_size" in args or next_page_token or page_number:
             # arguments collision
-            raise DemistoException("Too money arguments. if you choose a limit, don't enter a page_size or next_page_token")
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
         else:
             # multiple request are needed
             raw_data = manual_meeting_list_pagination(client=client, user_id=user_id, next_page_token=next_page_token,
@@ -734,9 +695,7 @@ def check_authentication_type_parameters(api_key: str, api_secret: str,
                                          # at the configuration level
                                          account_id: str, client_id: str, client_secret: str):
     if any((api_key, api_secret)) and any((account_id, client_id, client_secret)):
-        raise DemistoException("""Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)""")
+        raise DemistoException(EXTRA_PARAMS)
 
 
 def main():  # pragma: no cover

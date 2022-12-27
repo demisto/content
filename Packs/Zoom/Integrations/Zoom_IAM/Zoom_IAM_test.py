@@ -85,8 +85,8 @@ def test_get_oauth_token__if_not_ctx(mocker, result):
             Validate that a new token will be generated.            
     """
     mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={"generation_time": result,
-                                      'oauth_token': "old token"})
+                        return_value={'token_info': {"generation_time": result,
+                                      'oauth_token': "old token"}})
     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
     Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -106,8 +106,8 @@ def test_get_oauth_token__while_old_token_still_valid(mocker):
             stored in the get_integration_context dict.
     """
     mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"})
+                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
+                                      'oauth_token': "old token"}})
     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -126,8 +126,8 @@ def test_get_oauth_token___old_token_expired(mocker):
             Validate that a new token was stored in the get_integration_context dict.
     """
     mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={"generation_time": "1988-03-03T10:00:00",
-                                      'oauth_token': "old token"})
+                        return_value={'token_info': {"generation_time": "1988-03-03T10:00:00",
+                                      'oauth_token': "old token"}})
     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -135,7 +135,7 @@ def test_get_oauth_token___old_token_expired(mocker):
     assert client.access_token != "old token"
 
 
-@pytest.mark.parametrize("return_val", ({}, {'generation_time': None}))
+@pytest.mark.parametrize("return_val", ({'token_info': {}}, {'token_info': {'generation_time': None}}))
 def test_get_oauth_token___old_token_is_unreachable(mocker, return_val):
     """
         Given -
@@ -355,8 +355,8 @@ def test_http_request___when_raising_invalid_token_message(mocker):
                             side_effect=DemistoException('Invalid access token'))
     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
     mocker.patch.object(Zoom_IAM, "get_integration_context",
-                        return_value={"generation_time": "1988-03-03T10:50:00",
-                                      'oauth_token': "old token"})
+                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
+                                      'oauth_token': "old token"}})
     try:
         client = Client(base_url='https://test.com', account_id="mockaccount",
                         client_id="mockclient", client_secret="mocksecret")
