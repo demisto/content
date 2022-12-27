@@ -1025,8 +1025,56 @@ class Client(BaseClient):
         return super()._http_request(*args, **kwargs)
 
     @abstractmethod
-    def error_handler(self, res: Response):
+    def get_error_data(self, error: dict):
         pass
+
+    @property
+    @abstractmethod
+    def not_exist_error_list(self) -> Union[List[str], List[int]]:
+        pass
+
+    @property
+    @abstractmethod
+    def exist_error_list(self) -> Union[List[str], List[int]]:
+        pass
+
+    @property
+    @abstractmethod
+    def wrong_parameter_error_list(self) -> Union[List[str], List[int]]:
+        pass
+
+    def error_handler(self, res: Response):
+        """Error handler for Fortiweb response.
+
+        Args:
+            res (Response): Error response.
+
+        Raises:
+            DemistoException: The object does not exist.
+            DemistoException: The object already exist.
+            DemistoException: There is a problem with one or more arguments.
+            DemistoException: One or more of the specified fields are invalid. Please validate them.
+        """
+        output = res.json()
+        error_code = res.status_code
+        error = self.get_error_data(output)
+        if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
+            # update & delete
+            if error in self.not_exist_error_list:
+                raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {output}', res=res)
+            # create
+            elif error in self.exist_error_list:
+                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST.value} {output}', res=res)
+            elif error in self.wrong_parameter_error_list:
+                raise DemistoException(f'{ErrorMessage.ARGUMENTS.value} {output}', res=res)
+
+            else:
+                raise DemistoException(
+                    f'One or more of the specified fields are invalid. Please validate them. {output}', res=res)
+
+        else:
+            raise DemistoException(f'One or more of the specified fields are invalid. Please validate them. {output}',
+                                   res=res)
 
     @abstractmethod
     def protected_hostname_create_request(self, name: str, default_action: str) -> Dict[str, Any]:
@@ -1272,12 +1320,6 @@ class ClientV1(Client):
         Client (Client): Client class with abstract functions.
     """
     API_VER = 'V1'
-    NOT_EXIST_ERROR_MSGS = ['Entry not found.', 'Invalid length of value.']
-    EXIST_ERROR_MSGS = [
-        'A duplicate entry already exists.', 'The IP has already existed in the table.',
-        'The name of the policy has already existed'
-    ]
-    WRONG_PARAMETER_ERROR_MSGS = ['Empty values are not allowed.']
 
     URL_TYPE = 1
     PARAMETER_TYPE = 2
@@ -1292,38 +1334,46 @@ class ClientV1(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res: Response):
-        """Error handler for Fortiweb v1 response.
+    @property
+    def not_exist_error_list(self) -> List[str]:
+        """Sends not exists errors in Fortiweb V1.
+
+        Returns:
+            List[str]: Not exists errors in Fortiweb V1.
+        """
+        return ['Entry not found.', 'Invalid length of value.']
+
+    @property
+    def exist_error_list(self) -> List[str]:
+        """Sends exists errors in Fortiweb V1.
+
+        Returns:
+            List[str]: Exists errors in Fortiweb V1.
+        """
+        return [
+            'A duplicate entry already exists.', 'The IP has already existed in the table.',
+            'The name of the policy has already existed'
+        ]
+
+    @property
+    def wrong_parameter_error_list(self) -> List[str]:
+        """Sends wrong parameters errors in Fortiweb V1.
+
+        Returns:
+            List[str]: Wrong parameters errors in Fortiweb V1.
+        """
+        return ['Empty values are not allowed.']
+
+    def get_error_data(self, error: dict) -> Union[int, str]:
+        """Extracts error value from Fortiweb V1 error response.
 
         Args:
-            res (Response): Error response.
+            error (dict): Error response from Fortiweb V1.
 
-        Raises:
-            DemistoException: The object does not exist.
-            DemistoException: The object already exist.
-            DemistoException: There is a problem with one or more arguments.
-            DemistoException: One or more of the specified fields are invalid. Please validate them.
+        Returns:
+            Union[int,str]: Error value.
         """
-        error = res.json()
-        error_code = res.status_code
-        error_msg = error['msg']
-        if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
-            # update & delete
-            if error_msg in self.NOT_EXIST_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error}', res=res)
-            # create
-            elif error_msg in self.EXIST_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST.value} {error}', res=res)
-            elif error_msg in self.WRONG_PARAMETER_ERROR_MSGS:
-                raise DemistoException(f'{ErrorMessage.ARGUMENTS.value} {error}', res=res)
-
-            else:
-                raise DemistoException(
-                    f'One or more of the specified fields are invalid. Please validate them. {error}', res=res)
-
-        else:
-            raise DemistoException(f'One or more of the specified fields are invalid. Please validate them. {error}',
-                                   res=res)
+        return error['msg']
 
     def protected_hostname_create_request(self, name: str, default_action: str) -> Dict[str, Any]:
         """Create a new protected hostname.
@@ -2276,9 +2326,6 @@ class ClientV2(Client):
         Client (Client): Client class with abstract functions.
     """
     API_VER = 'V2'
-    NOT_EXIST_ERROR_CODES = [-3, 0, -1, -23]
-    EXIST_ERROR_CODES = [-5, -6014]
-    WRONG_PARAMETER_ERROR_CODES = [-651]
 
     def __init__(self, base_url: str, api_key: str, version: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url,
@@ -2288,39 +2335,43 @@ class ClientV2(Client):
                          verify=verify,
                          proxy=proxy)
 
-    def error_handler(self, res: Response):
-        """Error handler for Fortiweb v2 response.
+    @property
+    def not_exist_error_list(self) -> List[int]:
+        """Sends not exists errors in Fortiweb V2.
+
+        Returns:
+            List[int]: Not exists errors in Fortiweb V2.
+        """
+        return [-3, 0, -1, -23]
+
+    @property
+    def exist_error_list(self) -> List[int]:
+        """Sends exists errors in Fortiweb V2.
+
+        Returns:
+            List[int]: Exists errors in Fortiweb V2.
+        """
+        return [-5, -6014]
+
+    @property
+    def wrong_parameter_error_list(self) -> List[int]:
+        """Sends wrong parameters errors in Fortiweb V2.
+
+        Returns:
+            List[int]: Wrong parameters errors in Fortiweb V2.
+        """
+        return [-651]
+
+    def get_error_data(self, error: dict) -> Union[int, str]:
+        """Extracts error value from Fortiweb V2 error response.
 
         Args:
-            res (Response): Error response.
+            error (dict): Error response from Fortiweb V2.
 
-        Raises:
-            DemistoException: The object does not exist.
-            DemistoException: The object already exist.
-            DemistoException: There is a problem with one or more arguments.
-            DemistoException: One or more of the specified fields are invalid. Please validate them.
+        Returns:
+            Union[int,str]: Error value.
         """
-        error_code = res.status_code
-        error_msg = res.json()
-        sub_error_code = dict_safe_get(error_msg, ['results', 'errcode'])
-        # Only if we add Geo IP member to group that dose'nt exist.
-        if not sub_error_code:
-            raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error_msg}', res=res)
-        if error_code == HTTPStatus.INTERNAL_SERVER_ERROR:
-            # update & delete & get
-            if sub_error_code in self.NOT_EXIST_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.NOT_EXIST.value} {error_msg}', res=res)
-            # create
-            elif sub_error_code in self.EXIST_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.ALREADY_EXIST.value} {error_msg}', res=res)
-            elif sub_error_code in self.WRONG_PARAMETER_ERROR_CODES:
-                raise DemistoException(f'{ErrorMessage.ARGUMENTS.value} {error_msg}', res=res)
-            else:
-                raise DemistoException(
-                    f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
-        else:
-            raise DemistoException(
-                f'One or more of the specified fields are invalid. Please validate them. {error_msg}', res=res)
+        return dict_safe_get(error, ['results', 'errcode']) or dict_safe_get(error, ['results', 'pingResult'])
 
     def protected_hostname_create_request(self, name: str, default_action: str) -> Dict[str, Any]:
         """Create a new protected hostname.
