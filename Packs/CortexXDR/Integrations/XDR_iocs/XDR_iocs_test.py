@@ -77,6 +77,7 @@ class TestHttpRequest:
         assert e.value.res.status_code == status_code
 
     def test_http_request_bad_json(self, requests_mock):
+        # For an unknown reason, this does not pass locally, but only on the CI.
         """
             Given:
                 - a client
@@ -443,11 +444,11 @@ class TestDemistoIOCToXDR:
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'test'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['test']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'comments': [{'type': 'IndicatorCommentRegular', 'content': 'test'}, {'type': 'IndicatorCommentRegular', 'content': 'this is the comment'}]},    # noqa: E501
-            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': 'this is the comment'}    # noqa: E501
+            {'expiration_date': -1, 'indicator': '11.11.11.11', 'reputation': 'UNKNOWN', 'severity': 'INFO', 'type': 'IP', 'comment': ['this is the comment']}    # noqa: E501
         ),
         (
             {'value': '11.11.11.11', 'indicator_type': 'IP', 'aggregatedReliability': 'A - Completely reliable'},
@@ -880,7 +881,7 @@ def test_parse_demisto_comments__default():
         ioc={Client.xsoar_comments_field: [{'type': 'IndicatorCommentRegular', 'content': comment_value}]},
         comment_field_name=Client.xsoar_comments_field,
         comments_as_tags=False
-    ) == comment_value
+    ) == [comment_value]
 
 
 def test_parse_demisto_comments__default_empty():
@@ -914,10 +915,11 @@ def test_parse_demisto_comments__default_as_tag():
                                 "Set a different value."
 
 
-@pytest.mark.parametrize('comments_as_tags', (True, False))
-@pytest.mark.parametrize('comment_value,expected', (
-    ('hello', 'hello'),
-    ('hello,world', 'hello,world'),
+@pytest.mark.parametrize('comment_value,comments_as_tags,expected', (
+    ('hello', True, ['hello']),
+    ('hello', False, ['hello']),
+    ('hello,world', True, ['hello', 'world']),
+    ('hello,world', False, ['hello,world']),
 ))
 def test_parse_demisto_comments__custom_field(comment_value: str, comments_as_tags: bool, expected: str):
     """

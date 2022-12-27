@@ -222,20 +222,28 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> str | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
     if comment_field_name == 'comments':
         if comments_as_tags:
             raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
                                    "Set a different value.")
 
         # default behavior, take last comment's content value where type==IndicatorCommentRegular
-        last_comment: dict = next(
+        last_comment_dict: dict = next(
             filter(lambda x: x.get('type') == 'IndicatorCommentRegular', reversed(ioc.get('comments', ()))), {}
         )
-        return (last_comment).get('content')
+        if not last_comment_dict or not (comment := last_comment_dict.get('content')):
+            return None
+        return [comment]
 
     else:  # custom comments field
-        return ioc.get('CustomFields', {}).get(comment_field_name, ()) or None
+        if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
+            return None
+
+        if comments_as_tags:
+            return raw_comment.split(",")
+        else:
+            return [raw_comment]
 
 
 def demisto_ioc_to_xdr(ioc: Dict) -> Dict:
