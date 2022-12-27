@@ -1,7 +1,7 @@
 {
-    "id": "Illusive Networks Incident",
+    "id": "test_layout_id",
     "group": "indicator",
-    "name": "Illusive Networks Incident",
+    "name": "test_layout_id",
     "description": "Illusive Networks Incident Layout",
     "version": -1,
     "fromVersion": "6.0.0",
