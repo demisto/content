@@ -197,13 +197,14 @@ script:
           description: The policy name.
           isArray: false
         - name: visible_to_child
-          required: true
-          description: Will the policy be visible to the child domain.
+          required: false
+          description: Will the policy be visible to the child domain. The default value is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
             - yes
             - no
+          defaultValue: yes
         - name: description
           required: true
           description: The description of the policy.
@@ -218,7 +219,7 @@ script:
             - no
         - name: policy_type
           auto: PREDEFINED
-          description: The type of the policy. The options are "Advanced" or "Classic".
+          description: The type of the policy.
           isArray: false
           predefined:
             - Advanced
@@ -230,7 +231,7 @@ script:
           isArray: false
         - name: response
           auto: PREDEFINED
-          description: Action to be performed if the traffic matches this rule. The options are "Scan", "Drop", "Deny", "Ignore", "Stateless Ignore", "Stateless Drop" and "Require Authentication".
+          description: Action to be performed if the traffic matches this rule.
           isArray: false
           predefined:
             - Scan
@@ -252,7 +253,7 @@ script:
           defaultValue: yes
         - name: direction
           auto: PREDEFINED
-          description: The direction of the rule. The options are "Inbound", "Outbound" and "Either".
+          description: The direction of the rule.
           isArray: false
           predefined:
             - Inbound
@@ -261,11 +262,11 @@ script:
           required: true
         - name: source_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy.
+          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -277,11 +278,11 @@ script:
           required: false
         - name: destination_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy.
+          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -293,7 +294,7 @@ script:
           required: false
     - name: nsm-update-firewall-policy
       description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. 
-        If you want to delete a rule than enter is_overwrite=true and the relevant rule_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before.
+        If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before.
         If is_overwrite=true than at least one of the rules (source or destination) must be provided.
       arguments:
         - name: policy_id
@@ -310,7 +311,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain.
+          description: Will the policy be visible to the child domain. The default value is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -330,7 +331,7 @@ script:
             - no
         - name: policy_type
           auto: PREDEFINED
-          description: The type of the policy. The options are "Advanced" or "Classic".
+          description: The type of the policy.
           isArray: false
           predefined:
             - Advanced
@@ -342,7 +343,7 @@ script:
           isArray: false
         - name: response
           auto: PREDEFINED
-          description: Action to be performed if the traffic matches this rule. The options are "Scan", "Drop", "Deny", "Ignore", "Stateless Ignore", "Stateless Drop" and "Require Authentication".
+          description: Action to be performed if the traffic matches this rule.
           isArray: false
           predefined:
             - Scan
@@ -364,7 +365,7 @@ script:
           defaultValue: yes
         - name: direction
           auto: PREDEFINED
-          description: The direction of the rule. The options are "Inbound", "Outbound" and "Either".
+          description: The direction of the rule.
           isArray: false
           predefined:
             - Inbound
@@ -373,11 +374,11 @@ script:
           required: false
         - name: source_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy.
+          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: source_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -389,11 +390,11 @@ script:
           required: false
         - name: destination_rule_object_id
           required: false
-          description: The id of the rule that connected to the policy.
+          description: The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.
           isArray: false
         - name: destination_rule_object_type
           auto: PREDEFINED
-          description: The type of the rule that connected to the policy. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -427,7 +428,7 @@ script:
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule. The default value is All. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule. The default value is All.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -639,7 +640,7 @@ script:
           isArray: false
         - name: rule_object_type
           auto: PREDEFINED
-          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value. The options are "Endpoint IP V.4", "Range IP V.4", "Network IP V.4", "Endpoint IP V.6", "Range IP V.6" and "Network IP V.6".
+          description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” => the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -654,13 +655,14 @@ script:
           description: The rule object name.
           isArray: false
         - name: visible_to_child
-          required: true
-          description: Will the rule object be visible to the child domain.
+          required: false
+          description: Will the rule object be visible to the child domain. The default value is "yes".
           isArray: false
           auto: PREDEFINED
           predefined:
             - yes
             - no
+          defaultValue: yes
         - name: description
           required: false
           description: The description of the rule object.
@@ -706,7 +708,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain.
+          description: Will the rule object be visible to the child domain. The default value is yes.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -781,7 +783,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default value is "LAST_7_DAYS". The options are "LAST_5_MINUTES", "LAST_1_HOUR", "LAST_6_HOURS", "LAST_12_HOURS", "LAST_24_HOURS", "LAST_7_DAYS", "LAST_14_DAYS" and "CUSTOM".
+          description: Time Period. The default value is "LAST_7_DAYS".
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -801,7 +803,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State. The options are "Any", "Acknowledged", "Unacknowledged".
+          description: Alert State.
           defaultValue: ANY
           required: false
           isArray: false
@@ -822,13 +824,13 @@ script:
         - contextPath: NSM.Alerts.ID
           description: Alert ID.
           type: number
-        - contextPath: NSM.Alerts.name
+        - contextPath: NSM.Alerts.Name
           description: Alert Name.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
           description: Unique alert id.
           type: String
-        - contextPath: NSM.Alerts.alertState
+        - contextPath: NSM.Alerts.State
           description: Alert State (Acknowledged,Unacknowledged).
           type: String
         - contextPath: NSM.Alerts.Assignee
@@ -837,7 +839,7 @@ script:
         - contextPath: NSM.Alerts.CreatedTime
           description: Alert Creation Time.
           type: String
-        - contextPath: NSM.Alerts.attackSeverity
+        - contextPath: NSM.Alerts.AttackSeverity
           description: Alert Severity
           type: String
         - contextPath: NSM.Alerts.Event.time
@@ -1026,127 +1028,130 @@ script:
         - contextPath: NSM.Alerts.ID
           description: Alet Id.
           type: number
-        - contextPath: NSM.Alerts.name
+        - contextPath: NSM.Alerts.Name
           description: Alert Name.
+          type: String
+        - contextPath: NSM.Alerts.CreatedTime
+          description: Alert Created Time.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
           description: Unique Alert Id.
           type: String
-        - contextPath: NSM.Alerts.alertState
+        - contextPath: NSM.Alerts.State
           description: The state of the alert.
           type: String
-        - contextPath: NSM.Alerts.assignTo
+        - contextPath: NSM.Alerts.Assignee
           description: Alert Assignee.
           type: String
-        - contextPath: NSM.Alerts.summary.event.application
+        - contextPath: NSM.Alerts.Event.application
           description: The event application.
           type: String
-        - contextPath: NSM.Alerts.summary.event.protocol
+        - contextPath: NSM.Alerts.Event.protocol
           description: The event protocol.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.event.domain
+        - contextPath: NSM.Alerts.Event.domain
           description: The domain of the event.
           type: String
-        - contextPath: NSM.Alerts.summary.event.manager
+        - contextPath: NSM.Alerts.Event.manager
           description: the event manager.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.event.device
+        - contextPath: NSM.Alerts.Event.device
           description: The event device.
           type: String
-        - contextPath: NSM.Alerts.summary.event.deviceId
+        - contextPath: NSM.Alerts.Event.deviceId
           description: The id of the device that related to the event.
           type: String
-        - contextPath: NSM.Alerts.summary.event.interface
+        - contextPath: NSM.Alerts.event.interface
           description: The event interface.
           type: String
-        - contextPath: NSM.Alerts.summary.event.matchedPolicy
+        - contextPath: NSM.Alerts.Event.matchedPolicy
           description: The policy that matched the event.
           type: String
-        - contextPath: NSM.Alerts.summary.event.zone
+        - contextPath: NSM.Alerts.Event.zone
           description: The event zone.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.event.vlan
+        - contextPath: NSM.Alerts.Event.vlan
           description: The event vlan.
           type: String
-        - contextPath: NSM.Alerts.summary.event.detection
+        - contextPath: NSM.Alerts.Event.detection
           description: The vent detection.
           type: String
-        - contextPath: NSM.Alerts.summary.event.time
+        - contextPath: NSM.Alerts.CreatedTime
           description: The creation time of the event.
           type: Date
-        - contextPath: NSM.Alerts.summary.event.direction
+        - contextPath: NSM.Alerts.event.direction
           description: The event direction.
           type: String
-        - contextPath: NSM.Alerts.summary.event.result
+        - contextPath: NSM.Alerts.EventResult
           description: The event result.
           type: String
-        - contextPath: NSM.Alerts.summary.event.attackCount
+        - contextPath: NSM.Alerts.Event.attackCount
           description: Event attack count.
           type: Number
-        - contextPath: NSM.Alerts.summary.event.relevance
+        - contextPath: NSM.Alerts.Event.relevance
           description: The relevance of the event.
           type: String
-        - contextPath: NSM.Alerts.summary.event.alertId
+        - contextPath: NSM.Alerts.Event.alertId
           description: Alert Id.
           type: String
-        - contextPath: NSM.Alerts.summary.attacker.ipAddrs
+        - contextPath: NSM.Alerts.Attacker.ipAddrs
           description:  Attacker IP addresses.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.attacker.port
+        - contextPath: NSM.Alerts.Attacker.port
           description: Attacker port.
           type: Number
-        - contextPath: NSM.Alerts.summary.attacker.hostName
+        - contextPath: NSM.Alerts.Attacker.hostName
           description: Attacker host name.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.attacker.country
+        - contextPath: NSM.Alerts.Attacker.country
           description: Attacker country.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.attacker.os
+        - contextPath: NSM.Alerts.Attacker.os
           description: Attacker os.
           type: String
-        - contextPath: NSM.Alerts.summary.attacker.vmName
+        - contextPath: NSM.Alerts.Attacker.vmName
           description: Attacker vm name.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.attacker.proxyIP
+        - contextPath: NSM.Alerts.Attacker.proxyIP
           description: Attacker proxy IP.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.attacker.user
+        - contextPath: NSM.Alerts.Attacker.user
           description: Attacker user.
           type: String
-        - contextPath: NSM.Alerts.summary.attacker.risk
+        - contextPath: NSM.Alerts.Attacker.risk
           description: Attacker risk.
           type: String
-        - contextPath: NSM.Alerts.summary.attacker.networkObject
+        - contextPath: NSM.Alerts.Attacker.networkObject
           description: Attacker network object.
           type: String
-        - contextPath: NSM.Alerts.summary.target.ipAddrs
+        - contextPath: NSM.Alerts.Target.ipAddrs
           description: Target IP address.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.target.port
+        - contextPath: NSM.Alerts.Target.port
           description: Target port.
           type: Number
-        - contextPath: NSM.Alerts.summary.target.hostName
+        - contextPath: NSM.Alerts.Target.hostName
           description: Target host name.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.target.country
+        - contextPath: NSM.Alerts.Target.country
           description: Target country.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.target.os
+        - contextPath: NSM.Alerts.Target.os
           description: Target os.
           type: String
-        - contextPath: NSM.Alerts.summary.target.vmName
+        - contextPath: NSM.Alerts.Target.vmName
           description: Target vm name.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.target.proxyIP
+        - contextPath: NSM.Alerts.Target.proxyIP
           description: Target proxy IP.
           type: Unknown
-        - contextPath: NSM.Alerts.summary.target.user
+        - contextPath: NSM.Alerts.Target.user
           description: Target user.
           type: String
-        - contextPath: NSM.Alerts.summary.target.risk
+        - contextPath: NSM.Alerts.Target.risk
           description: Target risk.
           type: String
-        - contextPath: NSM.Alerts.summary.target.networkObject
+        - contextPath: NSM.Alerts.Target.networkObject
           description: Target network object.
           type: String
         - contextPath: NSM.Alerts.summary.source
@@ -1170,103 +1175,103 @@ script:
         - contextPath: NSM.Alerts.summary.compromisedEndpoint
           description: Compromised endpoint.
           type: Unknown
-        - contextPath: NSM.Alerts.details.matchedSignature
+        - contextPath: NSM.Alerts.Details.matchedSignature
           description: Matched signature.
           type: Unknown
-        - contextPath: NSM.Alerts.details.malwareFile
+        - contextPath: NSM.Alerts.MalwareFile
           description: Malware file.
           type: Unknown
-        - contextPath: NSM.Alerts.details.hostSweep
+        - contextPath: NSM.Alerts.Details.hostSweep
           description: Host sweep.
           type: Unknown
-        - contextPath: NSM.Alerts.details.portScan
+        - contextPath: NSM.Alerts.Details.portScan
           description: Port scan.
           type: Unknown
-        - contextPath: NSM.Alerts.details.fastFlux
+        - contextPath: NSM.Alerts.Details.fastFlux
           description: Fast flux.
           type: Unknown
-        - contextPath: NSM.Alerts.details.triggeredComponentAttacks
+        - contextPath: NSM.Alerts.Details.triggeredComponentAttacks
           description: Triggered component attack.
           type: Unknown
-        - contextPath: NSM.Alerts.details.sqlInjection
+        - contextPath: NSM.Alerts.Details.sqlInjection
           description: SQL injection.
           type: Unknown
-        - contextPath: NSM.Alerts.details.callbackDetectors
+        - contextPath: NSM.Alerts.Details.callbackDetectors
           description: Call back detectors.
           type: Unknown
-        - contextPath: NSM.Alerts.details.exceededThreshold
+        - contextPath: NSM.Alerts.Details.exceededThreshold
           description: Exceeded threshold.
           type: Unknown
-        - contextPath: NSM.Alerts.details.communicationRuleMatch
+        - contextPath: NSM.Alerts.Details.communicationRuleMatch
           description: Communication rule match.
           type: Unknown
-        - contextPath: NSM.Alerts.description.definition
-          description: definition.
+        - contextPath: NSM.Alerts.Description
+          description: Description.
           type: String
-        - contextPath: NSM.Alerts.description.btp
+        - contextPath: NSM.Alerts.Description.btp
           description: btp.
           type: String
-        - contextPath: NSM.Alerts.description.rfSB
+        - contextPath: NSM.Alerts.Description.rfSB
           description: rfSb.
           type: String
-        - contextPath: NSM.Alerts.description.protectionCategory
+        - contextPath: NSM.Alerts.Description.protectionCategory
           description: Protection Category.
           type: String
-        - contextPath: NSM.Alerts.description.target
+        - contextPath: NSM.Alerts.Description.target
           description: The target.
           type: String
-        - contextPath: NSM.Alerts.description.httpResponseAttack
+        - contextPath: NSM.Alerts.Description.httpResponseAttack
           description: Http response attack.
           type: String
-        - contextPath: NSM.Alerts.description.priority
+        - contextPath: NSM.Alerts.Description.priority
           description: Priority.
           type: String
-        - contextPath: NSM.Alerts.description.protocols
+        - contextPath: NSM.Alerts.Protocols
           description: Protocols.
           type: String
-        - contextPath: NSM.Alerts.description.attackCategory
+        - contextPath: NSM.Alerts.Attack.attackCategory
           description: Attack category.
           type: String
-        - contextPath: NSM.Alerts.description.attackSubCategory
+        - contextPath: NSM.Alerts.Attack.attackSubCategory
           description: Attack sub category.
           type: String
-        - contextPath: NSM.Alerts.description.snortEngine
+        - contextPath: NSM.Alerts.Description.snortEngine
           description: Snort engine.
           type: String
-        - contextPath: NSM.Alerts.description.versionAdded
+        - contextPath: NSM.Alerts.Description.versionAdded
           description: When the version was added.
           type: String
-        - contextPath: NSM.Alerts.description.versionUpdated
+        - contextPath: NSM.Alerts.Description.versionUpdated
           description: When the version was updated.
           type: Unknown
-        - contextPath: NSM.Alerts.description.reference.nspId
+        - contextPath: NSM.Alerts.Attack.nspId
           description: nspID.
           type: String
-        - contextPath: NSM.Alerts.description.reference.cveId
+        - contextPath: NSM.Alerts.Description.reference.cveId
           description: CVE ID.
           type: String
-        - contextPath: NSM.Alerts.description.reference.microsoftId
+        - contextPath: NSM.Alerts.Description.reference.microsoftId
           description: Microsoft ID.
           type: String
-        - contextPath: NSM.Alerts.description.reference.bugtraqId
+        - contextPath: NSM.Alerts.Description.reference.bugtraqId
           description: Bugtraq Id.
           type: String
-        - contextPath: NSM.Alerts.description.reference.certId
+        - contextPath: NSM.Alerts.Description.reference.certId
           description: Cert ID.
           type: Unknown
-        - contextPath: NSM.Alerts.description.reference.arachNidsId
+        - contextPath: NSM.Alerts.Description.reference.arachNidsId
           description: arachNidsId
           type: String
-        - contextPath: NSM.Alerts.description.reference.additionInfo
+        - contextPath: NSM.Alerts.Description.reference.additionInfo
           description: Additional info.
           type: String
-        - contextPath: NSM.Alerts.description.comments.comments
+        - contextPath: NSM.Alerts.Description.comments.comments
           description: comments.
           type: String
-        - contextPath: NSM.Alerts.description.comments.availabeToChildDomains
+        - contextPath: NSM.Alerts.Description.comments.availabeToChildDomains
           description: Is the alert available to child domains.
           type: Boolean
-        - contextPath: NSM.Alerts.description.comments.parentDomainComments
+        - contextPath: NSM.Alerts.Description.comments.parentDomainComments
           description: Parent domain comments.
           type: Unknown
     - name: nsm-get-attacks
@@ -1397,10 +1402,10 @@ script:
           description: The number of records in a page.
       outputs:
         - contextPath: NSM.Domains.id
-          description: Domain id.
+          description: Domain ID.
           type: Number
         - contextPath: NSM.Domains.name
-          description: Domain name.
+          description: Domain Name.
           type: String
     - name: nsm-get-sensors
       description: Gets the list of sensors available in the specified domain. If the domain is not specified, details of all the sensors in all ADs will be provided.
@@ -1508,10 +1513,10 @@ script:
         - contextPath: NSM.IPSPolicies.IsEditable
           description: Is the ips policy editable.
           type: Boolean
-        - contextPath: NSM.IPSPolicies.DomainId
+        - contextPath: NSM.IPSPolicies.DomainID
           description: Id of Domain to which this policy belongs to.
           type: Number
-        - contextPath: NSM.IPSPolicies.VisibleToChild
+        - contextPath: NSM.IPSPolicies.VisibleToChildren
           description: Policy visible to Child Domain.
           type: Boolean
         - contextPath: NSM.IPSPolicies.ID
@@ -1559,7 +1564,7 @@ script:
           description: A list of exploit attacks related to the IPS Policy
           type: Unknown
     - name: nsm-update-alerts
-      description: Update state or assignee of alerts. It is required to provide at least one of them.
+      description: Update state or assignee of alerts. It is required to provide at least one of them. If none of the alerts match the time_period they won't be updated.
       arguments:
         - name: state
           auto: PREDEFINED
@@ -1567,7 +1572,7 @@ script:
             - ANY
             - Acknowledged
             - Unacknowledged
-          description: Alert State. The options are "ANY", "Acknowledged", "Unacknowledged".
+          description: Alert State.
           defaultValue: ANY
           required: false
           isArray: false
@@ -1582,9 +1587,10 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The options are "LAST_5_MINUTES", "LAST_1_HOUR", "LAST_6_HOURS", "LAST_12_HOURS", "LAST_24_HOURS", "LAST_7_DAYS", "LAST_14_DAYS".
+          description: Time Period. The default value is "LAST_7_DAYS".
           required: false
           isArray: false
+          defaultValue: LAST_7_DAYS
         - name: start_time
           description: Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.
           required: false
@@ -1598,7 +1604,7 @@ script:
           predefined:
             - Acknowledged
             - Unacknowledged
-          description: The new alert state. The options are "Acknowledged", "Unacknowledged".
+          description: The new alert state.
           required: false
           isArray: false
         - name: new_assignee
@@ -1608,20 +1614,20 @@ script:
         - name: search
           description: Search string in alert details.
         - name: filter
-          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4"If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
+          description: 'Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:>3,<4". If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily.'
           required: false
           isArray: false
       outputs:
         - contextPath: NSM.Alerts.ID
           description: Alert ID.
           type: number
-        - contextPath: NSM.Alerts.name
+        - contextPath: NSM.Alerts.Name
           description: Alert Name.
           type: String
         - contextPath: NSM.Alerts.uniqueAlertId
           description: Unique alert id.
           type: String
-        - contextPath: NSM.Alerts.alertState
+        - contextPath: NSM.Alerts.State
           description: Alert State (Acknowledged,Unacknowledged).
           type: String
         - contextPath: NSM.Alerts.Assignee
@@ -1630,7 +1636,7 @@ script:
         - contextPath: NSM.Alerts.CreatedTime
           description: Alert Creation Time.
           type: String
-        - contextPath: NSM.Alerts.attackSeverity
+        - contextPath: NSM.Alerts.AttackSeverity
           description: Alert Severity
           type: String
         - contextPath: NSM.Alerts.Event.time

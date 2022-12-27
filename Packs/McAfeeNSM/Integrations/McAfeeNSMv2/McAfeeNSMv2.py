@@ -594,7 +594,10 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
     """
     for alert in alert_list:
         alert['ID'] = alert.get('event', {}).get('alertId')
+        alert['Name'] = alert.get('name')
         alert['Event'] = alert.get('event')
+        alert['State'] = alert.get('alertState')
+        alert['AttackSeverity'] = alert.get('attackSeverity')
         alert['CreatedTime'] = alert.get('event', {}).get('time')
         alert['Assignee'] = alert.get('assignTo')
         alert['Application'] = alert.get('application')
@@ -615,6 +618,9 @@ def add_entries_to_alert_list(alert_list: List[Dict]) -> List[Dict]:
         del alert['target']
         del alert['malwareFile']
         del alert['event']
+        del alert['name']
+        del alert['attackSeverity']
+        del alert['alertState']
     return alert_list
 
 
@@ -663,8 +669,12 @@ def update_policies_list_entries(policies_list: list[dict]) -> list[dict]:
     for policy in policies_list:
         policy['ID'] = policy.get('policyId')
         policy['Name'] = policy.get('name')
+        policy['DomainID'] = policy.get('DomainId')
+        policy['VisibleToChildren'] = policy.get('VisibleToChild')
         del policy['policyId']
         del policy['name']
+        del policy['DomainId']
+        del policy['VisibleToChild']
     return policies_list
 
 
@@ -700,9 +710,13 @@ def h_r_get_domains(children: List[Dict], human_readable: List):
             The human readable contains the relevant values.
     """
     for child in children:
+        child['ID'] = child.get('id')
+        del child['id']
+        child['Name'] = child.get('name')
+        del child['name']
         d = {
-            'ID': child.get('id'),
-            'Name': child.get('name')
+            'ID': child.get('ID'),
+            'Name': child.get('Name')
         }
         human_readable.append(d)
         if child.get('childdomains', []):
@@ -773,6 +787,52 @@ def update_filter(filter_arg: str) -> str:
             split_filter[index] = s
             break
     return ';'.join(split_filter)
+
+
+def update_alert_entries(alert_det: Dict) -> Dict:
+    """ Updates the entries to an alert object (the entries that we gwt here are different from get_alerts).
+        Args:
+            alert_det: Dict - The dictionary with the alert details.
+        Returns:
+            The updated alert details dictionary.
+    """
+    alert_det['ID'] = alert_det.get('summary', {}).get('event', {}).get('alertId')
+    alert_det['Name'] = alert_det.get('name')
+    alert_det['State'] = alert_det.get('alertState')
+    alert_det['CreatedTime'] = alert_det.get('summary', {}).get('event', {}).get('time')
+    alert_det['Assignee'] = alert_det.get('assignTo')
+    alert_det['Description'] = alert_det.get('description', {}).get('definition')
+    alert_det['EventResult'] = alert_det.get('summary', {}).get('event', {}).get('result')
+    alert_det['Attack'] = {
+        'attackCategory': alert_det.get('description', {}).get('attackCategory'),
+        'attackSubCategory': alert_det.get('description', {}).get('attackSubCategory'),
+        'nspId': alert_det.get('description', {}).get('reference', {}).get('nspId')
+    }
+    alert_det['Protocols'] = alert_det.get('description', {}).get('protocols')
+    alert_det['SensorID'] = alert_det.get('summary', {}).get('event', {}).get('deviceId')
+    alert_det['Event'] = alert_det.get('summary', {}).get('event')
+    alert_det['Attacker'] = alert_det.get('summary', {}).get('attacker')
+    alert_det['Target'] = alert_det.get('summary', {}).get('target')
+    alert_det['MalwareFile'] = alert_det.get('details', {}).get('malwareFile')
+    alert_det['Details'] = alert_det.get('details')
+    details_obj = alert_det.get('details', {})
+    summary_obj = alert_det.get('summary', {})
+    description_obj = alert_det.get('description', {})
+    reference_obj = alert_det.get('description', {}).get('reference', {})
+    del details_obj['malwareFile']
+    del summary_obj['target']
+    del summary_obj['attacker']
+    del summary_obj['event']
+    del description_obj['protocols']
+    del description_obj['attackSubCategory']
+    del description_obj['attackCategory']
+    del description_obj['definition']
+    del alert_det['assignTo']
+    del alert_det['alertState']
+    del alert_det['name']
+    del alert_det['details']
+    del reference_obj['nspId']
+    return alert_det
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1157,7 +1217,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     domain = arg_to_number(args.get('domain', 0)) or 0
     rule_id = arg_to_number(args.get('rule_id'))
     name = args.get('name')
-    visible_to_child = argToBoolean(args.get('visible_to_child', True))
+    visible_to_child = args.get('visible_to_child')
     description = args.get('description')
     address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
     from_address_ip_v_4 = args.get('from_address_ip_v.4')
@@ -1338,15 +1398,15 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
     human_readable = []
     for alert_info in alerts_list:
         d = {'ID': alert_info.get('ID'),
-             'Name': alert_info.get('name'),
-             'Event Time': alert_info.get('event.time'),
-             'Severity': alert_info.get('attackSeverity'),
-             'State': alert_info.get('alertState'),
-             'Direction': alert_info.get('event.direction'),
-             'Result': alert_info.get('event.result'),
-             'Attack Count': alert_info.get('event.attackCount'),
-             'Attacker IP': alert_info.get('attacker.ipAddrs'),
-             'Target IP': alert_info.get('target.ipAddrs')}
+             'Name': alert_info.get('Name'),
+             'Event Time': alert_info.get('CreatedTime'),
+             'Severity': alert_info.get('AttackSeverity'),
+             'State': alert_info.get('State'),
+             'Direction': alert_info.get('Event', {}).get('direction'),
+             'Result': alert_info.get('Event.result'),
+             'Attack Count': alert_info.get('EventResult'),
+             'Attacker IP': alert_info.get('Attacker', {}).get('ipAddrs'),
+             'Target IP': alert_info.get('Target', {}).get('ipAddrs')}
         human_readable.append(d)
 
     headers = ['ID', 'Name', 'Event Time', 'Severity', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP',
@@ -1381,18 +1441,17 @@ def get_alert_details_command(client: Client, args: Dict) -> CommandResults:
     alert_id = arg_to_number(args.get('alert_id'))
     sensor_id = arg_to_number(args.get('sensor_id'))
     response = client.get_alert_details_request(alert_id, sensor_id)
-    response['ID'] = alert_id
-
+    response = update_alert_entries(response)
     human_readable = {
         'ID': response.get('ID'),
-        'Name': response.get('name'),
-        'Event Time': response.get('summary', {}).get('event', {}).get('time'),
-        'State': response.get('alertState'),
-        'Direction': response.get('summary', {}).get('event', {}).get('direction'),
-        'Result': response.get('summary', {}).get('event', {}).get('result'),
-        'Attack Count': response.get('summary', {}).get('event', {}).get('attackCount'),
-        'Attacker IP': response.get('summary', {}).get('attacker', {}).get('ipAddrs'),
-        'Target IP': response.get('summary', {}).get('target', {}).get('ipAddrs')
+        'Name': response.get('Name'),
+        'Event Time': response.get('CreatedTime'),
+        'State': response.get('State'),
+        'Direction': response.get('Event', {}).get('direction'),
+        'Result': response.get('EventResult'),
+        'Attack Count': response.get('Event', {}).get('attackCount'),
+        'Attacker IP': response.get('Attacker', {}).get('ipAddrs'),
+        'Target IP': response.get('Target', {}).get('ipAddrs')
     }
     headers = ['ID', 'Name', 'Event Time', 'State', 'Direction', 'Result', 'Attack Count', 'Attacker IP', 'Target IP']
     readable_output = tableToMarkdown(
@@ -1482,9 +1541,13 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
     human_readable = []
     if domain_id is not None:
         title = f'Domain no.{domain_id}'
+        results['ID'] = results.get('id')
+        del results['id']
+        results['Name'] = results.get('name')
+        del results['name']
         human_readable = [{
-            'ID': domain_id,
-            'Name': results.get('name')
+            'ID': results.get('ID'),
+            'Name': results.get('Name')
         }]
     else:
         title = 'List of Domains'
