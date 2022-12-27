@@ -11,6 +11,7 @@ from pathlib import Path
 import argparse
 import sys
 import traceback
+import click
 
 
 def is_pack_xsoar_supported(pack_name: str) -> bool:
@@ -115,8 +116,8 @@ if __name__ == "__main__":  # pragma: no cover
 
     try:
         output = main(args)
-        print(output)
+        click.secho(output)
         sys.exit(0)
     except Exception:
-        print(f"Script terminated, reason:\n{traceback.format_exc()}")
+        click.secho(f"Script terminated, reason:\n{traceback.format_exc()}")
         sys.exit(1)
