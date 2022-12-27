@@ -35,9 +35,11 @@ args:
     means data of 'merge_with', 'destination' means data of 'array_path'.
   defaultValue: merge
 - name: overwrite_by_source
-  description: The list of keys to overwrite by source value when the key conflicts.
+  description: The comma separeted list of keys to overwrite by source value when the key conflicts.
+  isArray: true
 - name: overwrite_by_destination
-  description: The list of keys to overwrite by destination value when the key conflicts.
+  description: The comma separeted list of keys to overwrite by destination value when the key conflicts.
+  isArray: true
 comment: Each entry in an array is merged into the existing array if the keyed-value matches.
 commonfields:
   id: MergeDictArray

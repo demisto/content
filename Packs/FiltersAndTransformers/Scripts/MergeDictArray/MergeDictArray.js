@@ -153,6 +153,9 @@ const conflict_strategy = args.conflict_strategy ? args.conflict_strategy : 'mer
 const overwrite_by_src = argToList(args.overwrite_by_source);
 const overwrite_by_dst = argToList(args.overwrite_by_destination);
 
+if (overwrite_by_src.filter((v) => overwrite_by_dst.indexOf(v) >= 0).length !==0 ){
+    throw 'A key is conflict in overwrite_by_source and overwrite_by_destination.';
+}
 if (src_array && args.merge_with !== null) {
     if (args.array_path) {
         dst_value.forEach(v => {
