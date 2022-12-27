@@ -12,6 +12,8 @@ from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
 from datetime import datetime
 import dateparser
+from test_data import fetch_incidents_input
+
 
 integration_firewall_params = {
     'port': '443',
@@ -5903,10 +5905,10 @@ class TestFetchIncidentsHelperFunctions:
     case_one_valid_log_type_query_selected = (
         {'log_types': ['All'], 'traffic_query': 'traffic query'}, {'Traffic': 'traffic query'})
     case_one_invalid_log_type_query_selected = (
-        {'log_types': ['Traffic'], 'traffic_query': 'Please input a query, example: (traffic query)'}, {})
+        {'log_types': ['Traffic'], 'traffic_query': ''}, {})
     case_one_valid_log_type_query_one_invalid_log_type_query_selected = (
         {'log_types': ['Traffic', 'URL'], 'traffic_query': 'traffic query',
-            'url_query': 'Please input a query, example: (url query)'},
+            'url_query': ''},
         {'Traffic': 'traffic query'}
     )
 
@@ -6032,43 +6034,43 @@ class TestFetchIncidentsHelperFunctions:
 
         parse_incident_entries(incident_entries) == expected_result
 
-    utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})
-    fetch_start_datetime_dict = {'X_log_type': utc_time_twelve}
+    # utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UTC'})
+    # fetch_start_datetime_dict = {'X_log_type': utc_time_twelve}
 
-    incident_one = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00'}
-    incident_two = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}
-    incident_three = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:00:00'}
-    incident_four = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:01:00'}
+    # incident_one = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 11:00:00'}
+    # incident_two = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}
+    # incident_three = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:00:00'}
+    # incident_four = {'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 13:01:00'}
 
-    case_no_incidents_entries = ({}, {'X_log_type': utc_time_twelve}, {})
-    case_incident_with_smaller_time_generated_than_last_fetch = (
-        {'X_log_type': [incident_one]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
-    case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
-        {'X_log_type': [incident_one, incident_three]}, {'X_log_type': utc_time_twelve}, {'X_log_type': [incident_three]})
-    case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch = (
-        {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
-    case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
-        {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
-    case_two_incidents_with_larger_time_generated_than_last_fetch = (
-        {'X_log_type': [incident_three, incident_four]},
-        {'X_log_type': utc_time_twelve},
-        {'X_log_type': [incident_three, incident_four]})
+    # case_no_incidents_entries = ({}, {'X_log_type': utc_time_twelve}, {})
+    # case_incident_with_smaller_time_generated_than_last_fetch = (
+    #     {'X_log_type': [incident_one]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    # case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
+    #     {'X_log_type': [incident_one, incident_three]}, {'X_log_type': utc_time_twelve}, {'X_log_type': [incident_three]})
+    # case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch = (
+    #     {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    # case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch = (
+    #     {'X_log_type': [incident_one, incident_two]}, {'X_log_type': utc_time_twelve}, {'X_log_type': []})
+    # case_two_incidents_with_larger_time_generated_than_last_fetch = (
+    #     {'X_log_type': [incident_three, incident_four]},
+    #     {'X_log_type': utc_time_twelve},
+    #     {'X_log_type': [incident_three, incident_four]})
 
-    filter_incidents_entries_by_time_generated_args = [
-        case_no_incidents_entries,
-        case_incident_with_smaller_time_generated_than_last_fetch,
-        case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
-        case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch,
-        case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
-        case_two_incidents_with_larger_time_generated_than_last_fetch]
+    # filter_incidents_entries_by_time_generated_args = [
+    #     case_no_incidents_entries,
+    #     case_incident_with_smaller_time_generated_than_last_fetch,
+    #     case_incident_with_smaller_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
+    #     case_incident_with_smaller_time_generated_and_incident_with_equal_time_generated_than_last_fetch,
+    #     case_incident_with_equal_time_generated_and_incident_with_larger_time_generated_than_last_fetch,
+    #     case_two_incidents_with_larger_time_generated_than_last_fetch]
 
-    @pytest.mark.parametrize('incident_entries_dict, fetch_start_datetime_dict ,expected_result',
-                             filter_incidents_entries_by_time_generated_args)
-    def test_filter_incidents_entries_by_time_generated(
-            self, incident_entries_dict, fetch_start_datetime_dict, expected_result):
-        from Panorama import filter_incidents_entries_by_time_generated
-        assert filter_incidents_entries_by_time_generated(
-            incident_entries_dict, fetch_start_datetime_dict) == expected_result
+    # @pytest.mark.parametrize('incident_entries_dict, fetch_start_datetime_dict ,expected_result',
+    #                          filter_incidents_entries_by_time_generated_args)
+    # def test_filter_incidents_entries_by_time_generated(
+    #         self, incident_entries_dict, fetch_start_datetime_dict, expected_result):
+    #     from Panorama import filter_incidents_entries_by_time_generated
+    #     assert filter_incidents_entries_by_time_generated(
+    #         incident_entries_dict, fetch_start_datetime_dict) == expected_result
 
 
 class TestFetchIncidentsFlows:

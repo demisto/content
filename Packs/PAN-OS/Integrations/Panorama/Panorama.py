@@ -51,7 +51,6 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '24 hours'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
-DEFAULT_QUERY_PREFIX = "Please input a query, example:"
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -719,7 +718,8 @@ def panorama_test(fetch_params):
         test_topology_connectivity(topology)
         
         # Test fetch incidents parameters
-        test_fetch_incidents_parameters(fetch_params)
+        if fetch_params.get('isFetch'):
+            test_fetch_incidents_parameters(fetch_params)
         
     except DemistoException as e:
         raise e
@@ -12884,23 +12884,23 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     entries = []
     # first http request: send request with query, valid response will contain a job id.
     job_id = get_query_job_id_request(log_type, query, max_fetch)
-    demisto.debug(f'job_id: {job_id}')
+    demisto.debug(f'{job_id=}')
 
     # second http request: send request with job id, valid response will contain a dictionary of entries.
     query_entries = get_query_entries_by_id_request(job_id)
 
     # extract all entries from response
-    # TODO: check option to use filter on python list
-    
     if result := query_entries.get('response', {}).get('result', {}).get('log', {}).get('logs', {}).get('entry'):
         if isinstance(result,list):
-            for entry in result:
-                entries.append(entry)
+            entries.extend(result)
         elif isinstance(result,dict):
             entries.append(result)
         else:
             raise DemistoException('Could not parse fetch results.')
-
+    
+    entries_log_info = {entry.get('seqno',''):entry.get('time_generated') for entry in entries}
+    demisto.debug(f'{log_type} log type: {len(entries)} raw incidents (entries) found.')
+    demisto.debug(f'fetched raw incidents (entries) are (ID:time_generated): {entries_log_info}')
     return entries
 
 
@@ -12917,7 +12917,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime) -> str:
     if 'time_generated' in query or not last_fetch:
         return query
     time_generated = ' and (time_generated geq ' + '\'' + last_fetch.strftime(QUERY_DATE_FORMAT) + '\')'
-    return (query + time_generated)
+    return query + time_generated
 
 
 def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
@@ -12933,10 +12933,10 @@ def add_unique_id_filter_to_query_parameter(query: str, last_id: str) -> str:
         str: a string representing a query with added time filter parameter
     """
     if last_id:
-        last_id_int = int(last_id)
+        last_id_int = arg_to_number(last_id)
         last_id_int += 1
         unique_id_filter = ' and (seqno geq ' + '\'' + str(last_id_int) + '\')'
-        return (query + unique_id_filter)
+        return query + unique_id_filter
     else:
         return query
 
@@ -12962,12 +12962,11 @@ def fetch_incidents_request(queries_dict: Optional[Dict[str, str]],
             if id := last_id_dict.get(log_type):
                 query = add_unique_id_filter_to_query_parameter(query, id)
             response_entries = get_query_entries(log_type, query, max_fetch)
-            demisto.debug(f'{log_type} log type: {len(response_entries)} raw incidents (entries) found for {log_type} log type.')
             entries[log_type] = response_entries
     return entries
 
 
-def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str ,datetime | None, List[Dict[str, Any]]]:
+def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str | None ,datetime | None, List[Dict[str, Any]]]:
     """parses raw incident entries of a specific log type query into basic context incidents.
     
     Args:
@@ -12978,8 +12977,8 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     """
     # if no new incidents are available, return empty list of incidents
     if not incident_entries:
-        demisto.debug(f'{len(incident_entries)} parsed incidents returned from parse_incident_entries function')
-        return None, incident_entries
+        demisto.debug(f'no new incidents are available (incident_entries is empty)')
+        return None, None, incident_entries
 
     # calculate largest last fetch time for each log type query
     last_fetch_string = max({entry.get('time_generated', '') for entry in incident_entries})
@@ -12988,11 +12987,13 @@ def parse_incident_entries(incident_entries: List[Dict[str, Any]]) -> Tuple[str 
     # calculate largest unique id for each log type query
     new_largest_id = max({entry.get('seqno', '') for entry in incident_entries})
 
-    # convert incident entries to incident context
+    # convert incident entries to incident context and filter any empty incidents if exists
     parsed_incidents: List[Dict[str, Any]] = [incident_entry_to_incident_context(incident_entry) for incident_entry in incident_entries]
-    demisto.debug(f'{len(parsed_incidents)} parsed incidents returned from parse_incident_entries function')
-
-    return new_largest_id, new_fetch_datetime, parsed_incidents
+    filtered_parsed_incidents = list(filter(lambda incident: incident, parsed_incidents))
+    demisto.debug(f'{len(filtered_parsed_incidents)} parsed incidents returned from parse_incident_entries function')
+    if filtered_parsed_incidents:
+        demisto.debug(f"parsed incidents unique ID list: {[incident.get('name','') for incident in filtered_parsed_incidents]}")
+    return new_largest_id, new_fetch_datetime, filtered_parsed_incidents
 
 
 def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[str, Any]:
@@ -13013,7 +13014,9 @@ def incident_entry_to_incident_context(incident_entry: Dict[str, Any]) -> Dict[s
             'rawJSON': json.dumps(incident_entry),
             'type': incident_entry.get('type')
         }
-    return incident_context
+        return incident_context
+    else:
+        return {}
 
 
 def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
@@ -13055,7 +13058,7 @@ def get_fetch_start_datetime_dict(last_fetch_dict: Dict[str, str],
     return fetch_start_datetime_dict
 
 
-def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]]:
+def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
     """converts chosen log type queries from parameters to a queries dictionary.
     Example:
     for parameters: log_types=['X_log_type'], X_log_type_query='(example query for X_log_type)'
@@ -13065,7 +13068,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]
         params (Dict[str, str]): instance configuration parameters 
 
     Returns:
-        Optional[Dict[str, str]]: queries per log type dictionary
+        Dict[str, str]: queries per log type dictionary
     """
     queries_dict = {}
     if log_types := params.get('log_types'):
@@ -13073,7 +13076,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Optional[Dict[str, str]
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
             log_type_query = params.get(f'{log_type.lower()}_query', "")
-            if log_type_query and not log_type_query.startswith(DEFAULT_QUERY_PREFIX):
+            if log_type_query:
                 queries_dict[log_type.capitalize()] = log_type_query
 
     return queries_dict
@@ -13101,6 +13104,7 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
             if updated_last_id:
                 last_id_dict[log_type] = updated_last_id
             demisto.debug(f'{log_type} log type: incidents parsing has completed with total of {len(incidents)} incidents. Updated last run is: {last_fetch_dict.get(log_type)}. Updated last ID is: {last_id_dict.get(log_type)}')
+            demisto.debug(f'incidents ID list: {[incident.get("name") for incident in incidents]}')
     return parsed_incident_entries_dict
 
 
@@ -13138,17 +13142,15 @@ def fetch_incidents(last_run: dict, first_fetch: str, queries_dict: Optional[Dic
 
 
 def test_fetch_incidents_parameters(fetch_params):
-    if argToBoolean(fetch_params.get('isFetch', False)):
-        if log_types := fetch_params.get('log_types'):
-            # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
-            active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
-            for log_type in active_log_type_queries:
-                log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
-                if not log_type_query:
-                    raise DemistoException("Log Type Query parameter is empty. Please enter a valid query.")
-        else:
-            raise DemistoException("Fetches incidents is cheked but no Log Types were selected to fetch from the dropdown menu.")
-    return 'ok'
+    if log_types := fetch_params.get('log_types'):
+        # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
+        active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
+        for log_type in active_log_type_queries:
+            log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
+            if not log_type_query:
+                raise DemistoException("Log Type Query parameter is empty. Please enter a valid query.")
+    else:
+        raise DemistoException("Fetches incidents is cheked but no Log Types were selected to fetch from the dropdown menu.")
     
     
 def main(): # pragma: no cover
