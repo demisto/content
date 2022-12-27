@@ -585,12 +585,15 @@ def zoom_create_meeting_command(
     else:
         md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
                                                              'type', 'status', 'start_time', 'duration',
-                                                             'timezone', 'created_at', 'start_url', 'join_url'
-                                                             ])
+                                                             'timezone', 'created_at', 'start_url', 'join_url'])
+    # removing passwords from the response#
+    safe_raw_data = raw_data
+    for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
+        safe_raw_data.pop(sensitive_info)
     return CommandResults(
         outputs_prefix='Zoom.Meeting',
         readable_output=md,
-        outputs=raw_data,
+        outputs=safe_raw_data,
         raw_response=raw_data
     )
 
@@ -654,11 +657,15 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
                                                          'type', 'status', 'start_time', 'duration',
                                                          'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
                                                          ])
+    # removing passwords from the response#
+    safe_raw_data = raw_data
+    for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
+        safe_raw_data.pop(sensitive_info)
     return CommandResults(
-        outputs_prefix='Zoom.Meetings',
+        outputs_prefix='Zoom.Meeting',
         readable_output=md,
-        outputs_key_field=str(raw_data["id"]),
-        outputs=raw_data,
+        outputs_key_field=str(safe_raw_data["id"]),
+        outputs=safe_raw_data,
         raw_response=raw_data
     )
 
@@ -714,7 +721,7 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
         readable_output=md,
         # keeping the syntax of the output of the previous version
         outputs={
-            'Meetings': raw_data,
+            'Meeting': raw_data,
             'Metadata': {'Size': raw_data.get('page_size'),
                          'Total': raw_data.get('total_records')}
         },
