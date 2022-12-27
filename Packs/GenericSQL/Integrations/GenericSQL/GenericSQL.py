@@ -190,7 +190,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
     """
     If the connection in the client was successful the test will return OK
     if it wasn't an exception will be raised
-    In case of Fetch Incidents, there are some validation
+    In case of Fetch Incidents, there are some validations.
     """
     msg = ''
     params = demisto.params()
@@ -210,11 +210,16 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
                 msg += 'Missing Column name for fetching or ID Column name (when ID and timestamp are chosen,' \
                        ' fill in both). '
 
-        if not (params.get('start_id') or params.get('start_timestamp')):
-            msg += 'A starting point for fetching is missing, please enter Start ID or Start Timestamp. '
+        if params.get('fetch_parameters') == 'Unique ascending ID or unique timestamp':
+            if not params.get('column_name'):
+                msg += 'Missing Column name for fetching (when Unique ascending ID or unique timestamp is chosen,' \
+                       ' Column name for fetching should be filled). '
+            if params.get('id_column'):
+                msg += 'In case of Unique ascending ID or unique timestamp,  fill only Column name for fetching,' \
+                       ' ID Column name should be unfilled. '
 
-        if not params.get('column_name'):
-            msg += 'Missing parameter Column name for fetching. '
+        if not (params.get('start_id') or params.get('start_timestamp')):
+            msg += 'A starting point for fetching is missing, please enter First fetch ID or First fetch timestamp. '
 
     return msg if msg else 'ok', {}, []
 
@@ -261,14 +266,6 @@ def sql_query_execute(client: Client, args: dict, *_) -> Tuple[str, Dict[str, An
 
 
 def get_last_run(params: dict):
-    """
-
-    Args:
-        params:
-
-    Returns:
-
-    """
     last_run = demisto.getLastRun()
     demisto.debug(f"### {last_run=} ###")
 
@@ -282,7 +279,7 @@ def get_last_run(params: dict):
 
         else:
             last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}
-        # for the case when we get timestamp and id - need to maintain an id's set
+        # for the case when we get timestamp and id - need to maintain an id's list
         last_run['ids'] = list()
     return last_run
 
@@ -304,7 +301,7 @@ def create_sql_query(last_run: dict, params: dict):
         sql_query = f"{params.get('fetchQuery')}('{last_timestamp_or_id}', {params.get('fetch_limit')})"
 
     # a simple query with ts and id, that means ts is not unique
-    elif params.get('column_name') and params.get('id_column'):
+    elif params.get('fetch_parameters') == 'ID and timestamp':
         sql_query = f"{params.get('fetchQuery')} where {params.get('column_name')} >= '{last_timestamp_or_id}'" \
                     f" order by {params.get('column_name')}"
 
@@ -331,16 +328,6 @@ def convert_sqlalchemy_to_readable_table(result: dict):
 
 
 def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict):
-    """
-
-    Args:
-        params:
-        table:
-        last_run:
-
-    Returns:
-
-    """
     is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
     if last_run.get('last_timestamp'):
         last_record_timestamp = table[-1].get(params.get('column_name'))
@@ -353,10 +340,13 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
             last_run['ids'] = new_ids_list
 
         # allow till 3 digit after the decimal point - due to limits on querying
-        # before_decimal_point, after_decimal_point = last_record_timestamp.split('.')
-        # last_timestamp = f'{before_decimal_point}.{after_decimal_point[:3]}'
-        # last_run['last_timestamp'] = last_timestamp
-        last_run['last_timestamp'] = table[-1].get(params.get('column_name'))
+        before_and_after_decimal_point = last_record_timestamp.split('.')
+        if len(before_and_after_decimal_point) == 2:
+            last_run['last_timestamp'] = f'{before_and_after_decimal_point[0]}.{before_and_after_decimal_point[1][:3]}'
+        elif len(before_and_after_decimal_point) == 1:
+            last_run['last_timestamp'] = before_and_after_decimal_point[0]
+        else:
+            raise Exception("Unsupported Format Time")
     else:
         last_run['last_id'] = table[-1].get(params.get('column_name'))
 
@@ -364,16 +354,6 @@ def update_last_run_after_fetch(table: List[dict], last_run: dict, params: dict)
 
 
 def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[Dict[str, Any]]:
-    """
-
-    Args:
-        params:
-        last_run:
-        table:
-
-    Returns:
-
-    """
     incidents = []
     is_timestamp_and_id = True if params.get('fetch_parameters') == 'ID and timestamp' else False
     for record in table:
@@ -387,7 +367,7 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
                 continue
 
         incident_context = {
-            'name': record.get(params.get('incident_name')) if record.get('incident_name')
+            'name': record.get(params.get('incident_name')) if record.get(params.get('incident_name'))
             else record.get(params.get('column_name')),
             'occurred': date_time.strftime(DATE_FORMAT),
             'rawJSON': json.dumps(record),
@@ -398,21 +378,11 @@ def table_to_incidents(table: List[dict], last_run: dict, params: dict) -> List[
 
 
 def fetch_incidents(client: Client, params: dict):
-    """
-
-    Args:
-        client (Client): The API client.
-        params (dict): The params for fetch.
-    """
-    demisto.debug(f'### {params=} ###')
     last_run = get_last_run(params)
     sql_query = create_sql_query(last_run, params)
     limit_fetch = arg_to_number(params.get('fetch_limit', FETCH_DEFAULT_LIMIT))
     result, headers = client.sql_query_execute_request(sql_query, {})
-    demisto.debug(f'### {result=} ###')
-    demisto.debug(f'### {headers=} ###')
     table = convert_sqlalchemy_to_readable_table(result)
-    demisto.debug(f"## {table=} ##")
     table = table[:limit_fetch]
 
     incidents: List[Dict[str, Any]] = table_to_incidents(table, last_run, params)
@@ -422,7 +392,7 @@ def fetch_incidents(client: Client, params: dict):
 
     demisto.info(f'last record now is: {last_run}, '
                  f'number of incidents fetched is {len(incidents)}')
-    demisto.debug(f"## {incidents=} ##")
+
     return incidents, last_run
 
 

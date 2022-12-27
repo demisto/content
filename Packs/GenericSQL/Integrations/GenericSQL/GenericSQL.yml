@@ -37,7 +37,7 @@ configuration:
   - ID and timestamp
   required: false
   type: 15
-- additionalinfo: The Generic SQL query/procedure. Only simple queries are supported, which means 'select * from table_name'. Procedures should contain condition on the fetch parameter, for example timestamp > @timestamp and order by timestamp (asc). "CREATE PROCEDURE *NAME* @timestamp DATETIME AS SELECT * FROM table_name WHERE timestamp >= @timestamp order by timestamp".
+- additionalinfo: The Generic SQL query/procedure.
   display: Fetch events query
   name: fetchQuery
   required: false

@@ -108,3 +108,30 @@ TABLE_3 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incident
             'incident_data': 'incident data for incident 2'},
            {'incident_id': '1002', 'timestamp': '2022-11-24 13:10:31', 'incident_name': 'incident_3',
             'incident_data': 'incident data for incident 3'}]
+
+# ------------------------------------ test_fetch_incident_update_last_run (4) -------------------------------
+
+HEADERS_4 = "['incident_id', 'timestamp', 'incident_name', 'incident_data']"
+RESPONSE_4_1 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incident_name': 'incident_2',
+                'incident_data': 'incident data for incident 2'}]
+RESPONSE_4_2 = [{'incident_id': '1002', 'timestamp': '2022-11-24 13:10:31', 'incident_name': 'incident_3',
+                'incident_data': 'incident data for incident 3'}]
+TABLE_4_1 = [{'incident_id': '1001', 'timestamp': '2022-11-24 13:10:12', 'incident_name': 'incident_2',
+             'incident_data': 'incident data for incident 2'}]
+TABLE_4_2 = [{'incident_id': '1002', 'timestamp': '2022-11-24 13:10:31', 'incident_name': 'incident_3',
+             'incident_data': 'incident data for incident 3'}]
+PARAMS_4 = {'column_name': 'timestamp', 'connect_parameters': None, 'credentials':
+            {'credential': '', 'credentials': {'cacheVersn': 0, 'id': '', 'locked': False,
+                                               'modified': '0001-01-01T00:00:00Z', 'name': '', 'password': '',
+                                               'sshkey': '', 'sshkeyPass': '', 'user': '', 'vaultInstanceId': '',
+                                               'version': 0, 'workgroup': ''},
+             'identifier': 'admin', 'password': 'ICYq7L3S21', 'passwordChanged': False},
+            'dbname': 'test_db_1', 'dialect': 'MySQL', 'feed': False, 'fetchQuery': 'call Test_MySQL_3',
+            'fetch_limit': '2', 'fetch_parameters': 'Unique ascending ID or unique timestamp',
+            'host': 'demistodev-mysql.cb1lbinsdk4m.eu-central-1.rds.amazonaws.com', 'id_column': '',
+            'incidentFetchInterval': '1', 'incidentType': None, 'incident_name': 'incident_name', 'isFetch': True,
+            'pool_ttl': '600', 'port': '3306', 'ssl_connect': False, 'start_id': '', 'start_timestamp': '2 months',
+            'use_pool': False}
+
+EXPECTED_LAST_RUN_4_1 = {'last_timestamp': '2022-11-24 13:10:12', 'last_id': False, 'ids': []}
+EXPECTED_LAST_RUN_4_2 = {'last_timestamp': '2022-11-24 13:10:31', 'last_id': False, 'ids': []}

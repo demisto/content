@@ -37,10 +37,17 @@ There are two options to fetch incidents, determined by 'Fetch by' configuration
 
 #### Fetch events query
 The Generic SQL query or procedure to fetch according to.
-When using queries, only simple queries are supported, which means only using 'select' and 'from' keywords, for example: 'select id, header_name from table_name'.
-Therefor, it is highly recommended to use procedures.
+When using queries, only simple queries are supported, therefor, it is highly recommended to use procedures.
+1. **Queries examples**: 
+   Use only 'select' and 'from' keywords.
+   1. Supported:
+      1. select id, header_name from table_name -- ok when fetching by id and id is the exact column name.
+      2. select * from table_name -- all columns, should include timestamp or id column.
+   2. Unsupported:
+      1. select header_name from table_name -- no select id or timestamp column, can't execute the fetch
+
 Procedure examples for different SQL DBs:
-1. **MySQL** 
+2. **MySQL** 
     1. Example: "CREATE PROCEDURE *PROCEDURE_NAME*(IN ts DATETIME, IN l INT)
 BEGIN
     SELECT * FROM TABLE_NAME
@@ -51,7 +58,7 @@ END"
     4. Run ***sql-command*** with your new procedure provided in the query argument, in order to create your procedure.
     5. After creating the procedure, fill in 'Fetch events query' the value: 'call *PROCEDURE_NAME*' with your procedure name. 
     6. Fetch parameters, ts (timestamp) or id and l (limit), will be added by the fetch mechanism.
-2. **MSSQL**
+3. **MSSQL**
    1. Example: "CREATE PROCEDURE *PROCEDURE_NAME* @timestamp DATETIME
    AS
    SELECT * FROM TABLE_NAME WHERE timestamp >= @timestamp order by timestamp"
