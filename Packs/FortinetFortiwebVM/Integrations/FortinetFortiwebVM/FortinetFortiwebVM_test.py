@@ -62,7 +62,8 @@ def test_protected_hostname_group_create_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response, status_code=HTTPStatus.OK)
     result = protected_hostname_group_create_command(mock_client, args)
-    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_CREATE.value in str(result.readable_output)
+    output = f'{OutputTitle.PROTECTED_HOSTNAME_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -153,7 +154,8 @@ def test_protected_hostname_group_update_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = protected_hostname_group_update_command(mock_client, args)
-    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.PROTECTED_HOSTNAME_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -240,7 +242,8 @@ def test_protected_hostname_group_delete_command(requests_mock, mock_client: Cli
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = protected_hostname_group_delete_command(mock_client, args)
-    assert OutputTitle.PROTECTED_HOSTNAME_GROUP_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.PROTECTED_HOSTNAME_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -478,7 +481,8 @@ def test_protected_hostname_member_update_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = protected_hostname_member_update_command(mock_client, args)
-    assert OutputTitle.PROTECTED_HOSTNAME_MEMBER_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.PROTECTED_HOSTNAME_MEMBER.value} {args["member_id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -608,7 +612,8 @@ def test_protected_hostname_member_delete_command(requests_mock, mock_client: Cl
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = protected_hostname_member_delete_command(mock_client, args)
-    assert OutputTitle.PROTECTED_HOSTNAME_MEMBER_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.PROTECTED_HOSTNAME_MEMBER.value} {args["member_id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -713,7 +718,8 @@ def test_ip_list_group_create_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = ip_list_group_create_command(mock_client, args)
-    assert OutputTitle.IP_LIST_GROUP_CREATE.value in str(result.readable_output)
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -833,7 +839,8 @@ def test_ip_list_group_upadte_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = ip_list_group_update_command(mock_client, args)
-    assert OutputTitle.IP_LIST_GROUP_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'),
@@ -916,7 +923,8 @@ def test_ip_list_group_delete_command(requests_mock, mock_client: Client, versio
     requests_mock.delete(url=url, json=json_response)
 
     result = ip_list_group_delete_command(mock_client, args)
-    assert OutputTitle.IP_LIST_GROUP_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.IP_LIST_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1144,7 +1152,8 @@ def test_ip_list_member_update_command(requests_mock, mock_client: Client, versi
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = ip_list_member_update_command(mock_client, args)
-    assert OutputTitle.IP_LIST_MEMBER_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.IP_LIST_MEMBER.value} {args["member_id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1211,7 +1220,8 @@ def test_ip_list_member_delete_command(requests_mock, mock_client: Client, versi
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = ip_list_member_delete_command(mock_client, args)
-    assert OutputTitle.IP_LIST_MEMBER_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.IP_LIST_MEMBER.value} {args["member_id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -1448,7 +1458,8 @@ def test_http_content_routing_member_update_command(requests_mock, mock_client: 
     args = {'policy_name': 'policy', 'http_content_routing_policy': '1234', 'id': 1}
 
     result = http_content_routing_member_update_command(mock_client, args)
-    assert OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.HTTP_CONTENT_ROUTING_MEMBER.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1513,7 +1524,8 @@ def test_http_content_routing_member_delete_command(requests_mock, mock_client: 
     args = {'policy_name': 'policy', 'id': 1}
 
     result = http_content_routing_member_delete_command(mock_client, args)
-    assert OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.HTTP_CONTENT_ROUTING_MEMBER.value} {args["id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1614,7 +1626,8 @@ def test_geo_ip_group_create_command(requests_mock, mock_client: Client, version
     }
 
     result = geo_ip_group_create_command(mock_client, args)
-    assert OutputTitle.GEO_IP_GROUP_CREATE.value in str(result.readable_output)
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg', 'additional_args'), (
@@ -1733,7 +1746,8 @@ def test_geo_ip_group_update_command(requests_mock, mock_client: Client, version
     }
 
     result = geo_ip_group_update_command(mock_client, args)
-    assert OutputTitle.GEO_IP_GROUP_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1793,7 +1807,8 @@ def test_geo_ip_group_delete_command(requests_mock, mock_client: Client, version
     requests_mock.delete(url=url, json=json_response)
     args = {'name': 'check'}
     result = geo_ip_group_delete_command(mock_client, args)
-    assert OutputTitle.GEO_IP_GROUP_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.GEO_IP_GROUP.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -1946,7 +1961,8 @@ def test_geo_ip_member_delete_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.delete(url=url, json=json_response)
     result = geo_ip_member_delete_command(mock_client, args)
-    assert OutputTitle.GEO_IP_MEMBER_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.GEO_IP_MEMBER.value} 1 {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -2244,7 +2260,8 @@ def test_server_policy_create_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.post(url=url, json=json_response)
     result = server_policy_create_command(mock_client, args)
-    assert OutputTitle.SERVER_POLICY_CREATE.value in str(result.readable_output)
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.CREATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2422,7 +2439,8 @@ def test_server_policy_update_command(requests_mock, mock_client: Client, versio
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = server_policy_update_command(mock_client, args)
-    assert OutputTitle.SERVER_POLICY_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -2490,7 +2508,8 @@ def test_server_policy_delete_command(requests_mock, mock_client: Client, versio
     args = {'name': 'check'}
 
     result = server_policy_delete_command(mock_client, args)
-    assert OutputTitle.SERVER_POLICY_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.SERVER_POLICY.value} {args["name"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -2875,16 +2894,15 @@ def test_custom_whitelist_header_field_create_command(requests_mock, mock_client
     assert result.outputs_prefix == 'FortiwebVM.CustomGlobalWhitelist'
 
 
-@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
-    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
-        'name': 'ron',
-        'status': 'disable',
-        'header_name_type': 'Simple String'
-    }, 'custom_whitelist/v2_exist.json', ErrorMessage.ALREADY_EXIST.value),
-))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'),
+                         ((ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group', {
+                             'name': 'ron',
+                             'status': 'disable',
+                             'header_name_type': 'Simple String'
+                         }, 'custom_whitelist/v2_exist.json', ErrorMessage.ALREADY_EXIST.value), ))
 def test_api_fail_custom_whitelist_header_field_create_command(requests_mock, mock_client: Client, version: str,
-                                                           endpoint: str, args: Dict[str, Any], jsonpath: str,
-                                                           error_msg: str):
+                                                               endpoint: str, args: Dict[str, Any], jsonpath: str,
+                                                               error_msg: str):
     """
     Scenario: Create a custom whitelist header field member.
     Given:
@@ -2922,8 +2940,8 @@ def test_api_fail_custom_whitelist_header_field_create_command(requests_mock, mo
     }, 'custom_whitelist/v2_wrong_parameters.json', ErrorMessage.VALUE_INSERT.value),
 ))
 def test_input_fail_custom_whitelist_header_field_create_command(requests_mock, mock_client: Client, version: str,
-                                                           endpoint: str, args: Dict[str, Any], jsonpath: str,
-                                                           error_msg: str):
+                                                                 endpoint: str, args: Dict[str, Any], jsonpath: str,
+                                                                 error_msg: str):
     """
     Scenario: Create a custom whitelist header field member.
     Given:
@@ -2983,7 +3001,8 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_url_update_command(mock_client, args)
-    assert OutputTitle.CUSTOM_WHITELIST_URL_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_WHITELIST_URL.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -3001,7 +3020,7 @@ def test_custom_whitelist_url_update_command(requests_mock, mock_client: Client,
     }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
 def test_api_fail_custom_whitelist_url_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, error_msg: str):
+                                                      args: Dict[str, Any], jsonpath: str, error_msg: str):
     """
     Scenario: Create a custom whitelist url member.
     Given:
@@ -3041,7 +3060,7 @@ def test_api_fail_custom_whitelist_url_update_command(requests_mock, mock_client
     }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with URL update command."),
 ))
 def test_input_fail_custom_whitelist_url_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                  args: Dict[str, Any], jsonpath: str, error_msg: str):
+                                                        args: Dict[str, Any], jsonpath: str, error_msg: str):
     """
     Scenario: Create a custom whitelist url member.
     Given:
@@ -3103,7 +3122,8 @@ def test_custom_whitelist_parameter_update_command(requests_mock, mock_client: C
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_parameter_update_command(mock_client, args)
-    assert OutputTitle.CUSTOM_WHITELIST_PARAMETER_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_WHITELIST_PARAMETER.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -3141,6 +3161,7 @@ def test_fail_custom_whitelist_parameter_update_command(requests_mock, mock_clie
         custom_whitelist_parameter_update_command(mock_client, args)
     assert error_msg in str(error_info.value)
 
+
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
         'id': '3',
@@ -3151,8 +3172,9 @@ def test_fail_custom_whitelist_parameter_update_command(requests_mock, mock_clie
         'name': 'sdfs',
     }, 'custom_whitelist/v2_not_exist.json', "You can't update URL member with Parameter update command."),
 ))
-def test_input_fail_custom_whitelist_parameter_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                        args: Dict[str, Any], jsonpath: str, error_msg: str):
+def test_input_fail_custom_whitelist_parameter_update_command(requests_mock, mock_client: Client, version: str,
+                                                              endpoint: str, args: Dict[str, Any], jsonpath: str,
+                                                              error_msg: str):
     """
     Scenario: Update a custom whitelist parameter member.
     Given:
@@ -3209,7 +3231,8 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_cookie_update_command(mock_client, args)
-    assert OutputTitle.CUSTOM_WHITELIST_COOKIE_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_WHITELIST_COOKIE.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
@@ -3222,8 +3245,9 @@ def test_custom_whitelist_cookie_update_command(requests_mock, mock_client: Clie
         'name': 'sdfs',
     }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
 ))
-def test_api_fail_custom_whitelist_cookie_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                     args: Dict[str, Any], jsonpath: str, error_msg: str):
+def test_api_fail_custom_whitelist_cookie_update_command(requests_mock, mock_client: Client, version: str,
+                                                         endpoint: str, args: Dict[str,
+                                                                                   Any], jsonpath: str, error_msg: str):
     """
     Scenario: Create a custom whitelist cookie member.
     Given:
@@ -3247,6 +3271,8 @@ def test_api_fail_custom_whitelist_cookie_update_command(requests_mock, mock_cli
     with pytest.raises(DemistoException) as error_info:
         custom_whitelist_cookie_update_command(mock_client, args)
     assert error_msg in str(error_info.value)
+
+
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/3', {
         'id': '3',
@@ -3257,8 +3283,9 @@ def test_api_fail_custom_whitelist_cookie_update_command(requests_mock, mock_cli
         'name': 'sdfs',
     }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with Cookie update command."),
 ))
-def test_input_fail_custom_whitelist_cookie_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
-                                                     args: Dict[str, Any], jsonpath: str, error_msg: str):
+def test_input_fail_custom_whitelist_cookie_update_command(requests_mock, mock_client: Client, version: str,
+                                                           endpoint: str, args: Dict[str, Any], jsonpath: str,
+                                                           error_msg: str):
     """
     Scenario: Create a custom whitelist cookie member.
     Given:
@@ -3311,15 +3338,15 @@ def test_custom_whitelist_header_field_update_command(requests_mock, mock_client
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response)
     result = custom_whitelist_header_field_update_command(mock_client, args)
-    assert OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
-@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
-    (ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
-        'id': '4',
-        'name': 'sdfs',
-    }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value),
-))
+@pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'),
+                         ((ClientV2.API_VER, 'cmdb/server-policy/pattern.custom-global-white-list-group?mkey=4', {
+                             'id': '4',
+                             'name': 'sdfs',
+                         }, 'custom_whitelist/v2_not_exist.json', ErrorMessage.NOT_EXIST.value), ))
 def test_fail_custom_whitelist_header_field_update_command(requests_mock, mock_client: Client, version: str,
                                                            endpoint: str, args: Dict[str, Any], jsonpath: str,
                                                            error_msg: str):
@@ -3347,6 +3374,7 @@ def test_fail_custom_whitelist_header_field_update_command(requests_mock, mock_c
         custom_whitelist_header_field_update_command(mock_client, args)
     assert error_msg in str(error_info.value)
 
+
 @pytest.mark.parametrize(('version', 'endpoint', 'args', 'jsonpath', 'error_msg'), (
     (ClientV1.API_VER, 'ServerObjects/Global/CustomGlobalWhiteList/7', {
         'id': '7',
@@ -3363,8 +3391,8 @@ def test_fail_custom_whitelist_header_field_update_command(requests_mock, mock_c
     }, 'custom_whitelist/v2_not_exist.json', "You can't update Parameter member with Header Field update command."),
 ))
 def test_input_fail_custom_whitelist_header_field_update_command(requests_mock, mock_client: Client, version: str,
-                                                           endpoint: str, args: Dict[str, Any], jsonpath: str,
-                                                           error_msg: str):
+                                                                 endpoint: str, args: Dict[str, Any], jsonpath: str,
+                                                                 error_msg: str):
     """
     Scenario: Update a custom whitelist header-field member.
     Given:
@@ -3413,7 +3441,8 @@ def test_custom_whitelist_delete_command(requests_mock, mock_client: Client, ver
     args = {'id': '1'}
 
     result = custom_whitelist_delete_command(mock_client, args)
-    assert OutputTitle.CUSTOM_WHITELIST_DELETE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_WHITELIST_MEMBER.value} {args["id"]} {OutputTitle.DELETED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(('version', 'endpoint', 'jsonpath', 'error_msg'), (
@@ -3525,11 +3554,11 @@ def test_trigger_policy_list_command(requests_mock, mock_client: Client, version
     (ClientV1.API_VER, 'ServerObjects/Global/CustomPredefinedGlobalWhiteList', {
         'id': '200001',
         'status': 'enable',
-    }, 'custom_predifined/v1_update_success.json', 'Update command not supported in version 1.', HTTPStatus.OK, False),
+    }, 'custom_predifined/v1_update_success.json', '200001', HTTPStatus.OK, False),
     (ClientV2.API_VER, 'policy/serverobjects.global.predefinedglobalwhitelist', {
         'id': '200001',
         'status': 'enable',
-    }, 'custom_predifined/v2_update_success.json', 'check', HTTPStatus.OK, False),
+    }, 'custom_predifined/v2_update_success.json', '200001', HTTPStatus.OK, False),
 ))
 def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: Client, version: str, endpoint: str,
                                                     args: Dict[str, Any], jsonpath: str, expected_value: str,
@@ -3555,7 +3584,8 @@ def test_custom_predifined_whitelist_update_command(requests_mock, mock_client: 
     url = urljoin(mock_client.base_url, endpoint)
     requests_mock.put(url=url, json=json_response, status_code=status_code)
     result = custom_predifined_whitelist_update_command(mock_client, args)
-    assert OutputTitle.CUSTOM_PREDIFINED_UPDATE.value in str(result.readable_output)
+    output = f'{OutputTitle.CUSTOM_PREDIFINED.value} {args["id"]} {OutputTitle.UPDATED.value}'
+    assert output == str(result.readable_output)
 
 
 @pytest.mark.parametrize(

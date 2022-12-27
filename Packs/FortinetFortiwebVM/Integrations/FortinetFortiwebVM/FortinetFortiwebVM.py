@@ -11,48 +11,66 @@ LIMIT_SIZE = 50
 
 
 class OutputTitle(Enum):
-    PROTECTED_HOSTNAME_GROUP_CREATE = 'Hostname group successfully created!'
-    PROTECTED_HOSTNAME_GROUP_UPDATE = 'Hostname group successfully updated!'
-    PROTECTED_HOSTNAME_GROUP_DELETE = 'Hostname group successfully deleted!'
+    PROTECTED_HOSTNAME_GROUP = 'Protected Hostname group'
+    PROTECTED_HOSTNAME_MEMBER = 'Protected Hostname member'
+    IP_LIST_GROUP = 'IP List group'
+    IP_LIST_MEMBER = 'IP List member'
+    HTTP_CONTENT_ROUTING_MEMBER = 'HTTP content routing member'
+    GEO_IP_GROUP = 'Geo IP group'
+    GEO_IP_MEMBER = 'Geo IP member'
+    SERVER_POLICY = 'Server Policy'
+    CUSTOM_WHITELIST_URL = 'Custom whitelist URL member'
+    CUSTOM_WHITELIST_PARAMETER = 'Custom whitelist Parameter member'
+    CUSTOM_WHITELIST_COOKIE = 'Custom whitelist Cookie member'
+    CUSTOM_WHITELIST_HEADER_FIELD = 'Custom whitelist Header Field member'
+    CUSTOM_WHITELIST_MEMBER = 'Custom whitelist member'
+    CUSTOM_PREDIFINED = 'Custom predifined member'
+    CREATED = 'successfully created!'
+    UPDATED = 'successfully updated!'
+    DELETED = 'successfully deleted!'
     PROTECTED_HOSTNAME_GROUP_LIST = 'Protected Hostnames Groups:'
     PROTECTED_HOSTNAME_MEMBER_CREATE = 'Hostname member successfully created!'
+    PROTECTED_HOSTNAME_MEMBER_LIST = 'Protected Hostnames Members:'
+    IP_LIST_GROUP_LIST = 'IP Lists Groups:'
+    IP_LIST_MEMBER_CREATE = 'IP List member successfully created!'
+    IP_LIST_MEMBER_LIST = 'IP Lists Members:'
+    HTTP_CONTENT_ROUTING_MEMBER_CREATE = 'HTTP content routing member succesfuly created!'
+    HTTP_CONTENT_ROUTING_MEMBER_LIST = 'HTTP Content Routing Policy Members:'
+    GEO_IP_GROUP_LIST = 'Geo IP group:'
+    GEO_IP_MEMBER_ADD = 'Geo IP member successfully added!'
+    GEO_IP_MEMBER_LIST = 'Geo IP member:'
+    SERVER_POLICY_LIST = 'Server Policies:'
+    CUSTOM_WHITELIST_URL_CREATE = 'Custom whitelist URL member succesfuly created!'
+    CUSTOM_WHITELIST_PARAMETER_CREATE = 'Custom whitelist Parameter member succesfuly created!'
+    CUSTOM_WHITELIST_COOKIE_CREATE = 'Custom whitelist Cookie member succesfuly created!'
+    CUSTOM_WHITELIST_HEADER_FIELD_CREATE = 'Custom whitelist Header Field member succesfuly created!'
+    CUSTOM_WHITELIST_LIST = 'Custom whitelist members:'
+    CUSTOM_PREDIFINED_LIST = 'Custom whitelist members:'
+
+    PROTECTED_HOSTNAME_GROUP_CREATE = 'Protected Hostname group successfully created!'
+    PROTECTED_HOSTNAME_GROUP_UPDATE = 'Hostname group successfully updated!'
+    PROTECTED_HOSTNAME_GROUP_DELETE = 'Hostname group successfully deleted!'
     PROTECTED_HOSTNAME_MEMBER_UPDATE = 'Hostname member successfully updated!'
     PROTECTED_HOSTNAME_MEMBER_DELETE = 'Hostname member successfully deleted!'
-    PROTECTED_HOSTNAME_MEMBER_LIST = 'Protected Hostnames Members:'
     IP_LIST_GROUP_CREATE = 'IP List group successfully created!'
     IP_LIST_GROUP_UPDATE = 'IP List group successfully updated!'
     IP_LIST_GROUP_DELETE = 'IP List group successfully deleted!'
-    IP_LIST_GROUP_LIST = 'IP Lists Groups:'
-    IP_LIST_MEMBER_CREATE = 'IP List member successfully created!'
     IP_LIST_MEMBER_UPDATE = 'IP List member successfully updated!'
     IP_LIST_MEMBER_DELETE = 'IP List member successfully deleted!'
-    IP_LIST_MEMBER_LIST = 'IP Lists Members:'
-    HTTP_CONTENT_ROUTING_MEMBER_CREATE = 'HTTP content routing member succesfuly created!'
     HTTP_CONTENT_ROUTING_MEMBER_UPDATE = 'HTTP content routing member succesfuly updated!'
     HTTP_CONTENT_ROUTING_MEMBER_DELETE = 'HTTP content routing member succesfuly deleted!'
-    HTTP_CONTENT_ROUTING_MEMBER_LIST = 'HTTP Content Routing Policy Members:'
     GEO_IP_GROUP_CREATE = 'Geo IP group successfully created!'
     GEO_IP_GROUP_UPDATE = 'Geo IP group successfully updated!'
     GEO_IP_GROUP_DELETE = 'Geo IP group successfully deleted!'
-    GEO_IP_GROUP_LIST = 'Geo IP group:'
-    GEO_IP_MEMBER_ADD = 'Geo IP member successfully added!'
     GEO_IP_MEMBER_DELETE = 'Geo IP member succesfuly deleted!'
-    GEO_IP_MEMBER_LIST = 'Geo IP member:'
     SERVER_POLICY_CREATE = 'Server Policy succesfuly created!'
     SERVER_POLICY_UPDATE = 'Server Policy succesfuly updated!'
     SERVER_POLICY_DELETE = 'Server Policy succesfuly deleted!'
-    SERVER_POLICY_LIST = 'Server Policies:'
-    CUSTOM_WHITELIST_URL_CREATE = 'Custom whitelist URL member succesfuly created!'
     CUSTOM_WHITELIST_URL_UPDATE = 'Custom whitelist URL member succesfuly updated!'
-    CUSTOM_WHITELIST_PARAMETER_CREATE = 'Custom whitelist Parameter member succesfuly created!'
     CUSTOM_WHITELIST_PARAMETER_UPDATE = 'Custom whitelist Parameter member succesfuly updated!'
-    CUSTOM_WHITELIST_COOKIE_CREATE = 'Custom whitelist Cookie member succesfuly created!'
     CUSTOM_WHITELIST_COOKIE_UPDATE = 'Custom whitelist Cookie member succesfuly updated!'
-    CUSTOM_WHITELIST_HEADER_FIELD_CREATE = 'Custom whitelist Header Field member succesfuly created!'
     CUSTOM_WHITELIST_HEADER_FIELD_UPDATE = 'Custom whitelist Header Field member succesfuly updated!'
     CUSTOM_WHITELIST_DELETE = 'Custom whitelist member successfully deleted!'
-    CUSTOM_WHITELIST_LIST = 'Custom whitelist members:'
-    CUSTOM_PREDIFINED_LIST = 'Custom whitelist members:'
     CUSTOM_PREDIFINED_UPDATE = 'Custom predifined whitelist member successfully updated!'
 
 
@@ -3731,8 +3749,10 @@ def protected_hostname_group_create_command(client: Client, args: Dict[str, Any]
     validate_protected_hostname_group(args=args)
     name = args['name']
     response = client.protected_hostname_create_request(name=name, default_action=args['default_action'])
-    command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_CREATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.PROTECTED_HOSTNAME_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.CREATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -3749,8 +3769,10 @@ def protected_hostname_group_update_command(client: Client, args: Dict[str, Any]
     validate_protected_hostname_group(args=args)
     name = args['name']
     response = client.protected_hostname_update_request(name=name, default_action=args.get('default_action'))
-    command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.PROTECTED_HOSTNAME_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -3766,8 +3788,10 @@ def protected_hostname_group_delete_command(client: Client, args: Dict[str, Any]
     """
     name = args['name']
     response = client.protected_hostname_delete_request(name)
-    command_results = generate_simple_command_results('name', name, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_GROUP_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.PROTECTED_HOSTNAME_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -3876,8 +3900,10 @@ def protected_hostname_member_update_command(client: Client, args: Dict[str, Any
                                                                host=args.get('host'),
                                                                ignore_port=args.get('ignore_port'),
                                                                include_subdomains=args.get('include_subdomains'))
-    command_results = generate_simple_command_results('id', member_id, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.PROTECTED_HOSTNAME_MEMBER.value,
+                                                      object_name=member_id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -3894,10 +3920,12 @@ def protected_hostname_member_delete_command(client: Client, args: Dict[str, Any
     """
 
     protected_hostname = args['group_name']
-    protected_hostname_member_id = args['member_id']
-    response = client.protected_hostname_member_delete_request(protected_hostname, protected_hostname_member_id)
-    command_results = generate_simple_command_results('id', protected_hostname_member_id, response,
-                                                      OutputTitle.PROTECTED_HOSTNAME_MEMBER_DELETE.value)
+    member_id = args['member_id']
+    response = client.protected_hostname_member_delete_request(protected_hostname, member_id)
+    command_results = generate_simple_command_results(object_type=OutputTitle.PROTECTED_HOSTNAME_MEMBER.value,
+                                                      object_name=member_id,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -3981,8 +4009,10 @@ def ip_list_group_create_command(client: Client, args: Dict[str, Any]) -> Comman
                                                    ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'),
                                                    trigger_policy=args.get('trigger_policy'))
 
-    command_results = generate_simple_command_results('name', group_name, response,
-                                                      OutputTitle.IP_LIST_GROUP_CREATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.IP_LIST_GROUP.value,
+                                                      object_name=group_name,
+                                                      action=OutputTitle.CREATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4008,8 +4038,10 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
         severity=args.get('severity'),
         ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'),
         trigger_policy=args.get('trigger_policy'))
-    command_results = generate_simple_command_results('name', group_name, response,
-                                                      OutputTitle.IP_LIST_GROUP_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.IP_LIST_GROUP.value,
+                                                      object_name=group_name,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4017,8 +4049,10 @@ def ip_list_group_update_command(client: Client, args: Dict[str, Any]) -> Comman
 def ip_list_group_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     group_name = args['name']
     response = client.ip_list_group_delete_request(group_name)
-    command_results = generate_simple_command_results('id', group_name, response,
-                                                      OutputTitle.IP_LIST_GROUP_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.IP_LIST_GROUP.value,
+                                                      object_name=group_name,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4133,8 +4167,10 @@ def ip_list_member_update_command(client: Client, args: Dict[str, Any]) -> Comma
                                                     ip_address=args.get('ip_address'),
                                                     severity=severity,
                                                     trigger_policy=args.get('trigger_policy'))
-    command_results = generate_simple_command_results('id', member_id, response,
-                                                      OutputTitle.IP_LIST_MEMBER_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.IP_LIST_MEMBER.value,
+                                                      object_name=member_id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -4151,8 +4187,10 @@ def ip_list_member_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     group_name = args['group_name']
     member_id = args['member_id']
     response = client.ip_list_member_delete_request(group_name, member_id)
-    command_results = generate_simple_command_results('id', member_id, response,
-                                                      OutputTitle.IP_LIST_MEMBER_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.IP_LIST_MEMBER.value,
+                                                      object_name=member_id,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -4264,8 +4302,10 @@ def http_content_routing_member_update_command(client: Client, args: Dict[str, A
         inherit_webprotection_profile=args.get('inherit_web_protection_profile'),
         profile=args.get('profile'),
         status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.HTTP_CONTENT_ROUTING_MEMBER.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -4282,8 +4322,10 @@ def http_content_routing_member_delete_command(client: Client, args: Dict[str, A
     policy_name = args['policy_name']
     id = args['id']
     response = client.http_content_routing_member_delete_request(policy_name, id)
-    command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.HTTP_CONTENT_ROUTING_MEMBER_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.HTTP_CONTENT_ROUTING_MEMBER.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -4366,7 +4408,10 @@ def geo_ip_group_create_command(client: Client, args: Dict[str, Any]) -> Command
                                                   action=action,
                                                   block_period=block_period,
                                                   ignore_x_forwarded_for=ignore_x_forwarded_for)
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_CREATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.GEO_IP_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.CREATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4401,7 +4446,10 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
                                                   action=args.get('action'),
                                                   block_period=block_period,
                                                   ignore_x_forwarded_for=args.get('ignore_x_forwarded_for'))
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.GEO_IP_GROUP_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.GEO_IP_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4419,7 +4467,10 @@ def geo_ip_group_delete_command(client: Client, args: Dict[str, Any]) -> Command
 
     name = args['name']
     response = client.geo_ip_group_delete_request(name)
-    command_results = generate_simple_command_results('id', name, response, OutputTitle.GEO_IP_GROUP_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.GEO_IP_GROUP.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
 
     return command_results
 
@@ -4559,9 +4610,10 @@ def geo_ip_member_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     group_name = args['group_name']
     member_id = args['member_id']
     response = client.geo_ip_member_delete_request(group_name=group_name, member_id=member_id)
-    command_results = generate_simple_command_results('member_id', member_id, response,
-                                                      OutputTitle.GEO_IP_MEMBER_DELETE.value)
-
+    command_results = generate_simple_command_results(object_type=OutputTitle.GEO_IP_MEMBER.value,
+                                                      object_name=member_id,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -5043,7 +5095,10 @@ def server_policy_create_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_CREATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.SERVER_POLICY.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.CREATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5107,7 +5162,10 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
         intergroup=args.get('intergroup'),
         ip_range=args.get('ip_range'),
     )
-    command_results = generate_simple_command_results('name', name, response, OutputTitle.SERVER_POLICY_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.SERVER_POLICY.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5124,7 +5182,10 @@ def server_policy_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     """
     name = args['name']
     response = client.server_policy_delete_request(name)
-    command_results = generate_simple_command_results('id', name, response, OutputTitle.SERVER_POLICY_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.SERVER_POLICY.value,
+                                                      object_name=name,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5256,7 +5317,10 @@ def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) ->
                                                           request_type=args.get('request_type'),
                                                           request_url=args.get('request_url'),
                                                           status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_URL_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_WHITELIST_URL.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5353,8 +5417,10 @@ def custom_whitelist_parameter_update_command(client: Client, args: Dict[str, An
                                                                 domain_status=args.get('domain_status'),
                                                                 domain_type=args.get('domain_type'),
                                                                 domain=args.get('domain'))
-    command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.CUSTOM_WHITELIST_PARAMETER_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_WHITELIST_PARAMETER.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5406,8 +5472,10 @@ def custom_whitelist_cookie_update_command(client: Client, args: Dict[str, Any])
                                                              domain=args.get('domain'),
                                                              path=args.get('path'),
                                                              status=args.get('status'))
-    command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.CUSTOM_WHITELIST_COOKIE_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_WHITELIST_COOKIE.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
 
     return command_results
 
@@ -5471,8 +5539,10 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
         header_value_type=args.get('header_value_type'),
         value=args.get('value'))
 
-    command_results = generate_simple_command_results('id', id, response,
-                                                      OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_WHITELIST_HEADER_FIELD.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -5489,7 +5559,10 @@ def custom_whitelist_delete_command(client: Client, args: Dict[str, Any]) -> Com
 
     id = args['id']
     response = client.custom_whitelist_delete_request(id=id)
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_WHITELIST_DELETE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_WHITELIST_MEMBER.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.DELETED.value,
+                                                      response=response)
     return command_results
 
 
@@ -5591,7 +5664,10 @@ def custom_predifined_whitelist_update_command(client: Client, args: Dict[str, A
         rel_data.pop(f'{id}_enable', None)
     response = client.custom_predifined_whitelist_update_request(data=rel_data)
 
-    command_results = generate_simple_command_results('id', id, response, OutputTitle.CUSTOM_PREDIFINED_UPDATE.value)
+    command_results = generate_simple_command_results(object_type=OutputTitle.CUSTOM_PREDIFINED.value,
+                                                      object_name=id,
+                                                      action=OutputTitle.UPDATED.value,
+                                                      response=response)
     return command_results
 
 
@@ -5810,7 +5886,8 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def generate_simple_command_results(key: str, value: str, response: Dict[str, Any], message: str) -> CommandResults:
+def generate_simple_command_results(object_type: str, object_name: str, action: str,
+                                    response: Dict[str, Any]) -> CommandResults:
     """Genarte a simple command result with output (without context data).
 
     Args:
@@ -5822,9 +5899,8 @@ def generate_simple_command_results(key: str, value: str, response: Dict[str, An
     Returns:
         CommandResults: CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    outputs = {key: value}
-    readable_output = tableToMarkdown(message, outputs, headerTransform=string_to_table_header)
-    command_results = CommandResults(readable_output=readable_output, raw_response=response)
+    message = f'{object_type} {object_name} {action}'
+    command_results = CommandResults(readable_output=message, raw_response=response)
     return command_results
 
 
