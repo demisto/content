@@ -1859,18 +1859,18 @@ script:
       - '504'
       required: false
     - auto: PREDEFINED
-      description: Not documented. Supports API version 2 only.
+      description: Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
       isArray: false
       name: scripting
       predefined:
       - enable
       - disable
       required: false
-    - description: "Not documented. Required when: scripting is enable. Supports API version 2 only."
+    - description: "Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enable. Supports API version 2 only."
       isArray: false
       name: scripting_list
       required: false
-    - description: Supports API version 2 only.
+    - description: Select to use Policy Based Allow list instead of Global Allow List. Supports API version 2 only.
       isArray: false
       name: allow_list
       required: false
@@ -1962,7 +1962,7 @@ script:
       isArray: false
       name: certificate_group
       required: false
-    - description: "Required  when:  multi-certificate is disable."
+    - description: "Certificate group name. Required  when:  multi-certificate is disable."
       isArray: false
       name: certificate
       required: false
@@ -1971,7 +1971,7 @@ script:
       name: intergroup
       required: false
     - auto: PREDEFINED
-      description: Missing in version 1.
+      description: The name of an intermediate certificate authority (CA) group.
       isArray: false
       name: proxy
       defaultValue: disable
@@ -2079,15 +2079,15 @@ script:
       - '503'
       - '504'
       required: false
-    - description: Not documented. Supports API version 2 only.
+    - description: Not Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
       isArray: false
       name: scripting
       required: false
-    - description: "Not documented. Supports API version 2 only.Required  when: scripting-on is enable."
+    - description: "Scripting list to perform actions that are not currently supported by the built-in feature set. Required when: scripting is enable. Supports API version 2 only."
       isArray: false
       name: scripting_list
       required: false
-    - description: "Not documented. Required when: scripting is enable. Supports API version 2 only."
+    - description: Select to use Policy Based Allow list instead of Global Allow List. Supports API version 2 only.
       isArray: false
       name: allow_list
       required: false
@@ -2206,10 +2206,10 @@ script:
       description: "The failure return code when pserver can be connected to determine enabling HTTP failure retry. Supports API version 2 only. Required when: retry_on and retry_on_http_layer are enable."
       type: String
     - contextPath: FortiwebVM.ServerPolicy.scripting
-      description: Not documented. Supports API version 2 only.
+      description: Enable to perform actions that are not currently supported by the built-in feature set. Supports API version 2 only.
       type: String
     - contextPath: FortiwebVM.ServerPolicy.scripting_list
-      description: "Not documented. Required when: scripting is enable. Supports API version 2 only."
+      description: "Server policy scripting list. Required when: scripting is enable. Supports API version 2 only."
       type: String
     - contextPath: FortiwebVM.ServerPolicy.allow_list
       description: Server Policy Allow List. Supports API version 2 only.

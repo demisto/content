@@ -3062,7 +3062,7 @@ class ClientV2(Client):
             Dict[str, Any]: API response from FortiwebVM V2.
         """
         return self._http_request(method='GET', url_suffix='cmdb/server-policy/http-content-routing-policy')
-    def handle_certificates(self,certificate_type:str,certificate:str,multi_certificate:str,lets_certificate:str)-> Dict[str,Any]:
+    def handle_certificates(self, certificate_type : str,certificate : str, multi_certificate : str, lets_certificate : str) -> Dict[str, Any]:
         """Hadle certificates for Fortiweb V2 server policy.
 
         Args:
@@ -3074,7 +3074,7 @@ class ClientV2(Client):
         Returns:
             Dict[str,Any]: Certificate data to server policy.
         """
-        data={}
+        data = {}
         match certificate_type:
             case 'Letsencrypt':
                 data.update(
