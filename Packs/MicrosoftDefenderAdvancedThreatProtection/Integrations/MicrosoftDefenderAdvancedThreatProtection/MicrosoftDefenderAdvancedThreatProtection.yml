@@ -810,6 +810,7 @@ script:
       - Unknown
       - FalsePositive
       - TruePositive
+      - InformationalExpectedActivity
       required: false
       secret: false
     - auto: PREDEFINED
