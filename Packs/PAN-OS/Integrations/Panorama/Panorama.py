@@ -13092,7 +13092,7 @@ def get_parsed_incident_entries(incident_entries_dict: Dict[str, List[Dict[str, 
         last_id_dict (Dict[str,str]): last id dictionary
 
     Returns:
-        _type_: _description_
+        Dict[str,Any]: parsed context incident dictionary
     """
     parsed_incident_entries_dict = {}
     for log_type, incident_entries in incident_entries_dict.items():
