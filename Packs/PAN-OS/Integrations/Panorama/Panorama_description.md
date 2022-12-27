@@ -1,4 +1,4 @@
-The integration uses the Panorama XML API
+The integration uses the Panorama XML API.
 To obtain an API Key, run the following REST command and copy the key:
 https://[PanoramaIP]/api/?type=keygen&user=[user]&password=[password]
 
@@ -9,24 +9,24 @@ You need to create a separate integration instance for Palo Alto Networks Firewa
 
 ---
 ### Firewall: Configure the vsys
-- The vsys is located in the Firewall URL; e.g, https://<server>#device::<vsys>::device/setup
+- The vsys is located in the Firewall URL; e.g., https://<server>#device::<vsys>::device/setup
 
 ### Panorama: Configure a device group
 - Access the Panorama UI.
-- Go to Panorama --> Device Groups.
+- Go to **Panorama** > **Device Groups**.
 - Choose a device group name.
 
 ---
 ### Fetch Incidents
-Panorama integration now supports fetch incidents.
-The incidents are fetched according to a number of deferent optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
+The Panorama integration now supports fetch incidents.
+The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 
 ##### Max incidents per fetch
 The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
 
 ##### Log Type 
-The queries that will be included during the fetch are decided according to "Log Type" parameter (Multiple select dropdown).
+The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
 - Selecting "All" will use all the log type queries in the fetch.
 - To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
 
@@ -49,7 +49,7 @@ The queries that will be included during the fetch are decided according to "Log
 
 ##### Classifiers and Mappers
 
-This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) That handles incidents returned from the API.
+This integration supports a default Classifier (Panorama Classifier) and Mapper (Panorama Mapper) that handles incidents returned from the API.
 
 ---
 
