@@ -820,9 +820,7 @@ script:
       name: determination
       predefined:
       - NotAvailable
-      - Apt
       - Malware
-      - SecurityPersonnel
       - SecurityTesting
       - UnwantedSoftware
       - Other
