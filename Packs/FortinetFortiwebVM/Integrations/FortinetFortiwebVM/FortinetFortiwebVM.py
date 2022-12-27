@@ -112,54 +112,54 @@ class ErrorMessage(Enum):
 class Parser:
 
     @abstractmethod
-    def protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
     @abstractmethod
-    def custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
         pass
 
-    def custom_predifined_whitelist(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_custom_predifined_whitelist(self, data: Dict[str, Any]) -> Dict[str, Any]:
         return {
             'id': data['_id'],
             'name': data['name'],
@@ -168,10 +168,10 @@ class Parser:
             'status': data['value']
         }
 
-    def http_service(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_http_service(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         return {'id': policy['name']}
 
-    def operation_status(self, operation_network: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_operation_status(self, operation_network: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for operation status.
 
         Args:
@@ -194,7 +194,7 @@ class Parser:
         }
         return parsed_data
 
-    def simple_name_parser(self, data: Dict[str, Any]) -> dict[str, Any]:
+    def parse_simple_name(self, data: Dict[str, Any]) -> dict[str, Any]:
         """Parse a simple output with id.
 
         Args:
@@ -272,7 +272,7 @@ class Parser:
 
 class ParserV1(Parser):
 
-    def protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -291,7 +291,7 @@ class ParserV1(Parser):
         }
         return group
 
-    def protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname member.
 
         Args:
@@ -308,7 +308,7 @@ class ParserV1(Parser):
         }
         return group
 
-    def ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -325,7 +325,7 @@ class ParserV1(Parser):
         }
         return group
 
-    def ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for IP list member.
 
         Args:
@@ -344,7 +344,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for HTTP content routing member.
 
         Args:
@@ -365,7 +365,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for Geo IP Group.
 
         Args:
@@ -387,7 +387,7 @@ class ParserV1(Parser):
 
         return parsed_data
 
-    def geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for Geo IP member.
 
         Args:
@@ -403,7 +403,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for operation status.
 
         Args:
@@ -426,7 +426,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for system status.
 
         Args:
@@ -450,10 +450,10 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
         return {'id': data_dict['_id']}
 
-    def server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for server policy dict.
 
         Args:
@@ -487,7 +487,7 @@ class ParserV1(Parser):
         }
         return parsed_data
 
-    def custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for custom whitelist member dict.
 
         Args:
@@ -609,7 +609,7 @@ class ParserV1(Parser):
 
 class ParserV2(Parser):
 
-    def protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_group(self, protected_hostname_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -627,7 +627,7 @@ class ParserV2(Parser):
         }
         return group
 
-    def protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_protected_hostname_member(self, protected_hostname_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname member.
 
         Args:
@@ -646,7 +646,7 @@ class ParserV2(Parser):
         }
         return group
 
-    def ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_group(self, ip_list_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for protected hostname group.
 
         Args:
@@ -670,7 +670,7 @@ class ParserV2(Parser):
         }
         return group
 
-    def ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_ip_list_member(self, ip_list_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for IP list member.
 
         Args:
@@ -687,7 +687,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_http_content_routing_member(self, http_content_routing_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for HTTP content routing member.
 
         Args:
@@ -707,7 +707,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_group(self, geo_ip_group: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for Geo IP Group.
 
         Args:
@@ -730,7 +730,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_geo_ip_member(self, geo_ip_member: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for Geo IP member.
 
         Args:
@@ -746,7 +746,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_policy_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for operation status.
 
         Args:
@@ -774,7 +774,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_system_status(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for operation status.
 
         Args:
@@ -799,7 +799,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_simple_id(self, data_dict: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for simple dict.
 
         Args:
@@ -811,7 +811,7 @@ class ParserV2(Parser):
         """
         return {'id': data_dict['name']}
 
-    def server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_server_policy(self, policy: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for server policy dict.
 
         Args:
@@ -855,7 +855,7 @@ class ParserV2(Parser):
         }
         return parsed_data
 
-    def custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
+    def parse_custom_whitelist(self, custom_whitelist: Dict[str, Any]) -> Dict[str, Any]:
         """Parse for custom whitelist member dict.
 
         Args:
@@ -3700,7 +3700,7 @@ def protected_hostname_group_list_command(client: Client, args: Dict[str, Any]) 
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.protected_hostname_group,
+        data_parser=client.parser.parse_protected_hostname_group,
         args=args,
         sub_object_id=protected_hostname,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
@@ -3779,7 +3779,7 @@ def protected_hostname_member_update_command(client: Client, args: Dict[str, Any
         value=member_id,
         get_request=client.protected_hostname_member_list_request,
         args=args,
-        parser_command=client.parser.protected_hostname_member,
+        parser_command=client.parser.parse_protected_hostname_member,
         requested_version=ClientV1.API_VER,
         object_id=group_name,
     )
@@ -3831,7 +3831,7 @@ def protected_hostname_member_list_command(client: Client, args: Dict[str, Any])
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.protected_hostname_member,
+        data_parser=client.parser.parse_protected_hostname_member,
         args=args,
         sub_object_id=member_id,
         sub_object_key='id',
@@ -3950,7 +3950,7 @@ def ip_list_group_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.ip_list_group,
+        data_parser=client.parser.parse_ip_list_group,
         args=args,
         sub_object_id=group_name,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
@@ -4034,7 +4034,7 @@ def ip_list_member_update_command(client: Client, args: Dict[str, Any]) -> Comma
                                          value=member_id,
                                          get_request=client.ip_list_member_list_request,
                                          args=args,
-                                         parser_command=client.parser.ip_list_member,
+                                         parser_command=client.parser.parse_ip_list_member,
                                          object_id=group_name,
                                          requested_version=ClientV1.API_VER)
     severity = args.get('severity')
@@ -4082,8 +4082,8 @@ def ip_list_member_list_command(client: Client, args: Dict[str, Any]) -> Command
     member_id = args.get('member_id')
     response = client.ip_list_member_list_request(group_name=group_name, member_id=member_id)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.ip_list_member, args,
-                                                                                member_id)
+                                                                                client.parser.parse_ip_list_member,
+                                                                                args, member_id)
     outputs = {'group_name': group_name, 'Members': parsed_data}
     headers = create_headers(client.version, ['id', 'type', 'ip'], ['severity', 'trigger_policy'], [])
     readable_output = tableToMarkdown(name=OutputTitle.IP_LIST_MEMBER_LIST.value,
@@ -4164,7 +4164,7 @@ def http_content_routing_member_update_command(client: Client, args: Dict[str, A
                                          value=id,
                                          get_request=client.http_content_routing_member_list_request,
                                          args=args,
-                                         parser_command=client.parser.http_content_routing_member,
+                                         parser_command=client.parser.parse_http_content_routing_member,
                                          requested_version=ClientV1.API_VER,
                                          object_id=policy_name)
     response = client.http_content_routing_member_update_request(
@@ -4212,7 +4212,7 @@ def http_content_routing_member_list_command(client: Client, args: Dict[str, Any
     member_id = args.get('id')
     response = client.http_content_routing_member_list_request(policy_name, member_id=member_id)
     parsed_data, pagination_message, formatted_response = list_response_handler(
-        client, response, client.parser.http_content_routing_member, args, member_id)
+        client, response, client.parser.parse_http_content_routing_member, args, member_id)
     outputs = {'policy_name': policy_name, 'Members': parsed_data}
     headers = create_headers(
         client.version, ['id', 'default', 'http_content_routing_policy', 'inherit_web_protection_profile', 'profile'],
@@ -4300,7 +4300,7 @@ def geo_ip_group_update_command(client: Client, args: Dict[str, Any]) -> Command
         value=name,
         get_request=client.geo_ip_group_list_request,
         args=args,
-        parser_command=client.parser.geo_ip_group,
+        parser_command=client.parser.parse_geo_ip_group,
         requested_version=ClientV1.API_VER,
     )
     block_period = arg_to_number(args.get('block_period'))
@@ -4350,7 +4350,7 @@ def geo_ip_group_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.geo_ip_group,
+        data_parser=client.parser.parse_geo_ip_group,
         args=args,
         sub_object_id=name,
         sub_object_key='_id' if client == ClientV1.API_VER else 'name')
@@ -4440,7 +4440,7 @@ def geo_ip_member_add_command(client: Client, args: Dict[str, Any]) -> CommandRe
     # Get the new IDs
     get_response = client.geo_ip_member_list_request(group_name=group_name)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, get_response,
-                                                                                client.parser.geo_ip_member, {})
+                                                                                client.parser.parse_geo_ip_member, {})
     countries_data = find_dicts_in_array(parsed_data, 'country', countries)
 
     readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_ADD.value,
@@ -4489,7 +4489,7 @@ def geo_ip_member_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     group_name = args['group_name']
     response = client.geo_ip_member_list_request(group_name=group_name)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.geo_ip_member, args)
+                                                                                client.parser.parse_geo_ip_member, args)
     outputs = {'group_name': group_name, 'countries': parsed_data}
     headers = ['id', 'country']
     readable_output = tableToMarkdown(name=OutputTitle.GEO_IP_MEMBER_LIST.value,
@@ -4520,7 +4520,7 @@ def operation_status_get_command(client: Client, args: Dict[str, Any]) -> Comman
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.operation_status,
+        data_parser=client.parser.parse_operation_status,
         args=args,
         internal_path=['network'])
     headers = ['id', 'name', 'label', 'alias', 'ip_netmask', 'speed_duplex', 'tx', 'rx', 'link']
@@ -4549,7 +4549,7 @@ def policy_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.policy_status_get_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.policy_status, args)
+                                                                                client.parser.parse_policy_status, args)
     headers = create_headers(
         client.version,
         ['id', 'name', 'status', 'vserver', 'http_port', 'https_port', 'mode', 'session_count', 'connction_per_second'],
@@ -4579,7 +4579,7 @@ def system_status_get_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     response = client.system_status_get_request()
     results = response['results'] if client.version == ClientV2.API_VER else response
-    parsed_data = client.parser.system_status(results)
+    parsed_data = client.parser.parse_system_status(results)
     headers = create_headers(client.version,
                              common_headers=[
                                  'high_ability_status', 'host_name', 'serial_number', 'operation_mode', 'system_time',
@@ -4611,7 +4611,7 @@ def server_pool_list_command(client: Client, args: Dict[str, Any]) -> CommandRes
     """
     response = client.server_pool_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.simple_id, args)
+                                                                                client.parser.parse_simple_id, args)
     headers = ['id']
     readable_output = tableToMarkdown(name='Server pool:',
                                       metadata=pagination_message,
@@ -4638,7 +4638,7 @@ def http_service_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     """
     response = client.http_service_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.http_service, args)
+                                                                                client.parser.parse_http_service, args)
     headers = ['id']
     readable_output = tableToMarkdown(name='HTTP services:',
                                       metadata=pagination_message,
@@ -4665,7 +4665,7 @@ def inline_protection_profile_list_command(client: Client, args: Dict[str, Any])
     """
     response = client.inline_protction_profile_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.simple_id, args)
+                                                                                client.parser.parse_simple_id, args)
     headers = ['id']
     readable_output = tableToMarkdown(name='Inline Protection Profile:',
                                       metadata=pagination_message,
@@ -4692,7 +4692,7 @@ def virtual_server_list_command(client: Client, args: Dict[str, Any]) -> Command
     """
     response = client.virtual_server_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.simple_id, args)
+                                                                                client.parser.parse_simple_id, args)
     headers = ['id']
     readable_output = tableToMarkdown(name='Virtual Servers:',
                                       metadata=pagination_message,
@@ -4718,10 +4718,8 @@ def http_content_routing_policy_list_command(client: Client, args: Dict[str, Any
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     response = client.http_content_routing_poicy_list_request()
-    parsed_data, pagination_message, formatted_response = list_response_handler(client=client,
-                                                                                response=response,
-                                                                                data_parser=client.parser.simple_id,
-                                                                                args=args)
+    parsed_data, pagination_message, formatted_response = list_response_handler(
+        client=client, response=response, data_parser=client.parser.parse_simple_id, args=args)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4747,7 +4745,7 @@ def geo_exception_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     response = client.geo_exception_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(
-        client=client, response=response, data_parser=client.parser.simple_name_parser, args=args)
+        client=client, response=response, data_parser=client.parser.parse_simple_name, args=args)
     readable_output = tableToMarkdown(name='Geo exception:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4773,7 +4771,7 @@ def trigger_policy_list_command(client: Client, args: Dict[str, Any]) -> Command
     """
     response = client.trigger_policy_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(
-        client=client, response=response, data_parser=client.parser.simple_name_parser, args=args)
+        client=client, response=response, data_parser=client.parser.parse_simple_name, args=args)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4799,7 +4797,7 @@ def certificate_intermediate_group_list_command(client: Client, args: Dict[str, 
     """
     response = client.certificate_intermediate_group_list_request()
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.simple_name_parser, args)
+                                                                                client.parser.parse_simple_name, args)
     readable_output = tableToMarkdown(name='Content Routing Policy:',
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -4977,7 +4975,7 @@ def server_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
                                          value=name,
                                          get_request=client.server_policy_list_request,
                                          args=args,
-                                         parser_command=client.parser.server_policy,
+                                         parser_command=client.parser.parse_server_policy,
                                          by_key='name' if client.version == ClientV2.API_VER else None)
     validate_server_policy(client.version, args)
     response = client.server_policy_update_request(
@@ -5052,12 +5050,13 @@ def server_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     """
     name = args.get('name')
     response = client.server_policy_list_request(name=name)
-    parsed_data, pagination_message, formatted_response = list_response_handler(client=client,
-                                                                                response=response,
-                                                                                data_parser=client.parser.server_policy,
-                                                                                args=args,
-                                                                                sub_object_id=name,
-                                                                                sub_object_key='name')
+    parsed_data, pagination_message, formatted_response = list_response_handler(
+        client=client,
+        response=response,
+        data_parser=client.parser.parse_server_policy,
+        args=args,
+        sub_object_id=name,
+        sub_object_key='name')
     readable_output = tableToMarkdown(
         name=OutputTitle.SERVER_POLICY_LIST.value,
         metadata=pagination_message,
@@ -5162,7 +5161,7 @@ def custom_whitelist_url_update_command(client: Client, args: Dict[str, Any]) ->
                                          value=id,
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
-                                         parser_command=client.parser.custom_whitelist)
+                                         parser_command=client.parser.parse_custom_whitelist)
     validate_custom_whitelist(version=client.version, args=args, member_type='URL')
     response = client.custom_whitelist_url_update_request(id=id,
                                                           request_type=args.get('request_type'),
@@ -5253,7 +5252,7 @@ def custom_whitelist_parameter_update_command(client: Client, args: Dict[str, An
                                          value=id,
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
-                                         parser_command=client.parser.custom_whitelist)
+                                         parser_command=client.parser.parse_custom_whitelist)
     validate_custom_whitelist(version=client.version, args=args, member_type='Parameter')
     response = client.custom_whitelist_parameter_update_request(id=id,
                                                                 name=args.get('name'),
@@ -5311,7 +5310,7 @@ def custom_whitelist_cookie_update_command(client: Client, args: Dict[str, Any])
                                          value=id,
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
-                                         parser_command=client.parser.custom_whitelist)
+                                         parser_command=client.parser.parse_custom_whitelist)
     validate_custom_whitelist(version=client.version, args=args, member_type='Cookie')
     response = client.custom_whitelist_cookie_update_request(id=id,
                                                              name=args.get('name'),
@@ -5372,7 +5371,7 @@ def custom_whitelist_header_field_update_command(client: Client, args: Dict[str,
                                          value=id,
                                          get_request=client.custom_whitelist_list_request,
                                          args=args,
-                                         parser_command=client.parser.custom_whitelist)
+                                         parser_command=client.parser.parse_custom_whitelist)
     validate_custom_whitelist(version=client.version, args=args, member_type='Header Field')
     response = client.custom_whitelist_header_field_update_request(  # type: ignore #client is ClientV2
         id=id,
@@ -5419,8 +5418,8 @@ def custom_whitelist_list_command(client: Client, args: Dict[str, Any]) -> Comma
     response = client.custom_whitelist_list_request(id=id)
     # formatted_response, pagination_message = paginate_results(client.version, response, args)
     parsed_data, pagination_message, formatted_response = list_response_handler(client, response,
-                                                                                client.parser.custom_whitelist, args,
-                                                                                id)
+                                                                                client.parser.parse_custom_whitelist,
+                                                                                args, id)
     readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_WHITELIST_LIST.value,
                                       metadata=pagination_message,
                                       t=parsed_data,
@@ -5459,7 +5458,7 @@ def custom_predifined_whitelist_list_command(client: Client, args: Dict[str, Any
     parsed_data, pagination_message, formatted_response = list_response_handler(
         client=client,
         response=response,
-        data_parser=client.parser.custom_predifined_whitelist,
+        data_parser=client.parser.parse_custom_predifined_whitelist,
         args=args,
         sub_object_id=id)
     readable_output = tableToMarkdown(name=OutputTitle.CUSTOM_PREDIFINED_LIST.value,
