@@ -9,6 +9,7 @@ from typing import Dict, Any, List
 import json
 from pathlib import Path
 import argparse
+import sys
 
 
 def is_pack_xsoar_supported(pack_name: str) -> bool:
@@ -24,41 +25,48 @@ def is_pack_xsoar_supported(pack_name: str) -> bool:
 
     pack_metadata = Path("Packs", pack_name, "pack_metadata.json")
 
-    with pack_metadata.open(encoding="UTF-8") as pm:
-        metadata: Dict[str, Any] = json.load(pm)
-        if metadata.get("support") == "xsoar":
-            return True
+    if pack_metadata.exists():
+        with pack_metadata.open(encoding="UTF-8") as pm:
+            metadata: Dict[str, Any] = json.load(pm)
+            if metadata.get("support") == "xsoar":
+                return True
 
     return False
 
 
-def convert_file_to_path(release_note_path: str) -> Path:
+def convert_files_to_paths(files: List[str]) -> List[Path]:
     """
-    Converts a relative file path to a `Path` object for 
+    Converts a list of relative file paths to a list of `Path` object for
     easier navigation of filesystem.
 
     Args:
-        - `release_note_path` (``str``): The relative path to the file.
+        - `files` (``List[str]``): The relative paths to the file.
 
     Returns:
-        `Path` representing the filesystem of the provided file.
+        `List[Path]` representing a list of filesystem files.
     """
-    return Path(release_note_path)
+
+    return list(map(lambda f: Path(f), files))
 
 
 def main(args: argparse.Namespace) -> None:
     arg_dict: Dict[str, Any] = vars(args)
 
-    release_notes: List[Path] = map(convert_file_to_path, arg_dict.get("release_notes").split(","))
+    delimiter: str = arg_dict.get("delimiter")
+    release_notes_arg: List[Path] = convert_files_to_paths(arg_dict.get("release_notes").split(delimiter))
+
+    # Create new list to hold release notes to review
     release_notes_to_review: List[str] = []
 
-    for rn in release_notes:
-        # parts returns Tuple[str], e.g. ('Packs', 'HelloWorld', 'ReleaseNotes', '1_3_0.md')
+    for rn in release_notes_arg:
         pack_name = rn.parts[1]
         if is_pack_xsoar_supported(pack_name):
             release_notes_to_review.append(str(rn))
 
-    print(",".join(release_notes_to_review))
+    if release_notes_to_review:
+        print(",".join(release_notes_to_review))
+
+    return 0
 
 
 if __name__ == "__main__":
@@ -70,4 +78,4 @@ if __name__ == "__main__":
                                                   "review-release-notes.yml", default=",")
 
     args = parser.parse_args()
-    main(args)
+    sys.exit(main(args))
