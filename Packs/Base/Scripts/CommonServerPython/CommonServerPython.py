@@ -8429,7 +8429,6 @@ if 'requests' in sys.modules:
                 if status falls in ``status_forcelist`` range and retries have
                 been exhausted.
             """
-            print("here")
             try:
                 method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"
                 whitelist_kawargs = {
@@ -8573,7 +8572,7 @@ if 'requests' in sys.modules:
                     self._implement_retry(retries, status_list_to_retry, backoff_factor, raise_on_redirect, raise_on_status)
                 if not timeout:
                     timeout = self.timeout
-                print("here11")
+
                 # Execute
                 res = self._session.request(
                     method,
