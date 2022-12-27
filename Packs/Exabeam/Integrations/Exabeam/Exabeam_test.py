@@ -3,7 +3,7 @@ from Exabeam import Client, contents_append_notable_user_info, contents_user_inf
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
     get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date, \
-    fetch_incidents
+    fetch_incidents, build_incident_response_query_params
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -186,6 +186,82 @@ def test_get_notable_session_details_command_empty_sessions(mocker):
                     headers={})
     human_readable, entry_context, session_details_raw_data = get_notable_session_details(client, {'limit': '1'})
     assert human_readable == 'No results found.'
+
+
+@pytest.mark.parametrize(
+    'args, expected_results',
+    [
+        (
+            {
+                'query': None,
+                'incident_type': 'generic',
+                'status': 'new',
+                'priority': 'low',
+                'limit': 3,
+                'page_size': 25,
+                'page_number': 0,
+            },
+            {
+                'query': 'incidentType:generic AND priority:low AND status:new',
+                'length': 3,
+                'offset': 0,
+            }
+        ),
+        (
+            {
+                'query': None,
+                'incident_type': 'generic',
+                'status': None,
+                'priority': 'low',
+                'limit': 3,
+                'page_size': 25,
+                'page_number': 0,
+            },
+            {
+                'query': 'incidentType:generic AND priority:low',
+                'length': 3,
+                'offset': 0,
+            }
+        ),
+        (
+            {
+                'query': None,
+                'incident_type': None,
+                'status': None,
+                'priority': None,
+                'limit': 3,
+                'page_size': 25,
+                'page_number': 0,
+            },
+            {
+                'length': 3,
+                'offset': 0,
+            }
+        ),
+        (
+            {
+                'query': 'incidentType:generic OR priority:low',
+                'incident_type': 'malware',
+                'status': None,
+                'priority': 'medium',
+                'limit': 6,
+                'page_size': 25,
+                'page_number': 1,
+            },
+            {
+                'query': 'incidentType:generic OR priority:low',
+                'length': 6,
+                'offset': 25,
+            }
+        ),
+    ]
+)
+def test_build_incident_response_query_params(args, expected_results):
+
+    results = build_incident_response_query_params(**args)
+
+    for key in results:
+        assert results[key] == expected_results[key]
 
 
 @pytest.mark.parametrize(

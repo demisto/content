@@ -696,29 +696,10 @@ class Client(BaseClient):
                                       params=params)
         return response
 
-    def get_list_incidents(self, query, incident_type, priority, status, limit=None, page_number=None, page_size=None):
-        params = self.build_incident_response_query_params(incident_type, priority, query, status, limit, page_number,
-                                                           page_size)
+    def get_list_incidents(self, query_params: dict):
+
         return self._http_request('GET', url_suffix='/ir/api/incident/list',
-                                  params=params)
-
-    def build_incident_response_query_params(self, incident_type, priority, query,
-                                             status, limit=None, page_number=None, page_size=None):
-        params = {'incidentType': incident_type, 'priority': priority, 'status': status}
-        if query:
-            for key, val in params.items():
-                if val:
-                    query += f' AND {key}:{val}'
-            params = {'query': query}
-
-        if page_number and page_size:
-            params['offset'] = page_number * page_size
-
-        if limit:
-            params['length'] = limit
-
-        params = {'query': 'incidentType:malware,phishing'}
-        return params
+                                  params=query_params)
 
     def get_single_incident(self, incident_id: str, username: str = None):
         headers = {**self._headers, 'EXA_USERNAME': username or self.username}
@@ -1138,7 +1119,7 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
     return human_readable, entry_context
 
 
-def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> tuple[str, str]:
+def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> Tuple[str, str]:
 
     date_time = '%Y-%m-%dT%H:%M:%S.%f'
     start = datetime.strptime(start_time, date_time)
@@ -1157,6 +1138,41 @@ def convert_all_unix_keys_to_date(incident: dict) -> dict:
             if key in incident['baseFields']:
                 incident['baseFields'][key] = convert_unix_to_date(incident['baseFields'][key]).split('.')[0] + 'Z'
     return incident
+
+
+def build_incident_response_query_params(query: str | None,
+                                         incident_type: str | None,
+                                         priority: str | None,
+                                         status: str | None,
+                                         limit: int | None,
+                                         page_size: int | None,
+                                         page_number: int | None,
+                                         ) -> dict:
+
+    params: dict[str, Any] = {}
+    if not query:
+        q = ''
+        if incident_type:
+            q += f'incidentType:{incident_type} AND '
+        if priority:
+            q += f'priority:{priority} AND '
+        if status:
+            q += f'status:{status}'
+
+        if q.strip().split(' ')[-1] == 'AND':
+            q = q[:-(len(' AND '))]
+
+        if q:
+            params['query'] = q
+    else:
+        params['query'] = query
+    if page_size and page_number:
+        params['offset'] = page_size * page_number
+
+    if limit:
+        params['length'] = limit
+
+    return params
 
 
 ''' COMMANDS '''
@@ -1987,9 +2003,9 @@ def list_incidents(client: Client, args: Dict[str, str]):
     incident_type = args.get('incident_type')
     priority = args.get('priority')
     status = args.get('status')
-    limit = args.get('limit', 50)
-    page_size = args.get('page_size', 25)
-    page_number = args.get('page_number', 1)
+    limit = arg_to_number(args.get('limit', 50))
+    page_size = arg_to_number(args.get('page_size', 25))
+    page_number = arg_to_number(args.get('page_number', 0))
     username = args.get('username')
 
     if incident_ids and client.username == TOKEN_INPUT_IDENTIFIER and not username:
@@ -2005,8 +2021,15 @@ def list_incidents(client: Client, args: Dict[str, str]):
 
     else:
         if any([query, incident_type, priority, status]):
-            raw_response = client.get_list_incidents(query, incident_type, priority, status, limit, page_size,
-                                                     page_number)
+            query_params = build_incident_response_query_params(query,
+                                                                incident_type,
+                                                                priority,
+                                                                status,
+                                                                limit,
+                                                                page_size,
+                                                                page_number,
+                                                                )
+            raw_response = client.get_list_incidents(query_params)
             for incident in raw_response['incidents']:
                 incidents.append(format_single_incident(incident))
         else:
