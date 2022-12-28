@@ -49,6 +49,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
     fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
     related_issue = []
+    
     if not is_merged:
         print("Not merging, getting related issues.")
         related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
