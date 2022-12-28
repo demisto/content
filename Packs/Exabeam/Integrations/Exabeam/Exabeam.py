@@ -12,8 +12,7 @@ urllib3.disable_warnings()
 
 TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
-TIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
+DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 class Client(BaseClient):
@@ -1121,11 +1120,11 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
 
 def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> Tuple[str, str]:
 
-    start = datetime.strptime(start_time, TIME_FORMAT_MILISECONDS)
-    end = datetime.strptime(end_time, TIME_FORMAT_MILISECONDS)
+    start = datetime.strptime(start_time, DATETIME_FORMAT_MILISECONDS)
+    end = datetime.strptime(end_time, DATETIME_FORMAT_MILISECONDS)
 
-    start_unix = convert_date_to_unix(start.strftime(TIME_FORMAT_MILISECONDS))
-    end_unix = convert_date_to_unix(end.strftime(TIME_FORMAT_MILISECONDS))
+    start_unix = convert_date_to_unix(start.strftime(DATETIME_FORMAT_MILISECONDS))
+    end_unix = convert_date_to_unix(end.strftime(DATETIME_FORMAT_MILISECONDS))
 
     return str(start_unix), str(end_unix)
 
@@ -2048,7 +2047,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
         look_back=1,
-        date_format=TIME_FORMAT_MILISECONDS,
+        date_format=DATETIME_FORMAT_MILISECONDS,
     )
 
     demisto.debug(f"fetching incidents between {start_time=}, {end_time=}")
@@ -2088,7 +2087,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     incidents: List[dict] = []
     for incident in incidents_filtered:
         incident['createdAt'] = datetime.fromtimestamp(
-            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(TIME_FORMAT_MILISECONDS)
+            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
@@ -2105,7 +2104,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         look_back=1,
         created_time_field='createdAt',
         id_field='incidentId',
-        date_format=TIME_FORMAT_MILISECONDS,
+        date_format=DATETIME_FORMAT_MILISECONDS,
         increase_last_run_time=True
     )
     demisto.debug(f"Last run after the fetch run: {last_run}")

@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam Dev
+  id: Exabeam
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -92,9 +92,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Exabeam Security Management Platform provides end-to-end detection, user event behavioral analytics, and Security orchestration, automation, and response (SOAR).
-display: Exabeam Dev
-name: Exabeam Dev
+description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
+display: Exabeam
+name: Exabeam
 script:
   commands:
   - arguments:
@@ -2031,7 +2031,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Number of total results to query.
+      description: Number of total results to query. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -2039,11 +2039,11 @@ script:
     - default: false
       description: Specific page to query.
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     - default: false
-      description: Number of total results in each page.
+      description: Number of total results in each page. Default is 25.
       isArray: false
       name: page_size
       required: false

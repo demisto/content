@@ -1346,8 +1346,9 @@ Returns incidents from Exabeam.
 | priority          | Comma-separated list of incident priorities to filter by.                  | Optional |
 | status            | Comma-separated list of incident statuses to filter by.                    | Optional |
 | limit             | Maximum number of rules to retrieve. Default is 50.                        | Optional | 
-| page_size         | Results page number. Default is 0.                                         | Optional | 
-| page_number       | String to search for inside display name.                                  | Optional |
+| page_size         | Number of total results in each page. Default is 25.                                         | Optional | 
+| page_number       | Specific page to query.                                  | Optional |
+| username       | When the instance is configure by an API key, it must be used with the username argument.                                  | Optional |
 
 
 #### Context Output
