@@ -5008,7 +5008,7 @@
         {
             "playbookID": "IAMInitOktaUser - Test",
             "integrations": ["Okta v2","EWSO365"],
-            "instance_names": ["ewso365_sec_eng_team"],
+            "instance_names": ["ewso365_dev_team"],
             "fromversion": "6.5.0"
         },
         {
