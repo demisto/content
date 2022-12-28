@@ -3,7 +3,7 @@ on:
   pull_request:
   schedule:
     - cron: '50 18 * * *'
-    - cron: '52 18 * * *'
+    - cron: '57 18 * * *'
 
 permissions:
   pull-requests: write
