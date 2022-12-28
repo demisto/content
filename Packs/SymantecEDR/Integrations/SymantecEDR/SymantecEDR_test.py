@@ -15,7 +15,7 @@ from SymantecEDR import Client, get_file_instance_command, get_domain_instance_c
 
 
 def util_load_json(path):
-    with io.open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 

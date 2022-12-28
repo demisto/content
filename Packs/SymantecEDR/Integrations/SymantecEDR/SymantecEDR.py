@@ -1,6 +1,7 @@
 """
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
 """
+from typing import Optional
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -34,20 +35,20 @@ INVALID_QUERY_ERROR_MSG = 'Invalid query arguments. Either use any optional filt
 COMMAND_ACTION = ['isolate_endpoint', 'rejoin_endpoint', 'cancel_command', 'delete_endpoint_file']
 INCIDENT_PATCH_ACTION = ['add_comment', 'close_incident', 'update_resolution']
 SEARCH_QUERY_TYPE = ['domain', 'sha256', 'device_uid']
-INCIDENT_PRIORITY_LEVEL: Dict[str, str] = {
+INCIDENT_PRIORITY_LEVEL: dict[str, str] = {
     '1': 'Low',
     '2': 'Medium',
     '3': 'High'
 }
 
-INCIDENT_STATUS: Dict[str, str] = {
+INCIDENT_STATUS: dict[str, str] = {
     '1': 'Open',
     '2': 'Waiting',
     '3': 'In-Progress',
     '4': 'Close'
 }
 
-INCIDENT_RESOLUTION: Dict[str, str] = {
+INCIDENT_RESOLUTION: dict[str, str] = {
     '0': 'INSUFFICIENT_DATA. The incident does not have sufficient information to make a determination.',
     '1': 'SECURITY_RISK. The incident indicates a true security threat.',
     '2': 'FALSE_POSITIVE. The incident has been incorrectly reported as a security threat.',
@@ -57,7 +58,7 @@ INCIDENT_RESOLUTION: Dict[str, str] = {
     '6': 'TEST. The incident was generated due to internal security testing.'
 }
 
-EVENT_SEVERITY: Dict[str, str] = {
+EVENT_SEVERITY: dict[str, str] = {
     '1': 'Info',
     '2': 'Warning',
     '3': 'Minor',
@@ -67,13 +68,13 @@ EVENT_SEVERITY: Dict[str, str] = {
 }
 
 # Status for Applicable events : 1, 20, 21, 1000
-EVENT_STATUS: Dict[str, str] = {
+EVENT_STATUS: dict[str, str] = {
     '0': 'Unknown',
     '1': 'Success',
     '2': 'Failure'
 }
 
-EVENT_ATPNODE_ROLE: Dict[str, str] = {
+EVENT_ATPNODE_ROLE: dict[str, str] = {
     '0': 'Pre-Bootstrap',
     '1': 'Network Scanner',
     '2': 'Management',
@@ -82,13 +83,13 @@ EVENT_ATPNODE_ROLE: Dict[str, str] = {
     '5': 'All in One'
 }
 
-SANDBOX_STATE: Dict[str, str] = {
+SANDBOX_STATE: dict[str, str] = {
     '0': 'Completed',
     '1': 'In Progress',
     '2': 'Error'
 }
 
-DOMAIN_DISPOSITION_STATUS: Dict[str, str] = {
+DOMAIN_DISPOSITION_STATUS: dict[str, str] = {
     '0': 'Healthy',
     '1': 'unknown',
     '2': 'Suspicious',
@@ -147,8 +148,8 @@ class Client(BaseClient):
         # token = token_response.get('access_token')
         # return token
 
-    def query_request_api(self, endpoint: str, params: dict, method: Optional[str] = 'POST') \
-            -> Dict[str, str]:
+    def query_request_api(self, endpoint: str, params: dict, method: str | None = 'POST') \
+            -> dict[str, str]:
         """
         Call Symantec EDR On-prem POST and GET Request API
         Args:
@@ -182,7 +183,7 @@ class Client(BaseClient):
             return response status code
         """
 
-        result: Dict = {}
+        result: dict = {}
         access_token = self.get_access_token()
         url_path = f'{self._base_url}{endpoint}'
 
@@ -256,7 +257,7 @@ def iso_creation_date(date: str):
     return iso_date
 
 
-def get_data_of_current_page(offset: int, limit: int, data_list: List[dict[str, Any]]):
+def get_data_of_current_page(offset: int, limit: int, data_list: list[dict[str, Any]]):
     """
     Symantec EDR on-premise pagination
     Args:
@@ -274,7 +275,7 @@ def get_data_of_current_page(offset: int, limit: int, data_list: List[dict[str, 
     return data_list[0:limit]
 
 
-def pagination(page: Optional[int], page_size: Optional[int]):
+def pagination(page: int | None, page_size: int | None):
     """
     Define pagination.
     Args:
@@ -302,8 +303,8 @@ def pagination(page: Optional[int], page_size: Optional[int]):
     return limit, offset
 
 
-def get_command_title_string(context_name: str, page: Optional[int], page_size: Optional[int],
-                             total_record: Optional[int]) -> str:
+def get_command_title_string(context_name: str, page: int | None, page_size: int | None,
+                             total_record: int | None) -> str:
     """
     Symantec EDR on-premise display title and pagination
     Args:
@@ -321,15 +322,15 @@ def get_command_title_string(context_name: str, page: Optional[int], page_size: 
     return f"{context_name} List"
 
 
-def process_sub_object(data: Dict) -> Dict:
+def process_sub_object(data: dict) -> dict:
     data_dict = dict()
-    ignore_key_list: List[str] = ['file', 'user']
+    ignore_key_list: list[str] = ['file', 'user']
     data_dict = extract_raw_data(data, ignore_key_list)
     return data_dict
 
 
-def attacks_sub_object(data: List[dict]) -> Dict:
-    ignore_key_list: List[str] = ['tactic_ids', 'tactic_uids']
+def attacks_sub_object(data: list[dict]) -> dict:
+    ignore_key_list: list[str] = ['tactic_ids', 'tactic_uids']
     attacks_dict = extract_raw_data(data, ignore_key_list, prefix='attacks')
 
     for attack in data:
@@ -353,9 +354,9 @@ def attacks_sub_object(data: List[dict]) -> Dict:
     return attacks_dict
 
 
-def event_data_sub_object(data: Dict[str, Any]) -> Dict:
-    ignore_key_list: List[str] = []
-    event_data_dict: Dict[str, Any] = {}
+def event_data_sub_object(data: dict[str, Any]) -> dict:
+    ignore_key_list: list[str] = []
+    event_data_dict: dict[str, Any] = {}
 
     sepm_server = data.get('sepm_server', {})
     search_config = data.get('search_config', {})
@@ -376,32 +377,32 @@ def event_data_sub_object(data: Dict[str, Any]) -> Dict:
     return event_data_dict
 
 
-def enriched_data_sub_object(data: Dict[str, Any]) -> Dict:
-    ignore_key_list: List[str] = []
+def enriched_data_sub_object(data: dict[str, Any]) -> dict:
+    ignore_key_list: list[str] = []
     enriched_dict = extract_raw_data(data, ignore_key_list, 'enriched_data')
     return enriched_dict
 
 
-def user_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
+def user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     user_dict = dict()
-    ignore_key: List[str] = []
+    ignore_key: list[str] = []
     prefix = f'{obj_prefix}_user' if obj_prefix else 'user'
     user_dict = extract_raw_data(data, ignore_key, prefix)
     return user_dict
 
 
-def xattributes_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
+def xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     xattributes_dict = dict()
-    ignore_key: List[str] = []
+    ignore_key: list[str] = []
     prefix = f'{obj_prefix}_user' if obj_prefix else 'xattributes'
     xattributes_dict = extract_raw_data(data, ignore_key, prefix)
     return xattributes_dict
 
 
-def event_actor_sub_object(data: Dict[str, Any]) -> Dict:
+def event_actor_sub_object(data: dict[str, Any]) -> dict:
     event_actor_dict = dict()
     # Sub Object will be fetch separately
-    ignore_key: List[str] = ['file', 'user', 'xattributes']
+    ignore_key: list[str] = ['file', 'user', 'xattributes']
     event_actor_dict = extract_raw_data(data, ignore_key, 'event_actor')
 
     # File Sub Object
@@ -422,20 +423,20 @@ def event_actor_sub_object(data: Dict[str, Any]) -> Dict:
     return event_actor_dict
 
 
-def file_sub_object(data: Dict[str, Any], obj_prefix: str = None) -> Dict:
+def file_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
     file_dict = dict()
-    ignore_key_list: List[str] = ['signature_value_ids']
+    ignore_key_list: list[str] = ['signature_value_ids']
     prefix = f'{obj_prefix}_file' if obj_prefix else 'file'
     file_dict = extract_raw_data(data, ignore_key_list, prefix)
     return file_dict
 
 
-def monitor_source_sub_object(data: Dict[str, Any]) -> Dict:
+def monitor_source_sub_object(data: dict[str, Any]) -> dict:
     monitor_dict = extract_raw_data(data, prefix='monitor_source')
     return monitor_dict
 
 
-def connection_sub_object(data: Dict[str, Any]) -> Dict:
+def connection_sub_object(data: dict[str, Any]) -> dict:
     con_dict = extract_raw_data(data, prefix='connection')
     return con_dict
 
@@ -449,7 +450,7 @@ def convert_list_to_str(data: list) -> str:
     return value_str
 
 
-def event_object_data(data: Dict[str, Any]) -> Dict:
+def event_object_data(data: dict[str, Any]) -> dict:
     """
     Retrieve event object data and return Event dict
     Args:
@@ -457,7 +458,7 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
     Returns:
         event_dict: Event Json Data
     """
-    event_dict: Dict[str, Any] = {}
+    event_dict: dict[str, Any] = {}
     if not data:
         # Return empty dictionary
         return event_dict
@@ -567,7 +568,7 @@ def event_object_data(data: Dict[str, Any]) -> Dict:
     return event_dict
 
 
-def domain_instance_readable_output(results: List[Dict], title: str):
+def domain_instance_readable_output(results: list[dict], title: str):
     """
     Convert to XSOAR Readable output for entities Domains instance
     Args:
@@ -595,7 +596,7 @@ def domain_instance_readable_output(results: List[Dict], title: str):
     return markdown, summary_data
 
 
-def system_activity_readable_output(results: List[Dict], title: str):
+def system_activity_readable_output(results: list[dict], title: str):
     """
     Convert to User Readable output for System Activity resources
     Args:
@@ -636,7 +637,7 @@ def system_activity_readable_output(results: List[Dict], title: str):
     return markdown, context_data
 
 
-def endpoint_instance_readable_output(results: List[Dict], title: str) -> str:
+def endpoint_instance_readable_output(results: list[dict], title: str) -> str:
     """
     Convert to XSOAR Readable output for entities endpoints instance
     Args:
@@ -667,7 +668,7 @@ def endpoint_instance_readable_output(results: List[Dict], title: str) -> str:
     return markdown
 
 
-def incident_readable_output(results: List[Dict], title: str):
+def incident_readable_output(results: list[dict], title: str):
     """
     Convert to User Readable output for Incident resources
     Args:
@@ -677,7 +678,7 @@ def incident_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    summary_data: List[Dict[str, Any]] = []
+    summary_data: list[dict[str, Any]] = []
     for data in results:
         priority = data.get('priority_level', '')
         state = data.get('state', '')
@@ -712,7 +713,7 @@ def incident_readable_output(results: List[Dict], title: str):
     return markdown, summary_data
 
 
-def audit_event_readable_output(results: List[Dict], title: str):
+def audit_event_readable_output(results: list[dict], title: str):
     """
     Convert to User Readable output for Audit Event
     Args:
@@ -722,8 +723,8 @@ def audit_event_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    context_data: List[Dict[str, Any]] = []
-    summary_data: List[Dict[str, Any]] = []
+    context_data: list[dict[str, Any]] = []
+    summary_data: list[dict[str, Any]] = []
     for data in results:
         event_dict = event_object_data(data)
         event_dict['severity_id'] = EVENT_SEVERITY.get(str(event_dict.get('severity_id')))
@@ -753,7 +754,7 @@ def audit_event_readable_output(results: List[Dict], title: str):
     return markdown, context_data
 
 
-def incident_event_readable_output(results: List[Dict], title: str):
+def incident_event_readable_output(results: list[dict], title: str):
     """
     Convert to User Readable output for Event for Incident resources
     Args:
@@ -763,8 +764,8 @@ def incident_event_readable_output(results: List[Dict], title: str):
         markdown: A string representation of the Markdown table
         summary_data : Formatting response data
     """
-    context_data: List[Dict[str, Any]] = []
-    summary_data: List[Dict[str, Any]] = []
+    context_data: list[dict[str, Any]] = []
+    summary_data: list[dict[str, Any]] = []
     for data in results:
         event_dict = event_object_data(data)
         severity_id = event_dict.get('severity_id', '')
@@ -795,7 +796,7 @@ def incident_event_readable_output(results: List[Dict], title: str):
     return markdown, context_data
 
 
-def incident_comment_readable_output(results: List[Dict], title: str, incident_id: str):
+def incident_comment_readable_output(results: list[dict], title: str, incident_id: str):
     """
     Convert to XSOAR Readable output for incident comment
     Args:
@@ -807,7 +808,7 @@ def incident_comment_readable_output(results: List[Dict], title: str, incident_i
         summary_data : Formatted data set
     """
 
-    summary_data: List[Dict[str, Any]] = []
+    summary_data: list[dict[str, Any]] = []
     for data in results:
         new = {
             'incident_id': incident_id,
@@ -825,7 +826,7 @@ def incident_comment_readable_output(results: List[Dict], title: str, incident_i
     return markdown, summary_data
 
 
-def generic_readable_output(results_list: List[Dict], title: str) -> str:
+def generic_readable_output(results_list: list[dict], title: str) -> str:
     """
      Generic Readable output data for markdown
      Args:
@@ -836,7 +837,7 @@ def generic_readable_output(results_list: List[Dict], title: str) -> str:
      """
     readable_output = []
     for data in results_list:
-        ignore_key_list: List[str] = []
+        ignore_key_list: list[str] = []
         prefix = ''
         row = extract_raw_data(data, ignore_key_list, prefix)
         readable_output.append(row)
@@ -849,7 +850,7 @@ def generic_readable_output(results_list: List[Dict], title: str) -> str:
     return markdown
 
 
-def extract_raw_data(data: Union[List, Dict], ignore_key: List[str] = [], prefix: Optional[str] = None) -> Dict:
+def extract_raw_data(data: list | dict, ignore_key: list[str] = [], prefix: str | None = None) -> dict:
     """
      Retrieve Json data according and mapping field Name and value
      Args:
@@ -860,7 +861,7 @@ def extract_raw_data(data: Union[List, Dict], ignore_key: List[str] = [], prefix
          Return dict according to table field name and value
      """
     # ignore_key = ['event_actor', 'process', 'enriched_data']
-    dataset: Dict = {}
+    dataset: dict = {}
     if isinstance(data, dict):
         for key, val in data.items():
             if key not in ignore_key:
@@ -901,7 +902,7 @@ def query_search_condition(q_type: str, q_value: str, ignore_validation: bool = 
     return condition
 
 
-def get_incident_filter_query(args: Dict[str, Any]) -> str:
+def get_incident_filter_query(args: dict[str, Any]) -> str:
     """
     This function validate the incident filter search query and return the query condition
     Args:
@@ -909,8 +910,8 @@ def get_incident_filter_query(args: Dict[str, Any]) -> str:
     Returns:
         Return string.
     """
-    incident_status_dict: Dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
-    incident_severity_dict: Dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
+    incident_status_dict: dict[str, int] = {'Open': 1, 'Waiting': 2, 'In-Progress': 3, 'Close': 4}
+    incident_severity_dict: dict[str, int] = {'Low': 1, 'Medium': 2, 'High': 3}
     # Incident Parameters
     ids = arg_to_number(args.get('incident_id'))
     priority = incident_severity_dict.get(args.get('priority', ''))
@@ -936,7 +937,7 @@ def get_incident_filter_query(args: Dict[str, Any]) -> str:
     return condition
 
 
-def get_event_filter_query(args: Dict[str, Any]) -> str:
+def get_event_filter_query(args: dict[str, Any]) -> str:
     """
     This function create the query for search condition as part of response body.
     Args:
@@ -945,7 +946,7 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         Return string.
     """
     # Activity query Parameters
-    event_severity_mapping: Dict[str, int] = {
+    event_severity_mapping: dict[str, int] = {
         'info': 1,
         'warning': 2,
         'minor': 3,
@@ -954,7 +955,7 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
         'fatal': 6
     }
 
-    event_status_mapping: Dict[str, int] = {
+    event_status_mapping: dict[str, int] = {
         'Unknown': 0,
         'Success': 1,
         'Failure': 2
@@ -984,7 +985,7 @@ def get_event_filter_query(args: Dict[str, Any]) -> str:
     return condition
 
 
-def get_association_filter_query(args: Dict) -> str:
+def get_association_filter_query(args: dict) -> str:
     """
     This function validate the association filter search query and create the query search condition a
     payload based on the demisto.args().
@@ -1018,7 +1019,7 @@ def get_association_filter_query(args: Dict) -> str:
     return query_condition
 
 
-def post_request_body(args: Dict, p_limit: int = 1) -> Dict:
+def post_request_body(args: dict, p_limit: int = 1) -> dict:
     """
     This function creates a default payload based on the demisto.args().
     Args:
@@ -1028,7 +1029,7 @@ def post_request_body(args: Dict, p_limit: int = 1) -> Dict:
         Return arguments dict.
     """
     # Default payload
-    payload: Dict[str, Any] = {'verb': 'query'}
+    payload: dict[str, Any] = {'verb': 'query'}
     page_size = args.get('page_size')
     max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
 
@@ -1051,7 +1052,7 @@ def post_request_body(args: Dict, p_limit: int = 1) -> Dict:
     return payload
 
 
-def get_params_query(args: Dict, p_limit: int = 0) -> Dict:
+def get_params_query(args: dict, p_limit: int = 0) -> dict:
     """
     This function creates a query param based on the demisto.args().
     Args:
@@ -1060,7 +1061,7 @@ def get_params_query(args: Dict, p_limit: int = 0) -> Dict:
     Returns:
         Return arguments dict.
     """
-    query_param: Dict = {}
+    query_param: dict = {}
     ip = args.get('ip')
     url = args.get('url')
     md5 = args.get('md5')
@@ -1126,7 +1127,7 @@ def check_valid_indicator_value(indicator_type: str, indicator_value: str) -> bo
     return True
 
 
-def get_incident_raw_response(endpoint: str, client: Client, args: Dict[str, Any], max_limit: int) -> dict:
+def get_incident_raw_response(endpoint: str, client: Client, args: dict[str, Any], max_limit: int) -> dict:
     """
     Request to Get Incident response Json Data
     Args:
@@ -1148,7 +1149,7 @@ def get_incident_raw_response(endpoint: str, client: Client, args: Dict[str, Any
     return raw_response
 
 
-def get_incident_uuid(client: Client, args: Dict[str, Any]) -> str:
+def get_incident_uuid(client: Client, args: dict[str, Any]) -> str:
     """
       Get the incident UUID
       Args:
@@ -1171,7 +1172,7 @@ def get_incident_uuid(client: Client, args: Dict[str, Any]) -> str:
     return uuid
 
 
-def get_request_payload(args: Dict[str, Any], query_type: Optional[str] = 'default'):
+def get_request_payload(args: dict[str, Any], query_type: str | None = 'default'):
     """
     Create payload for request the endpoints
     Args:
@@ -1228,7 +1229,7 @@ def test_module(client: Client) -> str:
     """
     message: str = ''
     endpoint = '/atpapi/v2/incidents'
-    params: Dict = {
+    params: dict = {
         'verb': "query",
         'limit': 1
     }
@@ -1248,7 +1249,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_domain_file_association_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_domain_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     List of Domain and File association
     Args:
@@ -1261,7 +1262,7 @@ def get_domain_file_association_list_command(client: Client, args: Dict[str, Any
     endpoint = '/atpapi/v2/associations/entities/domains-files'
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         'Domain File Association',
         arg_to_number(args.get('page', 0)),
@@ -1287,7 +1288,7 @@ def get_domain_file_association_list_command(client: Client, args: Dict[str, Any
     )
 
 
-def get_endpoint_domain_association_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoint_domain_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     endpoint_domain_association_command: List of endpoint domain association
     Args:
@@ -1300,7 +1301,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: Dict[str,
     endpoint = '/atpapi/v2/associations/entities/endpoints-domains'
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         "Endpoint Domain Association",
         arg_to_number(args.get('page', 0)),
@@ -1326,7 +1327,7 @@ def get_endpoint_domain_association_list_command(client: Client, args: Dict[str,
     )
 
 
-def get_endpoint_file_association_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoint_file_association_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     endpoint_file_association_command: List of Endpoint File association
     Args:
@@ -1339,7 +1340,7 @@ def get_endpoint_file_association_list_command(client: Client, args: Dict[str, A
     endpoint = '/atpapi/v2/associations/entities/endpoints-files'
 
     payload, limit, offset, page_size = get_request_payload(args, 'association')
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         "Endpoint File Association",
         arg_to_number(args.get('page', 0)),
@@ -1365,7 +1366,7 @@ def get_endpoint_file_association_list_command(client: Client, args: Dict[str, A
     )
 
 
-def get_audit_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_audit_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Audit Event
     Args:
@@ -1404,7 +1405,7 @@ def get_audit_event_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_event_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get all events
     Args:
@@ -1443,7 +1444,7 @@ def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_system_activity_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_system_activity_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get System Activity log events
     Args:
@@ -1482,7 +1483,7 @@ def get_system_activity_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_event_for_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Event for Incident List
     Args:
@@ -1505,7 +1506,7 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
 
     result = raw_response.get('result')
     page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
-    context_data: List[Dict[str, Any]]
+    context_data: list[dict[str, Any]]
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1521,7 +1522,7 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
     )
 
 
-def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Incident List
     Args:
@@ -1531,7 +1532,7 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``, that contains an updated
             result.
     """
-    context_data: List = []
+    context_data: list = []
     endpoint = '/atpapi/v2/incidents'
 
     payload, limit, offset, page_size = get_request_payload(args, 'incident')
@@ -1560,7 +1561,7 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_incident_comments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get all comments based on Incident ID
     Args:
@@ -1603,7 +1604,7 @@ def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def patch_incident_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
       Incident Update command is used to Add, close or update incident resolution
       Args:
@@ -1622,7 +1623,7 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
     if action not in INCIDENT_PATCH_ACTION:
         raise ValueError(f'Invalid Incident Patch Operation: Supported values are : {INCIDENT_PATCH_ACTION}')
 
-    action_list: List[Dict[str, Any]] = []
+    action_list: list[dict[str, Any]] = []
     # Incident Add Comment
     if action == 'add_comment':
         if not value:
@@ -1679,7 +1680,7 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_file_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get File Instance
     Args:
@@ -1699,7 +1700,7 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
         else '/atpapi/v2/entities/files/instances'
 
     payload, limit, offset, page_size = get_request_payload(args)
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
 
     title = get_command_title_string(
         'File Instances',
@@ -1726,7 +1727,7 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
 
-def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_domain_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Domain Instance
     Args:
@@ -1739,7 +1740,7 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     endpoint = '/atpapi/v2/entities/domains/instances'
     payload, limit, offset, page_size = get_request_payload(args)
 
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
 
     title = get_command_title_string(
         'Domain Instances',
@@ -1766,7 +1767,7 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
 
-def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoint_instance_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get Endpoint Instance
     Args:
@@ -1780,7 +1781,7 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
 
     payload, limit, offset, page_size = get_request_payload(args)
 
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, payload)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, payload)
     title = get_command_title_string(
         'Endpoint Instances',
         arg_to_number(args.get('page', 0)),
@@ -1806,7 +1807,7 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
     )
 
 
-def get_allow_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_allow_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
    Get Allow List Policies
     Args:
@@ -1845,7 +1846,7 @@ def get_allow_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_deny_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_deny_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get deny List Policies
     Args:
@@ -1885,7 +1886,7 @@ def get_deny_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoint_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Issue a Command Action to the SEDR On-Prem networks with following action:
         isolate - Isolates endpoint by cutting connections that the endpoint(s) has to internal networks and external
@@ -1946,7 +1947,7 @@ def get_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_endpoint_status_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Check the command status of isolate endpoint.
     Args:
@@ -1960,7 +1961,7 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
     endpoint = f'/atpapi/v2/commands/{command_id}'
 
     params = post_request_body(args)
-    raw_response: Dict[str, Any] = client.query_request_api(endpoint, params)
+    raw_response: dict[str, Any] = client.query_request_api(endpoint, params)
 
     title = "Command Status"
     summary_data = {
@@ -2086,7 +2087,7 @@ def main() -> None:
             "symantec-edr-event-list": get_event_list_command,
 
         }
-        command_output: Union[CommandResults, str]
+        command_output: CommandResults | str
         if command == "test-module":
             command_output = test_module(client)
         elif command in commands:
