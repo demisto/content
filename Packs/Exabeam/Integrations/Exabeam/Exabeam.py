@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+TIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 
 
 class Client(BaseClient):
@@ -1120,12 +1121,11 @@ def create_context_table_updates_outputs(name: str, raw_response: Dict) -> Tuple
 
 def order_time_as_milisecound_for_fetch(start_time: str, end_time: str) -> Tuple[str, str]:
 
-    date_time = '%Y-%m-%dT%H:%M:%S.%f'
-    start = datetime.strptime(start_time, date_time)
-    end = datetime.strptime(end_time, date_time)
+    start = datetime.strptime(start_time, TIME_FORMAT_MILISECONDS)
+    end = datetime.strptime(end_time, TIME_FORMAT_MILISECONDS)
 
-    start_unix = convert_date_to_unix(start.strftime(date_time))
-    end_unix = convert_date_to_unix(end.strftime(date_time))
+    start_unix = convert_date_to_unix(start.strftime(TIME_FORMAT_MILISECONDS))
+    end_unix = convert_date_to_unix(end.strftime(TIME_FORMAT_MILISECONDS))
 
     return str(start_unix), str(end_unix)
 
@@ -1178,7 +1178,7 @@ def build_incident_response_query_params(query: str | None,
 ''' COMMANDS '''
 
 
-def test_module(client: Client, args: dict[str, str], params):
+def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
     """test function
 
     Args:
@@ -1190,7 +1190,6 @@ def test_module(client: Client, args: dict[str, str], params):
 
     client.test_module_request()
     demisto.results('ok')
-    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -2012,7 +2011,6 @@ def list_incidents(client: Client, args: dict[str, str]):
         raise ValueError('The username argument is necessary be for this command if the instance configured by api key')
 
     incidents = []
-    raw_response = dict()
 
     if incident_ids:
         for incident_id in incident_ids:
@@ -2050,7 +2048,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
         look_back=1,
-        date_format='%Y-%m-%dT%H:%M:%S.%f',
+        date_format=TIME_FORMAT_MILISECONDS,
     )
 
     demisto.debug(f"fetching incidents between {start_time=}, {end_time=}")
@@ -2090,7 +2088,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
     incidents: List[dict] = []
     for incident in incidents_filtered:
         incident['createdAt'] = datetime.fromtimestamp(
-            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime('%Y-%m-%dT%H:%M:%S.%f')
+            incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(TIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
         incidents.append({
             'Name': incident.get('name'),
@@ -2107,7 +2105,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> Tuple[list, dict]:
         look_back=1,
         created_time_field='createdAt',
         id_field='incidentId',
-        date_format='%Y-%m-%dT%H:%M:%S.%f',
+        date_format=TIME_FORMAT_MILISECONDS,
         increase_last_run_time=True
     )
     demisto.debug(f"Last run after the fetch run: {last_run}")
@@ -2130,7 +2128,6 @@ def main():
         headers['ExaAuthToken'] = password
 
     commands = {
-        'test-module': test_module,
         'get-notable-users': get_notable_users,
         'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
@@ -2181,7 +2178,7 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
-            return_outputs(*commands[command](client, args, params))
+            test_module(client, args, params)
         elif command in commands:
             return_outputs(*commands[command](client, args))
         else:
