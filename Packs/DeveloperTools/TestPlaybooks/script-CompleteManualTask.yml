@@ -16,7 +16,7 @@ script: >
               "raw-response": "true"
           }
 
-  resCmdName = demisto.executeCommand("DemistoGetIncidentTasksByState", search_args)
+  resCmdName = demisto.executeCommand("GetIncidentTasksByState", search_args)
 
   contents = resCmdName[0].get("Contents", {})
 
