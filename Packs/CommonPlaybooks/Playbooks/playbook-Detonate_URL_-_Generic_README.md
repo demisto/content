@@ -42,7 +42,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description**                            | **Default Value** | **Required** |
 | -------- | ------------------------------------------ | ----------------- | ------------ |
-| URL      | The URL object of the URL to be detonated. | URL.None          | Optional     |
+| URL      | The URL object of the URL to be detonated. | URL          | Optional     |
 
 ## Playbook Outputs
 

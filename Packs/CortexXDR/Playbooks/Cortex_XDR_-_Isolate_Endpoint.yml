@@ -21,6 +21,7 @@ tasks:
       '#none#':
       - "2"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,7 +34,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -65,6 +65,7 @@ tasks:
                 iscontext: true
           - operator: uniq
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,7 +78,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -88,10 +88,10 @@ tasks:
       id: cb9ba187-6e23-4c6c-847b-004dc0b6b241
       version: -1
       name: Is 'Palo Alto Networks Cortex XDR - Investigation and Response' integration enabled?
+      description: 'Checks if the ''Palo Alto Networks Cortex XDR - Investigation and Response'' integration is enabled. '
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks if the ''Palo Alto Networks Cortex XDR - Investigation and Response'' integration is enabled. '
     nexttasks:
       '#default#':
       - "3"
@@ -127,6 +127,7 @@ tasks:
             iscontext: true
           right:
             value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -139,7 +140,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -155,6 +155,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -167,7 +168,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -178,10 +178,10 @@ tasks:
       id: 465da07f-5e0a-458f-8efe-f3b1ba853d88
       version: -1
       name: Is there an endpoint to isolate?
+      description: Checks if there is any endpoint to isolate.
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks if there is any endpoint to isolate.'
     nexttasks:
       '#default#':
       - "3"
@@ -215,6 +215,7 @@ tasks:
               complex:
                 root: inputs.hostname
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -227,7 +228,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -269,6 +269,7 @@ tasks:
       dt:
         simple: PaloAltoNetworksXDR.Endpoint(val.is_isolated!=='AGENT_ISOLATED').endpoint_id
     separatecontext: true
+    continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
@@ -286,7 +287,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "7":
@@ -311,6 +311,7 @@ tasks:
           root: PaloAltoNetworksXDR
           accessor: Isolation.endpoint_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -323,7 +324,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -341,7 +341,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "11"
     scriptarguments:
       hostname:
         complex:
@@ -350,11 +350,12 @@ tasks:
         complex:
           root: inputs.ip_list
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 540
+          "x": 780,
+          "y": 680
         }
       }
     note: false
@@ -362,7 +363,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -387,6 +387,7 @@ tasks:
           root: PaloAltoNetworksXDR
           accessor: Isolation.endpoint_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -399,7 +400,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -422,11 +422,12 @@ tasks:
       endpoint_id_list:
         simple: ${inputs.endpoint_id}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 380,
-          "y": 710
+          "y": 680
         }
       }
     note: false
@@ -434,21 +435,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 84f4c199-6e4d-421c-8e64-2824dd30215d
+    taskid: d0720102-4246-49eb-8e38-bc04f44369c9
     type: condition
     task:
-      id: 84f4c199-6e4d-421c-8e64-2824dd30215d
+      id: d0720102-4246-49eb-8e38-bc04f44369c9
       version: -1
       name: Is the endpoint ready for isolation?
+      description: Checks if there is any endpoint ready for isolation.
       type: condition
       iscommand: false
       brand: ""
-      description: 'Checks if there is any endpoint ready for isolation.'
     nexttasks:
       '#default#':
       - "3"
@@ -468,17 +468,14 @@ tasks:
           right:
             value:
               simple: AGENT_UNISOLATED
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: PaloAltoNetworksXDR.Endpoint
-                accessor: is_isolated
+                accessor: endpoint_id
             iscontext: true
-          right:
-            value:
-              simple: inputs.endpoint_id
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -491,9 +488,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -506,7 +503,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1945,
-        "width": 1040,
+        "width": 1110,
         "x": 50,
         "y": 50
       }
@@ -552,5 +549,6 @@ outputs:
 - contextPath: Endpoint.Hostname
   description: The hostname that is mapped to this endpoint.
 tests:
-- no tests
+- Test XDR Playbook
 fromversion: 5.0.0
+toversion: 6.1.9
