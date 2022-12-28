@@ -4,6 +4,7 @@ if (serverURL.slice(-1) === '/') {
 }
 serverURL = serverURL + '/xsoar'
 
+
 sendMultipart = function (uri, entryID, body) {
     var requestUrl = serverURL;
     if (uri.slice(-1) !== '/') {
