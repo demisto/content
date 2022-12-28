@@ -443,9 +443,78 @@ UPLOAD_LARGE_FILE_COMMAND_ARGS = [
         },
     )]
 
+return_value_upload_without_upload_session = {'@odata.context': "https://graph.microsoft.com/v1.0/$metadata#sites"
+                                                                "(some_site)/drive/items/$entity",
+                                              '@microsoft.graph.downloadUrl': 'some_url',
+                                              'createdDateTime': '2022-12-15T12:56:27Z',
+                                              'eTag': '"{11111111-1111-1111-1111-111111111111},11"',
+                                              'id': 'some_id',
+                                              'lastModifiedDateTime': '2022-12-28T11:38:55Z',
+                                              'name': 'some_pdf.pdf',
+                                              'webUrl': 'https://some_url/some_pdf.pdf',
+                                              'cTag': '"c:{11111111-1111-1111-1111-111111111111},11"', 'size': 3028,
+                                              'createdBy': {'application': {'id': 'some_id',
+                                                                            'displayName': 'MS Graph Files'},
+                                                            'user': {'displayName': 'SharePoint App'}},
+                                              'lastModifiedBy': {'application': {'id': 'some_id',
+                                                                                 'displayName': 'MS Graph Files'},
+                                                                 'user': {'displayName': 'SharePoint App'}},
+                                              'parentReference': {'driveType': 'documentLibrary',
+                                                                  'driveId': 'some_drive_id',
+                                                                  'id': 'some_id',
+                                                                  'path': '/drive/root:/test-folder'},
+                                              'file': {'mimeType': 'image/jpeg',
+                                                       'hashes': {'quickXorHash': 'quickXorHash'}},
+                                              'fileSystemInfo': {'createdDateTime': '2022-12-15T12:56:27Z',
+                                                                 'lastModifiedDateTime': '2022-12-28T11:38:55Z'},
+                                              'image': {},
+                                              'shared': {'scope': 'users'}}
+
+return_context = {
+    "MsGraphFiles.UploadedFiles(val.ID === obj.ID)": {
+        "OdataContext": "https://graph.microsoft.com/v1.0/$metadata#sites(some_site)/drive/items/$entity",
+        "DownloadUrl": "some_url",
+        "CreatedDateTime": "2022-12-15T12:56:27Z",
+        "LastModifiedDateTime": "2022-12-28T11:38:55Z",
+        "Name": "some_pdf.pdf",
+        "WebUrl": "https://some_url/some_pdf.pdf",
+        "Size": 3028,
+        "CreatedBy": {
+            "Application": {"DisplayName": "MS Graph Files", "ID": "some_id"},
+            "User": {"DisplayName": "SharePoint App"},
+        },
+        "LastModifiedBy": {
+            "Application": {"DisplayName": "MS Graph Files", "ID": "some_id"},
+            "User": {"DisplayName": "SharePoint App"},
+        },
+        "ParentReference": {
+            "DriveType": "documentLibrary",
+            "DriveId": "some_drive_id",
+            "Path": "/drive/root:/test-folder",
+            "ID": "some_id",
+        },
+        "File": {"MimeType": "image/jpeg", "Hashes": {"QuickXorHash": "quickXorHash"}},
+        "FileSystemInfo": {
+            "CreatedDateTime": "2022-12-15T12:56:27Z",
+            "LastModifiedDateTime": "2022-12-28T11:38:55Z",
+        },
+        "Image": {},
+        "Shared": {"Scope": "users"},
+        "ID": "some_id",
+    }
+}
+
 
 @pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
 def test_upload_command_with_upload_session(mocker, client, args):
+    """
+        Given:
+            - An image to upload.
+        When:
+            - running upload new file command.
+        Then:
+            - return an result with upload session.
+     """
     import requests
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/shark.jpg',
                                                               'name': 'shark.jpg'})
@@ -454,3 +523,23 @@ def test_upload_command_with_upload_session(mocker, client, args):
     upload_query_mock = mocker.patch.object(requests, 'put', side_effect=upload_response_side_effect)
     upload_new_file_command(client, args)
     assert validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
+
+
+@pytest.mark.parametrize('client, args', UPLOAD_LARGE_FILE_COMMAND_ARGS)
+def test_upload_command_without_upload_session(mocker, client, args):
+    """
+        Given:
+            - An image to upload.
+        When:
+            - running upload new file command.
+        Then:
+            - return an result without upload session.
+     """
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/sample.pdf',
+                                                              'name': 'sample.pdf'})
+    mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
+    human_readable, context, result = upload_new_file_command(client, args)
+    assert human_readable == '### MsGraphFiles - File information:\n|CreatedDateTime|ID|Name|Size|WebUrl|\n|---|---|---|---|---|'\
+                             '\n| 2022-12-15T12:56:27Z | some_id | some_pdf.pdf | 3028 | https://some_url/some_pdf.pdf |\n'
+    assert result == return_value_upload_without_upload_session
+    assert context == return_context

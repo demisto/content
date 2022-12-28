@@ -103,9 +103,9 @@ script:
         To get the ID of a folder, use the msgraph-list-drive-content command.
       name: parent_id
       required: true
-    - description: The name of the file to upload. Default is file name as provided to the entry ID entry_id.
+    - description: The name of the file to upload.
       name: file_name
-      required: false
+      required: true
     - description: The Cortex XSOAR entry ID of the file.
       name: entry_id
       required: true

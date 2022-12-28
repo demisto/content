@@ -1,5 +1,5 @@
 id: test_MsGraphFiles
-version: 159
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"

@@ -205,15 +205,16 @@ class MsGraphClient:
                 method="PUT", data=file, headers=headers, url_suffix=uri
             )
 
-    def replace_existing_file_with_upload_session(self, object_type, object_type_id, item_id, entry_id, file_data,
-                                                  file_size, file_name):
+    def replace_existing_file_with_upload_session(self, object_type: str,
+                                                  object_type_id: str, item_id: str, entry_id: str, file_data: bytes,
+                                                  file_size: int, file_name: str) -> dict:
         """
         Replace a file with upload session.
 
         Args:
         object_type: ms graph resource.
         object_type_id: ms graph resource id.
-        item_id: item_id: ms graph item_id.
+        item_id: ms graph item_id.
         entry_id: demisto file entry id
 
         Returns:
@@ -226,13 +227,13 @@ class MsGraphClient:
                 f"Please provide another one."
             )
         # create suitable upload session
-        if 'drives' == object_type:
+        if object_type == 'drives':
             uri = f'/drives/{object_type_id}/items/{item_id}/createUploadSession'
-        elif 'groups' == object_type:
+        elif object_type == 'groups':
             uri = f'/groups/{object_type_id}/drive/items/{item_id}/createUploadSession'
-        elif 'sites' == object_type:
+        elif object_type == 'sites':
             uri = f'/sites/{object_type_id}/drive/items/{item_id}/createUploadSession'
-        elif 'users' == object_type:
+        elif object_type == 'users':
             uri = f'/users/{object_type_id}/drive/items/{item_id}/createUploadSession'
         response, upload_url = self.create_an_upload_session(uri)
         if not upload_url:
@@ -373,18 +374,18 @@ class MsGraphClient:
                       201 (created) if the file was uploaded completely. 400 in case of errors.
         """
         # create suitable upload session
-        if 'drives' == object_type:
+        if object_type == 'drives':
             uri = f'/drives/{object_type_id}/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif 'groups' == object_type:
+        elif object_type == 'groups':
             uri = f'/groups/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif 'sites' == object_type:
+        elif object_type == 'sites':
             uri = f'/sites/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
-        elif 'users' == object_type:
+        elif object_type == 'users':
             uri = f'/users/{object_type_id}/drive/items/{parent_id}:/{file_name}:/createUploadSession'
         response, upload_url = self.create_an_upload_session(uri)
         if not upload_url:
             raise Exception(f'Cannot get upload URL for attachment {file_name}')
-        demisto.debug(f'response of "create_an_upload_session": {response}')
+        demisto.debug(f'Create upload session response": {response}')
         response_file_upload = self.upload_file_with_upload_session(upload_url, file_data, file_size)
         demisto.debug(f'response of "upload_file_with_upload_session": {response}')
         return response_file_upload
