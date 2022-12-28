@@ -1,5 +1,15 @@
-Manage Secrets and Protect Sensitive Data through HashiCorp Vault
-This integration was integrated and tested with version xx of HashiCorp Vault
+Secure, store and tightly control access to tokens, pass[words, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see [Managing Credentials.](https://xsoar.pan.dev/docs/reference/articles/managing-credentials)
+
+This integration was integrated and tested with version 1.12.2 of HashiCorp Vault.
+
+##Authentication
+The integration supports the following auth methods:
+###Userpass Auth Method
+It is required to fill in only the Username / Role ID parameter with the username and Password / Secret ID parameter with the password. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/userpass)
+###Token Auth Method
+It is required to fill in only the Authentication token parameter. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/token)
+###AppRole Auth Method
+It is required to fill in only the Username / Role ID parameter with the role ID and Password / Secret ID parameter with the secret ID, and tick the Use AppRole Auth Method checkbox. For more details, see the [HashiCorp Vault documentation.](https://www.vaultproject.io/docs/auth/approle)
 
 ## Configure HashiCorp Vault on Cortex XSOAR
 
@@ -48,6 +58,8 @@ List all secrets engines that exist in HashiCorp Vault
 | HashiCorp.Engine.Description | string | Secrets engine description | 
 | HashiCorp.Engine.Accessor | string | Secrets engine accessor | 
 
+#### Command example
+```!hashicorp-list-secrets-engines```
 ### hashicorp-list-secrets
 ***
 List secrets (names) for a specified KV engine
@@ -69,7 +81,8 @@ List secrets (names) for a specified KV engine
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HashiCorp.Secret.Path | string | Secret path | 
-
+#### Command example
+```!hashicorp-list-secrets```
 ### hashicorp-get-secret-metadata
 ***
 Returns information about a specified secret in a specified KV V2 engine 
@@ -98,7 +111,8 @@ Returns information about a specified secret in a specified KV V2 engine
 | HashiCorp.Secret.Engine | string | Secret engine type | 
 | HashiCorp.Secret.CurrentVersion | number | Secret current version | 
 | HashiCorp.Secret.Path | string | Secret path | 
-
+#### Command example
+```!hashicorp-get-secret-metadata engine_path=secret secret_path=test```
 ### hashicorp-delete-secret
 ***
 Deletes the data under a specified secret given the secret path. Performs a soft delete that allows you to run the hashicorp-undelete-secret command if necessary (for KV V2 engine)
@@ -119,6 +133,9 @@ Deletes the data under a specified secret given the secret path. Performs a soft
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+```!hashicorp-delete-secret engine_path=secret secret_path=test versions=2```
 ### hashicorp-undelete-secret
 ***
 Undeletes (restores) a secret on HashiCorp (for KV V2 engine)
@@ -139,6 +156,8 @@ Undeletes (restores) a secret on HashiCorp (for KV V2 engine)
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-undelete-secret engine_path=secret secret_path=test versions=2```
 ### hashicorp-destroy-secret
 ***
 Permanently deletes a secret (for KV V2 engine)
@@ -159,6 +178,8 @@ Permanently deletes a secret (for KV V2 engine)
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-destroy-secret engine_path=secret secret_path=test versions=2```
 ### hashicorp-disable-engine
 ***
 When a secrets engine is no longer needed, it can be disabled. All secrets under the engine are revoked and the corresponding vault data and configurations are removed.
@@ -177,8 +198,10 @@ When a secrets engine is no longer needed, it can be disabled. All secrets under
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-disable-engine path=secret```
 ### hashicorp-enable-engine
-***
+***!hashicorp-disable-engine path=secret
 Enables a new secrets engine at the specified path
 
 
@@ -207,6 +230,8 @@ Enables a new secrets engine at the specified path
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-enable-engine path=secret type=AWS```
 ### hashicorp-list-policies
 ***
 Lists all configured policies
@@ -226,7 +251,8 @@ Lists all configured policies
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HashiCorp.Policy.Name | string | Policy name | 
-
+#### Command example
+```hashicorp-list-policies```
 ### hashicorp-get-policy
 ***
 Get information for a policy
@@ -249,7 +275,8 @@ Get information for a policy
 | HashiCorp.Policy.Name | string | Policy name | 
 | HashiCorp.Policy.Rule.Path  | string | Policy rule path | 
 | HashiCorp.Policy.Rule.Capabilities | unknown | Policy rule capabilities | 
-
+#### Command example
+```!hashicorp-get-policy name=secret```
 ### hashicorp-seal-vault
 ***
 If you suspect your data has been compromised, you can seal your vault to prevent access to your secrets
@@ -267,6 +294,8 @@ If you suspect your data has been compromised, you can seal your vault to preven
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-seal-vault```
 ### hashicorp-unseal-vault
 ***
 Use a single master key share to unseal the vault. If the master key shares threshold is met, vault will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
@@ -286,6 +315,8 @@ Use a single master key share to unseal the vault. If the master key shares thre
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!hashicorp-unseal-vault```
 ### hashicorp-configure-engine
 ***
 Configure a secrets engine to fetch secrets from
@@ -369,3 +400,23 @@ Creates a new authentication token
 | HashiCorp.Auth.Token | string | Authentication token | 
 | HashiCorp.Auth.Policy | unknown | Authentication policies | 
 | HashiCorp.Auth.LeaseDuration | number | Authentication lease duration in seconds, 0 if indefinitely  | 
+
+#### Command example
+```!hashicorp-create-token display_name=token explicit_max_ttl=3600 renewable=false```
+
+##Additional Information
+In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the configure-engine command.
+
+##Known Limitations
+Currently the integration is able to fetch credentials from the following engines:  
+- **K/V Versions 1,2**  
+- **Cubbyhole**  
+- **AWS**  
+
+###The following commands are limited to the K/V V2 engine:
+
+- hashicorp-list-secrets
+- hashicorp-get-secret-metadata
+- hashicorp-delete-secret
+- hashicorp-undelete-secret
+- hashicorp-destroy-secret
