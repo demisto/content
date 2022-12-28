@@ -3,7 +3,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Imperva WAF to forward Syslog messages in CEF format.
 
-For SIEM Log integration, please use the prodcut [documentation](https://docs.imperva.com/bundle/cloud-application-security/page/siem-log-configuration.htm).
+For the SIEM Log integration, see the following [documentation](https://docs.imperva.com/bundle/cloud-application-security/page/siem-log-configuration.htm).
 ## Collect Events from Vendor
 
 In order to use the collector, use the [Broker VM](#broker-vm) option.
