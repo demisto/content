@@ -53,12 +53,13 @@ def test_validate_date_field_format(due_date):
 
 
 @pytest.mark.parametrize("custom_fields, expected", [
-    (["customfield_10096=test"], [{"customfield_10096": "test"}]),
-    (["customfield_10096=test", "customfield_10040=100"], [{"customfield_10096": "test"}, {"customfield_10040": 100}]),
-    (["customfield_10096=test", "customfield_10040=0100"], [{"customfield_10096": "test"}, {"customfield_10040": 100}]),
-    (["customfield_10096=test", "customfield_10040=A100"], [{"customfield_10096": "test"}, {"customfield_10040": "A100"}]),
-    (["customfield_10096:test", "customfield_10040=A100"], [{"customfield_10040": "A100"}]),
-    ([], []),
+    (["customfield_10096=test"], {"customfield_10096": "test"}),
+    (["customfield_10096=test", "customfield_10040=100"], {"customfield_10096": "test", "customfield_10040": 100}),
+    (["customfield_10096=test", "customfield_10040=0100"], {"customfield_10096": "test", "customfield_10040": "0100"}),
+    (["customfield_10096=test", "customfield_10040=A100"], {"customfield_10096": "test", "customfield_10040": "A100"}),
+    (["customfield_10096:test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+    (["customfield_10096==test", "customfield_10040=A100"], {"customfield_10040": "A100"}),
+    ([], {}),
 ])
 def test_parse_custom_fields(custom_fields, expected):
 
@@ -73,15 +74,17 @@ def test_parse_custom_fields(custom_fields, expected):
         - Case C: 1 text custom field, 1 integer custom field with 0 padding.
         - Case D: 2 text custom fields.
         - Case E: 1 text custom field, 1 custom field with unexpected delimiter (:).
+        - Case E: 1 text custom field, 1 custom field with unexpected delimiter (==).
         - Case F: Empty custom field list.
 
     Then:
         - Case A: 1 text custom field returned.
         - Case B: 1 text custom field, 1 integer custom field returned.
-        - Case C: 1 text custom field, 1 integer custom field returned.
+        - Case C: 2 text custom fields returned.
         - Case D: 2 text custom fields returned.
         - Case E: 1 text custom field returned.
-        - Case F: Empty custom field list returned.
+        - Case F: 1 text custom field returned.
+        - Case G: Empty dict returned.
     """
 
     actual = parse_custom_fields(custom_fields)
@@ -91,11 +94,11 @@ def test_parse_custom_fields(custom_fields, expected):
 
 
 @pytest.mark.parametrize("args, custom_fields, expected", [
-    ({"arg1": "val1", "arg2": 1}, [{"customfield_10096": "test"}, {"customfield_10040": 100}],
+    ({"arg1": "val1", "arg2": 1}, {"customfield_10096": "test", "customfield_10040": 100},
         {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}),
-    ({"arg1": "val1", "arg2": 1}, [],
+    ({"arg1": "val1", "arg2": 1}, {},
         {"arg1": "val1", "arg2": 1}),
-    ({}, [{"customfield_10096": "test"}, {"customfield_10040": 100}],
+    ({}, {"customfield_10096": "test", "customfield_10040": 100},
         {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}})
 ])
 def test_add_custom_fields(args, custom_fields, expected):
