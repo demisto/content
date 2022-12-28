@@ -224,6 +224,15 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if params.get('format_time') == 'Relative Time' and not params.get('offset'):
             msg += 'An Offset is missing where Relative Time is chosen, please enter Offset. '
 
+        # Verify the correctness of the query / procedure
+        try:
+            params['fetch_limit'] = 1
+            last_run = get_last_run(params)
+            sql_query = create_sql_query(last_run, params)
+            client.sql_query_execute_request(sql_query, {})
+        except Exception as e:
+            raise e
+
     return msg if msg else 'ok', {}, []
 
 
