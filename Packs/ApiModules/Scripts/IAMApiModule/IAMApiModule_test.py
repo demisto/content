@@ -323,6 +323,5 @@ def test_enable_user_command__empty_json_as_argument(input):
     iamcommand = IAMCommand(get_user_iam_attrs=['id', 'username', 'email'])
 
     with pytest.raises(DemistoException) as e:
-        # client.enable_user(args)
         iamcommand.enable_user(client, input)
     assert e.value.message == "Your user profile argument must contain at least one attribute that is mapped into one of the following attributes in the outgoing mapper: ['id', 'username', 'email']"
