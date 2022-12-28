@@ -565,7 +565,7 @@ script:
       name: unassign_user
       predefined:
       - 'true'
-    description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
+    description: Updates one or more fields of a specified incident. Missing fields will be ignored (except the `status` field, which will be set to `RESOLVED_OTHER` if the `resolve_comment` field is set and the current status is `NEW` or `UNDER_INVESTIGATION`). To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
     - description: String value that defines the product.
