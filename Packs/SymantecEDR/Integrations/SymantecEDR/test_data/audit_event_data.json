@@ -1,7 +1,7 @@
 {
     "result": [
         {
-            "user_agent_ip": "172.16.11.107",
+            "user_agent_ip": "127.0.0.1",
             "entity_result": {
                 "data": {
                     "incident_management": {
@@ -14,7 +14,7 @@
             },
             "status_id": 1,
             "feature_name": "Incident",
-            "device_ip": "192.168.20.8",
+            "device_ip": "127.0.0.1",
             "user_name": "SEDR API",
             "atp_node_role": 5,
             "category_id": 4,

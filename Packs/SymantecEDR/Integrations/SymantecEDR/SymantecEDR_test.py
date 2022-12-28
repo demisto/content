@@ -20,7 +20,7 @@ def util_load_json(path):
 
 
 client = Client(
-    base_url="http://host:port",
+    base_url="http://<host:port>:port",
     verify=False,
     proxy=False,
     client_id="test_123",

@@ -15,7 +15,7 @@
             "message": "Successfully sent 0 incident(s) from Targeted Attack Analytics service.",
             "product_name": "Symantec Endpoint Detection and Response",
             "log_time": "2022-12-25T23:09:47.361Z",
-            "device_ip": "192.168.20.8",
+            "device_ip": "127.0.0.1",
             "severity_id": 1,
             "device_cap": "EDR",
             "uuid": "397546c0-84a9-11ed-c8ae-000000032de5",

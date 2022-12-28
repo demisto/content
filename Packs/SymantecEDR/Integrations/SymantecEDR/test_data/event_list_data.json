@@ -7,7 +7,7 @@
             "log_time": "2022-12-25T10:46:01.302Z",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
             "device_name": "WIN-TFB8L7BI77H",
-            "device_ip": "172.16.14.42",
+            "device_ip": "127.0.0.1",
             "device_os_name": "Windows Server 2019 ",
             "user_name": "SYSTEM",
             "user_domain": "NT AUTHORITY",

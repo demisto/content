@@ -120,7 +120,7 @@ List of Domain and File association
             {
                 "data_source_url": "http://msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d",
                 "data_source_url_domain": "msedge.b.tlu.dl.delivery.mp.microsoft.com",
-                "device_ip": "172.16.14.42",
+                "device_ip": "127.0.0.1",
                 "device_name": "win-tfb8l7bi77h",
                 "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
                 "first_seen": "2022-10-22T11:23:26.561Z",
@@ -139,7 +139,7 @@ List of Domain and File association
 >### Domain File Association List
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|Sha2|Name|SignatureCompanyName|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2022-10-22T11:23:26.561Z | 2022-10-22T11:23:26.561Z | http:<span>//</span>msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d | msedge.b.tlu.dl.delivery.mp.microsoft.com | 1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc | microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe | Microsoft Corporation | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
+>| 2022-10-22T11:23:26.561Z | 2022-10-22T11:23:26.561Z | http:<span>//</span>msedge.b.tlu.dl.delivery.mp.microsoft.com/filestreamingservice/files/685cae66-5fe2-498e-b4f1-ed26aafa2801?p1=1667042599&p2=404&p3=2&p4=c3swnk6uktun4vjyhudntbuxv8bilxgbgat1s%2flgzbqw4kjyc0zs8ox7mi1oaisl96huewngvdr%2bnfbl7erlxa%3d%3d | msedge.b.tlu.dl.delivery.mp.microsoft.com | 1291d6eb30cd1683544666692a382aecf325dc2624da9ef395047a64642059dc | microsoftedge_x64_106.0.1370.52_106.0.1370.47.exe | Microsoft Corporation | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 127.0.0.1 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-endpoint-domain-association-list
@@ -184,7 +184,7 @@ List of Endpoint and Domain association
             {
                 "data_source_url": "http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4",
                 "data_source_url_domain": "ctldl.windowsupdate.com",
-                "device_ip": "172.16.14.42",
+                "device_ip": "127.0.0.1",
                 "device_name": "WIN-TFB8L7BI77H",
                 "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
                 "first_seen": "2022-10-21T19:06:39.998Z",
@@ -200,7 +200,7 @@ List of Endpoint and Domain association
 >### Endpoint Domain Association List
 >|FirstSeen|LastSeen|DataSourceUrl|DataSourceUrlDomain|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|
->| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | WIN-TFB8L7BI77H |
+>| 2022-10-21T19:06:39.998Z | 2022-10-21T19:06:39.998Z | http:<span>//</span>ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4 | ctldl.windowsupdate.com | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 127.0.0.1 | WIN-TFB8L7BI77H |
 
 
 ### symantec-edr-endpoint-file-association-list
@@ -244,7 +244,7 @@ List of Domain and File association
     "SymantecEDR": {
         "EndpointFileAssociation": [
             {
-                "device_ip": "172.16.14.42",
+                "device_ip": "127.0.0.1",
                 "device_name": "win-tfb8l7bi77h",
                 "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
                 "first_seen": "2022-10-21T07:00:17.831Z",
@@ -263,7 +263,7 @@ List of Domain and File association
 >### Endpoint File Association List
 >|FirstSeen|LastSeen|Sha2|Name|Folder|DeviceUid|DeviceIp|DeviceName|
 >|---|---|---|---|---|---|---|---|
->| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 172.16.14.42 | win-tfb8l7bi77h |
+>| 2022-10-21T07:00:17.831Z | 2022-12-09T10:03:21.866Z | 1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164 | 3353b940c074fd0c.automaticdestinations-ms | csidl_profile\appdata\roaming\microsoft\windows\recent\automaticdestinations | 393b8e82-fe40-429f-8e5e-c6b79a0f2b1c | 127.0.0.1 | win-tfb8l7bi77h |
 
 
 ### symantec-edr-domain-instance-list
@@ -361,8 +361,8 @@ Get Endpoint Instances
     "SymantecEDR": {
         "EndpointInstances": [
             {
-                "device_ip": "172.16.14.58",
-                "device_name": "172.16.14.58",
+                "device_ip": "127.0.0.1",
+                "device_name": "127.0.0.1",
                 "device_uid": "c0e1b083-9aba-48c0-9ba1-39c0c37c5851",
                 "time": "2022-11-28T10:29:47.251Z"
             }
@@ -376,7 +376,7 @@ Get Endpoint Instances
 >### Endpoint Instances List
 >|DeviceUid|DeviceName|DeviceIp|Time|
 >|---|---|---|---|
->| c0e1b083-9aba-48c0-9ba1-39c0c37c5851 | 172.16.14.58 | 172.16.14.58 | 2022-11-28T10:29:47.251Z |
+>| c0e1b083-9aba-48c0-9ba1-39c0c37c5851 | 127.0.0.1 | 127.0.0.1 | 2022-11-28T10:29:47.251Z |
 
 
 ### symantec-edr-file-instance-list
@@ -523,7 +523,7 @@ Command to get System Activities
         "SystemActivity": {
             "atp_node_role": "All in One",
             "device_cap": "EDR",
-            "device_ip": "192.168.20.8",
+            "device_ip": "127.0.0.1",
             "device_name": "localhost.localdomain",
             "device_time": "2022-12-28T04:20:05.234Z",
             "feature_name": "AdministratorTask",
@@ -548,7 +548,7 @@ Command to get System Activities
 >### System Activities List
 >|Time|TypeId|SeverityId|Message|DeviceIp|AtpNodeRole|StatusId|
 >|---|---|---|---|---|---|---|
->| 2022-12-28T04:20:05.234Z | 1 | Info | Command delete_file with command id 0e2df8dfeea44a0d8e97b92368a0c986-2022-12-28 has started. | 192.168.20.8 | All in One | Success |
+>| 2022-12-28T04:20:05.234Z | 1 | Info | Command delete_file with command id 0e2df8dfeea44a0d8e97b92368a0c986-2022-12-28 has started. | 127.0.0.1 | All in One | Success |
 
 
 ### symantec-edr-audit-event-list
@@ -618,7 +618,7 @@ Get  Audit Events
             "count": 1,
             "device_cap": "EDR",
             "device_end_time": "2022-12-28T04:21:15.339Z",
-            "device_ip": "192.168.20.8",
+            "device_ip": "127.0.0.1",
             "device_name": "localhost.localdomain",
             "device_time": "2022-12-28T04:21:15.339Z",
             "device_uid": "2B034D56-DBDB-9D58-DBA5-1CCB980276F2",
@@ -634,7 +634,7 @@ Get  Audit Events
             "status_id": "Success",
             "timezone": 0,
             "type_id": 21,
-            "user_agent_ip": "172.16.11.107",
+            "user_agent_ip": "127.0.0.1",
             "user_name": "SEDR API",
             "user_uid": "O2ID.atp-customer.atp-domain.dbq9fmcjk132kmha7f9584qvr7",
             "uuid": "1199a9b0-8667-11ed-d392-000000033f60"
@@ -648,7 +648,7 @@ Get  Audit Events
 >### Audit Event List
 >|Time|TypeId|FeatureName|Message|UserAgentIp|UserName|Severity|DeviceName|DeviceIp|Uuid|StatusId|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-28T04:21:15.339Z | 21 | Incident | Incident Closed Successfully. | 172.16.11.107 | SEDR API | Info | localhost.localdomain | 192.168.20.8 | 1199a9b0-8667-11ed-d392-000000033f60 | Success |
+>| 2022-12-28T04:21:15.339Z | 21 | Incident | Incident Closed Successfully. | 127.0.0.1 | SEDR API | Info | localhost.localdomain | 127.0.0.1 | 1199a9b0-8667-11ed-d392-000000033f60 | Success |
 
 
 ### symantec-edr-event-list
@@ -739,7 +739,7 @@ Used to get events from EDR on-premise
         "Event": {
             "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
             "device_domain": "WORKGROUP",
-            "device_ip": "172.16.14.42",
+            "device_ip": "127.0.0.1",
             "device_name": "WIN-TFB8L7BI77H",
             "device_os_name": "Windows Server 2019 ",
             "device_time": "2022-12-28T04:19:24.550Z",
@@ -787,7 +787,7 @@ Used to get events from EDR on-premise
 >### Event List
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|
->| 2022-12-28T04:19:24.550Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 2 | WORKGROUP | SYSTEM |
+>| 2022-12-28T04:19:24.550Z | 8001 | dllhost.exe logged:  | WIN-TFB8L7BI77H | Info | 127.0.0.1 | 2 | WORKGROUP | SYSTEM |
 
 
 ### symantec-edr-incident-event-list
@@ -893,7 +893,7 @@ Command is used to get Events for Incidents
             "cmd_line": "C:\\Windows\\system32\\cmd.exe /d /c \"C:\\ProgramData\\Symantec\\Symantec Endpoint Protection\\14.3.8268.5000.105\\Data\\Definitions\\WebExtDefs\\20221129.017\\webextbridge.exe\" chrome-extension://pamolibmfebkknkdmfabpjebifbffbec/ --parent-window=0 < \\\\.\\pipe\\chrome.nativeMessaging.in.90abb4245fc8fa0a > \\\\.\\pipe\\chrome.nativeMessaging.out.90abb4245fc8fa0a",
             "correlation_uid": "787E05EE-71B8-11ED-8217-78E3B5B300F9",
             "device_domain": "WORKGROUP",
-            "device_ip": "172.16.14.42",
+            "device_ip": "127.0.0.1",
             "device_name": "WIN-TFB8L7BI77H",
             "device_os_name": "Windows Server 2019 ",
             "device_time": "2022-12-01T21:43:44.218Z",
@@ -946,7 +946,7 @@ Command is used to get Events for Incidents
 >### Event for Incident List
 >|Time|TypeId|Description|DeviceName|SeverityId|DeviceIp|EventUuid|Incident|Operation|DeviceDomain|UserName|
 >|---|---|---|---|---|---|---|---|---|---|---|
->| 2022-12-01T21:43:44.218Z | 8001 | chrome.exe logged: Generic process launch event | WIN-TFB8L7BI77H | Info | 172.16.14.42 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
+>| 2022-12-01T21:43:44.218Z | 8001 | chrome.exe logged: Generic process launch event | WIN-TFB8L7BI77H | Info | 127.0.0.1 | 3a7beba0-71c1-11ed-fd2d-000000010f00 | 9d6f2100-7158-11ed-da26-000000000001 | 1 | WORKGROUP | Administrator |
 
 
 ### symantec-edr-incident-list

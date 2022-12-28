@@ -7,7 +7,7 @@
             "data_source_url": "http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/disallowedcertstl.cab?4653cf2caa3508f4",
             "data_source_url_domain": "ctldl.windowsupdate.com",
             "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
-            "device_ip": "172.16.14.42",
+            "device_ip": "127.0.0.1",
             "device_name": "WIN-TFB8L7BI77H"
         }
     ],
