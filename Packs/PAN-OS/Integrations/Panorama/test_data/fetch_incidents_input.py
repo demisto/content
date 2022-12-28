@@ -8,6 +8,9 @@ utc_time_twelve = dateparser.parse('2022/01/01 12:00', settings={'TIMEZONE': 'UT
 utc_time_eleven = dateparser.parse('2022/01/01 11:00', settings={'TIMEZONE': 'UTC'})
 
 
+""" TestFetchIncidentsHelperFunctions UT's """
+
+
 def assert_datetime_objects(returned: datetime | None, expected: datetime | None):
     if not returned or not expected:
         return False
@@ -94,10 +97,10 @@ case_no_incidents = ({}, (None, None, {}))
 
 one_incident = [{'seqno': '00000000001', 'type': 'X_log_type', 'time_generated': '2022/01/01 12:00:00'}]
 one_incident_result = (
-    '00000000001',
-    utc_time_twelve,
-    [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat()+'Z',
-      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}', 'type': 'X_log_type'}])
+    '00000000001', utc_time_twelve,
+    [{'name': '00000000001', 'occurred': utc_time_twelve.isoformat() + 'Z',
+      'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
+      'type': 'X_log_type'}])
 case_one_incident = (one_incident, one_incident_result)
 
 two_incidents = [
@@ -107,10 +110,10 @@ two_incidents = [
 two_incidents_result = (
     '00000000002',
     utc_time_twelve,
-    [{'name': '00000000001', 'occurred': utc_time_eleven.isoformat()+'Z',
+    [{'name': '00000000001', 'occurred': utc_time_eleven.isoformat() + 'Z',
       'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 11:00:00"}',
       'type': 'X_log_type'},
-     {'name': '00000000002', 'occurred': utc_time_twelve.isoformat()+'Z',
+     {'name': '00000000002', 'occurred': utc_time_twelve.isoformat() + 'Z',
         'rawJSON': '{"seqno": "00000000002", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
       'type': 'X_log_type'}])
 case_two_incident = (two_incidents, two_incidents_result)
@@ -120,6 +123,14 @@ test_parse_incident_entries_args = [case_no_incidents, case_one_incident, case_t
 
 # test_get_parsed_incident_entries arguments
 case_no_incidents = ({}, {}, {}, {})
-case_valid_input = ({'X_log_type': {'seqno': '0000002'}}, {}, {}, {'X_log_type': [{'name': '00000000001', 'occurred': '2022-01-01T12:00:00Z', 'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}', 'type': 'X_log_type'}]})
+case_valid_input = (
+    {'X_log_type': {'seqno': '0000002'}},
+    {},
+    {},
+    {
+        'X_log_type':
+        [{'name': '00000000001', 'occurred': '2022-01-01T12:00:00Z',
+          'rawJSON': '{"seqno": "00000000001", "type": "X_log_type", "time_generated": "2022/01/01 12:00:00"}',
+          'type': 'X_log_type'}]})
 
 get_parsed_incident_entries_args = [case_no_incidents, case_valid_input]
