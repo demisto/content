@@ -11,8 +11,11 @@ OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
+# the lifetime for an JWT token is 90 minutes == 5400 seconds
+# 400 seconds were subtract for extra safety.
+JWT_LIFETIME = 5000
 # maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 300
+MAX_RECORDS_PER_PAGE = 3
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
@@ -22,26 +25,40 @@ USER_TYPE_MAPPING = {
     "Licensed": 2,
     "Corporate": 3
 }
+MONTHLY_RECURRING_TYPE_MAPPING = {
+    "Daily": 1,
+    "Weekly": 2,
+    "Monthly": 3
+}
+INSTANT = "instand"
+SCHEDULED = "scheduled"
+RECURRING_WITH_TIME = "recurring meeting with fixed time"
 
+MEETING_TYPE_NUM_MAPPING = {
+    "instant": 1,
+    "scheduled": 2,
+    "recurring meeting with fixed time": 8
+}
 # ERRORS
 INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
 INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
 INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
-WRONG_TIME_FORMAT ="Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
+WRONG_TIME_FORMAT = "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
 LIMIT_AND_EXTRA_ARGUMENTS = """Too money arguments. if you choose a limit,
                                        don't enter a user_id or page_size or next_page_token"""
-INSTANT_AND_TIME = "Too money arguments. start_time and timezone are for scheduled meetings only."
-JBH_TIME_AND_NO_JBH = "Collision arguments. jbh_time argument can be used only if join_before_host is 'True'."
-WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."                 
-END_TIMES_AND_END_DATE_TIME =  "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time."
+INSTANT_AND_TIME = "Too money arguments. Please use start_time and timezone for scheduled meetings only.."
+JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
+WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
+END_TIMES_AND_END_DATE_TIME = "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time."
 NOT_RECURRING_WITH_RECUURING_ARGUMENTS = "One or more arguments that were filed are used for recurring meeting with fixed time only"
 NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only"
-MONTHLY_RECURRING_MISIING_ARGUMENTS =  """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
+MONTHLY_RECURRING_MISIING_ARGUMENTS = """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
             must have the fallowing arguments: monthly_week and monthly_week_day"""
 NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only"
 EXTRA_PARAMS = """Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
                                    OR the API Key and API Secret fields (JWT - Deprecated)"""
+RECURRING_MISSING_ARGUMENTS = "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type"
 '''CLIENT CLASS'''
 
 
@@ -73,8 +90,8 @@ class Client(BaseClient):
             # the user has chosen to use the OAUTH authentication method.
             try:
                 self.access_token = self.get_oauth_token()
-            except Exception:
-                demisto.debug("Cannot get access token")
+            except Exception as e:
+                demisto.debug(f"Cannot get access token. Error: {e}")
                 self.access_token = None
 
     def generate_oauth_token(self):
@@ -123,20 +140,25 @@ class Client(BaseClient):
         return oauth_token
 
     def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
-                                   auth=None, json_data=None, params=None, return_empty_response: bool = False, resp_type: str = 'json'):
+                                   auth=None, json_data=None, params=None,
+                                   return_empty_response: bool = False, resp_type: str = 'json'):
 
         # all future functions should call this function instead of the original _http_request.
         # This is needed because the OAuth token may not behave consistently,
         # First the func will make an http request with a token,
         # and if it turns out to be invalid, the func will retry again with a new token.
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response,resp_type)
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
         except DemistoException as e:
             if ('Invalid access token' in e.message
                     or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response,resp_type )
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
 
     def zoom_create_user(self, user_type_num: int, email: str, first_name: str, last_name: str):
         return self.error_handled_http_request(
@@ -217,7 +239,7 @@ def get_jwt_token(apiKey: str, apiSecret: str) -> str:
     Encode the JWT token given the api ket and secret
     """
     now = datetime.now()
-    expire_time = int(now.strftime('%s')) + 5000
+    expire_time = int(now.strftime('%s')) + JWT_LIFETIME
     payload = {
         'iss': apiKey,
 
@@ -239,9 +261,9 @@ def test_module(client: Client):
         if 'Invalid access token' in error_message:
             error_message = INVALID_CREDENTIALS
         elif "The Token's Signature resulted invalid" in error_message:
-            error_message = INVALID_API_SECRET 
+            error_message = INVALID_API_SECRET
         elif 'Invalid client_id or client_secret' in error_message:
-            error_message = INVALID_ID_OR_SECRET 
+            error_message = INVALID_ID_OR_SECRET
         else:
             error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
@@ -279,19 +301,15 @@ def check_start_time_format(start_time):
 def manual_list_user_pagination(client: Client, next_page_token: str, page_size: int,
                                 limit: int, status: str, role_id: str):
     res = []
-    if limit < MAX_RECORDS_PER_PAGE:
-        # i dont need the maximum
-        page_size = limit
-    else:
-        # i need the maximum. for this API, page_size must be a const while using next_page_token.
-        page_size = MAX_RECORDS_PER_PAGE
+    page_size = min(limit, MAX_RECORDS_PER_PAGE)
+
     while limit > 0 and next_page_token != '':
-        basic_request = client.zoom_list_users(page_size=page_size, status=status,
-                                               next_page_token=next_page_token,
-                                               role_id=role_id, url_suffix="users")
-        next_page_token = basic_request.get("next_page_token")
-    
-        res.append(basic_request)
+        response = client.zoom_list_users(page_size=page_size, status=status,
+                                          next_page_token=next_page_token,
+                                          role_id=role_id, url_suffix="users")
+        next_page_token = response.get("next_page_token")
+
+        res.append(response)
         limit -= MAX_RECORDS_PER_PAGE
     return res
 
@@ -299,20 +317,14 @@ def manual_list_user_pagination(client: Client, next_page_token: str, page_size:
 def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None, page_size: int,
                                    limit: int, type: str):
     res = []
-    if limit < MAX_RECORDS_PER_PAGE:
-        # i dont need the maximum
-        page_size = limit
-    else:
-        # i need the maximum. for this API, page_size must be a const while using next_page_token.
-        page_size = MAX_RECORDS_PER_PAGE
+    page_size = min(limit, MAX_RECORDS_PER_PAGE)
     while limit > 0 and next_page_token != '':
-        basic_request = client.zoom_meeting_list(user_id=user_id,
-                                                 next_page_token=next_page_token,
-                                                 page_size=page_size,
-                                                 type=type)
-        next_page_token = basic_request.get("next_page_token")
-        # collect all the results together
-        res.append(basic_request)
+        response = client.zoom_meeting_list(user_id=user_id,
+                                            next_page_token=next_page_token,
+                                            page_size=page_size,
+                                            type=type)
+        next_page_token = response.get("next_page_token")
+        res.append(response)
         # subtract what i already got
         limit -= MAX_RECORDS_PER_PAGE
     return res
@@ -321,27 +333,24 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 '''FORMATTING FUNCTIONS'''
 
 
-def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = None,
-                            status: str = "active", next_page_token: str = None,
-                            role_id: str = None, limit: int = None, page_number: int = None) -> CommandResults:
-  
-    # PREPROCESSING
-    if not user_id:
-        url_suffix = 'users'
-    else:
-        url_suffix = f'users/{user_id}'
+def zoom_list_users_command(client, **args) -> CommandResults:
 
-    page_size = arg_to_number(page_size)
-    page_number = arg_to_number(page_number)
+    # PREPROCESSING
+    client = client
+    page_size = arg_to_number(args.get('page_size', 30))
+    user_id = args.get('user_id')
+    status = args.get('status', "active")
+    next_page_token = args.get('next_page_token')
+    role_id = args.get('role_id')
+    limit = arg_to_number(args.get('limit'))
+    page_number = arg_to_number(args.get('page_number'))
+
+    url_suffix = f'users/{user_id}' if user_id else 'users'
+
     if limit:
-        limit = arg_to_number(limit)
-        # "page_size" is specific referring to demisto.args,
-        # because of the error raising, i need to distinguish
-        # between a argument the user entered and the default argument
-        args = demisto.args()
         if "page_size" in args or next_page_token or user_id:
             # arguments collision
-            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS )
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
         else:
             # multiple requests are needed
             raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
@@ -349,10 +358,10 @@ def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = 
                                                    limit=limit, status=status, role_id=role_id)     # type: ignore[arg-type]
             # parsing the data
             all_info = []
-            for pages in range(len(raw_data)):
-                page = raw_data[pages].get("users")
-                for record in range(len(page)):
-                    all_info.append(page[record])
+            for page in raw_data:
+                users_info = page.get("users")
+                for user in users_info:
+                    all_info.append(user)
                     # since page_zise must be a const, i may need to return only part of the response
                     if len(all_info) >= limit:
                         break
@@ -389,7 +398,12 @@ def zoom_list_users_command(client: Client, page_size: int = 30, user_id: str = 
     )
 
 
-def zoom_create_user_command(client: Client, user_type: str, email: str, first_name: str, last_name: str) -> CommandResults:
+def zoom_create_user_command(client, **args) -> CommandResults:
+    client = client
+    user_type = args.get('user_type')
+    email = args.get('email')
+    first_name = args.get('first_name')
+    last_name = args.get('last_name')
     user_type_num = USER_TYPE_MAPPING.get(user_type)
     raw_data = client.zoom_create_user(user_type_num, email, first_name, last_name)
     return CommandResults(
@@ -400,90 +414,73 @@ def zoom_create_user_command(client: Client, user_type: str, email: str, first_n
     )
 
 
-def zoom_delete_user_command(client: Client, user_id: str, action: str) -> CommandResults:
+def zoom_delete_user_command(client, **args) -> CommandResults:
+    client = client
+    user_id = args.get('user_id')
+    action = args.get("action")
     client.zoom_delete_user(user_id, action)
     return CommandResults(
-        outputs_prefix='Zoom',
         readable_output=f'User {user_id} was deleted successfully',
     )
 
 
-def zoom_create_meeting_command(
-        client: Client,
-        user_id: str,
-        topic: str,
-        host_video: bool | str = True,
-        jbh_time: int | str | None = None,
-        start_time: str = None,
-        timezone: str = None,
-        type: str = "instant",
-        auto_record_meeting: str = "none",
-        encryption_type: str = "enhanced_encryption",
-        join_before_host: bool | str = False,
-        meeting_authentication: bool | str = False,
-        waiting_room: bool | str = False,
-        end_date_time: str | None = None,
-        end_times: int | str = 1,
-        monthly_day: int | str = 1,
-        monthly_week: int | str | None = None,
-        monthly_week_day: int | str | None = None,
-        repeat_interval: int | str | None = None,
-        recurrence_type: int | str | None = None,
-        weekly_days: int | str = 1) -> CommandResults:
+def zoom_create_meeting_command(client, **args) -> CommandResults:
+    client = client
+    user_id = args.get('user_id')
+    topic = args.get('topic')
+    host_video = argToBoolean(args.get('host_video', True))
+    join_before_host_time = args.get('join_before_host_time')
+    start_time = args.get('start_time')
+    timezone = args.get('timezone')
+    type = args.get('type', "instant")
+    auto_record_meeting = args.get('auto_record_meeting')
+    encryption_type = args.get('encryption_type')
+    join_before_host = argToBoolean(args.get('join_before_host', False))
+    meeting_authentication = argToBoolean(args.get('meeting_authentication', False))
+    waiting_room = argToBoolean(args.get(' waiting_room', False))
+    end_date_time = args.get('end_date_time')
+    end_times = arg_to_number(args.get('end_times', 1))
+    monthly_day = arg_to_number(args.get('monthly_day', 1))
+    monthly_week = arg_to_number(args.get('monthly_week'))
+    monthly_week_day = arg_to_number(args.get('monthly_week_day'))
+    repeat_interval = arg_to_number(args.get('repeat_interval'))
+    recurrence_type = args.get('recurrence_type')
+    weekly_days = arg_to_number(args.get('weekly_days', 1))
 
-    # converting
-    host_video = argToBoolean(host_video)
-    join_before_host = argToBoolean(join_before_host)
-    meeting_authentication = argToBoolean(meeting_authentication)
-    waiting_room = argToBoolean(waiting_room)
-    end_times = arg_to_number(end_times)
-    monthly_day = arg_to_number(monthly_day)
-    monthly_week = arg_to_number(monthly_week)
-    monthly_week_day = arg_to_number(monthly_week_day)
-    repeat_interval = arg_to_number(repeat_interval)
-    weekly_days = arg_to_number(weekly_days)
-
-    num_type = 1  # "instant"
-    if type == "scheduled":
-        num_type = 2
-    elif type == "recurring meeting with fixed time":
-        num_type = 8
+    num_type = MEETING_TYPE_NUM_MAPPING.get(type)
 
     # argument checking
-    # for arguments that have a default value, i use demisto.args to trigger an exception if user entered a value.
-    args = demisto.args()
-    if type == "instant" and (timezone or start_time):
+    if type == INSTANT and (timezone or start_time):
         raise DemistoException(INSTANT_AND_TIME)
 
-    if jbh_time and not join_before_host:
+    if join_before_host_time and not join_before_host:
         raise DemistoException(JBH_TIME_AND_NO_JBH)
 
     if waiting_room and join_before_host:
-        raise DemistoException(WAITING_ROOM_AND_JBH )
+        raise DemistoException(WAITING_ROOM_AND_JBH)
 
     if args.get("end_times") and end_date_time:
         raise DemistoException(END_TIMES_AND_END_DATE_TIME)
 
-    if num_type != 8 and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
-                              monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
-        raise DemistoException(NOT_RECURRING_WITH_RECUURING_ARGUMENTS )
+    if type != RECURRING_WITH_TIME and any((end_date_time, args.get("end_times"), args.get("monthly_day"),
+                                            monthly_week, monthly_week_day, repeat_interval, args.get("weekly_days"))):
+        raise DemistoException(NOT_RECURRING_WITH_RECUURING_ARGUMENTS)
 
-    if num_type == 8 and recurrence_type != 3 and any((args.get("monthly_day"),
-                                                       monthly_week, monthly_week_day)):
-        raise DemistoException( NOT_MONTHLY_AND_MONTHLY_ARGUMENTS)
+    if type == RECURRING_WITH_TIME and recurrence_type != "Monthly" and any((args.get("monthly_day"),
+                                                                             monthly_week, monthly_week_day)):
+        raise DemistoException(NOT_MONTHLY_AND_MONTHLY_ARGUMENTS)
 
-    if num_type == 8 and recurrence_type == 3 and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
+    if type == RECURRING_WITH_TIME and recurrence_type == "Monthly" and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
         raise DemistoException(MONTHLY_RECURRING_MISIING_ARGUMENTS)
 
-    if num_type == 8 and recurrence_type != 2 and args.get("weekly_days"):
-        raise DemistoException(NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS )
+    if type == RECURRING_WITH_TIME and recurrence_type != "Weekly" and args.get("weekly_days"):
+        raise DemistoException(NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS)
 
-    if num_type == 8 and not recurrence_type:
-        raise DemistoException(
-            "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type")
+    if type == RECURRING_WITH_TIME and not recurrence_type:
+        raise DemistoException(RECURRING_MISSING_ARGUMENTS)
 
     # converting separately after the argument checking, because 0 as an int is equaled to false
-    jbh_time = arg_to_number(jbh_time)
+    join_before_host_time = arg_to_number(join_before_host_time)
 
     if start_time:
         check_start_time_format(start_time)
@@ -491,13 +488,8 @@ def zoom_create_meeting_command(
     json_all_data = {}
 
     # special section for recurring meeting with fixed time
-    if num_type == 8:
-        if recurrence_type == "Daily":
-            recurrence_type = 1
-        elif recurrence_type == "Weekly":
-            recurrence_type = 2
-        elif recurrence_type == "Monthly":
-            recurrence_type = 3
+    if type == RECURRING_WITH_TIME:
+        recurrence_type_num = MONTHLY_RECURRING_TYPE_MAPPING.get(recurrence_type)
         json_all_data.update({"recurrence": {
             "end_date_time": end_date_time,
             "end_times": end_times,
@@ -505,7 +497,7 @@ def zoom_create_meeting_command(
             "monthly_week": monthly_week,
             "monthly_week_day": monthly_week_day,
             "repeat_interval": repeat_interval,
-            "type": recurrence_type,
+            "type": recurrence_type_num,
             "weekly_days": weekly_days
         }})
     json_all_data.update({
@@ -513,7 +505,7 @@ def zoom_create_meeting_command(
             "auto_recording": auto_record_meeting,
             "encryption_type": encryption_type,
             "host_video": host_video,
-            "jbh_time": jbh_time,
+            "jbh_time": join_before_host_time,
             "join_before_host": join_before_host,
             "meeting_authentication": meeting_authentication,
             "waiting_room": waiting_room
@@ -530,23 +522,14 @@ def zoom_create_meeting_command(
     raw_data = client.zoom_create_meeting(url_suffix=url_suffix, json_data=json_data)
     # parsing the response
     if type == "recurring meeting with fixed time":
-        basic_info = [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-                                  'type', 'status',
-                                  'timezone', 'created_at', 'start_url', 'join_url',
-                                  ][0]
-        additinal_info = raw_data["occurrences"], ['start_time', 'duration']
-        all_info = []
-        all_info.append(basic_info[0][0])
-        all_info[0].update(additinal_info[0][0])
+        raw_data.update({'start_time': raw_data.get("occurrences")[0].get('start_time')})
+        raw_data.update({'duration': raw_data.get("occurrences")[0].get('duration')})
 
-        md = tableToMarkdown('Meeting details', [all_info][0], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-                                                                'type', 'status', 'start_time', 'duration',
-                                                                'timezone', 'created_at', 'start_url', 'join_url'
-                                                                ])
-    else:
-        md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-                                                             'type', 'status', 'start_time', 'duration',
-                                                             'timezone', 'created_at', 'start_url', 'join_url'])
+    md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                         'type', 'status', 'start_time', 'duration',
+                                                         'timezone', 'created_at', 'start_url', 'join_url'
+                                                         ])
+
     # removing passwords from the response#
     safe_raw_data = raw_data
     for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
@@ -607,17 +590,18 @@ def zoom_fetch_recording_command():
         return_error('Download of recording failed: [%d] - %s' % (res.status_code, res.text))
 
 
-def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str = None,
-                             show_previous_occurrences: bool = True) -> CommandResults:
-   
-    show_previous_occurrences = argToBoolean(show_previous_occurrences)
-   
+def zoom_meeting_get_command(client, **args) -> CommandResults:
+    client = client
+    meeting_id = args.get('meeting_id')
+    occurrence_id = args.get('occurrence_id')
+    show_previous_occurrences = argToBoolean(args.get('show_previous_occurrences'))
+
     raw_data = client.zoom_meeting_get(meeting_id, occurrence_id, show_previous_occurrences)
     # parsing the response
-    md = tableToMarkdown('Meeting details', [raw_data], ['uuid', 'id', 'host_id', 'host_email', 'topic',
-                                                         'type', 'status', 'start_time', 'duration',
-                                                         'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
-                                                         ])
+    md = tableToMarkdown('Meeting details', raw_data, ['uuid', 'id', 'host_id', 'host_email', 'topic',
+                                                       'type', 'status', 'start_time', 'duration',
+                                                       'timezone', 'agenda', 'created_at', 'start_url', 'join_url',
+                                                       ])
     # removing passwords from the response#
     safe_raw_data = raw_data
     for sensitive_info in ["password", "pstn_password", "encrypted_password", "h323_password"]:
@@ -625,22 +609,21 @@ def zoom_meeting_get_command(client: Client, meeting_id: str, occurrence_id: str
     return CommandResults(
         outputs_prefix='Zoom.Meeting',
         readable_output=md,
-        outputs_key_field=str(safe_raw_data["id"]),
+        outputs_key_field="id",
         outputs=safe_raw_data,
         raw_response=raw_data
     )
 
 
-def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str = None,
-                              page_size: int = 30, limit: int = None, type: str = None, page_number: int = None) -> CommandResults:
-    # converting
-    page_size = arg_to_number(page_size)
-    page_number = arg_to_number(page_number)
-    limit = arg_to_number(limit)
-    args = demisto.args()
-    # "page_size" is specific referring to demisto.args,
-    # because the error raising, i need to distinguish
-    # between a user argument and the defult argument
+def zoom_meeting_list_command(client, **args) -> CommandResults:
+    client = client
+    user_id = args.get('user_id')
+    next_page_token = args.get('next_page_token')
+    page_size = arg_to_number(args.get('page_size', 30))
+    limit = arg_to_number(args.get('limit'))
+    type = args.get('type')
+    page_number = arg_to_number(args.get('page_number'))
+
     if limit:
         if "page_size" in args or next_page_token or page_number:
             # arguments collision
@@ -652,11 +635,10 @@ def zoom_meeting_list_command(client: Client, user_id: str, next_page_token: str
                                                       limit=limit, type=type)                          # type: ignore[arg-type]
             # parsing the data
             all_info = []
-            for pages in range(len(raw_data)):
-                page = raw_data[pages].get("meetings")
-
-                for record in range(len(page)):
-                    all_info.append(page[record])
+            for page in raw_data:
+                meetings = page.get("meetings")
+                for meeting in meetings:
+                    all_info.append(meeting)
                     if len(all_info) >= limit:
                         break
             md = tableToMarkdown("Meeting list", all_info, ['uuid', 'id',

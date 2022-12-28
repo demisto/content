@@ -96,7 +96,7 @@ script:
             - scheduled
             - recurring meeting with fixed time
           description: The type of the meeting
-          defaultValue: instant
+          defaultValue: Instant
         - name: end_date_time
           description: >
             For recurring meetings only.
@@ -175,7 +175,7 @@ script:
             - false
           defaultValue: true
           description: start meetings with the host video on.
-        - name: jbh_time
+        - name: join_before_host_time
           auto: PREDEFINED
           predefined:
             - 0
@@ -405,7 +405,7 @@ script:
             - False
             - True
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
-          defaultValue: False
+          defaultValue: true
       outputs:
         - contextPath: Zoom.Meeting.join_url
           description: Join url for the meeting

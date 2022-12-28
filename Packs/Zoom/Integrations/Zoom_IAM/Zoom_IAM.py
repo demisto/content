@@ -15,10 +15,18 @@ DEFAULT_INCOMING_MAPPER = "User Profile - SCIM (Incoming)"
 # The token’s time to live is 1 hour,
 # two minutes were subtract for extra safety.
 TOKEN_LIFE_TIME = timedelta(minutes=58)
+# the lifetime for an JWT token is 90 minutes == 5400 seconds
+# 400 seconds were subtract for extra safety.
+JWT_LIFETIME = 5000
 ERROR_CODES_TO_SKIP = [
     404
 ]
 OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
+
+# ERRORS
+INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
+INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
+INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 
 '''CLIENT CLASS'''
 
@@ -51,8 +59,8 @@ class Client(BaseClient):
             # the user has chosen to use the OAUTH authentication method.
             try:
                 self.access_token = self.get_oauth_token()
-            except Exception:
-                demisto.debug("Cannot get access token")
+            except Exception as e:
+                demisto.debug(f"Cannot get access token. Error: {e}")
                 self.access_token = None
 
     def generate_oauth_token(self):
@@ -108,13 +116,17 @@ class Client(BaseClient):
         # First the func will make an http request with a token,
         # and if it turns out to be invalid, the func will retry again with a new token.
         try:
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response, resp_type)
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
         except DemistoException as e:
             if ('Invalid access token' in e.message
                     or "Access token is expired." in e.message):
                 self.access_token = self.generate_oauth_token()
                 headers = {'authorization': f'Bearer {self.access_token}'}
-            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, params, return_empty_response, resp_type)
+            return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                         auth=auth, json_data=json_data, params=params,
+                                         return_empty_response=return_empty_response, resp_type=resp_type)
 
     def test(self):
         """ Tests connectivity with the application. """
@@ -268,7 +280,7 @@ def get_jwt_token(api_key: str, api_secret: str) -> str:
     Encode the JWT token given the api key and secret
     """
     now = time.time()
-    expire_time = int(now) + 5000
+    expire_time = int(now) + JWT_LIFETIME
     payload = {
         'iss': api_key,
         'exp': expire_time
@@ -303,11 +315,11 @@ def test_module(client: Client):
     except DemistoException as e:
         error_message = e.message
         if 'Invalid access token' in error_message:
-            error_message = 'Invalid credentials. Please verify that your credentials are valid.'
+            error_message = INVALID_CREDENTIALS
         elif "The Token's Signature resulted invalid" in error_message:
-            error_message = 'Invalid API Secret. Please verify that your API Secret is valid.'
+            error_message = INVALID_API_SECRET
         elif 'Invalid client_id or client_secret' in error_message:
-            error_message = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
+            error_message = INVALID_ID_OR_SECRET
         else:
             error_message = f'Problem reaching Zoom API, check your credentials. Error message: {error_message}'
         return error_message
