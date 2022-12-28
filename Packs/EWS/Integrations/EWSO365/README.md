@@ -43,6 +43,7 @@ The EWS integration can be used for the following use cases.
     *   **Name of the folder from which to fetch incidents**: Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. Please note, if Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
     *   **Public Folder**
     *   **Access Type**: Run the commands using `Delegate` or `Impersonation` access types.
+    *   **Mark fetched emails as read**: Mark emails as read after fetching them.
     *   **Use system proxy settings**
     *   **Trust any certificate (not secure)**  
     *   **Timeout (in seconds) for HTTP requests to Exchange Server**
