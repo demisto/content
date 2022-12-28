@@ -10,7 +10,6 @@ from panos.panorama import Panorama, DeviceGroup, Template
 from panos.firewall import Firewall
 from CommonServerPython import DemistoException, CommandResults
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
-from datetime import datetime
 import dateparser
 import test_data.fetch_incidents_input as fetch_incidents_input
 
@@ -5911,8 +5910,7 @@ class TestFetchIncidentsHelperFunctions:
             - every fetch incidents cycle starts
         Then:
             - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-              according to the queries log type last fetch time.
-        
+              according to the queries log type last fetch time.        
         """
         from Panorama import add_unique_id_filter_to_query_parameter
         assert add_unique_id_filter_to_query_parameter(query, id) == expected_result
@@ -6027,7 +6025,7 @@ class TestFetchIncidentsFlows:
         When:
         - using fetch incidents.
         - one incident returned from fetch request.
-        
+
         Then:
         - The only incident should be returned.
         - X_log_type last fetch should be created.
@@ -6138,7 +6136,7 @@ class TestFetchIncidentsFlows:
         - two incidents of two deferent log types (X_log_type, Y_log_type) are returned from the fetch time.
         - both incidents has the same generated time that is later than the last fetch run time.
         - one incident of X_log_type already have a last fetch run and last id, the second incident of type Y_log_Type don't.
-        
+
         Then:
         - both incidents should be returned.
         - Y_log_type last fetch should be created.
@@ -6190,7 +6188,7 @@ class TestFetchIncidentsFlows:
         - two incidents of two deferent log types (X_log_type, Y_log_type) are returned from the fetch time.
         - both incidents has the same generated time that is later than the last fetch run time.
         - both incidents log types has a last fetch run and last id.
-        
+
         Then:
         - both incidents should be returned.
         - Y_log_type last fetch should be created.
