@@ -1,5 +1,5 @@
-[MODEL: dataset="imperva_waf_raw"]
-alter
+[MODEL: dataset="imperva_inc__securesphere_raw"]
+| alter
     src_ip_v4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
     src_ip_v6 = if(src !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
     dst_ip_v4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
@@ -19,7 +19,7 @@ alter
     xdm.target.ipv4 = dst_ip_v4,
     xdm.target.ipv6 = dst_ip_v6,
     xdm.target.user.username = duser,
-    xdm.network.protocol_layers = proto,
+    xdm.network.ip_protocol = if(proto ="TCP", "TCP", proto="UDP", "UDP", proto~="lite|Lite|LITE", "UDPLITE", "UNKNOWN"),
     xdm.alert.severity = cefSeverity,
     xdm.observer.version = cefDeviceVersion,
-    xdm.event.operation_sub_type = cefDeviceEventClassId;
+    xdm.event.operation_sub_type = cefDeviceEventClassId
