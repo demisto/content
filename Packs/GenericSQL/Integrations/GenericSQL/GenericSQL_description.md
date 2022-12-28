@@ -77,3 +77,9 @@ END"
 **Fetch Incidents query Notes**
 1. When 'Fetch by' is 'Unique sequence ID or unique timestamp', make sure to create the procedure with '>' and not '>=' in the condition on the timestamp field.
 2. When 'Fetch by' is 'ID and timestamp', handling the ID occurs internally and has no reference in the query.
+
+**Format Time**
+
+You have two options:
+1. A Relative Time - number and time unit, e.g., 12 hours, 7 days etc. If you choose this option, 'Offset' must be filled in with your correct UTC offset in hours.
+2. A Timestamp - timestamp as a string, e.g, 2022-11-08 09:14:23.207 (note: SQL allows till 3 digits milliseconds). 
