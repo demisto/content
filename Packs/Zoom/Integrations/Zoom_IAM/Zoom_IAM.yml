@@ -1,6 +1,6 @@
 category: Identity and Access Management
 commonfields:
-  id: Zoom_IAM Dev
+  id: Zoom_IAM
   version: -1
 configuration:
   - defaultvalue: "https://api.zoom.us/v2/"
@@ -54,8 +54,8 @@ configuration:
     required: true
     type: 0
 description: An Identity and Access Management integration template.
-display: Zoom_IAM Dev
-name: Zoom_IAM Dev
+display: Zoom_IAM 
+name: Zoom_IAM 
 script:
   commands:
     - arguments:

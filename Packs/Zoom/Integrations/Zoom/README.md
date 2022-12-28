@@ -418,7 +418,7 @@
                 "verified": 1, 
                 "last_login_time": "2018-07-23T08:31:34Z", 
                 "created_at": "2018-07-19T05:54:18Z", 
-                "email": "admin@demistodev.com", 
+                "email": "example@example.com", 
                 "pmi": 9409768194, 
                 "timezone": "Asia/Jerusalem", 
                 "type": 2, 
