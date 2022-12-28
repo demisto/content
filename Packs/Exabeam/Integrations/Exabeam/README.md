@@ -8,7 +8,7 @@ In addition to the User Credentials authentication method, **Exabeam Cloud** use
 
 ### Generate a Cluster Authentication Token
 
-1. Navigate to Settings > Admin Operations > Cluster Authentication Token.
+1. Navigate to **Settings** > **Admin Operations** > **Cluster Authentication Token**.
 
 2. At the Cluster Authentication Token menu, click the blue `+` button.
    
@@ -29,9 +29,9 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | Server URL (e.g https://100.24.16.156:8484) |  | True |
     | Username | In order to authenticate with a Cluster Authentication Token, insert \`__token\` in the "Username" textbox, and the token itself in the "Password" textbox. | True |
     | Password |  | True |
-    | Exabeam Incident Type | Incident type to filter in exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
-    | Priority | Incident priority to filter in exabeam. Possible values are: low, medium, high, critical. | False |
-    | Status | Incident status to filter in exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
+    | Exabeam Incident Type | Incident type to filter in Exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
+    | Priority | Incident priority to filter in Exabeam. Possible values are: low, medium, high, critical. | False |
+    | Status | Incident status to filter in Exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
     | Fetch incidents |  | False |
     | Max incidents per fetch |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -524,7 +524,7 @@ Gets next events for a given asset.
 | --- | --- | --- |
 | asset_id | ID of the asset. | Required | 
 | event_time | The event time, e.g. "2 years ago" or "2019-02-27". | Required | 
-| number_of_events | Preffered number of events. Default is 50. | Optional | 
+| number_of_events | Preferred number of events. Default is 50. | Optional | 
 | anomaly_only | Whether to return only anomaly events. Possible values are: true, false. Default is false. | Optional | 
 | event_types | A comma-separated list of event types. | Optional | 
 | event_types_operator | Whether or not to include the specified event types. Possible values are: include, exclude. Default is exclude. | Optional | 
@@ -878,7 +878,7 @@ Gets the assets of a specified watchlist according to a keyword.
 | --- | --- | --- |
 | keyword | A keyword to search. | Required | 
 | watchlist_id | The watchlist ID. | Required | 
-| limit | Maximum nmber of results to retrieve. Default is 30. | Optional | 
+| limit | Maximum number of results to retrieve. Default is 30. | Optional | 
 | is_exclusive | Whether or not the item is exclusive on watchlist. Possible values are: true, false. Default is false. | Optional | 
 | search_by_ip | Whether or not to search the item by its IP. Possible values are: true, false. Default is false. | Optional | 
 
@@ -1331,7 +1331,7 @@ Returns sequence event types for the given asset sequence ID and time range.
 
 ### exabeam-list-incident
 ***
-Returns incidents from exabeam
+Returns incidents from Exabeam.
 
 #### Base Command
 
@@ -1341,10 +1341,10 @@ Returns incidents from exabeam
 | **Argument Name** | **Description**                                                            | **Required** |
 |-------------------|----------------------------------------------------------------------------| --- |
 | incident_id       | The incident ID.                                                           | Optional | 
-| query             | query string which is a combination of incident type, priority and status. | Optional | 
-| incident_type     | incident type to filter by.                                                | Optional | 
-| priority          | priority to filter by.                                                     | Optional |
-| status            | status to filter by.                                                        | Optional |
+| query             | Query string which is a combination of incident type, priority and status. | Optional | 
+| incident_type     | Comma-separated list of incident type to filter by.                        | Optional | 
+| priority          | Comma-separated list of incident priorities to filter by.                  | Optional |
+| status            | Comma-separated list of incident statuses to filter by.                    | Optional |
 | limit             | Maximum number of rules to retrieve. Default is 50.                        | Optional | 
 | page_size         | Results page number. Default is 0.                                         | Optional | 
 | page_number       | String to search for inside display name.                                  | Optional |
@@ -1354,18 +1354,18 @@ Returns incidents from exabeam
 
 | **Path**                              | **Type** | **Description**                  |
 |---------------------------------------| --- |----------------------------------|
-| Exabeam.incidents.incidentId          | String | The id of the incident.          | 
+| Exabeam.incidents.incidentId          | String | The ID of the incident.          | 
 | Exabeam.incidents.name                | String | The name of the incident.        | 
-| Exabeam.incidents.fields.startedDate  | Date | When did the incident start.     | 
-| Exabeam.incidents.fields.closedDate   | Date | When did the incident closed.    | 
-| Exabeam.incidents.fields.createdAt    | Date | When did the incident created    | 
-| Exabeam.incidents.fields.owner        | String | The owner of the incident.       | 
-| Exabeam.incidents.fields.status       | String | The status of the incident.      | 
-| Exabeam.incidents.fields.incidentType | String | The type of the incident.        | 
-| Exabeam.incidents.fields.source       | String | The source of the incident.      | 
-| Exabeam.incidents.fields.priority     | String | The prioirity of the incident.   | 
-| Exabeam.incidents.fields.queue        | String | The queue of the incident.       | 
-| Exabeam.incidents.fields.description  | String | The description of the incident. | 
+| Exabeam.incidents.fields.startedDate  | Date | The starting date of the incident.     | 
+| Exabeam.incidents.fields.closedDate   | Date | The ending date of the incident.   | 
+| Exabeam.incidents.fields.createdAt    | Date | The creation date of the incident.  | 
+| Exabeam.incidents.fields.owner        | String | The incident owner.       | 
+| Exabeam.incidents.fields.status       | String | The incident status.      | 
+| Exabeam.incidents.fields.incidentType | String | The incident type.        | 
+| Exabeam.incidents.fields.source       | String | The incident source.      | 
+| Exabeam.incidents.fields.priority     | String | The incident priority.   | 
+| Exabeam.incidents.fields.queue        | String | The incident queue.       | 
+| Exabeam.incidents.fields.description  | String | The incident description. | 
 
 #### Command Example
 ```!exabeam-list-incident priority=high```
