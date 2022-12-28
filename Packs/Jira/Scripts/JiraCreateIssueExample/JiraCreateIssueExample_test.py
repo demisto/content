@@ -41,7 +41,7 @@ def test_validate_date_field_format(due_date: str):
     When:
         - Case A: Attempting to validate the string with `validate_date_field` but it has an invalid month (31)
         - Case B: Attempting to validate the string with `validate_date_field` but it has an invalid month (51) and day(XY)
-        - Case C: Attempting to validate the string with `validate_date_field` but it has invalid everything 
+        - Case C: Attempting to validate the string with `validate_date_field` but it has invalid everything
     Then:
         - Case A: A `ValueError` exception is thrown.
         - Case B: A `ValueError` exception is thrown.
@@ -118,7 +118,7 @@ def test_parse_custom_fields(custom_fields: List[str], expected: Dict[str, Any])
 
 @pytest.mark.parametrize("args, custom_fields, expected", [
     (
-        {"arg1": "val1", "arg2": 1}, 
+        {"arg1": "val1", "arg2": 1},
         {"customfield_10096": "test", "customfield_10040": 100},
         {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}}
     ),
