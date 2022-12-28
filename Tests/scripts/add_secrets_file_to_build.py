@@ -7,6 +7,10 @@ from Tests.scripts.utils import logging_wrapper as logging
 def run(options):
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True)
+    print('********************************')
+    for s in secrets:
+        if 'EWSO365' in s['name']:
+            print(s)
     secret_file = {
         "username": options.user,
         "userPassword": options.password,
