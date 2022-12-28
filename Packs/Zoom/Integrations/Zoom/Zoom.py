@@ -45,7 +45,9 @@ INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is 
 INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 WRONG_TIME_FORMAT = "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
 LIMIT_AND_EXTRA_ARGUMENTS = """Too money arguments. if you choose a limit,
-                                       don't enter a user_id or page_size or next_page_token"""
+                                       don't enter a user_id or page_size or next_page_token or page_number"""
+LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST = """Too money arguments. if you choose a limit,
+                                       don't enter a page_size or next_page_token or page_number"""
 INSTANT_AND_TIME = "Too money arguments. Please use start_time and timezone for scheduled meetings only.."
 JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
 WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
@@ -330,6 +332,48 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
     return res
 
 
+def remove_extra_info_list_users(limit, raw_data):
+    """_summary_
+    since page_size must be const,
+    i may receive extra info, for example:
+    if limit = 301, manual_list_pagination will return 600 users(MAX_RECORDS * 2),
+    so I need to remove the last 299.
+
+    Args:
+        limit (int): the number of records the user asked for
+        raw_data (dict):the entire response from the pagination function
+    """
+    all_info = []
+    for page in raw_data:
+        users_info = page.get("users", [])
+        for user in users_info:
+            all_info.append(user)
+            if len(all_info) >= limit:
+                return all_info
+    return all_info
+
+
+def remove_extra_info_meeting_list(limit, raw_data):
+    """_summary_
+    since page_size must be const,
+    i may receive extra info, for example:
+    if limit = 301, manual_meeting_list_pagination will return 600 meetings(MAX_RECORDS * 2),
+    so I need to remove the last 299.
+
+    Args:
+        limit (int): the number of records the user asked for
+        raw_data (dict):the entire response from the pagination function
+    """
+    all_info = []
+    for page in raw_data:
+        meetings = page.get("meetings")
+        for meeting in meetings:
+            all_info.append(meeting)
+            if len(all_info) >= limit:
+                return all_info
+    return all_info
+
+
 '''FORMATTING FUNCTIONS'''
 
 
@@ -343,12 +387,12 @@ def zoom_list_users_command(client, **args) -> CommandResults:
     next_page_token = args.get('next_page_token')
     role_id = args.get('role_id')
     limit = arg_to_number(args.get('limit'))
-    page_number = arg_to_number(args.get('page_number'))
+    page_number = arg_to_number(args.get('page_number', 1))
 
     url_suffix = f'users/{user_id}' if user_id else 'users'
 
     if limit:
-        if "page_size" in args or next_page_token or user_id:
+        if "page_size" in args or "page_number" in args or next_page_token or user_id:
             # arguments collision
             raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
         else:
@@ -356,21 +400,11 @@ def zoom_list_users_command(client, **args) -> CommandResults:
             raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
                                                    page_size=page_size,  # type: ignore[arg-type]
                                                    limit=limit, status=status, role_id=role_id)     # type: ignore[arg-type]
-            # since page_size must be const,
-            # i may receive extra info, for example:
-            # if limit = 301, manual_list will return 600 users(MAX_RECORDS * 2),
-            # so I need to remove the last 299.
-            all_info = []
-            for page in raw_data:
-                users_info = page.get("users")
-                for user in users_info:
-                    all_info.append(user)
-                    # since page_zise must be a const, i may need to return only part of the response
-                    if len(all_info) >= limit:
-                        break
 
-            md = tableToMarkdown('Users', all_info, ['id', 'email',
-                                                     'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
+            minimal_needed_info = remove_extra_info_list_users(limit, raw_data)
+
+            md = tableToMarkdown('Users', minimal_needed_info, ['id', 'email',
+                                                                'type', 'pmi', 'verified', 'created_at', 'status', 'role_id'])
             md += '\n' + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
             raw_data = raw_data[0]
     else:
@@ -625,32 +659,24 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
     page_size = arg_to_number(args.get('page_size', 30))
     limit = arg_to_number(args.get('limit'))
     type = args.get('type')
-    page_number = arg_to_number(args.get('page_number'))
+    page_number = arg_to_number(args.get('page_number', 1))
 
     if limit:
-        if "page_size" in args or next_page_token or page_number:
+        if "page_size" in args or next_page_token or 'page_number' in args:
             # arguments collision
-            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
+            raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST)
         else:
             # multiple request are needed
             raw_data = manual_meeting_list_pagination(client=client, user_id=user_id, next_page_token=next_page_token,
                                                       page_size=page_size,  # type: ignore[arg-type]
                                                       limit=limit, type=type)                          # type: ignore[arg-type]
-            # since page_size must be const,
-            # i may receive extra info, for example:
-            # if limit = 301, manual_meeting will return 600 meetings(MAX_RECORDS * 2),
-            # so I need to remove the last 299.
-            all_info = []
-            for page in raw_data:
-                meetings = page.get("meetings")
-                for meeting in meetings:
-                    all_info.append(meeting)
-                    if len(all_info) >= limit:
-                        break
-            md = tableToMarkdown("Meeting list", all_info, ['uuid', 'id',
-                                                            'host_id', 'topic', 'type', 'start time', 'duration',
-                                                            'timezone', 'created_at', 'join_url'
-                                                            ])
+
+            minimal_needed_info = remove_extra_info_meeting_list(limit=limit, raw_data=raw_data)
+
+            md = tableToMarkdown("Meeting list", minimal_needed_info, ['uuid', 'id',
+                                                                       'host_id', 'topic', 'type', 'start time', 'duration',
+                                                                       'timezone', 'created_at', 'join_url'
+                                                                       ])
             md += "\n" + tableToMarkdown('Metadata', [raw_data][0][0], ['total_records'])
             raw_data = raw_data[0]
 

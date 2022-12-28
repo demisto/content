@@ -29,4 +29,4 @@ Important nots:
 - You must have your app activated for the OAuth authentication method.
 - Your API token is generated based on the permission you give it, AKA scopes.
 - If you initially allow cretin permissions, and now you deleted those permissions, your token is still valid with the previous permissions, only after 1 our the oldest token will expire and a new and limited token will be generated.
-- If you want to kill the tokens permissions  immediately, you can deactivate your app.
+- If you want to kill the tokens permissions immediately, you can deactivate your app.

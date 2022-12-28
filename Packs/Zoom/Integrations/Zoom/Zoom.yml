@@ -307,9 +307,8 @@ script:
           type: string
           required: false
         - name: page-number
-          defaultValue: 1
           description: >
-            Which page of results to return. 
+            Which page of results to return. The default = 1.
 
             Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
         - name: limit
@@ -451,9 +450,8 @@ script:
           default: false
           description: Number of users to return. Default = 30. Max = 300.
         - name: page_number
-          defaultValue: 1
           description: >
-            Which page of results to return.
+            Which page of results to return. The default = 1.
 
             Note: This argument is in a deprecate process by the API. As an alternative use "next_page_token" or "limit".
         - name: next_page_token
