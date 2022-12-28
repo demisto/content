@@ -2055,7 +2055,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns sequence event types for the given asset sequence ID and time range.
+    description: Returns incidents from Exabeam.
     execution: false
     name: exabeam-list-incident
     outputs:
@@ -2075,7 +2075,7 @@ script:
       description: The creation date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.owner
-      description: The owner of the incident.
+      description: The incident owner.
       type: String
     - contextPath: Exabeam.incidents.fields.status
       description: The incident status.
