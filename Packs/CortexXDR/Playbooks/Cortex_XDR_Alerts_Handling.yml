@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 50
+          "y": 70
         }
       }
     note: false
@@ -40,13 +40,15 @@ tasks:
       id: 7e32b542-4fd0-4a05-8f6a-914194fc2313
       version: -1
       name: Choose playbook by category
-      description: Choose playbook to run by alert category.
+      description: Choose the playbook to run by the alert category.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "7"
+      Cloud:
+      - "11"
       Malware:
       - "9"
       Port Scan:
@@ -97,6 +99,19 @@ tasks:
           right:
             value:
               simple: Port Scan
+    - label: Cloud
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident.xdralerts
+                accessor: event_type
+            iscontext: true
+          right:
+            value:
+              simple: Cloud Audit Log
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -162,7 +177,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 195
+          "y": 210
         }
       }
     note: false
@@ -256,7 +271,7 @@ tasks:
         - Lets the analyst manually retrieve the malicious file.
         - Performs file detonation.
 
-        The playbook is used as a sub- playbook in ‘Cortex XDR Incident Handling - v2’
+        The playbook is used as a sub-playbook in 'Cortex XDR Incident Handling - v2'.
       playbookName: Cortex XDR - Malware Investigation
       type: playbook
       iscommand: false
@@ -378,15 +393,183 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 819510f8-39d8-4237-82e5-fb57fd806749
+    type: playbook
+    task:
+      id: 819510f8-39d8-4237-82e5-fb57fd806749
+      version: -1
+      name: Cortex XDR - Cloud Cryptomining
+      playbookName: Cortex XDR - Cloud Cryptomining
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      SOCEmailAddress:
+        simple:
+      alert_id:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.name
+                iscontext: true
+              right:
+                value:
+                  simple: Unusual allocation of multiple cloud compute resources
+              ignorecase: true
+          accessor: alert_id
+      incident_id:
+        complex:
+          root: inputs.incident_id
+      requireAnalystReview:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -560,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0aa062ec-14be-440b-8606-a05efe27dd8f
+    type: playbook
+    task:
+      id: 0aa062ec-14be-440b-8606-a05efe27dd8f
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      Ids:
+        simple: ${incident.xdrincidentid}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: incident_id
+      PollingCommandName:
+        simple: 'xdr-get-incident-extra-data '
+      Timeout:
+        simple: "3"
+      dt:
+        simple: PaloAltoNetworksXDR.Incident.alerts.name(val.name!=='Unusual allocation of multiple cloud compute resources')
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 18ea3ba1-78ee-4ce3-844b-44853df600da
+    type: condition
+    task:
+      id: 18ea3ba1-78ee-4ce3-844b-44853df600da
+      version: -1
+      name: Was XCLOUD Cryptomining alert found?
+      description: Checks if XCLOUD Cryptomining alert is present in the incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              simple: Unusual allocation of multiple cloud compute resources
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_5_#default#": 0.18,
+      "1_11_Cloud": 0.81,
+      "1_7_#default#": 0.63,
+      "1_9_Malware": 0.65
+    },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 1260,
-        "x": 40,
-        "y": 50
+        "height": 1065,
+        "width": 1860,
+        "x": -560,
+        "y": 70
       }
     }
   }
@@ -415,7 +598,7 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
   description: Unique ID for each alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
-  description: Severity of the alert.,"low","medium","high"""
+  description: 'Severity of the alert: "low","medium","high".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
   description: Calculated name of the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
@@ -428,17 +611,17 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
   description: User name involved with the alert.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.event_type
-  description: Event type "Process Execution","Network Event","File Event","Registry
-    Event","Injection Event","Load Image Event","Windows Event Log"
+  description: 'Event type: "Process Execution","Network Event","File Event","Registry
+    Event","Injection Event","Load Image Event","Windows Event Log".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action
-  description: The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
+  description: 'The action that triggered the alert. "REPORTED", "BLOCKED", "POST_DETECTED",
     "SCANNED", "DOWNLOAD", "PROMPT_ALLOW", "PROMPT_BLOCK", "DETECTED", "BLOCKED_1",
     "BLOCKED_2", "BLOCKED_3", "BLOCKED_5", "BLOCKED_6", "BLOCKED_7", "BLOCKED_8",
     "BLOCKED_9", "BLOCKED_10", "BLOCKED_11", "BLOCKED_13", "BLOCKED_14", "BLOCKED_15",
     "BLOCKED_16", "BLOCKED_17", "BLOCKED_24", "BLOCKED_25", "DETECTED_0", "DETECTED_4",
-    "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23"
+    "DETECTED_18", "DETECTED_19", "DETECTED_20", "DETECTED_21", "DETECTED_22", "DETECTED_23".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
-  description: The action that triggered the alert "Detected (Reported)" "Prevented
+  description: 'The action that triggered the alert: "Detected (Reported)" "Prevented
     (Blocked)" "Detected (Post Detected)" "Detected (Scanned)" "Detected (Download)"
     "Detected (Prompt Allow)" "Prevented (Prompt Block)" "Detected" "Prevented (Denied
     The Session)" "Prevented (Dropped The Session)" "Prevented (Dropped The Session
@@ -452,22 +635,22 @@ outputs:
     Unreachable Message To The Host Or Application)" "Prevented (Block)" "Detected
     (Allowed The Session)" "Detected (Raised An Alert)" "Detected (Syncookie Sent)"
     "Detected (Forward)" "Detected (Wildfire Upload Success)" "Detected (Wildfire
-    Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)"
+    Upload Failure)" "Detected (Wildfire Upload Skip)" "Detected (Sinkhole)".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_image_name
-  description: Image name
+  description: Image name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_command_line
-  description: Command line
+  description: Command line.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_status
-  description: Signature status "Signed" "Invalid Signature" "Unsigned" "Revoked"
-    "Signature Fail" "N/A" "Weak Hash"
+  description: 'Signature status: "Signed" "Invalid Signature" "Unsigned" "Revoked"
+    "Signature Fail" "N/A" "Weak Hash".'
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.actor_process_signature_vendor
-  description: Singature vendor name
+  description: Signature vendor name.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_process_image_sha256
-  description: Image SHA256
+  description: Image SHA256.
 - contextPath: PaloAltoNetworksXDR.Incident.alerts.is_whitelisted
-  description: Is on allow list "Yes" "No"
+  description: Whether the alert is on the allow list.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
-  description: Network artifact type "IP"
+  description: 'Network artifact type: "IP".'
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
   description: The domain related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_country
@@ -475,24 +658,24 @@ outputs:
 - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
   description: The remote IP related to the artifact.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
-  description: Digital signature status of the file. "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED"
-    "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH"
+  description: 'Digital signature status of the file: "SIGNATURE_UNAVAILABLE", "SIGNATURE_SIGNED",
+    "SIGNATURE_INVALID", "SIGNATURE_UNSIGNED", "SIGNATURE_WEAK_HASH".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
   description: Whether the file artifact is related to a process execution.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
   description: Name of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
-  description: The file verdict, calculated by Wildfire. "BENIGN" "MALWARE" "GRAYWARE"
-    "PHISING" "UNKNOWN"
+  description: 'The file verdict, calculated by Wildfire: "BENIGN", "MALWARE", "GRAYWARE",
+    "PHISHING", "UNKNOWN".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
-  description: Whether the artifact is malicious, decided by the Wildfire verdic
+  description: Whether the artifact is malicious, decided by the Wildfire verdict.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
-  description: The artifact type "META" "GID" "CID" "HASH" "IP" "DOMAIN" "REGISTRY"
-    "HOSTNAME"
+  description: 'The artifact type: "META", "GID", "CID", "HASH", "IP", "DOMAIN", "REGISTRY",
+    "HOSTNAME".'
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-  description: SHA-256 hash of the file
+  description: SHA256 hash of the file.
 - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_vendor_name
-  description: File signature vendor name
+  description: File signature vendor name.
 - contextPath: PortScan.BlockPorts
   description: Indicates whether there's a need to block the ports used for exploitation
     on the scanned host.
@@ -501,22 +684,22 @@ outputs:
   description: Attacker IPs from the port scan alert.
   type: unknown
 - contextPath: PortScan.AttackerHostnames
-  description: Attacker hostnames from the port scan alert.
+  description: Attacker host names from the port scan alert.
   type: unknown
 - contextPath: PortScan.AttackerUsername
-  description: Attacker username from the port scan alert.
+  description: Attacker user name from the port scan alert.
   type: unknown
 - contextPath: PortScan.FileArtifacts
   description: File artifacts from the port scan alert.
   type: unknown
 - contextPath: PortScan.LateralMovementFirstDatetime
-  description: Lateral Movement First Date time from the port scan alert.
+  description: Lateral movement first date time from the port scan alert.
   type: unknown
 - contextPath: PortScan.PortScanFirstDatetime
-  description: Port Scan First Date time
+  description: Port scan first date time.
   type: unknown
 - contextPath: PaloAltoNetworksXDR.Incident.shouldRetrieveFile
-  description: Files hashes which are not present and were marked as "not retrieve" by the user
+  description: Files hashes which are not present and were marked as "not retrieve" by the user.
   type: unknown
 tests:
 - No tests (auto formatted)

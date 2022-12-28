@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 sectionOrder:
 - Connect
 - Collect
@@ -12,19 +12,22 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: ID or Client ID - see Detailed Instructions (?)
+- displaypassword: Application ID or Client ID
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_auth_id
   required: false
   type: 9
   section: Connect
-- displaypassword: Token or Tenant ID - see Detailed Instructions (?)
+- displaypassword: Token or Tenant ID
+  additionalinfo: See the Help tab.
   hiddenusername: true
   name: creds_tenant_id
   required: false
   type: 9
   section: Connect
-- displaypassword: Key or Client Secret - see Detailed Instructions (?)
+- displaypassword: Key or Client Secret
+  additionalinfo: See the Help tab.
   name: credentials
   required: false
   type: 9
@@ -47,19 +50,22 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g. "example@demisto.com")
+- display: Email address from which to fetch incidents
+  additionalinfo: For example, "example@demisto.com"
   name: mailbox_to_fetch
   required: false
   type: 0
   section: Collect
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  display: Name of the folder or sub-folder from which to fetch incidents
+  additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
   name: folder_to_fetch
   required: false
   type: 0
   section: Collect
 - defaultvalue: 15 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp
+  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   name: first_fetch
   required: false
   type: 0
@@ -90,7 +96,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-- display: Use a self deployed Azure Application
+- display: Use a self deployed Azure application
   name: self_deployed
   required: false
   type: 8
@@ -134,10 +140,17 @@ configuration:
   type: 4
   section: Connect
   advanced: true
-- additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
+- additionalinfo: If not active, only a preview of the email will be fetched.
   defaultvalue: 'false'
-  display: Display the entire email body
+  display: Display full email body
   name: display_full_email_body
+  type: 8
+  section: Collect
+  advanced: true
+- additionalinfo: Relevant only if fetch incidents is active.
+  defaultvalue: 'false'
+  display: 'Mark fetched emails as read'
+  name: mark_fetched_read
   type: 8
   section: Collect
   advanced: true
@@ -169,7 +182,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: An OData query. See REDAME for OData usage examples.
+      description: An OData query. See README for OData usage examples.
       isArray: false
       name: odata
       required: false
@@ -497,10 +510,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: ID of the attachment.
+      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
       isArray: false
       name: attachment_id
-      required: true
+      required: false
       secret: false
     - deprecated: true
       description: flag for rate limit retry
@@ -660,7 +673,7 @@ script:
       name: ran_once_flag
       required: false
     deprecated: false
-    description: Creates a new folder under specified the specified folder (parent).
+    description: Creates a new folder under the specified folder (parent).
     execution: false
     name: msgraph-mail-create-folder
     outputs:
@@ -1343,7 +1356,26 @@ script:
       description: The replyTo recipients of the email.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.36225
+  - name: msgraph-mail-update-email-status
+    arguments:
+    - description: User ID or principal ID (usually an email address. E.g., user@example.com).
+      name: user_id
+      required: true
+    - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
+      isArray: true
+      name: message_ids
+      required: true
+    - description: The folder ID.
+      name: folder_id
+    - auto: PREDEFINED
+      description: Status to set the email to.
+      name: status
+      required: true
+      predefined:
+      - Read
+      - Unread
+    description: Update the status of an email to read / unread.
+  dockerimage: demisto/crypto:1.0.0.40696
   feed: false
   isfetch: true
   longRunning: false

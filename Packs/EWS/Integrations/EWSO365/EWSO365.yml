@@ -117,8 +117,6 @@ configuration:
   required: false
   type: 15
 description: |-
-  Forked to add sorting by last-modified time, so we can process phishing emails in the order processed, not the order received.
-
   The new EWS O365 integration uses OAuth 2.0 protocol and can be used with Exchange Online and Office 365 (mail).
 display: EWS O365
 name: EWSO365
@@ -128,12 +126,22 @@ script:
     - description: The ID of the email message for which to get the attachments.
       name: item-id
       required: true
-    - description: The mailbox in which this attachment was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox.
+      secret: false
+    - default: false
+      description: The mailbox in which this attachment was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox.
+      isArray: false
       name: target-mailbox
-    - description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
+      required: false
+      secret: false
+    - default: false
+      description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
       isArray: true
       name: attachment-ids
+      required: false
+      secret: false
+    deprecated: false
     description: Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument.
+    execution: false
     name: ews-get-attachment
     outputs:
     - contextPath: EWS.Items.FileAttachments.attachmentId
@@ -890,7 +898,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.36628
+  dockerimage: demisto/py3ews:1.0.0.39859
   feed: false
   isfetch: true
   runonce: false
@@ -898,6 +906,5 @@ script:
   subtype: python3
   type: python
 tests:
-- pyEWS_Test
 - EWS search-mailbox test
 fromversion: 5.0.0

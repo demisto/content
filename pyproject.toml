@@ -9,8 +9,9 @@ license = "MIT"
 python = "^3.8,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "^1.7.8"
+demisto-sdk = "1.8.1"
 requests = "^2.22.0"
+pre-commit = "^2.20.0"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
@@ -51,6 +52,8 @@ boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
+google-cloud-secret-manager = "^2.13.0"
+json5 = "^0.9.10"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

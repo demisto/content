@@ -87,7 +87,7 @@ def main(args):
 
         return dmst_entry
     else:
-        workers = demisto.executeCommand("demisto-api-get", {"uri": "/workers/status"})[0]['Contents']
+        workers = demisto.executeCommand("demisto-api-get", {"uri": f"{account_name}workers/status"})[0]['Contents']
         demisto.executeCommand("setIncident", {
             'healthcheckworkerstotal': workers['response']['Total'],
             'healthcheckworkersbusy': workers['response']['Busy']

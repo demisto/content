@@ -1,14 +1,25 @@
-import email
-import hashlib
-import json
-import logging
-import os
 import random
 import string
+import subprocess
+from typing import Dict
+
+import dateparser
+import chardet
+
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 import sys
 import traceback
-import warnings
+import json
+import os
+import hashlib
 from io import StringIO
+import logging
+import warnings
+import email
+from requests.exceptions import ConnectionError
 from multiprocessing import Process
 from typing import Dict
 
@@ -16,25 +27,40 @@ import chardet
 import dateparser
 import demistomock as demisto  # noqa: F401
 import exchangelib
-from CommonServerPython import *  # noqa: F401
-from exchangelib import (IMPERSONATION, OAUTH2, Account, Body, Configuration,
-                         EWSDateTime, EWSTimeZone, ExtendedProperty,
-                         FileAttachment, Folder, HTMLBody, Identity,
-                         ItemAttachment, OAuth2AuthorizationCodeCredentials,
-                         Version)
-from exchangelib.errors import (ErrorFolderNotFound, ErrorInvalidIdMalformed,
-                                ErrorItemNotFound, ErrorMailboxMoveInProgress,
-                                ErrorMailboxStoreUnavailable,
-                                ErrorNameResolutionNoResults,
-                                MalformedResponseError, RateLimitError,
-                                ResponseMessageError)
-from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
-from exchangelib.services.common import EWSAccountService, EWSService
-from exchangelib.util import MNS, TNS, add_xml_child, create_element
-from exchangelib.version import EXCHANGE_O365
+from exchangelib.errors import (
+    ErrorItemNotFound,
+    ResponseMessageError,
+    RateLimitError,
+    ErrorInvalidIdMalformed,
+    ErrorFolderNotFound,
+    ErrorMailboxStoreUnavailable,
+    ErrorMailboxMoveInProgress,
+    ErrorNameResolutionNoResults,
+    MalformedResponseError,
+)
+from exchangelib.items import Item, Message, Contact
+from exchangelib.services.common import EWSService, EWSAccountService
+from exchangelib.util import create_element, add_xml_child, MNS, TNS
+from exchangelib import (
+    IMPERSONATION,
+    Account,
+    EWSDateTime,
+    EWSTimeZone,
+    Configuration,
+    FileAttachment,
+    Version,
+    Folder,
+    HTMLBody,
+    Body,
+    ItemAttachment,
+    OAUTH2,
+    OAuth2AuthorizationCodeCredentials,
+    Identity,
+    ExtendedProperty
+)
 from oauthlib.oauth2 import OAuth2Token
-from requests.exceptions import ConnectionError
+from exchangelib.version import EXCHANGE_O365
+from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
 # Ignore warnings print to stdout
 warnings.filterwarnings("ignore")
@@ -158,9 +184,10 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
 
-        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
-        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
-        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
+        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
+        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
+        access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
             raise Exception('Key / Application Secret must be provided.')
@@ -184,7 +211,7 @@ class EWSClient:
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder
-        self.access_type = (kwargs.get('access_type', IMPERSONATION) or IMPERSONATION).lower()
+        self.access_type = (access_type[0] if isinstance(access_type, list) else access_type).lower()
         self.max_fetch = min(MAX_INCIDENTS_PER_FETCH, int(max_fetch))
         self.last_run_ids_queue_size = 500
         self.client_id = client_id
@@ -532,7 +559,7 @@ def exchangelib_cleanup():
         exchangelib.close_connections()
     except Exception as ex:
         demisto.error("Error was found in exchangelib cleanup, ignoring: {}".format(ex))
-    for key, protocol in key_protocols:
+    for key, (protocol, _) in key_protocols:
         try:
             if "thread_pool" in protocol.__dict__:
                 demisto.debug(
@@ -749,6 +776,8 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         if type(value) in [str, str, int, float, bool, Body, HTMLBody, None]:
             raw_dict[field] = value
     raw_dict["id"] = item.id
+    demisto.debug(f"checking for attachments in email with id {item.id}")
+    log_memory()
     if getattr(item, "attachments", None):
         raw_dict["attachments"] = [
             parse_attachment_as_dict(item.id, x) for x in item.attachments
@@ -2013,7 +2042,8 @@ def parse_incident_from_item(item):
     """
     incident = {}
     labels = []
-
+    demisto.debug(f"starting to parse the email with id {item.id} into an incident")
+    log_memory()
     try:
         incident["details"] = item.text_body or item.body
     except AttributeError:
@@ -2051,7 +2081,11 @@ def parse_incident_from_item(item):
     # handle attachments
     if item.attachments:
         incident["attachment"] = []
+        demisto.debug(f"parsing {len(item.attachments)} attachments for item with id {item.id}")
+        attachment_counter = 0
         for attachment in item.attachments:
+            attachment_counter += 1
+            demisto.debug(f'retrieving attachment number {attachment_counter} of email with id {item.id}')
             file_result = None
             label_attachment_type = None
             label_attachment_id_type = None
@@ -2064,6 +2098,8 @@ def parse_incident_from_item(item):
 
                         # save the attachment
                         file_name = get_attachment_name(attachment.name)
+                        demisto.debug(f"saving content number {attachment_counter}, "
+                                      f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
 
                         # check for error
@@ -2151,6 +2187,7 @@ def parse_incident_from_item(item):
             labels.append(
                 {"type": label_attachment_id_type, "value": attachment.attachment_id.id}
             )
+        demisto.debug(f'finished parsing attachment {attachment_counter} of email with id {item.id}')
 
     # handle headers
     if item.headers:
@@ -2178,7 +2215,11 @@ def parse_incident_from_item(item):
         labels.append({"type": "Email/ConversionID", "value": item.conversation_id.id})
 
     incident["labels"] = labels
+    demisto.debug(f"Starting to generate rawJSON for incident, from email with id {item.id}")
+    log_memory()
     incident["rawJSON"] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+    log_memory()
+    demisto.debug(f"FInshed generatiing rawjson from email with id {item.id}")
 
     return incident
 
@@ -2190,6 +2231,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
     :param last_run: last run dict
     :return:
     """
+    log_memory()
     last_run = get_last_run(client, last_run)
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
@@ -2284,6 +2326,8 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
+    demisto.debug(f"Finished getting the folder named {folder_name} by path")
+    log_memory()
     if since_datetime:
         if incidentFilter == MODIFIED_FILTER:
             qs = qs.filter(last_modified_time__gte=since_datetime)
@@ -2295,21 +2339,25 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
-    qs = qs.filter().only(*[x.name for x in Message.FIELDS])
+    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != 'mime_content'])
     qs = qs.filter().order_by("datetime_received")
-
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
     demisto.debug(f'{APP_NAME} - Exclude ID list: {exclude_ids}')
+    qs.chunk_size = min(client.max_fetch, 100)
+    qs.page_size = min(client.max_fetch, 100)
+    demisto.debug("Before iterating on queryset")
+    demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
     for item in qs:
+        demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
         else:
             demisto.debug(f'message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}')
-
     demisto.debug(f'{APP_NAME} - Got total of {len(result)} from ews query.')
+    log_memory()
     return result
 
 
@@ -2403,6 +2451,8 @@ def sub_main():
             if incidentFilter not in [RECEIVED_FILTER,MODIFIED_FILTER]: # Ensure it's one of the allowed filter values
                 incidentFilter = RECEIVED_FILTER # or if not, force it to the default, RECEIVED_FILTER
             incidents = fetch_emails_as_incidents(client, last_run, incidentFilter)
+            demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
+
             demisto.incidents(incidents)
 
         # special outputs commands
@@ -2415,6 +2465,7 @@ def sub_main():
             return_outputs(*output)
 
     except Exception as e:
+        demisto.error(f'got exception {e}')
         start_logging()
         debug_log = log_stream.getvalue()  # type: ignore[union-attr]
         error_message_simple = ""
@@ -2522,10 +2573,16 @@ def main():
             p = Process(target=process_main)
             p.start()
             p.join()
+            demisto.debug("subprocess finished")
         except Exception as ex:
             demisto.error("Failed starting Process: {}".format(ex))
     else:
         sub_main()
+
+
+def log_memory():
+    if is_debug_mode():
+        demisto.debug(f'memstat\n{str(subprocess.check_output(["ps", "-opid,comm,rss,vsz"]))}')
 
 
 from MicrosoftApiModule import *  # noqa: E402

@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 sectionOrder:
 - Connect
 - Collect
@@ -7,29 +7,31 @@ commonfields:
   version: -1
 configuration:
 - display: Email of user with admin privileges
-  displaypassword: The content of the Service Account file
+  displaypassword: Service account private key file contents (JSON)
+  additionalinfo: See the Help tab for details on creating a Service Account file.
   name: adminEmail
   required: true
   type: 9
   section: Connect
-- display: Immutable Google Apps Id
-  name: gappsID
-  required: false
-  type: 0
-  section: Connect
-  advanced: true
-- display: Events search query (e.g., "from:example@demisto.com")
+- display: Events search query
   name: query
   required: false
   type: 0
-  additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example - "from:example@demisto.com is:unread".
+  additionalinfo: Used for searching emails in the inbox. The query language follows the Gmail query specification. For example, "from:example@demisto.com is:unread".
   section: Collect
-- display: Events user key (e.g., example@demisto.com)
+- display: Events user key
   name: queryUserKey
   required: false
   type: 0
   additionalinfo: Use this to specify the email account to search for messages with the search query. By default, the integration uses the email address specified in the credentials.
   section: Collect
+  advanced: true
+- display: Immutable Google Apps ID
+  additionalinfo: See the Help tab for details on the Immutable Google Apps ID.
+  name: gappsID
+  required: false
+  type: 0
+  section: Connect
   advanced: true
 - display: Fetch incidents
   name: isFetch
@@ -59,6 +61,12 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Maximum number of emails to pull per fetch
+  name: fetch_limit
+  required: false
+  type: 0
+  defaultvalue: "50"
+  additionalinfo: A maximum of 200 emails per fetch (even if a higher number is configured). The default is 50.
 description: Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).
 display: Gmail
 name: Gmail
@@ -2240,7 +2248,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.36366
+  dockerimage: demisto/google-api-py3:1.0.0.41312
   isfetch: true
   longRunning: false
   longRunningPort: false

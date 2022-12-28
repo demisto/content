@@ -1176,15 +1176,9 @@ script:
     - contextPath: FireEyeHX.Search.results.Local IP Address
       description: The local IP Address.
       type: string
-    - contextPath: FireEyeHX.Search.results.Local IP Address
-      description: The local IP Address.
-      type: string
     - contextPath: FireEyeHX.Search.results.Local Port
       description: The local Port.
       type: number
-    - contextPath: FireEyeHX.Search.results.Username
-      description: The username.
-      type: string
     - contextPath: FireEyeHX.Search.results.Remote Port
       description: The remote port.
       type: number
@@ -1588,6 +1582,7 @@ script:
       secret: false
     description: Start a data acquisition process to gather artifacts from the system disk and memory. The data is fetched as a MANS file.
     name: fireeye-hx-data-acquisition
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Acquisitions.Data._id
       description: The unique ID of the acquisition.
@@ -2407,7 +2402,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.35482
+  dockerimage: demisto/python3:3.10.9.40422
   feed: false
   longRunning: false
   longRunningPort: false
