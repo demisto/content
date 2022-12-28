@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 from AnsibleApiModule import *  # noqa: E402
 
 host_type = 'local'
+TEST = 'test'
 
 # MAIN FUNCTION
 
