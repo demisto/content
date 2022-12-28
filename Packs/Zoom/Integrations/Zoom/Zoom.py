@@ -30,7 +30,7 @@ MONTHLY_RECURRING_TYPE_MAPPING = {
     "Weekly": 2,
     "Monthly": 3
 }
-INSTANT = "instand"
+INSTANT = "instant"
 SCHEDULED = "scheduled"
 RECURRING_WITH_TIME = "recurring meeting with fixed time"
 
@@ -87,7 +87,7 @@ class Client(BaseClient):
         is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
         if is_jwt:
             # the user has chosen to use the JWT authentication method (deprecated)
-            self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
+            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
             try:
@@ -220,7 +220,7 @@ class Client(BaseClient):
             })
 
     def zoom_meeting_list(self, user_id: str, next_page_token: str | None = None, page_size: int | str = 30,
-                          limit: int | str | None = None, type: str = None, page_number: int = None):
+                          type: str | int | None = None, page_number: int = None):
         return self.error_handled_http_request(
             method='GET',
             url_suffix=f"users/{user_id}/meetings",
@@ -278,7 +278,7 @@ def remove_None_values_from_dict(dict_to_reduce: Dict[str, Any]):
     """
     reduced_dict = {}
     for key, value in dict_to_reduce.items():
-        if value != None:
+        if value is not None:
             if isinstance(value, dict):
                 reduced_nested_dict = remove_None_values_from_dict(value)
                 if reduced_nested_dict:
@@ -301,7 +301,7 @@ def check_start_time_format(start_time):
 
 
 def manual_list_user_pagination(client: Client, next_page_token: str | None,
-                                limit: int, status: str, role_id: str):
+                                limit: int, status: str, role_id: str | None):
     res = []
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
     while limit > 0 and next_page_token != '':
@@ -316,7 +316,7 @@ def manual_list_user_pagination(client: Client, next_page_token: str | None,
 
 
 def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None,
-                                   limit: int, type: str):
+                                   limit: int, type: str | int | None):
     res = []
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
     while limit > 0 and next_page_token != '':
@@ -358,7 +358,7 @@ def remove_extra_info_meeting_list(limit, raw_data):
     Extra information may be provided to me, such as:
     In the case of limit = 301, manual_meeting_list_pagination will return 600 meetings (MAX_RECORDS * 2),
     The last 299 must be removed.
-    
+
     Args:
         limit (int): the number of records the user asked for
         raw_data (dict):the entire response from the pagination function
@@ -435,7 +435,7 @@ def zoom_list_users_command(client, **args) -> CommandResults:
 
 def zoom_create_user_command(client, **args) -> CommandResults:
     client = client
-    user_type = args.get('user_type')
+    user_type = args.get('user_type', "")
     email = args.get('email')
     first_name = args.get('first_name')
     last_name = args.get('last_name')
@@ -462,11 +462,11 @@ def zoom_delete_user_command(client, **args) -> CommandResults:
 def zoom_create_meeting_command(client, **args) -> CommandResults:
     client = client
     user_id = args.get('user')
-    topic = args.get('topic')
+    topic = args.get('topic', "")
     host_video = argToBoolean(args.get('host_video', True))
     join_before_host_time = args.get('join_before_host_time')
     start_time = args.get('start_time')
-    timezone = args.get('timezone')
+    timezone = args.get('timezone', "")
     type = args.get('type', "instant")
     auto_record_meeting = args.get('auto_record_meeting')
     encryption_type = args.get('encryption_type')
@@ -479,7 +479,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     monthly_week = arg_to_number(args.get('monthly_week'))
     monthly_week_day = arg_to_number(args.get('monthly_week_day'))
     repeat_interval = arg_to_number(args.get('repeat_interval'))
-    recurrence_type = args.get('recurrence_type')
+    recurrence_type = args.get('recurrence_type', "")
     weekly_days = arg_to_number(args.get('weekly_days', 1))
 
     num_type = MEETING_TYPE_NUM_MAPPING.get(type)
