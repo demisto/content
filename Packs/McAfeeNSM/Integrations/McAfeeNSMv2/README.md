@@ -32,12 +32,12 @@ Gets the list of Firewall Policies defined in a particular domain.
 `nsm-list-domain-firewall-policy`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                               | **Required** |
+| --- |-------------------------------------------------------------------------------| --- |
 | domain_id | The id of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                      | Optional | 
+| page | The specific result page to display.                                          | Optional | 
+| page_size | The number of records in a page.                                              | Optional | 
 
 
 #### Context Output
@@ -106,10 +106,10 @@ Gets the Firewall Policy details.
 `nsm-get-firewall-policy`
 #### Input
 
-| **Argument Name** | **Description**                                                                                | **Required** |
-| --- |------------------------------------------------------------------------------------------------|--------------|
-| policy_id | The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.  | Required     | 
-| include_rule_objects | Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. The default value is false. Possible values are: true, false. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                 | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| policy_id | The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.                                                                                   | Required     | 
+| include_rule_objects | Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. Possible values are: true, false. Default is false. | Optional | 
 
 
 #### Context Output
@@ -244,7 +244,7 @@ Adds a new Firewall Policy and Access Rules. You have to provide at lease one of
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                                                     | Required | 
 | name | The policy name.                                                                                                                                                                                                                                  | Required | 
-| visible_to_child | Will the policy be visible to the child domain. The default value is yes. Possible values are: yes, no. Default is yes.                                                                                                                           | Optional | 
+| visible_to_child | Will the policy be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                           | Optional | 
 | description | The description of the policy.                                                                                                                                                                                                                    | Required | 
 | is_editable | If the policy is editable or not. Possible values are: yes, no.                                                                                                                                                                                   | Required | 
 | policy_type | The type of the policy. Possible values are: Advanced, Classic.                                                                                                                                                                                   | Required | 
@@ -280,24 +280,24 @@ Updates the Firewall Policy details. If the argument is_overwrite=true, then the
 `nsm-update-firewall-policy`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                   | **Required** |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| policy_id | The id of the policy. To get the policy id, use the !nsm-list-domain-firewall-policy.                                                                                                                                                             | Required | 
-| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                                                     | Optional | 
-| name | The policy name.                                                                                                                                                                                                                                  | Optional | 
-| visible_to_child | Will the policy be visible to the child domain. The default value is yes. Possible values are: yes, no.                                                                                                                                           | Optional | 
-| description | The description of the policy.                                                                                                                                                                                                                    | Optional | 
-| is_editable | If the policy is editable or not. Possible values are: yes, no.                                                                                                                                                                                   | Optional | 
-| policy_type | The type of the policy. Possible values are: Advanced, Classic.                                                                                                                                                                                   | Optional | 
-| rule_description | The rule description.                                                                                                                                                                                                                             | Optional | 
-| response | Action to be performed if the traffic matches this rule. Possible values are: Scan, Drop, Deny, Ignore, Stateless Ignore, Stateless Drop, Require Authentication.                                                                                 | Optional | 
-| rule_enabled | Is Rule Enabled or not. Possible values are: yes, no. Default is yes.                                                                                                                                                                             | Optional | 
-| direction | The direction of the rule. Possible values are: Inbound, Outbound, Either.                                                                                                                                                                        | Optional | 
-| source_rule_object_id | The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.                                                                                                                        | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| policy_id | The id of the policy. To get the policy id, use the !nsm-list-domain-firewall-policy.                                                                                                                                                            | Required | 
+| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                                                    | Optional | 
+| name | The policy name.                                                                                                                                                                                                                                 | Optional | 
+| visible_to_child | Will the policy be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                                              | Optional | 
+| description | The description of the policy.                                                                                                                                                                                                                   | Optional | 
+| is_editable | If the policy is editable or not. Possible values are: yes, no.                                                                                                                                                                                  | Optional | 
+| policy_type | The type of the policy. Possible values are: Advanced, Classic.                                                                                                                                                                                  | Optional | 
+| rule_description | The rule description.                                                                                                                                                                                                                            | Optional | 
+| response | Action to be performed if the traffic matches this rule. Possible values are: Scan, Drop, Deny, Ignore, Stateless Ignore, Stateless Drop, Require Authentication.                                                                                | Optional | 
+| rule_enabled | Is Rule Enabled or not. Possible values are: yes, no. Default is yes.                                                                                                                                                                            | Optional | 
+| direction | The direction of the rule. Possible values are: Inbound, Outbound, Either.                                                                                                                                                                       | Optional | 
+| source_rule_object_id | The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.                                                                                                                       | Optional | 
 | source_rule_object_type | The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
-| destination_rule_object_id | The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.                                                                                                                        | Optional | 
+| destination_rule_object_id | The id of the rule that connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'.                                                                                                                       | Optional | 
 | destination_rule_object_type | The type of the rule that connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
-| is_overwrite | Will the new addresses that was provided in the update processes will override the current ones or will be added to them. Possible values are: true, false.                                                                                       | Optional | 
+| is_overwrite | Will the new addresses that was provided in the update processes will override the current ones or will be added to them. Possible values are: true, false.                                                                                      | Optional | 
 
 
 #### Context Output
@@ -346,13 +346,13 @@ Updates the Firewall Policy details.
 `nsm-list-domain-rule-object`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| domain_id | The id of the domain. To get the domain id, use the !nsm-get-domains command. | Required | 
-| type | The type of the rule. The default value is All. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6, All. | Optional | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. The default is 1. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                           | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| domain_id | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                             | Required | 
+| type | The type of the rule. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6, All. Default is All. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                                                                                                  | Optional | 
+| page | The specific result page to display.                                                                                                   | Optional | 
+| page_size | The number of records in a page.                                                                                                                          | Optional | 
 
 
 #### Context Output
@@ -583,7 +583,7 @@ Adds a new Rule Object.
 | domain | The id of the domain. To get the domain id, use the !nsm-get-domains command. | Required | 
 | rule_object_type | The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X” than the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X” =&gt; the arguments “from_address_ip_v.X” and “to_address_ip_v.X” must contain a value. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Required | 
 | name | The rule object name. | Required | 
-| visible_to_child | Will the rule object be visible to the child domain. The default value is "yes". Possible values are: yes, no. Default is yes. | Optional | 
+| visible_to_child | Will the rule object be visible to the child domain. Possible values are: yes, no. Default is yes. | Optional | 
 | description | The description of the rule object. | Optional | 
 | address_ip_v.4 | List of IPv4 host Address, separated by comma. | Optional | 
 | from_address_ip_v.4 | Start IPv4 Range. | Optional | 
@@ -614,19 +614,19 @@ Updates a Rule Object.
 `nsm-update-rule-object`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command. | Required | 
-| rule_id | The id of the rule. To get the rule object id, use the !nsm-list-domain-rule-object. | Required | 
-| name | The rule object name. | Optional | 
-| visible_to_child | Will the rule object be visible to the child domain. The default value is yes. Possible values are: yes, no. | Optional | 
-| description | The description of the rule object. | Optional | 
-| address_ip_v.4 | List of IPv4 host Address, separated by comma. | Optional | 
-| from_address_ip_v.4 | Start IPv4 Range. | Optional | 
-| to_address_ip_v.4 | End IPv4 Range. | Optional | 
-| address_ip_v.6 | List of IPv6 host Address, separated by comma. | Optional | 
-| from_address_ip_v.6 | Start IPv6 Range. | Optional | 
-| to_address_ip_v.6 | End IPv6 Range. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                   | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| domain | The id of the domain. To get the domain id, use the !nsm-get-domains command.                                                                                                                                     | Required | 
+| rule_id | The id of the rule. To get the rule object id, use the !nsm-list-domain-rule-object.                                                                                                                              | Required | 
+| name | The rule object name.                                                                                                                                                                                             | Optional | 
+| visible_to_child | Will the rule object be visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                | Optional | 
+| description | The description of the rule object.                                                                                                                                                                               | Optional | 
+| address_ip_v.4 | List of IPv4 host Address, separated by comma.                                                                                                                                                                    | Optional | 
+| from_address_ip_v.4 | Start IPv4 Range.                                                                                                                                                                                                 | Optional | 
+| to_address_ip_v.4 | End IPv4 Range.                                                                                                                                                                                                   | Optional | 
+| address_ip_v.6 | List of IPv6 host Address, separated by comma.                                                                                                                                                                    | Optional | 
+| from_address_ip_v.6 | Start IPv6 Range.                                                                                                                                                                                                 | Optional | 
+| to_address_ip_v.6 | End IPv6 Range.                                                                                                                                                                                                   | Optional | 
 | is_overwrite | Will the new addresses that was provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added. Possible values are: true, false. | Optional | 
 
 
@@ -681,18 +681,18 @@ Retrieves the alerts.
 `nsm-get-alerts`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
-| page_size | The number of records in a page. | Optional | 
-| time_period | Time Period. The default value is "LAST_7_DAYS". Possible values are: LAST_5_MINUTES, LAST_1_HOUR, LAST_6_HOURS, LAST_12_HOURS, LAST_24_HOURS, LAST_7_DAYS, LAST_14_DAYS, CUSTOM. Default is LAST_7_DAYS. | Optional | 
-| start_time | Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only. | Optional | 
-| end_time | End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only. | Optional | 
-| state | Alert State. Possible values are: ANY, Acknowledged, Unacknowledged. Default is ANY. | Optional | 
-| search | Search string in alert details. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| limit | The maximum number of projects to return. Defaul is 50.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Optional | 
+| page | The specific result page to display.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
+| page_size | The number of records in a page.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional | 
+| time_period | Time Period. Possible values are: LAST_5_MINUTES, LAST_1_HOUR, LAST_6_HOURS, LAST_12_HOURS, LAST_24_HOURS, LAST_7_DAYS, LAST_14_DAYS, CUSTOM. Default is LAST_7_DAYS.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Optional | 
+| start_time | Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
+| end_time | End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional | 
+| state | Alert State. Possible values are: ANY, Acknowledged, Unacknowledged. Default is ANY.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
+| search | Search string in alert details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional | 
 | filter | Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:&gt;3,&lt;4". If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily. | Optional | 
-| domain_id | The id of the domain. To get the domain_id, use the !nsm-get-domains command. The default value is 0. | Optional | 
+| domain_id | The id of the domain. To get the domain_id, use the !nsm-get-domains command. Default is 0.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Optional | 
 
 
 #### Context Output
@@ -1294,12 +1294,12 @@ If a domain id is given The command returns the details of the specific domain. 
 `nsm-get-domains`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------| --- |
 | domain_id | Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Optional | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                                                                          | Optional | 
+| page | The specific result page to display.                                                                                              | Optional | 
+| page_size | The number of records in a page.                                                                                                  | Optional | 
 
 
 #### Context Output
@@ -1341,12 +1341,12 @@ Gets the list of sensors available in the specified domain. If the domain is not
 `nsm-get-sensors`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                                             | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------| --- |
 | domain_id | Specific domain id. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Optional | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                                                                    | Optional | 
+| page | The specific result page to display.                                                                                        | Optional | 
+| page_size | The number of records in a page.                                                                                            | Optional | 
 
 
 #### Context Output
@@ -1422,12 +1422,12 @@ Gets all the IPS Policies defined in the specific domain.
 `nsm-get-ips-policies`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------| --- |
 | domain_id | Specific domain id. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Required | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                                         | Optional | 
+| page | The specific result page to display.                                                             | Optional | 
+| page_size | The number of records in a page.                                                                 | Optional | 
 
 
 #### Context Output
@@ -1672,15 +1672,15 @@ Update state or assignee of alerts. It is required to provide at least one of th
 `nsm-update-alerts`
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Required** |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| state | Alert State. Possible values are: ANY, Acknowledged, Unacknowledged. Default is ANY.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Optional | 
-| time_period | Time Period. The default value is "LAST_7_DAYS". Possible values are: LAST_5_MINUTES, LAST_1_HOUR, LAST_6_HOURS, LAST_12_HOURS, LAST_24_HOURS, LAST_7_DAYS, LAST_14_DAYS, CUSTOM. Default is LAST_7_DAYS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional | 
-| start_time | Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
-| end_time | End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| new_state | The new alert state. Possible values are: Acknowledged, Unacknowledged.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional | 
-| new_assignee | The new assignee.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional | 
-| search | Search string in alert details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| state | Alert State. Possible values are: ANY, Acknowledged, Unacknowledged. Default is ANY.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional | 
+| time_period | Time Period. Possible values are: LAST_5_MINUTES, LAST_1_HOUR, LAST_6_HOURS, LAST_12_HOURS, LAST_24_HOURS, LAST_7_DAYS, LAST_14_DAYS, CUSTOM. Default is LAST_7_DAYS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional | 
+| start_time | Start Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Optional | 
+| end_time | End Time in "mm/dd/yyyy HH:MM" format only. used for custom time only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional | 
+| new_state | The new alert state. Possible values are: Acknowledged, Unacknowledged.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
+| new_assignee | The new assignee.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
+| search | Search string in alert details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
 | filter | Filter alert by fields. example: "name:hello;direction:Inbound,Outbound;attackcount:&gt;3,&lt;4"If you wish to use the "name" field in the filter, enter only one name in each command run. Filter on following column is allowed- name, assignTo, application, layer7Data, result, attackCount, relevance, alertId, direction, device, domain, interface, attackSeverity, nspId, btp, attackCategory, malwarefileName, malwarefileHash, malwareName, malwareConfidence, malwareEngine ,executableName, executableHash, executableConfidenceName, attackerIPAddress, attackerPort, attackerRisk, attackerProxyIP, attackerHostname, targetIPAddress, targetPort, targetRisk, targetProxyIP, targetHostname, botnetFamily. | Optional | 
 
 
@@ -1941,12 +1941,12 @@ Retrieves the list of captured PCAP files.
 `nsm-list-pcap-file`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| **Argument Name** | **Description**                                                               | **Required** |
+| --- |-------------------------------------------------------------------------------| --- |
 | sensor_id | The id of the sensor. To get the sensor_id, use the !nsm-get-sensors command. | Required | 
-| limit | The maximum number of projects to return. The default value is 50. | Optional | 
-| page | The specific result page to display. The default is 1. | Optional | 
-| page_size | The number of records in a page. | Optional | 
+| limit | The maximum number of projects to return. Default is 50.                | Optional | 
+| page | The specific result page to display. The default is 1.                        | Optional | 
+| page_size | The number of records in a page.                                              | Optional | 
 
 
 #### Context Output

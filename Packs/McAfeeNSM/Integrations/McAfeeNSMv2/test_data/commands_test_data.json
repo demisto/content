@@ -958,6 +958,480 @@
                 "lastModUser": "user"
             }
         ]
+    },
+    "member_rule_list": [
+            {
+                "Description": "r",
+                "Enabled": true,
+                "Response": "SCAN",
+                "IsLogging": false,
+                "Direction": "EITHER",
+                "SourceAddressObjectList": [
+                    {
+                        "RuleObjectId": "117",
+                        "Name": "Range V6 Test",
+                        "RuleObjectType": "IPV_6_ADDRESS_RANGE"
+                    }
+                ],
+                "DestinationAddressObjectList": [
+                    {
+                        "RuleObjectId": "-1",
+                        "Name": "Any",
+                        "RuleObjectType": null
+                    }
+                ],
+                "SourceUserObjectList": [
+                    {
+                        "RuleObjectId": "-1",
+                        "Name": "Any",
+                        "RuleObjectType": "USER"
+                    }
+                ],
+                "ServiceObjectList": [
+                    {
+                        "RuleObjectId": "-1",
+                        "Name": "Any",
+                        "RuleObjectType": null,
+                        "ApplicationType": null
+                    }
+                ],
+                "ApplicationObjectList": [],
+                "TimeObjectList": [
+                    {
+                        "RuleObjectId": "-1",
+                        "Name": "Always",
+                        "RuleObjectType": null
+                    }
+                ]
+            }
+        ],
+    "get_alert_details": {
+        "name": "Buffer Overflow",
+        "uniqueAlertId": "3333333333333333333",
+        "alertState": "UnAcknowledged",
+        "assignTo": "---",
+        "summary": {
+            "event": {
+                "application": "Not Available",
+                "protocol": "telnet",
+                "domain": "/My Domain",
+                "manager": null,
+                "device": "vm600-nsmapi-cc",
+                "deviceId": "1001",
+                "interface": "1-2",
+                "matchedPolicy": "Default Prevention",
+                "zone": null,
+                "vlan": "-10",
+                "detection": "Application anomaly",
+                "time": "Apr 23, 2020 22:26:13",
+                "direction": "Inbound",
+                "result": "Inconclusive",
+                "attackCount": 1,
+                "relevance": "Unknown",
+                "alertId": "6666666666666666666"
+            },
+            "attacker": {
+                "ipAddrs": "9.9.9.9",
+                "port": 11111,
+                "hostName": null,
+                "country": null,
+                "os": "Microsoft Windows Server 2008",
+                "vmName": null,
+                "proxyIP": null,
+                "user": "Unknown",
+                "risk": "N/A",
+                "networkObject": "---"
+            },
+            "target": {
+                "ipAddrs": "1.1.1.1",
+                "port": 88888,
+                "hostName": null,
+                "country": null,
+                "os": "Microsoft Windows Server 2003 Service Pack 1",
+                "vmName": null,
+                "proxyIP": null,
+                "user": "Unknown",
+                "risk": "N/A",
+                "networkObject": "---"
+            },
+            "source": null,
+            "destination": null,
+            "zoombie": null,
+            "cAndcServer": null,
+            "fastFluxAgent": null,
+            "attackedHIPEndpoint": null,
+            "compromisedEndpoint": null
+        },
+        "details": {
+            "matchedSignature": {
+                "signatureName": "overflow-iquery.c",
+                "signature": {
+                    "name": "Signature#1",
+                    "conditions": [
+                        "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4"
+                    ]
+                }
+            },
+            "layer7": null,
+            "malwareFile": null,
+            "hostSweep": null,
+            "portScan": null,
+            "fastFlux": null,
+            "triggeredComponentAttacks": null,
+            "sqlInjection": null,
+            "callbackDetectors": null,
+            "exceededThreshold": null,
+            "communicationRuleMatch": null
+        },
+        "description": {
+            "definition": "some description",
+            "btp": "Low",
+            "rfSB": "Yes",
+            "protectionCategory": "[Server Protection/Name Servers]",
+            "target": "Server",
+            "httpResponseAttack": "No",
+            "priority": "High",
+            "protocols": "dns",
+            "attackCategory": "Exploit",
+            "attackSubCategory": "Buffer Overflow",
+            "reference": {
+                "nspId": "0x00000000",
+                "cveId": "CVE-1999-0009",
+                "microsoftId": "",
+                "bugtraqId": "123",
+                "certId": null,
+                "arachNidsId": "",
+                "additionInfo": "http://www.website.com/"
+            },
+            "signatures": [
+                {
+                    "name": "Signature#1",
+                    "conditions": [
+                        "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4"
+                    ]
+                },
+                {
+                    "name": "Signature#2",
+                    "conditions": [
+                        "condition 1",
+                        "condition 2",
+                        "condition 3",
+                        "condition 4"
+                    ]
+                },
+                {
+                    "name": "Signature#3",
+                    "conditions": [
+                        "condition 1",
+                        "condition 2",
+                        "condition 3",
+                        "condition 4",
+                        "condition 5"
+                    ]
+                }
+            ],
+            "componentAttacks": [],
+            "comments": {
+                "comments": "",
+                "availabeToChildDomains": true,
+                "parentDomainComments": null
+            }
+        }
+    },
+    "expected_get_alert_details": {
+            "ID": "6666666666666666666",
+            "Name": "Buffer Overflow",
+            "uniqueAlertId": "3333333333333333333",
+            "State": "UnAcknowledged",
+            "CreatedTime": "Apr 23, 2020 22:26:13",
+            "Assignee": "---",
+            "Description": "some description",
+            "EventResult": "Inconclusive",
+            "Attack": {
+                "attackCategory": "Exploit",
+                "attackSubCategory": "Buffer Overflow",
+                "nspId": "0x00000000"
+            },
+            "Protocols": "dns",
+            "SensorID": "1001",
+            "Event": {
+                    "application": "Not Available",
+                    "protocol": "telnet",
+                    "domain": "/My Domain",
+                    "manager": null,
+                    "device": "vm600-nsmapi-cc",
+                    "interface": "1-2",
+                    "matchedPolicy": "Default Prevention",
+                    "zone": null,
+                    "vlan": "-10",
+                    "detection": "Application anomaly",
+                    "direction": "Inbound",
+                    "attackCount": 1,
+                    "relevance": "Unknown",
+                    "alertId": "6666666666666666666",
+                    "deviceId": "1001",
+                    "result": "Inconclusive",
+                    "time": "Apr 23, 2020 22:26:13"
+            },
+            "Attacker": {
+                    "ipAddrs": "9.9.9.9",
+                    "port": 11111,
+                    "hostName": null,
+                    "country": null,
+                    "os": "Microsoft Windows Server 2008",
+                    "vmName": null,
+                    "proxyIP": null,
+                    "user": "Unknown",
+                    "risk": "N/A",
+                    "networkObject": "---"
+                },
+            "Target": {
+                    "ipAddrs": "1.1.1.1",
+                    "port": 88888,
+                    "hostName": null,
+                    "country": null,
+                    "os": "Microsoft Windows Server 2003 Service Pack 1",
+                    "vmName": null,
+                    "proxyIP": null,
+                    "user": "Unknown",
+                    "risk": "N/A",
+                    "networkObject": "---"
+                },
+            "MalwareFile": null,
+            "summary": {
+                "source": null,
+                "destination": null,
+                "zoombie": null,
+                "cAndcServer": null,
+                "fastFluxAgent": null,
+                "attackedHIPEndpoint": null,
+                "compromisedEndpoint": null
+            },
+            "Details": {
+                "matchedSignature": {
+                    "signatureName": "overflow-iquery.c",
+                    "signature": {
+                        "name": "Signature#1",
+                        "conditions": [
+                            "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4"
+                        ]
+                    }
+                },
+                "layer7": null,
+                "hostSweep": null,
+                "portScan": null,
+                "fastFlux": null,
+                "triggeredComponentAttacks": null,
+                "sqlInjection": null,
+                "callbackDetectors": null,
+                "exceededThreshold": null,
+                "communicationRuleMatch": null
+            },
+            "description": {
+                "btp": "Low",
+                "rfSB": "Yes",
+                "protectionCategory": "[Server Protection/Name Servers]",
+                "target": "Server",
+                "httpResponseAttack": "No",
+                "priority": "High",
+                "reference": {
+                    "cveId": "CVE-1999-0009",
+                    "microsoftId": "",
+                    "bugtraqId": "123",
+                    "certId": null,
+                    "arachNidsId": "",
+                    "additionInfo": "http://www.website.com/"
+                },
+                "signatures": [
+                    {
+                        "name": "Signature#1",
+                        "conditions": [
+                            "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4"
+                        ]
+                    },
+                    {
+                        "name": "Signature#2",
+                        "conditions": [
+                            "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4"
+                        ]
+                    },
+                    {
+                        "name": "Signature#3",
+                        "conditions": [
+                            "condition 1",
+                            "condition 2",
+                            "condition 3",
+                            "condition 4",
+                            "condition 5"
+                        ]
+                    }
+                ],
+                "componentAttacks": [],
+                "comments": {
+                    "comments": "",
+                    "availabeToChildDomains": true,
+                    "parentDomainComments": null
+                }
+            }
+        },
+    "get_rule_object1": {
+        "ruleobjId": "133",
+        "ruleobjType": "IPV_4_ADDRESS_RANGE",
+        "name": "ruleo",
+        "description": null,
+        "domain": 0,
+        "visibleToChild": true,
+        "hostCriticality": null,
+        "ApplicationGroup": null,
+        "ApplicationOnCustomPort": null,
+        "FiniteTimePeriod": null,
+        "HostIPv4": null,
+        "HostIPv6": null,
+        "HostDNSName": null,
+        "IPv4AddressRange": {
+            "IPV4RangeList": [
+                {
+                    "FromAddress": "1.1.1.1",
+                    "ToAddress": "2.2.2.2"
+                }
+            ]
+        },
+        "IPv6AddressRange": null,
+        "Network_IPV_4": null,
+        "Network_IPV_6": null,
+        "NetworkGroup": null,
+        "RecurringTimePeriod": null,
+        "RecurringTimePeriodGroup": null,
+        "Service": null,
+        "ServiceGroup": null,
+        "ServiceRange": null
+    },
+    "get_rule_object2": {
+        "ruleobjId": "113",
+        "ruleobjType": "NETWORK_IPV_4",
+        "name": "Network ip Test",
+        "description": null,
+        "domain": 0,
+        "visibleToChild": false,
+        "hostCriticality": "HIGH",
+        "ApplicationGroup": null,
+        "ApplicationOnCustomPort": null,
+        "FiniteTimePeriod": null,
+        "HostIPv4": null,
+        "HostIPv6": null,
+        "HostDNSName": null,
+        "IPv4AddressRange": null,
+        "IPv6AddressRange": null,
+        "Network_IPV_4": {
+            "networkIPV4List": [
+                "3.3.3.3/33",
+                "4.4.4.4/44"
+            ]
+        },
+        "Network_IPV_6": null,
+        "NetworkGroup": null,
+        "RecurringTimePeriod": null,
+        "RecurringTimePeriodGroup": null,
+        "Service": null,
+        "ServiceGroup": null,
+        "ServiceRange": null
+    },
+    "get_firewall_policy": {
+        "Description": "update policy",
+        "DomainId": 0,
+        "FirewallPolicyId": 147,
+        "IsEditable": true,
+        "LastModifiedTime": "2022-12-26 05:37:46",
+        "LastModifiedUser": "user",
+        "MemberDetails": {
+            "MemberRuleList": [
+                {
+                    "ApplicationObjectList": [],
+                    "Description": "r",
+                    "DestinationAddressObjectList": [
+                        {
+                            "Name": "Any",
+                            "RuleObjectId": "-1",
+                            "RuleObjectType": null
+                        }
+                    ],
+                    "Direction": "EITHER",
+                    "Enabled": true,
+                    "IsLogging": false,
+                    "Response": "SCAN",
+                    "ServiceObjectList": [
+                        {
+                            "ApplicationType": null,
+                            "Name": "Any",
+                            "RuleObjectId": "-1",
+                            "RuleObjectType": null
+                        }
+                    ],
+                    "SourceAddressObjectList": [
+                        {
+                            "Name": "Range V6 Test",
+                            "RuleObjectId": "117",
+                            "RuleObjectType": "IPV_6_ADDRESS_RANGE"
+                        }
+                    ],
+                    "SourceUserObjectList": [
+                        {
+                            "Name": "Any",
+                            "RuleObjectId": "-1",
+                            "RuleObjectType": "USER"
+                        }
+                    ],
+                    "TimeObjectList": [
+                        {
+                            "Name": "Always",
+                            "RuleObjectId": "-1",
+                            "RuleObjectType": null
+                        }
+                    ]
+                }
+            ]
+        },
+        "Name": "n",
+        "PolicyType": "ADVANCED",
+        "PolicyVersion": 1,
+        "VisibleToChild": true
+    },
+    "expected_get_firewall_policy": {
+        "Description": "update policy",
+        "DomainId": 0,
+        "FirewallPolicyId": 147,
+        "IsEditable": true,
+        "LastModifiedTime": "2022-12-26 05:37:46",
+        "LastModifiedUser": "user",
+        "MemberDetails": {
+            "MemberRuleList": [
+                {
+                    "Description": "r",
+                    "Direction": "EITHER",
+                    "Enabled": true,
+                    "IsLogging": false,
+                    "Response": "SCAN"
+                }
+            ]
+        },
+        "Name": "n",
+        "PolicyType": "ADVANCED",
+        "PolicyVersion": 1,
+        "VisibleToChild": true
     }
-
 }

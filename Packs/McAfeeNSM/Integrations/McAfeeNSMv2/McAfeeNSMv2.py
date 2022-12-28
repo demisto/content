@@ -458,10 +458,10 @@ def check_source_and_destination(source_rule_object_id: Optional[int], source_ru
     Returns:
         Throws exception .
     """
-    if (source_rule_object_id and not source_rule_object_type) or (
+    if (source_rule_object_id and not source_rule_object_type and source_rule_object_id != -1) or (
             not source_rule_object_id and source_rule_object_type):
         raise Exception('If you provide at least one of the source fields, you must provide all of them.')
-    if (destination_rule_object_id and not destination_rule_object_type) or \
+    if (destination_rule_object_id and not destination_rule_object_type and destination_rule_object_id != -1) or \
             (not destination_rule_object_id and destination_rule_object_type):
         raise Exception('If you provide at least one of the destination fields, you must provide all of them.')
     if create_or_update == 'create':
@@ -723,7 +723,8 @@ def h_r_get_domains(children: List[Dict], human_readable: List):
             h_r_get_domains(child.get('childdomains', []), human_readable)
 
 
-def update_source_destination_object(obj: List[Dict], rule_object_id: int | None, rule_object_type: Optional[str]) -> List[Dict]:
+def update_source_destination_object(obj: List[Dict], rule_object_id: int | None, rule_object_type: Optional[str]) -> \
+        List[Dict]:
     """ Updates the source and destination objects in the command update_firewall_policy.
         Args:
             obj: List[Dict] - The relevant object.
@@ -738,6 +739,8 @@ def update_source_destination_object(obj: List[Dict], rule_object_id: int | None
             'RuleObjectType': rule_object_type
         }
         old_id = obj[0].get('RuleObjectId')
+        # if the old id is -1, it means that there wasn't any specific rule before, and we need to overwrite the
+        # "placeholder" rule.
         if old_id == '-1':
             obj = [new_object]
         else:
@@ -760,7 +763,7 @@ def overwrite_source_destination_object(rule_object_id: int | None, rule_object_
         if rule_object_id == -1:
             return [{
                 'RuleObjectId': -1,
-                'RuleObjectType': 'Any'
+                'RuleObjectType': None
             }]
         else:
             return [{
@@ -772,7 +775,7 @@ def overwrite_source_destination_object(rule_object_id: int | None, rule_object_
 
 
 def update_filter(filter_arg: str) -> str:
-    """ Removes the special characters from the name argument filter.
+    """ Removes the special characters from the name argument in filter.
         Args:
             filter_arg: str - The original filter
         Returns:
@@ -836,7 +839,7 @@ def update_alert_entries(alert_det: Dict) -> Dict:
 
 
 def get_addresses_from_response(response: Dict) -> List:
-    """ Updates the entries to an alert object (the entries that we gwt here are different from get_alerts).
+    """ Returns the addresses from the response, for the human-readable in the command get_rule_object.
         Args:
             response: Dict - The response from the API.
         Returns:

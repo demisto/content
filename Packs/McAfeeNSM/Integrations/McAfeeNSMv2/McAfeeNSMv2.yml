@@ -35,7 +35,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false
@@ -81,7 +82,7 @@ script:
           isArray: false
         - name: include_rule_objects
           required: false
-          description: Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. The default value is false.
+          description: Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -207,7 +208,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain. The default value is yes.
+          description: Will the policy be visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -320,12 +321,13 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the policy be visible to the child domain. The default value is yes.
+          description: Will the policy be visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
             - yes
             - no
+          defaultValue: yes
         - name: description
           required: false
           description: The description of the policy.
@@ -437,7 +439,7 @@ script:
           isArray: false
         - name: type
           auto: PREDEFINED
-          description: The type of the rule. The default value is All.
+          description: The type of the rule.
           isArray: false
           predefined:
             - Endpoint IP V.4
@@ -448,14 +450,16 @@ script:
             - Network IP V.6
             - All
           required: false
+          defaultValue: All
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false
-          description: The specific result page to display. The default is 1.
+          description: The specific result page to display.
         - name: page_size
           required: false
           isArray: false
@@ -665,7 +669,7 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain. The default value is "yes".
+          description: Will the rule object be visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
@@ -717,12 +721,13 @@ script:
           isArray: false
         - name: visible_to_child
           required: false
-          description: Will the rule object be visible to the child domain. The default value is yes.
+          description: Will the rule object be visible to the child domain.
           isArray: false
           auto: PREDEFINED
           predefined:
             - yes
             - no
+          defaultValue: yes
         - name: description
           required: false
           description: The description of the rule object.
@@ -772,7 +777,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false
@@ -792,7 +798,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default value is "LAST_7_DAYS".
+          description: Time Period.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -826,7 +832,7 @@ script:
           isArray: false
         - name: domain_id
           required: false
-          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command. The default value is 0.
+          description: The id of the domain. To get the domain_id, use the !nsm-get-domains command.
           isArray: false
           defaultValue: 0
       outputs:
@@ -1400,7 +1406,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50.
         - name: page
           required: false
           isArray: false
@@ -1426,7 +1433,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false
@@ -1509,7 +1517,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false
@@ -1596,7 +1605,7 @@ script:
             - LAST_7_DAYS
             - LAST_14_DAYS
             - CUSTOM
-          description: Time Period. The default value is "LAST_7_DAYS".
+          description: Time Period.
           required: false
           isArray: false
           defaultValue: LAST_7_DAYS
@@ -1829,7 +1838,8 @@ script:
         - name: limit
           required: false
           isArray: false
-          description: The maximum number of projects to return. The default value is 50.
+          description: The maximum number of projects to return.
+          defaultValue: 50
         - name: page
           required: false
           isArray: false

@@ -329,6 +329,132 @@ def test_update_ips_policy_entries():
     assert expected_ips_details == result
 
 
+update_source_destination_object_params = [
+    (
+        [
+            {
+                "RuleObjectId": "117",
+                "Name": "Range V6 Test",
+                "RuleObjectType": "IPV_6_ADDRESS_RANGE",
+            }
+        ],
+        120,
+        "HOST_IPV_6",
+        [
+            {
+                "RuleObjectId": "117",
+                "Name": "Range V6 Test",
+                "RuleObjectType": "IPV_6_ADDRESS_RANGE",
+            },
+            {"RuleObjectId": 120, "RuleObjectType": "HOST_IPV_6"},
+        ],
+    ),
+    (
+        [{"RuleObjectId": "-1", "Name": "Any", "RuleObjectType": None}],
+        120,
+        "HOST_IPV_6",
+        [{"RuleObjectId": 120, "RuleObjectType": "HOST_IPV_6"}],
+    ),
+]
+
+
+@pytest.mark.parametrize('obj, rule_object_id, rule_object_type, expected_obj', update_source_destination_object_params)
+def test_update_source_destination_object(obj, rule_object_id, rule_object_type, expected_obj):
+    """
+        Given:
+            - A list of Address Object, an id of the new rule, a type of the new rule.
+        When:
+            - In update_firewall_policy command.
+        Then:
+            - Returns the updated address object.
+    """
+    from McAfeeNSMv2 import update_source_destination_object
+    result = update_source_destination_object(obj, rule_object_id, rule_object_type)
+    assert expected_obj == result
+
+
+overwrite_source_destination_object_params = [(120, 'HOST_IPV_6', 'Destination', [{'RuleObjectId': 120,
+                                                                                   'RuleObjectType': 'HOST_IPV_6'
+                                                                                   }]),
+                                              (-1, None, 'Destination', [{
+                                                  "RuleObjectId": -1,
+                                                  "RuleObjectType": None}]),
+                                              (None, None, 'Source', [{
+                                                  "RuleObjectId": "117",
+                                                  "Name": "Range V6 Test",
+                                                  "RuleObjectType": "IPV_6_ADDRESS_RANGE"}])]
+
+
+@pytest.mark.parametrize('rule_object_id, rule_object_type, dest_or_src, expected_obj',
+                         overwrite_source_destination_object_params)
+def test_overwrite_source_destination_object(rule_object_id, rule_object_type, dest_or_src, expected_obj):
+    """
+        Given:
+            - An id of the new rule, a type of the new rule, a string that represents if it is a source or destination
+                object and member_rule_list.
+        When:
+            - In update_firewall_policy command.
+        Then:
+            - Returns the updated address object.
+    """
+    from McAfeeNSMv2 import overwrite_source_destination_object
+    member_rule_list = util_load_json('test_data/commands_test_data.json').get('member_rule_list')[0]
+    result = overwrite_source_destination_object(rule_object_id, rule_object_type, dest_or_src, member_rule_list)
+    assert expected_obj == result
+
+
+def test_update_filter():
+    """
+        Given:
+            - A filter argument.
+        When:
+            - In get_alerts_command command.
+        Then:
+            - Returns the updated filter.
+    """
+    from McAfeeNSMv2 import update_filter
+    filter_arg = 'name:HTTP: IIS 6.0'
+    expected_filter_arg = 'name:HTTP  IIS 6 0'
+    result = update_filter(filter_arg)
+    assert expected_filter_arg == result
+
+
+def test_update_alert_entries():
+    """
+        Given:
+            - A dictionary with the alert details.
+        When:
+            - In get_alert_details command.
+        Then:
+            - Returns the updated dictionary with the alert details.
+    """
+    from McAfeeNSMv2 import update_alert_entries
+    get_alert_details = util_load_json('test_data/commands_test_data.json').get('get_alert_details')
+    expected_get_alert_details = util_load_json('test_data/commands_test_data.json').get('expected_get_alert_details')
+    result = update_alert_entries(get_alert_details)
+    assert expected_get_alert_details == result
+
+
+def test_get_addresses_from_response():
+    """
+        Given:
+            - A dictionary with the alert details.
+        When:
+            - In get_alert_details command.
+        Then:
+            - Returns the updated dictionary with the alert details.
+    """
+    from McAfeeNSMv2 import get_addresses_from_response
+    addresses1 = util_load_json('test_data/commands_test_data.json').get('get_rule_object1')
+    addresses2 = util_load_json('test_data/commands_test_data.json').get('get_rule_object2')
+    expected_addresses1 = ['1.1.1.1 - 2.2.2.2']
+    expected_addresses2 = ['3.3.3.3/33', '4.4.4.4/44']
+    result1 = get_addresses_from_response(addresses1)
+    result2 = get_addresses_from_response(addresses2)
+    assert expected_addresses1 == result1
+    assert expected_addresses2 == result2
+
+
 def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     Given:
@@ -352,6 +478,33 @@ def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
                                '|---|---|---|---|---|---|---|---|---|\n' \
                                '| 147 | n | 0 | true | d | true | ADVANCED | 1 | user |\n' \
                                '| 140 | hello | 0 | true | hello policy | true | ADVANCED | 1 | user |\n'
+    readable_output = result.readable_output
+    assert readable_output == expected_readable_output
+    assert result.raw_response == expected_result
+
+
+def test_get_firewall_policy_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - Domain id, limit to the list and a page.
+
+    When:
+        - nsm-list-domain-firewall-policy command is executed
+
+    Then:
+        - The http request is called with the right arguments, and returns the right command result.
+    """
+    from McAfeeNSMv2 import get_firewall_policy_command
+    args = {'policy_id': '147'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_firewall_policy')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_firewall_policy')
+    mocker.patch.object(mcafeensmv2_client, 'get_firewall_policy_request', return_value=response)
+    result = get_firewall_policy_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Firewall Policy 147\n' \
+                               '|Name|Description|VisibleToChild|IsEditable|PolicyType|PolicyVersion|LastModifiedUser' \
+                               '|LastModifiedTime|\n' \
+                               '|---|---|---|---|---|---|---|---|\n' \
+                               '| n | update policy | true | true | ADVANCED | 1 | user | 2022-12-26 05:37:46 |\n'
     readable_output = result.readable_output
     assert readable_output == expected_readable_output
     assert result.raw_response == expected_result
