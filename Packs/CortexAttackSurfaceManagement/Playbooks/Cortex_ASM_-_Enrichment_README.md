@@ -4,27 +4,25 @@ Used as a container folder for all enrichments of ASM alerts.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* AWS - Enrichment
-* ServiceNow CMDB Search
+* Cortex ASM - ServiceNow CMDB Enrichment
+* Cortex ASM - Tenable.io Enrichment
+* Cortex ASM - AWS Enrichment
 
 ### Integrations
-* ServiceNow v2
 * Cortex Attack Surface Management
 
 ### Scripts
-* GridFieldSetup
-* GetTime
+This playbook does not use any scripts.
 
 ### Commands
 * asm-list-external-service
-* servicenow-query-users
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| RemoteIP | IP address of the service. | alert.remoteip | Optional |
+| RemoteIP | IP address of service | alert.remoteip | Optional |
 
 ## Playbook Outputs
 ---

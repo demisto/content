@@ -1,0 +1,58 @@
+{
+  "next": null,
+  "page_size": 10,
+  "previous": null,
+  "results": [
+    {
+      "analyst_score": null,
+      "analyst_tlp": null,
+      "confidence_score": 20,
+      "confidence_type": "ctix",
+      "country": null,
+      "created": 1667442867,
+      "ctix_created": 1667442867,
+      "ctix_modified": 1667442867,
+      "first_seen": null,
+      "id": "b75e2aa7-edb2-43b3-a04a-5a8b49479512",
+      "indicator_type": "url",
+      "ioc_type": "url",
+      "is_actioned": false,
+      "is_deprecated": false,
+      "is_false_positive": false,
+      "is_reviewed": false,
+      "is_revoked": false,
+      "is_watchlist": false,
+      "is_whitelisted": false,
+      "last_seen": null,
+      "modified": 1667442868,
+      "name": "https://example.com/manifest.",
+      "null": [],
+      "primary_attribute": null,
+      "published_collections": [],
+      "risk_severity": "UNKNOWN",
+      "source_collections": [
+        {
+          "id": "0cb41cd8-c162-4847-9443-94c28dff4469",
+          "name": "https://www.fireeye.com/blog/threat-research/_jcr_"
+        }
+      ],
+      "source_confidence": "NONE",
+      "sources": [
+        {
+          "id": "3b8dda02-2c5d-435c-8254-72d5b2490e38",
+          "name": "https://www.fireeye.com/blog/threat-research/_jcr_",
+          "source_type": "RSS_FEED"
+        }
+      ],
+      "sub_type": "value",
+      "subscriber_collections": [],
+      "subscribers": [],
+      "tags": [],
+      "tlp": "WHITE",
+      "type": "indicator",
+      "valid_from": 1667442867,
+      "valid_until": null
+    }
+  ],
+  "total": 1
+}
