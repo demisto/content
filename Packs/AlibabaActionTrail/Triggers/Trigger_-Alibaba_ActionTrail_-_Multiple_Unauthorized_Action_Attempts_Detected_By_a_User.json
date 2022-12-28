@@ -1,5 +1,5 @@
 {
-  "trigger_id": "73545719a1bdeba6ba91f6a16044c021",
+  "trigger_id": "abfa084a92abfb031de08b57b3f78ec8",
   "playbook_id": "Alibaba ActionTrail - multiple unauthorized action_attempts detected by a user.yml",
   "suggestion_reason": "Recommended for multiple unauthorized action_attempts detected by a user related alerts",
   "description": "This trigger is responsible for handling 'Alibaba ActionTrail - multiple unauthorized action_attempts detected by a user' alerts",
