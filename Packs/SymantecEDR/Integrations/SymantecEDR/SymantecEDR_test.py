@@ -4,8 +4,6 @@ Symantec EDR (On-prem) Integration - Unit Tests file
 # type: ignore
 import pytest
 import json
-import io
-# import os
 # from CommonServerPython import DemistoException
 from SymantecEDR import Client, get_file_instance_command, get_domain_instance_command, get_endpoint_instance_command, \
     get_endpoint_file_association_list_command, get_domain_file_association_list_command, \

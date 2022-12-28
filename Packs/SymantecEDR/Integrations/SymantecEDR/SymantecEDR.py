@@ -1,13 +1,11 @@
 """
 Symantec Endpoint Detection and Response (EDR) On-Prem integration with Symantec-EDR 4.6
 """
-from typing import Optional
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
-from typing import List, Dict, Union
 import urllib3
 
 # Disable insecure warnings
