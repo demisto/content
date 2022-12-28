@@ -534,7 +534,7 @@ def main():
     verify = not params.get('insecure', False)
     secretids = params.get('secrets')
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
 
     delinea_commands = {
         'delinea-secret-password-get': secret_password_get_command,
