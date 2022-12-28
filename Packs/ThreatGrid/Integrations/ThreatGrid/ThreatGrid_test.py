@@ -3,6 +3,7 @@ import json
 import os
 import pytest
 from ThreatGrid import Client
+from datetime import datetime
 from CommonServerPython import *  # noqa: F401
 '''MOCK PARAMETERS '''
 API_TOKEN = "api_token"
@@ -78,7 +79,7 @@ def test_sample_get_command(requests_mock, mock_client, url, args, outputs):
         assert result.get('File') == f'sample_id-{args["artifact"]}'
     else:
         assert result.outputs_prefix == outputs
-        assert result.outputs['id'] == 'data_id'
+        assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -133,6 +134,7 @@ def test_associated_samples_list_command(requests_mock, mock_client, url, args, 
     result = associated_samples_list_command(mock_client, args)
 
     assert result.outputs_prefix == outputs_prefix
+    assert result.outputs['samples'][0]['sha256'] == 'sha256'  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize('url, args,outputs_prefix', [
@@ -140,9 +142,9 @@ def test_associated_samples_list_command(requests_mock, mock_client, url, args, 
         'sample_id': 'sample_id',
         'command_name': 'threat-grid-analysis-annotations-get'
     }, 'SampleAnnotations'),
-    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/artifacts', {
+    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/artifacts/artifact', {
         'sample_id': 'sample_id',
-        'artifact': 'artifact',
+        'artifact_id': 'artifact',
         'command_name': 'threat-grid-analysis-artifacts-get'
     }, 'ArtifactAnalysis'),
     (f'/{API_VERSION2_URL}/samples/sample_id/analysis/iocs', {
@@ -154,13 +156,14 @@ def test_associated_samples_list_command(requests_mock, mock_client, url, args, 
         'sample_id': 'sample_id',
         'command_name': 'threat-grid-analysis-metadata-get'
     }, 'AnalysisMetadata'),
-    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/network_streams', {
+    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/network_streams/network_stream', {
         'sample_id': 'sample_id',
-        'network_stream': 'network_stream',
+        'network_stream_id': 'network_stream',
         'command_name': 'threat-grid-analysis-network-streams-get'
     }, 'NetworkAnalysis'),
-    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/processes', {
+    (f'/{API_VERSION2_URL}/samples/sample_id/analysis/processes/process_id', {
         'sample_id': 'sample_id',
+        'process_id': 'process_id',
         'command_name': 'threat-grid-analysis-processes-get'
     }, 'ProcessAnalysis'),
 ])
@@ -222,6 +225,8 @@ def test_rate_limit_get_command(requests_mock, mock_client):
     })
 
     assert result.outputs_prefix == 'ThreatGrid.RateLimit'
+    assert result.outputs[
+        'submissions-available'] == 'user_submissions-available'  # type: ignore[assignment]
 
 
 def test_who_am_i_command(requests_mock, mock_client):
@@ -245,7 +250,7 @@ def test_who_am_i_command(requests_mock, mock_client):
     result = who_am_i_command(mock_client, {})
 
     assert result.outputs_prefix == 'ThreatGrid.User'
-    assert result.outputs['email'] == 'data_email'
+    assert result.outputs['email'] == 'data_email'  # type: ignore[assignment]
 
 
 def test_specific_feed_get_command(requests_mock, mock_client):
@@ -278,6 +283,7 @@ def test_specific_feed_get_command(requests_mock, mock_client):
     })
 
     assert result.outputs_prefix == 'ThreatGrid.Feed'
+    assert result.outputs[0]['sample'] == 'sample'  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -318,6 +324,8 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
     from ThreatGrid import associated_command
 
     json_data = args['command_name'][12:].replace("-", "_")
+    arg_name = args['command_name'].split('-')[2]
+
     mock_response = load_mock_response(f'{json_data}.json')
 
     requests_mock.get(url=url, json=mock_response)
@@ -325,6 +333,7 @@ def test_associated_command(requests_mock, mock_client, url, args, outputs_prefi
     result = associated_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
+    assert result.outputs[arg_name] == f'data_{arg_name}'  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize('url, args, outputs_prefix', [
@@ -383,6 +392,7 @@ def test_feeds_command(requests_mock, mock_client, url, args, outputs_prefix):
     result = feeds_command(mock_client, args)
 
     assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
+    assert result.outputs[0]['ioc'] == 'data_items[0]_ioc'  # type: ignore[assignment]
 
 
 def test_sample_upload_command(requests_mock, mock_client):
@@ -409,6 +419,7 @@ def test_sample_upload_command(requests_mock, mock_client):
     result = sample_upload_command(mock_client, {'url': 'url'})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
+    assert result.outputs['id'] == 'data_id'  # type: ignore[assignment]
 
 
 @pytest.mark.parametrize('url_prefix ,args, outputs_prefix', [
@@ -470,22 +481,29 @@ def test_submission_search_command(requests_mock, mock_client):
     result = submission_search_command(mock_client, {})
 
     assert result.outputs_prefix == 'ThreatGrid.Sample'
+    assert result.outputs[0]['sample'] == 'sample_id'  # type: ignore[assignment]
 
 
-@pytest.mark.parametrize('args,outputs_prefix', [({
+@pytest.mark.parametrize('args,outputs_prefix,outputs_key_field', [({
     'command_name': 'ip',
     'ip': 'ip'
-}, 'IP'), ({
+}, 'IP', 'indicator'), ({
     'command_name': 'url',
     'url': 'url'
-}, 'URL'), ({
+}, 'URL', 'url'), ({
     'command_name': 'domain',
     'domain': 'domain'
-}, 'Domain'), ({
+}, 'Domain', 'domain'), ({
     'command_name': 'file',
     'file': 'file'
-}, 'File')])
-def test_reputation_command(requests_mock, mock_client, args, outputs_prefix):
+}, 'File', 'md5')])
+def test_reputation_command(
+    requests_mock,
+    mock_client,
+    args,
+    outputs_prefix,
+    outputs_key_field,
+):
     """
     Scenario: Search threat grid submissions.
     Given:
@@ -513,14 +531,20 @@ def test_reputation_command(requests_mock, mock_client, args, outputs_prefix):
     args.update({'reliability': DBotScoreReliability.B})
     result = reputation_command(mock_client, args)
 
-    assert result.outputs_prefix == f'ThreatGrid.{outputs_prefix}'
-    # assert result.outputs_key_field == args["command_name"]
+    assert result[0].outputs_prefix == f'ThreatGrid.{outputs_prefix}'
+    assert result[0].outputs_key_field == outputs_key_field
 
 
-def test_validate_days_diff():
+@pytest.mark.parametrize('date, output', [
+    ('2022-01-21T12:09:33Z', False),
+    (str(datetime.now()).split(" ")[0], True),
+])
+def test_validate_days_diff(date, output):
+    """ Validate days diff.
+    """
     from ThreatGrid import validate_days_diff
-    result = validate_days_diff('2022-01-21T12:09:33Z')
-    assert result is False
+    result = validate_days_diff(date)
+    assert result is output
 
 
 @pytest.mark.parametrize('args, outputs', [
@@ -550,6 +574,12 @@ def test_validate_days_diff():
     }),
 ])
 def test_pagination(args, outputs):
+    """ Validate pagination args.
+
+    Args:
+        args (_type_): pagination args.
+        outputs (_type_): pagination args required output.
+    """
 
     from ThreatGrid import pagination
     limit, offset, _ = pagination(args)

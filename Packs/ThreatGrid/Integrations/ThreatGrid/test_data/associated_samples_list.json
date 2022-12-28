@@ -19,7 +19,7 @@
                 "sample": "data_samples[0]_sample",
                 "filename": "data_samples[0]_filename",
                 "details": "data_samples[0]_details",
-                "sha256": "data_samples[0]_sha256",
+                "sha256": "sha256",
                 "timestamp": "data_samples[0]_timestamp",
                 "relation": "data_samples[0]_relation",
                 "owner": "data_samples[0]_owner"

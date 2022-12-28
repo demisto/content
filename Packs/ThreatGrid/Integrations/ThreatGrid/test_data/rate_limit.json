@@ -6,7 +6,7 @@
         "user": {
             "submission-rate-limit": [],
             "submission-wait-seconds": "data_user_submission-wait-seconds",
-            "submissions-available": "data_user_submissions-available"
+            "submissions-available": "user_submissions-available"
         },
         "organization": {
             "submission-rate-limit": [
