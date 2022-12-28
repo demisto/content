@@ -128,6 +128,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "GSuiteAdmin",
+            "playbookID": "GSuiteAdmin-MobileDevices-Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "AzureWAF",
             "instance_names": "azure_waf_user_auth_instance",
             "playbookID": "Azure WAF - Test",
@@ -5218,6 +5223,7 @@
         }
     ],
     "skipped_tests": {
+        "QRadar_v3-test": "Issue CIAC-4976",
         "Detonate URL - Generic Test": "Issue CRTX-67708",
         "Test XDR Playbook": "Issue CIAC-4624",
         "PaloAltoNetworks_IoT-Test": "Issue CRTX-67960",
@@ -5338,7 +5344,6 @@
         "AzureADTest": "Issue 40131",
         "Autoextract - Test": "Issue 45293",
         "LogRhythm-Test-Playbook": "Issue 27164",
-        "GSuiteAdmin-Test": "Issue 34784",
         "Microsoft_365_Defender-Test": "Issue 39390",
         "Tanium Threat Response - Request File Download v2 - Test": "Issue 46326",
         "test_AssignToNextShiftOOO": "Issue 44198",
