@@ -492,8 +492,8 @@ def fetch_credentials_command(client, secretids):
 
     if len(secretsid) == 0:
         demisto.credentials(credentials)
-        demisto.debug(
-        "Could not fetch credentials: Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
+        demisto.debug("Could not fetch credentials:\
+        Enter valid secret ID to fetch credentials.\n For multiple ID use ,(e.g. 1,2)")
         credentials = []
     else:
         for secret_id in secretsid:
