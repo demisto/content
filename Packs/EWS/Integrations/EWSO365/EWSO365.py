@@ -219,6 +219,7 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
+        self.mark_as_read = kwargs.get('mark_as_read', False)
 
     def __prepare(self, insecure):
         """
@@ -2245,6 +2246,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
 
         incidents = []
         incident: Dict[str, str] = {}
+        emails_ids = []  # Used for mark emails as read
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
 
@@ -2259,10 +2261,14 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+
                 if incidentFilter == MODIFIED_FILTER:
                     item_modified_time = item.last_modified_time.ewsformat()
                     if last_modification_time is None or last_modification_time < item_modified_time:
                         last_modification_time = item_modified_time
+
+                if item.id:
+                    emails_ids.append(item.id)
 
                 if len(incidents) >= client.max_fetch:
                     break
@@ -2300,6 +2306,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incidentFilter):
         }
 
         demisto.setLastRun(new_last_run)
+
+        if client.mark_as_read:
+            mark_item_as_read(client, emails_ids)
+
         return incidents
 
     except RateLimitError:
