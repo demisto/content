@@ -1,5 +1,5 @@
-import demistomock as demisto 
-from CommonServerPython import *  
+import demistomock as demisto
+from CommonServerPython import *
 
 ''' IMPORTS '''
 import requests
@@ -540,27 +540,25 @@ def query_malops_command(client: Client, args: dict):
         outputs_key_field='GUID',
         outputs=outputs)
 
-def rest_malops(client: Client,start_time):
-    end_time = round(datetime.now().timestamp())*1000
-    json_body = {"startTime":start_time,"endTime":end_time}
+
+def poll_malops(client: Client, start_time):
+    end_time = round(datetime.now().timestamp()) * 1000
+    json_body = {"startTime": start_time, "endTime": end_time}
     api_response = client.cybereason_api_call('POST', '/rest/detection/inbox', json_body=json_body)
     demisto.debug(f"Fetching the length of rest/dectection malops : {len(api_response)}")
     return api_response
 
 
-def get_non_edr_list(client,start_time):
-    malop_list = rest_malops(client,start_time)
-    edr_malop_guid = list()
-    non_edr_list = list()
+def get_non_edr_malop_data(client, start_time):
+    malop_data = poll_malops(client, start_time)
+    non_edr_malop_data = list()
+    for malops in malop_data['malops']:
+        if malops.get('edr') is False:
+            non_edr_malop_data.append(malops)
 
-    for guid in malop_list['malops']:
-        if guid['edr']:
-            edr_malop_guid.append(guid['guid'])
-        else:
-            non_edr_list.append(guid)
-    demisto.debug(f"Fetching the length of edr guid list: {len(edr_malop_guid)}")
-    demisto.debug(f"Fetching the length of non-edr list: {len(non_edr_list)}")
-    return edr_malop_guid,non_edr_list
+    malop_data.clear()
+    demisto.debug(f"Total length of EPP Malops fetched is: {len(non_edr_malop_data)}")
+    return non_edr_malop_data
 
 def query_malops(
     client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None,
@@ -1473,7 +1471,7 @@ def malop_to_incident(malop: str) -> dict:
 
     guid_string = malop.get('guidString', '')
     if guid_string == "":
-        guid_string =  malop.get('guid', '')
+        guid_string = malop.get('guid', '')
     incident = {
         'rawJSON': json.dumps(malop),
         'name': 'Cybereason Malop ' + guid_string,
@@ -1527,12 +1525,12 @@ def fetch_incidents(client: Client):
             incident = malop_to_incident(malop)
             incidents.append(incident)
 
-    ########for epp ##########
-    edr,non_edr = get_non_edr_list(client,last_update_time)
+    # Enable Polling for Cybereason EPP Malops
+    non_edr = get_non_edr_malop_data(client, last_update_time)
     if IS_EPP_ENABLED:
         demisto.info(f"Fetching EPP malop is enabled: {IS_EPP_ENABLED}")
         for non_edr_malops in non_edr:
-            malop_update_time = non_edr_malops['lastUpdateTime']
+            malop_update_time = dict_safe_get(non_edr_malops, ['lastUpdateTime'])
 
             if malop_update_time > max_update_time:
                 max_update_time = malop_update_time
@@ -1544,7 +1542,7 @@ def fetch_incidents(client: Client):
     demisto.setLastRun({
         'creation_time': max_update_time
     })
-
+    
     demisto.incidents(incidents)
 
 
@@ -2056,5 +2054,3 @@ def main():
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
-
-

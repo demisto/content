@@ -717,6 +717,11 @@ def test_fetch_incidents(mocker):
 
     raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
     mocker.patch("Cybereason.query_malops", return_value=(raw_response, {}))
+    raw_response = json.loads(load_mock_response('non_edr.json'))
+    mocker.patch("Cybereason.get_non_edr_malop_data", return_value=(raw_response, {}))
+    raw_response = json.loads(load_mock_response('malop_to_incident.json'))
+    mocker.patch("Cybereason.malop_to_incident", return_value=(raw_response, {}))
+
     command_output = fetch_incidents(client)
     command_output = str(command_output)
 
