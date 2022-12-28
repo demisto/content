@@ -1974,8 +1974,8 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Comma-separated list of incident types to filter in Exabeam.
-      isArray: true
+      description: Incident type to filter in Exabeam.
+      isArray: false
       predefined:
         - "generic"
         - "abnormalAuth"
@@ -2006,8 +2006,8 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Comma-separated list of incident priorities to filter in Exabeam.
-      isArray: true
+      description: Incident priority to filter in Exabeam.
+      isArray: false
       predefined:
         - "low"
         - "medium"
@@ -2018,8 +2018,8 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Comma-separated list of incident statuses to filter in Exabeam.
-      isArray: true
+      description: Incident status to filter in Exabeam.
+      isArray: false
       predefined:
         - "closed"
         - "closedFalsePositive"

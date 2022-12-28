@@ -2179,7 +2179,7 @@ def main():
         elif command == 'test-module':
             test_module(client, args, params)
         elif command in commands:
-            return_outputs(*commands[command](client, args))
+            return_outputs(*commands[command](client, args))  # type: ignore
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

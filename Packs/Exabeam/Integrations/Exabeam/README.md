@@ -1342,9 +1342,9 @@ Returns incidents from Exabeam.
 |-------------------|----------------------------------------------------------------------------| --- |
 | incident_id       | The incident ID.                                                           | Optional | 
 | query             | Query string which is a combination of incident type, priority and status. | Optional | 
-| incident_type     | Comma-separated list of incident type to filter by.                        | Optional | 
-| priority          | Comma-separated list of incident priorities to filter by.                  | Optional |
-| status            | Comma-separated list of incident statuses to filter by.                    | Optional |
+| incident_type     | Incident type to filter in Exabeam.                        | Optional | 
+| priority          | Incident priority to filter in Exabeam.                  | Optional |
+| status            | Incident status to filter in Exabeam.                    | Optional |
 | limit             | Maximum number of rules to retrieve. Default is 50.                        | Optional | 
 | page_size         | Number of total results in each page. Default is 25.                                         | Optional | 
 | page_number       | Specific page to query.                                  | Optional |
