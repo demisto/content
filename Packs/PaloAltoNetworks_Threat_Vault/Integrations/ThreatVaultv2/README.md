@@ -1067,4 +1067,4 @@ The following commands were removed in this version:
 * ***threatvault-signature-search-results***.
 
 ## Additional Considerations for this version
-Note: The Threat Vault API key is **not** the same as the Autotargeting API key. Make sure you have the required API key, as instructed on the integration configuration page.
+Note: The Threat Vault API key is **not** the same as the Auto Focus API key. Make sure you have the required API key, as instructed on the integration configuration page.
