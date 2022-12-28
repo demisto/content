@@ -49,7 +49,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
     related_issue = []
     print(f'{is_merged=}')
-    if not is_merged:
+    if is_merged == 'false':
         print("not merging")
         related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
         print(f'{related_issue=}')
@@ -80,7 +80,7 @@ def trigger_generic_webhook(options):
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
     if not issues_in_pr:
-        print(f"ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
+        print("ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
 
         sys.exit(1)
 
@@ -121,4 +121,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
