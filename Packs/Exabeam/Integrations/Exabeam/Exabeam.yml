@@ -92,7 +92,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
+description: The Exabeam Security Management Platform provides end-to-end detection, user event behavioral analytics, and Security orchestration, automation, and response (SOAR).
 display: Exabeam Dev
 name: Exabeam Dev
 script:
@@ -425,7 +425,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
+      description: The start time of the time range. For example, 2018-08-01T11:50:16 or "30 days ago".
       isArray: false
       name: start_time
       required: false
@@ -1570,7 +1570,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The ID of context table session. If not specified, a new session is created
+      description: The ID of the context table session. If not specified, a new session is created.
       isArray: false
       name: session_id
       required: false
@@ -1956,25 +1956,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The incident ID
+      description: The incident ID.
       isArray: True
       name: incident_id
       required: false
       secret: false
     - default: false
       description: |
-        The query string that will be used to filter incidents in exabeam
-        For exemple:
+        The query string that will be used to filter incidents in Exabeam
+        For example:
         - simple query: incidentType:generic,
-        - OR query: "status:new AND priority:high",
-        - AND query: "status:new OR status:closedFalsePositive".
+        - OR query: "status:new OR status:closedFalsePositive",
+        - AND query:  "status:new AND priority:high".
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Incident type to filter in exabeam
+      description: Comma-separated list of incident types to filter in Exabeam.
       isArray: true
       predefined:
         - "generic"
@@ -2006,7 +2006,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Incident priority to filter in exabeam
+      description: Comma-separated list of incident priorities to filter in Exabeam.
       isArray: true
       predefined:
         - "low"
@@ -2018,7 +2018,7 @@ script:
       secret: false
     - default: false
       auto: PREDEFINED
-      description: Incident status to filter in exabeam
+      description: Comma-separated list of incident statuses to filter in Exabeam.
       isArray: true
       predefined:
         - "closed"
@@ -2060,7 +2060,7 @@ script:
     name: exabeam-list-incident
     outputs:
     - contextPath: Exabeam.incidents.incidentId
-      description: The incident id.
+      description: The incident ID.
       type: String
     - contextPath: Exabeam.incidents.name
       description: The incident name.
@@ -2072,7 +2072,7 @@ script:
       description: The closing date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.createdAt
-      description: The creating date of the incident.
+      description: The creation date of the incident.
       type: String
     - contextPath: Exabeam.incidents.fields.owner
       description: The owner of the incident.
