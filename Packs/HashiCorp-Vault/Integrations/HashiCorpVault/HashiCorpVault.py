@@ -5,12 +5,7 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# TODO: remove comments
-# if not demisto.params().get('proxy', False):
-#     del os.environ['HTTP_PROXY']
-#     del os.environ['HTTPS_PROXY']
-#     del os.environ['http_proxy']
-#     del os.environ['https_proxy']
+handle_proxy()
 
 
 ''' GLOBAL VARIABLES '''
@@ -18,8 +13,8 @@ requests.packages.urllib3.disable_warnings()
 CREDENTIALS = demisto.params().get('credentials', {})
 USERNAME = None
 PASSWORD = None
-# We use this variable to make sure we generate a new token before the old one expires to avoid edge cases
-OVERLAP_TIME = 600
+# Used to make sure we generate a new token before the old one expires, in seconds, only relevant to AWS
+AWS_TOKEN_OVERLAP_TIME = 600
 if CREDENTIALS:
     USERNAME = CREDENTIALS.get('identifier')
     PASSWORD = CREDENTIALS.get('password')
@@ -580,7 +575,7 @@ def configure_engine_command():
 
 
 def reset_config_command():
-    demisto.setIntegrationContext({'configs': []})
+    set_integration_context({'configs': []})
 
     demisto.results('Successfully reset the engines configuration')
 
@@ -739,22 +734,23 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     secrets = []
     roles_list_url = engine_path + '/roles?list=true'
-    demisto.info('roles_list_url: {}'.format(roles_list_url))
-    res = send_request(roles_list_url, 'get')
+    demisto.debug('roles_list_url: {}'.format(roles_list_url))
+    params = {'list': 'true'}
+    res = send_request(roles_list_url, 'get', params=params)
     if not res or 'data' not in res:
         return []
     for role in res['data'].get('keys', []):
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         now = datetime.now()
         if f'{role}_ttl' in integration_context:
-            last = datetime.fromtimestamp(integ_context[f'{role}_ttl'])
+            last = datetime.fromtimestamp(integration_context[f'{role}_ttl'])
             diff = (now - last).seconds
-            if diff <= ttl - OVERLAP_TIME:
+            if diff <= ttl - AWS_TOKEN_OVERLAP_TIME:
                 continue
-        integ_context[f'{role}_ttl'] = now.timestamp()
-        demisto.setIntegrationContext(integ_context)
-        role_url = engine_path + '/roles/' + role
-        demisto.info('role_url: {}'.format(role_url))
+        integration_context[f'{role}_ttl'] = now.timestamp()
+        demisto.setIntegrationContext(integration_context)
+        role_url = urljoin(engine_path, urljoin('/roles/', role))
+        demisto.debug('role_url: {}'.format(role_url))
         role_data = send_request(role_url, 'get')
         credential_type = role_data['data'].get('credential_type')
 
@@ -764,8 +760,8 @@ def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
         else:
             method = 'GET'
             credential_type = 'creds'
-        generate_credentials_url = engine_path + '/' + credential_type + '/' + role
-        demisto.info('generate_credentials_url: {}'.format(generate_credentials_url))
+        generate_credentials_url = urljoin(engine_path + '/', urljoin(credential_type, '/' + role))
+        demisto.debug('generate_credentials_url: {}'.format(generate_credentials_url))
         body = {}
         if 'role_arns' in role_data['data']:
             body['role_arns'] = role_data['data'].get('role_arns', [])
@@ -806,11 +802,11 @@ if USERNAME and PASSWORD:
 elif not TOKEN:
     return_error('Either an authentication token or user credentials must be provided')
 
-integ_context = demisto.getIntegrationContext()
-if not integ_context or 'configs' not in integ_context:
-    integ_context['configs'] = []
+integration_context = get_integration_context()
+if not integration_context or 'configs' not in integration_context:
+    integration_context['configs'] = []
 
-ENGINE_CONFIGS = integ_context['configs']
+ENGINE_CONFIGS = integration_context['configs']
 
 try:
     if demisto.command() == 'test-module':
