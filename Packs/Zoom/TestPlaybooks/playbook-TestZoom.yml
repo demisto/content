@@ -1,5 +1,5 @@
 id: Zoom_Test
-version: 23
+version: 29
 vcShouldKeepItemLegacyProdMachine: false
 name: Zoom_Test_my_version
 description: |-
@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2ee2c17d-cff2-4a5c-8595-4e8469e2169d
+    taskid: 548f58d6-ed58-4f6a-8ce0-1e08b5a1d90f
     type: start
     task:
-      id: 2ee2c17d-cff2-4a5c-8595-4e8469e2169d
+      id: 548f58d6-ed58-4f6a-8ce0-1e08b5a1d90f
       version: -1
       name: ""
       iscommand: false
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5554c467-322f-4e41-85b7-9008adf72031
+    taskid: 99f926c6-71c7-4b03-8078-df36dcf89484
     type: regular
     task:
-      id: 5554c467-322f-4e41-85b7-9008adf72031
+      id: 99f926c6-71c7-4b03-8078-df36dcf89484
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 454c7917-9d6b-4fab-8cf7-6c33768ce234
+    taskid: 30c374dd-3584-4f19-824e-c5e844105dba
     type: regular
     task:
-      id: 454c7917-9d6b-4fab-8cf7-6c33768ce234
+      id: 30c374dd-3584-4f19-824e-c5e844105dba
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -104,17 +104,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: e9806fba-50ec-434c-83a5-69221b61024f
+    taskid: 7a55edfa-40d2-4cd1-8253-f4061f613744
     type: regular
     task:
-      id: e9806fba-50ec-434c-83a5-69221b61024f
+      id: 7a55edfa-40d2-4cd1-8253-f4061f613744
       version: -1
       name: zoom-create-user (default=Basic)
       description: Create a new user in zoom account
-      script: Zoom|||zoom-create-user
+      script: "|||zoom-create-user"
       type: regular
       iscommand: true
-      brand: Zoom
+      brand: ""
     nexttasks:
       "#none#":
         - "4"
@@ -143,10 +143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 95c82fc8-746f-449f-8c6f-fd0bef07b013
+    taskid: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
     type: regular
     task:
-      id: 95c82fc8-746f-449f-8c6f-fd0bef07b013
+      id: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
       version: -1
       name: zoom-delete-user
       description: Delete a user from Zoom
@@ -165,7 +165,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 40,
           "y": 720
         }
       }
@@ -178,10 +178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 98661220-51f7-43d0-8310-85b58c274933
+    taskid: a9f6fe1f-3232-412b-8d21-2a52c9714ea2
     type: condition
     task:
-      id: 98661220-51f7-43d0-8310-85b58c274933
+      id: a9f6fe1f-3232-412b-8d21-2a52c9714ea2
       version: -1
       name: Verify created user
       type: condition
@@ -244,10 +244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: a499c919-edca-4d5b-8663-f46a030e7a32
+    taskid: b47878cb-117a-4072-841b-eac8f8b911af
     type: regular
     task:
-      id: a499c919-edca-4d5b-8663-f46a030e7a32
+      id: b47878cb-117a-4072-841b-eac8f8b911af
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -278,10 +278,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8471afaf-d488-4cd7-87e5-afaf2151927f
+    taskid: 71b0dba9-bba2-4860-862e-06c732539739
     type: regular
     task:
-      id: 8471afaf-d488-4cd7-87e5-afaf2151927f
+      id: 71b0dba9-bba2-4860-862e-06c732539739
       version: -1
       name: Generate Email
       scriptName: GenerateEmail
@@ -309,10 +309,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ce3bb481-54b5-408f-816b-02e89e734a0e
+    taskid: c85e67d9-7474-4606-8d2d-4306e5ddbd8c
     type: regular
     task:
-      id: ce3bb481-54b5-408f-816b-02e89e734a0e
+      id: c85e67d9-7474-4606-8d2d-4306e5ddbd8c
       version: -1
       name: Delete All Context
       scriptName: DeleteContext
@@ -343,17 +343,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ddf315ef-77ad-45b3-8d40-94e45116f836
+    taskid: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
     type: regular
     task:
-      id: ddf315ef-77ad-45b3-8d40-94e45116f836
+      id: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
       version: -1
       name: zoom-list-users
       description: List the existing users
-      script: Zoom|||zoom-list-users
+      script: "|||zoom-list-users"
       type: regular
       iscommand: true
-      brand: Zoom
+      brand: ""
     nexttasks:
       "#none#":
         - "17"
@@ -375,10 +375,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4df9c7e8-9b45-4043-8647-031e9cdae3bb
+    taskid: 02f6459b-f350-40b2-8271-397046493f56
     type: condition
     task:
-      id: 4df9c7e8-9b45-4043-8647-031e9cdae3bb
+      id: 02f6459b-f350-40b2-8271-397046493f56
       version: -1
       name: Verify admin is in user list
       type: condition
@@ -416,17 +416,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: a937809f-e7d8-4585-8b70-ac8daa04ab95
+    taskid: a471785f-8c8a-45fc-8b8e-0445b15e6838
     type: regular
     task:
-      id: a937809f-e7d8-4585-8b70-ac8daa04ab95
+      id: a471785f-8c8a-45fc-8b8e-0445b15e6838
       version: -1
       name: zoom-create-meeting
       description: Create a new zoom meeting (scheduled or instant)
-      script: Zoom|||zoom-create-meeting
+      script: "|||zoom-create-meeting"
       type: regular
       iscommand: true
-      brand: Zoom
+      brand: ""
     nexttasks:
       "#none#":
         - "19"
@@ -453,10 +453,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: d18c5afb-9b97-425e-8594-ec44e62f8702
+    taskid: ae1e769a-98cd-41fe-8465-3695e22bdf6d
     type: regular
     task:
-      id: d18c5afb-9b97-425e-8594-ec44e62f8702
+      id: ae1e769a-98cd-41fe-8465-3695e22bdf6d
       version: -1
       name: Verify meeting was created
       scriptName: VerifyContext
@@ -489,10 +489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 759a57ac-3a64-415c-8d3f-64a9278f5f50
+    taskid: c17e3c01-10fe-4d6d-8783-0cd0860495e5
     type: regular
     task:
-      id: 759a57ac-3a64-415c-8d3f-64a9278f5f50
+      id: c17e3c01-10fe-4d6d-8783-0cd0860495e5
       version: -1
       name: Print test result
       scriptName: Print
@@ -520,17 +520,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 884a4db0-6557-408f-8e93-3d1e8ecff166
+    taskid: b930bad1-404c-464d-89ca-94d0c7418a3b
     type: regular
     task:
-      id: 884a4db0-6557-408f-8e93-3d1e8ecff166
+      id: b930bad1-404c-464d-89ca-94d0c7418a3b
       version: -1
       name: zoom-fetch-recording
       description: Get meeting record and save as file in the warroom
-      script: Zoom|||zoom-fetch-recording
+      script: "|||zoom-fetch-recording"
       type: regular
       iscommand: true
-      brand: Zoom
+      brand: ""
     scriptarguments:
       meeting_id:
         simple: "120332943"
@@ -553,17 +553,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 7e7befa5-99d7-4233-8729-c715ed529038
+    taskid: 5a61e1db-c9ed-42fb-8ec2-8768f0d06ff9
     type: regular
     task:
-      id: 7e7befa5-99d7-4233-8729-c715ed529038
+      id: 5a61e1db-c9ed-42fb-8ec2-8768f0d06ff9
       version: -1
       name: zoom-create-meeting#2
       description: Create a new zoom meeting (scheduled or instant)
-      script: Zoom|||zoom-create-meeting
+      script: "|||zoom-create-meeting"
       type: regular
       iscommand: true
-      brand: Zoom
+      brand: ""
     nexttasks:
       "#none#":
         - "27"
@@ -590,10 +590,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: be51930e-c636-4a64-8c2e-ca04fdfbecfe
+    taskid: 8dfcb746-81b6-451f-8ec6-5b53ef2713d8
     type: regular
     task:
-      id: be51930e-c636-4a64-8c2e-ca04fdfbecfe
+      id: 8dfcb746-81b6-451f-8ec6-5b53ef2713d8
       version: -1
       name: zoom-meeting-get
       description: Get the information of an existing zoom meeting
@@ -625,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 981ea1e8-4049-4811-8180-a45c1ba56909
+    taskid: c4390472-5ca8-4068-80c7-7dbeacc693cf
     type: regular
     task:
-      id: 981ea1e8-4049-4811-8180-a45c1ba56909
+      id: c4390472-5ca8-4068-80c7-7dbeacc693cf
       version: -1
       name: Verify meeting was reached
       scriptName: VerifyContext
@@ -642,7 +642,7 @@ tasks:
       fields:
         simple: id
       path:
-        simple: Zoom.Meetings
+        simple: Zoom.Meeting
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -661,15 +661,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: c019cf67-4224-4eaf-801f-cf33394c7bfb
+    taskid: ee6dc2ac-ec7f-42ec-8442-5415357b9923
     type: regular
     task:
-      id: c019cf67-4224-4eaf-801f-cf33394c7bfb
+      id: ee6dc2ac-ec7f-42ec-8442-5415357b9923
       version: -1
       name: zoom-meeting-list
-      description:
-        "This command will show all the user meetings. Note: only scheduled
-        and unexpired meetings will appear."
+      description: |
+        Show all the meetings of a given user. Note: only scheduled and unexpired meetings will appear.
       script: "|||zoom-meeting-list"
       type: regular
       iscommand: true
@@ -698,10 +697,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: d9dd6d15-b423-4801-898c-dc2454959e47
+    taskid: 2ac9cad4-c803-4cd4-8e09-8988265108aa
     type: condition
     task:
-      id: d9dd6d15-b423-4801-898c-dc2454959e47
+      id: 2ac9cad4-c803-4cd4-8e09-8988265108aa
       version: -1
       name: validate that the list contains at least 2 meetings
       type: condition
@@ -712,6 +711,8 @@ tasks:
         - "20"
         - "20"
         - "20"
+        - "20"
+        - "20"
     separatecontext: false
     conditions:
       - label: "yes"
@@ -719,7 +720,7 @@ tasks:
           - - operator: greaterThanOrEqual
               left:
                 value:
-                  simple: Zoom.Meetings.total_records
+                  simple: Zoom.Meeting.total_records
                 iscontext: true
               right:
                 value:
@@ -741,10 +742,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: c74d4c21-e605-4711-8007-850c127adfb5
+    taskid: 0ba833d7-8a63-49f1-87b6-fc979e994ee8
     type: regular
     task:
-      id: c74d4c21-e605-4711-8007-850c127adfb5
+      id: 0ba833d7-8a63-49f1-87b6-fc979e994ee8
       version: -1
       name: Sleep(2sec)
       description: Sleep for X seconds
@@ -780,8 +781,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3215,
-        "width": 1020,
-        "x": 50,
+        "width": 1030,
+        "x": 40,
         "y": 50
       }
     }
