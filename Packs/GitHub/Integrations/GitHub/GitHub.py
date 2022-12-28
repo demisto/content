@@ -1982,42 +1982,40 @@ def fetch_incidents_command():
 
 
 def github_add_assignee_command():
-    assigned_users = ""
-    not_assigned_users = ""
+    """
+    Assigns Github user to a PR
+
+        Args:
+            assignee (str): Github username.
+            pull_request_number (str): the pull request/issue number.
+
+        Returns:
+            CommandResults object with informative printout if adding user was successfull or not
+    """
+    assigned_users = []
+    not_assigned_users = []
     args = demisto.args()
     assignee = args.get('assignee')
-    pr_number = args.get('PR')
+    pr_number = args.get('pull_request_number')
     assignee_list = argToList(assignee)
     suffix = f'{USER_SUFFIX}/issues/{pr_number}/assignees'
     post_data = {"assignees": assignee_list}
     response = http_request('POST', url_suffix=suffix, data=post_data)
+    assignees_response = response.get("assignees")
+    assigned_users_from_pr = [user.get("login") for user in assignees_response]
     for user in assignee_list:
-        user_to_look = f'\'login\': \'{user}\''
-        if user_to_look in str(response):
-            if assigned_users == "":
-                assigned_users = user
-            else:
-                assigned_users = assigned_users + ", " + user
+        if user in assigned_users_from_pr:
+            assigned_users.append(user)
         else:
-            if not_assigned_users == "":
-                not_assigned_users = user
-            else:
-                not_assigned_users = not_assigned_users + ", " + user
-    readable_success = f'The following users: {assigned_users} were assigned successfully to PR #{pr_number}'
-    readable_failure = f'The following users: {not_assigned_users} were not assigned to PR #{pr_number}. Please check that ' \
-                       f'user exists and you have the correct permissions'
-    readable_partial = f'The following users: {assigned_users} were assigned successfully to PR #{pr_number}, the following ' \
-                       f'users: {not_assigned_users} were not assigned. Please check user exists and you have the' \
-                       f'correct permissions'
-    if not_assigned_users == "":
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
-                                      raw_response=response, readable_output=readable_success))
-    elif assigned_users == "":
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs=response, outputs_key_field='login',
-                                      raw_response=response, readable_output=readable_failure))
-    else:
-        return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
-                                      raw_response=response, readable_output=readable_partial))
+            not_assigned_users.append(user)
+    message = ''
+    if assigned_users:
+        message = f'The following users were assigned successfully to PR #{pr_number}: \n{assigned_users}'
+    if not_assigned_users:
+        message += f'\nThe following users were not assigned to #{pr_number}: \n{not_assigned_users} \n' \
+                   f'Verify that the users exist and that you have the right permissions.'
+    return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=response,
+                                  raw_response=response, readable_output=message))
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

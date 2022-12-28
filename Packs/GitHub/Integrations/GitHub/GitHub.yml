@@ -4148,12 +4148,12 @@ script:
     - default: false
       description: The number of PR/Issue to assign users to
       isArray: false
-      name: PR
+      name: pull_request_number
       required: true
       secret: false
     - default: false
       description: Users to assign, can be a list of users
-      isArray: false
+      isArray: true
       name: assignee
       required: true
       secret: false

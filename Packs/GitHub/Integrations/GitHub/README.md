@@ -2860,7 +2860,7 @@ Adds up to 10 assignees to an issue. Users already assigned to an issue are not 
 #### Input
 
 | **Argument Name** | **Description**                                          | **Required** |
-|-------------------|----------------------------------------------------------|--------------|
+|---|---|---|
 | assignee          | Users to assign, can be a list of users | Required     | 
 | PR                |The number of PR/Issue to assign users to | Required     | 
 
