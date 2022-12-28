@@ -26,7 +26,7 @@ def arguments_handler():
     parser.add_argument('-n', '--pr_num', help='The PR number.')
     parser.add_argument('-t', '--pr_title', help='The PR Title.')
     parser.add_argument('-b', '--pr_body', help='The content of the PR description.')
-    parser.add_argument('-m', '--is_merged', help='Boolean. Whether the PR was merged or not.')
+    parser.add_argument('-m', '--is_merged', help='Boolean. Whether the PR was merged or not.', type=bool)
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
     parser.add_argument('-url', '--url', help='The instance url.')
@@ -48,7 +48,7 @@ def find_fixed_issue_in_body(body_text, is_merged):
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
     fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
     related_issue = []
-    if not is_merged or is_merged == 'false':
+    if not is_merged:
         print("Not merging, getting related issues.")
         related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
 
