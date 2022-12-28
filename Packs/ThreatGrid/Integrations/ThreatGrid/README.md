@@ -53,6 +53,12 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 | ThreatGrid.Sample.submitted_at | String | The sample submission time | 
 | ThreatGrid.Sample.started_at | String | The sample analysis starting time | 
 | ThreatGrid.Sample.completed_at | String | The sample completion time | 
+| InfoFile.Name | The file name |
+| InfoFile.EntryID | The ID for locating the file in the War Room |
+| InfoFile.Size | The size of the file (in bytes) |
+| InfoFile.Type | The file type, as determined by libmagic (same as displayed in file entries) |
+| InfoFile.Extension | The file extension |
+| InfoFile.Info | Basic information about the file |
 
 #### Command example
 ```!threat-grid-sample-list```
