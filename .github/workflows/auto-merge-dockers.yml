@@ -3,7 +3,7 @@ on:
   pull_request:
   schedule:
     - cron: '50 18 * * *'
-    - cron: '52 18 * * *'
+    - cron: '57 18 * * *'
 
 permissions:
   pull-requests: write
@@ -22,7 +22,7 @@ jobs:
       - name: Check if build passed
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
-          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Checks CI Status"
           gh pr checks --required "$PR_URL"
