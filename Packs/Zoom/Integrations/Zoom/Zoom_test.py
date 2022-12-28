@@ -827,3 +827,45 @@ def test_test_moudle__reciving_errors(mocker):
 
     from Zoom import test_module
     assert test_module(client=client) == 'Problem reaching Zoom API, check your credentials. Error message: mockerror'
+
+def test_manual_list_user_pagination__next_page_token_None(mocker):
+    """
+        Given -
+           client
+        When -
+            limit > 0 and next_page_token == None
+        Then -
+            # Validate that the pagination process will start
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
+                     'total_records': 2, 'next_page_token': None, 'users': [{'id': '1234', 'first_name': 'as', 'last_name': 'bla', 'email': 'example@example.com', 'type': 1, 'pmi': 1234, 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': ''}]}
+    zoom_list_users_mocker = mocker.patch.object(Client, "zoom_list_users", return_value=returned_dict)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    limit = 5
+    from Zoom import manual_list_user_pagination
+    manual_list_user_pagination(client=client, next_page_token= None, page_size=1, limit=limit,
+                                status="None", role_id="None")
+    assert zoom_list_users_mocker.called
+    
+def test_manual_meeting_list_pagination__next_page_token_None(mocker):
+    """
+        Given -
+           client
+        When -
+            limit > 0 and next_page_token == None
+        Then -
+            # Validate that the pagination process will start
+    """
+    mocker.patch.object(Client, "generate_oauth_token")
+    returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
+                     'total_records': 2, 'next_page_token': None, 'users': [{'id': '1234', 'first_name': 'as', 'last_name': 'bla', 'email': 'example@example.com', 'type': 1, 'pmi': 1234, 'timezone': 'Asia/Jerusalem', 'verified': 1, 'dept': ''}]}
+    zoom_meeting_list_mocker = mocker.patch.object(Client, "zoom_meeting_list", return_value=returned_dict)
+    client = Client(base_url='https://test.com', account_id="mockaccount",
+                    client_id="mockclient", client_secret="mocksecret")
+    limit = 5
+    from Zoom import manual_meeting_list_pagination
+    manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
+                                   page_size=1, limit=limit, type="all")
+    assert zoom_meeting_list_mocker.called
