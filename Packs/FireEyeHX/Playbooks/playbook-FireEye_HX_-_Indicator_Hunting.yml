@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 3dfeaf54-1e32-4b7c-857a-c752bb69c721
+    taskid: c2b4501c-1aa8-4ebd-882e-277c32e67ed4
     type: regular
     task:
-      id: 3dfeaf54-1e32-4b7c-857a-c752bb69c721
+      id: c2b4501c-1aa8-4ebd-882e-277c32e67ed4
       version: -1
       name: Save matching results - users
       description: |-
@@ -133,18 +133,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -1682,10 +1670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: eb2ea322-cec9-44fa-8418-0cd502ef04d5
+    taskid: 3766f572-712b-47d8-8c41-e14da14e3bca
     type: regular
     task:
-      id: eb2ea322-cec9-44fa-8418-0cd502ef04d5
+      id: 3766f572-712b-47d8-8c41-e14da14e3bca
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -1717,18 +1705,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -1785,10 +1761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: 361d6ebd-2e3c-4899-805d-bdefe0fc4157
+    taskid: b6ce6823-a50b-4ff2-89ba-1d1ac001bbff
     type: regular
     task:
-      id: 361d6ebd-2e3c-4899-805d-bdefe0fc4157
+      id: b6ce6823-a50b-4ff2-89ba-1d1ac001bbff
       version: -1
       name: Save matching results - users
       description: |-
@@ -1813,25 +1789,17 @@ tasks:
         complex:
           root: FireEyeHX.Search.results
           filters:
-          - - operator: isNotEmpty
+          - - operator: inList
               left:
                 value:
-                  simple: FireEyeHX.Search.results.type
+                  simple: FireEyeHX.Search.results.IP Address
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressParsed
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -1851,10 +1819,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: 2dc84def-9099-4d6e-8fa5-e3751aa101a9
+    taskid: c6d300c1-6f31-401d-83fd-856d5bbbf6de
     type: regular
     task:
-      id: 2dc84def-9099-4d6e-8fa5-e3751aa101a9
+      id: c6d300c1-6f31-401d-83fd-856d5bbbf6de
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -1879,25 +1847,17 @@ tasks:
         complex:
           root: FireEyeHX.Search.results
           filters:
-          - - operator: isNotEmpty
+          - - operator: inList
               left:
                 value:
-                  simple: FireEyeHX.Search.results.type
+                  simple: FireEyeHX.Search.results.IP Address
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressParsed
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -1954,10 +1914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: 83851603-281f-44b4-87fd-d0c1ea7bb05b
+    taskid: 8b17b8e0-33c2-44b1-8131-7ec536fc069d
     type: regular
     task:
-      id: 83851603-281f-44b4-87fd-d0c1ea7bb05b
+      id: 8b17b8e0-33c2-44b1-8131-7ec536fc069d
       version: -1
       name: Save matching results - users
       description: |-
@@ -1993,18 +1953,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2024,10 +1972,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "138":
     id: "138"
-    taskid: b8c20525-3e80-4192-8f31-c090ca99abce
+    taskid: be29f417-0728-4e78-83c9-e1a9ea0ac0c5
     type: regular
     task:
-      id: b8c20525-3e80-4192-8f31-c090ca99abce
+      id: be29f417-0728-4e78-83c9-e1a9ea0ac0c5
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2063,18 +2011,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -2131,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "140":
     id: "140"
-    taskid: 569580f9-82a2-4de5-8b82-13003a0390cd
+    taskid: c4af0965-7726-43ea-8257-db2b61d1711b
     type: regular
     task:
-      id: 569580f9-82a2-4de5-8b82-13003a0390cd
+      id: c4af0965-7726-43ea-8257-db2b61d1711b
       version: -1
       name: Save matching results - users
       description: |-
@@ -2170,18 +2106,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2201,10 +2125,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: 9464c51f-886b-407a-8203-6b6d7e16b674
+    taskid: 517cd8b4-e111-4b18-80ac-b91a268bca61
     type: regular
     task:
-      id: 9464c51f-886b-407a-8203-6b6d7e16b674
+      id: 517cd8b4-e111-4b18-80ac-b91a268bca61
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2240,18 +2164,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -2308,10 +2220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: 39702082-21ae-4f69-8191-2f0e4bd81107
+    taskid: e86ad105-7c2a-4fc0-8d94-001540cc9bc5
     type: regular
     task:
-      id: 39702082-21ae-4f69-8191-2f0e4bd81107
+      id: e86ad105-7c2a-4fc0-8d94-001540cc9bc5
       version: -1
       name: Save matching results - users
       description: |-
@@ -2343,18 +2255,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2374,10 +2274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "144":
     id: "144"
-    taskid: 1c549527-34e8-406f-8e88-f3fa0275503e
+    taskid: 4bf99ba1-1f0a-4580-8201-6c2a1ded2f31
     type: regular
     task:
-      id: 1c549527-34e8-406f-8e88-f3fa0275503e
+      id: 4bf99ba1-1f0a-4580-8201-6c2a1ded2f31
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2413,19 +2313,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
                   simple: FireEyeHX.Search.results.IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -2477,10 +2365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "146":
     id: "146"
-    taskid: 5731b720-ddda-49c4-8a75-17f3f1079e70
+    taskid: 2183beb9-440c-4864-8163-1bea491d0c98
     type: regular
     task:
-      id: 5731b720-ddda-49c4-8a75-17f3f1079e70
+      id: 2183beb9-440c-4864-8163-1bea491d0c98
       version: -1
       name: Save matching results - users
       description: |-
@@ -2516,18 +2404,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2547,10 +2423,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "147":
     id: "147"
-    taskid: af77ce5a-6da8-4bf2-8a55-7c340096a40c
+    taskid: 12b88e23-1267-448c-8808-cdbbcfae2fe5
     type: regular
     task:
-      id: af77ce5a-6da8-4bf2-8a55-7c340096a40c
+      id: 12b88e23-1267-448c-8808-cdbbcfae2fe5
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2586,18 +2462,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -2623,10 +2487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "148":
     id: "148"
-    taskid: 999c88c8-7e6e-4515-8d37-0c3f7dcdfd03
+    taskid: d8371d0a-f493-4be5-83c6-1b2f61f19c12
     type: regular
     task:
-      id: 999c88c8-7e6e-4515-8d37-0c3f7dcdfd03
+      id: d8371d0a-f493-4be5-83c6-1b2f61f19c12
       version: -1
       name: Save matching results - users
       description: |-
@@ -2662,18 +2526,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2693,10 +2545,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "149":
     id: "149"
-    taskid: a242b519-65f2-4359-8f23-159628f677d6
+    taskid: 118b839b-3f9c-4767-83db-129952f6afaa
     type: regular
     task:
-      id: a242b519-65f2-4359-8f23-159628f677d6
+      id: 118b839b-3f9c-4767-83db-129952f6afaa
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2732,18 +2584,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -2769,10 +2609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "150":
     id: "150"
-    taskid: a03f33d4-bd52-49b0-8082-1cedfaa7b837
+    taskid: 82aff6a9-315c-42d5-8478-143d98604db4
     type: regular
     task:
-      id: a03f33d4-bd52-49b0-8082-1cedfaa7b837
+      id: 82aff6a9-315c-42d5-8478-143d98604db4
       version: -1
       name: Save matching results - users
       description: |-
@@ -2808,18 +2648,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -2839,10 +2667,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "151":
     id: "151"
-    taskid: 6a3190e5-e531-44e0-8fda-4a0fdf8f0fd2
+    taskid: ff8c142f-b5f5-47e1-85a5-079b4bf392c0
     type: regular
     task:
-      id: 6a3190e5-e531-44e0-8fda-4a0fdf8f0fd2
+      id: ff8c142f-b5f5-47e1-85a5-079b4bf392c0
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -2878,18 +2706,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -2946,10 +2762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "153":
     id: "153"
-    taskid: 201a5431-4eba-4715-82ce-be93acef72d9
+    taskid: e6a7798d-f783-4c02-88b8-c952c3962401
     type: regular
     task:
-      id: 201a5431-4eba-4715-82ce-be93acef72d9
+      id: e6a7798d-f783-4c02-88b8-c952c3962401
       version: -1
       name: Save matching results - users
       description: |-
@@ -2981,18 +2797,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -3012,10 +2816,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: 8eddd14b-7545-462e-8a2b-99bb1c0f143b
+    taskid: a26c325a-d73f-48d3-84ad-7181fe628056
     type: regular
     task:
-      id: 8eddd14b-7545-462e-8a2b-99bb1c0f143b
+      id: a26c325a-d73f-48d3-84ad-7181fe628056
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -3047,18 +2851,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -3146,10 +2938,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: 00f6a1f5-17ba-4fa1-8630-a95863e0a5d0
+    taskid: d78fd262-116f-46d9-887a-217c92d0fc70
     type: regular
     task:
-      id: 00f6a1f5-17ba-4fa1-8630-a95863e0a5d0
+      id: d78fd262-116f-46d9-887a-217c92d0fc70
       version: -1
       name: Save matching results - users
       description: |-
@@ -3181,18 +2973,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -3212,10 +2992,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "158":
     id: "158"
-    taskid: 1d799e2f-9061-4d60-849e-9b69234c867e
+    taskid: c6431203-c119-481b-8e53-f398483deda8
     type: regular
     task:
-      id: 1d799e2f-9061-4d60-849e-9b69234c867e
+      id: c6431203-c119-481b-8e53-f398483deda8
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -3247,18 +3027,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -3468,10 +3236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 61e286d9-296d-4539-89cb-36a50f5033a3
+    taskid: 4738e4e1-0576-49f8-8d7f-7f6bd4a8245b
     type: regular
     task:
-      id: 61e286d9-296d-4539-89cb-36a50f5033a3
+      id: 4738e4e1-0576-49f8-8d7f-7f6bd4a8245b
       version: -1
       name: Save matching results - users
       description: |-
@@ -3507,18 +3275,6 @@ tasks:
                 iscontext: true
           accessor: Username
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Username
-                iscontext: true
           - operator: uniq
     separatecontext: false
     continueonerrortype: ""
@@ -3538,10 +3294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 8ba7d103-7a97-40d7-8a34-fa28a182beaf
+    taskid: 9b9db2cf-0c8b-4182-8903-3ff5d8944a70
     type: regular
     task:
-      id: 8ba7d103-7a97-40d7-8a34-fa28a182beaf
+      id: 9b9db2cf-0c8b-4182-8903-3ff5d8944a70
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -3577,18 +3333,6 @@ tasks:
                 iscontext: true
           accessor: Local IP Address
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: FireEyeHX.Search.results.Local IP Address
-                iscontext: true
           - operator: append
             args:
               item:
@@ -3824,6 +3568,8 @@ inputs:
   required: true
   description: |-
     The name of host set to be searched.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
 - key: interval_in_seconds
   value: {}
