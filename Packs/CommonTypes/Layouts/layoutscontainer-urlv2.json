@@ -572,8 +572,7 @@
             }
         ]
     },
-    "fromVersion": "6.0.0",
-    "toVersion": "6.4.9",
+    "fromVersion": "6.5.0",
     "version": -1,
     "system": false,
     "description": ""
