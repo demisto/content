@@ -28,7 +28,6 @@ if [ "$?" != "0" ]; then
 fi
 cp -r ./content-test-conf/awsinstancetool ./Tests/scripts/awsinstancetool
 cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
-cp -r ./content-test-conf/conf.json $SECRET_CONF_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
 rm -rf ./content-test-conf
