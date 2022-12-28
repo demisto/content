@@ -2679,6 +2679,10 @@ Update the Waas Policy for containers
 #### Context Output
 
 There is no context output for this command.
+
+### Human Readable Output
+> Successfully updated the WaaS policy
+
 ### prisma-cloud-compute-get-audit-firewall-container-alerts
 ***
 Get the audits for the firewall container policies
