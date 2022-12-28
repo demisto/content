@@ -27,7 +27,7 @@ configuration:
   required: false
   type: 8
   additionalinfo: Used for troubleshooting purposes.
-description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API version.
+description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
 display: OpenCTI
 name: OpenCTI
 script:
