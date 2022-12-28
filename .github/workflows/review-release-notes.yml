@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'poetry'
-      - run: poetry install demisto-sdk
+      - run: poetry install --only dev
       - name: Review Release Notes
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
