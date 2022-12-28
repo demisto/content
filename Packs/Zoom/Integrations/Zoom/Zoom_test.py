@@ -414,7 +414,7 @@ def test_zoom_create_meeting__too_meny_arguments(mocker):
        Given -
           client
        When -
-           asking for a meeting with jbh_time ant not join_before_host
+           asking for a meeting with join_before_host_time ant not join_before_host
        Then -
            Validate that the right error will return
     """
@@ -429,8 +429,8 @@ def test_zoom_create_meeting__too_meny_arguments(mocker):
                                     user_id="mock@moker.com",
                                     topic="nonsense",
                                     type="scheduled",
-                                    jbh_time=5, join_before_host=False)
-    assert e.value.message == "Collision arguments. jbh_time argument can be used only if join_before_host is 'True'."
+                                    join_before_host_time=5, join_before_host=False)
+    assert e.value.message ==  "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
 
 
 def test_zoom_create_meeting_command__too_meny_arguments(mocker):

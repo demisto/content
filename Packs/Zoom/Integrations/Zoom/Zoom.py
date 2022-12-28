@@ -15,7 +15,7 @@ TOKEN_LIFE_TIME = timedelta(minutes=58)
 # 400 seconds were subtract for extra safety.
 JWT_LIFETIME = 5000
 # maximun records that the api can return in one request
-MAX_RECORDS_PER_PAGE = 3
+MAX_RECORDS_PER_PAGE = 300
 
 # Note#1: type "Pro" is the old version, and "Licensed" is the new one, and i want to support both.
 # Note#2: type "Corporate" is officially not supported any more, but i did not remove it just in case it still works.
