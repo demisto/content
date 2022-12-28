@@ -835,6 +835,36 @@ def update_alert_entries(alert_det: Dict) -> Dict:
     return alert_det
 
 
+def get_addresses_from_response(response: Dict) -> List:
+    """ Updates the entries to an alert object (the entries that we gwt here are different from get_alerts).
+        Args:
+            response: Dict - The response from the API.
+        Returns:
+            The list of addresses.
+    """
+    rule_type = response.get('ruleobjType', '')
+    if 'HOST_IPV_4' in rule_type:
+        return response.get('HostIPv4', {}).get('hostIPv4AddressList', [])
+    elif 'IPV_4_ADDRESS_RANGE' in rule_type:
+        addresses_list = response.get('IPv4AddressRange', {}).get('IPV4RangeList', [Dict])
+        result_list = []
+        for address in addresses_list:
+            result_list.append(f'{address.get("FromAddress")} - {address.get("ToAddress")}')
+        return result_list
+    elif 'NETWORK_IPV_4' in rule_type:
+        return response.get('Network_IPV_4', {}).get('networkIPV4List', [])
+    elif 'HOST_IPV_6' in rule_type:
+        return response.get('HostIPv6', {}).get('hostIPv6AddressList', [])
+    elif 'IPV_6_ADDRESS_RANGE' in rule_type:
+        addresses_list = response.get('IPv6AddressRange', {}).get('IPV6RangeList', [Dict])
+        result_list = []
+        for address in addresses_list:
+            result_list.append(f'{address.get("FromAddress")} - {address.get("ToAddress")}')
+        return result_list
+    else:  # NETWORK_IPV_6
+        return response.get('Network_IPV_6', {}).get('networkIPV6List', [])
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -912,7 +942,17 @@ def get_firewall_policy_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with the Firewall Policy details.
     """
     policy_id = args.get('policy_id', '')
+    include_rule_objects = argToBoolean(args.get('include_rule_objects', False))
     response = client.get_firewall_policy_request(policy_id)
+    if not include_rule_objects:
+        member_rule_list = response.get('MemberDetails', {}).get('MemberRuleList', [Dict])
+        for member in member_rule_list:
+            del member['SourceAddressObjectList']
+            del member['DestinationAddressObjectList']
+            del member['SourceUserObjectList']
+            del member['ServiceObjectList']
+            del member['ApplicationObjectList']
+            del member['TimeObjectList']
     human_readable = {'FirewallPolicyId': response.get('FirewallPolicyId'),
                       'Name': response.get('Name'),
                       'Description': response.get('Description'),
@@ -1130,15 +1170,17 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_id = arg_to_number(args.get('rule_id'))
     response = client.get_rule_object_request(rule_id)
     response = response.get('RuleObjDef', {})
+    addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
     human_readable = {
         'RuleId': response.get('ruleobjId'),
         'Name': response.get('name'),
         'Description': response.get('description'),
         'VisibleToChild': response.get('visibleToChild'),
-        'RuleType': response.get('ruleobjType')
+        'RuleType': response.get('ruleobjType'),
+        'Addresses': addresses
     }
-    headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType']
+    headers = ['RuleId', 'Name', 'Description', 'VisibleToChild', 'RuleType', 'Addresses']
     readable_output = tableToMarkdown(name=f'Rule Objects {rule_id}',
                                       t=human_readable,
                                       removeNull=True,

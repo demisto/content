@@ -106,9 +106,10 @@ Gets the Firewall Policy details.
 `nsm-get-firewall-policy`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| policy_id | The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command. | Required | 
+| **Argument Name** | **Description**                                                                                | **Required** |
+| --- |------------------------------------------------------------------------------------------------|--------------|
+| policy_id | The id of the policy. To get the policy_id, use the !nsm-list-domain-firewall-policy command.  | Required     | 
+| include_rule_objects | Whether to insert the rule object that are linked to the policy in the context. True- the rule object will bw inserted. False- not inserted. The default value is false. Possible values are: true, false. | Optional | 
 
 
 #### Context Output
@@ -271,7 +272,7 @@ There is no context output for this command.
 
 ### nsm-update-firewall-policy
 ***
-Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true than at least one of the rules (source or destination) must be provided.
+Updates the Firewall Policy details. If the argument is_overwrite=true, then the new values of the provided addresses will replace the existing values else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true then at least one of the rules (source or destination) must be provided.
 
 
 #### Base Command
@@ -563,9 +564,9 @@ Gets the details of a Rule Object.
 #### Human Readable Output
 
 >### List of Rule Objects
->|RuleId|Name|Description|VisibleToChild|RuleType|
---------|---------|---|---|---|---|
->| 133 | ruleo | None | true | IPV_4_ADDRESS_RANGE |
+>|RuleId|Name|Description|VisibleToChild|RuleType|Addresses|
+>|---|---|---|---|---|---|
+>| 133 | ruleo | None | true | IPV_4_ADDRESS_RANGE | 1.1.1.1 - 2.2.2.2 |
 
 ### nsm-create-rule-object
 ***
