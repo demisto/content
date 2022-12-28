@@ -28,27 +28,28 @@ display: 'KnowBe4KMSAT'
 name: KnowBe4KMSAT
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+  - arguments: []
+    description: 'Returns KMSAT account information'
     execution: false
     name: get-account-info
     outputs:
     - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: 'KMSAT Account Details'
+      type: String
+  - arguments: []
+    description: 'Returns KMSAT Account Risk Score History.'
+    execution: false
+    name: get-account-risk-score-history
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: 'List of Account risk_scores and associated date'
       type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.40422
-fromversion: 5.5.0
+  dockerimage: demisto/python3:3.10.9.42008
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

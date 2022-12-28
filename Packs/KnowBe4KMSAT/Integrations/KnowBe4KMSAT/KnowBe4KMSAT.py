@@ -45,7 +45,10 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def kmsat_account_info(self):
-        return self._http_request(method='GET', url_suffix='/account', resp_type='json',  ok_codes=(200,))
+        return self._http_request(method='GET', url_suffix='/account', resp_type='json', ok_codes=(200,))
+    
+    def kmsat_account_risk_score_history(self):
+        return self._http_request(method='GET', url_suffix='/account/risk_score_history', resp_type='json',  ok_codes=(200,))
 
 
 ''' HELPER FUNCTIONS '''
@@ -55,14 +58,24 @@ class Client(BaseClient):
 
 def get_account_info(client: Client) -> CommandResults:
     response = client.kmsat_account_info()
-    account_info = demisto.get(response)
-    print(account_info)
-    if account_info is None:
-        raise DemistoException('Translation failed: the response from server did not include `account_info`.',res=account_info)
+    return_results(response)
+    if response is None:
+        raise DemistoException('Translation failed: the response from server did not include `account_info`.', res=response)
     return CommandResults(outputs_prefix='KMSAT_Account_Info_Returned',
-                          outputs_key_field='Account_Info',
-                          raw_response=response, 
-                          readable_output=tableToMarkdown(name='Account_Info', t=outputs))
+                          outputs_key_field='',
+                          raw_response=response,
+                          readable_output=tableToMarkdown(name='Account_Info', t=response))
+
+
+def get_account_risk_score_history(client: Client) -> CommandResults:
+    response = client.kmsat_account_risk_score_history()
+    return_results(response)
+    if response is None:
+        raise DemistoException('Translation failed: the response from server did not include `risk_score`.', res=response)
+    return CommandResults(outputs_prefix='KMSAT_Account_Risk_Score_History_Returned',
+                          outputs_key_field='',
+                          raw_response=response,
+                          readable_output=tableToMarkdown(name='Account_Risk_Score_History', t=response))
 
 
 def test_module(client: Client) -> str:
@@ -81,13 +94,11 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        client.kmsat_account_info()
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
+            message = 'Authorization Error: make sure API Key is correctly set' + str(client._headers)
         else:
             raise e
     return message
@@ -146,6 +157,8 @@ def main() -> None:
             return_results(result)
         elif command == 'get-account-info':
             return_results(get_account_info(client, **args))
+        elif command == 'get-account-risk-score-history':
+            return_results(get_account_risk_score_history(client, **args))            
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
