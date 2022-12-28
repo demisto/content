@@ -119,5 +119,5 @@ if __name__ == "__main__":  # pragma: no cover
         click.secho(output)
         sys.exit(0)
     except Exception:
-        click.secho(f"Script terminated, reason:\n{traceback.format_exc()}")
+        click.secho(f"Script terminated, reason:\n{traceback.format_exc()}", fg="red")
         sys.exit(1)
