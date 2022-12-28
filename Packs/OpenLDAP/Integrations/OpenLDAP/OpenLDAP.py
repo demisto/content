@@ -6,7 +6,8 @@ from CommonServerUserPython import *
 import ssl
 from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS
 from ldap3.utils.dn import parse_dn
-from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
+from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError, \
+    LDAPSocketReceiveError, LDAPStartTLSError
 from typing import Tuple, List
 
 ''' LDAP Authentication CLIENT '''
@@ -30,6 +31,14 @@ class LdapClient:
     SUPPORTED_BUILD_NUMBER = 57352  # required server build number
     CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:DH+AESGCM:' \
                      'ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
+    SSL_VERSIONS = {
+        'None': None,
+        'TLS': ssl.PROTOCOL_TLS,
+        'TLSv1': ssl.PROTOCOL_TLSv1,  # guardrails-disable-line
+        'TLSv1_1': ssl.PROTOCOL_TLSv1_1,  # guardrails-disable-line
+        'TLSv1_2': ssl.PROTOCOL_TLSv1_2,
+        'TLS_CLIENT': ssl.PROTOCOL_TLS_CLIENT
+    }
 
     def __init__(self, kwargs):
         self._ldap_server_vendor = kwargs.get('ldap_server_vendor', self.OPENLDAP)  # OpenLDAP or Active Directory
@@ -39,6 +48,7 @@ class LdapClient:
         self._password = kwargs.get('credentials', {}).get('password', '')
         self._base_dn = kwargs.get('base_dn', '').strip()
         self._connection_type = kwargs.get('connection_type', 'none').lower()
+        self._ssl_version = kwargs.get('ssl_version', 'None')
         self._fetch_groups = kwargs.get('fetch_groups', True)
         self._verify = not kwargs.get('insecure', False)
         self._ldap_server = self._initialize_ldap_server()
@@ -100,6 +110,18 @@ class LdapClient:
         """
         return self._custom_attributes
 
+    def _get_ssl_version(self):
+        """
+            Returns the ssl version object according to the user's selection.
+        """
+        version = self.SSL_VERSIONS.get(self._ssl_version)
+        if version:
+            demisto.info(f"SSL/TLS protocol version is {self._ssl_version} ({version}).")
+        else:  # version is None
+            demisto.info("SSL/TLS protocol version is None (the default value of the ldap3 Tls object).")
+
+        return version
+
     def _get_tls_object(self):
         """
             Returns a TLS object according to the user's selection of the 'Trust any certificate' checkbox.
@@ -108,16 +130,13 @@ class LdapClient:
             # Trust any certificate = False means that the LDAP server's certificate must be valid -
             # i.e if the server's certificate is not valid the connection will fail.
             tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'),
-                      version=ssl.PROTOCOL_TLS)
+                      version=self._get_ssl_version())
 
         else:  # Trust any certificate is checked
             # Trust any certificate = True means that we do not require validation of the LDAP server's certificate,
             # and allow the use of all possible ciphers.
-            tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=ssl.PROTOCOL_TLS,
+            tls = Tls(validate=ssl.CERT_NONE, ca_certs_file=None, version=self._get_ssl_version(),
                       ciphers=self.CIPHERS_STRING)
-
-            # By setting the version to ssl.PROTOCOL_TLS we select the highest protocol version that both client
-            # and server support (can be SSL or TLS versions).
 
         return tls
 
@@ -239,7 +258,8 @@ class LdapClient:
     @staticmethod
     def _is_valid_dn(dn: str, user_identifier_attribute: str) -> Tuple[bool, str]:
         """
-            Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN.
+            Validates whether given input is valid ldap DN. Returns flag indicator and user's identifier value from DN
+            (if exists).
         """
         try:
             parsed_dn = parse_dn(dn, strip=False)
@@ -432,24 +452,14 @@ class LdapClient:
             raise Exception(f"LDAP Authentication - authentication connection failed,"
                             f" server type is: {self._ldap_server_vendor}")
 
-    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
-                      name_attribute: str, mail_attribute: str, phone_attribute: str,
-                      search_user_by_dn: bool = False) -> dict:
+    def search_user_data(self, username: str, attributes: List, search_user_by_dn: bool = False) -> Tuple:
         """
-            Returns data for given ldap user.
+             Returns data for given ldap user.
+             Raises error if the user is not found in the ldap server.
         """
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             demisto.info(f'LDAP Connection Details: {ldap_conn}')
-
-            attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
-
-            if pull_name:
-                attributes.append(name_attribute)
-            if pull_mail:
-                attributes.append(mail_attribute)
-            if pull_phone:
-                attributes.append(phone_attribute)
 
             if search_user_by_dn:
                 search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
@@ -466,22 +476,44 @@ class LdapClient:
             if not ldap_conn.entries:
                 raise Exception("LDAP Authentication - LDAP user not found")
             entry = ldap_conn.entries[0]
+            referrals = ldap_conn.result.get('referrals')
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
                     or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
                 raise Exception(f"LDAP Authentication - OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
 
-            user_data = {'dn': entry.entry_dn, 'gid_number': [str(entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value)],
-                         'referrals': ldap_conn.result.get('referrals')}
+            return entry, referrals
 
-            if name_attribute in entry and entry[name_attribute].value:
-                user_data['name'] = ldap_conn.entries[0][name_attribute].value
-            if mail_attribute in entry and entry[mail_attribute].value:
-                user_data['email'] = ldap_conn.entries[0][mail_attribute].value
-            if phone_attribute in entry and entry[phone_attribute].value:
-                user_data['mobile'] = ldap_conn.entries[0][phone_attribute].value
+    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
+                      name_attribute: str, mail_attribute: str, phone_attribute: str,
+                      search_user_by_dn: bool = False) -> dict:
+        """
+            Returns data for given ldap user.
+        """
 
-            return user_data
+        attributes = [self.GROUPS_IDENTIFIER_ATTRIBUTE]
+
+        if pull_name:
+            attributes.append(name_attribute)
+        if pull_mail:
+            attributes.append(mail_attribute)
+        if pull_phone:
+            attributes.append(phone_attribute)
+
+        user_data_entry, referrals = self.search_user_data(username, attributes, search_user_by_dn)
+
+        user_data = {'dn': user_data_entry.entry_dn,
+                     'gid_number': [str(user_data_entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value)],
+                     'referrals': referrals}
+
+        if name_attribute in user_data_entry and user_data_entry[name_attribute].value:
+            user_data['name'] = user_data_entry[name_attribute].value
+        if mail_attribute in user_data_entry and user_data_entry[mail_attribute].value:
+            user_data['email'] = user_data_entry[mail_attribute].value
+        if phone_attribute in user_data_entry and user_data_entry[phone_attribute].value:
+            user_data['mobile'] = user_data_entry[phone_attribute].value
+
+        return user_data
 
     def get_user_groups(self, user_identifier: str):
         """
@@ -580,6 +612,19 @@ class LdapClient:
                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                         phone_attribute=phone_attribute)
 
+    def ad_authenticate(self, username: str, password: str) -> str:
+        """
+            Search for the user in the ldap server.
+            Performs simple bind operation on ldap server.
+        """
+        if self._ldap_server_vendor == self.OPENLDAP:
+            # If the given username is not a full DN, search for it in the ldap server and find it's full DN
+            search_user_by_dn, _ = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
+            user_data_entry, _ = self.search_user_data(username, [self.GROUPS_IDENTIFIER_ATTRIBUTE], search_user_by_dn)
+            username = user_data_entry.entry_dn
+
+        return self.authenticate_ldap_user(username, password)
+
     def test_module(self):
         """
             Basic test connection and validation of the Ldap integration.
@@ -596,12 +641,12 @@ class LdapClient:
             try:
                 parse_dn(self._username)
             except LDAPInvalidDnError:
-                raise Exception("Invalid credentials input. Credentials must be full DN.")
+                raise Exception("Invalid credentials input. User DN must be a full DN.")
         self.authenticate_ldap_user(username=self._username, password=self._password)
         return 'ok'
 
 
-def main():
+def main():  # pragma: no coverage
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     command = demisto.command()
@@ -618,7 +663,7 @@ def main():
         elif command == 'ad-authenticate':
             username = args.get('username')
             password = args.get('password')
-            authentication_result = client.authenticate_ldap_user(username, password)
+            authentication_result = client.ad_authenticate(username, password)
             demisto.info(f'ad-authenticate command - authentication result: {authentication_result}')
             return_results(authentication_result)
         elif command == 'ad-groups':
@@ -649,8 +694,10 @@ def main():
         msg = str(e)
         if isinstance(e, LDAPBindError):
             msg = f'LDAP Authentication - authentication connection failed. Additional details: {msg}'
-        elif isinstance(e, LDAPSocketOpenError):
+        elif isinstance(e, (LDAPSocketOpenError, LDAPSocketReceiveError, LDAPStartTLSError)):
             msg = f'LDAP Authentication - Failed to connect to LDAP server. Additional details: {msg}'
+            if not params.get('insecure', False):
+                msg += ' Try using: "Trust any certificate" option.\n'
         elif isinstance(e, LDAPInvalidPortError):
             msg = 'LDAP Authentication - Not valid ldap server input.' \
                   ' Check that server input is of form: ip or ldap://ip'

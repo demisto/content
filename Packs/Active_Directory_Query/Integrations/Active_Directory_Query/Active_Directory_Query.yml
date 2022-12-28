@@ -44,6 +44,21 @@ configuration:
   - None
   - SSL
   - TLS
+  - Start TLS
+- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
+  defaultvalue: None
+  display: SSL Version
+  hidden: false
+  name: ssl_version
+  options:
+  - None
+  - TLS
+  - TLSv1
+  - TLSv1_1
+  - TLSv1_2
+  - TLS_CLIENT
+  required: false
+  type: 15
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
@@ -268,6 +283,14 @@ script:
     - name: full-superior-dn
       description: Superior DN. For example, OU=computers,DC=domain,DC=com (the specified domain must be the same as the current computer domain).
     description: Modifies the computer organizational unit within a domain.
+  - name: ad-modify-user-ou
+    arguments:
+      - name: user-name
+        required: true
+        description: "The name of the user to modify."
+      - name: full-superior-dn
+        description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
+    description: Modifies the user organizational unit within a domain.
   - name: ad-get-user
     arguments:
     - name: dn
@@ -781,7 +804,7 @@ script:
       description: Value to set "Password Never Expire".
     description: 'Modifies the AD account attribute "Password Never Expire".'
     execution: true
-  dockerimage: demisto/py3-tools:1.0.0.37427
+  dockerimage: demisto/py3-tools:1.0.0.41100
   runonce: false
   ismappable: true
   isremotesyncout: true

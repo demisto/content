@@ -194,7 +194,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: plaintext-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.37427
+  dockerimage: demisto/py3-tools:1.0.0.41748
   feed: true
   isfetch: false
   longRunning: false

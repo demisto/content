@@ -16,6 +16,34 @@ FILE_INDICATOR = \
             }
     }
 
+MALWARE_INDICATOR = \
+    {
+        'indicators':
+            {
+                '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:26:05Z',
+                      'indicator_type': 'Malware',
+                      'lastSeen': '2022-07-31T13:26:05Z', 'score': 'bad',
+                      'timestamp': '2022-07-31T13:26:05Z',
+                      'value': 'Bad Malware',
+                      'ismalwarefamily': 'True',
+                      }
+            }
+    }
+
+ATTACK_PATTERN_INDICATOR = \
+    {
+        'indicators':
+            {
+                '0': {'expirationStatus': 'active', 'firstSeen': '2022-07-31T13:26:05Z',
+                      'indicator_type': 'Attack Pattern',
+                      'lastSeen': '2022-07-31T13:26:05Z', 'score': 'unknown',
+                      'timestamp': '2022-07-31T13:26:05Z',
+                      'value': 'Attack Pattern',
+                      'mitreid': 'T1111',
+                      }
+            }
+    }
+
 DOMAIN_INDICATORS = \
     {
         'indicators':
@@ -36,7 +64,10 @@ DOMAIN_INDICATORS = \
     }
 
 
-@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle'), (FILE_INDICATOR, 'indicator')])
+@pytest.mark.parametrize('indicators, stix_type', [(DOMAIN_INDICATORS, 'bundle'),
+                                                   (FILE_INDICATOR, 'indicator'),
+                                                   (MALWARE_INDICATOR, 'malware'),
+                                                   (ATTACK_PATTERN_INDICATOR, 'attack-pattern')])
 def test_stixCreator_with_indicators(mocker, indicators, stix_type):
     mocker.patch.object(demisto, 'args', return_value=indicators)
     mocker.patch.object(demisto, 'results')

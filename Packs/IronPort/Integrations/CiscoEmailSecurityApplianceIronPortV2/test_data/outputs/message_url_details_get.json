@@ -1,0 +1,72 @@
+{
+    "data": {
+      "messages": {
+        "sdrAge": "30 days (or greater)",
+        "attachments": [
+          "test.jpg"
+        ],
+        "showURLDetails": true,
+        "urlDetails": [
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 URL: http://test.com:8080/, URL reputation: -6.8, Condition: URL Reputation Rule."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 URL: https://test.com/test/test/, URL reputation: -6.6, Condition: URL Reputation Rule."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 URL: http://test.com:8080, URL reputation: -6.8, Condition: URL Reputation Rule."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 rewritten URL u'http://test.com:8080'."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 rewritten URL u'https://test.com/test/test/'."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 rewritten URL u'http://test.com:8080/'."
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Message 765 rewritten URL u'https://test.com/test/test/'."
+          }
+        ],
+        "hostName": "(Name unresolved,  SN:42356DFA5D016457B182-3616BA148E19)",
+        "direction": "incoming",
+        "messageStatus": "Quarantined by Multiple Engines",
+        "senderGroup": "ACCEPTLIST",
+        "subject": "test",
+        "sdrCategory": "N/A",
+        "mid": [
+          222,
+          223,
+          224
+        ],
+        "sendingHostSummary": {
+          
+        },
+        "ampTgCategories": [
+          
+        ],
+        "smtpAuthId": "",
+        "midHeader": "<test@test.test.com>",
+        "timestamp": "20 Sep 2022 13:30:51 (GMT +00:00)",
+        "messageSize": "439.25 (KB)",
+        "sdrThreatLevels": "3",
+        "sdrReputation": "Neutral",
+        "recipient": [
+          "test@test.com"
+        ],
+        "sender": "test@test.com",
+        "allIcid": [
+          23092
+        ],
+        "headerFrom": "test@test.com"
+      }
+    }
+  }

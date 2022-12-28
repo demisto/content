@@ -158,12 +158,6 @@ configuration:
   type: 0
   section: Collect
   advanced: true
-- display: Use Python requests handler
-  name: use_requests_handler
-  required: false
-  type: 8
-  section: Collect
-  advanced: true
 - additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
   display: Enrichment Types
   name: enabled_enrichments
@@ -581,23 +575,19 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk:1.0.0.33029
+  dockerimage: demisto/splunksdk-py3:1.0.0.42294
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
   script: ''
-  subtype: python2
+  subtype: python3
   type: python
 tests:
 - SplunkPySearch_Test_default_handler
-- SplunkPySearch_Test_requests_handler
 - SplunkPy-Test-V2_default_handler
-- SplunkPy-Test-V2_requests_handler
 - Splunk-Test_default_handler
-- Splunk-Test_requests_handler
 - SplunkPy_KV_commands_default_handler
-- SplunkPy_KV_commands_requests_handler
 - SplunkPy parse-raw - Test
 fromversion: 5.0.0
