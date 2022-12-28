@@ -129,15 +129,23 @@ class Client(BaseClient):
         payload = {
             "grant_type": 'client_credentials'
         }
-        token_response = self._http_request(
+        return self._http_request(
             method='POST',
             full_url=self.token_url,
             auth=(self.client_key, self.secret_key),
             data=payload,
             error_handler=access_token_error_handler
-        )
-        token = token_response.get('access_token')
-        return token
+        ).get('access_token')
+
+        # token_response = self._http_request(
+        #     method='POST',
+        #     full_url=self.token_url,
+        #     auth=(self.client_key, self.secret_key),
+        #     data=payload,
+        #     error_handler=access_token_error_handler
+        # )
+        # token = token_response.get('access_token')
+        # return token
 
     def query_request_api(self, endpoint: str, params: dict, method: Optional[str] = 'POST') \
             -> Dict[str, str]:
@@ -214,11 +222,10 @@ def access_token_error_handler(response: requests.Response):
     Raise:
          DemistoException
     """
-    status_code = response.json().get('status')
-    if status_code == 401:
+    if response.status_code == 401:
         raise DemistoException(INVALID_CREDENTIALS_ERROR_MSG)
-    elif status_code >= 400:
-        raise DemistoException('Error: something went wrong, please try again.')
+    elif response.status_code >= 400:
+        raise DemistoException('Error: something went wrong, please try again.', res=response)
 
 
 def http_request_error_handler(response: requests.Response):
@@ -249,7 +256,7 @@ def iso_creation_date(date: str):
     return iso_date
 
 
-def get_data_of_current_page(offset: int, limit: int, data_list: List[Dict[str, Any]]):
+def get_data_of_current_page(offset: int, limit: int, data_list: List[dict[str, Any]]):
     """
     Symantec EDR on-premise pagination
     Args:
@@ -1025,7 +1032,7 @@ def post_request_body(args: Dict, p_limit: int = 1) -> Dict:
     page_size = args.get('page_size')
     max_limit = args.get('limit', DEFAULT_PAGE_SIZE)
 
-    if page_size: 
+    if page_size:
         if p_limit >= max_limit:
             # in case user pass the page_size or limit is less than page_size
             payload['limit'] = p_limit
@@ -1159,7 +1166,7 @@ def get_incident_uuid(client: Client, args: Dict[str, Any]) -> str:
         uuid = data_list[0].get('uuid')
     else:
         raise DemistoException(f'Incident ID Not Found {args.get("incident_id")}.'
-                               f'Provide time range arguments if incidents is older then 30 days')
+                               f'Provide time range arguments if incidents are older then 30 days')
 
     return uuid
 
@@ -1262,8 +1269,8 @@ def get_domain_file_association_list_command(client: Client, args: Dict[str, Any
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1301,8 +1308,8 @@ def get_endpoint_domain_association_list_command(client: Client, args: Dict[str,
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1340,8 +1347,8 @@ def get_endpoint_file_association_list_command(client: Client, args: Dict[str, A
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1379,8 +1386,8 @@ def get_audit_event_command(client: Client, args: Dict[str, Any]) -> CommandResu
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     context_data = None
     if page_result:
         readable_output, context_data = audit_event_readable_output(page_result, title)
@@ -1418,8 +1425,8 @@ def get_event_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     context_data = None
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
@@ -1457,8 +1464,8 @@ def get_system_activity_command(client: Client, args: Dict[str, Any]) -> Command
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     context_data = None
     if page_result:
         readable_output, context_data = system_activity_readable_output(page_result, title)
@@ -1496,9 +1503,9 @@ def get_event_for_incident_list_command(client: Client, args: Dict[str, Any]) ->
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
-    context_data: List[str, Any] = []
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
+    context_data: List[Dict[str, Any]]
     if page_result:
         readable_output, context_data = incident_event_readable_output(page_result, title)
     else:
@@ -1537,8 +1544,8 @@ def get_incident_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     if page_result:
         readable_output, context_data = incident_readable_output(page_result, title)
     else:
@@ -1578,8 +1585,8 @@ def get_incident_comments_command(client: Client, args: Dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
     context_data = None
     if page_result:
         readable_output, context_data = incident_comment_readable_output(page_result, title, incident_id)
@@ -1659,7 +1666,7 @@ def patch_incident_update_command(client: Client, args: Dict[str, Any]) -> Comma
     if response.get('status') == 204:
         summary_data = {
             'incident_id': args.get('incident_id'),
-            'Message': f'Successfully Updated',
+            'Message': 'Successfully Updated',
         }
         headers = list(summary_data.keys())
         readable_output = tableToMarkdown(title, summary_data, headers=headers, removeNull=True)
@@ -1702,7 +1709,7 @@ def get_file_instance_command(client: Client, args: Dict[str, Any]) -> CommandRe
     )
 
     result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1742,7 +1749,7 @@ def get_domain_instance_command(client: Client, args: Dict[str, Any]) -> Command
     )
 
     result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output, context_data = domain_instance_readable_output(page_result, title)
@@ -1781,7 +1788,7 @@ def get_endpoint_instance_command(client: Client, args: Dict[str, Any]) -> Comma
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
+    result = raw_response.get('result', '')
     page_result = get_data_of_current_page(offset, limit, result)
 
     if page_result:
@@ -1821,7 +1828,7 @@ def get_allow_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
     result = raw_response.get('result')
-    page_result = get_data_of_current_page(offset, limit, result)
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1860,8 +1867,8 @@ def get_deny_list_command(client: Client, args: Dict[str, Any]) -> CommandResult
         arg_to_number(raw_response.get('total'))
     )
 
-    result = raw_response.get('result', [])
-    page_result = get_data_of_current_page(offset, limit, result)
+    result = raw_response.get('result')
+    page_result = get_data_of_current_page(offset, limit, result)  # type: ignore
 
     if page_result:
         readable_output = generic_readable_output(page_result, title)
@@ -1918,15 +1925,15 @@ def get_endpoint_command(client: Client, args: Dict[str, Any]) -> CommandResults
     elif demisto.command() == 'symantec-edr-endpoint-rejoin':
         payload = {'action': 'rejoin_endpoint', 'targets': argToList(device_uid)}
     else:
-        raise DemistoException(f'No Endpoint Command found.')
+        raise DemistoException('Endpoint Command action not found.')
 
     raw_response = client.query_request_api(endpoint, payload)
     title = f'Command {payload.get("action")}'
 
     summary_data = {
-            "Message": raw_response.get('message'),
-            "CommandId": raw_response.get('command_id')
-        }
+        "Message": raw_response.get('message'),
+        "CommandId": raw_response.get('command_id')
+    }
 
     headers = list(summary_data.keys())
     return CommandResults(
@@ -1957,9 +1964,9 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
 
     title = "Command Status"
     summary_data = {
-            "state": raw_response.get('state'),
-            "Command Issuer Name": raw_response.get('command_issuer_name'),
-        }
+        "state": raw_response.get('state'),
+        "Command Issuer Name": raw_response.get('command_issuer_name'),
+    }
 
     result = raw_response.get('status', [])
     if len(result) >= 1:
@@ -1991,10 +1998,8 @@ def get_endpoint_status_command(client: Client, args: Dict[str, Any]) -> Command
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
+    """
+    main function, parses params and runs command functions
     """
     try:
         params = demisto.params()
@@ -2081,12 +2086,15 @@ def main() -> None:
             "symantec-edr-event-list": get_event_list_command,
 
         }
+        command_output: Union[CommandResults, str]
         if command == "test-module":
-            return_results(test_module(client))
+            command_output = test_module(client)
         elif command in commands:
-            return_results(commands[command](client, args))
+            command_output = commands[command](client, args)
         else:
             raise NotImplementedError
+
+        return_results(command_output)
 
     # Log exceptions and return errors
     except Exception as e:

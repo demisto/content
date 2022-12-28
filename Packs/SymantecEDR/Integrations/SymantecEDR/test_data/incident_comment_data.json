@@ -4,7 +4,7 @@
         {
             "comment": "added as part of testing xsoar command examples",
             "time": "2022-12-25T20:16:17.630Z",
-            "user_id": 100000,
+            "user_id": 100011,
             "incident_responder_name": "SEDR API"
         }
     ],
