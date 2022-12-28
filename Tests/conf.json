@@ -303,7 +303,7 @@
             "playbookID": "OpenCTI 5.x Feed Test",
             "fromversion": "6.0.0",
             "is_mockable": false,
-            "instance_names": "OpenCTI_Feed_4_X",
+            "instance_names": "OpenCTI_Feed_5_X",
             "timeout": 2400
         },
         {
