@@ -221,6 +221,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], List[Any]]:
         if not (params.get('start_id') or params.get('start_timestamp')):
             msg += 'A starting point for fetching is missing, please enter First fetch ID or First fetch timestamp. '
 
+        if params.get('format_time') == 'Relative Time' and not params.get('offset'):
+            msg += 'An Offset is missing where Relative Time is chosen, please enter Offset. '
+
     return msg if msg else 'ok', {}, []
 
 
@@ -273,9 +276,14 @@ def get_last_run(params: dict):
     if not last_run:
         # Fetch should be by timestamp or id
         if start_interval := params.get('start_timestamp'):
-            first_fetch_datetime = dateparser.parse(start_interval, settings={'TIMEZONE': 'UTC'})
-            last_run = {'last_timestamp': first_fetch_datetime.strftime('%Y-%m-%d %H:%M:%S'),
-                        'last_id': False}
+            if params.get('format_time') == 'Relative Time':
+                last_timestamp = dateparser.parse(start_interval, settings={'TIMEZONE': 'UTC'}) +\
+                                       timedelta(hours=arg_to_number(params.get('offset')))
+                last_timestamp = last_timestamp.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                last_timestamp = start_interval
+
+            last_run = {'last_timestamp': last_timestamp, 'last_id': False}
 
         else:
             last_run = {'last_timestamp': False, 'last_id': params.get('start_id', '-1')}

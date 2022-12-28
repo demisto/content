@@ -76,13 +76,28 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- defaultvalue: Relative Time
+  display: Format Time
+  hidden: false
+  name: format_time
+  options:
+  - Relative Time
+  - Timestamp
+  required: false
+  type: 15
 - defaultvalue: 24 hours
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 2 months)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 2 months or Timestamp)
   hidden: false
   name: start_timestamp
   required: false
   type: 0
   section: Collect
+- display: Offset
+  name: offset
+  required: false
+  type: 0
+  defaultvalue: 0
+  additionalinfo: Offset from UTC in hours.
 - display: First fetch ID - ID to start fetching
   name: start_id
   required: false
