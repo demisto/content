@@ -5910,7 +5910,7 @@ class TestFetchIncidentsHelperFunctions:
             - every fetch incidents cycle starts
         Then:
             - add_time_filter_to_query_parameter function will append time_generated parameter to the original query to filleter
-              according to the queries log type last fetch time.        
+              according to the queries log type last fetch time.
         """
         from Panorama import add_unique_id_filter_to_query_parameter
         assert add_unique_id_filter_to_query_parameter(query, id) == expected_result
