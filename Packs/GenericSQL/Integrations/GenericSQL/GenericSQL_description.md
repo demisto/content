@@ -54,7 +54,9 @@ BEGIN
     WHERE timestamp >= ts order by timestamp asc limit l;
 END"
     2. Make sure to add as parameters the fetch parameter and the limit.
-    3. The procedure should contain conditions on the fetch parameter. In the example provided, 'ts' is a fetch timestamp parameter.
+    3. The procedure should contain conditions on the fetch parameter: (In the example provided, 'ts' is a fetch timestamp parameter)
+       1. timestamp >= ts or timestamp > ts if timestamp is unique.
+       2. order by timestamp (asc).
     4. Run ***sql-command*** with your new procedure provided in the query argument, in order to create your procedure.
     5. After creating the procedure, fill in 'Fetch events query' the value: 'call *PROCEDURE_NAME*' with your procedure name. 
     6. Fetch parameters, ts (timestamp) or id and l (limit), will be added by the fetch mechanism.
@@ -63,7 +65,9 @@ END"
    AS
    SELECT * FROM TABLE_NAME WHERE timestamp >= @timestamp order by timestamp"
    2. Make sure to add as parameters the fetch parameter.
-   3. The procedure should contain conditions on the fetch parameter. In the example provided, 'timestamp' is a fetch parameter.
+   3. The procedure should contain conditions on the fetch parameter: (In the example provided, 'timestamp' is a fetch parameter)
+      1. timestamp >= @timestamp or timestamp > @timestamp if timestamp is unique.
+      2. order by timestamp (asc).
    4. The fetch parameter should be the same as the column name, the limit is handled outside the query.
    5. Run ***sql-command*** with your new procedure provided in the query argument, in order to create your procedure.
    6. After creating the procedure, fill in 'Fetch events query' the value: 'EXEC *PROCEDURE_NAME*' with your procedure name.
