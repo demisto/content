@@ -5967,9 +5967,16 @@ class TestFetchIncidentsHelperFunctions:
 class TestFetchIncidentsFlows:
     def test_first_fetch_with_no_incidents_flow(self, mocker):
         """
-        Flow: First fetch cycle with no incidents
-        Expected result: no incidents should be returned.
+        Given:
+        - first fetch cycle.
+
+        When:
+        - no incident returned from fetch request.
+
+        Then:
+        - no incidents should be returned.
         """
+        
         from Panorama import fetch_incidents
         last_run = {}
         first_fetch = '24 hours'
@@ -5986,10 +5993,17 @@ class TestFetchIncidentsFlows:
 
     def test_first_fetch_with_one_incident_flow(self, mocker):
         """
-        Flow: First fetch cycle with one incident.
-        Expected result:
-            - The only incident should be returned.
-            - X_log_type last fetch should be created.
+        Given:
+        - first fetch cycle.
+
+        When:
+        - using fetch incidents.
+        - one incident returned from fetch request.
+        
+        Then:
+        - The only incident should be returned.
+        - X_log_type last fetch should be created.
+        - X_log_type last id should be created.
         """
         from Panorama import fetch_incidents
         last_run = {}
@@ -6008,17 +6022,56 @@ class TestFetchIncidentsFlows:
         last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
 
         assert incident_entries_dict[0] == expected_parsed_incident_entries
-        assert last_fetch_dict.get('X_log_type', None)
-        assert last_id_dict.get('X_log_type', None)
+        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
+        assert last_id_dict.get('X_log_type', '') == '000000001'
+
+    def test_second_fetch_with_no_incidents_flow(self, mocker):
+        """
+        Given:
+        - second fetch cycle.
+
+        When:
+        - using fetch incidents.
+        - no new incidents are returned from the fetch request.
+
+        Then:
+        - no fetch incidents should be returned.
+        - last_fetch_dict X_log_type value should not be updated.
+        - last_id_dict X_log_type value should not be updated.
+        """
+        from Panorama import fetch_incidents
+        last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'}, 'last_id_dict': {'X_log_type': '000000001'}}
+        first_fetch = '24 hours'
+        queries_dict = {'X_log_type': "(receive_time geq '2021/01/01 08:00:00)"}
+        max_fetch = 10
+
+        raw_entries = []
+
+        fetch_start_datetime_dict = {'X_log_type': dateparser.parse('2022/1/1 12:00:00', settings={'TIMEZONE': 'UTC'})}
+
+        mocker.patch('Panorama.get_query_entries', return_value=raw_entries)
+        mocker.patch('Panorama.get_fetch_start_datetime_dict', return_value=fetch_start_datetime_dict)
+
+        last_fetch_dict, last_id_dict, incident_entries_dict = fetch_incidents(last_run, first_fetch, queries_dict, max_fetch)
+
+        assert incident_entries_dict == []
+        assert last_fetch_dict.get('X_log_type', '') == '2022-01-01T12:00:00'
+        assert last_id_dict.get('X_log_type', '') == '000000001'
 
     def test_second_fetch_with_two_incidents_with_same_log_type_flow(self, mocker):
         """
-        Flow: Second fetch cycle with two incident of the same log type (X_log_type).
-            - fetched incident has later generated time than last run fetch time.
-        Expected result:
-            - fetched incident should be returned.
-            - last_fetch_dict X_log_type value should be updated.
-            - last_id_dict X_log_type value should be updated.
+        Given:
+        - second fetch cycle with.
+
+        When:
+        - using fetch incidents.
+        - one incident with an existing log type is returned (X_log_type).
+        - the incident has a time generated value that is greater than last fetch time.
+
+        Then:
+        - the fetched incident should be returned.
+        - last_fetch_dict X_log_type value should be updated.
+        - last_id_dict X_log_type value should be updated.
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'}, 'last_id_dict': {'X_log_type': '000000001'}}
@@ -6043,16 +6096,21 @@ class TestFetchIncidentsFlows:
 
     def test_second_fetch_with_two_incidents_with_different_log_types_flow(self, mocker):
         """
-        Flow: Second fetch cycle with two incidents of two deferent log types (X_log_type, Y_log_type).
-            - Both incidents has the same generated time that is later than the last fetch run time.
-            - One incident of X_log_type already have a last fetch run and last id, the second incident of type Y_log_Type don't.
-        Expected result:
-            - Both incidents should be returned.
-            - Y_log_type last fetch should be created.
-            - Y_log_type last id is created.
-            - X_log_type last fetch time will be updated.
-            - X_log_type last id is updated.
+        Given:
+        - second fetch cycle.
 
+        When:
+        - using fetch incidents.
+        - two incidents of two deferent log types (X_log_type, Y_log_type) are returned from the fetch time.
+        - both incidents has the same generated time that is later than the last fetch run time.
+        - one incident of X_log_type already have a last fetch run and last id, the second incident of type Y_log_Type don't.
+        
+        Then:
+        - both incidents should be returned.
+        - Y_log_type last fetch should be created.
+        - Y_log_type last id is created.
+        - X_log_type last fetch time will be updated.
+        - X_log_type last id is updated.
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T12:00:00'}, 'last_id_dict': {'X_log_type': '000000001'}}
@@ -6087,15 +6145,21 @@ class TestFetchIncidentsFlows:
 
     def test_second_fetch_with_two_incidents_with_different_log_types_and_different_last_fetch_flow(self, mocker):
         """
-        Flow: Second fetch cycle with two incidents of two deferent log types (X_log_type, Y_log_type).
-            - Both incidents has the same generated time that is later than the last fetch run time.
-            - Both incidents has a last fetch run and last id.
-        Expected result:
-            - Both incidents should be returned.
-            - Y_log_type last fetch should be updated.
-            - Y_log_type last id is updated.
-            - X_log_type last fetch time will be updated.
-            - X_log_type last id is updated.
+        Given:
+        - second fetch cycle. 
+
+        When:
+        - using fetch incidents.
+        - two incidents of two deferent log types (X_log_type, Y_log_type) are returned from the fetch time.
+        - both incidents has the same generated time that is later than the last fetch run time.
+        - both incidents log types has a last fetch run and last id.
+        
+        Then:
+        - both incidents should be returned.
+        - Y_log_type last fetch should be created.
+        - Y_log_type last id is created.
+        - X_log_type last fetch time will be updated.
+        - X_log_type last id is updated.
         """
         from Panorama import fetch_incidents
         last_run = {'last_fetch_dict': {'X_log_type': '2022-01-01T11:00:00', 'Y_log_type': '2022-01-01T13:00:00'}, 'last_id_dict': {'X_log_type': '000000001', 'Y_log_type': '000000001'}}
@@ -6125,3 +6189,4 @@ class TestFetchIncidentsFlows:
         assert last_id_dict.get('X_log_type', '') == '000000002'
         assert last_fetch_dict.get('Y_log_type', '') == '2022-01-01T13:00:00'
         assert last_id_dict.get('X_log_type', '') == '000000002'
+

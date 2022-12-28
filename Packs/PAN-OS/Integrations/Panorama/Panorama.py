@@ -12850,7 +12850,7 @@ def get_query_job_id_request(log_type: str, query: str, max_fetch: int) -> str:
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, skip=0)
+    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch)
     response = http_request(URL, 'GET', params=params)
     job_id = response.get('response', {}).get('result', {}).get('job')
     return job_id
