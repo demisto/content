@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
   - defaultvalue: "https://api.zoom.us/v2/"
-    display: Server URL (e.g. 'https://api.zoom.us/v2/')
+    display: Server URL (e.g., 'https://api.zoom.us/v2/')
     name: url
     required: true
     type: 0
@@ -21,12 +21,12 @@ configuration:
     name: api_key
     type: 4
     required: false
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method is deprecated.
   - display: API Secret (JWT-Deprecated)
     name: api_secret
     type: 4
     required: false
-    additionalinfo: This authentication method is deprecated
+    additionalinfo: This authentication method is deprecated.
   - display: Use system proxy settings
     name: proxy
     required: false
