@@ -55,6 +55,10 @@ db-dtypes = "^1.0.1"
 google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
 
+
+[tool.poetry.group.docreview.dependencies]
+demisto-sdk = "*"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
