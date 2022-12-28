@@ -356,7 +356,10 @@ def zoom_list_users_command(client, **args) -> CommandResults:
             raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
                                                    page_size=page_size,  # type: ignore[arg-type]
                                                    limit=limit, status=status, role_id=role_id)     # type: ignore[arg-type]
-            # parsing the data
+            # since page_size must be const,
+            # i may receive extra info, for example:
+            # if limit = 301, manual_list will return 600 users(MAX_RECORDS * 2),
+            # so I need to remove the last 299.
             all_info = []
             for page in raw_data:
                 users_info = page.get("users")
@@ -633,7 +636,10 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
             raw_data = manual_meeting_list_pagination(client=client, user_id=user_id, next_page_token=next_page_token,
                                                       page_size=page_size,  # type: ignore[arg-type]
                                                       limit=limit, type=type)                          # type: ignore[arg-type]
-            # parsing the data
+            # since page_size must be const,
+            # i may receive extra info, for example:
+            # if limit = 301, manual_meeting will return 600 meetings(MAX_RECORDS * 2),
+            # so I need to remove the last 299.
             all_info = []
             for page in raw_data:
                 meetings = page.get("meetings")
