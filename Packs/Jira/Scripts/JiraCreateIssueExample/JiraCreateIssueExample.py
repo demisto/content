@@ -70,20 +70,8 @@ def add_custom_fields(args: Dict[str, Any], custom_fields: Dict[str, Any]) -> Di
         - A `Dict[str, Any]` with the Jira issue payload
     """
 
-    if custom_fields:
-        args["issueJson"] = {}
-        args["issueJson"]["fields"] = custom_fields
-
-    return args
-
-
-def rm_custom_field_from_args(args: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Method to remove the `customFields` dict from the command arguments.
-    jira-create-issue doesn't include `customFields` arg so we need to remove it and replace it with `issueJson`.
-    """
-
-    del args["customFields"]
+    args["issueJson"] = {}
+    args["issueJson"]["fields"] = custom_fields
 
     return args
 
@@ -101,16 +89,21 @@ def main():  # pragma: no cover
         if "customFields" in args:
             demisto.debug("Found customFields arguments. Attempting to parse them...")
             custom_fields = parse_custom_fields(argToList(args.get("customFields")))
-            demisto.debug(f"Custom fields parsed: {custom_fields}. Removing 'customFields' argument...")
-            args = rm_custom_field_from_args(args)
-            demisto.debug("'customFields' removed. Adding custom field payload to the rest of the command arguments...")
-            propagated_args = add_custom_fields(args, custom_fields)
-            demisto.debug("Custom fields added to command arguments")
 
-        demisto.debug(f"Executing {INTEGRATION_COMMAND} with arguments: \n{propagated_args}")
+            # supplied custom fields might not parse correctly
+            if custom_fields:
+                demisto.debug(f"Custom fields parsed: {custom_fields}. Removing 'customFields' argument...")
+
+                # `jira-create-issue`` doesn't include `customFields` arg so we need to remove it and replace it with `issueJson`.
+                del args["customFields"]
+                demisto.debug("'customFields' removed. Adding custom field payload to the rest of the command arguments...")
+                args = add_custom_fields(args, custom_fields)
+                demisto.debug("Custom fields added to command arguments")
+
+        demisto.debug(f"Executing {INTEGRATION_COMMAND} with arguments: \n{args}")
         create_issue_result = demisto.executeCommand(
             INTEGRATION_COMMAND,
-            propagated_args
+            args
         )
 
         return_results(create_issue_result)
