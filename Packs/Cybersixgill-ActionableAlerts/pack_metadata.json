@@ -8,13 +8,12 @@
     "email": "getstarted@cybersixgill.com",
     "created": "2021-11-16T08:37:18Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence",
-        "Forensics & Malware Analysis"
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
+        "Malware",
         "Dark Web",
-        "Malware"
+        "Threat Intelligence"
     ],
     "useCases": [
         "Threat Intelligence Management",

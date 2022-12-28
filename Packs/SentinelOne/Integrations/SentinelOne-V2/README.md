@@ -1566,6 +1566,15 @@ Returns all Deep Visibility events that match the query.
 | SentinelOne.Event.EventType | String | Event type. Can be "events", "file", "ip", "url", "dns", "process", "registry", "scheduled_task", or "logins". | 
 | SentinelOne.Event.ProcessName | String | The name of the process. | 
 | SentinelOne.Event.MD5 | String | MD5 hash of the file. | 
+| SentinelOne.Event.SourceIP | String | The source ip. | 
+| SentinelOne.Event.SourcePort | String | The source port. | 
+| SentinelOne.Event.DestinationIP | String | The destination IP. | 
+| SentinelOne.Event.DestinationPort | String | The destination port. | 
+| SentinelOne.Event.SourceProcessUser | String | The source process user. | 
+| SentinelOne.Event.SourceProcessCommandLine | String | The source process command line. | 
+| SentinelOne.Event.DNSRequest | String | The DNS Request. | 
+| SentinelOne.Event.FileFullName | String | The file full name. | 
+| SentinelOne.Event.EventTime | String | The event time. | 
 | Event.ID | String | Event process ID. | 
 | Event.Name | String | Event name. | 
 | Event.Type | String | Event type. | 
@@ -2679,3 +2688,30 @@ Initiate the endpoint virus scan on provided agent IDs.
 #### Command Example
 ```!sentinelone-initiate-endpoint-scan agent_ids="1463801667584541849,1463801667584545236"```
 
+
+### sentinelone-remove-item-from-whitelist
+***
+Removes inputted item from the SentinelOne whitelist.
+
+
+#### Base Command
+
+`sentinelone-initiate-endpoint-scan`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| item | Value of the item to be removed from the exclusion list | Required | 
+| exclusion_type | Type of item to be removed from exclusion list. Options are file_type, path, white_hash, certificate, or browser. Default type is white_hash | Optional |
+| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux" | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.RemoveItemFromWhitelist.item | String | Item removed fom whitelist. | 
+| SentinelOne.RemoveItemFromWhitelist.status | String | Status on if items were removed from whitelist or not found on whitelist. |
+
+#### Command Example
+```!sentinelone-remove-item-from-whitelist item="31cb594e8f688521a24dd6f95b95508de42d870d" exclusion_type="white_hash" os_type="windows"```

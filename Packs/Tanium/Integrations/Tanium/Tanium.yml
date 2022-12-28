@@ -21,8 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Tanium endpoint security and systems management
-display: Tanium
+description: Deprecated. Use Tanium v2 instead.
+display: Tanium (Deprecated)
 name: Tanium
 script:
   commands:
@@ -745,7 +745,7 @@ script:
     - contextPath: Tanium.Actions.package_spec.name
       description: Name of the package that was deployed
       type: string
-  dockerimage: demisto/pytan:1.0.0.24291
+  dockerimage: demisto/pytan:1.0.0.38590
   isfetch: false
   runonce: false
   script: '-'
@@ -754,3 +754,4 @@ script:
 tests:
 - Tanium Test Playbook
 fromversion: 5.0.0
+deprecated: true

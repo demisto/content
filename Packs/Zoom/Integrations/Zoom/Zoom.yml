@@ -290,7 +290,7 @@ script:
       description: Delete a user from Zoom
       execution: true
       name: zoom-delete-user
-  dockerimage: demisto/pyjwt3:1.0.0.36533
+  dockerimage: demisto/pyjwt3:1.0.0.42367
   feed: false
   isfetch: false
   longRunning: false

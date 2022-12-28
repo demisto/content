@@ -2,7 +2,7 @@
     "name": "GitLab",
     "description": "Pack for handling gitlab operations",
     "support": "xsoar",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -10,9 +10,7 @@
     "categories": [
         "Cloud Services"
     ],
-    "tags": [
-        "Data Source"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

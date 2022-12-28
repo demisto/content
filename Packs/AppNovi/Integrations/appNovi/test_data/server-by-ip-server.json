@@ -1,0 +1,66 @@
+[
+  {
+    "_key": "1450",
+    "_id": "Things/1450",
+    "_rev": "_eo0KmvW---",
+    "category": "Server",
+    "cpu": null,
+    "firstSeen": 1644552834473,
+    "identity": {
+      "company": "appnovi",
+      "type": "vmwarevm",
+      "value": "vm-4864371498218",
+      "datacenter": "global",
+      "domain": "global"
+    },
+    "lastSeen": 1660769051306,
+    "memory": null,
+    "name": "vm-4864371498218",
+    "os": null,
+    "source": {
+      "Rapid7": {
+        "lastSeen": 1650304802588.7
+      },
+      "SentinelOne": {
+        "lastSeen": 1650304808211.136
+      },
+      "tenable.io": {
+        "lastSeen": 1650304805333.0022
+      },
+      "vCenter": {
+        "lastSeen": 1650304811328.552
+      }
+    },
+    "userProperties": {
+      "ServiceNow_owner": "Bart Simpson",
+      "r7_riskScore": 7500,
+      "r7_vulns": [
+        "3",
+        "28",
+        "0",
+        "22",
+        "22",
+        "75"
+      ],
+      "s1_activeThreats": 0,
+      "s1_domain": "global",
+      "s1_groupName": "VMware S1 Agents",
+      "s1_infected": "False",
+      "s1_isUpToDate": "Updated",
+      "s1_lastActiveDate": "~13 minutes ago",
+      "s1_lastLoggedInUserName": "admin@local",
+      "s1_uuid": "753752548321-dalkhj33-asd324",
+      "tenable_acrScore": 500,
+      "tenable_agentId": "23432-23asdff-23vasd4a-afda123",
+      "tenable_exposureScore": 649,
+      "tenable_firstScan": "2/1/2022",
+      "tenable_firstSeen": "2/1/2022",
+      "tenable_hasAgent": "True",
+      "tenable_lastScan": "~14 days ago",
+      "tenable_lastSeen": "~14 days ago",
+      "tenable_tenableId": "23432-23asdff-23324a-afdas",
+      "vCenter_OS": "Ubuntu Linux (64-bit)",
+      "vCenter_state": "poweredOn"
+    }
+  }
+]
