@@ -2590,6 +2590,16 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'IPAddress': event.get('agentIp'),
             'MD5': event.get('md5'),
             'SHA256': event.get('sha256'),
+            'SourceIP': event.get('srcIp'),
+            'SourcePort': event.get('srcPort'),
+            'DestinationIP': event.get('dstIp'),
+            'DestinationPort': event.get('dstPort'),
+            'SourceProcessUser': event.get('srcProcUser'),
+            'SourceProcessCommandLine': event.get('srcProcCmdLine'),
+            'DNSRequest': event.get('dnsRequest'),
+            'FileFullName': event.get('fileFullName'),
+            'EventTime': event.get('eventTime'),
+            'EventID': event.get('id'),
         })
 
         event_standards.append({
@@ -2597,11 +2607,14 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'Name': event.get('processName'),
             'ID': event.get('pid'),
         })
+    # using the CommandResults.to_context in order to get the correct outputs key
+    context = CommandResults(
+        outputs_prefix='SentinelOne.Event',
+        outputs_key_field=['ProcessID', 'EventID'],
+        outputs=contents).to_context().get('EntryContext', {})
 
-    context = {
-        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
-        'Event(val.ID && val.ID === obj.ID)': event_standards
-    }
+    context.update({'Event(val.ID && val.ID === obj.ID)': event_standards})
+
     return CommandResults(
         readable_output=tableToMarkdown('SentinelOne Events', contents, removeNull=True),
         outputs=context,
