@@ -2,7 +2,7 @@
 In order to use this integration, you need to enter your Zoom credentials in the relevant integration instance parameters.
 There are two authentication methods available: **OAuth** and **JWT**(deprecated).
 
-Please login to your Zoom admin user account, and follow these steps:
+Log in to your Zoom admin user account, and follow these steps:
 Click [here](https://marketplace.zoom.us/develop/create) to create an app.
 ### For the OAuth method:
 - Enable permissions.
