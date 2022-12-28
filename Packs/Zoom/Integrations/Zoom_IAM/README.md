@@ -1,5 +1,5 @@
 An Identity and Access Management integration template.
-This integration was integrated and tested with version 2.0.0 of Zoom_IAM
+This integration was integrated and tested with version 2.0.0 of Zoom_IAM.
 
 ## Configure Zoom_IAM on Cortex XSOAR
 
@@ -12,8 +12,8 @@ This integration was integrated and tested with version 2.0.0 of Zoom_IAM
     | Account ID (OAuth)                 |                                          | False        |
     | Client ID (OAuth)                  |                                          | False        |
     | Client Secret (OAuth)              |                                          | False        |
-    | API Key (JWT-Deprecated)           | This authentication method is deprecated | False        |
-    | API Secret (JWT-Deprecated)        | This authentication method is deprecated | False        |
+    | API Key (JWT-Deprecated)           | This authentication method is deprecated. | False        |
+    | API Secret (JWT-Deprecated)        | This authentication method is deprecated. | False        |
     | Use system proxy settings          |                                          | False        |
     | Trust any certificate (not secure) |                                          | False        |
     | Allow disabling users              |                                          | False        |
@@ -430,7 +430,7 @@ There is no context output for this command.
 
 You can enable incident mirroring between Cortex XSOAR incidents and Zoom_IAM corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
+Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Zoom_IAM.
