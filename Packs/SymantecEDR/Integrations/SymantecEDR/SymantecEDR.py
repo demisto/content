@@ -323,7 +323,7 @@ def get_command_title_string(context_name: str, page: int | None, page_size: int
 
 
 def process_sub_object(data: dict) -> dict:
-    data_dict = dict()
+    data_dict = {}
     ignore_key_list: list[str] = ['file', 'user']
     data_dict = extract_raw_data(data, ignore_key_list)
     return data_dict
@@ -384,7 +384,7 @@ def enriched_data_sub_object(data: dict[str, Any]) -> dict:
 
 
 def user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    user_dict = dict()
+    user_dict = {}
     ignore_key: list[str] = []
     prefix = f'{obj_prefix}_user' if obj_prefix else 'user'
     user_dict = extract_raw_data(data, ignore_key, prefix)
@@ -392,7 +392,7 @@ def user_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict
 
 
 def xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    xattributes_dict = dict()
+    xattributes_dict = {}
     ignore_key: list[str] = []
     prefix = f'{obj_prefix}_user' if obj_prefix else 'xattributes'
     xattributes_dict = extract_raw_data(data, ignore_key, prefix)
@@ -400,7 +400,7 @@ def xattributes_sub_object(data: dict[str, Any], obj_prefix: str | None = None) 
 
 
 def event_actor_sub_object(data: dict[str, Any]) -> dict:
-    event_actor_dict = dict()
+    event_actor_dict = {}
     # Sub Object will be fetch separately
     ignore_key: list[str] = ['file', 'user', 'xattributes']
     event_actor_dict = extract_raw_data(data, ignore_key, 'event_actor')
@@ -424,7 +424,7 @@ def event_actor_sub_object(data: dict[str, Any]) -> dict:
 
 
 def file_sub_object(data: dict[str, Any], obj_prefix: str | None = None) -> dict:
-    file_dict = dict()
+    file_dict = {}
     ignore_key_list: list[str] = ['signature_value_ids']
     prefix = f'{obj_prefix}_file' if obj_prefix else 'file'
     file_dict = extract_raw_data(data, ignore_key_list, prefix)
@@ -1189,7 +1189,7 @@ def get_request_payload(args: dict[str, Any], query_type: str | None = 'default'
     page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE), arg_name='page_size')
     page_limit, offset = pagination(page, page_size)
 
-    if query_type == 'allow_list' or query_type == 'deny_list':
+    if query_type in ('allow_list', 'deny_list'):
         limit = arg_to_number(args.get('limit'))
         if limit and (limit < 10 or limit > 1000):
             raise ValueError('Invalid input limit: Value between Minimum = 10 , Maximum = 1000')
@@ -2099,7 +2099,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError: {str(e)}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError: {e}')
 
 
 ''' ENTRY POINT '''
