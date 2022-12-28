@@ -13,6 +13,18 @@ ignore=IN126
 [file:WaitAndCompleteTask.py]
 ignore=E9003
 
+[file:playbook-EDL_Indicator_Performance_Test.yml]
+ignore=auto-test
+
+[file:playbook-EDL_Performance_Test_-_Concurrency.yml]
+ignore=auto-test
+
+[file:TAXII2_Indicator_Performance_Test.yml]
+ignore=auto-test
+
+[file:TAXII2_Performance_Test_-_Concurrency.yml]
+ignore=auto-test
+
 [file:CreateMockFeed_image.png]
 ignore=IM111
 
