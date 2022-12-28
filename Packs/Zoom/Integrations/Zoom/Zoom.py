@@ -300,11 +300,10 @@ def check_start_time_format(start_time):
         raise DemistoException(WRONG_TIME_FORMAT) from e
 
 
-def manual_list_user_pagination(client: Client, next_page_token: str, page_size: int,
+def manual_list_user_pagination(client: Client, next_page_token: str | None,
                                 limit: int, status: str, role_id: str):
     res = []
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
-
     while limit > 0 and next_page_token != '':
         response = client.zoom_list_users(page_size=page_size, status=status,
                                           next_page_token=next_page_token,
@@ -316,7 +315,7 @@ def manual_list_user_pagination(client: Client, next_page_token: str, page_size:
     return res
 
 
-def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None, page_size: int,
+def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token: str | None,
                                    limit: int, type: str):
     res = []
     page_size = min(limit, MAX_RECORDS_PER_PAGE)
@@ -334,10 +333,10 @@ def manual_meeting_list_pagination(client: Client, user_id: str, next_page_token
 
 def remove_extra_info_list_users(limit, raw_data):
     """_summary_
-    since page_size must be const,
-    i may receive extra info, for example:
-    if limit = 301, manual_list_pagination will return 600 users(MAX_RECORDS * 2),
-    so I need to remove the last 299.
+    Due to the fact that page_size must be const,
+    Extra information may be provided to me, such as:
+    In the case of limit = 301, manual_list_users_pagination will return 600 users (MAX_RECORDS * 2),
+    The last 299 must be removed.
 
     Args:
         limit (int): the number of records the user asked for
@@ -354,12 +353,12 @@ def remove_extra_info_list_users(limit, raw_data):
 
 
 def remove_extra_info_meeting_list(limit, raw_data):
-    """_summary_
-    since page_size must be const,
-    i may receive extra info, for example:
-    if limit = 301, manual_meeting_list_pagination will return 600 meetings(MAX_RECORDS * 2),
-    so I need to remove the last 299.
-
+    """
+    Due to the fact that page_size must be const,
+    Extra information may be provided to me, such as:
+    In the case of limit = 301, manual_meeting_list_pagination will return 600 meetings (MAX_RECORDS * 2),
+    The last 299 must be removed.
+    
     Args:
         limit (int): the number of records the user asked for
         raw_data (dict):the entire response from the pagination function
@@ -397,9 +396,8 @@ def zoom_list_users_command(client, **args) -> CommandResults:
             raise DemistoException(LIMIT_AND_EXTRA_ARGUMENTS)
         else:
             # multiple requests are needed
-            raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,  # type: ignore[arg-type]
-                                                   page_size=page_size,  # type: ignore[arg-type]
-                                                   limit=limit, status=status, role_id=role_id)     # type: ignore[arg-type]
+            raw_data = manual_list_user_pagination(client=client, next_page_token=next_page_token,
+                                                   limit=limit, status=status, role_id=role_id)
 
             minimal_needed_info = remove_extra_info_list_users(limit, raw_data)
 
@@ -463,7 +461,7 @@ def zoom_delete_user_command(client, **args) -> CommandResults:
 
 def zoom_create_meeting_command(client, **args) -> CommandResults:
     client = client
-    user_id = args.get('user_id')
+    user_id = args.get('user')
     topic = args.get('topic')
     host_video = argToBoolean(args.get('host_video', True))
     join_before_host_time = args.get('join_before_host_time')
@@ -654,7 +652,7 @@ def zoom_meeting_get_command(client, **args) -> CommandResults:
 
 def zoom_meeting_list_command(client, **args) -> CommandResults:
     client = client
-    user_id = args.get('user_id')
+    user_id = args.get('user_id', '')
     next_page_token = args.get('next_page_token')
     page_size = arg_to_number(args.get('page_size', 30))
     limit = arg_to_number(args.get('limit'))
@@ -668,8 +666,7 @@ def zoom_meeting_list_command(client, **args) -> CommandResults:
         else:
             # multiple request are needed
             raw_data = manual_meeting_list_pagination(client=client, user_id=user_id, next_page_token=next_page_token,
-                                                      page_size=page_size,  # type: ignore[arg-type]
-                                                      limit=limit, type=type)                          # type: ignore[arg-type]
+                                                      limit=limit, type=type)
 
             minimal_needed_info = remove_extra_info_meeting_list(limit=limit, raw_data=raw_data)
 

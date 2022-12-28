@@ -198,7 +198,7 @@ script:
             - false
             - true
           description: If true, only authenticated users can join the meeting.
-        - name: user_id
+        - name: user
           required: true
           description: email address or id of user for meeting
         - name: topic
