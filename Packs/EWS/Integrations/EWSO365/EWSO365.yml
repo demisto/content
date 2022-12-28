@@ -65,11 +65,11 @@ configuration:
   name: mark_as_read
   required: false
   type: 8
-- defaultvalue: '120'
-  display: Timeout (in seconds) for HTTP requests to Exchange Server
+- display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   required: false
   type: 0
+  defaultvalue: '120'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -1170,7 +1170,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.40920
+  dockerimage: demisto/py3ews:1.0.0.42364
   feed: false
   isfetch: true
   longRunning: false
