@@ -212,6 +212,16 @@ script:
       - 'false'
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether the mirrored channel should be private or not (true by default).
+      isArray: false
+      name: private
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
     deprecated: false
     description: Mirrors the investigation between Slack and the Cortex XSOAR War Room.
     execution: false

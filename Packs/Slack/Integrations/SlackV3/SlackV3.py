@@ -1,6 +1,8 @@
 import asyncio
 import concurrent
+import logging, logging.handlers
 import ssl
+import sys
 import threading
 from distutils.util import strtobool
 from typing import Tuple
@@ -642,6 +644,7 @@ def mirror_investigation():
     channel_name = demisto.args().get('channelName', '')
     channel_topic = demisto.args().get('channelTopic', '')
     kick_admin = bool(strtobool(demisto.args().get('kickAdmin', 'false')))
+    private = demisto.args().get('private', '')
 
     investigation = demisto.investigation()
 
@@ -669,7 +672,7 @@ def mirror_investigation():
                 'name': channel_name
             }
 
-            if mirror_to != 'channel':
+            if mirror_to != 'channel' or private:
                 body['is_private'] = True
 
             conversation = send_slack_request_sync(CLIENT, 'conversations.create',  # type: ignore
@@ -794,6 +797,10 @@ def long_running_loop():
                 demisto.debug(f'Number of threads currently - {threading.active_count()}')
                 stats, _ = slack_get_integration_context_statistics()
                 demisto.debug(f'Integration Context Stats\n_____________\n{stats}')
+            if SlackLog.messages:
+                text = 'Full Integration Log:\n' + '\n'.join(SlackLog.messages)
+                demisto.info(f"{text}")
+                SlackLog.messages = []
             time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
@@ -984,45 +991,40 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
     return content, guid, incident_id, task_id
 
 
-class SlackLogger:
-    """
-    Slack's Socket listener by default pipes messages via stdout. This is an attempt to capture those
-    and instead log them into the XSOAR server logs.
-
-    Essentially this converts Logger.info() to demisto.info()
-    """
+class SlackLogger(IntegrationLogger):
     def __init__(self):
-        """
-        Set the base level as debug. The server will handle the filtering as needed.
-        """
+        super().__init__()
         self.level = logging.DEBUG
 
-    @staticmethod
-    def info(message):
-        demisto.info(message)
+    def info(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
 
-    @staticmethod
-    def error(message):
-        demisto.error(message)
+    def debug(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
 
-    @staticmethod
-    def debug(message):
-        demisto.debug(message)
+    def error(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
 
-    @staticmethod
-    def exception(message):
-        demisto.error(message)
+    def warning(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
+
+SlackLog = SlackLogger()
 
 
 async def slack_loop():
     try:
         exception_await_seconds = 1
         while True:
-            slack_logger = SlackLogger()
+            SlackLog.set_buffering(state=True)
             client = SocketModeClient(
                 app_token=APP_TOKEN,
                 web_client=ASYNC_CLIENT,
-                logger=slack_logger,  # type: ignore
+                logger=SlackLog,  # type: ignore
                 auto_reconnect_enabled=True,
                 trace_enabled=EXTENSIVE_LOGGING,
             )
