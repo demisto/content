@@ -1,5 +1,13 @@
 id: test_MsGraphFiles
 version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: MicrosoftGraphFiles
+    packName: Microsoft Graph Files
+    itemVersion: 1.1.5
+    fromServerVersion: 5.0.0
+    toServerVersion: ""
+    definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
@@ -1810,10 +1818,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: a750fde7-bc6f-4518-8706-4b616e7bef65
+    taskid: b73abffa-b3c8-4089-8469-f43c15de59cb
     type: regular
     task:
-      id: a750fde7-bc6f-4518-8706-4b616e7bef65
+      id: b73abffa-b3c8-4089-8469-f43c15de59cb
       version: -1
       name: 'upload  new file '
       description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
@@ -1841,11 +1849,11 @@ tasks:
       file_name:
         simple: ${FileName}
       object_type:
-        simple: sites
+        simple: drives
       object_type_id:
-        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+        simple: b!RDctFH7NTE-76fPa5-vcg-ouY54nVzJCtors1LmkYNRucDgOdrfDSYsD6zrQj9zi
       parent_id:
-        simple: root
+        simple: 01YGQTXW56Y2GOVW7725BZO354PWSELRRZ
       retry-count:
         simple: "2"
     separatecontext: false
@@ -1907,10 +1915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 077c9db8-fbc1-4cc9-8df8-59b26884c858
+    taskid: 8b9e733c-1f9c-4f15-8d8f-f353c2e6c739
     type: regular
     task:
-      id: 077c9db8-fbc1-4cc9-8df8-59b26884c858
+      id: 8b9e733c-1f9c-4f15-8d8f-f353c2e6c739
       version: -1
       name: Replace existing file
       description: Replaces the content of the file in the specified MS Graph resource.
@@ -1938,9 +1946,9 @@ tasks:
       item_id:
         simple: ${id_image}
       object_type:
-        simple: sites
+        simple: drives
       object_type_id:
-        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+        simple: b!RDctFH7NTE-76fPa5-vcg-ouY54nVzJCtors1LmkYNRucDgOdrfDSYsD6zrQj9zi
     separatecontext: false
     continueonerror: true
     continueonerrortype: errorPath
@@ -2086,10 +2094,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: f15d7eb1-13dd-4a09-8ace-1d02c579b102
+    taskid: 9b3ff937-f3c7-4bd4-816c-e19b6326c971
     type: regular
     task:
-      id: f15d7eb1-13dd-4a09-8ace-1d02c579b102
+      id: 9b3ff937-f3c7-4bd4-816c-e19b6326c971
       version: -1
       name: delete file
       description: Deletes an item from OneDrive.
@@ -2104,9 +2112,9 @@ tasks:
       item_id:
         simple: ${MsGraphFiles.ReplacedFiles.ID}
       object_type:
-        simple: sites
+        simple: drives
       object_type_id:
-        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+        simple: b!RDctFH7NTE-76fPa5-vcg-ouY54nVzJCtors1LmkYNRucDgOdrfDSYsD6zrQj9zi
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2236,10 +2244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 3650df55-95f3-4a38-81b9-d710bc85c020
+    taskid: 3e20a40d-90ad-404a-8aa6-ab833612def8
     type: regular
     task:
-      id: 3650df55-95f3-4a38-81b9-d710bc85c020
+      id: 3e20a40d-90ad-404a-8aa6-ab833612def8
       version: -1
       name: list site content
       description: Returns a list of files and folders in the specified drive.
@@ -2251,10 +2259,12 @@ tasks:
       '#none#':
       - "64"
     scriptarguments:
+      item_id:
+        simple: 01YGQTXW56Y2GOVW7725BZO354PWSELRRZ
       object_type:
-        simple: sites
+        simple: drives
       object_type_id:
-        simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
+        simple: b!RDctFH7NTE-76fPa5-vcg-ouY54nVzJCtors1LmkYNRucDgOdrfDSYsD6zrQj9zi
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2477,6 +2487,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
