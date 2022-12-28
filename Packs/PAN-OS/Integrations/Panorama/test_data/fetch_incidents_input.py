@@ -1,5 +1,6 @@
 from datetime import datetime
 import dateparser
+import json
 
 """ Fetch Incidents Inputs """
 
@@ -23,12 +24,10 @@ def assert_datetime_objects(returned: datetime | None, expected: datetime | None
 
 
 # test_add_time_filter_to_query_parameter arguments
-case_query_with_time_filter = ('(query with time_generated geq some_time)',
-                               utc_time_twelve, '(query with time_generated geq some_time)')
 case_query_without_time_filter = (
     '(query without time filter)', utc_time_twelve,
     "(query without time filter) and (time_generated geq '2022/01/01 12:00:00')")
-test_add_time_filter_to_query_parameter_args = [case_query_with_time_filter, case_query_without_time_filter]
+test_add_time_filter_to_query_parameter_args = [case_query_without_time_filter]
 
 
 # test_add_unique_id_filter_to_query_parameter arguments

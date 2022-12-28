@@ -119,34 +119,42 @@ configuration:
       - All
   - display: Traffic Log Type Query
     name: traffic_query
+    additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action})"
     required: false
     type: 12
   - display: Threat Log Type Query
     name: threat_query
+    additionalinfo: "Threat Log Type query example: (severity geq high)"
     required: false
     type: 12
   - display: URL Log Type Query
     name: url_query
+    additionalinfo: "URL Log Type query example: ((action eq block-override) or (action eq block-url)) and (severity geq high)"
     required: false
     type: 12
   - display: Data Log Type Query
     name: data_query
+    additionalinfo: "Data Log Type query example: ((action eq alert) or (action eq wildfire-upload-success) or (action eq forward)) and (severity geq high)"
     required: false
     type: 12
   - display: Correlation Log Type Query
     name: correlation_query
+    additionalinfo: "Correlation Log Type query example: (hostid eq {host_id}) and (match_time in {last_x_time}) and (objectname eq {object_name}) and (severity geq '{severity}'') and (src in {source_address})"
     required: false
     type: 12
   - display: System Log Type Query
     name: system_query
+    additionalinfo: "System Log Type query example: (subtype eq {sub_type}) and (severity geq {severity})"
     required: false
     type: 12
   - display: Wildfire Submission Log Type Query
     name: wildfire_query
+    additionalinfo: "Wildfire Submission Log Type query example: ((action eq wildfire-upload-fail) or (action eq wildfire-upload-skip) or (action eq sinkhole))"
     required: false
     type: 12
   - display: Decryption Log Type Query
     name: decryption_query
+    additionalinfo: "Decryption Log Type query example: (app eq {application}) and (policy_name geq {policy_name}) and ((src in {source}) or (dst in {destination}))"
     required: false
     type: 12
   - display: Incident type
