@@ -6623,7 +6623,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.40696
+  dockerimage: demisto/crypto:1.0.0.42155
   feed: false
   isfetch: true
   longRunning: false
