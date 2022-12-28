@@ -41,7 +41,7 @@ tasks:
     task:
       id: a562232f-4fa7-4c19-8bcd-fb9f926a7c09
       version: -1
-      name: ConvertTableToHTML with default context path
+      name: ConvertTableToHTML with context_key argument
       description: Converts a given array to an HTML table
       scriptName: ConvertTableToHTML
       type: regular
