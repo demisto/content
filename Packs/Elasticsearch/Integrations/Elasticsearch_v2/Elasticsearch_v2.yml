@@ -174,6 +174,13 @@ script:
       name: timestamp_range_end
       required: false
       secret: false
+    - default: false
+      description: Timestamp field name.
+      defaultValue: "@timestamp"
+      isArray: false
+      name: timestamp_field
+      required: false
+      secret: false
     deprecated: false
     description: Queries an index.
     execution: false
@@ -281,6 +288,13 @@ script:
       predefined:
       - asc
       - desc
+      required: false
+      secret: false
+    - default: false
+      description: Timestamp field name.
+      defaultValue: "@timestamp"
+      isArray: false
+      name: timestamp_field
       required: false
       secret: false
     deprecated: false
@@ -439,7 +453,7 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  dockerimage: demisto/py3-tools:1.0.0.38394
+  dockerimage: demisto/py3-tools:1.0.0.41700
   feed: false
   isfetch: true
   longRunning: false

@@ -1,5 +1,5 @@
 # Configure an API account on G Suite Admin
-Configure a Service Account and retrieve its key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) or in the integration README.
+Configure a service account and retrieve its key in JSON format by following the steps mentioned here: [https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount](https://developers.google.com/identity/protocols/oauth2/service-account#creatinganaccount) or in the integration README.
  
 
 Provide at least one of the scopes mentioned for each command.
@@ -7,9 +7,10 @@ Provide at least one of the scopes mentioned for each command.
 ### Commands and its scopes
 * gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
+* gsuite-user-get
+	* https://www.googleapis.com/auth/admin.directory.user
 * gsuite-mobile-update 
-	*  https://www.googleapis.com/auth/admin.directory.device.mobile.action   		
-	* https://www.googleapis.com/auth/admin.directory.device.mobile 
+	* https://www.googleapis.com/auth/admin.directory.device.mobile.action
 * gsuite-mobile-delete 
 	* https://www.googleapis.com/auth/admin.directory.user.readonly
 	* https://www.googleapis.com/auth/admin.directory.user 
@@ -31,22 +32,30 @@ Provide at least one of the scopes mentioned for each command.
 	* https://www.googleapis.com/auth/admin.datatransfer.readonly   
 * gsuite-group-create 
 	* https://www.googleapis.com/auth/admin.directory.group 
+* gsuite-group-get
+	* https://www.googleapis.com/auth/admin.directory.group 
 * gsuite-role-create 
 	*  https://www.googleapis.com/auth/admin.directory.rolemanagement 
 * gsuite-custom-user-schema-create 
 	 * https://www.googleapis.com/auth/admin.directory.userschema 
 * gsuite-custom-user-schema-update 
-	* https://www.googleapis.com/auth/admin.directory.userschema 
+	* https://www.googleapis.com/auth/admin.directory.userschema
+* gsuite-mobiledevice-list
+	* https://www.googleapis.com/auth/admin.directory.device.mobile.readonly
+* gsuite-chromeosdevice-action
+	* https://www.googleapis.com/auth/admin.directory.device.chromeos
+* gsuite-chromeosdevice-list
+	* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
 
 
-To execute the command either provide the value of the Admin Email in the integration configuration or provide the value of the *admin_email* argument for the command or provide the admin role to the created service account's email by performing the following steps:
+To execute the command either provide the value of the Admin email in the integration configuration or provide the value of the *admin_email* argument for the command or provide the admin role to the created service account's email by performing the following steps:
 
 1. You must be signed in as a super administrator for this task.
 2. Open your Google Admin console (at [https://admin.google.com](https://admin.google.com)).
 3. Go to Admin roles.
 4. Click the role you want to assign (the appropriate role).
-5. Click on *Assign Admin*.
-6. On the opened page, click *Assign users*.
+5. Click *Assign Admin*.
+6. On the opened page, click *Assign Service Accounts*.
 7. Append the email ID of the service account created and click *ASSIGN ROLE* to save.
 
-Precedence of this will be admin_email in command argument > Admin Email in integration configuration > admin role provided to the service account.
+Precedence of this will be admin_email in the command argument > admin email in the integration configuration > admin role provided to the service account.
