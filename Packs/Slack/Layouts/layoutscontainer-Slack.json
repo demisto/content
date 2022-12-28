@@ -1,6 +1,6 @@
 {
     "id": "test_layout_id",
-    "group": "indicator",
+    "group": "incident",
     "name": "test_layout_id",
     "description": "Illusive Networks Incident Layout",
     "version": -1,
@@ -501,8 +501,5 @@
                 "type": "canvas"
             }
         ]
-    },
-    "marketplaces": [
-    "marketplacev2"
-  ]
+    }
 }
