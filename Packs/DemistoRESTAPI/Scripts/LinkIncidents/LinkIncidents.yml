@@ -1,12 +1,12 @@
 commonfields:
-  id: DemistoLinkIncidents
+  id: LinkIncidents
   version: -1
-name: DemistoLinkIncidents
+name: LinkIncidents
 script: ''
 type: javascript
 tags:
 - DemistoAPI
-comment: Deprecated. Use LinkIncidents instead.
+comment: Link two or more incidents
 enabled: true
 args:
 - name: masterID
@@ -32,4 +32,3 @@ marketplaces:
 - xsoar
 tests:
 - no test
-deprecated: true
