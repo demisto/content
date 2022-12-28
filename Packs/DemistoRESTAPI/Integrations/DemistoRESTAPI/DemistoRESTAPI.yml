@@ -34,6 +34,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Use tenant
+  additionalinfo: Whether API calls should be made to the current tenant instead of the master tenant.
+  name: use_tenant
+  type: 8
+  required: false
 script:
   script: ''
   type: javascript
@@ -116,6 +121,10 @@ script:
       isArray: true
     - name: file_url
       description: 'The pack zip file url.'
+      required: false
+      isArray: false
+    - name: entry_id
+      description: 'The War Room entry ID of the pack zip file.'
       required: false
       isArray: false
     - name: skip_verify

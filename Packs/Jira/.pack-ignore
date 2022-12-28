@@ -23,3 +23,5 @@ JiraEventCollector
 JiraCreateIssue
 JiraCreateIssueExample
 customFields
+JiraCreateIssue
+SSL

@@ -65,7 +65,7 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -74,6 +74,23 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
+  display: Use Display Value
+  name: use_display_value
+  required: false
+  type: 8
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+  defaultvalue: None
+  display: Instance Date Format
+  name: display_date_format
+  options:
+  - MM-dd-yyyy
+  - dd/MM/yyyy
+  - dd-MM-yyyy
+  - dd.MM.yyyy
+  - yyyy-MM-dd
   required: false
   type: 15
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
@@ -123,7 +140,7 @@ configuration:
   name: close_incident
   required: false
   type: 8
-- additionalinfo: Define how to close the mirrored tickets, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
@@ -133,12 +150,18 @@ configuration:
   - resolved
   required: false
   type: 15
-- additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
-  defaultvalue: 'false'
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
+  defaultvalue: ''
+  display: Mirrored ServiceNow Ticket custom close state code
+  name: close_custom_state
+  required: false
+  type: 0
+- defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
   required: false
   type: 8
+  additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
 - defaultvalue: 'false'
   display: Use system proxy settings
@@ -151,7 +174,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: Incidents Fetch Interval
+  display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
@@ -765,7 +788,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Business criticallity of the ticket.
+      description: Business criticality of the ticket.
       isArray: false
       name: business_criticality
       predefined:
@@ -1324,7 +1347,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Business criticallity of the ticket.
+      description: Business criticality of the ticket.
       isArray: false
       name: business_criticality
       predefined:
@@ -1815,7 +1838,31 @@ script:
     - defaultValue: '0'
       description: Offset of the ticket notes.
       name: offset
-    description: Gets notes from the specified ServiceNow ticket. "Read permissions" are required for the sys_journal_field table.
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration.
+      isArray: false
+      name: use_display_value
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: incident
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
+        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      name: ticket_type
+      predefined:
+        - incident
+        - problem
+        - change_request
+        - sc_request
+        - sc_task
+        - sc_req_item
+        - sn_si_incident
+    description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions"
+      for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -2103,7 +2150,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.8.37753
+  dockerimage: demisto/python3:3.10.9.40422
   isfetch: true
   ismappable: true
   isremotesyncin: true
