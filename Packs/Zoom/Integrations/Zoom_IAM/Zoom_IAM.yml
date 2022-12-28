@@ -62,7 +62,6 @@ script:
         - default: false
           description: >
             A User Profile indicator.
-
             For example: `{"email": "john.doe@example.com"}`
           isArray: false
           name: user-profile
@@ -154,7 +153,10 @@ script:
           type: String
     - arguments:
         - default: false
-          description: A User Profile indicator.
+          description: >
+            A User Profile indicator.          
+
+            For example: `{"email": "john.doe@example.com"}`
           isArray: false
           name: user-profile
           required: true
