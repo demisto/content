@@ -1,8 +1,6 @@
-id: playbook-ThreatGridTry_Test
-version: 16
-vcShouldKeepItemLegacyProdMachine: false
+id: ThreatGridTest
+version: -1
 name: playbook-ThreatGridTry_Test
-description: REAL
 starttaskid: "0"
 tasks:
   "0":
@@ -15,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -42,10 +40,10 @@ tasks:
       id: f420116c-b8a1-4221-844b-7403d56476ff
       version: -1
       name: DeleteContext
-      script: DeleteContext
       type: regular
       iscommand: true
       brand: ""
+      script: DeleteContext
     nexttasks:
       '#none#':
       - "2"
@@ -53,7 +51,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -84,7 +81,6 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -114,6 +110,14 @@ tasks:
       "true":
       - "4"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
     conditions:
     - label: "true"
       condition:
@@ -127,15 +131,6 @@ tasks:
             value:
               simple: ThreatGrid.User.login
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 600
-        }
-      }
-    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -154,16 +149,12 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
     scriptarguments:
-      entity_type:
-        simple: user
       login:
         simple: ${ThreatGrid.User.login}
+      entity_type:
+        simple: user
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -172,75 +163,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: 7e052d70-8e5c-460a-84ac-219e601d20cf
-    type: condition
-    task:
-      id: 7e052d70-8e5c-460a-84ac-219e601d20cf
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "true":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "true"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatGrid.RateLimit.submission-wait-seconds
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: ea4eba9f-486e-4fee-834b-7902ed4a5e78
-    type: regular
-    task:
-      id: ea4eba9f-486e-4fee-834b-7902ed4a5e78
-      version: -1
-      name: threat-grid-submissions-search
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-submissions-search
-      type: regular
-      iscommand: true
-      brand: ""
     nexttasks:
       '#none#':
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1200
-        }
-      }
-    note: false
+      - "5"
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -254,7 +179,7 @@ tasks:
     task:
       id: 07966fe0-ebe5-4769-801f-5692d7a57a4e
       version: -1
-      name: Verify Outputs
+      name: 'Verify Outputs'
       type: condition
       iscommand: false
       brand: ""
@@ -262,6 +187,14 @@ tasks:
       "true":
       - "8"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
     conditions:
     - label: "true"
       condition:
@@ -305,15 +238,6 @@ tasks:
             value:
               simple: ThreatGrid.Sample.submitted_at
             iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1400
-        }
-      }
-    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -339,12 +263,294 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
           "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b13df3b4-dce4-4181-8f97-b4b66df083cc
+    type: regular
+    task:
+      id: b13df3b4-dce4-4181-8f97-b4b66df083cc
+      version: -1
+      name: threat-grid-ip-samples-list
+      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-samples-list
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    nexttasks:
+      '#none#':
+      - "11"
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
+    type: condition
+    task:
+      id: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedSample.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedSample.samples
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
+    type: regular
+    task:
+      id: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
+      version: -1
+      name: threat-grid-path-samples-list
+      type: regular
+      iscommand: true
+      brand: ""
+      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-path-samples-list
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      path:
+        simple: user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
+    type: regular
+    task:
+      id: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
+      version: -1
+      name: threat-grid-ip-associated-domains
+      type: regular
+      iscommand: true
+      brand: ""
+      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-domains
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
+    type: condition
+    task:
+      id: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    nexttasks:
+      "true":
+      - "20"
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedDomain.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedDomain.domains
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 55d7d72e-4590-43f3-8d71-880139e3d2df
+    type: regular
+    task:
+      id: 55d7d72e-4590-43f3-8d71-880139e3d2df
+      version: -1
+      name: threat-grid-ip-associated-urls
+      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-urls
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7e052d70-8e5c-460a-84ac-219e601d20cf
+    type: condition
+    task:
+      id: 7e052d70-8e5c-460a-84ac-219e601d20cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.RateLimit.submission-wait-seconds
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ea4eba9f-486e-4fee-834b-7902ed4a5e78
+    type: regular
+    task:
+      id: ea4eba9f-486e-4fee-834b-7902ed4a5e78
+      version: -1
+      name: threat-grid-submissions-search
+      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-submissions-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
         }
       }
     note: false
@@ -382,123 +588,11 @@ tasks:
             value:
               simple: ThreatGrid.DomainAssociatedSample.samples
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
           "y": 1800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: b13df3b4-dce4-4181-8f97-b4b66df083cc
-    type: regular
-    task:
-      id: b13df3b4-dce4-4181-8f97-b4b66df083cc
-      version: -1
-      name: threat-grid-ip-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-samples-list
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "11"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2000
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
-    type: condition
-    task:
-      id: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "true":
-      - "12"
-    separatecontext: false
-    conditions:
-    - label: "true"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatGrid.IpAssociatedSample.ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatGrid.IpAssociatedSample.samples
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
-    type: regular
-    task:
-      id: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
-      version: -1
-      name: threat-grid-path-samples-list
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-path-samples-list
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      path:
-        simple: user
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2400
         }
       }
     note: false
@@ -536,7 +630,6 @@ tasks:
             value:
               simple: ThreatGrid.PathAssociatedSample.samples
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -567,7 +660,6 @@ tasks:
       '#none#':
       - "15"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -655,7 +747,6 @@ tasks:
             value:
               simple: ThreatGrid.Sample.completed_at
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -689,7 +780,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -757,123 +847,11 @@ tasks:
             value:
               simple: ThreatGrid.SampleAnalysisSummary.last_seen
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
           "y": 3400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
-    type: regular
-    task:
-      id: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
-      version: -1
-      name: threat-grid-ip-associated-domains
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-domains
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
-    type: condition
-    task:
-      id: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
-      version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "true":
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "true"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatGrid.IpAssociatedDomain.ip
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ThreatGrid.IpAssociatedDomain.domains
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: 55d7d72e-4590-43f3-8d71-880139e3d2df
-    type: regular
-    task:
-      id: 55d7d72e-4590-43f3-8d71-880139e3d2df
-      version: -1
-      name: threat-grid-ip-associated-urls
-      script: Cisco Secure Malware Analytics (Threat Grid)|||threat-grid-ip-associated-urls
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      ip:
-        simple: 8.8.8.8
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4000
         }
       }
     note: false
@@ -911,7 +889,6 @@ tasks:
             value:
               simple: ThreatGrid.IpAssociatedUrl.urls
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -945,7 +922,6 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -988,7 +964,6 @@ tasks:
             value:
               simple: ThreatGrid.DomainAssociatedUrl.urls
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1022,7 +997,6 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1065,7 +1039,6 @@ tasks:
             value:
               simple: ThreatGrid.DomainAssociatedIp.ips
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1096,7 +1069,6 @@ tasks:
       '#none#':
       - "27"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1159,7 +1131,6 @@ tasks:
             value:
               simple: ThreatGrid.Artifact.sample_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1190,7 +1161,6 @@ tasks:
       '#none#':
       - "29"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1253,7 +1223,6 @@ tasks:
             value:
               simple: ThreatGrid.Domain.domain
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1284,7 +1253,6 @@ tasks:
       '#none#':
       - "31"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1352,7 +1320,6 @@ tasks:
             value:
               simple: ThreatGrid.Ip.port
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1383,7 +1350,6 @@ tasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1461,7 +1427,6 @@ tasks:
             value:
               simple: ThreatGrid.NetworkStreams.dst_port
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1492,7 +1457,6 @@ tasks:
       '#none#':
       - "35"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1555,7 +1519,6 @@ tasks:
             value:
               simple: ThreatGrid.Url.url
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1586,7 +1549,6 @@ tasks:
       '#none#':
       - "37"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1644,7 +1606,6 @@ tasks:
             value:
               simple: ThreatGrid.Path.sample_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1678,7 +1639,6 @@ tasks:
       feed_name:
         simple: doc-net-com-dns
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1721,7 +1681,6 @@ tasks:
             value:
               simple: ThreatGrid.Feed.description
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1755,7 +1714,6 @@ tasks:
       ip:
         simple: 8.8.8.8
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1803,7 +1761,6 @@ tasks:
             value:
               simple: ThreatGrid.search.location
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1837,7 +1794,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1875,7 +1831,6 @@ tasks:
             value:
               simple: ThreatGrid.ArtifactAnalysis.items
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1909,7 +1864,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1977,7 +1931,6 @@ tasks:
             value:
               simple: ThreatGrid.IOCAnalysis.tags
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2011,7 +1964,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2059,7 +2011,6 @@ tasks:
             value:
               simple: ThreatGrid.AnalysisMetadata.sandcastle_env
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2093,7 +2044,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2151,7 +2101,6 @@ tasks:
             value:
               simple: ThreatGrid.NetworkAnalysis.server_ip
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2185,7 +2134,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2228,7 +2176,6 @@ tasks:
             value:
               simple: ThreatGrid.ProcessAnalysis.process_id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2262,7 +2209,6 @@ tasks:
       sample_id:
         simple: ${ThreatGrid.Sample.id}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2300,7 +2246,6 @@ tasks:
             value:
               simple: ThreatGrid.SampleAnnotations.network
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2334,7 +2279,6 @@ tasks:
       url:
         simple: http://google.com:80/
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2372,7 +2316,6 @@ tasks:
             value:
               simple: ThreatGrid.search.url
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2406,7 +2349,6 @@ tasks:
       url:
         simple: http://google.com:80/
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2449,7 +2391,6 @@ tasks:
             value:
               simple: ThreatGrid.UrlAssociatedSample.samples
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2483,7 +2424,6 @@ tasks:
       registry_key:
         simple: ChangeNotice
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2523,7 +2463,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2557,7 +2496,6 @@ tasks:
       url:
         simple: http://google.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2635,7 +2573,6 @@ tasks:
             value:
               simple: ThreatGrid.Sample.submitted_at
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2669,7 +2606,6 @@ tasks:
       file:
         simple: 65eddaa2cd3276918725f89697823c91ae20291bb2dc95360d9988511f334fd7
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2727,7 +2663,6 @@ tasks:
             value:
               simple: DBotScore.Reliability
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2761,7 +2696,6 @@ tasks:
       ip:
         simple: 8.8.8.8
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2819,7 +2753,6 @@ tasks:
             value:
               simple: DBotScore.Reliability
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2853,7 +2786,6 @@ tasks:
       url:
         simple: http://google.com:80/
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2911,7 +2843,6 @@ tasks:
             value:
               simple: DBotScore.Reliability
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -2945,7 +2876,6 @@ tasks:
       domain:
         simple: google.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3003,7 +2933,6 @@ tasks:
             value:
               simple: DBotScore.Reliability
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3029,8 +2958,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -3059,3 +2988,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: REAL

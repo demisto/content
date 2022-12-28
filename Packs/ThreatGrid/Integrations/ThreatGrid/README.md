@@ -1,5 +1,5 @@
 Query and upload samples to Cisco threat grid.
-This integration was integrated and tested with version xx of Cisco Secure Malware Analytics (Threat Grid)
+This integration was integrated and tested with version 2 of Cisco Secure Malware Analytics (Threat Grid)
 
 ## Configure Cisco Secure Malware Analytics (Threat Grid) on Cortex XSOAR
 
@@ -19,14 +19,14 @@ This integration was integrated and tested with version xx of Cisco Secure Malwa
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### threat-grid-sample-get
+### threat-grid-sample-list
 ***
 Search samples on the Threat Grid platform. Input parameters are ANDed together. Only finished samples can be searched (that is, the ones that are having a status of succ or fail.)
 
 
 #### Base Command
 
-`threat-grid-sample-get`
+`threat-grid-sample-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,7 +55,7 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 | ThreatGrid.Sample.completed_at | String | The sample completion time | 
 
 #### Command example
-```!threat-grid-sample-get```
+```!threat-grid-sample-list```
 #### Context Example
 ```json
 {
@@ -124,7 +124,7 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The file ID. Click on the chain-like icon after you upload a file in Demisto to find the file_id. | Optional | 
+| file_id | The file ID. Click on the chain-like icon after you upload a file in d__ to find the file_id. | Optional |
 | url | The URL to upload. . | Optional | 
 | interval_in_seconds | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. Default is 10. | Optional | 
 | timeout_in_seconds | Indicates the time in seconds until the polling sequence timeouts. Default is 60. Default is 60. | Optional | 
