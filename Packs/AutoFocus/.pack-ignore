@@ -8,4 +8,4 @@ ignore=RM102,RM106
 ignore=IN145
 
 [file:FeedAutofocus.yml]
-ignore=IN145
+ignore=IN145,IN124
