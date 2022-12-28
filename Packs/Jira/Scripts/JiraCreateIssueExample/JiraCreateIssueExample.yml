@@ -57,4 +57,4 @@ runonce: false
 tests:
 - No tests
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.8.39276
+dockerimage: demisto/python3:3.10.9.42008
