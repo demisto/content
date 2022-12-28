@@ -3,7 +3,6 @@ import re
 import sys
 import requests
 import urllib3
-from blessings import Terminal
 
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -42,7 +41,8 @@ def find_fixed_issue_in_body(body_text, is_merged):
     """
     fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
     related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
-
+    print(f'{related_jira_issue=}')
+    
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
@@ -50,6 +50,8 @@ def find_fixed_issue_in_body(body_text, is_merged):
     related_issue = []
     if not is_merged:
         related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
+        print(f'{related_issue=}')
+
     return fixed_issue + related_issue
 
 
@@ -76,8 +78,7 @@ def trigger_generic_webhook(options):
     issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
 
     if not issues_in_pr:
-        t = Terminal()
-        print(f"{t.red}ERROR: No linked issues were found in PR. Make sure you correctly linked issues.{t.normal}")
+        print(f"ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
 
         sys.exit(1)
 
@@ -118,3 +119,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
