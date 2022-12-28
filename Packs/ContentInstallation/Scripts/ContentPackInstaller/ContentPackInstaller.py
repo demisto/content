@@ -18,7 +18,7 @@ class ContentPackInstaller:
         self.packs_data: Dict[str, Dict[str, str]] = dict()
         self.packs_dependencies: Dict[str, Dict[str, Dict[str, str]]] = dict()
         self.packs_failed: Dict[str, str] = dict()
-        self.instance_name: str = instance_name
+        self.instance_name: Optional[str] = instance_name
 
         self.get_installed_packs()
 
@@ -186,6 +186,7 @@ class ContentPackInstaller:
                 args['using'] = self.instance_name
 
             status, res = execute_command(
+                'demisto-api-install-packs',
                 args,
                 fail_on_error=False,
             )
