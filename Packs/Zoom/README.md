@@ -1,15 +1,15 @@
 Zoom
 ---
 #### About Zoom
-Zoom allows users to create and join virtual meeting rooms where they can communicate with each other using video, and audio. Additional features can give participants the ability to share their screen, share files, and use text chat within the meeting group or privately with others in the meeting
+Zoom allows users to create and join virtual meeting rooms where they can communicate with each other using video and audio. Additional features can give participants the ability to share their screen, share files, and use text chat within the meeting group or privately with others in the meeting
 
 #### What does this pack do?
-- Create and delete zoom users.
-- Enable and Disable zoom users.
-- create meetings.
-- Get info abut meetings
-- Get info abut zoom users.
-- Get recordings of previos meetings
+- Create and delete Zoom users.
+- Enable and disable Zoom users.
+- Create meetings.
+- Get info about meetings
+- Get info about Zoom users.
+- Get recordings of previous meetings.
 
 
 #### Pack Contents
