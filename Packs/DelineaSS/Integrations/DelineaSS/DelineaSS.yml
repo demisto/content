@@ -33,15 +33,6 @@ display: DelineaSS
 name: DelineaSS
 script:
   commands:
-  - arguments: []
-    deprecated: false
-    description: Extracting the credentials from secret
-    execution: false
-    name: delinea-fetch-users
-    outputs:
-    - contextPath: Delinea.User.Credentials
-      description: credentials from secrets
-      type: String
   - arguments:
     - default: false
       description: Secret ID
