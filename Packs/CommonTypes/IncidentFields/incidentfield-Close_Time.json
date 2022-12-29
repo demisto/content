@@ -7,7 +7,8 @@
 		"SysAid Request",
         "Qradar Generic",
         "Guardicore Incident",
-        "Saas Security Incident"
+        "Saas Security Incident",
+        "Exabeam Incident"
     ],
     "breachScript": "",
     "caseInsensitive": true,
