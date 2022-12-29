@@ -21,20 +21,21 @@ jobs:
           files: |
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
-      - name: Install poetry
-        run: pipx install poetry
+      # - name: Install poetry
+      #   run: pipx install poetry
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
       #     cache: 'poetry'
-      # - name: Install Python dependencies
-      #   run: poetry install --only dev
-      - uses: Gr1N/setup-poetry@v8
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v8
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pypoetry/virtualenvs
           key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+      - name: Install Python dependencies
+        run: poetry install --only dev
       - name: Review Release Notes
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
