@@ -66,6 +66,10 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Mark fetched emails as read
+  name: mark_as_read
+  required: false
+  type: 8
 - display: Timeout (in seconds) for HTTP requests to Exchange Server
   name: request_timeout
   required: false
