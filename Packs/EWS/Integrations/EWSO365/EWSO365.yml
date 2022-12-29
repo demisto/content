@@ -61,11 +61,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '50'
-  display: Max incidents per fetch (up to 50)
+- display: Max incidents per fetch (up to 50)
   name: max_fetch
   required: false
   type: 0
+  defaultvalue: '50'
 - display: Mark fetched emails as read
   name: mark_as_read
   required: false
@@ -79,11 +79,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  defaultvalue: 'false'
 - display: Run as a separate process (protects against memory depletion)
   name: separate_process
   required: false
@@ -1175,7 +1175,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.42364
+  dockerimage: demisto/py3ews:1.0.0.42471
   feed: false
   isfetch: true
   longRunning: false
