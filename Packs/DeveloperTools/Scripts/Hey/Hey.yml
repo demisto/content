@@ -1,7 +1,7 @@
 commonfields:
   id: Hey
   version: -1
-fromversion: 6.0.0
+fromversion: 6.5.0
 comment: Use rakyll/hey to test a web application with a load of requests.
 name: Hey
 script: ''
@@ -31,8 +31,7 @@ args:
   - OPTIONS
   description: HTTP method.
 - name: headers
-  description: Custom HTTP header. Comma separated list
-    of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
+  description: Custom HTTP header. Comma separated list of "key=value". e.g. User-Agent=curl/7.54.0,Accept=*/*
 - name: disable_compression
   defaultValue: "true"
   auto: PREDEFINED
@@ -41,8 +40,7 @@ args:
   - "false"
   description: Disable compression.
 - name: results_map
-  description: Additional information to add to the result. Comma separated list
-    of "key=value". e.g. Content-Type=text/plain,Accept=*/*.
+  description: Additional information to add to the result. Comma separated list of "key=value". e.g. Content-Type=text/plain,Accept=*/*.
 - name: body
   description: HTTP request body.
 - name: proxy
@@ -87,7 +85,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/rakyll-hey:1.0.0.24037
+dockerimage: demisto/rakyll-hey:1.0.0.40629
 runas: DBotWeakRole
 tests:
 - No test
