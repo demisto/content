@@ -23,6 +23,7 @@ SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
+MIRROR_LIMIT = 1000
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
 REPLACE_WITH = '_'
 REPLACE_FLAG = params.get('replaceKeys', False)
@@ -1310,9 +1311,10 @@ def get_modified_remote_data_command(service: client.Service, args):
              '| fields rule_id ' \
              '| dedup rule_id'.format(last_update_splunk_timestamp)
     demisto.debug('Performing get-modified-remote-data command with query: {}'.format(search))
-    for item in results.ResultsReader(service.jobs.oneshot(search)):
+    for item in results.ResultsReader(service.jobs.oneshot(search, count=MIRROR_LIMIT)):
         modified_notable_ids.append(item['rule_id'])
-
+    if len(modified_notable_ids) >= MIRROR_LIMIT:
+        demisto.info(f'Warning: More than {MIRROR_LIMIT} notables have been modified since the last update.')
     return_results(GetModifiedRemoteDataResponse(modified_incident_ids=modified_notable_ids))
 
 

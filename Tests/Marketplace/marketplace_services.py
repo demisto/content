@@ -4305,6 +4305,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
         res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
 
@@ -4324,7 +4325,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
+        content_type = rn_header.replace(' ', '')[:-1]
         return is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
                                         marketplace=marketplace)
