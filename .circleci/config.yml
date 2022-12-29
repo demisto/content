@@ -323,6 +323,10 @@ references:
         context: nightly_env
         requires:
           - Setup Environment
+        matrix:
+          parameters:
+            dockerimageflag: [ "native:8.1", "native:latest", "from-yml" ]
+          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
     - Run Validations:
         requires:
           - Setup Environment
