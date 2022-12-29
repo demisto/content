@@ -637,6 +637,23 @@ class URLFormatter(object):
         return URLFormatter.scheme_fix.sub(fix_scheme, url)
 
 
+def _is_valid_cidr(cidr: str) -> bool:
+    """
+    Will check if "url" is a valid CIDR in order to ignore it
+    Args:
+        cidr: the suspected input
+
+    Returns:
+        True if inout is a valid CIDR
+
+    """
+    try:
+        ipaddress.ip_network(cidr)
+        return True
+    except ValueError:
+        return False
+
+
 def main():
     raw_urls = demisto.args().get('input')
 
@@ -647,6 +664,11 @@ def main():
 
     for url in raw_urls:
         formatted_url = ''
+
+        if _is_valid_cidr(url):
+            # If input is a valid CIDR formatter will ignore it to let it become a CIDR
+            formatted_urls.append('')
+            continue
 
         try:
             formatted_url = URLFormatter(url).output
