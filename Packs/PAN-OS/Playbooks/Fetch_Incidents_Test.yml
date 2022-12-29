@@ -94,7 +94,7 @@ tasks:
       - "26"
     scriptarguments:
       all:
-        simple: "yes"
+        simple: "no"
     separatecontext: false
     continueonerrortype: ""
     view: |-
