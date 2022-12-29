@@ -1,4 +1,3 @@
-import google
 from google.cloud import secretmanager
 import json5
 from Tests.scripts.utils import logging_wrapper as logging
