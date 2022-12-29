@@ -1,10 +1,6 @@
 id: Zoom_Test
-version: 29
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Zoom_Test_my_version
-description: |-
-  Important!
-  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      "#none#":
-        - "1"
+      '#none#':
+      - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,6 +32,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 99f926c6-71c7-4b03-8078-df36dcf89484
@@ -49,14 +46,13 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "2"
-        - "21"
+      '#none#':
+      - "2"
+      - "21"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -71,6 +67,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 30c374dd-3584-4f19-824e-c5e844105dba
@@ -84,10 +81,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "3"
+      '#none#':
+      - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,6 +98,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 7a55edfa-40d2-4cd1-8253-f4061f613744
@@ -110,14 +107,14 @@ tasks:
       id: 7a55edfa-40d2-4cd1-8253-f4061f613744
       version: -1
       name: zoom-create-user (default=Basic)
-      description: Create a new user in zoom account
       script: "|||zoom-create-user"
       type: regular
       iscommand: true
       brand: ""
+      description: Create a new user in zoom account
     nexttasks:
-      "#none#":
-        - "4"
+      '#none#':
+      - "4"
     scriptarguments:
       email:
         simple: ${GeneratedEmail}
@@ -126,7 +123,6 @@ tasks:
       last_name:
         simple: McTesty
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -141,6 +137,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
@@ -149,19 +146,18 @@ tasks:
       id: f33cb5a5-df05-4dfe-816e-44e242ca5a1b
       version: -1
       name: zoom-delete-user
-      description: Delete a user from Zoom
       script: "|||zoom-delete-user"
       type: regular
       iscommand: true
       brand: ""
+      description: Delete a user from Zoom
     nexttasks:
-      "#none#":
-        - "5"
+      '#none#':
+      - "5"
     scriptarguments:
       user_id:
         simple: ${Zoom.User.email}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -176,6 +172,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: a9f6fe1f-3232-412b-8d21-2a52c9714ea2
@@ -189,45 +186,44 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "6"
+      - "6"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.first_name
-                iscontext: true
-              right:
-                value:
-                  simple: Testy
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.last_name
-                iscontext: true
-              right:
-                value:
-                  simple: McTesty
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.email
-                iscontext: true
-              right:
-                value:
-                  simple: GeneratedEmail
-                iscontext: true
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.type
-                iscontext: true
-              right:
-                value:
-                  simple: "1"
-    continueonerrortype: ""
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.first_name
+            iscontext: true
+          right:
+            value:
+              simple: Testy
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.last_name
+            iscontext: true
+          right:
+            value:
+              simple: McTesty
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.email
+            iscontext: true
+          right:
+            value:
+              simple: GeneratedEmail
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.type
+            iscontext: true
+          right:
+            value:
+              simple: "1"
     view: |-
       {
         "position": {
@@ -242,6 +238,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: b47878cb-117a-4072-841b-eac8f8b911af
@@ -255,13 +252,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "7"
+      '#none#':
+      - "7"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,6 +272,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 71b0dba9-bba2-4860-862e-06c732539739
@@ -289,10 +286,9 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "11"
+      '#none#':
+      - "11"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,6 +303,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: c85e67d9-7474-4606-8d2d-4306e5ddbd8c
@@ -320,13 +317,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "#none#":
-        - "16"
+      '#none#':
+      - "16"
     scriptarguments:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -341,6 +337,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
@@ -349,16 +346,15 @@ tasks:
       id: 3f03ebeb-5e1c-421d-8c01-54ee58caa3fc
       version: -1
       name: zoom-list-users
-      description: List the existing users
       script: "|||zoom-list-users"
       type: regular
       iscommand: true
       brand: ""
+      description: List the existing users
     nexttasks:
-      "#none#":
-        - "17"
+      '#none#':
+      - "17"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -373,6 +369,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 02f6459b-f350-40b2-8271-397046493f56
@@ -386,20 +383,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "18"
+      - "18"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: Zoom.User.email
-                iscontext: true
-              right:
-                value:
-                  simple: admin@demistodev.com
-    continueonerrortype: ""
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.User.email
+            iscontext: true
+          right:
+            value:
+              simple: admin@demistodev.com
     view: |-
       {
         "position": {
@@ -414,6 +410,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: a471785f-8c8a-45fc-8b8e-0445b15e6838
@@ -422,21 +419,20 @@ tasks:
       id: a471785f-8c8a-45fc-8b8e-0445b15e6838
       version: -1
       name: zoom-create-meeting
-      description: Create a new zoom meeting (scheduled or instant)
       script: "|||zoom-create-meeting"
       type: regular
       iscommand: true
       brand: ""
+      description: Create a new zoom meeting (scheduled or instant)
     nexttasks:
-      "#none#":
-        - "19"
+      '#none#':
+      - "19"
     scriptarguments:
       topic:
         simple: Testing
       user_id:
         simple: admin@demistodev.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -451,6 +447,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: ae1e769a-98cd-41fe-8465-3695e22bdf6d
@@ -463,16 +460,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      "#none#":
-        - "22"
     scriptarguments:
       fields:
         simple: id
       path:
         simple: Zoom.Meeting
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -487,6 +480,10 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    nexttasks:
+      "#none#":
+      - "22"
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: c17e3c01-10fe-4d6d-8783-0cd0860495e5
@@ -503,7 +500,6 @@ tasks:
       value:
         simple: Zoom test completed successfuly
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -518,6 +514,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: b930bad1-404c-464d-89ca-94d0c7418a3b
@@ -526,17 +523,16 @@ tasks:
       id: b930bad1-404c-464d-89ca-94d0c7418a3b
       version: -1
       name: zoom-fetch-recording
-      description: Get meeting record and save as file in the warroom
       script: "|||zoom-fetch-recording"
       type: regular
       iscommand: true
       brand: ""
+      description: Get meeting record and save as file in the warroom
     scriptarguments:
       meeting_id:
         simple: "120332943"
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -551,6 +547,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 5a61e1db-c9ed-42fb-8ec2-8768f0d06ff9
@@ -566,7 +563,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "27"
+      - "27"
     scriptarguments:
       topic:
         simple: Testing#2
@@ -603,7 +600,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "24"
+      - "24"
     scriptarguments:
       meeting_id:
         simple: ${Zoom.Meeting.id}
@@ -637,7 +634,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "25"
+      - "25"
     scriptarguments:
       fields:
         simple: id
@@ -675,7 +672,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "26"
+      - "26"
     scriptarguments:
       user_id:
         simple: admin@demistodev.com
@@ -708,23 +705,23 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "20"
-        - "20"
-        - "20"
-        - "20"
-        - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
+      - "20"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: Zoom.Meeting.total_records
-                iscontext: true
-              right:
-                value:
-                  simple: "2"
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Zoom.Meeting.total_records
+            iscontext: true
+          right:
+            value:
+              simple: "2"
     continueonerrortype: ""
     view: |-
       {
@@ -755,7 +752,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "23"
+      - "23"
     scriptarguments:
       seconds:
         simple: "2"
@@ -789,3 +786,7 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: |-
+  Important!
+  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
