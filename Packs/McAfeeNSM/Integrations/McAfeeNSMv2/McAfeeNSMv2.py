@@ -902,7 +902,7 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
         raise Exception('If you enter one of the parameters page or page_size, you have to enter both.')
 
     response = client.list_domain_firewall_policy_request(domain_id)
-    result = response.get('FirewallPoliciesForDomainResponseList', [])
+    result = sorted(response.get('FirewallPoliciesForDomainResponseList', []), key=lambda k: k['policyId'], reverse=True)
     result = pagination(result, limit, page, page_size)
     human_readable = []
     for value in result:
@@ -1302,7 +1302,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
                         '"to_address_ip_v_6" should contain a value')
 
     name = name if name else response_get.get('name')
-    visible_to_child = argToBoolean(visible_to_child) if visible_to_child else response_get.get('visible_to_child')
+    visible_to_child = argToBoolean(visible_to_child) if visible_to_child else response_get.get('visibleToChild')
     description = description if description else response_get.get('description')
     from_to_address_ip_v_6 = []
     from_to_address_ip_v_4 = []
@@ -1470,7 +1470,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         readable_output=readable_output,
         outputs_prefix='NSM.Alerts',
         outputs=alerts_list,
-        raw_response=alerts_list,
+        raw_response=response,
         outputs_key_field='uniqueAlertId'
     )
 
@@ -1607,8 +1607,8 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_outputs,
         outputs_prefix='NSM.Domains',
-        outputs=human_readable,
-        raw_response=human_readable,
+        outputs=results,
+        raw_response=results,
         outputs_key_field='id'
     )
 

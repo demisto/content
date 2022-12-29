@@ -1,225 +1,229 @@
 {
-  "get_alerts_output": [
-        {
-            "name": "Name 1",
-            "uniqueAlertId": "1111111111111111111",
-            "alertState": "UnAcknowledged",
-            "assignTo": "",
-            "attackSeverity": "High",
-            "event": {
-                "time": "Dec 10, 2022 00:00:0",
-                "direction": "Outbound",
-                "result": "n/a",
-                "attackCount": 1,
-                "relevance": "Unknown",
-                "alertId": "2222222222222222222"
+  "get_alerts_output": {
+        "totalAlertsCount": 3,
+        "retrievedAlertsCount": 3,
+        "alertsList": [
+            {
+                "name": "Name 1",
+                "uniqueAlertId": "1111111111111111111",
+                "alertState": "UnAcknowledged",
+                "assignTo": "",
+                "attackSeverity": "High",
+                "event": {
+                    "time": "Dec 10, 2022 00:00:0",
+                    "direction": "Outbound",
+                    "result": "n/a",
+                    "attackCount": 1,
+                    "relevance": "Unknown",
+                    "alertId": "2222222222222222222"
+                },
+                "attack": {
+                    "nspId": "0x00000000",
+                    "btp": "",
+                    "attackCategory": "Volume DoS"
+                },
+                "attacker": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "target": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "malwareFile": {
+                    "fileName": "",
+                    "fileHash": "",
+                    "fileSHA1Hash": "",
+                    "fileSHA256Hash": null,
+                    "malwareName": "",
+                    "malwareConfidence": "",
+                    "engine": "",
+                    "engineId": 0,
+                    "size": null,
+                    "description": null,
+                    "additionalReference": null,
+                    "cveId": null
+                },
+                "endpointExcutable": {
+                    "name": "",
+                    "hash": "",
+                    "malwareConfidence": ""
+                },
+                "detection": {
+                    "managerId": 0,
+                    "manager": null,
+                    "domain": "/My Domain",
+                    "device": "Name_Device_01",
+                    "deviceId": "0000",
+                    "interface": "1-2"
+                },
+                "application": "---",
+                "layer7Data": ""
             },
-            "attack": {
-                "nspId": "0x00000000",
-                "btp": "",
-                "attackCategory": "Volume DoS"
+            {
+                "name": "Name 2",
+                "uniqueAlertId": "2111111111111111111",
+                "alertState": "UnAcknowledged",
+                "assignTo": "",
+                "attackSeverity": "Medium",
+                "event": {
+                    "time": "Dec 10, 2022 00:00:0",
+                    "direction": "Outbound",
+                    "result": "n/a",
+                    "attackCount": 1,
+                    "relevance": "Unknown",
+                    "alertId": "2322222222222222222"
+                },
+                "attack": {
+                    "nspId": "0x40000000",
+                    "btp": "",
+                    "attackCategory": "Volume DoS"
+                },
+                "attacker": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "target": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "malwareFile": {
+                    "fileName": "",
+                    "fileHash": "",
+                    "fileSHA1Hash": "",
+                    "fileSHA256Hash": null,
+                    "malwareName": "",
+                    "malwareConfidence": "",
+                    "engine": "",
+                    "engineId": 0,
+                    "size": null,
+                    "description": null,
+                    "additionalReference": null,
+                    "cveId": null
+                },
+                "endpointExcutable": {
+                    "name": "",
+                    "hash": "",
+                    "malwareConfidence": ""
+                },
+                "detection": {
+                    "managerId": 0,
+                    "manager": null,
+                    "domain": "/My Domain",
+                    "device": "Name_Device_01",
+                    "deviceId": "0000",
+                    "interface": "1-2"
+                },
+                "application": "---",
+                "layer7Data": ""
             },
-            "attacker": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "target": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "malwareFile": {
-                "fileName": "",
-                "fileHash": "",
-                "fileSHA1Hash": "",
-                "fileSHA256Hash": null,
-                "malwareName": "",
-                "malwareConfidence": "",
-                "engine": "",
-                "engineId": 0,
-                "size": null,
-                "description": null,
-                "additionalReference": null,
-                "cveId": null
-            },
-            "endpointExcutable": {
-                "name": "",
-                "hash": "",
-                "malwareConfidence": ""
-            },
-            "detection": {
-                "managerId": 0,
-                "manager": null,
-                "domain": "/My Domain",
-                "device": "Name_Device_01",
-                "deviceId": "0000",
-                "interface": "1-2"
-            },
-            "application": "---",
-            "layer7Data": ""
-        },
-        {
-            "name": "Name 2",
-            "uniqueAlertId": "2111111111111111111",
-            "alertState": "UnAcknowledged",
-            "assignTo": "",
-            "attackSeverity": "Medium",
-            "event": {
-                "time": "Dec 10, 2022 00:00:0",
-                "direction": "Outbound",
-                "result": "n/a",
-                "attackCount": 1,
-                "relevance": "Unknown",
-                "alertId": "2322222222222222222"
-            },
-            "attack": {
-                "nspId": "0x40000000",
-                "btp": "",
-                "attackCategory": "Volume DoS"
-            },
-            "attacker": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "target": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "malwareFile": {
-                "fileName": "",
-                "fileHash": "",
-                "fileSHA1Hash": "",
-                "fileSHA256Hash": null,
-                "malwareName": "",
-                "malwareConfidence": "",
-                "engine": "",
-                "engineId": 0,
-                "size": null,
-                "description": null,
-                "additionalReference": null,
-                "cveId": null
-            },
-            "endpointExcutable": {
-                "name": "",
-                "hash": "",
-                "malwareConfidence": ""
-            },
-            "detection": {
-                "managerId": 0,
-                "manager": null,
-                "domain": "/My Domain",
-                "device": "Name_Device_01",
-                "deviceId": "0000",
-                "interface": "1-2"
-            },
-            "application": "---",
-            "layer7Data": ""
-        },
-        {
-            "name": "Name 3",
-            "uniqueAlertId": "3111111111111111111",
-            "alertState": "UnAcknowledged",
-            "assignTo": "",
-            "attackSeverity": "High",
-            "event": {
-                "time": "Dec 10, 2022 00:00:0",
-                "direction": "Inbound",
-                "result": "n/a",
-                "attackCount": 1,
-                "relevance": "Unknown",
-                "alertId": "3333333333333333333"
-            },
-            "attack": {
-                "nspId": "0x30000000",
-                "btp": "",
-                "attackCategory": "Volume DoS"
-            },
-            "attacker": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "target": {
-                "ipAddrs": "",
-                "port": 0,
-                "hostName": "",
-                "country": "",
-                "os": null,
-                "vmName": null,
-                "proxyIP": "",
-                "user": null,
-                "risk": "Disabled",
-                "networkObject": null
-            },
-            "malwareFile": {
-                "fileName": "",
-                "fileHash": "",
-                "fileSHA1Hash": "",
-                "fileSHA256Hash": null,
-                "malwareName": "",
-                "malwareConfidence": "",
-                "engine": "",
-                "engineId": 0,
-                "size": null,
-                "description": null,
-                "additionalReference": null,
-                "cveId": null
-            },
-            "endpointExcutable": {
-                "name": "",
-                "hash": "",
-                "malwareConfidence": ""
-            },
-            "detection": {
-                "managerId": 0,
-                "manager": null,
-                "domain": "/My Domain",
-                "device": "Name_Device_01",
-                "deviceId": "0000",
-                "interface": "1-2"
-            },
-            "application": "---",
-            "layer7Data": ""
-        }
-  ],
+            {
+                "name": "Name 3",
+                "uniqueAlertId": "3111111111111111111",
+                "alertState": "UnAcknowledged",
+                "assignTo": "",
+                "attackSeverity": "High",
+                "event": {
+                    "time": "Dec 10, 2022 00:00:0",
+                    "direction": "Inbound",
+                    "result": "n/a",
+                    "attackCount": 1,
+                    "relevance": "Unknown",
+                    "alertId": "3333333333333333333"
+                },
+                "attack": {
+                    "nspId": "0x30000000",
+                    "btp": "",
+                    "attackCategory": "Volume DoS"
+                },
+                "attacker": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "target": {
+                    "ipAddrs": "",
+                    "port": 0,
+                    "hostName": "",
+                    "country": "",
+                    "os": null,
+                    "vmName": null,
+                    "proxyIP": "",
+                    "user": null,
+                    "risk": "Disabled",
+                    "networkObject": null
+                },
+                "malwareFile": {
+                    "fileName": "",
+                    "fileHash": "",
+                    "fileSHA1Hash": "",
+                    "fileSHA256Hash": null,
+                    "malwareName": "",
+                    "malwareConfidence": "",
+                    "engine": "",
+                    "engineId": 0,
+                    "size": null,
+                    "description": null,
+                    "additionalReference": null,
+                    "cveId": null
+                },
+                "endpointExcutable": {
+                    "name": "",
+                    "hash": "",
+                    "malwareConfidence": ""
+                },
+                "detection": {
+                    "managerId": 0,
+                    "manager": null,
+                    "domain": "/My Domain",
+                    "device": "Name_Device_01",
+                    "deviceId": "0000",
+                    "interface": "1-2"
+                },
+                "application": "---",
+                "layer7Data": ""
+            }
+      ]
+    },
   "get_list_firewall_policy": [
         {
             "policyId": 123,
@@ -519,7 +523,8 @@
             "layer7Data": ""
         }
   ],
-    "get_sensors": [{
+    "get_sensors":{
+        "SensorDescriptor": [{
             "sensorId": 1111,
             "name": "Name_Device_01",
             "model": "MMM-MM666",
@@ -542,7 +547,7 @@
             "isStack": false,
             "isStackMember": false,
             "MemberSensors": []
-        }],
+        }]},
     "expected_sensors_list": [{
             "ID": 1111,
             "Name": "Name_Device_01",
@@ -642,6 +647,45 @@
             }
         }
     }],
+    "get_attacks_command": {
+        "AttackDescriptor": {
+            "DosDirection": null,
+            "Severity": 5,
+            "attackId": "0x00000000",
+            "name": "IP: IP Fragment too Large",
+            "description": {
+                "definition": "The Fragment offset plus the length exceeds 65,535.",
+                "btp": "Low",
+                "rfSB": "No",
+                "protectionCategory": "[Network Protection/IP]",
+                "target": "Server",
+                "httpResponseAttack": "No",
+                "priority": "High",
+                "protocols": "ipv4",
+                "attackCategory": "Exploit",
+                "attackSubCategory": "Protocol Violation",
+                "snortEngine": "---",
+                "versionAdded": "1.1.1.1",
+                "versionUpdated": "1.1.1.1",
+                "reference": {
+                    "nspId": "0x00000000",
+                    "cveId": "",
+                    "microsoftId": "",
+                    "bugtraqId": "",
+                    "certId": "",
+                    "arachNidsId": "",
+                    "additionInfo": null
+                },
+                "signatures": [],
+                "componentAttacks": [],
+                "comments": {
+                    "comments": "",
+                    "availabeToChildDomains": true,
+                    "parentDomainComments": null
+                }
+            }
+        }
+    },
     "get_ips_policy_details": {
        "PolicyName": "IpsPolicy",
        "Description": "To test the IPS policy",
@@ -1433,5 +1477,180 @@
         "PolicyType": "ADVANCED",
         "PolicyVersion": 1,
         "VisibleToChild": true
-    }
+    },
+    "list_domain_rule_objects": {
+        "RuleObjDef": [
+            {
+                "ruleobjId": "134",
+                "ruleobjType": "HOST_IPV_4",
+                "name": "testing",
+                "description": null,
+                "domain": 0,
+                "visibleToChild": false,
+                "hostCriticality": "HIGH",
+                "ApplicationGroup": null,
+                "ApplicationOnCustomPort": null,
+                "FiniteTimePeriod": null,
+                "HostIPv4": {
+                    "hostIPv4AddressList": [
+                        "1.1.1.1"
+                    ]
+                },
+                "HostIPv6": null,
+                "HostDNSName": null,
+                "IPv4AddressRange": null,
+                "IPv6AddressRange": null,
+                "Network_IPV_4": null,
+                "Network_IPV_6": null,
+                "NetworkGroup": null,
+                "RecurringTimePeriod": null,
+                "RecurringTimePeriodGroup": null,
+                "Service": null,
+                "ServiceGroup": null,
+                "ServiceRange": null
+            },
+            {
+                "ruleobjId": "129",
+                "ruleobjType": "IPV_4_ADDRESS_RANGE",
+                "name": "rule object",
+                "description": "ddd",
+                "domain": 0,
+                "visibleToChild": true,
+                "hostCriticality": null,
+                "ApplicationGroup": null,
+                "ApplicationOnCustomPort": null,
+                "FiniteTimePeriod": null,
+                "HostIPv4": null,
+                "HostIPv6": null,
+                "HostDNSName": null,
+                "IPv4AddressRange": {
+                    "IPV4RangeList": [
+                        {
+                            "FromAddress": "1.1.1.1",
+                            "ToAddress": "2.2.2.2"
+                        }
+                    ]
+                },
+                "IPv6AddressRange": null,
+                "Network_IPV_4": null,
+                "Network_IPV_6": null,
+                "NetworkGroup": null,
+                "RecurringTimePeriod": null,
+                "RecurringTimePeriodGroup": null,
+                "Service": null,
+                "ServiceGroup": null,
+                "ServiceRange": null
+            }
+        ]
+    },
+    "get_rule_object_test": {
+        "RuleObjDef": {
+            "ruleobjId": "113",
+            "ruleobjType": "NETWORK_IPV_4",
+            "name": "Network ip Test",
+            "description": null,
+            "domain": 0,
+            "visibleToChild": false,
+            "hostCriticality": "HIGH",
+            "ApplicationGroup": null,
+            "ApplicationOnCustomPort": null,
+            "FiniteTimePeriod": null,
+            "HostIPv4": null,
+            "HostIPv6": null,
+            "HostDNSName": null,
+            "IPv4AddressRange": null,
+            "IPv6AddressRange": null,
+            "Network_IPV_4": {
+                "networkIPV4List": [
+                    "3.3.3.3/33",
+                    "4.4.4.4/44"
+                ]
+            },
+            "Network_IPV_6": null,
+            "NetworkGroup": null,
+            "RecurringTimePeriod": null,
+            "RecurringTimePeriodGroup": null,
+            "Service": null,
+            "ServiceGroup": null,
+            "ServiceRange": null
+        }
+    },
+    "expected_get_rule_obj_result": {
+        "RuleObjDef": {
+            "ruleobjId": "113",
+            "ruleobjType": "Network IP V.4",
+            "name": "Network ip Test",
+            "description": null,
+            "domain": 0,
+            "visibleToChild": false,
+            "hostCriticality": "HIGH",
+            "ApplicationGroup": null,
+            "ApplicationOnCustomPort": null,
+            "FiniteTimePeriod": null,
+            "HostIPv4": null,
+            "HostIPv6": null,
+            "HostDNSName": null,
+            "IPv4AddressRange": null,
+            "IPv6AddressRange": null,
+            "Network_IPV_4": {
+                "networkIPV4List": [
+                    "3.3.3.3/33",
+                    "4.4.4.4/44"
+                ]
+            },
+            "Network_IPV_6": null,
+            "NetworkGroup": null,
+            "RecurringTimePeriod": null,
+            "RecurringTimePeriodGroup": null,
+            "Service": null,
+            "ServiceGroup": null,
+            "ServiceRange": null
+        }
+    },
+    "get_domains": {
+        "DomainDescriptor": {
+            "id": 0,
+            "name": "My Company",
+            "childdomains": []
+        }
+    },
+    "expected_get_domains": {
+            "ID": 0,
+            "Name": "My Company",
+            "childdomains": []
+        },
+    "get_ips_policies": {
+        "PolicyDescriptorDetailsList": [
+            {
+                "DomainId": 0,
+                "policyId": -1,
+                "IsEditable": true,
+                "name": "Master",
+                "VisibleToChild": true
+            },
+            {
+                "DomainId": 0,
+                "policyId": 0,
+                "IsEditable": true,
+                "name": "Default",
+                "VisibleToChild": true
+            }
+        ]
+    },
+    "expected_get_ips_policies": [
+        {
+            "DomainID": 0,
+            "ID": -1,
+            "IsEditable": true,
+            "Name": "Master",
+            "VisibleToChildren": true
+        },
+        {
+            "DomainID": 0,
+            "ID": 0,
+            "IsEditable": true,
+            "Name": "Default",
+            "VisibleToChildren": true
+        }
+    ]
 }

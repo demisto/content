@@ -1308,6 +1308,7 @@ If a domain id is given The command returns the details of the specific domain. 
 | --- | --- | --- |
 | NSM.Domains.id | Number | Domain id. | 
 | NSM.Domains.name | String | Domain name. | 
+| NSM.Domains.childdomains | Unknown | The children of the domain. | 
 
 #### Command example
 ```!nsm-get-domains```
@@ -1317,7 +1318,8 @@ If a domain id is given The command returns the details of the specific domain. 
     "NSM": {
         "Domains": {
             "ID": 0,
-            "Name": "My Company"
+            "Name": "My Company",
+            "childdomains": []
         }
     }
 }
@@ -1452,14 +1454,14 @@ Gets all the IPS Policies defined in the specific domain.
                 "ID": -1,
                 "IsEditable": true,
                 "Name": "Master",
-                "VisibleToChild": true
+                "VisibleToChildren": true
             },
             {
                 "DomainId": 0,
                 "ID": 0,
                 "IsEditable": true,
                 "Name": "Default",
-                "VisibleToChild": true
+                "VisibleToChildren": true
             }
         ]
     }

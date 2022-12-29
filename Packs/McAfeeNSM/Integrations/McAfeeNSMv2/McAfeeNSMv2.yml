@@ -1423,6 +1423,9 @@ script:
         - contextPath: NSM.Domains.name
           description: Domain Name.
           type: String
+        - contextPath: NSM.Domains.childdomains
+          description: The children of the domain.
+          type: Unknown
     - name: nsm-get-sensors
       description: Gets the list of sensors available in the specified domain. If the domain is not specified, details of all the sensors in all ADs will be provided.
       arguments:

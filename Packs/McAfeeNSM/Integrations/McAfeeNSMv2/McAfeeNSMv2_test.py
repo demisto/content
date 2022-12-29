@@ -96,7 +96,7 @@ def test_alerts_list_pagination():
             - Returns the wanted records.
     """
     from McAfeeNSMv2 import alerts_list_pagination
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output')
+    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output', {}).get('alertsList')
     page_size = 1050
     page = 1
     time_period = None
@@ -275,7 +275,7 @@ def test_add_entries_to_alert_list():
             - Returns the alerts list with the updated entries.
     """
     from McAfeeNSMv2 import add_entries_to_alert_list
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output')
+    records_list = util_load_json('test_data/commands_test_data.json').get('get_alerts_output', {}).get('alertsList')
     expected_records_list = util_load_json('test_data/commands_test_data.json').get('updated_get_alert_list')
     result_list = add_entries_to_alert_list(records_list)
     assert expected_records_list == result_list
@@ -291,7 +291,7 @@ def test_update_sensors_list():
             - Returns the sensors list with the updated entries.
     """
     from McAfeeNSMv2 import update_sensors_list
-    records_list = util_load_json('test_data/commands_test_data.json').get('get_sensors')
+    records_list = util_load_json('test_data/commands_test_data.json').get('get_sensors', {}).get('SensorDescriptor')
     expected_records_list = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
     result_list = update_sensors_list(records_list)
     assert expected_records_list == result_list
@@ -445,12 +445,12 @@ def test_get_addresses_from_response():
             - Returns the updated dictionary with the alert details.
     """
     from McAfeeNSMv2 import get_addresses_from_response
-    addresses1 = util_load_json('test_data/commands_test_data.json').get('get_rule_object1')
-    addresses2 = util_load_json('test_data/commands_test_data.json').get('get_rule_object2')
+    get_rule_object1 = util_load_json('test_data/commands_test_data.json').get('get_rule_object1')
+    get_rule_object2 = util_load_json('test_data/commands_test_data.json').get('get_rule_object2')
     expected_addresses1 = ['1.1.1.1 - 2.2.2.2']
     expected_addresses2 = ['3.3.3.3/33', '4.4.4.4/44']
-    result1 = get_addresses_from_response(addresses1)
-    result2 = get_addresses_from_response(addresses2)
+    result1 = get_addresses_from_response(get_rule_object1)
+    result2 = get_addresses_from_response(get_rule_object2)
     assert expected_addresses1 == result1
     assert expected_addresses2 == result2
 
@@ -458,13 +458,14 @@ def test_get_addresses_from_response():
 def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     Given:
-        - Domain id, limit to the list and a page.
+        - Domain id, limit to the list, a page. and page_size.
 
     When:
         - nsm-list-domain-firewall-policy command is executed
 
     Then:
-        - The http request is called with the right arguments, and returns the right command result.
+        - The http request is called with the right arguments,
+        and returns a list of the firewall policies in the domain.
     """
     from McAfeeNSMv2 import list_domain_firewall_policy_command
     args = {'domain_id': '0', 'limit': '2'}
@@ -478,18 +479,17 @@ def test_list_domain_firewall_policy_command(mocker, mcafeensmv2_client):
                                '|---|---|---|---|---|---|---|---|---|\n' \
                                '| 147 | n | 0 | true | d | true | ADVANCED | 1 | user |\n' \
                                '| 140 | hello | 0 | true | hello policy | true | ADVANCED | 1 | user |\n'
-    readable_output = result.readable_output
-    assert readable_output == expected_readable_output
+    assert result.readable_output == expected_readable_output
     assert result.raw_response == expected_result
 
 
 def test_get_firewall_policy_command(mocker, mcafeensmv2_client):
     """
     Given:
-        - Domain id, limit to the list and a page.
+        - A policy_id.
 
     When:
-        - nsm-list-domain-firewall-policy command is executed
+        - nsm-get-firewall-policy command is executed
 
     Then:
         - The http request is called with the right arguments, and returns the right command result.
@@ -505,6 +505,551 @@ def test_get_firewall_policy_command(mocker, mcafeensmv2_client):
                                '|LastModifiedTime|\n' \
                                '|---|---|---|---|---|---|---|---|\n' \
                                '| n | update policy | true | true | ADVANCED | 1 | user | 2022-12-26 05:37:46 |\n'
-    readable_output = result.readable_output
-    assert readable_output == expected_readable_output
+    assert result.readable_output == expected_readable_output
     assert result.raw_response == expected_result
+
+
+def test_create_firewall_policy_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A domain id, name, visible_to_child, description, is_editable, policy_type, rule_description, rule_enabled,
+            response_param, direction, source_rule_object_id, source_rule_object_type, destination_rule_object_id,
+            destination_rule_object_type.
+    When:
+        - create-firewall-policy command is executed
+    Then:
+        - The http request is called with the right arguments,
+            returns a command result with a success message and a number of the new firewall policy.
+    """
+    from McAfeeNSMv2 import create_firewall_policy_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    args = {
+        'domain': '0',
+        'name': 'firewall policy name',
+        'description': "some tests",
+        'is_editable': 'yes',
+        'policy_type': 'Advanced',
+        'rule_description': 'some rule',
+        'response': 'Scan',
+        'direction': 'Either',
+        'source_rule_object_id': '1',
+        'source_rule_object_type': 'Network IP V.6'
+    }
+    expected_body = {
+        'Name': 'firewall policy name',
+        'DomainId': 0,
+        'VisibleToChild': True,
+        'Description': 'some tests',
+        'IsEditable': True,
+        'PolicyType': 'ADVANCED',
+        'MemberDetails': {
+            'MemberRuleList': [
+                {
+                    'Description': 'some rule',
+                    'Enabled': True,
+                    'Response': 'SCAN',
+                    'Direction': 'EITHER',
+                    'SourceAddressObjectList': [{
+                        'RuleObjectId': 1,
+                        'RuleObjectType': 'NETWORK_IPV_6'
+                    }],
+                    'DestinationAddressObjectList': [{
+                        'RuleObjectId': -1,
+                        'RuleObjectType': None
+                    }],
+                    "SourceUserObjectList": [
+                        {
+                            "RuleObjectId": '-1',
+                            "Name": "Any",
+                            "RuleObjectType": "USER"
+                        }
+                    ],
+                    "ServiceObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": None,
+                            "ApplicationType": None
+                        }
+                    ],
+                    "ApplicationObjectList": [],
+                    "TimeObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Always",
+                            "RuleObjectType": None
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    create_firewall_policy_command(mcafeensmv2_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/firewallpolicy',
+                                    json_data=expected_body)
+
+
+def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A domain id, name, visible_to_child, description, is_editable, policy_type, rule_description, rule_enabled,
+            response_param, direction, source_rule_object_id, source_rule_object_type, destination_rule_object_id,
+            destination_rule_object_type, is_overwrite.
+    When:
+        - update-firewall-policy command is executed
+    Then:
+        - The http request is called with the right arguments,
+            returns a command result with a success message and a number of the updated firewall policy.
+    """
+    from McAfeeNSMv2 import update_firewall_policy_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    get_response = util_load_json('test_data/commands_test_data.json').get('get_firewall_policy')
+    args1 = {
+        'policy_id': '147',
+        'domain': '0',
+        'source_rule_object_id': '12',
+        'source_rule_object_type': 'Range IP V.4'
+    }
+    expected_body1 = {
+        "Name": "n",
+        "DomainId": "0",
+        "VisibleToChild": True,
+        "Description": "update policy",
+        "IsEditable": True,
+        "PolicyType": "ADVANCED",
+        "MemberDetails": {
+            "MemberRuleList": [
+                {
+                    "Description": "r",
+                    "Enabled": True,
+                    "Response": "SCAN",
+                    "Direction": "EITHER",
+                    "SourceAddressObjectList": [
+                        {
+                            "Name": "Range V6 Test",
+                            "RuleObjectId": "117",
+                            "RuleObjectType": "IPV_6_ADDRESS_RANGE",
+                        },
+                        {
+                            "RuleObjectId": 12,
+                            "RuleObjectType": "IPV_4_ADDRESS_RANGE"
+                        },
+                    ],
+                    "DestinationAddressObjectList": [
+                        {
+                            "Name": "Any",
+                            "RuleObjectId": "-1",
+                            "RuleObjectType": None}
+                    ],
+                    "SourceUserObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": "USER"}
+                    ],
+                    "ServiceObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": None,
+                            "ApplicationType": None,
+                        }
+                    ],
+                    "ApplicationObjectList": [],
+                    "TimeObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Always",
+                            "RuleObjectType": None}
+                    ],
+                }
+            ]
+        }
+    }
+
+    args2 = {
+        'policy_id': '147',
+        'domain': '0',
+        'source_rule_object_id': '12',
+        'source_rule_object_type': 'Range IP V.4',
+        'is_overwrite': 'true'
+    }
+    expected_body2 = {
+        'Name': 'n',
+        'DomainId': '0',
+        'VisibleToChild': True,
+        'Description': 'update policy',
+        'IsEditable': True,
+        'PolicyType': 'ADVANCED',
+        'MemberDetails': {
+            'MemberRuleList': [
+                {
+                    'Description': 'r',
+                    'Enabled': True,
+                    'Response': 'SCAN',
+                    'Direction': 'EITHER',
+                    'SourceAddressObjectList': [
+                        {
+                            'RuleObjectId': 12,
+                            'RuleObjectType': 'IPV_4_ADDRESS_RANGE'
+                        }
+                    ],
+                    'DestinationAddressObjectList': [{
+                        'Name': 'Any',
+                        'RuleObjectId': '-1',
+                        'RuleObjectType': None
+                    }],
+                    "SourceUserObjectList": [
+                        {
+                            "RuleObjectId": '-1',
+                            "Name": "Any",
+                            "RuleObjectType": "USER"
+                        }
+                    ],
+                    "ServiceObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Any",
+                            "RuleObjectType": None,
+                            "ApplicationType": None
+                        }
+                    ],
+                    "ApplicationObjectList": [],
+                    "TimeObjectList": [
+                        {
+                            "RuleObjectId": "-1",
+                            "Name": "Always",
+                            "RuleObjectType": None
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    mocker.patch.object(mcafeensmv2_client, 'get_firewall_policy_request', return_value=get_response)
+    update_firewall_policy_command(mcafeensmv2_client, args1)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/firewallpolicy/147',
+                                    json_data=expected_body1)
+    update_firewall_policy_command(mcafeensmv2_client, args2)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/firewallpolicy/147',
+                                    json_data=expected_body2)
+
+
+def test_delete_firewall_policy_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a firewall policy id.
+    When:
+        - delete-firewall-policy command is executed
+    Then:
+        - The http request is called with the right arguments, returns a command result with a success message.
+    """
+    from McAfeeNSMv2 import delete_firewall_policy_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    args = {
+        'policy_id': '147'
+    }
+    delete_firewall_policy_command(mcafeensmv2_client, args)
+    http_request.assert_called_with(method='DELETE', url_suffix='/firewallpolicy/147')
+
+
+def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - Domain id, rule_type, limit to the list, a page and page_size.
+    When:
+        - nsm-list-domain-rule-object command is executed
+    Then:
+        - The http request is called with the right arguments, and returns a list with information about the rules
+            in the specified domain.
+    """
+    from McAfeeNSMv2 import list_domain_rule_objects_command
+    args = {'domain_id': '0', 'limit': '2'}
+    response = util_load_json('test_data/commands_test_data.json').get('list_domain_rule_objects')
+    expected_result = response.get('RuleObjDef')
+    mocker.patch.object(mcafeensmv2_client, 'list_domain_rule_objects_request', return_value=response)
+    result = list_domain_rule_objects_command(mcafeensmv2_client, args)
+    expected_readable_output = '### List of Rule Objects\n' \
+                               '|RuleId|Name|Description|VisibleToChild|RuleType|\n' \
+                               '|---|---|---|---|---|\n' \
+                               '| 134 | testing |  | false | Endpoint IP V.4 |\n' \
+                               '| 129 | rule object | ddd | true | Range IP V.4 |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.raw_response == expected_result
+
+
+def test_get_rule_object_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a rule_id.
+    When:
+        - nsm-get-rule-object command is executed
+    Then:
+        - The http request is called with the right arguments, and returns a Command Result with information
+            about the rule.
+    """
+    from McAfeeNSMv2 import get_rule_object_command
+    args = {'rule_id': '113'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
+    expected_result = response.get('RuleObjDef')
+    mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=response)
+    result = get_rule_object_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Rule Objects 113\n' \
+                               '|RuleId|Name|VisibleToChild|RuleType|Addresses|\n' \
+                               '|---|---|---|---|---|\n' \
+                               '| 113 | Network ip Test | false | Network IP V.4 | 3.3.3.3/33,<br>4.4.4.4/44 |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.raw_response == expected_result
+
+
+def test_create_rule_object_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A domain id, rule_object_type, name, visible_to_child, description and matching addresses.
+    When:
+        - create-rule-object command is executed
+    Then:
+        - The http request is called with the right arguments,
+            returns a command result with a success message and a number of the new rule.
+    """
+    from McAfeeNSMv2 import create_rule_object_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    args = {
+        'domain': '0',
+        'rule_object_type': 'Endpoint IP V.6',
+        'name': 'new rule',
+        'description': "a new rule in the way",
+        'address_ip_v.6': '1111:1111:1111:1111:1111:1111:1111:1111'
+    }
+    expected_body = {
+        'RuleObjDef': {
+            "domain": 0,
+            "ruleobjType": 'HOST_IPV_6',
+            "visibleToChild": True,
+            "description": 'a new rule in the way',
+            "name": 'new rule',
+            'HostIPv6': {
+                'hostIPv6AddressList': ['1111:1111:1111:1111:1111:1111:1111:1111']
+            }
+        }
+    }
+    create_rule_object_command(mcafeensmv2_client, args)
+    http_request.assert_called_with(method='POST',
+                                    url_suffix='/ruleobject',
+                                    json_data=expected_body)
+
+
+def test_update_rule_object_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - A domain id, rule_id, description, address_ip_v.4.
+    When:
+        - update-rule-object command is executed.
+    Then:
+        - The http request is called with the right arguments,
+            returns a command result with a success message and the numcer of the updated rule object.
+    """
+    from McAfeeNSMv2 import update_rule_object_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    get_response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
+    args1 = {
+        'rule_id': '113',
+        'domain': '0',
+        'description': 'updated description',
+        'address_ip_v.4': '5.5.5.5/55'
+    }
+    expected_body1 = {
+        'RuleObjDef': {
+            "domain": 0,
+            "ruleobjType": 'NETWORK_IPV_4',
+            "visibleToChild": False,
+            "description": 'updated description',
+            "name": 'Network ip Test',
+            "Network_IPV_4": {
+                "networkIPV4List": [
+                    "3.3.3.3/33",
+                    "4.4.4.4/44",
+                    "5.5.5.5/55"
+                ]
+            }
+        }
+    }
+
+    args2 = {
+        'rule_id': '113',
+        'domain': '0',
+        'description': 'updated description',
+        'address_ip_v.4': '5.5.5.5/55',
+        'is_overwrite': 'true'
+    }
+    expected_body2 = {
+        'RuleObjDef': {
+            "domain": 0,
+            "ruleobjType": 'NETWORK_IPV_4',
+            "visibleToChild": False,
+            "description": 'updated description',
+            "name": 'Network ip Test',
+            "Network_IPV_4": {
+                "networkIPV4List": [
+                    "5.5.5.5/55"
+                ]
+            }
+        }
+    }
+    mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=get_response)
+    update_rule_object_command(mcafeensmv2_client, args1)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/ruleobject/113',
+                                    json_data=expected_body1,
+                                    resp_type='response')
+    update_rule_object_command(mcafeensmv2_client, args2)
+    http_request.assert_called_with(method='PUT',
+                                    url_suffix='/ruleobject/113',
+                                    json_data=expected_body2,
+                                    resp_type='response')
+
+
+def test_delete_rule_object_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a rule id.
+    When:
+        - delete-rule-object command is executed
+    Then:
+        - The http request is called with the right arguments, returns a command result with a success message.
+    """
+    from McAfeeNSMv2 import delete_rule_object_command
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    args = {
+        'rule_id': '147'
+    }
+    delete_rule_object_command(mcafeensmv2_client, args)
+    http_request.assert_called_with(method='DELETE', url_suffix='/ruleobject/147')
+
+
+def test_get_alerts_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - Domain id, limit to the list, time_period, start_time, end_time.
+    When:
+        - nsm-get-alerts command is executed
+    Then:
+        - The http request is called with the right arguments, and returns a list with information about the alerts
+            in the specified domain.
+    """
+    from McAfeeNSMv2 import get_alerts_command
+    args = {'domain_id': '0', 'time_period': 'CUSTOM', 'start_time': '12/17/2000 14:14',
+            'end_time': '12/18/2022 00:26:45'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_alerts_output')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('updated_get_alert_list')
+    mocker.patch.object(mcafeensmv2_client, 'get_alerts_request', return_value=response)
+    result = get_alerts_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Alerts list. Showing 3 of 3\n' \
+                               '|ID|Name|Event Time|Severity|State|Direction|Attack Count|\n' \
+                               '|---|---|---|---|---|---|---|\n' \
+                               '| 2222222222222222222 | Name 1 | Dec 10, 2022 00:00:0 | High | UnAcknowledged | ' \
+                               'Outbound | n/a |\n' \
+                               '| 2322222222222222222 | Name 2 | Dec 10, 2022 00:00:0 | Medium | UnAcknowledged | ' \
+                               'Outbound | n/a |\n' \
+                               '| 3333333333333333333 | Name 3 | Dec 10, 2022 00:00:0 | High | UnAcknowledged | ' \
+                               'Inbound | n/a |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_result
+
+
+def test_get_attacks_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - an attack id.
+    When:
+        - nsm-get-attacks command is executed
+    Then:
+        - The http request is called with the right arguments, and returns a Command Result with information about the
+            requested attack.
+    """
+    from McAfeeNSMv2 import get_attacks_command
+    args = {'attack_id': '0x00000000'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_attacks_command')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_attacks_list')
+    mocker.patch.object(mcafeensmv2_client, 'get_attacks_request', return_value=response)
+    result = get_attacks_command(mcafeensmv2_client, args)[0]
+    expected_readable_output = '### Attack no.0x00000000\n' \
+                               '|ID|Name|Severity|Category|\n' \
+                               '|---|---|---|---|\n' \
+                               '| 0x00000000 | IP: IP Fragment too Large | 5 | Exploit |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_result
+
+
+def test_get_domains_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a domain id.
+    When:
+        - nsm-get-domains command is executed.
+    Then:
+        - The http request is called with the right arguments, and returns a Command Result with information about the
+            requested domain.
+    """
+    from McAfeeNSMv2 import get_domains_command
+    args = {'domain_id': '0'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_domains')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_domains')
+    mocker.patch.object(mcafeensmv2_client, 'get_domains_request', return_value=response)
+    result = get_domains_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Domain no.0\n' \
+                               '|ID|Name|\n' \
+                               '|---|---|\n' \
+                               '| 0 | My Company |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_result
+
+
+def test_get_sensors_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a domain id.
+    When:
+        - nsm-get-sensors command is executed.
+    Then:
+        - The http request is called with the right arguments, and returns a Command Result with a list of sensors.
+    """
+    from McAfeeNSMv2 import get_sensors_command
+    args = {'domain_id': '0'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_sensors')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_sensors_list')
+    mocker.patch.object(mcafeensmv2_client, 'get_sensors_request', return_value=response)
+    result = get_sensors_command(mcafeensmv2_client, args)
+    expected_readable_output = '### Sensors List\n' \
+                               '|ID|Name|Description|DomainID|IPSPolicyID|IP Address|\n' \
+                               '|---|---|---|---|---|---|\n' \
+                               '| 1111 | Name_Device_01 | MCAFEE-NETWORK-SECURITY-PLATFORM | 0 | 0 | 3.3.3.3 |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_result
+
+
+def test_get_ips_policies_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+        - a domain id.
+    When:
+        - nsm-get-ips-policies command is executed.
+    Then:
+        - The http request is called with the right arguments, and returns a Command Result with a list of ips policies.
+    """
+    from McAfeeNSMv2 import get_ips_policies_command
+    args = {'domain_id': '0'}
+    response = util_load_json('test_data/commands_test_data.json').get('get_ips_policies')
+    expected_result = util_load_json('test_data/commands_test_data.json').get('expected_get_ips_policies')
+    mocker.patch.object(mcafeensmv2_client, 'get_ips_policies_request', return_value=response)
+    result = get_ips_policies_command(mcafeensmv2_client, args)
+    expected_readable_output = '### IPS Policies List of Domain no.0\n' \
+                               '|ID|Name|DomainID|IsEditable|VisibleToChildren|\n' \
+                               '|---|---|---|---|---|\n' \
+                               '| -1 | Master | 0 | true | true |\n' \
+                               '| 0 | Default | 0 | true | true |\n'
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_result
