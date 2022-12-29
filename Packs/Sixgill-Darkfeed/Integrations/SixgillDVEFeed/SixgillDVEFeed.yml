@@ -104,7 +104,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Deprecated. Use Cybersixgill DVE Feed Threat Intelligence v2 from the `Cybersixgill-DVE` pack instead.
+description: Deprecated. Use Cybersixgill DVE Feed Threat Intelligence v2 from the Cybersixgill-DVE pack instead.
 display: Cybersixgill DVE Feed Threat Intelligence (Deprecated)
 name: Sixgill_DVE_Feed
 script:
