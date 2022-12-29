@@ -40,29 +40,29 @@ MEETING_TYPE_NUM_MAPPING = {
     "recurring meeting with fixed time": 8
 }
 # ERRORS
-INVALID_CREDENTIALS = 'Invalid credentials. Please verify that your credentials are valid.'
-INVALID_API_SECRET = 'Invalid API Secret. Please verify that your API Secret is valid.'
-INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
-WRONG_TIME_FORMAT = "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
-LIMIT_AND_EXTRA_ARGUMENTS = """Too money arguments. if you choose a limit,
-                                       don't enter a user_id or page_size or next_page_token or page_number"""
-LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST = """Too money arguments. if you choose a limit,
-                                       don't enter a page_size or next_page_token or page_number"""
-INSTANT_AND_TIME = "Too money arguments. Please use start_time and timezone for scheduled meetings only.."
+INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
+INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
+INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+WRONG_TIME_FORMAT = "Wrong time format. Use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
+LIMIT_AND_EXTRA_ARGUMENTS = "Too many arguments. If you choose a limit,
+                                       don't enter a user_id or page_size or next_page_token or page_number."
+LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST = "Too many arguments. If you choose a limit,
+                                       don't enter a page_size or next_page_token or page_number."
+INSTANT_AND_TIME = "Too many arguments.Uuse start_time and timezone for scheduled meetings only."
 JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
 WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
-END_TIMES_AND_END_DATE_TIME = "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time."
-NOT_RECURRING_WITH_RECUURING_ARGUMENTS = """One or more arguments that were filed
-are used for recurring meeting with fixed time only"""
-NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = """One or more arguments that were
-filed are for recurring meeting with fixed time and monthly recurrence_type only"""
-MONTHLY_RECURRING_MISIING_ARGUMENTS = """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
-            must have the fallowing arguments: monthly_week and monthly_week_day"""
-NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only"
-EXTRA_PARAMS = """Too many fields were filled.
+END_TIMES_AND_END_DATE_TIME = "Collision arguments. Choose only one of these two arguments, end_time or end_date_time."
+NOT_RECURRING_WITH_RECURRING_ARGUMENTS = "One or more arguments that were filed
+are used for a recurring meeting with a fixed time only."
+NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = "One or more arguments that were
+filed are for a recurring meeting with a fixed time and monthly recurrence_type only."
+MONTHLY_RECURRING_MISIING_ARGUMENTS = "Missing arguments. A recurring meeting with a fixed time and monthly recurrence_type
+            must have the following arguments: monthly_week and monthly_week_day."
+NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only."
+EXTRA_PARAMS = "Too many fields were filled.
                                    You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
-RECURRING_MISSING_ARGUMENTS = "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type"
+                                   OR the API Key and API Secret fields (JWT - Deprecated)."
+RECURRING_MISSING_ARGUMENTS = "Missing arguments. A recurring meeting with a fixed time is missing this argument: recurrence_type."
 '''CLIENT CLASS'''
 
 
