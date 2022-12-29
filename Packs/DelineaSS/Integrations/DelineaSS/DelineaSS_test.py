@@ -7,22 +7,25 @@ from DelineaSS import Client, \
     secret_delete_command, folder_create_command, \
     folder_delete_command, folder_update_command, \
     user_delete_command, secret_create_command, user_create_command, \
-    user_update_command, secret_rpc_changepassword_command
+    user_update_command, secret_rpc_changepassword_command, \
+    fetch_credentials_command, secret_search_name_command
 from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, \
     GET_USERNAME_BY_ID_CONTENT, SECRET_GET_CONTENT, \
     SECRET_PASSWORD_UPDATE_CONTEXT, SECRET_CHECKOUT_CONTEXT, \
     SECRET_CHECKIN_CONTEXT, SECRET_DELETE_CONTEXT, \
     FOLDER_CREATE_CONTEXT, FOLDER_DELETE_CONTEXT, FOLDER_UPDATE_CONTEXT, \
     USER_DELETE_CONTEXT, SECRET_CREATE_CONTEXT, USER_CREATE_CONTEXT, \
-    USER_UPDATE_CONTEXT, SECRET_RPC_CHANGE_PASSWORD_CONTEXT
+    USER_UPDATE_CONTEXT, SECRET_RPC_CHANGE_PASSWORD_CONTEXT, \
+    SECRET_GET_CREDENTIALS_CONTEXT, SECRET_SEARCH_NAME_CONTEXT
 from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, \
-    GET_USERNAME_BY_ID_RAW_RESPONSE, SECRET_CHECKOUT_RAW_RESPONSE,\
+    GET_USERNAME_BY_ID_RAW_RESPONSE, SECRET_CHECKOUT_RAW_RESPONSE, \
     SECRET_GET_RAW_RESPONSE, SECRET_PASSWORD_UPDATE_RAW_RESPONSE, \
     SECRET_CHECKIN_RAW_RESPONSE, SECRET_DELETE_RAW_RESPONSE, \
     FOLDER_CREATE_RAW_RESPONSE, FOLDER_DELETE_RAW_RESPONSE, \
     FOLDER_UPDATE_RAW_RESPONSE, USER_DELETE_RAW_RESPONSE, \
     SECRET_CREATE_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, \
-    USER_CREATE_RAW_RESPONSE, USER_UPDATE_RAW_RESPONSE
+    USER_CREATE_RAW_RESPONSE, USER_UPDATE_RAW_RESPONSE, SECRET_GET_CREDENTIALS_RAW_RESPONSE, \
+    SECRET_SEARCH_NAME_RAW_RESPONSE
 
 GET_PASSWORD_BY_ID_ARGS = {"secret_id": "4"}
 GET_USERNAME_BY_ID_ARGS = {"secret_id": "4"}
@@ -35,16 +38,18 @@ FOLDER_CREATE_ARGS = {"folderName": "xsoarFolderTest3", "folderTypeId": "1",
                       "parentFolderId": "3"}
 FOLDER_DELETE_ARGS = {"folder_id": "9"}
 FOLDER_UPDATE_ARGS = {"id": "12", "folderName": "xsoarTF3New"}
-USER_CREATE_ARGS = {"displayName": "xsoarUserTest1", "password": "1234567890",
+USER_CREATE_ARGS = {"displayName": "dispalyName", "password": "password",
                     "userName": "XSOAR", "emailAddress": "example@example.com"}
 USER_DELETE_ARGS = {"id": "10"}
 SECRET_CREATE_ARGS = {"name": "xsoarSecret", "secrettemplateid": "6003",
                       "siteid": "1", "checkoutenabled": "true",
                       "folderid": "3", "machine_item": "my-machine",
                       "username_item": "my-username",
-                      "password_item": "test123"}
+                      "password_item": "password_item"}
 USER_UPDATE_ARGS = {"id": "28", "userName": "UserOne"}
-SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "Test000"}
+SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "newPassword"}
+SECRET_GET_CREDENTIALS_ARGS = {"secretids": "4"}
+SECRET_SEARCH_NAME_ARGS = {"search_name": "Sayali"}
 
 
 @pytest.mark.parametrize('command, args, http_response, context', [
@@ -64,12 +69,15 @@ SECRET_RPC_CHANGE_PASSWORD_ARGS = {"secret_id": "4", "newpassword": "Test000"}
     (user_create_command, USER_CREATE_ARGS, USER_CREATE_RAW_RESPONSE, USER_CREATE_CONTEXT),
     (user_update_command, USER_UPDATE_ARGS, USER_UPDATE_RAW_RESPONSE, USER_UPDATE_CONTEXT),
     (secret_rpc_changepassword_command, SECRET_RPC_CHANGE_PASSWORD_ARGS,
-     SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_CONTEXT)
+     SECRET_RPC_CHANGE_PASSWORD_RAW_RESPONSE, SECRET_RPC_CHANGE_PASSWORD_CONTEXT),
+    (fetch_credentials_command, SECRET_GET_CREDENTIALS_ARGS, SECRET_GET_CREDENTIALS_RAW_RESPONSE,
+     SECRET_GET_CREDENTIALS_CONTEXT),
+    (secret_search_name_command, SECRET_SEARCH_NAME_ARGS, SECRET_SEARCH_NAME_RAW_RESPONSE, SECRET_SEARCH_NAME_CONTEXT)
+
 ])
 def test_delinea_commands(command, args, http_response, context, mocker):
-
     mocker.patch.object(Client, '_generate_token')
-    client = Client(server_url="https://test.example.com", username="test", password="test123",
+    client = Client(server_url="https://test.example.com", username="username", password="password",
                     proxy=False, verify=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
