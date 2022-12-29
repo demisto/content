@@ -310,7 +310,7 @@ def test_test_moudle__reciving_errors(mocker):
     assert test_module(client=client) == 'Invalid credentials. Please verify that your credentials are valid.'
 
 
-def test_test_moudle__reciving_errors(mocker):
+def test_test_moudle__reciving_errors_1(mocker):
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -320,7 +320,7 @@ def test_test_moudle__reciving_errors(mocker):
     assert test_module(client=client) == 'Invalid API Secret. Please verify that your API Secret is valid.'
 
 
-def test_test_moudle__reciving_errors(mocker):
+def test_test_moudle__reciving_errors_2(mocker):
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
@@ -330,7 +330,7 @@ def test_test_moudle__reciving_errors(mocker):
     assert test_module(client=client) == 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 
 
-def test_test_moudle__reciving_errors(mocker):
+def test_test_moudle__reciving_errors_3(mocker):
     mocker.patch.object(Client, "generate_oauth_token")
     client = Client(base_url='https://test.com', account_id="mockaccount",
                     client_id="mockclient", client_secret="mocksecret")
