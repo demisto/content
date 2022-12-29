@@ -18,9 +18,6 @@ This playbook does not use any integrations.
 * DeleteContext
 * SearchIncidentsV2
 
-### Commands
-* demisto-api-get
-
 ## Playbook Inputs
 ---
 
@@ -33,6 +30,4 @@ This playbook does not use any integrations.
 ---
 There are no outputs for this playbook.
 
-## Playbook Image
----
-![Fetch Incidents Test](../doc_files/Fetch_Incidents_Test.png)
+<!-- Playbook PNG image comes here -->
