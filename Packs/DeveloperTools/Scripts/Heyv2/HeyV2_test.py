@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import Heyv2 as hey
+import HeyV2 as hey
 import pytest
 
 
