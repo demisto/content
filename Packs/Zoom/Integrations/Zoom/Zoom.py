@@ -52,8 +52,10 @@ INSTANT_AND_TIME = "Too money arguments. Please use start_time and timezone for 
 JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
 WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
 END_TIMES_AND_END_DATE_TIME = "Collision arguments. Please choose only one of these two arguments, end_time or end_date_time."
-NOT_RECURRING_WITH_RECUURING_ARGUMENTS = "One or more arguments that were filed are used for recurring meeting with fixed time only"
-NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = "One or more arguments that were filed are for recurring meeting with fixed time and monthly recurrence_type only"
+NOT_RECURRING_WITH_RECUURING_ARGUMENTS = """One or more arguments that were filed
+are used for recurring meeting with fixed time only"""
+NOT_MONTHLY_AND_MONTHLY_ARGUMENTS = """One or more arguments that were
+filed are for recurring meeting with fixed time and monthly recurrence_type only"""
 MONTHLY_RECURRING_MISIING_ARGUMENTS = """Missing arguments. recurring meeting with fixed time and monthly recurrence_type
             must have the fallowing arguments: monthly_week and monthly_week_day"""
 NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only"
@@ -482,7 +484,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     recurrence_type = args.get('recurrence_type', "")
     weekly_days = arg_to_number(args.get('weekly_days', 1))
 
-    num_type = MEETING_TYPE_NUM_MAPPING.get(type)
+    num_type: int | None = MEETING_TYPE_NUM_MAPPING.get(type)
 
     # argument checking
     if type == INSTANT and (timezone or start_time):
@@ -505,7 +507,8 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
                                                                              monthly_week, monthly_week_day)):
         raise DemistoException(NOT_MONTHLY_AND_MONTHLY_ARGUMENTS)
 
-    if type == RECURRING_WITH_TIME and recurrence_type == "Monthly" and not (monthly_week and monthly_week_day) and not args.get("monthly_day"):
+    if (type == RECURRING_WITH_TIME and recurrence_type == "Monthly"
+            and not (monthly_week and monthly_week_day) and not args.get("monthly_day")):
         raise DemistoException(MONTHLY_RECURRING_MISIING_ARGUMENTS)
 
     if type == RECURRING_WITH_TIME and recurrence_type != "Weekly" and args.get("weekly_days"):
@@ -520,7 +523,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     if start_time:
         check_start_time_format(start_time)
 
-    json_all_data = {}
+    json_all_data: Dict[str, Union[Any, None, int]] = {}
 
     # special section for recurring meeting with fixed time
     if type == RECURRING_WITH_TIME:
