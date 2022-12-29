@@ -299,14 +299,6 @@
             "fromversion": "5.5.0"
         },
         {
-            "integrations": ["OpenCTI Feed 4.X", "Demisto REST API"],
-            "playbookID": "OpenCTI 5.x Feed Test",
-            "fromversion": "6.0.0",
-            "is_mockable": false,
-            "instance_names": "OpenCTI_Feed_5_X",
-            "timeout": 2400
-        },
-        {
             "integrations": "AWS - Security Hub",
             "playbookID": "AWS-securityhub Test",
             "timeout": 800
