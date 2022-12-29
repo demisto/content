@@ -1006,7 +1006,7 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-pa', '--packs_artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=True)
+    parser.add_argument('-idp', '--id_set_path', help="The full path of id_set.json", required=False)
     parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
@@ -1050,14 +1050,11 @@ def main():
     packs_artifacts_path = option.packs_artifacts_path
     id_set = None
     try:
+        with Neo4jContentGraphInterface():
+            pass
+    except Exception as e:
+        logging.warning(f"Database is not ready, using id_set.json instead.\n{e}")
         id_set = open_id_set_file(option.id_set_path)
-    except IOError:
-        logging.warning("No ID_SET file, will try to use graph")
-        try:
-            with Neo4jContentGraphInterface():
-                pass
-        except Exception:
-            raise Exception("Database is not ready")
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
