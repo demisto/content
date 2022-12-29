@@ -171,8 +171,8 @@ script:
         - name: host_video
           auto: PREDEFINED
           predefined:
-            - true
-            - false
+            - "true"
+            - "false"
           defaultValue: true
           description: start meetings with the host video on.
         - name: join_before_host_time
@@ -188,15 +188,15 @@ script:
         - name: join_before_host
           auto: PREDEFINED
           predefined:
-            - False
-            - True
+            - "False"
+            - "True"
           description: Whether participants can join the meeting before its host. For scheduled or recurring meetings only. The default value is False.
         - name: meeting_authentication
           auto: PREDEFINED
-          defaultValue: false
+          defaultValue: "false"
           predefined:
-            - false
-            - true
+            - "false"
+            - "true"
           description: If true, only authenticated users can join the meeting.
         - name: user
           required: true
@@ -207,8 +207,8 @@ script:
         - name: waiting_room
           auto: PREDEFINED
           predefined:
-            - false
-            - true
+            - "false"
+            - "true"
           description: This allows the host to control when a participant joins the meeting. The default is False.
         - name: start-time
           description: Meeting start time. When using a format like “yyyy-MM-ddTHH:mm:ssZ”, always use GMT time. When using a format like “yyyy-MM-ddTHH:mm:ss”, you should use local time and you will need to specify the time zone. Only used for scheduled meetings and recurring meetings with fixed time.
@@ -401,8 +401,8 @@ script:
         - name: show_previous_occurrences
           auto: PREDEFINED
           predefined:
-            - False
-            - True
+            - "False"
+            - "True"
           description: Set the value of this field to true if you would like to view meeting details of all previous occurrences of a recurring meeting.
           defaultValue: true
       outputs:
@@ -447,7 +447,7 @@ script:
           description: The user ID
           type: string
         - name: page_size
-          default: false
+          default: "false"
           description: Number of users to return. Default = 30. Max = 300.
         - name: page_number
           description: >
@@ -461,7 +461,7 @@ script:
         - name: limit
           description: The total amunt of results to show.
           type: string
-          default: false
+          default: "false"
         - name: type
           description: Filter the results by searching specific types.
           auto: PREDEFINED
@@ -514,6 +514,7 @@ script:
           description: The time that this meeting was created
           type: Date
         - contextPath: Zoom.Meeting.type
+          description: The ty pe of this meeting 
       description: >
         Show all the meetings of a given user.
         Note: only scheduled and unexpired meetings will appear.

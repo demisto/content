@@ -123,7 +123,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 | Zoom.Meeting.type | number | The type of the new meeting, Instant = 1, Scheduled =2,Recurring with fixed time = 8 | 
 
 #### Command example
-```!zoom-create-meeting topic=test type=scheduled user=admin@demistodev.com start-time=2022-12-29T12:12:12Z ```
+```!zoom-create-meeting topic=test type=scheduled user=example@example.com start-time=2022-12-29T12:12:12Z ```
 #### Context Example
 ```json
 {
@@ -131,7 +131,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
         "Meeting": {
             "created_at": "2022-12-29T08:14:39Z",
             "duration": 60,
-            "host_email": "admin@demistodev.com",
+            "host_email": "example@example.com",
             "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
             "id": 81967809573,
             "join_url": "https://us06web.zoom.us/j/81967809573?pwd=S1NuSEovNWRXSGJNZHRsWDNOSkFkUT09",
@@ -221,7 +221,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
                         "type": "toll"
                     },
                     {
-                        "city": "Chicago",
+                        "city": "Houston",
                         "country": "US",
                         "country_name": "US",
                         "number": "+1 3126266799",
@@ -306,7 +306,7 @@ Create a new zoom meeting (scheduled ,instant, or recurring)
 >### Meeting details
 >|uuid|id|host_id|host_email|topic|type|status|start_time|duration|timezone|created_at|start_url|join_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| fQbNc0ZUTECrosWSasccxw== | 81967809573 | uJiZN-O7Rp6Jp_995FpZGg | admin@demistodev.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem | 2022-12-29T08:14:39Z | https:<span>//</span>us06web.zoom.us/s/81967809573?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6IjgxOTY3ODA5NTczIiwiZXhwIjoxNjcyMzA4ODc5LCJpYXQiOjE2NzIzMDE2NzksImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.u77iCWCY0KP2oY5wb9ABzudnFUB8TmqgL7qUdo8sXgg | https:<span>//</span>us06web.zoom.us/j/81967809573?pwd=S1NuSEovNWRXSGJNZHRsWDNOSkFkUT09 |
+>| fQbNc0ZUTECrosWSasccxw== | 81967809573 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem | 2022-12-29T08:14:39Z | https:<span>//</span>us06web.zoom.us/s/81967809573?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6IjgxOTY3ODA5NTczIiwiZXhwIjoxNjcyMzA4ODc5LCJpYXQiOjE2NzIzMDE2NzksImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.u77iCWCY0KP2oY5wb9ABzudnFUB8TmqgL7qUdo8sXgg | https:<span>//</span>us06web.zoom.us/j/81967809573?pwd=S1NuSEovNWRXSGJNZHRsWDNOSkFkUT09 |
 
 
 ### zoom-fetch-recording
@@ -440,7 +440,7 @@ List the existing users
             },
             {
                 "created_at": "2022-12-29T08:14:44Z",
-                "email": "retert@gmail.com",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -451,7 +451,7 @@ List the existing users
             },
             {
                 "created_at": "2022-12-29T08:14:44Z",
-                "email": "yrosenberg@paloaltonetworks.com",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -473,7 +473,7 @@ List the existing users
             },
             {
                 "created_at": "2022-12-29T08:14:44Z",
-                "email": "yehu@gmail.com",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -484,7 +484,7 @@ List the existing users
             },
             {
                 "created_at": "2022-12-29T08:14:44Z",
-                "email": "yeh@gmail.com",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -495,7 +495,7 @@ List the existing users
             },
             {
                 "created_at": "2022-12-29T08:14:44Z",
-                "email": "Yehuda@gmail.com",
+                "email": "example@example.com",
                 "id": "",
                 "pmi": 0,
                 "role_id": "0",
@@ -518,12 +518,12 @@ List the existing users
 >|  | berg@ks.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
 >|  | r2e2fxzmphomnc1@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
 >|  | ax0qwkfpctfuz06@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | retert@gmail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | yrosenberg@paloaltonetworks.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
 >|  | qmeb9kypck6utf1@demistomockemail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | yehu@gmail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | yeh@gmail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
->|  | Yehuda@gmail.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
+>|  | example@example.com | 1 | 0 | 0 | 2022-12-29T08:14:44Z | pending | 0 |
 >
 >### Metadata
 >|total_records|
@@ -594,7 +594,7 @@ Get the information of an existing zoom meeting
             "assistant_id": "",
             "created_at": "2022-12-29T07:35:10Z",
             "duration": 60,
-            "host_email": "admin@demistodev.com",
+            "host_email": "example@example.com",
             "host_id": "uJiZN-O7Rp6Jp_995FpZGg",
             "id": 85235660275,
             "join_url": "https://us06web.zoom.us/j/85235660275?pwd=UWRXdDNyM3JaMnNJZ3pCZ1YyZ3FyUT09",
@@ -672,7 +672,7 @@ Get the information of an existing zoom meeting
                         "type": "toll"
                     },
                     {
-                        "city": "Chicago",
+                        "city": "Houston",
                         "country": "US",
                         "country_name": "US",
                         "number": "+1 3126266799",
@@ -769,7 +769,7 @@ Get the information of an existing zoom meeting
 >### Meeting details
 >|uuid|id|host_id|host_email|topic|type|status|start_time|duration|timezone|agenda|created_at|start_url|join_url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 987MfVRLQR2UXxYxo9k0rA== | 85235660275 | uJiZN-O7Rp6Jp_995FpZGg | admin@demistodev.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem |  | 2022-12-29T07:35:10Z | https:<span>//</span>us06web.zoom.us/s/85235660275?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg1MjM1NjYwMjc1IiwiZXhwIjoxNjcyMzA4ODg1LCJpYXQiOjE2NzIzMDE2ODUsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.O_0oFbJ4ptJDVhGUSugGT2Uvw7zCzR4M-KUbDr23fJI | https:<span>//</span>us06web.zoom.us/j/85235660275?pwd=UWRXdDNyM3JaMnNJZ3pCZ1YyZ3FyUT09 |
+>| 987MfVRLQR2UXxYxo9k0rA== | 85235660275 | uJiZN-O7Rp6Jp_995FpZGg | example@example.com | test | 2 | waiting | 2022-12-29T12:12:12Z | 60 | Asia/Jerusalem |  | 2022-12-29T07:35:10Z | https:<span>//</span>us06web.zoom.us/s/85235660275?zak=eyJ0eXAiOiJKV1QiLCJzdiI6IjAwMDAwMSIsInptX3NrbSI6InptX28ybSIsImFsZyI6IkhTMjU2In0.eyJhdWQiOiJjbGllbnRzbSIsInVpZCI6InVKaVpOLU83UnA2SnBfOTk1RnBaR2ciLCJpc3MiOiJ3ZWIiLCJzayI6IjczMjU5NTExMTgxNDYyODc0NjciLCJzdHkiOjEwMCwid2NkIjoidXMwNiIsImNsdCI6MCwibW51bSI6Ijg1MjM1NjYwMjc1IiwiZXhwIjoxNjcyMzA4ODg1LCJpYXQiOjE2NzIzMDE2ODUsImFpZCI6ImFlS0QyQkZKUkFTdDFRVlVSV285Q0EiLCJjaWQiOiIifQ.O_0oFbJ4ptJDVhGUSugGT2Uvw7zCzR4M-KUbDr23fJI | https:<span>//</span>us06web.zoom.us/j/85235660275?pwd=UWRXdDNyM3JaMnNJZ3pCZ1YyZ3FyUT09 |
 
 
 ### zoom-meeting-list
@@ -813,7 +813,7 @@ Show all the meetings of a given user. Note: only scheduled and unexpired meetin
 | Zoom.Meeting.type | unknown |  | 
 
 #### Command example
-```!zoom-meeting-list user_id=admin@demistodev.com type=scheduled limit=7 ```
+```!zoom-meeting-list user_id=example@example.com type=scheduled limit=7 ```
 #### Context Example
 ```json
 {
