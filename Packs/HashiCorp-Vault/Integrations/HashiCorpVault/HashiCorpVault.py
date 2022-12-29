@@ -5,8 +5,6 @@ from CommonServerPython import *  # noqa: F401
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-handle_proxy()
-
 
 ''' GLOBAL VARIABLES '''
 
@@ -593,7 +591,7 @@ def configure_engine(engine_path, engine_type, version, folder=None, ttl='3600')
 
     ENGINE_CONFIGS.append(engine_conf)
 
-    demisto.setIntegrationContext({'configs': ENGINE_CONFIGS})
+    set_integration_context({'configs': ENGINE_CONFIGS})
 
 
 def fetch_credentials():
@@ -733,7 +731,7 @@ def get_ch_secrets(engine_path, concat_username_to_cred_name=False):
 
 def get_aws_secrets(engine_path, ttl, concat_username_to_cred_name):
     secrets = []
-    roles_list_url = engine_path + '/roles?list=true'
+    roles_list_url = engine_path
     demisto.debug('roles_list_url: {}'.format(roles_list_url))
     params = {'list': 'true'}
     res = send_request(roles_list_url, 'get', params=params)
@@ -791,6 +789,8 @@ def get_ch_secret(engine_path, secret):
 
 
 ''' EXECUTION CODE '''
+
+handle_proxy()
 
 LOG('Executing command: ' + demisto.command())
 
