@@ -26,10 +26,10 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10.6'
           cache: 'poetry'
       - name: Install Python dependencies
-        run: poetry install --without linters,testing,typing,ci
+        run: poetry install --without linters,testing,typing,ci --no-root
       - name: Review Release Notes
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
