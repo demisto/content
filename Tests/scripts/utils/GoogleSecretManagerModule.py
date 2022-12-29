@@ -29,8 +29,8 @@ class GoogleSecreteManagerModule:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
                     secrets.append(secret_value)
-                except google.api_core.exceptions.NotFound:
-                    logging.error(f'Could not find the secret: {secret.name}')
+                except Exception as e:
+                    logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
                 secrets.append(secret)
 
