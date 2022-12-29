@@ -3,6 +3,7 @@ on: pull_request
 
 env:
   CHANGED_FILES_DELIMITER: ","
+  PYTHONWARNINGS: ignore
 
 jobs:
   release_notes_review:
@@ -21,15 +22,6 @@ jobs:
           files: |
             Packs/**/ReleaseNotes/**
           since_last_remote_commit: false
-      # - name: Install poetry
-      #   run: pipx install poetry
-      # - name: Setup Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.10.6'
-      #     cache: 'poetry'
-      # - name: Install Python dependencies
-      #   run: poetry install --without linters,testing,typing,ci --no-root
 
       - name: Install SDK
         run: python3 -m pip install demisto-sdk
