@@ -80,7 +80,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsupported use cases and unextracted files. "
+      description: "Extract files from log bundle - supports tar.gz & tar \n\nhandle unsupported use cases and unextracted files."
       id: e8724f76-78b4-4b28-8cee-da2fb34302fb
       iscommand: false
       name: UnPack the zipped log file
@@ -317,7 +317,7 @@ view: |-
   }
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted) 
+- No tests (auto formatted)
 contentitemexportablefields:
   contentitemfields:
     propagationLabels:
