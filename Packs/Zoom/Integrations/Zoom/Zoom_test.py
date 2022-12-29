@@ -707,7 +707,7 @@ def test_get_jwt_token__encoding_format_check():
             Validate that the token is in the right format
     """
     encoded_token = Zoom.get_jwt_token(apiKey="blabla", apiSecret="blabla")
-    expected = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJibGFibGEiLCJleHAiOjU3MzM4NzgwMH0.8GUkPXA1Dwkj55rGTBqE3chK0IaPiyRTEhCtcOOJjHk"""
+    expected = """eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJibGFibGEiLCJleHAiOjU3MzM4NzgwMH0.8GUkPXA1Dwkj55rGTBqE3chK0IaPiyRTEhCtcOOJjHk"""  # noqa: E501
     assert encoded_token == expected
 
 # i dont like this test:(
