@@ -260,22 +260,3 @@ def test_fetch_incidents_command(mocker):
 
     incidents = fetch_incidents(client_mocker, fetch_time='1 hour', fetch_limit=0, providers='', filter='')
     assert len(incidents) == 0
-
-
-def mock_request(method, url_suffix, params):
-    return params
-
-
-@pytest.mark.parametrize('filter_query, expected_filter_query', [
-    ("Category eq 'Malware' and Severity eq 'High'", "contains(category, 'malware') and severity eq 'high'"),
-    ("Severity eq 'High'", "severity eq 'high'"),
-    ("Category eq 'Malware'", "contains(category, 'malware')")
-])
-def test_filter_query(filter_query, expected_filter_query, mocker):
-    from MicrosoftGraphSecurity import MicrosoftClient
-    mocker.patch.object(MicrosoftClient, 'http_request', side_effect=mock_request)
-
-    response = client_mocker.search_alerts(last_modified=None, severity=None, category=None, vendor=None,
-                                           time_from=None, time_to=None, filter_query=filter_query)
-
-    assert response.get('$filter') == expected_filter_query
