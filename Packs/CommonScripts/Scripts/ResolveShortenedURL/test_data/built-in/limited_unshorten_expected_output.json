@@ -6,8 +6,7 @@
     "https://short.url/b"
   ],
   "ResolvedURL": "https://short.url/b",
-  "ServiceName": "unshorten.me",
-  "EncounteredError": false,
-  "APIRateLimit": 10,
-  "APIUsageCount": 1
+  "ServiceName": "Built-in",
+  "EncounteredError": false
 }
+

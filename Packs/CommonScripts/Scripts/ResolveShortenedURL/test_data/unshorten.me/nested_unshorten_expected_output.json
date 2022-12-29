@@ -8,5 +8,7 @@
   ],
   "ResolvedURL": "https://xsoar.pan.dev/",
   "ServiceName": "unshorten.me",
-  "UsageCount": 2
+  "EncounteredError": false,
+  "APIRateLimit": 10,
+  "APIUsageCount": 2
 }

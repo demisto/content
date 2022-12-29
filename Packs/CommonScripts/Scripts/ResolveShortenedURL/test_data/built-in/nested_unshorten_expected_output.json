@@ -1,11 +1,12 @@
 {
   "OriginalURL": "https://short.url/a",
-  "RedirectCount": 1,
+  "RedirectCount": 2,
   "RedirectHistory": [
+    "https://short.url/a",
     "https://short.url/b",
     "https://xsoar.pan.dev/"
   ],
   "ResolvedURL": "https://xsoar.pan.dev/",
-  "ServiceName": "Self Unshortener",
-  "UsageCount": null
+  "ServiceName": "Built-in",
+  "EncounteredError": false
 }

@@ -2,6 +2,6 @@
   "requested_url": "https://short.url/b",
   "success": true,
   "resolved_url": "https://xsoar.pan.dev/",
-  "usage_count": 0,
-  "remaining_calls": 10
+  "usage_count": 1,
+  "remaining_calls": 9
 }

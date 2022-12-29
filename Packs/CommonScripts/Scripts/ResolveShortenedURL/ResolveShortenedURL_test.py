@@ -47,12 +47,14 @@ class TestUnshortenMeService:
         """
         mock_data = [load_test_data("unshorten.me", mock_files_prefix + f"_{i}")
                      for i in range(mock_files_count)]
+        # Add the last response again, as we try to unshorten the final URL since we don't know that it's not shortened.
+        mock_data.append(mock_data[-1])
 
-        def recursion_side_effect():
-            for i in range(mock_files_count):
-                yield mock_data[i]
+        def redirect_side_effect() -> dict:
+            for d in mock_data:
+                yield d
 
-        mocker.patch.object(BaseClient, "_http_request", side_effect=recursion_side_effect())
+        mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
 
         result = unshorten_url(service="unshorten.me",
                                url=args["url"],
@@ -62,67 +64,68 @@ class TestUnshortenMeService:
         assert result.outputs == expected_output
 
 
-class TestSelfService:
+class TestBuiltInService:
     @staticmethod
-    def get_response_mock(url: str, status_code: int, previous_response: Response | None = None) -> Response:
+    def get_response_mock(url: str, redirect_url: str | None = None, response_code: int | None = 200) -> Response:
         """
         Create a mock requests.Response object.
 
         Args:
-            url (str): URL to set as th `url` attribute (should be the last URL in the redirect chain).
-            status_code (int): Status code to set as the `status_code` attribute.
-            previous_response (Response | None, optional): Previous response in the redirect chain to use
-                for the `history` attribute. Defaults to None.
+            url (str): URL to set as the `url` attribute (should be the last URL in the redirect chain).
+            redirect_url (str | None, optional): URL to redirect to. Defaults to None.
+            response_code (int | None, optional): Response code to set as the `status_code` attribute.
+              Not relevant if `redirect_url` is set (301 will be used). Defaults to None.
 
         Returns:
             Response: A requests.Response object to use as a mock.
         """
         response_mock = Response()
         response_mock.url = url
-        response_mock.status_code = status_code,
 
-        response_mock.history = []
+        if redirect_url is not None:
+            response_mock.status_code = 301
+            response_mock.headers["Location"] = redirect_url
+            # response_mock.is_redirect = True
 
-        if previous_response is not None:
-            response_mock.history.append(previous_response)
-            response_mock.history.extend(previous_response.history)
+        else:
+            response_mock.status_code = response_code
+            # response_mock.is_redirect = False
 
         return response_mock
 
-    @pytest.mark.parametrize("args, mock_response_obj, expected_output",
+    @pytest.mark.parametrize("args, responses, expected_output",
                              [
                                  (
                                      {"url": "https://short.url/a", "redirect_limit": 6},
-                                     get_response_mock(
-                                         url='https://xsoar.pan.dev/',
-                                         status_code=200,
-                                         previous_response=get_response_mock(
-                                             url='https://short.url/b',
-                                             status_code=301,
-                                             previous_response=get_response_mock(
-                                                 url='https://short.url/a',
-                                                 status_code=301))),
-                                     load_test_data("self", "nested_unshorten_expected_output"),
+                                     [get_response_mock(url="https://short.url/a",
+                                                        redirect_url="https://short.url/b"),
+                                      get_response_mock(url="https://short.url/b",
+                                                        redirect_url="https://xsoar.pan.dev/"),
+                                      get_response_mock(url="https://xsoar.pan.dev/")],
+                                     load_test_data("built-in", "nested_unshorten_expected_output"),
                                  ),
                                  (
                                      {"url": "https://short.url/a", "redirect_limit": 1},
-                                     get_response_mock(
-                                         url='https://xsoar.pan.dev/',
-                                         status_code=200,
-                                         previous_response=get_response_mock(
-                                             url='https://short.url/b',
-                                             status_code=301)),
-                                     load_test_data("self", "limited_unshorten_expected_output"),
+                                     [get_response_mock(url="https://short.url/a",
+                                                        redirect_url="https://short.url/b"),
+                                      get_response_mock(url="https://short.url/b",
+                                                        redirect_url="https://xsoar.pan.dev/"),
+                                      get_response_mock(url="https://xsoar.pan.dev/")],
+                                     load_test_data("built-in", "limited_unshorten_expected_output"),
                                  ),
                              ])
-    def test_shortened_url(self, mocker, args: dict, mock_response_obj: Response, expected_output: dict):
+    def test_shortened_url(self, mocker, args: dict, responses: list[Response], expected_output: dict):
         """
-        Given: Parameters for self unshortening a URL using the 'requests' library.
+        Given: Parameters for Built-In unshortening a URL using the 'requests' library.
         When: Calling the `unshorten_url` function.
         Then: Ensure the context output is returned as expected, and that redirect_limit is working as expected.
         """
-        mocker.patch.object(BaseClient, "_http_request", return_value=mock_response_obj)
+        def redirect_side_effect() -> Response:
+            for response in responses:
+                yield response
 
-        assert unshorten_url(service="Self",
+        mocker.patch.object(BaseClient, "_http_request", side_effect=redirect_side_effect())
+
+        assert unshorten_url(service="Built-In",
                              url=args["url"],
                              redirect_limit=args["redirect_limit"]).outputs == expected_output
