@@ -125,6 +125,9 @@ class Pack(object):
         self._is_modified = None  # initialized in detect_modified function
         self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
+        self._has_fetch = False
+        self._is_data_source = False
+        self._single_integration = True  # assuming the pack contains one integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
         self._first_level_dependencies = {}  # initialized in set_pack_dependencies function
@@ -194,6 +197,13 @@ class Pack(object):
         """ setter of is_siem
         """
         self._is_siem = is_siem
+
+    @property
+    def is_data_source(self):
+        """
+        bool: whether the pack is a siem pack
+        """
+        return self._is_data_source
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -498,6 +508,30 @@ class Pack(object):
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
+    def is_data_source_pack(self, yaml_content):
+
+        is_data_source = self._is_data_source
+        # this's the first integration in the pack, and the pack is in xsiem
+        if self._single_integration and 'marketplacev2' in self.marketplaces:
+
+            # the integration is not deprecated
+            if not yaml_content.get('deprecated', False):
+
+                # the integration contains isfetch or isfetchevents
+                if yaml_content.get('script', {}).get('isfetchevents', False) or \
+                        yaml_content.get('script', {}).get('isfetch', False) is True:
+                    logging.info(f"{yaml_content.get('name')} is a Data Source potential")
+                    is_data_source = True
+        # already has the pack as data source
+        elif not self._single_integration and is_data_source:
+
+            # got a second integration in the pack that's not deprecated
+            if not yaml_content.get('deprecated', False):
+                logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
+                is_data_source = False
+
+        return is_data_source
+
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
         Checks if an pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
@@ -508,11 +542,19 @@ class Pack(object):
         Returns:
             Doesn't return
         """
+        logging.info("adding pack type tags")
         if yaml_type == 'Integration':
             if yaml_content.get('script', {}).get('feed', False) is True:
                 self._is_feed = True
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
+
+            self._is_data_source = self.is_data_source_pack(yaml_content)
+
+            # already found integration in the pack that's not deprecated
+            if not yaml_content.get('deprecated', False):
+                self._single_integration = False
+
         if yaml_type == 'Playbook':
             if yaml_content.get('name').startswith('TIM '):
                 self._is_feed = True
@@ -2359,6 +2401,7 @@ class Pack(object):
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
+        tags |= {PackTags.DATA_SOURCE} if self._is_data_source else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
@@ -3626,7 +3669,7 @@ class Pack(object):
 
         try:
             for file in diff_files_list:
-                if self.is_preview_image(file.a_path):
+                if self.is_valid_preview_image(file.a_path):
                     logging.info(f"adding preview image {file.a_path} to pack preview images")
                     image_folder = os.path.dirname(file.a_path).split('/')[-1] or ''
                     image_name = os.path.basename(file.a_path)
@@ -3697,19 +3740,34 @@ class Pack(object):
 
         return task_status
 
-    def is_preview_image(self, file_path: str) -> bool:
-        """ Indicates whether a file_path is a preview image or not
+    def is_valid_preview_image(self, file_path: str) -> bool:
+        """ Indicates whether a file_path is a valid preview image or not:
+            - The file exists (is not removed in the latest upload)
+            - Belong to the current pack
+            - Id of type png
+            - path include the word '_image'
+            - Located in either XSIAMDashboards or XSIAMReports folder
         Args:
             file_path (str): The file path
         Returns:
             bool: True if the file is a preview image or False otherwise
         """
-        return all([
+        valid_image = all([
             file_path.startswith(os.path.join(PACKS_FOLDER, self.name)),
             file_path.endswith('.png'),
             '_image' in os.path.basename(file_path.lower()),
             (PackFolders.XSIAM_DASHBOARDS.value in file_path or PackFolders.XSIAM_REPORTS.value in file_path)
         ])
+        if not valid_image:
+            return False
+
+        # In cases where a preview image was deleted valid_image will be true but we don't want to upload it as it does
+        # not exist anymore
+        elif not os.path.exists(file_path):
+            logging.warning(f'Image: {file_path} was deleted and therefore will not be uploaded')
+            return False
+
+        return True
 
     @staticmethod
     def find_preview_image_path(file_name: str) -> str:
@@ -4234,6 +4292,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
         res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
 
@@ -4253,7 +4312,7 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
-        content_type = RN_HEADER_TO_ID_SET_KEYS[rn_header].capitalize()[:-1]
+        content_type = rn_header.replace(' ', '')[:-1]
         return is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
                                         marketplace=marketplace)

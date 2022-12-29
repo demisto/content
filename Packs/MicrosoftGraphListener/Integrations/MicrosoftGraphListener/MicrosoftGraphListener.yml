@@ -1,4 +1,4 @@
-category: Email Gateway
+category: Cloud Services
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -37,12 +37,12 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Email address from which to fetch incidents (e.g. "example@demisto.com")
+- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
   name: mailbox_to_fetch
   required: true
   type: 0
 - defaultvalue: Inbox
-  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing)
+  display: Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing)
   name: folder_to_fetch
   required: true
   type: 0
@@ -72,6 +72,20 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Display full email body
+  name: display_full_email_body
+  defaultvalue: 'false'
+  type: 8
+  additionalinfo: If not active, only a preview of the email will be fetched.
+  section: Collect
+  advanced: true
+- additionalinfo: Relevant only if fetch incidents is active.
+  defaultvalue: 'false'
+  display: Mark fetched emails as read
+  name: mark_fetched_read
+  type: 8
+  section: Collect
+  advanced: true
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '1'
@@ -528,7 +542,7 @@ script:
     arguments:
     - name: message_id
       required: true
-      description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
     - deprecated: true
       description: flag for rate limit retry
       isArray: false
@@ -570,7 +584,23 @@ script:
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
     polling: true
-  dockerimage: demisto/crypto:1.0.0.36225
+  - name: msgraph-update-email-status
+    arguments:
+    - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
+      isArray: true
+      name: message_ids
+      required: true
+    - description: The folder ID.
+      name: folder_id
+    - auto: PREDEFINED
+      description: Status to set the email to.
+      name: status
+      required: true
+      predefined:
+      - Read
+      - Unread
+    description: Update the status of an email to read / unread.
+  dockerimage: demisto/crypto:1.0.0.40696
   isfetch: true
   runonce: false
   script: ''

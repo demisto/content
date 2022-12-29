@@ -247,6 +247,7 @@ def search_command(proxies):
     sort_field = demisto.args().get('sort-field')
     sort_order = demisto.args().get('sort-order')
     query_dsl = demisto.args().get('query_dsl')
+    timestamp_field = demisto.args().get('timestamp_field')
     timestamp_range_start = demisto.args().get('timestamp_range_start')
     timestamp_range_end = demisto.args().get('timestamp_range_end')
 
@@ -256,7 +257,8 @@ def search_command(proxies):
     es = elasticsearch_builder(proxies)
     time_range_dict = None
     if timestamp_range_end or timestamp_range_start:
-        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end)
+        time_range_dict = get_time_range(time_range_start=timestamp_range_start, time_range_end=timestamp_range_end,
+                                         time_field=timestamp_field)
 
     if query_dsl:
 
@@ -270,7 +272,7 @@ def search_command(proxies):
             search = search.extra(explain=True)
 
         if time_range_dict:
-            search.filter(time_range_dict)
+            search = search.filter(time_range_dict)
 
         if fields is not None:
             fields = fields.split(',')

@@ -175,9 +175,9 @@ class EWSClient:
         :param insecure: Trust any certificate (not secure)
         """
 
-        client_id = kwargs.get('client_id') or kwargs.get('_client_id')
-        tenant_id = kwargs.get('tenant_id') or kwargs.get('_tenant_id')
-        client_secret = kwargs.get('client_secret') or (kwargs.get('credentials') or {}).get('password')
+        client_id = kwargs.get('_client_id') or kwargs.get('client_id')
+        tenant_id = kwargs.get('_tenant_id') or kwargs.get('tenant_id')
+        client_secret = (kwargs.get('credentials') or {}).get('password') or kwargs.get('client_secret')
         access_type = kwargs.get('access_type', IMPERSONATION) or IMPERSONATION
 
         if not client_secret:
@@ -210,6 +210,7 @@ class EWSClient:
         self.account_email = default_target_mailbox
         self.config = self.__prepare(insecure)
         self.protocol = BaseProtocol(self.config)
+        self.mark_as_read = kwargs.get('mark_as_read', False)
 
     def __prepare(self, insecure):
         """
@@ -2235,6 +2236,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
 
         incidents = []
         incident: Dict[str, str] = {}
+        emails_ids = []  # Used for mark emails as read
         demisto.debug(f'{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}')
         current_fetch_ids = set()
         for item in last_emails:
@@ -2242,6 +2244,8 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
                 current_fetch_ids.add(item.message_id)
                 incident = parse_incident_from_item(item)
                 incidents.append(incident)
+                if item.id:
+                    emails_ids.append(item.id)
 
                 if len(incidents) >= client.max_fetch:
                     break
@@ -2278,6 +2282,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run):
         }
 
         demisto.setLastRun(new_last_run)
+
+        if client.mark_as_read:
+            mark_item_as_read(client, emails_ids)
+
         return incidents
 
     except RateLimitError:
