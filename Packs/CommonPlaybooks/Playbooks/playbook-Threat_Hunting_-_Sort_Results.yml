@@ -1,9 +1,7 @@
 id: Threat Hunting - Sort Results
 version: -1
 name: Threat Hunting - Sort Results
-description: |
-  The playbook is used for sorting the results of hunting and threat detection. The playbook receives IP addresses, email addresses, hosts, internal domains, hosts regex, and internal IPs inputs provided manually or from outputs by other playbooks.
-  The output of the playbook facilitates pivoting searches for IP addresses, users, and hosts that may be affected.
+description: "This playbook is used for sorting the results of threat hunting and detection playbooks. \n\nThe playbook receives IPs, email addresses, and hosts provided manually or obtained by threat hunting and detection playbooks. The playbook then determines whether an object is internal or external by utilizing the internal domains, hosts regex, and internal IP ranges provided in the playbook inputs.\n\nThe output of the playbook facilitates pivoting searches for IP addresses, users, and hosts that may be affected."
 starttaskid: "0"
 tasks:
   "0":
@@ -1074,7 +1072,7 @@ inputs:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
+  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com)
   playbookInputQuery:
 - key: InternalHostRegex
   value: {}

@@ -1,7 +1,7 @@
 id: Threat Hunting - Set Indicators
 version: -1
 name: Threat Hunting - Set Indicators
-description: "The playbooks process a variety of indicators by parsing and storing them as arrays under newly created context keys.\nThe playbook outputs can then be used to improve the efficiency of various threat hunting playbooks.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters). \n\nThe following IOCs are included in the playbook:\nMD5\nSHA1\nSHA256\nIP Address\nURLDomain\nRegistry Value\nRegistry Key\nRegistry Hives\nCommand Line\nFile Name\nProcess Name\nHTTP Request Methods\nUser Agent\nPort Number\nFile Path\nGeolocation\nEmail Address\nCIDR\nURI\nJa3\nFileType "
+description: "This playbook normalizes a variety of indicators to facilitate their use within threat hunting and detection playbooks, as well as reduce the possibility of task errors.\nUsing this playbook as a sub-playbook in threat hunting and detection playbooks is particularly useful if inputs are manually entered.\n\nThe playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.\n\nNote that multiple search values should be separated by commas only (without spaces or any special characters e.g. 10.0.0.1,10.0.0.2). \n\nSupported IOCs for this playbook:\n- MD5\n- SHA1\n- SHA256\n- IP Address\n- URLDomain\n- Registry Value\n- Registry Key\n- Registry Hives\n- Command Line\n- File Name\n- Process Name\n- HTTP Request Methods\n- User Agent\n- Port Number\n- File Path\n- Geolocation\n- Email Address\n- CIDR\n- URI\n- Ja3\n- FileType"
 starttaskid: "0"
 tasks:
   "0":

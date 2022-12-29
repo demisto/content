@@ -1,30 +1,32 @@
-The playbooks process a variety of indicators by parsing and storing them as arrays under newly created context keys.
-The playbook outputs can then be used to improve the efficiency of various threat hunting playbooks.
+This playbook normalizes a variety of indicators to facilitate their use within threat hunting and detection playbooks, as well as reduce the possibility of task errors.
+Using this playbook as a sub-playbook in threat hunting and detection playbooks is particularly useful if inputs are manually entered.
 
-Note that multiple search values should be separated by commas only (without spaces or any special characters). 
+The playbook removes duplications, splits each input into an array of strings, and then stores the indicators under newly created context keys.
 
-The following IOCs are included in the playbook:
-MD5
-SHA1
-SHA256
-IP Address
-URLDomain
-Registry Value
-Registry Key
-Registry Hives
-Command Line
-File Name
-Process Name
-HTTP Request Methods
-User Agent
-Port Number
-File Path
-Geolocation
-Email Address
-CIDR
-URI
-Ja3
-FileType 
+Note that multiple search values should be separated by commas only (without spaces or any special characters e.g. 10.0.0.1,10.0.0.2). 
+
+Supported IOCs for this playbook:
+- MD5
+- SHA1
+- SHA256
+- IP Address
+- URLDomain
+- Registry Value
+- Registry Key
+- Registry Hives
+- Command Line
+- File Name
+- Process Name
+- HTTP Request Methods
+- User Agent
+- Port Number
+- File Path
+- Geolocation
+- Email Address
+- CIDR
+- URI
+- Ja3
+- FileType
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
