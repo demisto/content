@@ -509,7 +509,7 @@ return_context = {
 def test_upload_command_with_upload_session(mocker, client, args):
     """
         Given:
-            - An image to upload.
+            - An image to upload with a size bigger than 3.
         When:
             - running upload new file command.
         Then:
@@ -521,7 +521,10 @@ def test_upload_command_with_upload_session(mocker, client, args):
     create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
                                              return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
     upload_query_mock = mocker.patch.object(requests, 'put', side_effect=upload_response_side_effect)
+    upload_file_without_upload_session_mock = mocker.patch.object(MsGraphClient, 'upload_new_file',
+                                                                  return_value="")
     upload_new_file_command(client, args)
+    assert upload_file_without_upload_session_mock.call_count == 0
     assert validate_upload_attachments_flow(create_upload_mock, upload_query_mock)
 
 
@@ -529,7 +532,7 @@ def test_upload_command_with_upload_session(mocker, client, args):
 def test_upload_command_without_upload_session(mocker, client, args):
     """
         Given:
-            - An image to upload.
+            - An image to upload (file size lower than 3).
         When:
             - running upload new file command.
         Then:
