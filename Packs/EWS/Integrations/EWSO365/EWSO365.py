@@ -260,10 +260,11 @@ class EWSClient:
         :return: list of exchangelib Items
         """
         # allow user to pass target_mailbox as account
-        if isinstance(account, str):
-            account = self.get_account(account)
-        else:
-            account = self.get_account(self.account_email)
+        if account is None:
+            if isinstance(account, str):
+                account = self.get_account(account)
+            else:
+                account = self.get_account(self.account_email)
         if type(item_ids) is not list:
             item_ids = [item_ids]
         items = [Item(id=x) for x in item_ids]
