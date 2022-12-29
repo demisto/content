@@ -54,7 +54,7 @@ class Client(BaseClient):
         is_jwt = (api_key and api_secret) and not (client_id and client_secret and account_id)
         if is_jwt:
             # the user has chosen to use the JWT authentication method (deprecated)
-            self.access_token = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
+            self.access_token: str | None = get_jwt_token(api_key, api_secret)  # type: ignore[arg-type]
         else:
             # the user has chosen to use the OAUTH authentication method.
             try:
@@ -109,7 +109,8 @@ class Client(BaseClient):
         return oauth_token
 
     def error_handled_http_request(self, method, url_suffix='', full_url=None, headers=None,
-                                   auth=None, json_data=None, params=None, return_empty_response: bool = False, resp_type: str = 'json'):
+                                   auth=None, json_data=None, params=None,
+                                   return_empty_response: bool = False, resp_type: str = 'json'):
 
         # all future functions should call this function instead of the original _http_request.
         # This is needed because the OAuth token may not behave consistently,
