@@ -106,7 +106,7 @@ script:
     - description: Negate the destination.
       name: negate_destination
     description: Create a new security rule.
-    name: prisma-access-create-security-rule
+    name: prisma-sase-security-rule-create
     outputs:
     - contextPath: PrismaAccess.CreatedSecurityRule
       description: Created security rule.
@@ -177,7 +177,7 @@ script:
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: List the security rules.
-    name: prisma-access-list-security-rules
+    name: prisma-sase-security-rule-list
     outputs:
     - contextPath: PrismaAccess.FoundSecurityRule
       description: Found security rule.
@@ -241,7 +241,7 @@ script:
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Push the candidate configuration.
-    name: prisma-access-push-candidate-config
+    name: prisma-sase-candidate-config-push
     outputs:
     - contextPath: PrismaAccess.ConfigPush
       description: Configuration job information.
@@ -314,7 +314,7 @@ script:
     - description: Negate the destination.
       name: negate_destination
     description: Edit an existing security rule.
-    name: prisma-access-edit-security-rule
+    name: prisma-sase-security-rule-update
     outputs:
     - contextPath: PrismaAccess.EditedSecurityRule
       description: Edited security rule.
@@ -531,7 +531,7 @@ script:
     - description: Results paging offset.
       name: offset
     description: List configuration jobs.
-    name: prisma-access-list-config-jobs
+    name: prisma-sase-config-job-list
     outputs:
     - contextPath: PrismaAccess.ConfigJob
       description: Configuration job details.
@@ -584,7 +584,7 @@ script:
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Delete a security rule.
-    name: prisma-access-delete-security-rule
+    name: prisma-sase-security-rule-delete
     outputs:
     - contextPath: PrismaAccess.DeletedSecurityRule
       description: Deleted security rule info.
@@ -648,7 +648,7 @@ script:
       isArray: true
       name: tag
     description: Create a new address object
-    name: prisma-access-create-address-object
+    name: prisma-sase-address-object-create
     outputs:
     - contextPath: PrismaAccess.CreatedAddressObject
       description: Created address object.
@@ -685,7 +685,7 @@ script:
       isArray: true
       name: tag
     description: Edit address object
-    name: prisma-access-edit-address-object
+    name: prisma-sase-address-object-update
     outputs:
     - contextPath: PrismaAccess.EditedAddressObject
       description: Edited address object.
@@ -711,7 +711,7 @@ script:
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: Delete address object
-    name: prisma-access-delete-address-object
+    name: prisma-sase-address-object-delete
     outputs:
     - contextPath: PrismaAccess.DeletedAddressObject
       description: Deleted address object.
@@ -745,7 +745,7 @@ script:
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     description: List address objects.
-    name: prisma-access-list-address-objects
+    name: prisma-sase-address-object-list
     outputs:
     - contextPath: PrismaAccess.FoundSecurityRule
       description: Found security rule.

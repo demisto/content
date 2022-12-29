@@ -896,19 +896,19 @@ def main():
 
     commands = {
         'test-module': test_module,
-        'prisma-access-create-security-rule': create_security_rule_command,
-        'prisma-access-list-security-rules': list_security_rules_command,
-        'prisma-access-push-candidate-config': push_candidate_config_command,
-        'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
-        'prisma-access-list-config-jobs': list_config_jobs_command,
-        'prisma-access-edit-security-rule': edit_security_rule_command,
-        'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
+        'prisma-sase-security-rule-create': create_security_rule_command,
+        'prisma-sase-security-rule-list': list_security_rules_command,
+        'prisma-sase-candidate-config-push': push_candidate_config_command,
+        #'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
+        'prisma-sase-config-job-list': list_config_jobs_command,
+        'prisma-sase-security-rule-update': edit_security_rule_command,
+        #'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
         'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
-        'prisma-access-delete-security-rule': delete_security_rule_command,
-        'prisma-access-create-address-object': create_address_object_command,
-        'prisma-access-edit-address-object': edit_address_object_command,
-        'prisma-access-delete-address-object': delete_address_object_command,
-        'prisma-access-list-address-objects': list_address_objects_command
+        'prisma-sase-security-rule-delete': delete_security_rule_command,
+        'prisma-sase-address-object-create': create_address_object_command,
+        'prisma-sase-address-object-update': edit_address_object_command,
+        'prisma-sase-address-object-delete': delete_address_object_command,
+        'prisma-sase-address-object-list': list_address_objects_command
     }
 
     client = Client(
