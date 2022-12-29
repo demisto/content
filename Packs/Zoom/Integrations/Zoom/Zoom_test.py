@@ -212,8 +212,8 @@ def test_zoom_list_users_command__limit_and_page_size(mocker):
         zoom_list_users_command(client=client, page_size=30, user_id="fdghdf", status="active",
                                 next_page_token=None, role_id=None, limit=50)
 
-    assert e.value.message == """Too money arguments. if you choose a limit,
-                                       don't enter a user_id or page_size or next_page_token"""
+    assert e.value.message == """Too many arguments. If you choose a limit,
+                                       don't enter a user_id or page_size or next_page_token or page_number."""
 
 
 def test_zoom_list_users_command__user_id(mocker):
@@ -257,7 +257,7 @@ def test_manual_list_user_pagination__small_limit(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     limit = 5
     from Zoom import manual_list_user_pagination
-    manual_list_user_pagination(client=client, next_page_token="None", page_size=1, limit=limit,
+    manual_list_user_pagination(client=client, next_page_token="None", limit=limit,
                                 status="None", role_id="None")
     assert zoom_list_users_mocker.call_args[1].get('page_size') == limit
 
@@ -279,7 +279,7 @@ def test_manual_list_user_pagination__large_limit(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     limit = 2000
     from Zoom import manual_list_user_pagination
-    manual_list_user_pagination(client=client, next_page_token="None", page_size=1, limit=limit,
+    manual_list_user_pagination(client=client, next_page_token="None", limit=limit,
                                 status="None", role_id="None")
     assert zoom_list_users_mocker.call_args[1].get('page_size') == 300
 
@@ -519,8 +519,7 @@ def test_zoom_create_meeting_command__too_meny_arguments(mocker):
     with pytest.raises(DemistoException) as e:
         zoom_create_meeting_command(client=client,
                                     type="recurring meeting with fixed time", topic="nonsense", user_id="mock@moker.com")
-    assert e.value.message == "Missing arguments. recurring meeting with fixed time is missing this argument: recurrence_type"
-
+    assert e.value.message == "Missing arguments. A recurring meeting with a fixed\ntime is missing this argument: recurrence_type."
 
 def test_meeting_get_command__show_previous_occurrences_is_false(mocker):
     """
@@ -603,7 +602,7 @@ def test_manual_meeting_list_pagination__small_limit(mocker):
     limit = 5
     from Zoom import manual_meeting_list_pagination
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
-                                   page_size=1, limit=limit, type="all")
+                                   limit=limit, type="all")
     assert zoom_meeting_list_mocker.call_args[1].get('page_size') == limit
 
 
@@ -625,7 +624,7 @@ def test_manual_meeting_list_pagination__large_limit(mocker):
     limit = 2000
     from Zoom import manual_meeting_list_pagination
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
-                                   page_size=1, limit=limit, type="all")
+                                   limit=limit, type="all")
     assert zoom_meeting_list_mocker.call_args[1].get('page_size') == 300
 
 
@@ -643,8 +642,8 @@ def test_check_authentication_type_parameters_with_extra_jwt_member(mocker):
                                                   client_id="mockclient", client_secret="mocksecret",
                                                   api_key="blabla", api_secret="")
     assert e.value.message == """Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
+You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+OR the API Key and API Secret fields (JWT - Deprecated)."""
 
 
 def test_check_authentication_type_parameters__with_extra_AOuth_member():
@@ -661,8 +660,8 @@ def test_check_authentication_type_parameters__with_extra_AOuth_member():
                                                   client_id="", client_secret="mocksecret",
                                                   api_key="blabla", api_secret="ertert")
     assert e.value.message == """Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)"""
+You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+OR the API Key and API Secret fields (JWT - Deprecated)."""
 
 
 @freeze_time("1988-03-03T11:00:00")
@@ -786,7 +785,7 @@ def test_check_start_time_format__wrong_format():
     from Zoom import check_start_time_format
     with pytest.raises(DemistoException) as e:
         check_start_time_format("2022-13-26T22:22:Z")
-    assert e.value.message == "Wrong time format. please use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
+    assert e.value.message == "Wrong time format. Use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
 
 
 def test_test_moudle__reciving_errors(mocker):
@@ -845,7 +844,7 @@ def test_manual_list_user_pagination__next_page_token_None(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     limit = 5
     from Zoom import manual_list_user_pagination
-    manual_list_user_pagination(client=client, next_page_token= None, page_size=1, limit=limit,
+    manual_list_user_pagination(client=client, next_page_token= None, limit=limit,
                                 status="None", role_id="None")
     assert zoom_list_users_mocker.called
     
@@ -867,5 +866,5 @@ def test_manual_meeting_list_pagination__next_page_token_None(mocker):
     limit = 5
     from Zoom import manual_meeting_list_pagination
     manual_meeting_list_pagination(client=client, user_id="bla", next_page_token=None,
-                                   page_size=1, limit=limit, type="all")
+                                    limit=limit, type="all")
     assert zoom_meeting_list_mocker.called
