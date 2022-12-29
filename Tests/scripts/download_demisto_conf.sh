@@ -31,8 +31,24 @@ cp -r ./content-test-conf/demisto.lic $DEMISTO_LIC_PATH
 cp -r ./content-test-conf/signDirectory $DEMISTO_PACK_SIGNATURE_UTIL_PATH
 cp -r ./content-test-conf/xsiam_servers.json $XSIAM_SERVERS_PATH
 
-if [ "$EXTRACT_MODELING_RULE_TESTDATA_FILES" == "true" ]; then
+if [[ "$IS_NIGHTLY" == "true" ]] || [[ "$EXTRACT_MODELING_RULE_TESTDATA_FILES" == "true" && "$UNDERSCORE_BRANCH" != "master" ]]; then
     cp -r ./content-test-conf/modelingrules ./modelingrules
+fi
+
+if [[ -d ./modelingrules ]]; then
+    echo "Copying modeling rule testdata files to their respective directories"
+    # Copy testdata files from 'modelingrules' directory that was extracted to root directory into their respective pack destinations
+    testdata_files=($(find ./modelingrules -type file -name '*.json'))
+    for testdata_file in "${testdata_files[@]}"; do
+        # strip './' prefix
+        dest_without_curdir="${testdata_file#*/}"
+        # strip 'modelingrules/' prefix
+        pack_dest="${dest_without_curdir#*/}"
+        echo "Copying $testdata_file --> $pack_dest"
+        cp "$testdata_file" "$pack_dest"
+    done
+    echo "Deleting ./modelingrules directory"
+    rm -rf ./modelingrules
 fi
 
 rm -rf ./content-test-conf
