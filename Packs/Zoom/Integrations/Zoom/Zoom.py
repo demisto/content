@@ -48,7 +48,7 @@ LIMIT_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose a limit,
                                        don't enter a user_id or page_size or next_page_token or page_number."""
 LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST = """Too many arguments. If you choose a limit,
                                        don't enter a page_size or next_page_token or page_number."""
-INSTANT_AND_TIME = "Too many arguments.Uuse start_time and timezone for scheduled meetings only."
+INSTANT_AND_TIME = "Too many arguments.Use start_time and timezone for scheduled meetings only."
 JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
 WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
 END_TIMES_AND_END_DATE_TIME = "Collision arguments. Choose only one of these two arguments, end_time or end_date_time."
@@ -60,8 +60,8 @@ MONTHLY_RECURRING_MISIING_ARGUMENTS = """Missing arguments. A recurring meeting 
             must have the following arguments: monthly_week and monthly_week_day."""
 NOT_WEEKLY_WITH_WEEKLY_ARGUMENTS = "Weekly_days is for weekly recurrence_type only."
 EXTRA_PARAMS = """Too many fields were filled.
-                                   You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
-                                   OR the API Key and API Secret fields (JWT - Deprecated)."""
+You should fill the Account ID, Client ID, and Client Secret fields (OAuth),
+OR the API Key and API Secret fields (JWT - Deprecated)."""
 RECURRING_MISSING_ARGUMENTS = """Missing arguments. A recurring meeting with a fixed
 time is missing this argument: recurrence_type."""
 '''CLIENT CLASS'''
