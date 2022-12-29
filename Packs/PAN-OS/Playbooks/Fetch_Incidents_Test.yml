@@ -1,6 +1,7 @@
 id: Fetch Incidents Test
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+description: ''
+fromversion: 6.5.0
+version: -1
 name: Fetch Incidents Test
 starttaskid: "0"
 tasks:
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -39,6 +41,7 @@ tasks:
     type: condition
     task:
       id: 635bd945-58f1-4cbe-85c9-66364036b155
+      description: ''
       version: -1
       name: Check If Incidents exist
       type: condition
@@ -119,6 +122,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -143,8 +147,7 @@ tasks:
       id: df1a8229-c1ef-481e-8344-aa939c240fbf
       version: -1
       name: Check If Fields Exist
-      description: Receive fields and context. Verifies that these field exists in
-        context.
+      description: Receive fields and context. Verifies that these field exists in context.
       scriptName: VerifyObjectFieldsList
       type: regular
       iscommand: false
@@ -177,8 +180,9 @@ tasks:
     id: "9"
     taskid: 1987f07a-3be5-4768-8c20-58ab92ab7987
     type: condition
-    task:
+    task:    
       id: 1987f07a-3be5-4768-8c20-58ab92ab7987
+      description: ''
       version: -1
       name: Do all the indicator fields exist?
       type: condition
@@ -218,7 +222,7 @@ tasks:
     task:
       id: 2fd62184-1bd3-4a6d-873e-72714b3a53fc
       version: -1
-      name: GenericPolling - waiting to fetch Incidents.
+      name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -313,6 +317,7 @@ tasks:
     type: condition
     task:
       id: 11d17f24-6198-4d17-84aa-2e0f702f66ad
+      description: ''
       version: -1
       name: Check Health status
       type: condition
@@ -462,6 +467,7 @@ tasks:
     type: condition
     task:
       id: b2cf2ada-d2c1-4229-8f48-cd76625eacaa
+      description: ''
       version: -1
       name: Check If Incidents exists
       type: condition
@@ -503,7 +509,7 @@ tasks:
     task:
       id: 3106db13-594a-42d7-8e7c-6b60dd72b0cb
       version: -1
-      name: GenericPolling - Waiting to finish fetch.
+      name: GenericPolling
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -594,6 +600,7 @@ tasks:
     type: condition
     task:
       id: 68256294-ada1-42f1-8255-09265fc4b02a
+      description: ''
       version: -1
       name: Instance name should not contain spaces.
       type: condition
@@ -635,6 +642,7 @@ tasks:
     type: condition
     task:
       id: 291a7880-8c5a-4c4f-81b3-7bc086910d16
+      description: ''
       version: -1
       name: Check if there are playbook inputs
       type: condition
@@ -877,11 +885,18 @@ inputs:
     simple: Panorama
   required: false
   description: Id of Integration that we want to test.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: searchfield
   value:
     simple: CustomFields.destinationport
   required: false
   description: Comma separated list of fields to confirm that exists in all incidents.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- PAN-OS URL Filtering enrichment - Test
+- PAN-OS - Block IP and URL - External Dynamic List v2 Test
+- PAN-OS Create Or Edit Rule Test
+- PAN-OS EDL Setup v3 Test
+- PAN-OS Query Logs For Indicators Test
+- PAN-OS DAG Configuration Test
