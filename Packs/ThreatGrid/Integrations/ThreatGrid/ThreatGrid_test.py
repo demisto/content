@@ -9,7 +9,7 @@ os.environ["HTTPS_PROXY"] = "test"
 os.environ["http_proxy"] = "test"
 os.environ["https_proxy"] = "test"
 PARAMS = {
-    'server': 'test',
+    'server': 'http://test.com',
     'proxy': True,
     'disregard_quota': True,
 }
@@ -91,32 +91,31 @@ def test_get_with_limit_dict(mocker):
     assert len(res.get('Country'))
 
 
-def test_submit_urls(mocker):
-    req_mock = mocker.Mock()
-    mock_response = mocker.Mock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = util_load_json('test_data/submit_url.json')
+def test_submit_urls(mocker, requests_mock):
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    testing_url = 'http://test.com/api/v2/samples'
+    mock_response = util_load_json('test_data/submit_url.json')
     expected_results = util_load_json('test_data/submit_url_results.json')
-    req_mock.return_value = mock_response
+    requests_mock.post(testing_url, json=mock_response)
     from ThreatGrid import submit_urls
     args = Submit_url_input
 
-    res = submit_urls(args, req=req_mock)
+    res = submit_urls(args)
     assert res.outputs == expected_results
 
 def test_advanced_seach(mocker, requests_mock):
 
-    mocker.patch.object(demisto, 'args', return_value=Search_query_input)
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from ThreatGrid import advanced_search
-    args = demisto.args
+    args = Search_query_input
+    testing_url = 'http://test.com/api/v3/search'
     # Load assertions and mocked request data
-    testing_url = Submit_url_input.get('url')
     mock_response = util_load_json('test_data/advanced_search.json')
     expected_results = util_load_json('test_data/advanced_search_results.json')
-    mocker.patch.object(advanced_search, 'req', return_value=mock_response)
+    requests_mock.post(testing_url, json=mock_response, status_code=201)
 
     res = advanced_search(args)
-    assert res.outputs == expected_results
+    assert res.outputs[0] == expected_results[0]
 
 
 def test_get_with_limit_fail(mocker):
@@ -158,6 +157,7 @@ def test_create_analysis_json_human_readable(mocker, test_dict, expected_result)
 
 
 def test_feed_helper_byte_response(mocker):
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
     from ThreatGrid import feeds_helper
 
     class MockResponse:

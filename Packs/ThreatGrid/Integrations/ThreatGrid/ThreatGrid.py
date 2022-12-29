@@ -935,7 +935,7 @@ def search_urls():
     })
 
 
-def submit_urls(args, req=req):
+def submit_urls(args):
     """
     Submit urls for analysis
     """
@@ -953,7 +953,7 @@ def submit_urls(args, req=req):
             outputs_key_field='Info',
             outputs=res
             )
-    return_results(results)
+    return results
 
 
 def advanced_search(args):
@@ -974,9 +974,9 @@ def advanced_search(args):
             outputs_key_field='Info',
             outputs=final_results
             )
-        return_results(results)
+        return results
     else:
-        return_results(CommandResults(readable_output='No results found'))
+        return (CommandResults(readable_output='No results found'))
 
 
 def search_samples():
@@ -1201,9 +1201,9 @@ def main():
     elif demisto.command() == 'threat-grid-search-urls':
         search_urls()
     elif demisto.command() == 'threat-grid-advanced-search':
-        advanced_search(args)
+        return_results(advanced_search(args))
     elif demisto.command() == 'threat-grid-submit-urls':
-        submit_urls(args)
+        return_results(submit_urls(args))
     elif demisto.command() == 'threat-grid-search-submissions':
         search_submissions()
     elif demisto.command() == 'threat-grid-get-specific-feed':
