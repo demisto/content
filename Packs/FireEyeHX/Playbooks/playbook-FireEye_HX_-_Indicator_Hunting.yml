@@ -98,10 +98,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: c2b4501c-1aa8-4ebd-882e-277c32e67ed4
+    taskid: 55134add-4736-47b9-8ad0-c27dfc40a76d
     type: regular
     task:
-      id: c2b4501c-1aa8-4ebd-882e-277c32e67ed4
+      id: 55134add-4736-47b9-8ad0-c27dfc40a76d
       version: -1
       name: Save matching results - users
       description: |-
@@ -121,7 +121,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -223,7 +223,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "31"
       "yes":
       - "57"
@@ -1670,10 +1670,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: 3766f572-712b-47d8-8c41-e14da14e3bca
+    taskid: 1f476989-92ed-4f45-8d03-0cf1b83a4daa
     type: regular
     task:
-      id: 3766f572-712b-47d8-8c41-e14da14e3bca
+      id: 1f476989-92ed-4f45-8d03-0cf1b83a4daa
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -1761,10 +1761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: b6ce6823-a50b-4ff2-89ba-1d1ac001bbff
+    taskid: 8d54b780-f297-492f-8bbe-ae0e33974355
     type: regular
     task:
-      id: b6ce6823-a50b-4ff2-89ba-1d1ac001bbff
+      id: 8d54b780-f297-492f-8bbe-ae0e33974355
       version: -1
       name: Save matching results - users
       description: |-
@@ -1784,7 +1784,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -1914,10 +1914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: 8b17b8e0-33c2-44b1-8131-7ec536fc069d
+    taskid: 527e7b0c-f7aa-48ab-8c1c-4e7b6f526c5a
     type: regular
     task:
-      id: 8b17b8e0-33c2-44b1-8131-7ec536fc069d
+      id: 527e7b0c-f7aa-48ab-8c1c-4e7b6f526c5a
       version: -1
       name: Save matching results - users
       description: |-
@@ -1937,7 +1937,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2067,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "140":
     id: "140"
-    taskid: c4af0965-7726-43ea-8257-db2b61d1711b
+    taskid: 64f11355-ad25-4e06-8592-fff058906591
     type: regular
     task:
-      id: c4af0965-7726-43ea-8257-db2b61d1711b
+      id: 64f11355-ad25-4e06-8592-fff058906591
       version: -1
       name: Save matching results - users
       description: |-
@@ -2090,7 +2090,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2220,10 +2220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "143":
     id: "143"
-    taskid: e86ad105-7c2a-4fc0-8d94-001540cc9bc5
+    taskid: a5e33db9-7626-454c-8dc0-18d00f3e1398
     type: regular
     task:
-      id: e86ad105-7c2a-4fc0-8d94-001540cc9bc5
+      id: a5e33db9-7626-454c-8dc0-18d00f3e1398
       version: -1
       name: Save matching results - users
       description: |-
@@ -2243,7 +2243,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2365,10 +2365,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "146":
     id: "146"
-    taskid: 2183beb9-440c-4864-8163-1bea491d0c98
+    taskid: 6438f9aa-c410-443b-83da-479cb7605c17
     type: regular
     task:
-      id: 2183beb9-440c-4864-8163-1bea491d0c98
+      id: 6438f9aa-c410-443b-83da-479cb7605c17
       version: -1
       name: Save matching results - users
       description: |-
@@ -2388,7 +2388,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2487,10 +2487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "148":
     id: "148"
-    taskid: d8371d0a-f493-4be5-83c6-1b2f61f19c12
+    taskid: 31382a84-a7fe-4dea-87a7-803a3a8c8079
     type: regular
     task:
-      id: d8371d0a-f493-4be5-83c6-1b2f61f19c12
+      id: 31382a84-a7fe-4dea-87a7-803a3a8c8079
       version: -1
       name: Save matching results - users
       description: |-
@@ -2510,7 +2510,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2609,10 +2609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "150":
     id: "150"
-    taskid: 82aff6a9-315c-42d5-8478-143d98604db4
+    taskid: 6033d8e1-7e8d-443a-8b5b-e236c5a9fcf2
     type: regular
     task:
-      id: 82aff6a9-315c-42d5-8478-143d98604db4
+      id: 6033d8e1-7e8d-443a-8b5b-e236c5a9fcf2
       version: -1
       name: Save matching results - users
       description: |-
@@ -2632,7 +2632,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2762,10 +2762,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "153":
     id: "153"
-    taskid: e6a7798d-f783-4c02-88b8-c952c3962401
+    taskid: a902a425-ea80-41ba-88ae-80326b7210d5
     type: regular
     task:
-      id: e6a7798d-f783-4c02-88b8-c952c3962401
+      id: a902a425-ea80-41ba-88ae-80326b7210d5
       version: -1
       name: Save matching results - users
       description: |-
@@ -2785,7 +2785,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2938,10 +2938,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: d78fd262-116f-46d9-887a-217c92d0fc70
+    taskid: 36d6bba4-7a1d-4dcd-8ff0-740b928821b0
     type: regular
     task:
-      id: d78fd262-116f-46d9-887a-217c92d0fc70
+      id: 36d6bba4-7a1d-4dcd-8ff0-740b928821b0
       version: -1
       name: Save matching results - users
       description: |-
@@ -2961,7 +2961,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -2992,10 +2992,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "158":
     id: "158"
-    taskid: c6431203-c119-481b-8e53-f398483deda8
+    taskid: fe6c21e7-6639-42b0-88d0-fb5321c89e78
     type: regular
     task:
-      id: c6431203-c119-481b-8e53-f398483deda8
+      id: fe6c21e7-6639-42b0-88d0-fb5321c89e78
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -3236,10 +3236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 4738e4e1-0576-49f8-8d7f-7f6bd4a8245b
+    taskid: 9bc639e0-439d-4ca2-890f-9658e4a72632
     type: regular
     task:
-      id: 4738e4e1-0576-49f8-8d7f-7f6bd4a8245b
+      id: 9bc639e0-439d-4ca2-890f-9658e4a72632
       version: -1
       name: Save matching results - users
       description: |-
@@ -3259,7 +3259,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: HuntingResults.DetectedUsers
+        simple: HXHunting.DetectedUsers
       value:
         complex:
           root: FireEyeHX.Search.results
@@ -3294,10 +3294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 9b9db2cf-0c8b-4182-8903-3ff5d8944a70
+    taskid: 3d65998b-eebc-4566-8649-e53c74d94ea7
     type: regular
     task:
-      id: 9b9db2cf-0c8b-4182-8903-3ff5d8944a70
+      id: 3d65998b-eebc-4566-8649-e53c74d94ea7
       version: -1
       name: Save matching results - IP addresses
       description: |-
@@ -3465,7 +3465,7 @@ view: |-
       "130_131_yes": 0.56,
       "130_142_#default#": 0.23,
       "161_160_#default#": 0.23,
-      "56_31_no": 0.19,
+      "56_31_#default#": 0.1,
       "56_57_yes": 0.47
     },
     "paper": {
