@@ -80,9 +80,9 @@ def test_get_oauth_token__if_not_ctx(mocker, result):
            client
         When -
             asking for the latest token's generation_time and the result is None
-            or empty 
+            or empty
         Then -
-            Validate that a new token will be generated.            
+            Validate that a new token will be generated.
     """
     mocker.patch.object(Zoom_IAM, "get_integration_context",
                         return_value={'token_info': {"generation_time": result,

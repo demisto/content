@@ -324,4 +324,6 @@ def test_enable_user_command__empty_json_as_argument(input):
 
     with pytest.raises(DemistoException) as e:
         iamcommand.enable_user(client, input)
-    assert e.value.message == "Your user profile argument must contain at least one attribute that is mapped into one of the following attributes in the outgoing mapper: ['id', 'username', 'email']"
+    assert e.value.message == ("Your user profile argument must contain at least"
+                               "one attribute that is mapped into one of the following attributes"
+                               "in the outgoing mapper: ['id', 'username', 'email']")

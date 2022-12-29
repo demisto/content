@@ -761,7 +761,7 @@ def main():  # pragma: no cover
         elif command == 'zoom-delete-user':
             results = zoom_delete_user_command(client, **args)
         elif command == 'zoom-fetch-recording':
-            results = zoom_fetch_recording_command()
+            zoom_fetch_recording_command()
         elif command == 'zoom-list-users':
             results = zoom_list_users_command(client, **args)
         else:

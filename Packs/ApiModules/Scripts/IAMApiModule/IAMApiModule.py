@@ -462,7 +462,8 @@ class IAMCommand:
         """ Enables a user in the application and updates the user profile object with the updated data.
             If not found, the command will be skipped.
 
-        :param client: (Client) The integration Client object that implements get_user(), enable_user() and handle_exception methods
+        :param client: (Client) The integration Client object that implements get_user(),
+                                enable_user() and handle_exception methods
         :param args: (dict) The `iam-enable-user` command arguments
         :return: (IAMUserProfile) The user profile object.
         """
