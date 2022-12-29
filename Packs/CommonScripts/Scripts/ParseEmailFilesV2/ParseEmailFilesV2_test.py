@@ -88,6 +88,8 @@ def test_eml_type(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['SMTP mail, UTF-8 Unicode text, with CRLF terminators'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -137,6 +139,8 @@ def test_eml_contains_eml(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -199,6 +203,8 @@ def test_eml_contains_msg(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -257,6 +263,8 @@ def test_eml_contains_eml_depth(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test', 'max_depth': '1'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -291,6 +299,8 @@ def test_msg(mocker):
     info = 'CDFV2 Microsoft Outlook Message'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime-p7s.msg', info=info))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['CDFV2 Microsoft Outlook Message'])
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -315,6 +325,8 @@ def test_no_content_type_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content_type.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['ascii text'])
     mocker.patch.object(demisto, 'results')
     main()
     results = demisto.results.call_args[0]
@@ -335,6 +347,8 @@ def test_no_content_file(mocker):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand',
                         side_effect=exec_command_for_file('no_content.eml', info="ascii text"))
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['ascii text'])
     mocker.patch.object(demisto, 'results')
     try:
         main()
@@ -489,6 +503,8 @@ def test_eml_contains_eml_nesting_level(mocker, nesting_level_to_return, results
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test',
                                                        'nesting_level_to_return': nesting_level_to_return})
+    mocker.patch.object(demisto, 'context')
+    mocker.patch.object(demisto, 'dt', return_value=['news or mail text, ASCII text'])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'results')
     main()
