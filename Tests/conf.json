@@ -294,7 +294,7 @@
             "playbookID": "Azure NSG - Test"
         },
         {
-            "integrations": "OpenCTI Feed",
+            "integrations": "OpenCTI Feed 4.X",
             "playbookID": "OpenCTI Feed Test",
             "fromversion": "5.5.0"
         },
