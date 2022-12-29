@@ -2,6 +2,8 @@ Exchange Web Services (EWS) provides the functionality to enable client applicat
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
+The integration will use the UPN parameter as the target mailbox if it's different from the Email Address, otherwise, the Email Address is used.
+
 ## EWS O365 Playbook
 
 *   Get Original Email - EWS
