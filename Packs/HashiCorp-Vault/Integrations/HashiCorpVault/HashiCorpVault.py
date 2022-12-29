@@ -844,4 +844,5 @@ try:
     elif demisto.command() == 'hashicorp-reset-configuration':
         reset_config_command()
 except Exception as e:
+    demisto.debug(f'An error occurred: {e}')
     return_error(f'An error occurred: {e}')
