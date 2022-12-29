@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
     "name": "Delinea Secret Server",
     "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
@@ -30,3 +31,37 @@
         "marketplacev2"
     ]
 }
+=======
+{
+    "name": "Delinea Secret Server",
+    "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
+    "support": "partner",
+    "currentVersion": "2.0.0",
+    "author": "Delinea, Inc",
+    "url": "https://delinea.com/support",
+    "email": "support@delinea.com",
+    "created": "2022-08-10T14:49:56Z",
+    "categories": [
+        "Authentication"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "RoshaniTambadkar"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
+>>>>>>> c09ed55077d4d57c2991ceeb24ece07e3f01fc58
