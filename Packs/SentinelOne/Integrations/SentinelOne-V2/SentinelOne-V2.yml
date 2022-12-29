@@ -1010,6 +1010,33 @@ script:
     - contextPath: SentinelOne.Event.MD5
       description: MD5 hash of the file.
       type: String
+    - contextPath: SentinelOne.Event.SourceIP
+      description: The source ip.
+      type: String
+    - contextPath: SentinelOne.Event.SourcePort
+      description: The source port.
+      type: String
+    - contextPath: SentinelOne.Event.DestinationIP
+      description: The destination IP.
+      type: String
+    - contextPath: SentinelOne.Event.DestinationPort
+      description: The destination port.
+      type: String
+    - contextPath: SentinelOne.Event.SourceProcessUser
+      description: The source process user.
+      type: String
+    - contextPath: SentinelOne.Event.SourceProcessCommandLine
+      description: The source process command line.
+      type: String
+    - contextPath: SentinelOne.Event.DNSRequest
+      description: The DNS Request.
+      type: String
+    - contextPath: SentinelOne.Event.FileFullName
+      description: The file full name.
+      type: String
+    - contextPath: SentinelOne.Event.EventTime
+      description: The event time.
+      type: String
     - contextPath: Event.ID
       description: Event process ID.
       type: String
