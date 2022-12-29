@@ -6,7 +6,7 @@ configuration:
   - name: base_url
     display: Server URL
     required: true
-    defaultvalue: https://example.com/
+    defaultvalue: https://example.com/api/v3.0/
     type: 0
     additionalinfo: null
   - display: Username
