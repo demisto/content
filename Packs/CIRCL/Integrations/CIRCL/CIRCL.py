@@ -213,8 +213,7 @@ def get_certificate_details(sha1):
 
 
 def http_get_certificate_details(sha1):
-    query_url = BASE_URL + '/v2pssl/cfetch/' + sha1
-
+    query_url = f'{BASE_URL}/v2pssl/cfetch/{sha1}'
     return http_request('GET', query_url)
 
 
