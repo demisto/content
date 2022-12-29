@@ -297,7 +297,7 @@ upload-packs-to-marketplace:
     - |
       if [[ $TEST_UPLOAD == "false" ]]; then
         section_start "Upload content graph CSVs to GCP" --collapsed
-        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*"
+        gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION"
         section_end "Upload content graph CSVs to GCP"
       fi
 
