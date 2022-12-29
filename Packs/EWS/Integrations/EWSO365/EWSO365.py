@@ -2387,7 +2387,7 @@ def sub_main():
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
     command = demisto.command()
-    if params.get('upn_mailbox'):
+    if params.get('upn_mailbox') and command != 'ews-get-searchable-mailboxes' and command != 'ews-get-out-of-office':
         params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
         client = EWSClient(**params)
