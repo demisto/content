@@ -1046,7 +1046,7 @@ script:
       etc...
   
   runonce: false
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.42476
 tests:
 - ThreatGridTest
 fromversion: 5.0.0
