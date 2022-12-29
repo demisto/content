@@ -688,6 +688,7 @@ def main():  # pragma: no coverage
             return_results(entry_result)
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
+            testttttt
 
     # Log exceptions
     except Exception as e:
