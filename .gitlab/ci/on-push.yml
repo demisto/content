@@ -172,9 +172,6 @@ validate-content-conf:
         python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
       fi
     - section_end "Create Instances for XSOAR"
-    # testing overrider # TODO delete
-    - gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/tests"
-    - gsutil -m cp -r $ARTIFACTS_FOLDER/content_graph/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/tests"
 
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
