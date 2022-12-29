@@ -156,6 +156,7 @@ if [ -n "$_gitlab" ]; then
     --form "variables[STORAGE_BASE_PATH]=${_storage_base_path}" \
     --form "variables[OVERRIDE_ALL_PACKS]=${_override_all_packs}" \
     --form "variables[CREATE_DEPENDENCIES_ZIP]=${_create_dependencies_zip}" \
+    --form "variables[TEST_UPLOAD]=true" \
     "$BUILD_TRIGGER_URL"
 
 else

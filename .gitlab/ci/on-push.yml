@@ -173,13 +173,13 @@ validate-content-conf:
       fi
     - section_end "Create Instances for XSOAR"
 
-    - section_start "Upload Graph CSV files to bucket" --collapsed
     - |
       if [[ $BUCKET_UPLOAD == "true" && $TEST_UPLOAD == "false" ]]; then
+        section_start "Upload Graph CSV files to bucket" --collapsed
         # delete command after decide how to upload in prod
         gsutil -m cp -r /var/lib/neo4j/import/* "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*"
+        section_end "Upload Graph CSV files to bucket"
       fi
-    - section_end "Upload Graph CSV files to bucket"
 
     - section_start "Upload Artifacts to GCP" --collapsed
     - ./Tests/scripts/upload_artifacts.sh
