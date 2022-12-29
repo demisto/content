@@ -818,7 +818,7 @@ def test_EclecticIQ_lookup_observables_scenario(mocker):
 
 
 def EclecticIQ_lookup_observables_scenario_mock_response(*args, **kwargs):
-    return_value = {'id': 1}
+    return_value = {"count": 0, "data": [], "limit": 100, "offset": 0, "total_count": 0}
     return return_value
 # Test cases for lookup observables scenario-1
 
@@ -829,9 +829,8 @@ def test_EclecticIQ_lookup_observables_scenario_1(mocker):
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001"}
     result = EclecticIQ_lookup_observables(client, args)
-    assert isinstance(result, str)
-
-# # Test cases for create sighting
+    assert result.readable_output == "No observable data found."
+# Test cases for create sighting
 
 
 def test_EclecticIQ_create_sighting(mocker):
@@ -841,8 +840,7 @@ def test_EclecticIQ_create_sighting(mocker):
     args = {"type": "ipv4", "value": "001.001.001.001", "title": "EIQ", "tags": "cortex alert",
             "description": "sighting", "confidence_level": "medium"}
     result = EclecticIQ_create_sighting(client, args)
-    assert isinstance(result.outputs['value'], str)
-    assert result.outputs_prefix == 'Sighting.Data'
+    assert result.outputs_prefix == 'Sighting'
     assert result.outputs_key_field == 'value'
 
 # Test cases for create sighting scenario
@@ -869,7 +867,7 @@ def test_EclecticIQ_create_observable(mocker):
     args = {"type": "ipv4", "value": "001.001.001.001", "maliciousness": "safe"}
     result = EclecticIQ_create_observable(client, args)
     assert isinstance(result.outputs['value'], str)
-    assert result.outputs_prefix == 'Observables.Data'
+    assert result.outputs_prefix == 'Observables'
     assert result.outputs_key_field == 'value'
 
 # Test cases for create observable scenario

@@ -109,20 +109,20 @@ script:
       description: severity level of the sighting
       type: textArea
     outputs:
-    - contextPath: Sighting.Data.Type
-      description: Sighting Type
+    - contextPath: Sighting.Data.data.type
+      description: Sighting type
       type: string
-    - contextPath: Sighting.Data.tags
+    - contextPath: Sighting.Data.data.tags
       description: Sighting Tags
       type: string
-    - contextPath: Sighting.Data.title
+    - contextPath: Sighting.Data.data.title
       description: Sighting Title
       type: string
-    - contextPath: Sighting.Data.description
+    - contextPath: Sighting.Data.data.description
       description: Sighting Description
       type: string
-    - contextPath: Sighting.Data.value
-      description: Sighting Value
+    - contextPath: Sighting.Data.data.timestamp
+      description: Sighting timestamp
       type: string
     description: 'create sighting in the EclecticIQ Intelligence Center Platform '
   - name: EclecticIQ_create_observable
@@ -157,18 +157,18 @@ script:
       - high
       description: severity level of the type
     outputs:
-    - contextPath: Observables.Data.type
+    - contextPath: Observables.Data.data.type
       description: Observable Type
       type: string
-    - contextPath: Observables.Data.value
+    - contextPath: Observables.Data.data.value
       description: Observable Value
       type: string
-    - contextPath: Observables.Data.maliciousness
+    - contextPath: Observables.Data.data.maliciousness
       description: Observable maliciousness
       type: string
     description: 'create observable in the EclecticIQ Intelligence Center Platform '
   runonce: true
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.9.42008
 tests:
 - No test - instance issues
 fromversion: 6.5.0

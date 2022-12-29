@@ -1,13 +1,12 @@
 import json
 import re
 import traceback
-# import datetime
 from typing import Any, Dict, List, Mapping, Tuple
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
-"""EclecticIQ Integration for Cortex XSOAR (aka Demisto)."""
+"""EclecticIQ Integration for Cortex XSOAR."""
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -123,12 +122,12 @@ class Client(BaseClient):
         :type type_eiq: str
         :param value: observable value
         :type value: str
-        :param maliciousness: malciousness of the value
+        :param maliciousness: maliciousness of the value
         :type maliciousness: str
         :return: observable payload
         :rtype: ``Dict[str, Any]``
         """
-        Body_paramas: Mapping[str, Any] = {
+        body_params: Mapping[str, Any] = {
             "data": {
                 "meta": {
                     "maliciousness": "Unknown"
@@ -137,13 +136,13 @@ class Client(BaseClient):
                 "value": "value1"
             }
         }
-        Body_paramas["data"]["type"] = type_eiq
-        Body_paramas["data"]["value"] = value
-        Body_paramas["data"]["meta"]["maliciousness"] = maliciousness
+        body_params["data"]["type"] = type_eiq
+        body_params["data"]["value"] = value
+        body_params["data"]["meta"]["maliciousness"] = maliciousness
         return self._http_request(
             method='POST',
             url_suffix='/observables',
-            data=json.dumps(Body_paramas)
+            data=json.dumps(body_params)
         )
 
     def get_user_granted_permissions(self) -> Any:
@@ -473,7 +472,7 @@ def EclecticIQ_lookup_observables(client: Client, args: Any) -> CommandResults:
     if response.get("data"):
         data_item = response["data"]
     else:
-        return "No observable data found"  # type:ignore
+        return CommandResults(readable_output="No observable data found.")
     standard_observable_outputs = []
     final_data = []
     for observable in data_item:
@@ -484,8 +483,8 @@ def EclecticIQ_lookup_observables(client: Client, args: Any) -> CommandResults:
         }
         if score == 3:
             standard_observable_output['Malicious'] = {
-                'Vendor': 'EclectiqIQ',
-                'Description': 'EclectiqIQ maliciousness confidence level: ' + maliciousness
+                'Vendor': 'EclecticIQ',
+                'Description': 'EclecticIQ maliciousness confidence level: ' + maliciousness
             }
             standard_observable_outputs.append(standard_observable_output)
         dbot_output = {
@@ -545,13 +544,13 @@ def EclecticIQ_create_sighting(client: Client, args: Any) -> CommandResults:
     human_readable_title = '!sighting created for- {}'.format(
         args.get("value"))
     human_readable = tableToMarkdown(human_readable_title, t=output)
-    context['Sighting.Data'] = createContext(
+    context['Data'] = createContext(
         data=response, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Sighting.Data',
+        outputs_prefix='Sighting',
         outputs_key_field='value',
-        outputs=output
+        outputs=context
     )
 
 
@@ -577,13 +576,13 @@ def EclecticIQ_create_observable(client: Client, args: Any) -> CommandResults:
               }
     human_readable_title = "Observables created successfully..!!"
     human_readable = tableToMarkdown(human_readable_title, t=output)
-    context['Observable.Data'] = createContext(
+    context['Data'] = createContext(
         data=response, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='Observables.Data',
+        outputs_prefix='Observables',
         outputs_key_field='value',
-        outputs=output
+        outputs=context
     )
 
 
@@ -591,10 +590,6 @@ def EclecticIQ_create_observable(client: Client, args: Any) -> CommandResults:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-    :return:
-    :rtype:
-    """
     params = demisto.params()
     api_key = params.get('apikey')
     base_url = params.get('url')

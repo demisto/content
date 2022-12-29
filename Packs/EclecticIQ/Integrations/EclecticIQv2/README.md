@@ -81,8 +81,7 @@ Lookup observables from EclecticIQ Intelligence Center Platform
                       "maliciousness":"medium"
                    },
                    "sources":[
-                      "https://ic-playground.eclecticiq.com/api/v1/sources/9a479225-37d1-4dae-9554-172eeccea193"
-    ],
+                      "https://ic-playground.eclecticiq.com/api/v1/sources/9a479225-37d1-4dae-9554-172eeccea193"],
                    "type":"ipv4",
                    "value":"000.001.001.001"
                 }
@@ -121,11 +120,11 @@ create sighting in the EclecticIQ Intelligence Center Platform
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Sighting.Data.Type | string | Sighting Type | 
-| Sighting.Data.tags | string | Sighting Tags | 
-| Sighting.Data.title | string | Sighting Title | 
-| Sighting.Data.description | string | Sighting Description | 
-| Sighting.Data.value | string | Sighting Value | 
+| Sighting.Data.data.type | string | Sighting Type | 
+| Sighting.Data.data.tags | string | Sighting Tags | 
+| Sighting.Data.data.title | string | Sighting Title | 
+| Sighting.Data.data.description | string | Sighting Description | 
+| Sighting.Data.data.timestamp | string | Sighting timestamp | 
 
 #### Command Example
 ```!EclecticIQ_create_sighting  type="ipv4" value="001.001.001.001" description="sighting creation" title="sighting" tags="Alert" confidence_level="high"```
@@ -133,14 +132,43 @@ create sighting in the EclecticIQ Intelligence Center Platform
 #### Context Example
 ```json
 {
-   "sighting":{
+   "Sighting":{
       "Data":{
-         "Type":"ipv4",
-         "confidence_level":"high",
-         "description":"Sighting",
-         "tags":"Alert",
-         "title":"EIQ",
-         "value":"001.001.001.001"
+         "data":{
+            "last_updated_at":"2022-12-28T12:45:05.465825+00:00",
+            "outgoing_feeds":[],
+            "meta":{
+               "estimated_observed_time":"2022-12-28T12:45:05.508090+00:00",
+               "half_life":182,
+               "attacks":[],
+               "estimated_threat_start_time":"2022-12-28T12:45:04+00:00",
+               "taxonomies":[],
+               "estimated_threat_end_time":"null",
+               "source_reliability":"A",
+               "tags":["Alert"],
+               "tlp_color":null
+            },
+            "created_at":"2022-12-28T12:45:05.508090+00:00",
+            "data":{
+               "confidence":"high",
+               "description":"sighting creation",
+               "id":"{https://ic-playground.eclecticiq.com}eclecticiq-sighting-742ad072-86ad-11ed-ad71-067b5e23fb5e",
+               "timestamp":"2022-12-28T12:45:04+00:00",
+               "title":"sighting",
+               "relevancy":1
+            },
+            "observables":[
+               "https://ic-playground.eclecticiq.com/api/v1/observables/9391529"
+            ],
+            "attachments":[],
+            "incoming_feed":null,
+            "sources":[
+               "https://ic-playground.eclecticiq.com/api/v1/sources/9a479225-37d1-4dae-9554-172eeccea193"
+            ],
+            "type":"eclecticiq-sighting",
+            "id":"453d1fb2-d654-4a7a-9654-40556a893640",
+            "datasets":[]
+         }
       }
    }
 }
@@ -176,9 +204,9 @@ create observable in the EclecticIQ Intelligence Center Platform
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Observables.Data.type | string | Observable Type | 
-| Observables.Data.value | string | Observable Value | 
-| Observables.Data.maliciousness | string | Observable maliciousness | 
+| Observables.Data.data.type | string | Observable Type | 
+| Observables.Data.data.value | string | Observable Value | 
+| Observables.Data.data.maliciousness | string | Observable maliciousness | 
 
 #### Command Example
 ```!EclecticIQ_create_observable  type="ipv4" value="001.001.001.001" maliciousness="high"```
@@ -187,9 +215,24 @@ create observable in the EclecticIQ Intelligence Center Platform
 {
    "Observables":{
       "Data":{
-         "maliciousness":"high",
-         "type":"ipv4",
-         "value":"000.001.001.001"
+         "data":[
+            {
+               "created_at":"2022-12-26T13:16:06.757271+00:00",
+               "entities":[
+                  "https://ic-playground.eclecticiq.com/api/v1/entities/3a1cc90b-9cbd-437a-ab0b-7153b1bb275b"
+               ],
+               "id":9389500,
+               "last_updated_at":"2022-12-26T13:16:06.677236+00:00",
+               "meta":{
+                  "maliciousness":"low"
+               },
+               "sources":[
+                  "https://ic-playground.eclecticiq.com/api/v1/sources/9a479225-37d1-4dae-9554-172eeccea193"
+               ],
+               "type":"ipv4",
+               "value":"001.001.001.001"
+            }
+         ]
       }
    }
 }
