@@ -49,8 +49,9 @@ LIMIT_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose a limit,
 LIMIT_AND_EXTRA_ARGUMENTS_MEETING_LIST = """Too many arguments. If you choose a limit,
                                        don't enter a page_size or next_page_token or page_number."""
 INSTANT_AND_TIME = "Too many arguments.Use start_time and timezone for scheduled meetings only."
-JBH_TIME_AND_NO_JBH = "Collision arguments. join_before_host_time argument can be used only if join_before_host is 'True'."
-WAITING_ROOM_AND_JBH = "Collision arguments. join_before_ host argument can be used only if waiting_room is 'False'."
+JBH_TIME_AND_NO_JBH = """Collision arguments.
+join_before_host_time argument can be used only if join_before_host is 'True'."""
+WAITING_ROOM_AND_JBH = "Collision arguments. join_before_host argument can be used only if waiting_room is 'False'."
 END_TIMES_AND_END_DATE_TIME = "Collision arguments. Choose only one of these two arguments, end_time or end_date_time."
 NOT_RECURRING_WITH_RECURRING_ARGUMENTS = """One or more arguments that were filed
 are used for a recurring meeting with a fixed time only."""
@@ -475,7 +476,7 @@ def zoom_create_meeting_command(client, **args) -> CommandResults:
     encryption_type = args.get('encryption_type')
     join_before_host = argToBoolean(args.get('join_before_host', False))
     meeting_authentication = argToBoolean(args.get('meeting_authentication', False))
-    waiting_room = argToBoolean(args.get(' waiting_room', False))
+    waiting_room = argToBoolean(args.get('waiting_room', False))
     end_date_time = args.get('end_date_time')
     end_times = arg_to_number(args.get('end_times', 1))
     monthly_day = arg_to_number(args.get('monthly_day', 1))
