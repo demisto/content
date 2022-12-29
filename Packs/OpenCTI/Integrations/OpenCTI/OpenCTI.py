@@ -241,7 +241,6 @@ def indicator_create_command(client: OpenCTIApiClient, args: Dict[str, str]) -> 
         Returns:
             readable_output, raw_response
         """
-    redirect_std_out = argToBoolean(demisto.params().get('redirect_std_out', 'false'))
     indicator_type = args.get("type")
     created_by = args.get("created_by")
     marking_id = args.get("marking_id")
