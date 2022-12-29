@@ -40,7 +40,7 @@ tasks:
       id: 6cc970ca-146a-4229-89d2-9eabf36a951f
       version: -1
       name: Hey edl IP
-      scriptName: Heyv2
+      scriptName: HeyV2
       type: regular
       iscommand: false
       brand: ""
@@ -101,7 +101,7 @@ tasks:
       id: 865e8aa5-0259-453c-86a8-c3d8137a4c7e
       version: -1
       name: Hey edl URL
-      scriptName: Heyv2
+      scriptName: HeyV2
       type: regular
       iscommand: false
       brand: ""
@@ -162,7 +162,7 @@ tasks:
       id: 87d0d1be-5083-4910-8ae0-b0c481d2914c
       version: -1
       name: Hey edl Domain
-      scriptName: Heyv2
+      scriptName: HeyV2
       type: regular
       iscommand: false
       brand: ""

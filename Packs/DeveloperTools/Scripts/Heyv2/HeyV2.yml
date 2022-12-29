@@ -1,9 +1,9 @@
 commonfields:
-  id: Heyv2
+  id: HeyV2
   version: -1
 fromversion: 6.5.0
 comment: Use rakyll/hey to test a web application with a load of requests.
-name: Hey
+name: HeyV2
 script: ''
 type: python
 tags: []
