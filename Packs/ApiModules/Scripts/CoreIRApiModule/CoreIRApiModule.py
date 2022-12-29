@@ -2597,37 +2597,27 @@ def handle_outgoing_issue_closure(remote_args):
         demisto.debug(f"Closing Remote incident with status {update_args['status']}")
 
 
-def handle_outgoing_incident_with_resolve_comment(update_args, remote_incident_status):
-    if remote_incident_status and remote_incident_status.lower() not in XDR_RESOLVED_STATUS_TO_XSOAR:
-        update_args['status'] = 'resolved_other'
-
-
-def get_update_args(remote_args, remote_incident_status):
+def get_update_args(remote_args):
     """Change the updated field names to fit the update command"""
 
     handle_outgoing_issue_closure(remote_args)
     handle_outgoing_incident_owner_sync(remote_args.delta)
     handle_user_unassignment(remote_args.delta)
-    handle_outgoing_incident_with_resolve_comment(remote_args.delta, remote_incident_status)
     return remote_args.delta
 
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
-    remote_incident_status = ''
-    if 'resolve_comment' in remote_args.delta and 'status' not in remote_args.delta:
-        remote_incident_status = client.get_incidents(incident_id_list=[remote_args.remote_incident_id])[0].get('status')
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
     try:
         if remote_args.incident_changed:
-            update_args = get_update_args(remote_args, remote_incident_status)
+            update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
-            demisto.debug(f'Updating the following fields: {update_args} for incident with remote ID: '
-                          f'[{remote_args.remote_incident_id}]\n')
+            demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             update_incident_command(client, update_args)
 
         else:
