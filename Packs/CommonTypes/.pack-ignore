@@ -327,6 +327,7 @@ emailRep
 accountRep
 cveRep
 VerifyCIDR
+Exabeam
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
