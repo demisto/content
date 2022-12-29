@@ -24,7 +24,7 @@ configuration:
   name: default_target_mailbox
   required: true
   type: 0
-- additionalinfo: UPN mailbox to run commands on and to fetch incidents from.
+- additionalinfo: If this parameter is given, the commands will run with the UPN mailbox instead of the default target mailbox.
   display: UPN Address
   name: upn_mailbox
   required: false

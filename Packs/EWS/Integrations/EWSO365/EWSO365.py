@@ -154,7 +154,6 @@ class EWSClient:
     def __init__(
             self,
             default_target_mailbox,
-
             folder="Inbox",
             is_public_folder=False,
             request_timeout="120",
