@@ -736,7 +736,7 @@ def test_zoom_user_list_command__when_user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_list_users_command
     res = zoom_list_users_command(client, user_id="bla")
-    assert len(res.readable_output) == 159
+    assert len(res.readable_output) == 159      # type: ignore[arg-type]
 
 # i dont like this test:(
 
@@ -762,7 +762,7 @@ def test_zoom_meeting_list_command__when_user_id(mocker):
                     client_id="mockclient", client_secret="mocksecret")
     from Zoom import zoom_meeting_list_command
     res = zoom_meeting_list_command(client, user_id="bla")
-    assert len(res.readable_output) == 133
+    assert len(res.readable_output) == 133   # type: ignore[arg-type]
 
 
 def test_remove_None_values_from_dict():
