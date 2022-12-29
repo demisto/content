@@ -687,8 +687,8 @@ def main():  # pragma: no coverage
             demisto.info(f'ad-authenticate-and-roles command - entry results: {entry_result}')
             return_results(entry_result)
         else:
+            demisto.debug('testtttttt')
             raise NotImplementedError(f'Command {command} is not implemented')
-            testttttt
 
     # Log exceptions
     except Exception as e:
