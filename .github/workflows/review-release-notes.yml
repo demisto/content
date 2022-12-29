@@ -23,11 +23,13 @@ jobs:
           since_last_remote_commit: false
       - name: Install poetry
         run: pipx install poetry
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           cache: 'poetry'
-      - run: poetry install --only dev
+      - name: Install Python dependencies
+        run: poetry install --only dev
       - name: Review Release Notes
         run: |
           release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
