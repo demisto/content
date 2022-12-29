@@ -2573,8 +2573,10 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     cursor = args.get('cursor', None)
 
     events, pagination = client.get_events_request(query_id, limit, cursor)
+    context = {}
     if pagination['nextCursor'] is not None:
         demisto.results("Use the below cursor value to get the next page events \n {}". format(pagination['nextCursor']))
+        context.update({'SentinelOne.Cursor.Event': pagination['nextCursor']})
     for event in events:
         contents.append({
             'EventType': event.get('eventType'),
@@ -2608,10 +2610,10 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'ID': event.get('pid'),
         })
     # using the CommandResults.to_context in order to get the correct outputs key
-    context = CommandResults(
+    context.update(CommandResults(
         outputs_prefix='SentinelOne.Event',
         outputs_key_field=['ProcessID', 'EventID'],
-        outputs=contents).to_context().get('EntryContext', {})
+        outputs=contents).to_context().get('EntryContext', {}))
 
     context.update({'Event(val.ID && val.ID === obj.ID)': event_standards})
 
