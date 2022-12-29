@@ -866,7 +866,6 @@ def test_EclecticIQ_create_observable(mocker):
     client = Client(Base_url, api_key, proxy)
     args = {"type": "ipv4", "value": "001.001.001.001", "maliciousness": "safe"}
     result = EclecticIQ_create_observable(client, args)
-    assert isinstance(result.outputs['value'], str)
     assert result.outputs_prefix == 'Observables'
     assert result.outputs_key_field == 'value'
 
