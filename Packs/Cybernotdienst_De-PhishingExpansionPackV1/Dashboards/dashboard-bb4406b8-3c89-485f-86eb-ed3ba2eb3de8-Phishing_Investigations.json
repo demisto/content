@@ -1,0 +1,738 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Phishing Investigations",
+    "layout": [
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "6329e660-7b94-11ed-8139-7136d44b20da",
+            "id": "6329e660-7b94-11ed-8139-7136d44b20da",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "39add46e-8a22-426c-8874-4421017ac04a",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-14T09:47:23.252722148Z",
+                "name": "Postmark / Phishing",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "postmarkscorerounded"
+                    ],
+                    "keys": [
+                        "max|openDuration"
+                    ],
+                    "valuesFormat": "percentage"
+                },
+                "prevName": "Postmark / Phishing",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:Phishing and playbook:\"Cybernotdienst.de - Phishing v1\" and -postmarkscorerounded:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 6,
+            "y": 13
+        },
+        {
+            "forceRange": true,
+            "h": 5,
+            "i": "c6ae2070-7b94-11ed-8139-7136d44b20da",
+            "id": "c6ae2070-7b94-11ed-8139-7136d44b20da",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "b1762214-71f8-4c77-827b-06b49fbd3769",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-14T09:50:42.344677541Z",
+                "name": "Spammers Top 20",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "emailfrom"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spammers Top 20",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -emailfrom:\"\" and -emailclassification:Legitimate",
+                "shouldCommit": false,
+                "size": 20,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 6,
+            "y": 0
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "f3a69e80-7b95-11ed-8139-7136d44b20da",
+            "id": "f3a69e80-7b95-11ed-8139-7136d44b20da",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "212362e8-d88c-4973-88c2-0eb9e2821b49",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-14T09:59:07.160535016Z",
+                "name": "Spam Body Format",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "emailbodyformat"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spam Body Format",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -emailbodyformat:\"\" and  -emailclassification:Legitimate",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 5
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "47dba170-7bb0-11ed-a4e9-8be2716c6f1e",
+            "id": "47dba170-7bb0-11ed-a4e9-8be2716c6f1e",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "21a6d571-c9fe-45d9-89c0-01312f046fdb",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-14T13:07:31.31180838Z",
+                "name": "Spam Domains",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "cyndspamdomain"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spam Domains",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -cyndspamdomain:\"\" and  -emailclassification:Legitimate",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 13
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "2f5f9870-7c52-11ed-bbd8-47aa5a428d97",
+            "id": "2f5f9870-7c52-11ed-bbd8-47aa5a428d97",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "6a1323e6-0ec0-42a1-85fb-1bb782e5dbd3",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-15T08:26:31.877545726Z",
+                "name": "Spam Count",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spam Count",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -postmarkscorerounded:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "trend"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "58aeda10-7c52-11ed-bbd8-47aa5a428d97",
+            "id": "58aeda10-7c52-11ed-bbd8-47aa5a428d97",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "dcf9ac93-8b81-48eb-8a5a-25780e7fe484",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-15T08:27:39.679756165Z",
+                "name": "Spamassassin Evaluation",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "customGroupBy": [
+                        {
+                            "Legit (Score \u003c0)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "postmarkscorerounded",
+                                            "operator": "lessThan",
+                                            "right": "0",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Legit (Score \u003c0)"
+                            },
+                            "Spam (Score \u003e0)": {
+                                "conditions": [
+                                    [
+                                        {
+                                            "field": "postmarkscorerounded",
+                                            "operator": "greaterThan",
+                                            "right": "0",
+                                            "type": "string"
+                                        }
+                                    ]
+                                ],
+                                "name": "Spam (Score \u003e0)"
+                            }
+                        }
+                    ],
+                    "groupBy": [
+                        "postmarkscorerounded"
+                    ],
+                    "showOthers": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spamassassin Score: Spam",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": " -postmarkscorerounded:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 2,
+            "y": 0
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "14fd7970-7d38-11ed-93b9-43a94539f962",
+            "id": "14fd7970-7d38-11ed-93b9-43a94539f962",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "2215367b-5592-471b-849c-d156a4a4c352",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-16T11:52:11.369895967Z",
+                "name": "Top Spam TLD",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "cyndtopleveldomain"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Top Spam TLD",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -cyndtopleveldomain:\"\" -emailclassification:Legitimate",
+                "shouldCommit": false,
+                "size": 20,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 3,
+            "y": 3
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "f42ed080-7ee6-11ed-a73a-29e7f7eee50e",
+            "id": "f42ed080-7ee6-11ed-a73a-29e7f7eee50e",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d6507a06-ac14-4774-809a-418f7b4e376b",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-18T15:16:28.22465339Z",
+                "name": "Investigation outcome",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "emailclassification"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Investigation outcome",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -emailclassification:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "ee1df800-7ee7-11ed-a73a-29e7f7eee50e",
+            "id": "ee1df800-7ee7-11ed-a73a-29e7f7eee50e",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "0fc0a4fd-5d19-44e9-86d2-f9e10943be2f",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-18T15:23:29.577384107Z",
+                "name": "Emails with Attachments and Count",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "attachmentcount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Emails with Attachments and Count",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "4e7c12e0-7ee8-11ed-a73a-29e7f7eee50e",
+            "id": "4e7c12e0-7ee8-11ed-a73a-29e7f7eee50e",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "583a77ff-e234-4cfd-88b5-7b74bbf2cfad",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-18T15:25:49.648814433Z",
+                "name": "Type of attachments",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "customGroupBy": [
+                        null
+                    ],
+                    "groupBy": [
+                        "attachmenttype"
+                    ],
+                    "showOthers": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Type of attachments",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\" and -attachmenttype:\"\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "d29ea760-875b-11ed-b387-21db980688c4",
+            "id": "d29ea760-875b-11ed-b387-21db980688c4",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "27b73594-93b0-47d3-8552-dff8cd7b4198",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-29T09:33:13.147517505Z",
+                "name": "Spam per AS Owner",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "firstemailserverowner"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Spam per AS Owner",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-firstemailserverowner:\"\"",
+                "shouldCommit": false,
+                "size": 20,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 5
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "c4e4ed10-8764-11ed-b387-21db980688c4",
+            "id": "c4e4ed10-8764-11ed-b387-21db980688c4",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "calendarMonths",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "987bb7cb-f444-40b9-82c4-6ed4e989d05c",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-12-18T15:21:06.898803011Z",
+                "name": "Phishing/Spam per day",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "occurred(d)",
+                        "type"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "pla",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"Cybernotdienst.de - Phishing v1\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 8
+        }
+    ],
+    "name": "Phishing Investigations",
+    "period": {
+        "by": "",
+        "byFrom": "calendarMonths",
+        "byTo": "",
+        "field": "",
+        "fromValue": 0,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

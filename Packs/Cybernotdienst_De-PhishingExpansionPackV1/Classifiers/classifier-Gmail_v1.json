@@ -1,0 +1,261 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Gmail v1",
+    "mapping": {
+        "Phishing": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Attachment Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Attachment Extension": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": "."
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "CyNd Spam Domain": {
+                    "complex": {
+                        "filters": [],
+                        "root": "from",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": "@"
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "CyNd Top Level Domain": {
+                    "complex": {
+                        "filters": [],
+                        "root": "from",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "delimiter": {
+                                        "value": {
+                                            "simple": "."
+                                        }
+                                    }
+                                },
+                                "operator": "split"
+                            },
+                            {
+                                "operator": "LastArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Email Authenticity Check": {
+                    "simple": "headers.Authentication-Results"
+                },
+                "Email BCC": {
+                    "simple": "bcc"
+                },
+                "Email Body Format": {
+                    "simple": "format"
+                },
+                "Email Body HTML": {
+                    "simple": "HTML"
+                },
+                "Email CC": {
+                    "simple": "cc"
+                },
+                "Email From": {
+                    "simple": "from"
+                },
+                "Email HTML": {
+                    "simple": "HTML"
+                },
+                "Email Headers": {
+                    "simple": "headers"
+                },
+                "Email In Reply To": {
+                    "simple": "headers.Reply-To"
+                },
+                "Email Message ID": {
+                    "simple": "headers.Message-Id"
+                },
+                "Email Received": {
+                    "simple": "headers.Date"
+                },
+                "Email Recipients Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "to",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Email Reply To": {
+                    "simple": "headers.Reply-To"
+                },
+                "Email Return Path": {
+                    "simple": "headers.Return-Path"
+                },
+                "Email Sender IP": {
+                    "complex": {
+                        "accessor": "Received",
+                        "filters": [],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {},
+                                    "ignore_case": {},
+                                    "multi_line": {},
+                                    "period_matches_newline": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+                                        }
+                                    },
+                                    "unpack_matches": {}
+                                },
+                                "operator": "RegexExtractAll"
+                            },
+                            {
+                                "operator": "FirstArrayElement"
+                            }
+                        ]
+                    }
+                },
+                "Email Subject": {
+                    "simple": "subject"
+                },
+                "Email To": {
+                    "simple": "to"
+                },
+                "Email To Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "to",
+                        "transformers": [
+                            {
+                                "operator": "count"
+                            }
+                        ]
+                    }
+                },
+                "Reported Email CC": {
+                    "simple": "cc"
+                },
+                "Reported Email From": {
+                    "simple": "to"
+                },
+                "Reported Email Message ID": {
+                    "simple": "headers.Message-ID"
+                },
+                "Reported Email Subject": {
+                    "simple": "subject"
+                },
+                "Reported Email To": {
+                    "simple": "johe.stephan@gmail.com"
+                },
+                "Reporter Email Address": {
+                    "simple": "johe.stephan@gmail.com"
+                },
+                "State": {
+                    "complex": {
+                        "accessor": "X-Gm-Message-State",
+                        "filters": [],
+                        "root": "headers",
+                        "transformers": []
+                    }
+                },
+                "first Email Server ": {
+                    "complex": {
+                        "accessor": "Received",
+                        "filters": [],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {},
+                                    "ignore_case": {},
+                                    "multi_line": {},
+                                    "period_matches_newline": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "from ([\\w0-9\\.]*) "
+                                        }
+                                    },
+                                    "unpack_matches": {}
+                                },
+                                "operator": "RegexExtractAll"
+                            }
+                        ]
+                    }
+                },
+                "first email server ip": {
+                    "complex": {
+                        "accessor": "Received",
+                        "filters": [],
+                        "root": "headers",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "error_if_no_match": {},
+                                    "ignore_case": {},
+                                    "multi_line": {},
+                                    "period_matches_newline": {},
+                                    "regex": {
+                                        "value": {
+                                            "simple": "from [\\w0-9\\.]* \\([-\\.0-9\\w]* \\[([0-9\\.]*)\\]"
+                                        }
+                                    },
+                                    "unpack_matches": {}
+                                },
+                                "operator": "RegexExtractAll"
+                            }
+                        ]
+                    }
+                },
+                "received from": {
+                    "simple": "headers.Received"
+                }
+            }
+        }
+    },
+    "name": "Gmail v1",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Cybernotdienst.de - Phishing Expansion Pack v1",
+    "description": "The Expansion sets provides some basic indicator extraction and enrichment, as well ass  Spamassassin based pre-evaluation of emails. By running this playbook as part of the phishing investigation a decision can be made if a full investigation based on Palo Alto's Phishing Generic v3 is necessary or the incident can be closed as Spam.\n\nThe Content Pack includes widgets, Dasboards and Layouts.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jörg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2022-12-29T11:54:12Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "johestephan"
+    ]
+}
