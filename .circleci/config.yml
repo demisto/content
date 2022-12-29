@@ -233,7 +233,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report
+        demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -di << parameters.dockerimageflag >>
 
   generate_coverage_reports: &generate_coverage_reports
     run:
@@ -350,6 +350,9 @@ jobs:
     <<: *container_config
     resource_class: medium
     <<: *environment
+    parameters:
+      dockerimageflag:
+        type: string
     steps:
       - *attach_workspace
       - *remote_docker
@@ -417,6 +420,10 @@ workflows:
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
+          matrix:
+            parameters:
+              dockerimageflag: [ "native:8.1", "native:latest", "from-yml" ]
+          name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
           requires:
             - Setup Environment
