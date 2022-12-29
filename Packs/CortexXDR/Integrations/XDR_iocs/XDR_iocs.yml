@@ -7,11 +7,18 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key ID
-  name: credentials
+- display: ''
+  name: apikey_id_creds
+  required: false
+  type: 9
+  displaypassword: API Key ID
+  hiddenusername: true
+- display: ''
+  name: apikey_creds
   required: false
   type: 9
   displaypassword: API Key
+  hiddenusername: true
 - display: API Key ID
   name: apikey_id
   required: false
@@ -22,17 +29,17 @@ configuration:
   required: false
   type: 4
   hidden: true
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
   required: false
   type: 8
+  defaultvalue: 'true'
 - additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  defaultvalue: 'true'
   display: Auto Sync
   name: autoSync
   required: false
   type: 8
-  defaultvalue: 'true'
 - additionalinfo: When the `override severity` parameter is set to True, the severity level chosen here will be used for all indicators. Otherwise, the severity level of the indicator will be used.
   display: Overriding severity value
   hidden: false
@@ -45,13 +52,13 @@ configuration:
   - medium
   - high
   - critical
-- additionalinfo: Supports CSV values.
-  defaultvalue: Cortex XDR
-  display: Tags
-  hidden: false
+- display: Tags
   name: feedTags
   required: false
   type: 0
+  additionalinfo: Supports CSV values.
+  defaultvalue: Cortex XDR
+  hidden: false
 - display: Sync Query
   name: query
   required: true
@@ -77,8 +84,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
-  display: Source Reliability
+- display: 'Source Reliability'
   name: feedReliability
   options:
   - A - Completely reliable
@@ -89,16 +95,17 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
 - display: 'Traffic Light Protocol Color'
   name: tlp_color
+  required: false
+  type: 15
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  required: false
-  type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - display: ''
   name: feedExpirationPolicy
@@ -113,23 +120,23 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: 'true'
-  display: Incremental Feed
+- display: Incremental Feed
   name: feedIncremental
   required: false
   type: 8
+  defaultvalue: 'true'
   hidden: true
-- display: Feed Fetch Interval
+- defaultvalue: '1'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
-  defaultvalue: '1'
-- defaultvalue: 'sourceoriginalseverity'
-  additionalinfo: The XSOAR indicator field used as severity.
+- additionalinfo: The XSOAR indicator field used as severity.
   display: XSOAR Severity Field
   name: xsoar_severity_field
   required: false
   type: 0
+  defaultvalue: 'sourceoriginalseverity'
 - additionalinfo: When enabled, the severity value will be taken from the `severity` parameter, regardless of the IOC severity value. Otherwise, the severity value will be taken according to the `xsoar_severity_field` parameter.
   display: Override severity
   name: override_severity
