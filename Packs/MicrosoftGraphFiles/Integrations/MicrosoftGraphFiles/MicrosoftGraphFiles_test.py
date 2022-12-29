@@ -535,10 +535,19 @@ def test_upload_command_without_upload_session(mocker, client, args):
         Then:
             - return an result without upload session.
      """
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/sample.pdf',
-                                                              'name': 'sample.pdf'})
-    mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/some_pdf.pdf',
+                                                              'name': 'some_pdf.pdf'})
+    mocker_https = mocker.patch.object(client.ms_client, "http_request", return_value=return_value_upload_without_upload_session)
+    create_upload_mock = mocker.patch.object(MsGraphClient, 'create_an_upload_session',
+                                             return_value=({"response": "", "uploadUrl": "test.com"}, "test.com"))
+    upload_file_with_upload_session_mock = mocker.patch.object(MsGraphClient, 'upload_file_with_upload_session_flow',
+                                                               return_value=({"response": "",
+                                                                              "uploadUrl": "test.com"}, "test.com"))
+
     human_readable, context, result = upload_new_file_command(client, args)
+    assert mocker_https.call_count == 1
+    assert create_upload_mock.call_count == 0
+    assert upload_file_with_upload_session_mock.call_count == 0
     assert human_readable == '### MsGraphFiles - File information:\n|CreatedDateTime|ID|Name|Size|WebUrl|\n|---|---|---|---|---|'\
                              '\n| 2022-12-15T12:56:27Z | some_id | some_pdf.pdf | 3028 | https://some_url/some_pdf.pdf |\n'
     assert result == return_value_upload_without_upload_session
