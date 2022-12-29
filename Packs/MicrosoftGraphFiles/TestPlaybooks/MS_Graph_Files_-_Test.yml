@@ -1,14 +1,5 @@
 id: test_MsGraphFiles
 version: -1
-contentitemexportablefields:
-  contentitemfields:
-    packID: MicrosoftGraphFiles
-    packName: Microsoft Graph Files
-    itemVersion: 1.1.5
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
 name: test_MsGraphFiles
 starttaskid: "0"
 tasks:
@@ -22,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "62"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -39,6 +30,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "1":
@@ -61,7 +53,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -74,6 +65,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -99,7 +91,6 @@ tasks:
       filename:
         simple: playbook1.txt
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -112,6 +103,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -143,7 +135,6 @@ tasks:
       parent_id:
         simple: 01VX7CPKF6Y2GOVW7725BZO354PWSELRRZ
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -156,6 +147,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -205,7 +197,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: UploadedFiles.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -218,6 +209,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -243,7 +235,6 @@ tasks:
       filename:
         simple: playbook2.txt
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -256,6 +247,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "6":
@@ -286,7 +278,6 @@ tasks:
       object_type_id:
         simple: 83900b2c-617f-4642-b778-17303be19009
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -299,6 +290,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "8":
@@ -323,7 +315,6 @@ tasks:
       key:
         simple: File
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -336,6 +327,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -362,7 +354,6 @@ tasks:
           root: MsGraphFiles
           accessor: UploadedFiles.ID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -375,6 +366,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -399,7 +391,6 @@ tasks:
       key:
         simple: ${MsGraphFiles}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -412,6 +403,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "11":
@@ -461,7 +453,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ReplacedFiles.File.Hashes
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -474,6 +465,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "12":
@@ -487,11 +479,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -504,6 +496,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "13":
@@ -531,7 +524,6 @@ tasks:
       parent_id:
         simple: 01YGQTXW56Y2GOVW7725BZO354PWSELRRZ
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -544,6 +536,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
@@ -595,7 +588,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: CreatedFolders.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -608,6 +600,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -634,7 +627,6 @@ tasks:
           root: MsGraphFiles
           accessor: CreatedFolders.ID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -647,6 +639,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "16":
@@ -660,11 +653,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -677,6 +670,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "17":
@@ -703,7 +697,6 @@ tasks:
       object_type_id:
         simple: b!ZAovhtvn4Eapf5FWtPaT7lybnnqOkQpPspFV4riUtXuy_S3BgrgsSp0DNvpsLWoV
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -716,6 +709,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "18":
@@ -740,7 +734,6 @@ tasks:
       key:
         simple: File
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -753,6 +746,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
@@ -785,7 +779,6 @@ tasks:
               complex:
                 root: UploadedFileID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -798,6 +791,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "20":
@@ -811,11 +805,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -828,6 +822,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "21":
@@ -847,7 +842,6 @@ tasks:
       '#none#':
       - "39"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -860,6 +854,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "22":
@@ -908,7 +903,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListSites.Value.[0].WebUrl
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -921,6 +915,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "23":
@@ -934,11 +929,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -951,6 +946,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "24":
@@ -974,7 +970,6 @@ tasks:
       site_id:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -987,6 +982,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "25":
@@ -1042,7 +1038,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListDrives.Value.[0].LastModifiedBy.ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1055,6 +1050,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "26":
@@ -1068,11 +1064,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "27"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1085,6 +1081,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "27":
@@ -1111,7 +1108,6 @@ tasks:
       object_type_id:
         simple: demistodev.sharepoint.com,defa2285-86ca-449f-911c-b5dbce34dfda,7a9e9b5c-918e-4f0a-b291-55e2b894b57b
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1124,6 +1120,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "28":
@@ -1165,7 +1162,6 @@ tasks:
                 root: MsGraphFiles
                 accessor: ListChildren.Children.Value.[0].ID
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1178,6 +1174,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "29":
@@ -1191,11 +1188,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1208,6 +1205,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "30":
@@ -1235,7 +1233,6 @@ tasks:
         complex:
           root: UploadedFileParent
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1248,6 +1245,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "31":
@@ -1274,7 +1272,6 @@ tasks:
           root: MsGraphFiles
           accessor: UploadedFiles.ParentReference.DriveId
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1287,6 +1284,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "32":
@@ -1313,7 +1311,6 @@ tasks:
           root: MsGraphFiles
           accessor: CreatedFolders.ParentReference.DriveId
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1326,6 +1323,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "33":
@@ -1353,7 +1351,6 @@ tasks:
         complex:
           root: UploadedFolderParentID
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1366,6 +1363,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "34":
@@ -1388,7 +1386,6 @@ tasks:
       seconds:
         simple: "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1401,6 +1398,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "35":
@@ -1423,7 +1421,6 @@ tasks:
       seconds:
         simple: "4"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1436,6 +1433,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "36":
@@ -1458,7 +1456,6 @@ tasks:
       seconds:
         simple: "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1471,6 +1468,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "37":
@@ -1493,7 +1491,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1506,6 +1503,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "38":
@@ -1528,7 +1526,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1541,6 +1538,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "39":
@@ -1563,7 +1561,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1576,6 +1573,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "40":
@@ -1598,7 +1596,6 @@ tasks:
       seconds:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1611,6 +1608,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "41":
@@ -1633,7 +1631,6 @@ tasks:
       seconds:
         simple: "2"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1646,6 +1643,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "42":
@@ -1668,7 +1666,6 @@ tasks:
       seconds:
         simple: "7"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1681,6 +1678,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
@@ -1694,11 +1692,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "68"
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1711,6 +1706,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    nexttasks:
+      '#none#':
+      - "68"
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "44":
@@ -1733,7 +1732,6 @@ tasks:
       seconds:
         simple: "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1746,6 +1744,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "45":
@@ -1759,6 +1758,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2487,7 +2487,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -2504,3 +2503,7 @@ inputs: []
 outputs: []
 sourceplaybookid: test_MsGraphFiles
 fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+description: ''
