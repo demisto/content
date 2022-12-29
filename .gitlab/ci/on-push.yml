@@ -120,7 +120,7 @@ validate-content-conf:
       mkdir $ARTIFACTS_FOLDER/content_graph
       cp -R /var/lib/neo4j/import $ARTIFACTS_FOLDER/content_graph
 
-    - section_end "Update content graph"
+    - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - |
@@ -160,11 +160,11 @@ validate-content-conf:
       fi
     - section_end "Collect Tests"
 
-    - section_start "Prepare Content Packs for Testing"
+    - section_start "Prepare Content Packs for Testing" --collapsed
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
 
-    - section_start "Create Instances for XSOAR"
+    - section_start "Create Instances for XSOAR" --collapsed
     - |
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
         echo "Creating Instances, only for XSOAR."
