@@ -1,5 +1,4 @@
 Query and upload samples to Cisco threat grid.
-This integration was integrated and tested with version xx of Threat Grid
 
 ## Configure Cisco Threat Grid on Cortex XSOAR
 
@@ -126,7 +125,7 @@ Submits a sample to threat grid for analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file-id | The sample file. Click on the chain like icon after you upload a file in Demisto to find the file-id. . | Required | 
+| file-id | The sample file. Click on the chain like icon after you upload a file in XSOAR to find the file-id. . | Required | 
 | filename | The original filename of the sample, as a string. | Required | 
 | vm | a string identifying a specific VM to use. Options: win7-x64: Windows 7 64bit, win7-x64-2: Windows 7 64bit Profile 2, win7-x64-jp: Windows 7 64bit Japanese (Not available on Threat Grid appliances), win7-x64-kr: Windows 7 64bit Korean (Only available on Threat Grid appliances licensed for this VM), win10: Windows 10 (Not available on Threat Grid appliances). NOTE: The standard (English) VMs default to UTF-8 encoding. To support Korean and Japanese character sets, such as S-JIS, submit to the appropriate VM. Possible values are: win7-x64, win7-x64-2, win7-x64-jp, win7-x64-kr, win10. | Optional | 
 | private | if present, and set to any value but “false” the sample will be marked private. | Optional | 
@@ -210,7 +209,7 @@ Get the sample analysis video by id
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.Sample.Id | string | The sample Id | 
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.Sample.File | unknown | File containing result | 
 
 ### threat-grid-get-analysis-by-id
 ***
@@ -233,7 +232,7 @@ The detailed overview of dynamic and static analysis results for the sample
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.Sample.ID | unknown | The ID of the sample for which the report was downloaded. | 
-| Demisto.File | unknown | File containing unfiltered result. | 
+| ThreatGrid.Sample.File | unknown | File containing unfiltered result. | 
 | ThreatGrid.Sample.VM.ID | unknown | The VM ID for the sample. | 
 | ThreatGrid.Sample.VM.Name | unknown | The VM Name for the sample. | 
 | ThreatGrid.Sample.StartedAt | unknown | Start time of the analysis. | 
@@ -304,7 +303,7 @@ Get the tcpdump PCAP file for a specific Sample ID, with all the network activit
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.Sample.Id | string | The ID of the sample for which the PCAP needs to be downloaded. | 
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.Sample.File | unknown | File containing result | 
 
 ### threat-grid-get-warnings-by-id
 ***
@@ -326,7 +325,7 @@ Gets a JSON structure describing any warnings that occured during the analysis
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.Sample.Id | string | The sample ID | 
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.Sample.File | unknown | File containing result | 
 
 ### threat-grid-get-summary-by-id
 ***
@@ -405,7 +404,7 @@ Get the report.html file for a specific Sample ID. This is a stand-alone file wi
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.Sample.Id | string | The ID of the sample for which the report was downloaded. | 
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.Sample.File | unknown | File containing result | 
 
 ### threat-grid-download-sample-by-id
 ***
@@ -427,7 +426,7 @@ Download a sample by using its ID. The downloaded file is an archive of the samp
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.DownloadedSamples.Id | string | The ID of the downloaded sample | 
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.DownloadedSamples.File | unknown | File containing result | 
 
 ### threat-grid-get-analysis-iocs
 ***
@@ -535,7 +534,7 @@ Gets a specific threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-url-to-file
 ***
@@ -755,7 +754,7 @@ Get artifacts threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-feeds-domain
 ***
@@ -784,7 +783,7 @@ Get domain threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-feeds-ip
 ***
@@ -813,7 +812,7 @@ Get ips threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-feeds-network-stream
 ***
@@ -843,7 +842,7 @@ Get network stream threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-feeds-path
 ***
@@ -872,7 +871,7 @@ Get path threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-feeds-url
 ***
@@ -901,7 +900,7 @@ Get url threat feed
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-get-analysis-artifact
 ***
@@ -1054,7 +1053,7 @@ Returns data regarding the specifiic process id in the analysis
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-get-analysis-processes
 ***
@@ -1075,7 +1074,7 @@ Returns data regarding the analysis processes
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Demisto.File | unknown | File containing result | 
+| ThreatGrid.File | unknown | File containing result | 
 
 ### threat-grid-submit-urls
 ***
