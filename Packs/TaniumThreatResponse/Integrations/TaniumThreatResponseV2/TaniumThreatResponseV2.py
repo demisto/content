@@ -420,7 +420,8 @@ def test_module(client, data_args):
         raise ValueError(f'Please check your credentials and try again. Error is:\n{str(e)}')
 
 
-def fetch_incidents(client, alerts_states_to_retrieve, label_name_to_retrieve, last_run, fetch_time, max_fetch):
+def fetch_incidents(client: Client, alerts_states_to_retrieve: str, label_name_to_retrieve: str,
+                    last_run: dict, fetch_time: str, max_fetch: int):
     """
     Fetch events from this integration and return them as Demisto incidents
 
@@ -2088,7 +2089,7 @@ def main():
             # demisto.getLastRun() will returns an obj with the previous run in it.
             last_run = demisto.getLastRun()
             alerts_states_to_retrieve = demisto.params().get('filter_alerts_by_state')
-            filter_label_name = demisto.params().get('filter_by_label_name')
+            filter_label_name = demisto.params().get('filter_by_label_name', '')
             first_fetch = demisto.params().get('first_fetch')
             max_fetch = int(demisto.params().get('max_fetch', '50'))
 
