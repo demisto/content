@@ -97,7 +97,7 @@ validate-content-conf:
 
     - |
       echo "Trying to pull all CSV import files from bucket"
-      gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
+      # gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
       # gsutil -m cp -r "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION/*" /var/lib/neo4j/import || echo "failed to download graph imports."
       echo "Successfully pulled all CSV import files from bucket"
     - |
