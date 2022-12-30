@@ -32,6 +32,7 @@ class MicrosoftStorageClient(BaseClient):
             headers (dict): Request Header.
             return_empty_response (bool): Return the response itself if the return_code is 201 or 204.
             full_url (str): Request full URL.
+
         Returns:
             Response from API according to resp_type.
         """
@@ -39,12 +40,15 @@ class MicrosoftStorageClient(BaseClient):
         if 'ok_codes' not in kwargs and not self._ok_codes:
             kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
 
-        # https://stackoverflow.com/questions/53855050/azure-blob-get-request-authorization-header-x-ms-date-field-issue
-        # https://learn.microsoft.com/en-us/rest/api/storageservices/authorize-with-shared-key#specifying-the-date-header
+        if not params:
+            params = {}
+
+        # sas token should be added into the url as a parameter
+        params['sig'] = self._account_sas_token
+
         default_headers = {
             'x-ms-version': self._api_version,
-            'x-ms-date': datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT'),
-            'Authorization': f'SharedKey {self._storage_account_name}:{self._account_sas_token}'
+            'x-ms-date': datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
         }
 
         if headers:
