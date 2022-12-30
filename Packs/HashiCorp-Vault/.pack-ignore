@@ -1,5 +1,6 @@
 [file:HashiCorpVault.yml]
 ignore=IN145
+ignore=DO106
 
 [known_words]
 HashiCorp

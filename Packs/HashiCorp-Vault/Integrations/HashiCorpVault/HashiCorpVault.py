@@ -2,9 +2,6 @@ import demistomock as demisto  # noqa: F401
 import hcl
 from CommonServerPython import *  # noqa: F401
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBAL VARIABLES '''
 
