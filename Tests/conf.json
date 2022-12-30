@@ -1112,14 +1112,6 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Panorama",
-            "playbookID": "Fetch Incidents Test",
-            "fromversion": "6.1.0",
-            "is_mockable": false,
-            "instance_names": "panorama_fetch_incidents_test",
-            "timeout": 2400
-        },
-        {
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io test"
         },
