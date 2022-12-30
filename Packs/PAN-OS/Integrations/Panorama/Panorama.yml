@@ -9349,6 +9349,5 @@ tests:
 - palo_alto_panorama_test_pb
 - PAN-OS-firewall-topology-test-pb
 - PAN-OS-panorama-topology-test-pb
-- Fetch Incidents Test
 defaultmapperin: Panorama Mapper
 defaultclassifier: Panorama Classifier
