@@ -7,14 +7,7 @@ CI_COMMIT_BRANCH=${CI_COMMIT_BRANCH:-unknown}
 CI_BUILD_ID=${CI_BUILD_ID:-00000}
 PACK_ARTIFACTS=$ARTIFACTS_FOLDER/content_packs.zip
 EXTRACT_FOLDER=$(mktemp -d)
-ID_SET=$ARTIFACTS_FOLDER/id_set.json
 
-# build type is staging if ID_SET doesn't exist
-STAGING_SUFFIX=""
-if [ ! -f "$ID_SET" ]; then
-    echo "ID_SET file not found at $ID_SET"
-    STAGING_SUFFIX="_staging"
-fi
 
 if [[ ! -f "$GCS_MARKET_KEY" ]]; then
     echo "GCS_MARKET_KEY not set aborting!"
@@ -92,7 +85,7 @@ fi
 
 if [ -z "${BUCKET_UPLOAD}" ]; then
   echo "Updating the following content packs: $CONTENT_PACKS_TO_UPLOAD ..."
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -p $CONTENT_PACKS_TO_UPLOAD -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
 else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
@@ -111,7 +104,7 @@ else
     echo "Updating the following content packs to production: $CONTENT_PACKS_TO_UPLOAD ..."
     IS_FORCE_UPLOAD=false
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -idp $ID_SET -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$CONTENT_PACKS_TO_UPLOAD" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa $PACK_ARTIFACTS -d $ARTIFACTS_FOLDER/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -p "$CONTENT_PACKS_TO_UPLOAD" -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $IS_FORCE_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
   if [ -f "$ARTIFACTS_FOLDER/index.json" ]; then
     gsutil cp -z json "$ARTIFACTS_FOLDER/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
@@ -122,11 +115,6 @@ else
     gsutil cp -z json "$ARTIFACTS_FOLDER/corepacks.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
   else
     echo "Skipping uploading corepacks.json file."
-  fi
-  if [ -f $ID_SET ]; then
-    gsutil cp -z json $ID_SET "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH"
-  else
-    echo "Skipping uploading id_set.json file."
   fi
 
   echo "Finished updating content packs successfully."
