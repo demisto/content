@@ -898,7 +898,7 @@ class BranchTestCollector(TestCollector):
                 logger.warning(f'unexpected {git_status=}, considering it as <M>odified')
 
             if git_status == 'D':  # git-deleted file
-                if pack_file_removed_from := find_pack_file_removed_from(Path(old_file_path), None):
+                if pack_file_removed_from := find_pack_file_removed_from(Path(file_path), None):
                     packs_files_were_removed_from.add(pack_file_removed_from)
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
