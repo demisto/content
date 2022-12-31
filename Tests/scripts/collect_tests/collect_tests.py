@@ -900,6 +900,7 @@ class BranchTestCollector(TestCollector):
             if git_status == 'D':  # git-deleted file
                 if pack_file_removed_from := find_pack_file_removed_from(Path(file_path), None):
                     packs_files_were_removed_from.add(pack_file_removed_from)
+                continue  # not adding to changed files list
 
             changed_files.append(file_path)  # non-deleted files (added, modified)
         return FilesToCollect(changed_files=tuple(changed_files),
