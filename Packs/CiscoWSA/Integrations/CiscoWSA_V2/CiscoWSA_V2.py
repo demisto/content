@@ -1,11 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from requests.models import Response
 
 
 JWT_TOKEN_EXPIRATION_PERIOD = 30
-V2_PREFIX = 'v2.0'
-V3_PREFIX = 'v3.0'
+V2_PREFIX = "v2.0"
+V3_PREFIX = "v3.0"
 
 
 class Client(BaseClient):
@@ -23,8 +22,7 @@ class Client(BaseClient):
         """Retrieve and save to integration context JWT token for authorized client class API requests."""
         integration_context = get_integration_context()
         jwt_token = integration_context.get("jwt_token")
-        jwt_token_issued_time = integration_context.get(
-            "jwt_token_issued_time")
+        jwt_token_issued_time = integration_context.get("jwt_token_issued_time")
         if jwt_token and jwt_token_issued_time >= datetime.timestamp(
             datetime.now() - timedelta(minutes=JWT_TOKEN_EXPIRATION_PERIOD)
         ):
@@ -50,8 +48,7 @@ class Client(BaseClient):
             }
         }
         try:
-            response = self._http_request(
-                "POST", f"{V2_PREFIX}/login", json_data=data)
+            response = self._http_request("POST", f"{V2_PREFIX}/login", json_data=data)
             return dict_safe_get(response, ["data", "jwtToken"])
 
         except DemistoException as e:
@@ -71,68 +68,73 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco WSA.
         """
-        params = assign_params(
-            policy_names=policy_names
-        )
+        params = assign_params(policy_names=policy_names)
 
         return self._http_request(
-            'GET',
-            f'{V3_PREFIX}/web_security/access_policies',
-            params=params
+            "GET", f"{V3_PREFIX}/web_security/access_policies", params=params
         )
 
-    def access_policy_create_request(
-            self, policy_status, policy_name, policy_order, profile_name, auth, predefined, custom,
-            is_inverse, state, allow_connect_ports, block_protocols, block_custom_user_agents):
+    # def access_policy_create_request(
+    #     self,
+    #     policy_status,
+    #     policy_name,
+    #     policy_order,
+    #     profile_name,
+    #     auth,
+    #     predefined,
+    #     custom,
+    #     is_inverse,
+    #     state,
+    #     allow_connect_ports,
+    #     block_protocols,
+    #     block_custom_user_agents,
+    # ):
 
+    #     data = {
+    #         "access_policies": [
+    #             {
+    #                 "membership": {
+    #                     "identification_profiles": [
+    #                         {"auth": auth, "profile_name": profile_name}
+    #                     ],
+    #                     "user_agents": {
+    #                         "custom": custom,
+    #                         "is_inverse": is_inverse,
+    #                         "predefined": predefined,
+    #                     },
+    #                 },
+    #                 "policy_name": policy_name,
+    #                 "policy_order": policy_order,
+    #                 "policy_status": policy_status,
+    #                 "protocols_user_agents": {
+    #                     "allow_connect_ports": allow_connect_ports,
+    #                     "block_custom_user_agents": block_custom_user_agents,
+    #                     "block_protocols": block_protocols,
+    #                     "state": state,
+    #                 },
+    #             }
+    #         ]
+    #     }
+
+    #     return self._http_request(
+    #         "POST", f"{V3_PREFIX}/web_security/access_policies", json_data=data
+    #     )
+
+    def access_policy_update_request(self, policy_status, policy_name):
         data = {
             "access_policies": [
-                {
-                    "membership": {
-                        "identification_profiles": [
-                            {
-                                "auth": auth,
-                                "profile_name": profile_name
-                            }],
-                        "user_agents": {
-                            "custom": custom,
-                            "is_inverse": is_inverse,
-                            "predefined": predefined
-                        }},
-                    "policy_name": policy_name,
-                    "policy_order": policy_order,
-                    "policy_status": policy_status,
-                    "protocols_user_agents": {
-                        "allow_connect_ports": allow_connect_ports,
-                        "block_custom_user_agents": block_custom_user_agents,
-                        "block_protocols": block_protocols,
-                        "state": state
-                    }}]}
-
-        return self._http_request(
-            'POST',
-            f'{V3_PREFIX}/web_security/access_policies',
-            json_data=data
-        )
-
-    def access_policy_update_request(self, policy_status, policy_name) -> Response:
-        data = {
-            "access_policies": [
-                {
-                    "policy_name": policy_name,
-                    "policy_status": policy_status
-                }
+                {"policy_name": policy_name, "policy_status": policy_status}
             ]
         }
 
         return self._http_request(
-            'PUT',
-            f'{V3_PREFIX}/web_security/access_policies',
+            "PUT",
+            f"{V3_PREFIX}/web_security/access_policies",
             json_data=data,
-            resp_type='response'
+            resp_type="response",
         )
 
-    def access_policy_delete_request(self, policy_names: str) -> Response:
+    def access_policy_delete_request(self, policy_names: str):
         """
         Delete access policy.
 
@@ -142,15 +144,13 @@ class Client(BaseClient):
         Returns:
             Response: API response from Cisco WSA.
         """
-        params = assign_params(
-            policy_names=policy_names
-        )
+        params = assign_params(policy_names=policy_names)
 
         return self._http_request(
-            'DELETE',
-            f'{V3_PREFIX}/web_security/access_policies',
+            "DELETE",
+            f"{V3_PREFIX}/web_security/access_policies",
             params=params,
-            resp_type='response'
+            resp_type="response",
         )
 
     def domain_map_list_request(self) -> Dict[str, Any]:
@@ -161,50 +161,46 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco WSA.
         """
         return self._http_request(
-            'GET',
-            f'{V2_PREFIX}/configure/web_security/domain_map'
+            "GET", f"{V2_PREFIX}/configure/web_security/domain_map"
         )
 
     def domain_map_create_request(self, domain_name, order, ip_addresses):
         data = [
+            {"IP_addresses": ip_addresses, "domain_name": domain_name, "order": order}
+        ]
+
+        return self._http_request(
+            "POST", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
+        )
+
+    def domain_map_update_request(
+        self, new_domain_name, domain_name, order, ip_addresses
+    ):
+        data = [
             {
                 "IP_addresses": ip_addresses,
                 "domain_name": domain_name,
-                "order": order
-            }]
+                "new_domain_name": new_domain_name,
+                "order": order,
+            }
+        ]
 
         return self._http_request(
-            'POST',
-            f'{V2_PREFIX}/configure/web_security/domain_map',
-            json_data=data
-        )
-
-    def domain_map_update_request(self, new_domain_name, domain_name, order, ip_addresses):
-        data = [{
-            "IP_addresses": ip_addresses,
-            "domain_name": domain_name,
-            "new_domain_name": new_domain_name,
-            "order": order
-        }]
-
-        return self._http_request(
-            'PUT',
-            f'{V2_PREFIX}/configure/web_security/domain_map',
-            json_data=data
+            "PUT", f"{V2_PREFIX}/configure/web_security/domain_map", json_data=data
         )
 
     def domain_map_delete_request(self, domain_name):
-        data = {
-            "domain_name": domain_name
-        }
+        data = {"domain_name": domain_name}
 
         return self._http_request(
-            'DELETE',
-            f'{V2_PREFIX}/configure/web_security/domain_map',
+            "DELETE",
+            f"{V2_PREFIX}/configure/web_security/domain_map",
             json_data=data,
         )
 
-    def identification_profiles_list_request(self) -> Dict[str, Any]:
+    def identification_profiles_list_request(
+        self, profile_names: str
+        ) -> Dict[str, Any]:
         """
         Get identification profiles.
 
@@ -212,13 +208,16 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco WSA.
         """
         return self._http_request(
-            'GET',
-            f'{V3_PREFIX}/web_security/identification_profiles'
+            "GET", f"{V3_PREFIX}/web_security/identification_profiles"
         )
 
     def identification_profiles_create_request(
-        self, profile_name: str = None, status: str = None, description: str = None,
-        protocols: str = None, order: int = None
+        self,
+        profile_name: str = None,
+        status: str = None,
+        description: str = None,
+        protocols: str = None,
+        order: int = None,
     ) -> Response:
         """
         Create identification profile.
@@ -235,27 +234,36 @@ class Client(BaseClient):
         """
 
         data = {
-            "identification_profiles": [{
-                "description": description,
-                "members": {
-                    "protocols": ['socks'] if protocols == 'SOCKS' else ['http', 'https', 'ftp']
-                },
-                "order": order,
-                "profile_name": profile_name,
-                "status": status
-            }]
+            "identification_profiles": [
+                {
+                    "description": description,
+                    "members": {
+                        "protocols": ["socks"]
+                        if protocols == "SOCKS"
+                        else ["http", "https", "ftp"]
+                    },
+                    "order": order,
+                    "profile_name": profile_name,
+                    "status": status,
+                }
+            ]
         }
 
         return self._http_request(
-            'POST',
-            f'{V3_PREFIX}/web_security/identification_profiles',
+            "POST",
+            f"{V3_PREFIX}/web_security/identification_profiles",
             json_data=data,
-            resp_type='response'
+            resp_type="response",
         )
 
     def identification_profiles_update_request(
-        self, profile_name: str, new_profile_name: str = None, status: str = None,
-        description: str = None, protocols: str = None, order: int = None
+        self,
+        profile_name: str,
+        new_profile_name: str = None,
+        status: str = None,
+        description: str = None,
+        protocols: str = None,
+        order: int = None,
     ) -> Response:
         """
         Update identification profile.
@@ -272,35 +280,48 @@ class Client(BaseClient):
             Response: API response from Cisco WSA.
         """
 
-        data = remove_empty_elements({
-            "identification_profiles": [{
-                "profile_name": profile_name,
-                "new_profile_name": new_profile_name,
-                "description": description,
-                "status": status,
-                "identification_method": {},
-                "members": {
-                    "protocols": ['socks'] if protocols == 'SOCKS' else ['http', 'https', 'ftp']
-                },
-                "order": order,
-                }]
-        })
+        data = remove_empty_elements(
+            {
+                "identification_profiles": [
+                    {
+                        "profile_name": profile_name,
+                        "new_profile_name": new_profile_name,
+                        "description": description,
+                        "status": status,
+                        "identification_method": {},
+                        "members": {
+                            "protocols": ["socks"]
+                            if protocols == "SOCKS"
+                            else ["http", "https", "ftp"]
+                        },
+                        "order": order,
+                    }
+                ]
+            }
+        )
 
         return self._http_request(
-            'PUT',
-            f'{V3_PREFIX}/web_security/identification_profiles',
+            "PUT",
+            f"{V3_PREFIX}/web_security/identification_profiles",
             json_data=data,
-            resp_type='response'
+            resp_type="response",
         )
 
-    def identification_profiles_delete_request(self, profile_names):
-        params = assign_params(
-            profile_names=profile_names
-        )
+    def identification_profiles_delete_request(self, profile_names: str):
+        """
+        Delete identification profiles.
+
+        Args:
+            profile_names (str): Identification profile names to delete.
+
+        Returns:
+            Response: API response from Cisco WSA.
+        """
+        params = assign_params(profile_names=",".join(profile_names))
 
         return self._http_request(
-            'DELETE',
-            f'{V3_PREFIX}/web_security/identification_profiles',
+            "DELETE",
+            f"{V3_PREFIX}/web_security/identification_profiles",
             params=params,
         )
 
@@ -312,9 +333,20 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco WSA.
         """
         return self._http_request(
-            'GET',
-            f'{V3_PREFIX}/generic_resources/url_categories'
+            "GET", f"{V3_PREFIX}/generic_resources/url_categories"
         )
+
+
+def pagination(response: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, Any]:
+    page = args.get("page")
+    page_size = args.get("page_size")
+    limit = args.get("limit")
+
+    if page and page_size:
+        offset =  (page - 1) * page_size
+        return response[offset:offset + page_size]
+    elif limit:
+        return response[:limit]
 
 
 def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -328,26 +360,25 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    policy_names = args.get('policy_names')
-    response = client.access_policy_list_request(
-        policy_names=policy_names
-    ).get('access_policies')
+    policy_names = args.get("policy_names")
+    response = client.access_policy_list_request(policy_names=policy_names).get(
+        "access_policies"
+    )
 
     readable_output = tableToMarkdown(
-        name=f'Access Policies',
+        name=f"Access Policies",
         t=response,
-        headers=['policy_name', 'policy_status',
-                 'policy_order', 'policy_description'],
+        headers=["policy_name", "policy_status", "policy_order", "policy_description"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CiscoWSA.AccessPolicy',
-        outputs_key_field='policy_name',
+        outputs_prefix="CiscoWSA.AccessPolicy",
+        outputs_key_field="policy_name",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -385,7 +416,9 @@ def access_policy_list_command(client: Client, args: Dict[str, Any]) -> CommandR
 #     )
 
 
-def access_policy_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def access_policy_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Update an access policy.
 
@@ -396,12 +429,12 @@ def access_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    policy_status = args.get('policy_status')
-    policy_name = args.get('policy_name')
+    policy_status = args.get("policy_status")
+    policy_name = args.get("policy_name")
 
     response = client.access_policy_update_request(policy_status, policy_name)
     if response.status_code == 204:
-        readable_output = f'{policy_name} policy updated successfully.'
+        readable_output = f"{policy_name} policy updated successfully."
     else:
         raise Exception(response.json())
 
@@ -410,7 +443,9 @@ def access_policy_update_command(client: Client, args: Dict[str, Any]) -> Comman
     )
 
 
-def access_policy_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def access_policy_delete_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Delete access policy.
 
@@ -421,11 +456,11 @@ def access_policy_delete_command(client: Client, args: Dict[str, Any]) -> Comman
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    policy_names = args['policy_names']
+    policy_names = args["policy_names"]
 
     response = client.access_policy_delete_request(policy_names)
     if response.status_code == 204:
-        readable_output = f'{policy_names} policy deleted successfully.'
+        readable_output = f"{policy_names} policy deleted successfully."
     else:
         raise Exception(response.json())
 
@@ -445,28 +480,25 @@ def domain_map_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    domain_names = args.get('domain_names')
-    page = args.get('page')
-    page_size = args.get('page_size')
-    limit = args.get('limit')
+    domain_names = args.get("domain_names")
 
     response = client.domain_map_list_request()
     print(response)
 
     readable_output = tableToMarkdown(
-        name=f'Domain Map',
+        name=f"Domain Map",
         t=response,
-        headers=['domain_name', 'IP_addresses', 'order'],
+        headers=["domain_name", "IP_addresses", "order"],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='CiscoWSA.DomainMap',
-        outputs_key_field='domain_name',
+        outputs_prefix="CiscoWSA.DomainMap",
+        outputs_key_field="domain_name",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -481,20 +513,18 @@ def domain_map_create_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    domain_name = args.get('domain_name')
-    order = args.get('order')
-    ip_addresses = args.get('ip_addresses')
+    domain_name = args.get("domain_name")
+    order = args.get("order")
+    ip_addresses = args.get("ip_addresses")
 
-    response = client.domain_map_create_request(
-        domain_name, order, ip_addresses)
-    command_results = CommandResults(
-        outputs_prefix='CiscoWSA.DomainMapCreate',
-        outputs_key_field='',
+    response = client.domain_map_create_request(domain_name, order, ip_addresses)
+
+    return CommandResults(
+        outputs_prefix="CiscoWSA.DomainMapCreate",
+        outputs_key_field="",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
-
-    return command_results
 
 
 def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -508,18 +538,19 @@ def domain_map_update_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    new_domain_name = args.get('new_domain_name')
-    domain_name = args.get('domain_name')
-    order = args.get('order')
-    ip_addresses = args.get('ip_addresses')
+    new_domain_name = args.get("new_domain_name")
+    domain_name = args.get("domain_name")
+    order = args.get("order")
+    ip_addresses = args.get("ip_addresses")
 
     response = client.domain_map_update_request(
-        new_domain_name, domain_name, order, ip_addresses)
+        new_domain_name, domain_name, order, ip_addresses
+    )
     return CommandResults(
-        outputs_prefix='CiscoWSA.DomainMapUpdate',
-        outputs_key_field='',
+        outputs_prefix="CiscoWSA.DomainMapUpdate",
+        outputs_key_field="",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -534,19 +565,21 @@ def domain_map_delete_command(client: Client, args: Dict[str, Any]) -> CommandRe
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    domain_name = args.get('domain_name')
+    domain_name = args.get("domain_name")
 
     response = client.domain_map_delete_request(domain_name)
 
     return CommandResults(
-        outputs_prefix='CiscoWSA.DomainMapDelete',
-        outputs_key_field='',
+        outputs_prefix="CiscoWSA.DomainMapDelete",
+        outputs_key_field="",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
 
-def identification_profiles_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def identification_profiles_list_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Get identification profiles.
 
@@ -557,14 +590,25 @@ def identification_profiles_list_command(client: Client, args: Dict[str, Any]) -
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    response = client.identification_profiles_list_request().get(
-        'identification_profiles', [])
+    profile_names = args.get("profile_names")
 
+    response = client.identification_profiles_list_request().get(
+        "identification_profiles", []
+    )
+
+    response = pagination(response, args)
+    
     readable_output = tableToMarkdown(
-        name=f'Identification Profiles',
+        name=f"Identification Profiles",
         t=response,
-        headers=['order', 'profile_name', 'status',
-                 'description', 'members', 'identification_method'],
+        headers=[
+            "order",
+            "profile_name",
+            "status",
+            "description",
+            "members",
+            "identification_method",
+        ],
         headerTransform=string_to_table_header,
         removeNull=True,
     )
@@ -578,7 +622,9 @@ def identification_profiles_list_command(client: Client, args: Dict[str, Any]) -
     )
 
 
-def identification_profiles_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def identification_profiles_create_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Create identification profiles.
 
@@ -589,34 +635,31 @@ def identification_profiles_create_command(client: Client, args: Dict[str, Any])
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    status = args.get('status')
-    description = args.get('description')
-    profile_name = args.get('profile_name')
-    protocols = args.get('protocols')
-    order = arg_to_number(args.get('order', 1))
+    profile_name = args.get("profile_name")
+    status = args.get("status")
+    description = args.get("description")
+    protocols = args.get("protocols")
+    order = arg_to_number(args.get("order", 1))
 
     response = client.identification_profiles_create_request(
         status=status,
         description=description,
         profile_name=profile_name,
         protocols=protocols,
-        order=order
+        order=order,
     )
 
     if response.status_code == 204:
-        readable_output = f'Create profile {profile_name} successfully.'
+        readable_output = f"Created profile {profile_name} successfully."
     else:
-        readable_output = f'ERROR: Create profile {profile_name} successfully.'
+        readable_output = f"ERROR: Created profile {profile_name} successfully."
 
-    print(response.status_code)
-    print(response.json())
-
-    return CommandResults(
-        readable_output=readable_output
-    )
+    return CommandResults(readable_output=readable_output)
 
 
-def identification_profiles_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def identification_profiles_update_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Update identification profiles.
 
@@ -627,12 +670,13 @@ def identification_profiles_update_command(client: Client, args: Dict[str, Any])
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    profile_name = args['profile_name']
-    new_profile_name = args.get('new_profile_name')
-    status = args.get('status')
-    description = args.get('description')
-    protocols = args.get('protocols')
-    order = args.get('order')
+    # profile_name = args["profile_name"]
+    profile_name = args.get("profile_name")
+    new_profile_name = args.get("new_profile_name")
+    status = args.get("status")
+    description = args.get("description")
+    protocols = args.get("protocols")
+    order = args.get("order")
 
     response = client.identification_profiles_update_request(
         profile_name=profile_name,
@@ -640,20 +684,20 @@ def identification_profiles_update_command(client: Client, args: Dict[str, Any])
         description=description,
         status=status,
         protocols=protocols,
-        order=order
+        order=order,
     )
 
     if response.status_code == 204:
-        readable_output = f'Create profile {profile_name} successfully.'
+        readable_output = f"Updated profile {profile_name} successfully."
     else:
-        readable_output = f'ERROR: Create profile {profile_name} successfully.'
+        readable_output = f"ERROR: Updated profile {profile_name} successfully."
 
-    return CommandResults(
-        readable_output=readable_output
-    )
+    return CommandResults(readable_output=readable_output)
 
 
-def identification_profiles_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def identification_profiles_delete_command(
+    client: Client, args: Dict[str, Any]
+) -> CommandResults:
     """
     Delete identification profiles.
 
@@ -664,15 +708,16 @@ def identification_profiles_delete_command(client: Client, args: Dict[str, Any])
     Returns:
         CommandResults: readable outputs for XSOAR.
     """
-    profile_names = args.get('profile_names')
+    profile_names = argToList(args.get("profile_names"))
 
     response = client.identification_profiles_delete_request(profile_names)
-    return CommandResults(
-        outputs_prefix='CiscoWSA.IdentificationProfilesDelete',
-        outputs_key_field='',
-        outputs=response,
-        raw_response=response
-    )
+
+    if response.status_code == 204:
+        readable_output = f"Deleted profiles successfully."
+    else:
+        readable_output = f"ERROR: Deleted profiles successfully."
+
+    return CommandResults(readable_output=readable_output)
 
 
 def url_categories_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -689,7 +734,7 @@ def url_categories_list_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.url_categories_list_request()
 
     readable_output = tableToMarkdown(
-        name=f'URL categories',
+        name=f"URL categories",
         t=response,
         headerTransform=string_to_table_header,
         removeNull=True,
@@ -712,7 +757,7 @@ def test_module(client: Client) -> str:
         client (Client): Cisco WSA API client.
     """
     client.url_categories_list_request()
-    return 'ok'
+    return "ok"
 
 
 def main() -> None:
@@ -723,44 +768,44 @@ def main() -> None:
     username = params.get("credentials", {}).get("identifier")
     password = params.get("credentials", {}).get("password")
 
-    verify_certificate: bool = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    verify_certificate: bool = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     command = demisto.command()
     commands = {
-        'cisco-wsa-access-policy-list': access_policy_list_command,
+        "cisco-wsa-access-policy-list": access_policy_list_command,
         # 'cisco-wsa-access-policy-create': access_policy_create_command,
-        'cisco-wsa-access-policy-update': access_policy_update_command,
-        'cisco-wsa-access-policy-delete': access_policy_delete_command,
-        'cisco-wsa-domain-map-list': domain_map_list_command,
-        'cisco-wsa-domain-map-create': domain_map_create_command,
-        'cisco-wsa-domain-map-update': domain_map_update_command,
-        'cisco-wsa-domain-map-delete': domain_map_delete_command,
-        'cisco-wsa-identification-profiles-list': identification_profiles_list_command,
-        'cisco-wsa-identification-profiles-create': identification_profiles_create_command,
-        'cisco-wsa-identification-profiles-update': identification_profiles_update_command,
-        'cisco-wsa-identification-profiles-delete': identification_profiles_delete_command,
-        'cisco-wsa-url-categories-list': url_categories_list_command,
+        "cisco-wsa-access-policy-update": access_policy_update_command,
+        "cisco-wsa-access-policy-delete": access_policy_delete_command,
+        "cisco-wsa-domain-map-list": domain_map_list_command,
+        "cisco-wsa-domain-map-create": domain_map_create_command,
+        "cisco-wsa-domain-map-update": domain_map_update_command,
+        "cisco-wsa-domain-map-delete": domain_map_delete_command,
+        "cisco-wsa-identification-profiles-list": identification_profiles_list_command,
+        "cisco-wsa-identification-profiles-create": identification_profiles_create_command,
+        "cisco-wsa-identification-profiles-update": identification_profiles_update_command,
+        "cisco-wsa-identification-profiles-delete": identification_profiles_delete_command,
+        "cisco-wsa-url-categories-list": url_categories_list_command,
     }
     try:
         client: Client = Client(
-            urljoin(base_url, '/wsa/api'),
+            urljoin(base_url, "/wsa/api"),
             username,
             password,
             verify_certificate,
             proxy,
         )
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f'{command} command is not implemented.')
+            raise NotImplementedError(f"{command} command is not implemented.")
 
     except Exception as e:
         return_error(str(e))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ["__main__", "builtin", "builtins"]:
     main()
