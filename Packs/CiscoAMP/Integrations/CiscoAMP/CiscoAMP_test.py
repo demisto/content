@@ -177,18 +177,14 @@ def test_computer_trajectory_list_error_command(requests_mock, mock_client):
     """
     args = {
         'connector_guid': '1',
-        'query_string': '1'
+        'query_string': '\"'
     }
-
-    requests_mock.get(
-        f'{BASE_URL}/computers/{args["connector_guid"]}/trajectory'
-    )
 
     with pytest.raises(ValueError) as ve:
         from CiscoAMP import computer_trajectory_list_command
         computer_trajectory_list_command(mock_client, args)
 
-        assert str(ve) == 'connector_guid cannot be entered with a query_string'
+        assert str(ve) == 'query_string must be: SHA-256/IPv4/URL'
 
 
 def test_computer_user_activity_list_command(requests_mock, mock_client):
@@ -457,12 +453,15 @@ def test_computer_isolation_feature_availability_get_command(requests_mock, mock
 
     requests_mock.options(
         f'{BASE_URL}/computers/{args["connector_guid"]}/isolation',
+        headers={
+            'Allow': 'GET, PUT, DELETE'
+        }
     )
 
     from CiscoAMP import computers_isolation_feature_availability_get_command
     response = computers_isolation_feature_availability_get_command(mock_client, args)
 
-    assert response.readable_output == ''
+    assert response.readable_output == 'Can get information about an isolation with computer-isolation-get\nCan request to create a new isolation with computer-isolation-create\nCan request to stop the isolation with computer-isolation-delete\n'
 
 
 def test_computer_isolation_get_command(requests_mock, mock_client):

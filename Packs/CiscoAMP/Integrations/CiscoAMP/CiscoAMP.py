@@ -1382,7 +1382,7 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
     limit = arg_to_number(args.get('limit', 0))
     query_string = args.get('query_string')
 
-    if not connector_guid and not validate_query(
+    if not validate_query(
         query=query_string,
         accept_ipv4=True,
         accept_sha256=True,
@@ -3169,7 +3169,7 @@ def validate_query(
         bool: Whether the query is correct or not.
     """
     if not query:
-        return False
+        return True
 
     is_sha256 = accept_sha256 and sha256Regex.match(query)
     is_ipv4 = accept_ipv4 and re.match(ipv4Regex, query)
