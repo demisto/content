@@ -3285,7 +3285,7 @@ inputs:
 - key: InternalDomainName
   value: {}
   required: false
-  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example demisto.com. If there is more than one domain, use the | character to separate values such as (demisto.com|test.com)
+  description: The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example paloaltonetworks.com. If there is more than one domain, use the | character to separate values such as (paloaltonetworks.com|test.com)
   playbookInputQuery:
 - key: InternalRange
   value: {}
