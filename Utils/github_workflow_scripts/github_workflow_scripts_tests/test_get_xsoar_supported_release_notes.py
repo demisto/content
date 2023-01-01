@@ -75,7 +75,7 @@ def test_convert_files_to_paths(files_paths, expected):
     ([
         "Packs/CommonTypes/ReleaseNotes/3_3_39.md",
         "Packs/SentinelOne/ReleaseNotes/3_0_4.md"
-    ], None, "Packs/CommonTypes/ReleaseNotes/3_3_39.md,Packs/SentinelOne/ReleaseNotes/3_0_4.md")
+    ], None, "Packs/CommonTypes/ReleaseNotes/3_3_39.md;Packs/SentinelOne/ReleaseNotes/3_0_4.md")
 ])
 def test_format_output(rns, delimiter, expected):
     """
@@ -98,7 +98,7 @@ def test_format_output(rns, delimiter, expected):
         - The returned string has 1 path
         - The returned string has 2 paths with comma in between
         - The returned string has 2 paths with semicolon in between
-        - The returned string has 2 paths with comma in between
+        - The returned string has 2 paths with semicolon in between
     """
 
     if delimiter:
