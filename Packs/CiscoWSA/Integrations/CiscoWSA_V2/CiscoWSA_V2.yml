@@ -1,0 +1,371 @@
+commonfields:
+  id: CiscoWSA
+  version: -1
+name: CiscoWSA
+display: Cisco WSA
+category: Network Security
+description: Cisco Secure Web Appliance protects your organisation by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
+configuration:
+- name: base_url
+  display: Server URL
+  required: true
+  type: 0
+  additionalinfo: Base URL, e.g., https://XXX.eu.iphmx.com
+- name: credentials
+  display: Username
+  required: true
+  type: 9
+  additionalinfo: ""
+  displaypassword: Password
+  hiddenusername: false
+- name: proxy
+  display: Use system proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  type: python
+  subtype: python3
+  script: '-'
+  dockerimage: demisto/python3:3.10.8.37233
+  isfetch: false
+  commands:
+  - name: cisco-wsa-access-policy-list
+    description: |-
+      Retrieve access policies.
+      Access policies containing allowed/blocked URL categories in the network.   
+    arguments:
+    - name: policy_names
+      description: Policy names to retrieve.
+      required: false
+      isArray: true
+    - name: page
+      description: |-
+        Page number of paginated results.
+        Minimum value is 1.
+      isArray: false
+      required: false
+    - name: page_size
+      description: Number of results per page. Maximum value is 100.
+      isArray: false
+      required: false
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+      isArray: false
+      required: false
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_expiry
+      description: Policy expiry date.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_status
+      description: Policy status.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_name
+      description: Policy name.
+    - type: String
+      contextPath: CiscoWSA.AccessPolicy.policy_description
+      description: Policy description.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.membership.identification_profiles
+      description: Identification Profiles info.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.objects
+      description: Policy custom objects blocking settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.protocols_user_agents
+      description: Policy protocols and user agents settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.http_rewrite_profile
+      description: Policy HTTP rewrite profile settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.avc.applications
+      description: Application visibility and control.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.url_filtering
+      description: URL filtering settings.
+    - type: Unknown
+      contextPath: CiscoWSA.AccessPolicy.amw_reputation
+      description: Anti-Malware and reputation settings.
+  # - name: cisco-wsa-access-policy-create
+  #   description: Create access policy.
+  #   arguments:
+  #   - name: policy_status
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: policy_name
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: policy_order
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: profile_name
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: auth
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: predefined
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: custom
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: is_inverse
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: state
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: allow_connect_ports
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: block_protocols
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  #   - name: block_custom_user_agents
+  #     description: ''
+  #     required: false
+  #     isArray: false
+  - name: cisco-wsa-access-policy-update
+    description: Update access policy.
+    arguments:
+    - name: policy_name
+      description: Policy name to update.
+      required: true
+      isArray: false
+    - name: policy_status
+      description: Policy status.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: policy_order
+      description: Policy order, index of policy in the collection. Not applicable for global_policy.
+      required: false
+      isArray: false
+    - name: policy_expiry
+      description: Policy expiry date, format MM/DD/YYYY HH:MM, e.g. 01/25/2023 08:30
+      required: false
+      isArray: false
+    - name: policy_description
+      description: Policy description to update.
+      required: false
+      isArray: false
+  - name: cisco-wsa-access-policy-delete
+    description: Delete access policy.
+    arguments:
+    - name: policy_names
+      description: Comma separated policy names to delete.
+      required: true
+      isArray: true
+  - name: cisco-wsa-domain-map-list
+    description: |-
+      Retrieve domain mappings.
+      Domain maps are DNS mappings of domain to IP addresses.
+    arguments:
+    - name: domain_names
+      description: Comma separated domain names to retrieve.
+      required: false
+      isArray: true
+    - name: page
+      description: |-
+        Page number of paginated results.
+        Minimum value is 1.
+      isArray: false
+      required: false
+    - name: page_size
+      description: Number of results per page. Maximum value is 100.
+      isArray: false
+      required: false
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+      isArray: false
+      required: false
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.DomainMap.domain_name
+      description: Domain name.
+    - type: String
+      contextPath: CiscoWSA.DomainMap.IP_addresses
+      description: Mapped IP addresses.
+    - type: Number
+      contextPath: CiscoWSA.DomainMap.order
+      description: Domain map order, index of domain map in the collection.
+  - name: cisco-wsa-domain-map-create
+    description: Create domain mapping for IP addresses.
+    arguments:
+    - name: domain_name
+      description: Domain name to create.
+      required: true
+      isArray: false
+    - name: order
+      description: Domain map order, index of domain map in the collection.
+      required: false
+      isArray: false
+    - name: ip_addresses
+      description: IP addresses to map for the domain.
+      required: true
+      isArray: true
+  - name: cisco-wsa-domain-map-update
+    description: Update domain map.
+    arguments:
+    - name: domain_name
+      description: Domain name to update.
+      required: true
+      isArray: false
+    - name: new_domain_name
+      description: New domain name.
+      required: false
+      isArray: false
+    - name: order
+      description: Domain map order, index of domain map in the collection.
+      required: false
+      isArray: false
+    - name: ip_addresses
+      description: IP addresses to map for the domain.
+      required: false
+      isArray: true
+  - name: cisco-wsa-domain-map-delete
+    description: Delete domain map.
+    arguments:
+    - name: domain_name
+      description: Domain name to delete.
+      required: true
+      isArray: false
+  - name: cisco-wsa-identification-profiles-list
+    description: |-
+      Retrieve identification profiles.
+      Identification Profiles	are classifications	of users, defining authentication requirements.
+    arguments:
+    - name: profile_names
+      description: Comma separated profile names to retrieve.
+      required: false
+      isArray: true
+    - name: page
+      description: |-
+        Page number of paginated results.
+        Minimum value is 1.
+      isArray: false
+      required: false
+    - name: page_size
+      description: Number of results per page. Maximum value is 100.
+      isArray: false
+      required: false
+    - name: limit
+      defaultValue: 50
+      description: The maximum number of records to retrieve.
+      isArray: false
+      required: false
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.status
+      description: Identification Profile status.
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.profile_name
+      description: Identification Profile name
+    - type: String
+      contextPath: CiscoWSA.IdentificationProfile.description
+      description: Identification Profile description
+  - name: cisco-wsa-identification-profiles-create
+    description: Create identification profile.
+    arguments:
+    - name: profile_name
+      description: Profile name.
+      required: true
+      isArray: false
+    - name: status
+      description: Status.
+      required: true
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: description
+      description: Description.
+      required: true
+      isArray: false
+    - name: protocols
+      description: ''
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - HTTPS
+      - SOCKS
+    - name: order
+      description: |-
+        Identification profile order, index of Identification profile in the collection.
+        Not applicable for global_identification_profile.
+      required: true
+      isArray: false
+  - name: cisco-wsa-identification-profiles-update
+    description: Update identification profile.
+    arguments:
+    - name: profile_name
+      description: Profile name to update.
+      required: true
+      isArray: false
+    - name: new_profile_name
+      description: New profile name.
+      required: false
+      isArray: false
+    - name: status
+      description: Status.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: description
+      description: Description.
+      required: false
+      isArray: false
+    - name: protocols
+      description: Protocols
+      required: false
+      isArray: false
+    - name: order
+      description: |-
+        Identification profile order, index of Identification profile in the collection.
+        Not applicable for global_identification_profile.
+      required: false
+      isArray: false
+  - name: cisco-wsa-identification-profiles-delete
+    description: Delete identification profiles.
+    arguments:
+    - name: profile_names
+      description: Profile names to delete.
+      required: true
+      isArray: true
+  - name: cisco-wsa-url-categories-list
+    description: Retrieve URL categories of available categories to allow/block in access policies.
+    outputs:
+    - type: String
+      contextPath: CiscoWSA.UrlCategory.predefined
+      description: Predefined URL categories.
+    - type: String
+      contextPath: CiscoWSA.UrlCategory.custom
+      description: Custom URL categories.
