@@ -1381,10 +1381,13 @@ def computer_trajectory_list_command(client: Client, args: Dict[str, Any]) -> Co
     limit = arg_to_number(args.get('limit', 0))
     query_string = args.get('query_string')
 
-    if connector_guid and query_string:
-        raise ValueError('connector_guid cannot be entered with a query_string')
-
-    if not connector_guid and is_query_wrong(query_string):
+    if not connector_guid and not validate_query(
+        query=query_string,
+        accept_ipv4=True,
+        accept_sha256=True,
+        accept_url=True,
+        accept_filename=False,
+    ):
         raise ValueError('query_string must be: SHA-256/IPv4/URL')
 
     pagination = get_pagination_parameters(page, page_size, limit)
@@ -1651,11 +1654,14 @@ def computer_activity_list_command(client: Client, args: Dict[str, Any]) -> Comm
     page_size = arg_to_number(args.get('page_size', 0))
     limit = arg_to_number(args.get('limit', 0))
 
-    filename_regex = r'[\w\-\.]+[\w\-\. ]*'
-
     # Check if the query is empty or of one of the following formats: SHA256, IPv4, URL or Filename.
-    if is_query_wrong(query_string) \
-            and not bool(re.match(filename_regex, query_string)):
+    if not validate_query(
+        query=query_string,
+        accept_ipv4=True,
+        accept_filename=True,
+        accept_sha256=True,
+        accept_url=True,
+    ):
         raise ValueError('query_string must be: SHA-256/IPv4/URL/Filename')
 
     pagination = get_pagination_parameters(page, page_size, limit)
@@ -3140,23 +3146,43 @@ def add_item_to_all_dictionaries(dictionaries: List[Dict[str, Any]], key: str, v
         dictionary[key] = value
 
 
-def is_query_wrong(query: str = None) -> bool:
+def validate_query(
+    accept_ipv4: bool,
+    accept_url: bool,
+    accept_sha256: bool,
+    accept_filename: bool,
+    query: str = None,
+) -> bool:
     """
-    Check if the query is empty or the format is one of the following options: SHA256, IPv4 or URL.
+    Check if the query is empty or the format is correct.
 
     Args:
+        accept_ipv4 (bool): Validate IPv4.
+        accept_url (bool): Validate URL.
+        accept_sha256 (bool): Validate SHA256.
+        accept_filename (bool): Validate Filename.
         query (str, optional): Query string in some format.
             Defaults to None.
 
     Returns:
-        bool: Whether query is correct or not.
+        bool: Whether the query is correct or not.
     """
-    if not query:
-        return True
+    filename_regex = r'[\w\-\.]+[\w\-\. ]*'
 
-    return not sha256Regex.match(query) \
-        and not re.match(ipv4Regex, query) \
-        and not re.match(urlRegex, query)
+    if not query:
+        return False
+
+    is_sha256 = accept_sha256 and sha256Regex.match(query)
+    is_ipv4 = accept_ipv4 and re.match(ipv4Regex, query)
+    is_url = accept_url and re.match(urlRegex, query)
+    is_filename = accept_filename and re.match(filename_regex, query)
+
+    return any((
+        is_sha256,
+        is_ipv4,
+        is_url,
+        is_filename,
+    ))
 
 
 def get_dbotscore(reliability: str, sha256: str = None, disposition: str = None) -> Common.DBotScore:
