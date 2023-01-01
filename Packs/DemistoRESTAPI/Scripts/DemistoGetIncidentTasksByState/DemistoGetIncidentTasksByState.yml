@@ -1,14 +1,12 @@
 commonfields:
   id: DemistoGetIncidentTasksByState
-  id_x2: GetIncidentTasksByState
   version: -1
 name: DemistoGetIncidentTasksByState
-name_x2: GetIncidentTasksByState
 script: ''
 type: javascript
 tags:
 - Utility
-comment: Get all tasks for specific incident by the given state.
+comment: Deprecated. No available replacement.
 enabled: true
 args:
 - name: incidentId
@@ -61,3 +59,4 @@ sensitive: true
 tests:
 - No test
 fromversion: 5.0.0
+deprecated: true
