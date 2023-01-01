@@ -95,17 +95,12 @@ validate-content-conf:
 
     - section_start "Create or update content graph" --collapsed
 
-    - |
-        echo "Updating the content graph"
-        mkdir $ARTIFACTS_FOLDER/content_graph
-        demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -g -o $ARTIFACTS_FOLDER/content_graph
-        echo "Successfully updated content graph"
-
-        gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" > auth.out 2>&1
-        gsutil cp $ARTIFACTS_FOLDER/content_graph/$MARKETPLACE_VERSION.zip "gs://$GCS_MARKET_BUCKET_DEV/content_graph/$MARKETPLACE_VERSION.zip"
-
+    - echo "Updating the content graph"
+    - mkdir $ARTIFACTS_FOLDER/content_graph
+    - demisto-sdk update-content-graph --marketplace $MARKETPLACE_VERSION -g -o $ARTIFACTS_FOLDER/content_graph
+    - echo "Successfully updated content graph"
       
-    - section_end "Update content graph"
+    - section_end "Create or update content graph"
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
     - |
