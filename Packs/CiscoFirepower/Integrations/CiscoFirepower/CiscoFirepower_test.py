@@ -6,7 +6,6 @@ import io
 import os
 from typing import Any, Union
 from http import HTTPStatus
-import unittest
 from unittest import mock
 import pytest
 from CommonServerPython import CommandResults
