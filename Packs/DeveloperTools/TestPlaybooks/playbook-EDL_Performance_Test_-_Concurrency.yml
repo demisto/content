@@ -1,6 +1,6 @@
 id: EDL Performance Test - Concurrency
 version: -1
-fromversion: 6.0.0
+fromversion: 6.5.0
 name: EDL Performance Test - Concurrency
 starttaskid: "0"
 tasks:
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -43,6 +44,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -72,6 +74,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -101,6 +104,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "14"
@@ -130,6 +134,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -159,6 +164,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -189,6 +195,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "17"
@@ -238,6 +245,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -287,6 +295,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -336,6 +345,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -385,6 +395,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -804,24 +815,25 @@ inputs:
   value: {}
   required: false
   description: The URL of the EDL instance with with query in the end
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: results_map
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: "n"
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: z
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: HeyConcurrency
   type: unknown
 tests:
 - No test
+description: ''

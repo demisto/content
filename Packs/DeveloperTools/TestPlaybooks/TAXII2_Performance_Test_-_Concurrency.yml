@@ -833,5 +833,5 @@ inputs:
 outputs:
 - contextPath: HeyConcurrency
   type: unknown
-fromversion: 6.1.0
+fromversion: 6.5.0
 description: ''

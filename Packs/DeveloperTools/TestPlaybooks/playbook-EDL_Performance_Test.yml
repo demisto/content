@@ -1,6 +1,6 @@
 id: EDL Performance Test
 version: -1
-fromversion: 6.0.0
+fromversion: 6.5.0
 name: EDL Performance Test
 starttaskid: "0"
 tasks:
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -78,6 +79,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -108,6 +110,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -158,6 +161,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -203,6 +207,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -232,6 +237,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -262,6 +268,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -2103,6 +2110,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -2284,21 +2292,22 @@ inputs:
     simple: edl
   required: false
   description: EDL instance URL.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: z
   value: {}
   required: false
   description: Duration of application to send requests.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: "n"
   value: {}
   required: false
   description: The number of requests to run. Default is 200.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: iocs_in_xsoar
   value:
     simple: "100000"
   required: false
   description: Expected number of indicators in the system.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+description: ''

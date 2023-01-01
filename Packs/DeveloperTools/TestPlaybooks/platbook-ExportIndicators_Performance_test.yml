@@ -1,6 +1,6 @@
 id: Export Indicators Performance Test
 version: -1
-fromversion: 6.0.0
+fromversion: 6.5.0
 name: Export Indicators Performance Test
 starttaskid: "0"
 tasks:

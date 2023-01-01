@@ -2314,5 +2314,5 @@ inputs:
   description: Expected number of indicators in the system.
   playbookInputQuery:
 outputs: []
-fromversion: 6.1.0
+fromversion: 6.5.0
 description: ''
