@@ -2,10 +2,11 @@ import demistomock as demisto  # noqa: F401
 import json
 import hcl
 import requests
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 if not demisto.params().get('proxy', False):
     del os.environ['HTTP_PROXY']
@@ -784,4 +785,4 @@ try:
 except Exception as e:
     LOG(e)
     LOG.print_log()
-    return_error(e.message)
+    return_error(e)
