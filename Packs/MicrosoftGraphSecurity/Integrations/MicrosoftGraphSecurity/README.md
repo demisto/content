@@ -5,7 +5,7 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
 
 ## Note
-The `message-search-alerts` command does not filter alerts of the`Office 365` provider because of API limitations.\
+The `message-search-alerts` command does not filter alerts of the `Office 365` provider because of API limitations.\
 For more info, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 
 ### Required Permissions
