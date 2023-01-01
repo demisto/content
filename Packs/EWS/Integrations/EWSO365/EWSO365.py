@@ -1105,7 +1105,6 @@ def move_item_between_mailboxes(
     source_account = client.get_account(source_mailbox)
     destination_account = client.get_account(destination_mailbox)
     is_public = client.is_default_folder(destination_folder_path, is_public)
-    # print('hello4')
     destination_folder = client.get_folder_by_path(
         destination_folder_path, destination_account, is_public
     )
@@ -2383,7 +2382,6 @@ def sub_main():
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
-    command = demisto.command()
     # client's default_target_mailbox is the authorization source for the instance
     params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
     if params.get('upn_mailbox') and not(args.get('target_mailbox')):
@@ -2393,7 +2391,7 @@ def sub_main():
         start_logging()
         # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
-
+        command = demisto.command()
         # commands that return a single note result
         normal_commands = {
             "ews-get-searchable-mailboxes": get_searchable_mailboxes,
