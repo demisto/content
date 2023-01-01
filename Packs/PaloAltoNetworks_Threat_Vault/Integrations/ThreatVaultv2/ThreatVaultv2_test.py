@@ -261,6 +261,29 @@ def test_pagination(page, page_size, limit, expected_result):
                 "ThreatVault.Fileformat",
             ],
         ),
+        (
+            {
+                "data": {
+                    "dns": [
+                        {"id": "test", "name": "test", "description": "test"}
+                    ],
+                    "rtdns": [
+                        {"id": "test", "name": "test", "description": "test"}
+                    ],
+                    "fileformat": [
+                        {"id": "test", "name": "test", "description": "test"}
+                    ],
+                    "spywarec2": [{"id": "test", "name": "test", "description": "test"}],
+                }
+            },
+            False,
+            [
+                "ThreatVault.Fileformat",
+                "ThreatVault.DNS",
+                "ThreatVault.RTDNS",
+                "ThreatVault.SpywareC2",
+            ],
+        ),
     ],
 )
 def test_parse_resp_by_type(mocker, resp, expanded, expected_results):
@@ -343,6 +366,39 @@ RESP_TO_HR_ARGS = [
         "spyware",
         False,
         12,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
+    ),
+    (
+        {
+            "id": "test",
+            "name": "test",
+            "description": "test",
+        },
+        "dns",
+        False,
+        10,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
+    ),
+    (
+        {
+            "id": "test",
+            "name": "test",
+            "description": "test",
+        },
+        "rtdns",
+        False,
+        10,
+        (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
+    ),
+    (
+        {
+            "id": "test",
+            "name": "test",
+            "description": "test",
+        },
+        "spywarec2",
+        False,
+        10,
         (("ThreatID", "test"), ("Description", "test"), ("Name", "test")),
     ),
     (
