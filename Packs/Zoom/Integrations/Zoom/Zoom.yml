@@ -11,7 +11,7 @@ configuration:
   - defaultvalue: "https://api.zoom.us/v2/"
     display: Server URL (e.g. 'https://api.zoom.us/v2/')
     name: url
-    required: true
+    required: false
     type: 0
   - display: Account ID (OAuth)
     name: account_id

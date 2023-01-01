@@ -1,10 +1,6 @@
 id: Zoom_Test
-version: 38
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Zoom_Test
-description: |-
-  Important!
-  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
 starttaskid: "0"
 tasks:
   "0":
@@ -17,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -36,6 +32,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 5c699f8f-13bb-49af-853d-ff673b52cf93
@@ -56,7 +53,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -71,6 +67,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 28148171-dbb8-4480-83dd-3adb0f1ca9de
@@ -87,7 +84,6 @@ tasks:
       '#none#':
       - "3"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,6 +98,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: c24b04ca-0563-4f4f-81e6-368f55017e46
@@ -110,11 +107,11 @@ tasks:
       id: c24b04ca-0563-4f4f-81e6-368f55017e46
       version: -1
       name: zoom-create-user (default=Basic)
-      description: Create a new user in zoom account
       script: '|||zoom-create-user'
       type: regular
       iscommand: true
       brand: ""
+      description: Create a new user in zoom account
     nexttasks:
       '#none#':
       - "4"
@@ -126,7 +123,6 @@ tasks:
       last_name:
         simple: McTesty
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -141,6 +137,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: cf2e87ad-1111-4625-8648-9315c71746e3
@@ -149,11 +146,11 @@ tasks:
       id: cf2e87ad-1111-4625-8648-9315c71746e3
       version: -1
       name: zoom-delete-user
-      description: Delete a user from Zoom
       script: '|||zoom-delete-user'
       type: regular
       iscommand: true
       brand: ""
+      description: Delete a user from Zoom
     nexttasks:
       '#none#':
       - "5"
@@ -161,7 +158,6 @@ tasks:
       user_id:
         simple: ${Zoom.User.email}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -176,6 +172,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: dee4f962-0689-4915-87f7-cafb0d950c40
@@ -227,7 +224,6 @@ tasks:
           right:
             value:
               simple: "1"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -242,6 +238,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 1915afaa-b342-485c-8afd-d73dfd1cf6d9
@@ -261,7 +258,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -276,6 +272,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 6aca67b4-1e4c-457e-8248-83dc7b49287b
@@ -292,7 +289,6 @@ tasks:
       '#none#':
       - "11"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,6 +303,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: 295a7aec-81f2-4dae-85e4-e6b3b314e852
@@ -326,7 +323,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -341,6 +337,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
     taskid: 0fe75f05-ad92-4f88-8607-3eb8025d00b2
@@ -349,16 +346,15 @@ tasks:
       id: 0fe75f05-ad92-4f88-8607-3eb8025d00b2
       version: -1
       name: zoom-list-users
-      description: List the existing users
       script: '|||zoom-list-users'
       type: regular
       iscommand: true
       brand: ""
+      description: List the existing users
     nexttasks:
       '#none#':
       - "17"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -373,6 +369,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
     taskid: 0b136e16-1573-45e4-887f-203ee85515e5
@@ -399,7 +396,6 @@ tasks:
           right:
             value:
               simple: admin@demistodev.com
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -414,6 +410,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
     taskid: 8735cee4-9e28-4736-8281-786d817a32d8
@@ -422,11 +419,11 @@ tasks:
       id: 8735cee4-9e28-4736-8281-786d817a32d8
       version: -1
       name: zoom-create-meeting
-      description: Create a new zoom meeting (scheduled or instant)
       script: '|||zoom-create-meeting'
       type: regular
       iscommand: true
       brand: ""
+      description: Create a new zoom meeting (scheduled or instant)
     nexttasks:
       '#none#':
       - "19"
@@ -436,7 +433,6 @@ tasks:
       user_id:
         simple: admin@demistodev.com
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -451,6 +447,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
     taskid: 25bc69e8-f5fb-4a42-8b2c-d959380284c8
@@ -463,16 +460,12 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
     scriptarguments:
       fields:
         simple: id
       path:
         simple: Zoom.Meeting
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -487,6 +480,10 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "22"
+    continueonerrortype: ""
   "20":
     id: "20"
     taskid: f35c7500-cc76-4bfe-8087-214b6ecbd4bb
@@ -503,7 +500,6 @@ tasks:
       value:
         simple: Zoom test completed successfuly
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -518,6 +514,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
     taskid: a7e6f786-812a-4878-8ff8-1532e9bf3e2f
@@ -526,17 +523,16 @@ tasks:
       id: a7e6f786-812a-4878-8ff8-1532e9bf3e2f
       version: -1
       name: zoom-fetch-recording
-      description: Get meeting record and save as file in the warroom
       script: '|||zoom-fetch-recording'
       type: regular
       iscommand: true
       brand: ""
+      description: Get meeting record and save as file in the warroom
     scriptarguments:
       meeting_id:
         simple: "120332943"
-    separatecontext: false
     continueonerror: true
-    continueonerrortype: ""
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -551,6 +547,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: 036976c6-b1b0-4570-8eb9-8d725efb8cf4
@@ -789,3 +786,7 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: |-
+  Important!
+  Because  API  token limit, if you run this playbook again, it will crash. So wait a few minutes between each time.
