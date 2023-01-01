@@ -634,6 +634,14 @@ script:
     - description: Prisma Access Folder Location for the Object
       name: folder
       required: true
+      auto: PREDEFINED
+      predefined:
+      - Shared
+      - Mobile Users
+      - Remote Networks
+      - Service Connections
+      - Mobile Users Container
+      - Mobile Users Explicit Proxy
     - description: Tenant services group ID. If not provided, the tsg_id integration parameter will be used as the default.
       name: tsg_id
     - description: Friendly name of the address object.
@@ -644,27 +652,36 @@ script:
     - description: IP/Netmask of the object using slash notation.
       name: ip_netmask
       required: true
+    - description: ''
+      name: ip_range
+      required: true
+    - description: ''
+      name: ip_wildcard
+      required: true
+    - description: ''
+      name: fqdn
+      required: true
     - description: A comma-separated list of address object tags.
       isArray: true
       name: tag
     description: Create a new address object
     name: prisma-sase-address-object-create
     outputs:
-    - contextPath: PrismaAccess.CreatedAddressObject
+    - contextPath: PrismaSase.Address
       description: Created address object.
-    - contextPath: PrismaAccess.CreatedAddress.description
+    - contextPath: PrismaSase.Address.description
       description: Address description.
       type: String
-    - contextPath: PrismaAccess.CreatedAddress.folder
+    - contextPath: PrismaSase.Address.folder
       description: Address folder.
       type: String
-    - contextPath: PrismaAccess.CreatedAddress.id
+    - contextPath: PrismaSase.Address.id
       description: Address ID.
       type: String
-    - contextPath: PrismaAccess.CreatedAddress.ip_netmask
+    - contextPath: PrismaSase.Address.ip_netmask
       description: Address IP netmask.
       type: String
-    - contextPath: PrismaAccess.CreatedAddress.name
+    - contextPath: PrismaSase.Address.name
       description: Address name.
       type: String
   - arguments:

@@ -12,7 +12,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 SEARCH_LIMIT = 200
 DEFAULT_LIMIT = 10
 DEFAULT_OFFSET = 0
-PA_OUTPUT_PREFIX = "PrismaAccess."
+PA_OUTPUT_PREFIX = "PrismaSase."
 CONFIG_URI_PREFIX = "/sse/config/v1/"
 
 SECURITYRULE_FIELDS = {
@@ -516,7 +516,7 @@ def create_address_object_command(client: Client, args: Dict[str, Any]) -> Comma
     outputs = raw_response
 
     return CommandResults(
-        outputs_prefix=f'{PA_OUTPUT_PREFIX}CreatedAddress',
+        outputs_prefix=f'{PA_OUTPUT_PREFIX}Address',
         outputs_key_field='id',
         outputs=outputs,
         readable_output=tableToMarkdown('Address Object Created', outputs, headerTransform=string_to_table_header),
@@ -898,13 +898,13 @@ def main():
         'test-module': test_module,
         'prisma-sase-security-rule-create': create_security_rule_command,
         'prisma-sase-security-rule-list': list_security_rules_command,
-        'prisma-sase-candidate-config-push': push_candidate_config_command,
-        #'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
-        'prisma-sase-config-job-list': list_config_jobs_command,
-        'prisma-sase-security-rule-update': edit_security_rule_command,
-        #'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
-        'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
         'prisma-sase-security-rule-delete': delete_security_rule_command,
+        'prisma-sase-security-rule-update': edit_security_rule_command,
+        #'prisma-access-get-config-jobs-by-id': get_config_jobs_by_id_command,
+        'prisma-sase-candidate-config-push': push_candidate_config_command,
+        'prisma-sase-config-job-list': list_config_jobs_command,
+        'prisma-sase-query-agg-monitor-api': query_agg_monitor_api_command,
+        #'prisma-access-get-security-rule-by-name': get_security_rule_by_name_command,
         'prisma-sase-address-object-create': create_address_object_command,
         'prisma-sase-address-object-update': edit_address_object_command,
         'prisma-sase-address-object-delete': delete_address_object_command,
