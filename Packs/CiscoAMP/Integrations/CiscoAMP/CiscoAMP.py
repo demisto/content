@@ -19,6 +19,7 @@ DEFAULT_TIMEOUT = 600
 FETCH_LIMIT = 200
 MAX_PAGE_SIZE = 100
 
+FILENAME_REGEX = r'[\w\-\.]+[\w\-\. ]*'
 ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 XSOAR_SEVERITY_BY_AMP_SEVERITY = {
@@ -3167,15 +3168,13 @@ def validate_query(
     Returns:
         bool: Whether the query is correct or not.
     """
-    filename_regex = r'[\w\-\.]+[\w\-\. ]*'
-
     if not query:
         return False
 
     is_sha256 = accept_sha256 and sha256Regex.match(query)
     is_ipv4 = accept_ipv4 and re.match(ipv4Regex, query)
     is_url = accept_url and re.match(urlRegex, query)
-    is_filename = accept_filename and re.match(filename_regex, query)
+    is_filename = accept_filename and re.match(FILENAME_REGEX, query)
 
     return any((
         is_sha256,
