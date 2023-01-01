@@ -16,6 +16,7 @@ ExceedLMS
 Okta
 SecneurX
 VirusTotal
+HasResults
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101
