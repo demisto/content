@@ -51,7 +51,7 @@ def convert_files_to_paths(files: List[str]) -> List[Path]:
     return list(map(lambda f: Path(f), files))
 
 
-def format_output(rns_to_review: List[str], delimiter: str = ",") -> str:
+def format_output(rns_to_review: List[str], delimiter: str = ";") -> str:
     """
     Convert the list of release notes to review into a comma-separated string
     in preparation for output.

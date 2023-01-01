@@ -49,7 +49,7 @@ def parse_changed_files_names() -> argparse.Namespace:
                         help="The files that are passed to docs review (passed as one string).")
     parser.add_argument('-d', '--delimiter', help="The delimiter that separates the changed files names,"
                                                   " defined in yq 'env.CHANGED_FILES_DELIMITER' .github/workflows/"
-                                                  "review-release-notes.yml", default=",")
+                                                  "review-release-notes.yml", default=";")
     args = parser.parse_args()
 
     return args

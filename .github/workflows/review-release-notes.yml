@@ -2,8 +2,8 @@ name: Review Release Notes
 on: pull_request
 
 env:
-  CHANGED_FILES_DELIMITER: ","
-  PYTHONWARNINGS: ignore
+  CHANGED_FILES_DELIMITER: ";"
+  PYTHONWARNINGS: ignore::DeprecationWarning
 
 jobs:
   release_notes_review:
