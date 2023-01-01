@@ -29,6 +29,7 @@ ignore=IM111
 [known_words]
 Splunk
 SplunkPy
+HEC
 
 [file:classifier-SplunkPy.json]
 ignore=BA101
