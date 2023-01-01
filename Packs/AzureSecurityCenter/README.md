@@ -10,4 +10,4 @@ Azure Security Center provides threat protection for data centers within both cl
 
 
 # License information
-- must be enabled on at least 1 Azure subscription
+Must be enabled on at least 1 Azure subscription.
