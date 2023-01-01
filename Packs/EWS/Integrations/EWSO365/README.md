@@ -267,6 +267,8 @@ Impersonation rights required. In order to perform actions on the target mailbox
 
 Returns a list of searchable mailboxes.
 
+When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained [https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019].
+
 ##### Required Permissions
 
 Requires eDiscovery permissions to the Exchange Server. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
