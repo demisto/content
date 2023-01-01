@@ -5,10 +5,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Threat Hunting - Generic
-* Crowdstrike Falcon - Isolate Endpoint
+* Crowdstrike Falcon Intelligence Sandbox - Isolate Endpoint
 
 ### Integrations
-CrowdStrikeFalcon
+CrowdStrikeFalcon Intelligence Sandbox
 
 ### Scripts
 * AddEvidence

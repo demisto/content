@@ -1,13 +1,13 @@
 {
-	"id": "CrowdStrike Falcon",
-	"name": "CrowdStrike Falcon Incident Classifier",
+	"id": "CrowdStrike Falcon Intelligence Sandbox",
+	"name": "CrowdStrike Falcon Intelligence Sandbox",
 	"type": "classification",
-	"description": "CrowdStrike Falcon Incident Classifier",
+	"description": "CrowdStrike Falcon Intelligence Sandbox",
 	"version": -1,
-	"defaultIncidentType": "CrowdStrike Falcon Incident",
+	"defaultIncidentType": "CrowdStrike Falcon Intelligence Sandbox Incident",
 	"keyTypeMap": {
-		"detection": "CrowdStrike Falcon Detection",
-		"incident": "CrowdStrike Falcon Incident"
+		"detection": "CrowdStrike Falcon Intelligence Sandbox Detection",
+		"incident": "CrowdStrike Falcon Intelligence Sandbox Incident"
 	},
 	"transformer": {
 		"complex": null,

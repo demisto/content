@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-CrowdStrikeFalcon
+CrowdStrikeFalcon Intelligence Sandbox
 
 ### Scripts
 This playbook does not use any scripts.

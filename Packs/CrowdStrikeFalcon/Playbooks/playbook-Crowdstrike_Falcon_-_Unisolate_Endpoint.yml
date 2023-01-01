@@ -39,7 +39,7 @@ tasks:
     task:
       id: 2ae518e9-5ce5-4579-8497-0bc6fa4b0d62
       version: -1
-      name: Is Crowdstrike Falcon enabled?
+      name: Is Crowdstrike Falcon Intelligence Sandbox enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns
         'no'.
       scriptName: IsIntegrationAvailable
@@ -53,7 +53,7 @@ tasks:
       - "3"
     scriptarguments:
       brandname:
-        simple: CrowdstrikeFalcon
+        simple: CrowdstrikeFalcon Intelligence Sandbox
     results:
     - brandInstances
     separatecontext: false

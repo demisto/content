@@ -1,10 +1,10 @@
 Endpoint security is at the frontline to protect against malicious cybersecurity threats. It represents one of the first places organizations look to secure their enterprise networks.  
 As the volume and sophistication of cybersecurity threats have increased, so has the need for more advanced endpoint security solutions.  
-CrowdStrike Falcon is one of the leaders in the Endpoint Protection Platform (EPP) market, and the CrowdStrike Falcon content pack provides a holistic solution for protecting enterprise endpoints and servers from malicious attacks that can seriously impact your organization.  
+CrowdStrike Falcon Intelligence Sandbox is one of the leaders in the Endpoint Protection Platform (EPP) market, and the CrowdStrike Falcon Intelligence Sandbox content pack provides a holistic solution for protecting enterprise endpoints and servers from malicious attacks that can seriously impact your organization.  
 This pack is designed to quickly detect, analyze, block, and contain malicious attacks in progress. It also gives administrators visibility into advanced threats to speed detection and remediation response times.  
   
 ## What Does This Pack Do?
-- Mirrors incidents between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections
+- Mirrors incidents between Cortex XSOAR incidents and CrowdStrike Falcon Intelligence Sandbox incidents or detections
 - Provides real-time response features
 - Assesses vulnerability
 - Contains endpoints (isolation/unisolation)

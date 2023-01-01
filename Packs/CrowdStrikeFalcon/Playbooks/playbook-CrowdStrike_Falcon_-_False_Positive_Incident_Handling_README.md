@@ -6,10 +6,10 @@ Actions include unisolating the host, allowing the indicator by the EDR, and tag
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-Crowdstrike Falcon - Unisolate Endpoint
+Crowdstrike Falcon Intelligence Sandbox - Unisolate Endpoint
 
 ### Integrations
-CrowdStrikeFalcon
+CrowdStrikeFalcon Intelligence Sandbox
 
 ### Scripts
 This playbook does not use any scripts.
@@ -30,7 +30,7 @@ This playbook does not use any scripts.
 | AllowIOCTagName | The name of the tag to apply to allowed indicators. |  | Optional |
 | ApplyAllowIOCGlobally | Whether adding to the allow list is global.<br/>If False, set the AllowHostGroup input to the group name. | True | Optional |
 | AllowHostGroupName | The name of the allow list group to apply in case ApplyAllowIOCGlobally is set to False. |  | Optional |
-| CloseNotes | Provide the close notes to be listed in CrowdStrike Falcon. |  | Optional |
+| CloseNotes | Provide the close notes to be listed in CrowdStrike Falcon Intelligence Sandbox. |  | Optional |
 | Sha256 | The SHA256 value to manage. |  | Optional |
 
 ## Playbook Outputs

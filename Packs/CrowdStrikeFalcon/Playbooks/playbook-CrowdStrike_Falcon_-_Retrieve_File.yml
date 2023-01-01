@@ -4,7 +4,7 @@ fromversion: 6.5.0
 name: CrowdStrike Falcon - Retrieve File
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+  This playbook retrieves and unzips files from CrowdStrike Falcon Intelligence Sandbox and returns a list of the files that were and were not retrieved.
 starttaskid: '0'
 tasks:
   '0':
@@ -268,7 +268,7 @@ inputs:
   value:
     simple: infected
   required: false
-  description: Default password to unzip files retrieved by CrowdStrike Falcon.
+  description: Default password to unzip files retrieved by CrowdStrike Falcon Intelligence Sandbox.
   playbookInputQuery:
 - key: FileNames
   value: {}

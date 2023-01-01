@@ -1,5 +1,5 @@
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
+This playbook enables getting CrowdStrike Falcon Intelligence Sandbox detection details based on the CrowdStrike incident ID.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-CrowdStrikeFalcon
+CrowdStrikeFalcon Intelligence Sandbox
 
 ### Scripts
 This playbook does not use any scripts.

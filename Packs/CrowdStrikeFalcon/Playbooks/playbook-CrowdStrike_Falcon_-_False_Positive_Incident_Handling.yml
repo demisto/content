@@ -497,7 +497,7 @@ tasks:
     task:
       id: f9b2354d-0093-45f0-86fe-6b4aa88324d5
       version: -1
-      name: Crowdstrike Falcon - Unisolate Endpoint
+      name: Crowdstrike Falcon Intelligence Sandbox - Unisolate Endpoint
       playbookName: Crowdstrike Falcon - Unisolate Endpoint
       type: playbook
       iscommand: false

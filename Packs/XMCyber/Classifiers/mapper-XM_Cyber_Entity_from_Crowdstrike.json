@@ -1,5 +1,5 @@
 {
-    "description": "Maps Crowdstrike Falcon incident data to XM Cyber fields for automatic enrichment",
+    "description": "Maps Crowdstrike Falcon Intelligence Sandbox incident data to XM Cyber fields for automatic enrichment",
     "feed": false,
     "fromVersion": "6.0.0",
     "id": "XM Cyber Entity from Crowdstrike",

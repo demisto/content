@@ -1,5 +1,5 @@
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+This playbook retrieves and unzips files from CrowdStrike Falcon Intelligence Sandbox and returns a list of the files that were and were not retrieved.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-CrowdStrikeFalcon
+CrowdStrikeFalcon Intelligence Sandbox
 
 ### Scripts
 * Set
@@ -24,7 +24,7 @@ cs-falcon-rtr-retrieve-file
 | --- | --- | --- | --- |
 | HostId | The ID of the host to use. |  | Optional |
 | PathsToGet | The paths to retrieve the files from the host. |  | Optional |
-| ZipPassword | The default password to unzip files retrieved by CrowdStrike Falcon. | infected | Optional |
+| ZipPassword | The default password to unzip files retrieved by CrowdStrike Falcon Intelligence Sandbox. | infected | Optional |
 | FileNames | The names of the file to retrieve. Used to validate that all the intended files were retrieved, not to specify which ones will be retrieved.    |  | Optional |
 
 ## Playbook Outputs
