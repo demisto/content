@@ -118,8 +118,8 @@ def search_incidents(args: Dict):   # pragma: no cover
         if platform == 'xsoar' or platform == 'xsoar_hosted':
             raise ValueError('The trimevents argument is not supported in XSOAR.')
 
-    if args.get('trimevents') == '0':
-        args.pop('trimevents')
+        if args.get('trimevents') == '0':
+            args.pop('trimevents')
 
     platform = get_demisto_version().get('platform')
 
