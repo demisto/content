@@ -20,7 +20,7 @@
  "params": {
   "groupBy": [
    "calculatedTime(d)",
-   "type"
+   "rawType"
   ],
   "timeFrame": "days"
  },

@@ -3,7 +3,7 @@
     "dataType": "metrics",
     "params": {
         "groupBy": [
-            "name"
+            "rawName"
         ],
         "keys": [
             "avg|duration"

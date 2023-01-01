@@ -41,7 +41,7 @@
         ],
         "limitType": "top",
         "groupBy": [
-            "name"
+            "rawName"
         ],
         "valuesFormat": "days",
         "yAxisLabel": "",

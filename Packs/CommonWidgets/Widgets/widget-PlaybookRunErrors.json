@@ -40,7 +40,7 @@
             "sum|errorCount"
         ],
         "groupBy": [
-            "name"
+            "rawName"
         ],
         "valuesFormat": "abbreviated",
         "yAxisLabel": "",

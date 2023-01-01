@@ -28,7 +28,7 @@
  "params": {
   "groupBy": [
    "severity",
-   "type"
+   "rawType"
   ]
  },
  "description": ""
